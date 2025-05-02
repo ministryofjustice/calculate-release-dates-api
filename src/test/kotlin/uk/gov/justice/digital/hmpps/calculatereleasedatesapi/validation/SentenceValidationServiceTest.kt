@@ -128,6 +128,38 @@ class SentenceValidationServiceTest {
   }
 
   @Test
+  fun `Bulk calculation validation returns both multiple sentences for one parent and multiple offences against any consecutive sentence`() {
+    val sentences = listOf(
+      activeOffence,
+      activeOffence.copy(
+        caseSequence = 2,
+        sentenceSequence = 2,
+        consecutiveToSequence = 1,
+        terms = listOf(
+          SentenceTerms(1, 0, 0, 0, code = "IMP"),
+        ),
+      ),
+      activeOffence.copy(
+        caseSequence = 2,
+        sentenceSequence = 2,
+        consecutiveToSequence = 1,
+        terms = listOf(
+          SentenceTerms(1, 0, 0, 0, code = "IMP"),
+        ),
+      ),
+      activeOffence.copy(
+        caseSequence = 3,
+        sentenceSequence = 3,
+        consecutiveToSequence = 1,
+      ),
+    )
+    val result = sentenceValidationService.validateSentences(sentences, bulkCalcValidation = true)
+    assertTrue(result.count() == 2)
+    assertEquals("More than one sentence consecutive to the same sentence", result[0].message)
+    assertEquals("Sentence with multiple offences is consecutive to another sentence", result[1].message)
+  }
+
+  @Test
   fun `Bulk calculation validation returns multiple sentences for consecutive chain warning`() {
     val sentences = listOf(
       activeOffence,
@@ -201,6 +233,107 @@ class SentenceValidationServiceTest {
     val result = sentenceValidationService.validateSentences(sentences, bulkCalcValidation = true)
     assertTrue(result.count() == 1)
     assertEquals("Sentence with multiple offences is consecutive to another sentence", result.first().message)
+  }
+
+  @Test
+  fun `Bulk calculation validation returns multiple offences validation against root sentence`() {
+    val sentences = listOf(
+      activeOffence,
+      activeOffence.copy(
+        offence = OffenderOffence(
+          2L,
+          LocalDate.of(2015, 1, 1),
+          null,
+          "ADIMP_ORA",
+          "description",
+          listOf("C"),
+        ),
+      ),
+      activeOffence.copy(
+        caseSequence = 2,
+        sentenceSequence = 2,
+        consecutiveToSequence = 1,
+        terms = listOf(
+          SentenceTerms(1, 0, 0, 0, code = "IMP"),
+        ),
+      ),
+    )
+    val result = sentenceValidationService.validateSentences(sentences, bulkCalcValidation = true)
+    assertTrue(result.count() == 1)
+    assertEquals("Sentence with multiple offences is consecutive to another sentence", result.first().message)
+  }
+
+  @Test
+  fun `Bulk calculation validation passes for multiple offences not part of a consecutive chain`() {
+    val sentences = listOf(
+      activeOffence,
+      activeOffence.copy(
+        caseSequence = 2,
+        sentenceSequence = 2,
+        consecutiveToSequence = 1,
+        terms = listOf(
+          SentenceTerms(1, 0, 0, 0, code = "IMP"),
+        ),
+      ),
+      activeOffence.copy(
+        caseSequence = 3,
+        sentenceSequence = 3,
+        consecutiveToSequence = 2,
+        terms = listOf(
+          SentenceTerms(1, 0, 0, 0, code = "IMP"),
+        ),
+      ),
+      activeOffence.copy(
+        caseSequence = 4,
+        sentenceSequence = 4,
+        consecutiveToSequence = 3,
+        terms = listOf(
+          SentenceTerms(1, 0, 0, 0, code = "IMP"),
+        ),
+        offence = OffenderOffence(
+          2L,
+          LocalDate.of(2015, 1, 1),
+          null,
+          "ADIMP_ORA",
+          "description",
+          listOf("C"),
+        ),
+      ),
+      activeOffence.copy(
+        caseSequence = 5,
+        sentenceSequence = 5,
+        consecutiveToSequence = null,
+        terms = listOf(
+          SentenceTerms(1, 0, 0, 0, code = "IMP"),
+        ),
+        offence = OffenderOffence(
+          3L,
+          LocalDate.of(2016, 1, 1),
+          null,
+          "ADIMP_ORA",
+          "description",
+          listOf("C"),
+        ),
+      ),
+      activeOffence.copy(
+        caseSequence = 5,
+        sentenceSequence = 5,
+        consecutiveToSequence = null,
+        terms = listOf(
+          SentenceTerms(1, 0, 0, 0, code = "IMP"),
+        ),
+        offence = OffenderOffence(
+          4L,
+          LocalDate.of(2016, 2, 1),
+          null,
+          "ADIMP_ORA",
+          "description",
+          listOf("C"),
+        ),
+      ),
+    )
+    val result = sentenceValidationService.validateSentences(sentences, bulkCalcValidation = true)
+    assertTrue(result.count() == 0)
   }
 
   @Test
