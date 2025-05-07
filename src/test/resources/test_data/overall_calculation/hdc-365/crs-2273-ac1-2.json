@@ -1,0 +1,61 @@
+{
+  "offender": {
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
+  },
+  "sentences": [
+    {
+      "offence": {
+        "committedAt": "2022-06-04",
+        "offenceCode": "OF61102"
+      },
+      "duration": {
+        "durationElements": {
+          "YEARS": 3,
+          "MONTHS": 6
+        }
+      },
+      "sentencedAt": "2024-03-29",
+      "identifier": "cb304745-d781-47d3-b931-4baa31551fc5"
+    },
+    {
+      "offence": {
+        "committedAt": "2022-06-04",
+        "offenceCode": "PC53001"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 8
+        }
+      },
+      "sentencedAt": "2025-07-01",
+      "consecutiveSentenceUUIDs": ["cb304745-d781-47d3-b931-4baa31551fc5"]
+    }
+  ],
+  "adjustments": {
+    "UNLAWFULLY_AT_LARGE": [
+      {
+        "appliesToSentencesFrom": "2025-06-04",
+        "numberOfDays": 3,
+        "fromDate": "2025-06-04",
+        "toDate": "2025-06-06"
+      }
+    ],
+    "ADDITIONAL_DAYS_AWARDED": [
+      {
+        "appliesToSentencesFrom": "2025-07-03",
+        "numberOfDays": 5,
+        "fromDate": "2025-07-03",
+        "toDate": "2025-07-07"
+      }
+    ],
+    "RESTORATION_OF_ADDITIONAL_DAYS_AWARDED": [
+      {
+        "appliesToSentencesFrom": "2025-08-08",
+        "numberOfDays": 2,
+        "fromDate": "2025-08-08",
+        "toDate": "2025-08-09"
+      }
+    ]
+  }
+}

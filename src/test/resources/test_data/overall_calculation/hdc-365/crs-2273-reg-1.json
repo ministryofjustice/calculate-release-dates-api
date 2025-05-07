@@ -1,0 +1,31 @@
+{
+  "offender": {
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
+  },
+  "sentences": [
+    {
+      "offence": {
+        "committedAt": "2022-04-20",
+        "offenceCode": "TH68068"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 45
+        }
+      },
+      "sentencedAt": "2024-04-20",
+      "identifier": "cb304745-d781-47d3-b931-4baa31551fc5"
+    }
+  ],
+  "adjustments": {
+    "ADDITIONAL_DAYS_AWARDED": [
+      {
+        "appliesToSentencesFrom": "2025-06-06",
+        "numberOfDays": 60,
+        "fromDate": "2025-06-06",
+        "toDate": "2025-08-04"
+      }
+    ]
+  }
+}
