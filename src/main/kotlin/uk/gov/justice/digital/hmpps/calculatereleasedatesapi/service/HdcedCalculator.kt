@@ -15,6 +15,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSe
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.HDC12_DATE
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.hasSentencesBeforeAndAfter
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
 import java.time.LocalDate
 import kotlin.math.ceil
@@ -221,12 +223,18 @@ class HdcedCalculator(
     sentence: CalculableSentence,
     params: HdcedParams,
   ) {
-    sentenceCalculation.noDaysToHdcedByCalcType[InterimHdcCalcType.HDCED_PRE_365_RULES] =
+    val daysToAdd =
       sentenceCalculation.numberOfDaysToDeterminateReleaseDate
         .minus(hdcedConfiguration.custodialPeriodAboveMidpointDeductionDaysPreHdc365 + 1) // Extra plus one because we use the numberOfDaysToDeterminateReleaseDate param and not the sentencedAt param
         .plus(params.adjustedDays)
-    sentenceCalculation.hdcedByCalcType[InterimHdcCalcType.HDCED_PRE_365_RULES] =
-      sentence.sentencedAt.plusDays(sentenceCalculation.noDaysToHdcedByCalcType[InterimHdcCalcType.HDCED_PRE_365_RULES]!!)
+
+    sentenceCalculation.hdcedByCalcType[InterimHdcCalcType.HDCED_PRE_365_RULES] = if (
+      sentence is ConsecutiveSentence && sentence.hasSentencesBeforeAndAfter(HDC12_DATE)
+    ) {
+      maxOf(sentence.sentencedAt, HDC12_DATE).plusDays(daysToAdd)
+    } else {
+      sentence.sentencedAt.plusDays(daysToAdd)
+    }
 
     if (isCalculatedHdcLessThanTheMinimumHDCPeriod(sentence, sentenceCalculation.hdcedByCalcType[InterimHdcCalcType.HDCED_PRE_365_RULES]!!, params)) {
       calculateHdcedMinimumCustodialPeriodUsingPreHdc365Rules(
