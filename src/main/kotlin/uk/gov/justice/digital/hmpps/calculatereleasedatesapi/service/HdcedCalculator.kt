@@ -223,7 +223,7 @@ class HdcedCalculator(
     sentence: CalculableSentence,
     params: HdcedParams,
   ) {
-    val daysToAdd =
+    sentenceCalculation.noDaysToHdcedByCalcType[InterimHdcCalcType.HDCED_PRE_365_RULES] =
       sentenceCalculation.numberOfDaysToDeterminateReleaseDate
         .minus(hdcedConfiguration.custodialPeriodAboveMidpointDeductionDaysPreHdc365 + 1) // Extra plus one because we use the numberOfDaysToDeterminateReleaseDate param and not the sentencedAt param
         .plus(params.adjustedDays)
@@ -231,9 +231,9 @@ class HdcedCalculator(
     sentenceCalculation.hdcedByCalcType[InterimHdcCalcType.HDCED_PRE_365_RULES] = if (
       sentence is ConsecutiveSentence && sentence.hasSentencesBeforeAndAfter(HDC12_DATE)
     ) {
-      maxOf(sentence.sentencedAt, HDC12_DATE).plusDays(daysToAdd)
+      maxOf(sentence.sentencedAt, HDC12_DATE).plusDays(sentenceCalculation.noDaysToHdcedByCalcType[InterimHdcCalcType.HDCED_PRE_365_RULES]!!)
     } else {
-      sentence.sentencedAt.plusDays(daysToAdd)
+      sentence.sentencedAt.plusDays(sentenceCalculation.noDaysToHdcedByCalcType[InterimHdcCalcType.HDCED_PRE_365_RULES]!!)
     }
 
     if (isCalculatedHdcLessThanTheMinimumHDCPeriod(sentence, sentenceCalculation.hdcedByCalcType[InterimHdcCalcType.HDCED_PRE_365_RULES]!!, params)) {
