@@ -21,7 +21,6 @@ generic-service:
     ADJUSTMENTS_API_URL: https://adjustments-api-preprod.hmpps.service.justice.gov.uk
     MANAGE-OFFENCES_API_URL: https://manage-offences-api-preprod.hmpps.service.justice.gov.uk
     USE_ADJUSTMENTS_API: "false"
-    EXTERNAL_MOVEMENTS_SDS_40_FEATURE_TOGGLE: "true"
     EXTERNAL_MOVEMENTS_ADJUSTMENTS_FEATURE_TOGGLE: "true"
 
   serviceAccountName: calculate-release-dates-api-preprod
