@@ -15,31 +15,25 @@ class SentencesExtractionService {
   fun mostRecentOrNull(
     sentences: List<CalculableSentence>,
     property: KProperty1<SentenceCalculation, LocalDate?>,
-  ): LocalDate? {
-    return sentences
-      .map { property.get(it.sentenceCalculation) }
-      .filter(Objects::nonNull)
-      .maxOfOrNull { it!! }
-  }
+  ): LocalDate? = sentences
+    .map { property.get(it.sentenceCalculation) }
+    .filter(Objects::nonNull)
+    .maxOfOrNull { it!! }
 
   fun mostRecent(
     sentences: List<CalculableSentence>,
     property: KProperty1<SentenceCalculation, LocalDate?>,
-  ): LocalDate {
-    return sentences
-      .map { property.get(it.sentenceCalculation) }
-      .filter(Objects::nonNull)
-      .maxOf { it!! }
-  }
+  ): LocalDate = sentences
+    .map { property.get(it.sentenceCalculation) }
+    .filter(Objects::nonNull)
+    .maxOf { it!! }
 
   fun mostRecentSentence(
     sentences: List<CalculableSentence>,
     property: KProperty1<SentenceCalculation, LocalDate?>,
-  ): CalculableSentence {
-    return sentences
-      .filter { property.get(it.sentenceCalculation) != null }
-      .maxByOrNull { property.get(it.sentenceCalculation)!! }!!
-  }
+  ): CalculableSentence = sentences
+    .filter { property.get(it.sentenceCalculation) != null }
+    .maxByOrNull { property.get(it.sentenceCalculation)!! }!!
 
   fun mostRecentSentences(
     sentences: List<CalculableSentence>,
@@ -56,11 +50,9 @@ class SentencesExtractionService {
     sentences: List<CalculableSentence>,
     property: KProperty1<SentenceCalculation, LocalDate?>,
     filter: (CalculableSentence) -> Boolean = { true },
-  ): CalculableSentence? {
-    return sentences
-      .filter { property.get(it.sentenceCalculation) != null && filter(it) }
-      .maxByOrNull { property.get(it.sentenceCalculation)!! }
-  }
+  ): CalculableSentence? = sentences
+    .filter { property.get(it.sentenceCalculation) != null && filter(it) }
+    .maxByOrNull { property.get(it.sentenceCalculation)!! }
 
   companion object {
     val log: Logger = LoggerFactory.getLogger(this::class.java)

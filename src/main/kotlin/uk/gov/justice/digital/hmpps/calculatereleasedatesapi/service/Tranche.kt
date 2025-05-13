@@ -57,17 +57,11 @@ class Tranche(
     }
   }
 
-  private fun filterOnType(sentence: CalculableSentence): Boolean {
-    return !sentence.isDto() && !sentence.isOrExclusivelyBotus() && sentence !is AFineSentence
-  }
+  private fun filterOnType(sentence: CalculableSentence): Boolean = !sentence.isDto() && !sentence.isOrExclusivelyBotus() && sentence !is AFineSentence
 
-  private fun filterOnSentenceDate(sentence: CalculableSentence): Boolean {
-    return sentence.sentencedAt.isBefore(trancheConfiguration.trancheOneCommencementDate)
-  }
+  private fun filterOnSentenceDate(sentence: CalculableSentence): Boolean = sentence.sentencedAt.isBefore(trancheConfiguration.trancheOneCommencementDate)
 
-  private fun filterOnSentenceExpiryDates(sentence: CalculableSentence): Boolean {
-    return sentence.sentenceCalculation.adjustedExpiryDate.isAfterOrEqualTo(trancheConfiguration.trancheOneCommencementDate)
-  }
+  private fun filterOnSentenceExpiryDates(sentence: CalculableSentence): Boolean = sentence.sentenceCalculation.adjustedExpiryDate.isAfterOrEqualTo(trancheConfiguration.trancheOneCommencementDate)
 }
 
 enum class TrancheType {

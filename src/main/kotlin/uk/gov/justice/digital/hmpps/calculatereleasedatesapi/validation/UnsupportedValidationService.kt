@@ -38,11 +38,10 @@ class UnsupportedValidationService {
     return sentenceAndOffences.filter { it.offence.offenceCode in offenceCodesToFilter }
   }
 
-  private fun findUnsupported97BreachOffencesAfter1Dec2020(sentencesAndOffence: List<SentenceAndOffenceWithReleaseArrangements>): List<SentenceAndOffence> {
-    return sentencesAndOffence.filter {
-      it.offence.offenceCode.startsWith("PH97003") && it.offence.offenceStartDate != null &&
-        it.offence.offenceStartDate.isAfterOrEqualTo(AFTER_97_BREACH_PROVISION_INVALID)
-    }
+  private fun findUnsupported97BreachOffencesAfter1Dec2020(sentencesAndOffence: List<SentenceAndOffenceWithReleaseArrangements>): List<SentenceAndOffence> = sentencesAndOffence.filter {
+    it.offence.offenceCode.startsWith("PH97003") &&
+      it.offence.offenceStartDate != null &&
+      it.offence.offenceStartDate.isAfterOrEqualTo(AFTER_97_BREACH_PROVISION_INVALID)
   }
 
   private fun findUnsupportedSuspendedOffenceCodes(sentenceAndOffences: List<SentenceAndOffenceWithReleaseArrangements>): List<SentenceAndOffence> {

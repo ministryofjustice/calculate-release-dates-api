@@ -136,17 +136,15 @@ class ControllerAdvice {
    * We simply need to return a 404 response.
    */
   @ExceptionHandler(NoActiveBookingException::class)
-  fun handleException(e: NoActiveBookingException): ResponseEntity<ErrorResponse> {
-    return ResponseEntity
-      .status(HttpStatus.NOT_FOUND)
-      .body(
-        ErrorResponse(
-          status = HttpStatus.NOT_FOUND.value(),
-          userMessage = "No active booking available: ${e.message}",
-          developerMessage = e.message,
-        ),
-      )
-  }
+  fun handleException(e: NoActiveBookingException): ResponseEntity<ErrorResponse> = ResponseEntity
+    .status(HttpStatus.NOT_FOUND)
+    .body(
+      ErrorResponse(
+        status = HttpStatus.NOT_FOUND.value(),
+        userMessage = "No active booking available: ${e.message}",
+        developerMessage = e.message,
+      ),
+    )
 
   @ExceptionHandler(java.lang.Exception::class)
   fun handleException(e: java.lang.Exception): ResponseEntity<ErrorResponse?>? {

@@ -113,10 +113,8 @@ class BulkComparisonEventService(
     comparisonRepository.save(comparison)
   }
 
-  fun getComparison(comparisonId: Long): Comparison {
-    return comparisonRepository.findById(comparisonId).orElseThrow {
-      EntityNotFoundException("The comparison $comparisonId could not be found.")
-    }
+  fun getComparison(comparisonId: Long): Comparison = comparisonRepository.findById(comparisonId).orElseThrow {
+    EntityNotFoundException("The comparison $comparisonId could not be found.")
   }
 
   @Transactional

@@ -25,12 +25,10 @@ class WebClientConfiguration(
 ) {
 
   @Bean
-  fun prisonApiUserAuthWebClient(webClientBuilder: WebClient.Builder): WebClient {
-    return webClientBuilder
-      .baseUrl(prisonApiUri)
-      .filter(addAuthHeaderFilterFunction())
-      .build()
-  }
+  fun prisonApiUserAuthWebClient(webClientBuilder: WebClient.Builder): WebClient = webClientBuilder
+    .baseUrl(prisonApiUri)
+    .filter(addAuthHeaderFilterFunction())
+    .build()
 
   @Bean
   fun prisonApiSystemAuthWebClient(
@@ -45,29 +43,21 @@ class WebClientConfiguration(
       .build()
   }
 
-  private fun addAuthHeaderFilterFunction(): ExchangeFilterFunction {
-    return ExchangeFilterFunction { request: ClientRequest, next: ExchangeFunction ->
-      val filtered = ClientRequest.from(request)
-        .header(HttpHeaders.AUTHORIZATION, UserContext.getAuthToken())
-        .build()
-      next.exchange(filtered)
-    }
+  private fun addAuthHeaderFilterFunction(): ExchangeFilterFunction = ExchangeFilterFunction { request: ClientRequest, next: ExchangeFunction ->
+    val filtered = ClientRequest.from(request)
+      .header(HttpHeaders.AUTHORIZATION, UserContext.getAuthToken())
+      .build()
+    next.exchange(filtered)
   }
 
   @Bean
-  fun prisonApiHealthWebClient(webClientBuilder: WebClient.Builder): WebClient {
-    return webClientBuilder.baseUrl(prisonApiUri).build()
-  }
+  fun prisonApiHealthWebClient(webClientBuilder: WebClient.Builder): WebClient = webClientBuilder.baseUrl(prisonApiUri).build()
 
   @Bean
-  fun oauthApiHealthWebClient(webClientBuilder: WebClient.Builder): WebClient {
-    return webClientBuilder.baseUrl(oauthApiUrl).build()
-  }
+  fun oauthApiHealthWebClient(webClientBuilder: WebClient.Builder): WebClient = webClientBuilder.baseUrl(oauthApiUrl).build()
 
   @Bean
-  fun bankHolidayApiWebClient(webClientBuilder: WebClient.Builder): WebClient {
-    return webClientBuilder.baseUrl(bankHolidayApiUrl).build()
-  }
+  fun bankHolidayApiWebClient(webClientBuilder: WebClient.Builder): WebClient = webClientBuilder.baseUrl(bankHolidayApiUrl).build()
 
   @Bean
   fun adjustmentsApiWebClient(

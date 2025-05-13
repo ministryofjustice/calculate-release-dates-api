@@ -55,11 +55,7 @@ class SqsIntegrationTestBase : IntegrationTestBase() {
 
   protected fun jsonString(any: Any) = objectMapper.writeValueAsString(any) as String
 
-  fun getNumberOfMessagesCurrentlyOnQueue(): Int? {
-    return bulkComparisonQueue.sqsClient.countMessagesOnQueue(bulkComparisonQueue.queueUrl).get()
-  }
+  fun getNumberOfMessagesCurrentlyOnQueue(): Int? = bulkComparisonQueue.sqsClient.countMessagesOnQueue(bulkComparisonQueue.queueUrl).get()
 
-  fun getLatestMessage(): ReceiveMessageResponse? {
-    return bulkComparisonQueue.sqsClient.receiveMessage(ReceiveMessageRequest.builder().maxNumberOfMessages(2).queueUrl(bulkComparisonQueue.queueUrl).build()).get()
-  }
+  fun getLatestMessage(): ReceiveMessageResponse? = bulkComparisonQueue.sqsClient.receiveMessage(ReceiveMessageRequest.builder().maxNumberOfMessages(2).queueUrl(bulkComparisonQueue.queueUrl).build()).get()
 }

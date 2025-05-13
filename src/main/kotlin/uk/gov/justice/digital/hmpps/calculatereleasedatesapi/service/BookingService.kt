@@ -6,7 +6,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
 
 @Service
-class BookingService() {
+class BookingService {
 
   fun getBooking(calculationSourceData: CalculationSourceData, calculationUserInputs: CalculationUserInputs): Booking {
     val prisonerDetails = calculationSourceData.prisonerDetails

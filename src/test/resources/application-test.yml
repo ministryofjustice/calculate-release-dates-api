@@ -11,25 +11,17 @@ spring:
       WRITE_DATES_AS_TIMESTAMPS: false
 
   datasource:
-    url: 'jdbc:h2:mem:release-dates-db;MODE=PostgreSQL;INIT=create domain if not exists jsonb as json'
-    username: create_vary
-    password: dummy
+    url: 'jdbc:postgresql://localhost:5433/calculate_release_dates'
+    username: calculate_release_dates
+    password: calculate_release_dates
 
   flyway:
-    locations: classpath:/migration/h2,classpath:/migration/common
-    url: ${spring.datasource.url}
-    user: create_vary
-    password: dummy
-
-  h2:
-    console:
-      enabled: true
+    placeholders:
+      dpr_user: 'dpr_user'
+      dpr_password: 'dpr_password'
 
   jpa:
     show-sql: true
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.H2Dialect
 
   sql:
     init:

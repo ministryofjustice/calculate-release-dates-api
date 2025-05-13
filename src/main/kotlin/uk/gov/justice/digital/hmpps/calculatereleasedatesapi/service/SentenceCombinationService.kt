@@ -28,11 +28,9 @@ class SentenceCombinationService(
     return getAllExtractableSentences(singleSentences, singleTermed, consecutiveSentences)
   }
 
-  private fun allSdsBeforeLaspo(sentences: List<AbstractSentence>): Boolean =
-    sentences.all { it is StandardDeterminateSentence && it.isBeforeCJAAndLASPO() }
+  private fun allSdsBeforeLaspo(sentences: List<AbstractSentence>): Boolean = sentences.all { it is StandardDeterminateSentence && it.isBeforeCJAAndLASPO() }
 
-  private fun allDtos(sentences: List<AbstractSentence>): Boolean =
-    sentences.all { it is DetentionAndTrainingOrderSentence }
+  private fun allDtos(sentences: List<AbstractSentence>): Boolean = sentences.all { it is DetentionAndTrainingOrderSentence }
 
   fun createSingleTermSentences(sentences: List<AbstractSentence>, offender: Offender): SingleTermed? {
     if (sentences.size > 1 &&
@@ -74,10 +72,8 @@ class SentenceCombinationService(
      It does this in case a sentence within the chain has multiple offences, which may have different release conditions
      However here we reduce the list by any duplicated offences with the same release conditions, to improve calculation time.
    */
-  private fun collapseDuplicateConsecutiveSentences(consecutiveSentences: List<ConsecutiveSentence>): List<ConsecutiveSentence> {
-    return consecutiveSentences.distinctBy {
-      it.orderedSentences.joinToString { sentence -> "${sentence.sentencedAt}${sentence.identificationTrack}${sentence.totalDuration()}${sentence.javaClass}${sentence.recallType}" }
-    }
+  private fun collapseDuplicateConsecutiveSentences(consecutiveSentences: List<ConsecutiveSentence>): List<ConsecutiveSentence> = consecutiveSentences.distinctBy {
+    it.orderedSentences.joinToString { sentence -> "${sentence.sentencedAt}${sentence.identificationTrack}${sentence.totalDuration()}${sentence.javaClass}${sentence.recallType}" }
   }
 
   private fun getAllExtractableSentences(

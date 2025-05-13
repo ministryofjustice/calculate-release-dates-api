@@ -58,7 +58,8 @@ class SentenceAdjustedCalculationService(
     if (sentence.releaseDateTypes.contains(ReleaseDateType.ETD) && !sentenceCalculation.isImmediateRelease()) {
       if (sentence.durationIsGreaterThanOrEqualTo(8, MONTHS) && sentence.durationIsLessThan(18, MONTHS)) {
         sentenceCalculation.earlyTransferDate = sentenceCalculation.releaseDate.minusMonths(1)
-      } else if (sentence.durationIsGreaterThanOrEqualTo(18, MONTHS) && sentence.durationIsLessThanEqualTo(
+      } else if (sentence.durationIsGreaterThanOrEqualTo(18, MONTHS) &&
+        sentence.durationIsLessThanEqualTo(
           24,
           MONTHS,
         )
@@ -70,7 +71,8 @@ class SentenceAdjustedCalculationService(
     if (sentence.releaseDateTypes.contains(ReleaseDateType.LTD) && !sentenceCalculation.isImmediateRelease()) {
       if (sentence.durationIsGreaterThanOrEqualTo(8, MONTHS) && sentence.durationIsLessThan(18, MONTHS)) {
         sentenceCalculation.latestTransferDate = sentenceCalculation.releaseDate.plusMonths(1)
-      } else if (sentence.durationIsGreaterThanOrEqualTo(18, MONTHS) && sentence.durationIsLessThanEqualTo(
+      } else if (sentence.durationIsGreaterThanOrEqualTo(18, MONTHS) &&
+        sentence.durationIsLessThanEqualTo(
           24,
           MONTHS,
         )
@@ -122,15 +124,14 @@ class SentenceAdjustedCalculationService(
     }
   }
 
-  private fun getBreakdownForExpiryDate(sentenceCalculation: SentenceCalculation) =
-    ReleaseDateCalculationBreakdown(
-      releaseDate = sentenceCalculation.adjustedExpiryDate,
-      unadjustedDate = sentenceCalculation.unadjustedExpiryDate,
-      adjustedDays = DAYS.between(
-        sentenceCalculation.unadjustedExpiryDate,
-        sentenceCalculation.adjustedExpiryDate,
-      ),
-    )
+  private fun getBreakdownForExpiryDate(sentenceCalculation: SentenceCalculation) = ReleaseDateCalculationBreakdown(
+    releaseDate = sentenceCalculation.adjustedExpiryDate,
+    unadjustedDate = sentenceCalculation.unadjustedExpiryDate,
+    adjustedDays = DAYS.between(
+      sentenceCalculation.unadjustedExpiryDate,
+      sentenceCalculation.adjustedExpiryDate,
+    ),
+  )
 
   private fun getBreakdownForReleaseDate(sentenceCalculation: SentenceCalculation): ReleaseDateCalculationBreakdown {
     val daysBetween = DAYS.between(

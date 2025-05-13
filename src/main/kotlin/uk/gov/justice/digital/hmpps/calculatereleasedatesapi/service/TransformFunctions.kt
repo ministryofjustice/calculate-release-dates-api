@@ -130,166 +130,157 @@ fun transform(
   sentence: SentenceAndOffenceWithReleaseArrangements,
   calculationUserInputs: CalculationUserInputs?,
   historicalTusedData: HistoricalTusedData? = null,
-): AbstractSentence {
-  return sentence.let {
-    val offendersOffence = sentence.offence
-    val offence =
-      Offence(
-        committedAt = offendersOffence.offenceEndDate
-          ?: offendersOffence.offenceStartDate
-          ?: throw NoOffenceDatesProvidedException("No offence end or start dates provided on charge id [${offendersOffence.offenderChargeId}]"),
-        offenceCode = offendersOffence.offenceCode,
-      )
+): AbstractSentence = sentence.let {
+  val offendersOffence = sentence.offence
+  val offence =
+    Offence(
+      committedAt = offendersOffence.offenceEndDate
+        ?: offendersOffence.offenceStartDate
+        ?: throw NoOffenceDatesProvidedException("No offence end or start dates provided on charge id [${offendersOffence.offenderChargeId}]"),
+      offenceCode = offendersOffence.offenceCode,
+    )
 
-    val consecutiveSentenceUUIDs = if (sentence.consecutiveToSequence != null) {
-      listOf(
-        generateUUIDForSentence(sentence.bookingId, sentence.consecutiveToSequence),
+  val consecutiveSentenceUUIDs = if (sentence.consecutiveToSequence != null) {
+    listOf(
+      generateUUIDForSentence(sentence.bookingId, sentence.consecutiveToSequence),
+    )
+  } else {
+    listOf()
+  }
+
+  val sentenceCalculationType = SentenceCalculationType.from(sentence.sentenceCalculationType)
+  when (sentenceCalculationType.sentenceType?.sentenceClazz) {
+    AFineSentence::class.java -> {
+      AFineSentence(
+        sentencedAt = sentence.sentenceDate,
+        duration = transform(sentence.terms[0]),
+        offence = offence,
+        identifier = generateUUIDForSentence(sentence.bookingId, sentence.sentenceSequence),
+        consecutiveSentenceUUIDs = consecutiveSentenceUUIDs,
+        caseSequence = sentence.caseSequence,
+        lineSequence = sentence.lineSequence,
+        caseReference = sentence.caseReference,
+        recallType = sentenceCalculationType.recallType,
+        fineAmount = sentence.fineAmount,
       )
-    } else {
-      listOf()
     }
 
-    val sentenceCalculationType = SentenceCalculationType.from(sentence.sentenceCalculationType)
-    when (sentenceCalculationType.sentenceType?.sentenceClazz) {
-      AFineSentence::class.java -> {
-        AFineSentence(
-          sentencedAt = sentence.sentenceDate,
-          duration = transform(sentence.terms[0]),
-          offence = offence,
-          identifier = generateUUIDForSentence(sentence.bookingId, sentence.sentenceSequence),
-          consecutiveSentenceUUIDs = consecutiveSentenceUUIDs,
-          caseSequence = sentence.caseSequence,
-          lineSequence = sentence.lineSequence,
-          caseReference = sentence.caseReference,
-          recallType = sentenceCalculationType.recallType,
-          fineAmount = sentence.fineAmount,
-        )
-      }
+    DetentionAndTrainingOrderSentence::class.java -> {
+      DetentionAndTrainingOrderSentence(
+        sentencedAt = sentence.sentenceDate,
+        duration = transform(sentence.terms[0]),
+        offence = offence,
+        identifier = generateUUIDForSentence(sentence.bookingId, sentence.sentenceSequence),
+        consecutiveSentenceUUIDs = consecutiveSentenceUUIDs,
+        caseSequence = sentence.caseSequence,
+        lineSequence = sentence.lineSequence,
+        caseReference = sentence.caseReference,
+        recallType = sentenceCalculationType.recallType,
+      )
+    }
 
-      DetentionAndTrainingOrderSentence::class.java -> {
-        DetentionAndTrainingOrderSentence(
-          sentencedAt = sentence.sentenceDate,
-          duration = transform(sentence.terms[0]),
-          offence = offence,
-          identifier = generateUUIDForSentence(sentence.bookingId, sentence.sentenceSequence),
-          consecutiveSentenceUUIDs = consecutiveSentenceUUIDs,
-          caseSequence = sentence.caseSequence,
-          lineSequence = sentence.lineSequence,
-          caseReference = sentence.caseReference,
-          recallType = sentenceCalculationType.recallType,
-        )
-      }
+    BotusSentence::class.java -> {
+      BotusSentence(
+        sentencedAt = sentence.sentenceDate,
+        duration = transform(sentence.terms[0]),
+        offence = offence,
+        identifier = generateUUIDForSentence(sentence.bookingId, sentence.sentenceSequence),
+        consecutiveSentenceUUIDs = consecutiveSentenceUUIDs,
+        caseSequence = sentence.caseSequence,
+        lineSequence = sentence.lineSequence,
+        latestTusedDate = historicalTusedData?.tused,
+        latestTusedSource = historicalTusedData?.historicalTusedSource,
+      )
+    }
 
-      BotusSentence::class.java -> {
-        BotusSentence(
-          sentencedAt = sentence.sentenceDate,
-          duration = transform(sentence.terms[0]),
-          offence = offence,
-          identifier = generateUUIDForSentence(sentence.bookingId, sentence.sentenceSequence),
-          consecutiveSentenceUUIDs = consecutiveSentenceUUIDs,
-          caseSequence = sentence.caseSequence,
-          lineSequence = sentence.lineSequence,
-          latestTusedDate = historicalTusedData?.tused,
-          latestTusedSource = historicalTusedData?.historicalTusedSource,
-        )
-      }
+    ExtendedDeterminateSentence::class.java -> {
+      val imprisonmentTerm = sentence.terms.firstOrNull { it.code == SentenceTerms.IMPRISONMENT_TERM_CODE }
+        ?: throw MissingTermException("Missing IMPRISONMENT_TERM_CODE for ExtendedDeterminateSentence")
+      val licenseTerm = sentence.terms.firstOrNull { it.code == SentenceTerms.LICENCE_TERM_CODE }
+        ?: throw MissingTermException("Missing LICENCE_TERM_CODE for ExtendedDeterminateSentence")
 
-      ExtendedDeterminateSentence::class.java -> {
-        val imprisonmentTerm = sentence.terms.firstOrNull { it.code == SentenceTerms.IMPRISONMENT_TERM_CODE }
-          ?: throw MissingTermException("Missing IMPRISONMENT_TERM_CODE for ExtendedDeterminateSentence")
-        val licenseTerm = sentence.terms.firstOrNull { it.code == SentenceTerms.LICENCE_TERM_CODE }
-          ?: throw MissingTermException("Missing LICENCE_TERM_CODE for ExtendedDeterminateSentence")
+      ExtendedDeterminateSentence(
+        sentencedAt = sentence.sentenceDate,
+        custodialDuration = transform(imprisonmentTerm),
+        extensionDuration = transform(licenseTerm),
+        automaticRelease = listOf(SentenceCalculationType.LASPO_AR, SentenceCalculationType.LR_LASPO_AR).contains(sentenceCalculationType),
+        offence = offence,
+        identifier = generateUUIDForSentence(sentence.bookingId, sentence.sentenceSequence),
+        consecutiveSentenceUUIDs = consecutiveSentenceUUIDs,
+        caseSequence = sentence.caseSequence,
+        lineSequence = sentence.lineSequence,
+        caseReference = sentence.caseReference,
+        recallType = sentenceCalculationType.recallType,
+      )
+    }
 
-        ExtendedDeterminateSentence(
-          sentencedAt = sentence.sentenceDate,
-          custodialDuration = transform(imprisonmentTerm),
-          extensionDuration = transform(licenseTerm),
-          automaticRelease = listOf(SentenceCalculationType.LASPO_AR, SentenceCalculationType.LR_LASPO_AR).contains(sentenceCalculationType),
-          offence = offence,
-          identifier = generateUUIDForSentence(sentence.bookingId, sentence.sentenceSequence),
-          consecutiveSentenceUUIDs = consecutiveSentenceUUIDs,
-          caseSequence = sentence.caseSequence,
-          lineSequence = sentence.lineSequence,
-          caseReference = sentence.caseReference,
-          recallType = sentenceCalculationType.recallType,
-        )
-      }
+    // SopcSentence
+    SopcSentence::class.java -> {
+      val imprisonmentTerm = sentence.terms.firstOrNull { it.code == SentenceTerms.IMPRISONMENT_TERM_CODE }
+        ?: throw MissingTermException("Missing IMPRISONMENT_TERM_CODE for SopcSentence")
+      val licenseTerm = sentence.terms.firstOrNull { it.code == SentenceTerms.LICENCE_TERM_CODE }
+        ?: throw MissingTermException("Missing LICENCE_TERM_CODE for SopcSentence")
 
-      // SopcSentence
-      SopcSentence::class.java -> {
-        val imprisonmentTerm = sentence.terms.firstOrNull { it.code == SentenceTerms.IMPRISONMENT_TERM_CODE }
-          ?: throw MissingTermException("Missing IMPRISONMENT_TERM_CODE for SopcSentence")
-        val licenseTerm = sentence.terms.firstOrNull { it.code == SentenceTerms.LICENCE_TERM_CODE }
-          ?: throw MissingTermException("Missing LICENCE_TERM_CODE for SopcSentence")
+      SopcSentence(
+        sentencedAt = sentence.sentenceDate,
+        custodialDuration = transform(imprisonmentTerm),
+        extensionDuration = transform(licenseTerm),
+        sdopcu18 = sentenceCalculationType == SentenceCalculationType.SDOPCU18,
+        offence = offence,
+        identifier = generateUUIDForSentence(sentence.bookingId, sentence.sentenceSequence),
+        consecutiveSentenceUUIDs = consecutiveSentenceUUIDs,
+        caseSequence = sentence.caseSequence,
+        lineSequence = sentence.lineSequence,
+        caseReference = sentence.caseReference,
+        recallType = sentenceCalculationType.recallType,
+      )
+    }
 
-        SopcSentence(
-          sentencedAt = sentence.sentenceDate,
-          custodialDuration = transform(imprisonmentTerm),
-          extensionDuration = transform(licenseTerm),
-          sdopcu18 = sentenceCalculationType == SentenceCalculationType.SDOPCU18,
-          offence = offence,
-          identifier = generateUUIDForSentence(sentence.bookingId, sentence.sentenceSequence),
-          consecutiveSentenceUUIDs = consecutiveSentenceUUIDs,
-          caseSequence = sentence.caseSequence,
-          lineSequence = sentence.lineSequence,
-          caseReference = sentence.caseReference,
-          recallType = sentenceCalculationType.recallType,
-        )
-      }
-
-      // Fallback Sentence
-      else -> {
-        StandardDeterminateSentence(
-          sentencedAt = sentence.sentenceDate,
-          duration = transform(sentence.terms.first()),
-          offence = offence,
-          identifier = generateUUIDForSentence(sentence.bookingId, sentence.sentenceSequence),
-          consecutiveSentenceUUIDs = consecutiveSentenceUUIDs,
-          caseSequence = sentence.caseSequence,
-          lineSequence = sentence.lineSequence,
-          caseReference = sentence.caseReference,
-          recallType = sentenceCalculationType.recallType,
-          isSDSPlus = sentence.isSDSPlus,
-          isSDSPlusEligibleSentenceTypeLengthAndOffence = sentence.isSDSPlusEligibleSentenceTypeLengthAndOffence,
-          isSDSPlusOffenceInPeriod = sentence.isSDSPlusOffenceInPeriod,
-          hasAnSDSEarlyReleaseExclusion = sentence.hasAnSDSEarlyReleaseExclusion,
-        )
-      }
+    // Fallback Sentence
+    else -> {
+      StandardDeterminateSentence(
+        sentencedAt = sentence.sentenceDate,
+        duration = transform(sentence.terms.first()),
+        offence = offence,
+        identifier = generateUUIDForSentence(sentence.bookingId, sentence.sentenceSequence),
+        consecutiveSentenceUUIDs = consecutiveSentenceUUIDs,
+        caseSequence = sentence.caseSequence,
+        lineSequence = sentence.lineSequence,
+        caseReference = sentence.caseReference,
+        recallType = sentenceCalculationType.recallType,
+        isSDSPlus = sentence.isSDSPlus,
+        isSDSPlusEligibleSentenceTypeLengthAndOffence = sentence.isSDSPlusEligibleSentenceTypeLengthAndOffence,
+        isSDSPlusOffenceInPeriod = sentence.isSDSPlusOffenceInPeriod,
+        hasAnSDSEarlyReleaseExclusion = sentence.hasAnSDSEarlyReleaseExclusion,
+      )
     }
   }
 }
 
-private fun transform(term: SentenceTerms): Duration {
-  return Duration(
-    mapOf(
-      DAYS to term.days.toLong(),
-      WEEKS to term.weeks.toLong(),
-      MONTHS to term.months.toLong(),
-      YEARS to term.years.toLong(),
-    ),
-  )
-}
+private fun transform(term: SentenceTerms): Duration = Duration(
+  mapOf(
+    DAYS to term.days.toLong(),
+    WEEKS to term.weeks.toLong(),
+    MONTHS to term.months.toLong(),
+    YEARS to term.years.toLong(),
+  ),
+)
 
-private fun generateUUIDForSentence(bookingId: Long, sequence: Int) =
-  UUID.nameUUIDFromBytes(("$bookingId-$sequence").toByteArray())
+private fun generateUUIDForSentence(bookingId: Long, sequence: Int) = UUID.nameUUIDFromBytes(("$bookingId-$sequence").toByteArray())
 
-fun transform(prisonerDetails: PrisonerDetails): Offender {
-  return Offender(
-    dateOfBirth = prisonerDetails.dateOfBirth,
-    reference = prisonerDetails.offenderNo,
-    isActiveSexOffender = prisonerDetails.isActiveSexOffender(),
-  )
-}
+fun transform(prisonerDetails: PrisonerDetails): Offender = Offender(
+  dateOfBirth = prisonerDetails.dateOfBirth,
+  reference = prisonerDetails.offenderNo,
+  isActiveSexOffender = prisonerDetails.isActiveSexOffender(),
+)
 
 fun transform(
   adjustmentsSource: Either<BookingAndSentenceAdjustments, List<AdjustmentDto>>,
   sentencesAndOffences: List<SentenceAndOffence>,
-): Adjustments {
-  return adjustmentsSource.fold(
-    { transform(it, sentencesAndOffences) },
-    { transform(it, sentencesAndOffences) },
-  )
-}
+): Adjustments = adjustmentsSource.fold(
+  { transform(it, sentencesAndOffences) },
+  { transform(it, sentencesAndOffences) },
+)
 
 fun transform(
   adjustmentsSource: List<AdjustmentDto>,
@@ -368,7 +359,8 @@ private fun findSentenceForAdjustment(
     if (listOf(
         SentenceAdjustmentType.REMAND,
         SentenceAdjustmentType.TAGGED_BAIL,
-      ).contains(adjustment.type) && recallType != null
+      ).contains(adjustment.type) &&
+      recallType != null
     ) {
       val firstDeterminate = sentencesAndOffences.sortedBy { it.sentenceDate }
         .find { SentenceCalculationType.from(it.sentenceCalculationType).recallType == null }
@@ -379,7 +371,8 @@ private fun findSentenceForAdjustment(
     if (listOf(
         SentenceAdjustmentType.RECALL_SENTENCE_REMAND,
         SentenceAdjustmentType.RECALL_SENTENCE_TAGGED_BAIL,
-      ).contains(adjustment.type) && recallType == null
+      ).contains(adjustment.type) &&
+      recallType == null
     ) {
       val firstRecall = sentencesAndOffences.sortedBy { it.sentenceDate }
         .find { SentenceCalculationType.from(it.sentenceCalculationType).recallType != null }
@@ -391,26 +384,22 @@ private fun findSentenceForAdjustment(
   }
 }
 
-fun transform(sentenceAdjustmentType: SentenceAdjustmentType): AdjustmentType? {
-  return when (sentenceAdjustmentType) {
-    SentenceAdjustmentType.RECALL_SENTENCE_REMAND -> RECALL_REMAND
-    SentenceAdjustmentType.RECALL_SENTENCE_TAGGED_BAIL -> RECALL_TAGGED_BAIL
-    SentenceAdjustmentType.REMAND -> REMAND
-    SentenceAdjustmentType.TAGGED_BAIL -> TAGGED_BAIL
-    SentenceAdjustmentType.UNUSED_REMAND -> null
-    SentenceAdjustmentType.TIME_SPENT_IN_CUSTODY_ABROAD -> null
-    SentenceAdjustmentType.TIME_SPENT_AS_AN_APPEAL_APPLICANT -> null
-  }
+fun transform(sentenceAdjustmentType: SentenceAdjustmentType): AdjustmentType? = when (sentenceAdjustmentType) {
+  SentenceAdjustmentType.RECALL_SENTENCE_REMAND -> RECALL_REMAND
+  SentenceAdjustmentType.RECALL_SENTENCE_TAGGED_BAIL -> RECALL_TAGGED_BAIL
+  SentenceAdjustmentType.REMAND -> REMAND
+  SentenceAdjustmentType.TAGGED_BAIL -> TAGGED_BAIL
+  SentenceAdjustmentType.UNUSED_REMAND -> null
+  SentenceAdjustmentType.TIME_SPENT_IN_CUSTODY_ABROAD -> null
+  SentenceAdjustmentType.TIME_SPENT_AS_AN_APPEAL_APPLICANT -> null
 }
 
-fun transform(bookingAdjustmentType: BookingAdjustmentType): AdjustmentType? {
-  return when (bookingAdjustmentType) {
-    BookingAdjustmentType.ADDITIONAL_DAYS_AWARDED -> ADDITIONAL_DAYS_AWARDED
-    BookingAdjustmentType.LAWFULLY_AT_LARGE -> null
-    BookingAdjustmentType.RESTORED_ADDITIONAL_DAYS_AWARDED -> RESTORATION_OF_ADDITIONAL_DAYS_AWARDED
-    BookingAdjustmentType.SPECIAL_REMISSION -> null
-    BookingAdjustmentType.UNLAWFULLY_AT_LARGE -> UNLAWFULLY_AT_LARGE
-  }
+fun transform(bookingAdjustmentType: BookingAdjustmentType): AdjustmentType? = when (bookingAdjustmentType) {
+  BookingAdjustmentType.ADDITIONAL_DAYS_AWARDED -> ADDITIONAL_DAYS_AWARDED
+  BookingAdjustmentType.LAWFULLY_AT_LARGE -> null
+  BookingAdjustmentType.RESTORED_ADDITIONAL_DAYS_AWARDED -> RESTORATION_OF_ADDITIONAL_DAYS_AWARDED
+  BookingAdjustmentType.SPECIAL_REMISSION -> null
+  BookingAdjustmentType.UNLAWFULLY_AT_LARGE -> UNLAWFULLY_AT_LARGE
 }
 
 fun transform(adjustmentType: AdjustmentDto.AdjustmentType, sentence: SentenceAndOffence?): AdjustmentType? {
@@ -442,32 +431,30 @@ fun transform(
   calculationType: CalculationType = CalculationType.CALCULATED,
   historicalTusedSource: HistoricalTusedSource? = null,
   version: String,
-): CalculationRequest {
-  return CalculationRequest(
-    prisonerId = booking.offender.reference,
-    bookingId = booking.bookingId,
-    calculationStatus = calculationStatus.name,
-    calculatedByUsername = username,
-    prisonerLocation = sourceData.prisonerDetails.agencyId,
-    inputData = objectToJson(booking, objectMapper),
-    sentenceAndOffences = objectToJson(sourceData.sentenceAndOffences, objectMapper),
-    prisonerDetails = objectToJson(sourceData.prisonerDetails, objectMapper),
-    adjustments = sourceData.bookingAndSentenceAdjustments.fold(
-      { objectToJson(it, objectMapper) },
-      { objectToJson(it, objectMapper) },
-    ),
-    adjustmentsVersion = sourceData.bookingAndSentenceAdjustments.fold({ 0 }, { 1 }),
-    offenderFinePayments = objectToJson(sourceData.offenderFinePayments, objectMapper),
-    returnToCustodyDate = if (sourceData.returnToCustodyDate != null) objectToJson(sourceData.returnToCustodyDate, objectMapper) else null,
-    calculationRequestUserInput = transform(calculationUserInputs),
-    breakdownHtml = calculationFragments?.breakdownHtml,
-    calculationType = calculationType,
-    reasonForCalculation = reasonForCalculation,
-    historicalTusedSource = historicalTusedSource,
-    otherReasonForCalculation = otherReasonDescription,
-    version = version,
-  )
-}
+): CalculationRequest = CalculationRequest(
+  prisonerId = booking.offender.reference,
+  bookingId = booking.bookingId,
+  calculationStatus = calculationStatus.name,
+  calculatedByUsername = username,
+  prisonerLocation = sourceData.prisonerDetails.agencyId,
+  inputData = objectToJson(booking, objectMapper),
+  sentenceAndOffences = objectToJson(sourceData.sentenceAndOffences, objectMapper),
+  prisonerDetails = objectToJson(sourceData.prisonerDetails, objectMapper),
+  adjustments = sourceData.bookingAndSentenceAdjustments.fold(
+    { objectToJson(it, objectMapper) },
+    { objectToJson(it, objectMapper) },
+  ),
+  adjustmentsVersion = sourceData.bookingAndSentenceAdjustments.fold({ 0 }, { 1 }),
+  offenderFinePayments = objectToJson(sourceData.offenderFinePayments, objectMapper),
+  returnToCustodyDate = if (sourceData.returnToCustodyDate != null) objectToJson(sourceData.returnToCustodyDate, objectMapper) else null,
+  calculationRequestUserInput = transform(calculationUserInputs),
+  breakdownHtml = calculationFragments?.breakdownHtml,
+  calculationType = calculationType,
+  reasonForCalculation = reasonForCalculation,
+  historicalTusedSource = historicalTusedSource,
+  otherReasonForCalculation = otherReasonDescription,
+  version = version,
+)
 
 fun transform(
   calculationUserInputs: CalculationUserInputs?,
@@ -509,48 +496,40 @@ fun transform(calculationRequestUserInput: CalculationRequestUserInput?): Calcul
   )
 }
 
-fun objectToJson(subject: Any, objectMapper: ObjectMapper): JsonNode {
-  return JacksonUtil.toJsonNode(objectMapper.writeValueAsString(subject))
-}
+fun objectToJson(subject: Any, objectMapper: ObjectMapper): JsonNode = JacksonUtil.toJsonNode(objectMapper.writeValueAsString(subject))
 
 fun transform(
   calculationRequest: CalculationRequest,
   releaseDateType: ReleaseDateType,
   date: LocalDate,
-): CalculationOutcome {
-  return CalculationOutcome(
-    calculationRequestId = calculationRequest.id,
-    outcomeDate = date,
-    calculationDateType = releaseDateType.name,
-  )
-}
+): CalculationOutcome = CalculationOutcome(
+  calculationRequestId = calculationRequest.id,
+  outcomeDate = date,
+  calculationDateType = releaseDateType.name,
+)
 
-fun transform(calculationRequest: CalculationRequest): CalculatedReleaseDates {
-  return CalculatedReleaseDates(
-    dates = calculationRequest.calculationOutcomes.associateBy(
-      { ReleaseDateType.valueOf(it.calculationDateType) },
-      { it.outcomeDate },
-    ).toMutableMap(),
-    calculationRequestId = calculationRequest.id,
-    calculationFragments = if (calculationRequest.breakdownHtml != null) CalculationFragments(calculationRequest.breakdownHtml) else null,
-    bookingId = calculationRequest.bookingId,
-    prisonerId = calculationRequest.prisonerId,
-    calculationStatus = CalculationStatus.valueOf(calculationRequest.calculationStatus),
-    calculationType = calculationRequest.calculationType,
-    approvedDates = transform(calculationRequest.approvedDatesSubmissions.firstOrNull()),
-    calculationReference = calculationRequest.calculationReference,
-    calculationReason = calculationRequest.reasonForCalculation,
-    otherReasonDescription = calculationRequest.otherReasonForCalculation,
-    calculationDate = calculationRequest.calculatedAt.toLocalDate(),
-  )
-}
-
-fun transform(firstOrNull: ApprovedDatesSubmission?): Map<ReleaseDateType, LocalDate?>? {
-  return firstOrNull?.approvedDates?.associateBy(
+fun transform(calculationRequest: CalculationRequest): CalculatedReleaseDates = CalculatedReleaseDates(
+  dates = calculationRequest.calculationOutcomes.associateBy(
     { ReleaseDateType.valueOf(it.calculationDateType) },
     { it.outcomeDate },
-  )?.toMutableMap()
-}
+  ).toMutableMap(),
+  calculationRequestId = calculationRequest.id,
+  calculationFragments = if (calculationRequest.breakdownHtml != null) CalculationFragments(calculationRequest.breakdownHtml) else null,
+  bookingId = calculationRequest.bookingId,
+  prisonerId = calculationRequest.prisonerId,
+  calculationStatus = CalculationStatus.valueOf(calculationRequest.calculationStatus),
+  calculationType = calculationRequest.calculationType,
+  approvedDates = transform(calculationRequest.approvedDatesSubmissions.firstOrNull()),
+  calculationReference = calculationRequest.calculationReference,
+  calculationReason = calculationRequest.reasonForCalculation,
+  otherReasonDescription = calculationRequest.otherReasonForCalculation,
+  calculationDate = calculationRequest.calculatedAt.toLocalDate(),
+)
+
+fun transform(firstOrNull: ApprovedDatesSubmission?): Map<ReleaseDateType, LocalDate?>? = firstOrNull?.approvedDates?.associateBy(
+  { ReleaseDateType.valueOf(it.calculationDateType) },
+  { it.outcomeDate },
+)?.toMutableMap()
 
 fun transform(
   booking: CalculationOutput,
@@ -682,11 +661,10 @@ private fun extractDates(sentence: CalculableSentence): Map<ReleaseDateType, Dat
   return dates
 }
 
-fun transform(fixedTermRecallDetails: FixedTermRecallDetails): ReturnToCustodyDate =
-  ReturnToCustodyDate(
-    bookingId = fixedTermRecallDetails.bookingId,
-    returnToCustodyDate = fixedTermRecallDetails.returnToCustodyDate,
-  )
+fun transform(fixedTermRecallDetails: FixedTermRecallDetails): ReturnToCustodyDate = ReturnToCustodyDate(
+  bookingId = fixedTermRecallDetails.bookingId,
+  returnToCustodyDate = fixedTermRecallDetails.returnToCustodyDate,
+)
 
 fun transform(
   calculationRequest: CalculationRequest,
@@ -750,16 +728,14 @@ fun transform(dates: Map<ReleaseDateType, LocalDate?>?, effectiveSentenceLength:
 fun transform(
   comparison: ComparisonInput,
   username: String,
-): Comparison {
-  return Comparison(
-    criteria = comparison.criteria ?: JsonNodeFactory.instance.objectNode(),
-    comparisonType = comparison.comparisonType,
-    prison = comparison.prison,
-    calculatedAt = LocalDateTime.now(),
-    calculatedByUsername = username,
-    comparisonStatus = ComparisonStatus(ComparisonStatusValue.SETUP),
-  )
-}
+): Comparison = Comparison(
+  criteria = comparison.criteria ?: JsonNodeFactory.instance.objectNode(),
+  comparisonType = comparison.comparisonType,
+  prison = comparison.prison,
+  calculatedAt = LocalDateTime.now(),
+  calculatedByUsername = username,
+  comparisonStatus = ComparisonStatus(ComparisonStatusValue.SETUP),
+)
 
 fun transform(
   criteria: JsonNode,
@@ -774,14 +750,12 @@ fun transform(
 
 fun transform(
   genuineOverride: GenuineOverride,
-): GenuineOverrideResponse {
-  return GenuineOverrideResponse(
-    reason = genuineOverride.reason,
-    originalCalculationRequest = genuineOverride.originalCalculationRequest.calculationReference.toString(),
-    savedCalculation = genuineOverride.savedCalculation?.calculationReference.toString(),
-    isOverridden = genuineOverride.isOverridden,
-  )
-}
+): GenuineOverrideResponse = GenuineOverrideResponse(
+  reason = genuineOverride.reason,
+  originalCalculationRequest = genuineOverride.originalCalculationRequest.calculationReference.toString(),
+  savedCalculation = genuineOverride.savedCalculation?.calculationReference.toString(),
+  isOverridden = genuineOverride.isOverridden,
+)
 
 fun transform(comparison: Comparison): ComparisonSummary = ComparisonSummary(
   comparison.comparisonShortReference,
@@ -862,8 +836,7 @@ fun transform(
   comparisonPerson.fatalException,
 )
 
-fun transform(discrepancy: ComparisonPersonDiscrepancy): ComparisonDiscrepancySummary =
-  transform(discrepancy, discrepancy.causes)
+fun transform(discrepancy: ComparisonPersonDiscrepancy): ComparisonDiscrepancySummary = transform(discrepancy, discrepancy.causes)
 
 fun transform(
   discrepancy: ComparisonPersonDiscrepancy,
@@ -876,46 +849,40 @@ fun transform(
   action = discrepancy.action,
 )
 
-fun transform(discrepancyCauses: List<ComparisonPersonDiscrepancyCause>): List<DiscrepancyCause> {
-  return discrepancyCauses.map {
-    DiscrepancyCause(it.category, it.subCategory, it.detail)
-  }
+fun transform(discrepancyCauses: List<ComparisonPersonDiscrepancyCause>): List<DiscrepancyCause> = discrepancyCauses.map {
+  DiscrepancyCause(it.category, it.subCategory, it.detail)
 }
 
 fun transform(
   sentenceAndOffenceAnalysis: SentenceAndOffenceAnalysis,
   sentencesAndOffences: List<SentenceAndOffenceWithReleaseArrangements>,
-): List<AnalysedSentenceAndOffence> {
-  return sentencesAndOffences.map {
-    transform(sentenceAndOffences = it, sentenceAndOffenceAnalysis = sentenceAndOffenceAnalysis)
-  }
+): List<AnalysedSentenceAndOffence> = sentencesAndOffences.map {
+  transform(sentenceAndOffences = it, sentenceAndOffenceAnalysis = sentenceAndOffenceAnalysis)
 }
 
 fun transform(
   sentenceAndOffenceAnalysis: SentenceAndOffenceAnalysis,
   sentenceAndOffences: SentenceAndOffenceWithReleaseArrangements,
-): AnalysedSentenceAndOffence {
-  return AnalysedSentenceAndOffence(
-    sentenceAndOffences.bookingId,
-    sentenceAndOffences.sentenceSequence,
-    sentenceAndOffences.lineSequence,
-    sentenceAndOffences.caseSequence,
-    sentenceAndOffences.consecutiveToSequence,
-    sentenceAndOffences.sentenceStatus,
-    sentenceAndOffences.sentenceCategory,
-    sentenceAndOffences.sentenceCalculationType,
-    sentenceAndOffences.sentenceTypeDescription,
-    sentenceAndOffences.sentenceDate,
-    sentenceAndOffences.terms,
-    sentenceAndOffences.offence,
-    sentenceAndOffences.caseReference,
-    sentenceAndOffences.courtDescription,
-    sentenceAndOffences.fineAmount,
-    sentenceAndOffenceAnalysis,
-    sentenceAndOffences.isSDSPlus,
-    sentenceAndOffences.hasAnSDSEarlyReleaseExclusion,
-  )
-}
+): AnalysedSentenceAndOffence = AnalysedSentenceAndOffence(
+  sentenceAndOffences.bookingId,
+  sentenceAndOffences.sentenceSequence,
+  sentenceAndOffences.lineSequence,
+  sentenceAndOffences.caseSequence,
+  sentenceAndOffences.consecutiveToSequence,
+  sentenceAndOffences.sentenceStatus,
+  sentenceAndOffences.sentenceCategory,
+  sentenceAndOffences.sentenceCalculationType,
+  sentenceAndOffences.sentenceTypeDescription,
+  sentenceAndOffences.sentenceDate,
+  sentenceAndOffences.terms,
+  sentenceAndOffences.offence,
+  sentenceAndOffences.caseReference,
+  sentenceAndOffences.courtDescription,
+  sentenceAndOffences.fineAmount,
+  sentenceAndOffenceAnalysis,
+  sentenceAndOffences.isSDSPlus,
+  sentenceAndOffences.hasAnSDSEarlyReleaseExclusion,
+)
 
 fun transform(
   externalMovement: PrisonApiExternalMovement,

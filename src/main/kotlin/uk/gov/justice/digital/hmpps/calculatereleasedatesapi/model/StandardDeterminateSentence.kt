@@ -24,37 +24,25 @@ data class StandardDeterminateSentence(
   val hasAnSDSEarlyReleaseExclusion: SDSEarlyReleaseExclusionType,
 ) : AbstractSentence(offence, sentencedAt, identifier, consecutiveSentenceUUIDs, caseSequence, lineSequence, caseReference, recallType) {
 
-  override fun buildString(): String {
-    return "Sentence\t:\t\n" +
-      "Identification Track\t:\t${identificationTrack}\n" +
-      "Duration\t:\t$duration\n" +
-      "${duration.toPeriodString(sentencedAt)}\n" +
-      "Sentence Types\t:\t$recallType\n" +
-      "Release Date Types\t:\t$releaseDateTypes\n" +
-      "Number of Days in Sentence\t:\t${getLengthInDays()}\n" +
-      sentenceCalculation.buildString(releaseDateTypes.initialTypes)
-  }
+  override fun buildString(): String = "Sentence\t:\t\n" +
+    "Identification Track\t:\t${identificationTrack}\n" +
+    "Duration\t:\t$duration\n" +
+    "${duration.toPeriodString(sentencedAt)}\n" +
+    "Sentence Types\t:\t$recallType\n" +
+    "Release Date Types\t:\t$releaseDateTypes\n" +
+    "Number of Days in Sentence\t:\t${getLengthInDays()}\n" +
+    sentenceCalculation.buildString(releaseDateTypes.initialTypes)
 
-  override fun getLengthInDays(): Int {
-    return duration.getLengthInDays(this.sentencedAt)
-  }
+  override fun getLengthInDays(): Int = duration.getLengthInDays(this.sentencedAt)
 
-  override fun hasAnyEdsOrSopcSentence(): Boolean {
-    return false
-  }
+  override fun hasAnyEdsOrSopcSentence(): Boolean = false
 
   @JsonIgnore
-  fun isOraSentence(): Boolean {
-    return offence.committedAt.isAfterOrEqualTo(ImportantDates.ORA_DATE)
-  }
+  fun isOraSentence(): Boolean = offence.committedAt.isAfterOrEqualTo(ImportantDates.ORA_DATE)
 
   @JsonIgnore
-  fun isBeforeCJAAndLASPO(): Boolean {
-    return sentencedAt.isBefore(LASPO_DATE) && offence.committedAt.isBefore(CJA_DATE)
-  }
+  fun isBeforeCJAAndLASPO(): Boolean = sentencedAt.isBefore(LASPO_DATE) && offence.committedAt.isBefore(CJA_DATE)
 
   @JsonIgnore
-  fun isAfterCJAAndLASPO(): Boolean {
-    return !isBeforeCJAAndLASPO()
-  }
+  fun isAfterCJAAndLASPO(): Boolean = !isBeforeCJAAndLASPO()
 }

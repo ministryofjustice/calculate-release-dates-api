@@ -17,7 +17,7 @@ import java.time.temporal.ChronoUnit.MONTHS
 import kotlin.math.abs
 
 @Service
-class FixedTermRecallsService() {
+class FixedTermRecallsService {
 
   fun calculatePRRD(
     sentences: List<CalculableSentence>,
@@ -64,20 +64,17 @@ class FixedTermRecallsService() {
     return postRecallReleaseDate != dates[CRD] && postRecallReleaseDate.isBefore(latestDateEntry.value)
   }
 
-  private fun ftrIsMixedDuration(sentences: List<CalculableSentence>): Boolean {
-    return sentences.any {
-      it.durationIsGreaterThanOrEqualTo(12, MONTHS)
-    } && sentences.any {
+  private fun ftrIsMixedDuration(sentences: List<CalculableSentence>): Boolean = sentences.any {
+    it.durationIsGreaterThanOrEqualTo(12, MONTHS)
+  } &&
+    sentences.any {
       it.durationIsLessThan(12, MONTHS)
     }
-  }
 
-  private fun getReleaseDate(sentence: CalculableSentence, maxReleaseDate: LocalDate): LocalDate {
-    return if (maxReleaseDate < sentence.sentenceCalculation.adjustedExpiryDate) {
-      maxReleaseDate
-    } else {
-      sentence.sentenceCalculation.adjustedExpiryDate
-    }
+  private fun getReleaseDate(sentence: CalculableSentence, maxReleaseDate: LocalDate): LocalDate = if (maxReleaseDate < sentence.sentenceCalculation.adjustedExpiryDate) {
+    maxReleaseDate
+  } else {
+    sentence.sentenceCalculation.adjustedExpiryDate
   }
 
   private fun calculateUnderTwelveMonthsReleaseDate(
@@ -111,40 +108,34 @@ class FixedTermRecallsService() {
     sentences: List<CalculableSentence>,
     latestReleaseDate: LocalDate,
     returnToCustodyDate: LocalDate,
-  ): CalculableSentence? {
-    return sentences
-      .filter {
-        it.durationIsGreaterThanOrEqualTo(12, MONTHS) && it.sentenceCalculation.adjustedExpiryDate.isAfterOrEqualTo(
+  ): CalculableSentence? = sentences
+    .filter {
+      it.durationIsGreaterThanOrEqualTo(12, MONTHS) &&
+        it.sentenceCalculation.adjustedExpiryDate.isAfterOrEqualTo(
           returnToCustodyDate,
         )
-      }
-      .minByOrNull { abs(ChronoUnit.DAYS.between(it.sentenceCalculation.unadjustedExpiryDate, latestReleaseDate)) }
-  }
+    }
+    .minByOrNull { abs(ChronoUnit.DAYS.between(it.sentenceCalculation.unadjustedExpiryDate, latestReleaseDate)) }
 
   private fun is28DayWithGapLessThan14Days(
     latestSentence: CalculableSentence,
     adjacentSentence: CalculableSentence,
     returnToCustodyDate: LocalDate,
-  ): Boolean {
-    return latestSentence.recallType == FIXED_TERM_RECALL_28 &&
-      ChronoUnit.DAYS.between(adjacentSentence.sentenceCalculation.adjustedExpiryDate, returnToCustodyDate) < 14
-  }
+  ): Boolean = latestSentence.recallType == FIXED_TERM_RECALL_28 &&
+    ChronoUnit.DAYS.between(adjacentSentence.sentenceCalculation.adjustedExpiryDate, returnToCustodyDate) < 14
 
   private fun is14DayWithGapLessThan14Days(
     latestSentence: CalculableSentence,
     adjacentSentence: CalculableSentence,
     returnToCustodyDate: LocalDate,
-  ): Boolean {
-    return latestSentence.recallType == FIXED_TERM_RECALL_14 &&
-      ChronoUnit.DAYS.between(adjacentSentence.sentenceCalculation.adjustedExpiryDate, returnToCustodyDate) < 14
-  }
+  ): Boolean = latestSentence.recallType == FIXED_TERM_RECALL_14 &&
+    ChronoUnit.DAYS.between(adjacentSentence.sentenceCalculation.adjustedExpiryDate, returnToCustodyDate) < 14
 
-  private fun getFixedTermRecallSentences(sentences: List<CalculableSentence>): List<CalculableSentence> =
-    sentences
-      .filter {
-        it.recallType == FIXED_TERM_RECALL_28 ||
-          it.recallType == FIXED_TERM_RECALL_14 &&
-          it.releaseDateTypes.contains(SLED)
-      }
-      .sortedBy { it.sentencedAt }
+  private fun getFixedTermRecallSentences(sentences: List<CalculableSentence>): List<CalculableSentence> = sentences
+    .filter {
+      it.recallType == FIXED_TERM_RECALL_28 ||
+        it.recallType == FIXED_TERM_RECALL_14 &&
+        it.releaseDateTypes.contains(SLED)
+    }
+    .sortedBy { it.sentencedAt }
 }

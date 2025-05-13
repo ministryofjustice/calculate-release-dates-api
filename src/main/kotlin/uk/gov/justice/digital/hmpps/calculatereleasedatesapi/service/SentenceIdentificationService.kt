@@ -130,7 +130,8 @@ class SentenceIdentificationService(
   }
 
   private fun identifyAFineSentence(sentence: AFineSentence): List<ReleaseDateType> {
-    if (sentence.fineAmount != null && sentence.fineAmount >= TEN_MILLION &&
+    if (sentence.fineAmount != null &&
+      sentence.fineAmount >= TEN_MILLION &&
       sentence.sentencedAt.isAfterOrEqualTo(A_FINE_TEN_MILLION_FULL_RELEASE_DATE)
     ) {
       sentence.identificationTrack = AFINE_ARD_AT_FULL_TERM
@@ -383,12 +384,10 @@ class SentenceIdentificationService(
    */
   private fun sdsStandardOrEarlyRelease(
     sentence: CalculableSentence,
-  ): SentenceIdentificationTrack {
-    return when {
-      sentence is StandardDeterminateSentence && sentence.hasAnSDSEarlyReleaseExclusion == SDSEarlyReleaseExclusionType.NO -> SDS_EARLY_RELEASE
-      sentence is StandardDeterminateSentence && offenceIsTrancheThreeAffected(sentence, trancheConfiguration) -> SDS_STANDARD_RELEASE_T3_EXCLUSION
-      else -> SDS_STANDARD_RELEASE
-    }
+  ): SentenceIdentificationTrack = when {
+    sentence is StandardDeterminateSentence && sentence.hasAnSDSEarlyReleaseExclusion == SDSEarlyReleaseExclusionType.NO -> SDS_EARLY_RELEASE
+    sentence is StandardDeterminateSentence && offenceIsTrancheThreeAffected(sentence, trancheConfiguration) -> SDS_STANDARD_RELEASE_T3_EXCLUSION
+    else -> SDS_STANDARD_RELEASE
   }
 
   companion object {

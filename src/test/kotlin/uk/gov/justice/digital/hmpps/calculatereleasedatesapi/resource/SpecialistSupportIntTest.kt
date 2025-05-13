@@ -17,7 +17,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmittedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.GenuineOverrideRepository
 import java.util.UUID
 
-class SpecialistSupportIntTest() : IntegrationTestBase() {
+class SpecialistSupportIntTest : IntegrationTestBase() {
 
   @Autowired
   lateinit var genuineOverrideRepository: GenuineOverrideRepository
@@ -109,28 +109,27 @@ class SpecialistSupportIntTest() : IntegrationTestBase() {
       .expectStatus().isNotFound
   }
 
-  private fun createGenuineOverrideDates(preliminaryCalculation: CalculatedReleaseDates): GenuineOverrideDateResponse? =
-    webTestClient.post()
-      .uri("/specialist-support/genuine-override/calculation")
-      .accept(MediaType.APPLICATION_JSON)
-      .bodyValue(
-        GenuineOverrideDateRequest(
-          originalCalculationReference = preliminaryCalculation.calculationReference.toString(),
-          manualEntryRequest = ManualEntryRequest(
-            listOf(
-              ManualEntrySelectedDate(ReleaseDateType.APD, "text", SubmittedDate(day = 1, month = 2, year = 2023)),
-            ),
-            1L,
-            "",
+  private fun createGenuineOverrideDates(preliminaryCalculation: CalculatedReleaseDates): GenuineOverrideDateResponse? = webTestClient.post()
+    .uri("/specialist-support/genuine-override/calculation")
+    .accept(MediaType.APPLICATION_JSON)
+    .bodyValue(
+      GenuineOverrideDateRequest(
+        originalCalculationReference = preliminaryCalculation.calculationReference.toString(),
+        manualEntryRequest = ManualEntryRequest(
+          listOf(
+            ManualEntrySelectedDate(ReleaseDateType.APD, "text", SubmittedDate(day = 1, month = 2, year = 2023)),
           ),
+          1L,
+          "",
         ),
-      )
-      .headers(setAuthorisation(roles = listOf("ROLE_CRDS_SPECIALIST_SUPPORT")))
-      .exchange()
-      .expectStatus().isOk
-      .expectHeader().contentType(MediaType.APPLICATION_JSON)
-      .expectBody(GenuineOverrideDateResponse::class.java)
-      .returnResult().responseBody
+      ),
+    )
+    .headers(setAuthorisation(roles = listOf("ROLE_CRDS_SPECIALIST_SUPPORT")))
+    .exchange()
+    .expectStatus().isOk
+    .expectHeader().contentType(MediaType.APPLICATION_JSON)
+    .expectBody(GenuineOverrideDateResponse::class.java)
+    .returnResult().responseBody
 
   private fun createGenuineOverride(
     calculationReference: String,

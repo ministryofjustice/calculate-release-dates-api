@@ -13,7 +13,10 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource.JsonTransformation
 
-class AdjustmentsApiExtension : BeforeAllCallback, AfterAllCallback, BeforeEachCallback {
+class AdjustmentsApiExtension :
+  BeforeAllCallback,
+  AfterAllCallback,
+  BeforeEachCallback {
   companion object {
     @JvmField
     val adjustmentsApi = AdjustmentsApiMockServer()
@@ -57,14 +60,13 @@ class AdjustmentsApiMockServer : WireMockServer(WIREMOCK_PORT) {
     private const val WIREMOCK_PORT = 8334
   }
 
-  fun stubGetAdjustments(prisonerId: String, json: String): StubMapping =
-    stubFor(
-      get(urlMatching("/adjustments.*$prisonerId.*"))
-        .willReturn(
-          aResponse()
-            .withHeader("Content-Type", "application/json")
-            .withBody(json)
-            .withStatus(200),
-        ),
-    )
+  fun stubGetAdjustments(prisonerId: String, json: String): StubMapping = stubFor(
+    get(urlMatching("/adjustments.*$prisonerId.*"))
+      .willReturn(
+        aResponse()
+          .withHeader("Content-Type", "application/json")
+          .withBody(json)
+          .withStatus(200),
+      ),
+  )
 }

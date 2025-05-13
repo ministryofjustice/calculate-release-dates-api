@@ -13,9 +13,7 @@ class BotusValidationService(
   private val featureToggles: FeatureToggles,
 ) {
 
-  internal fun validate(sourceData: CalculationSourceData): List<ValidationMessage> {
-    return validateUnsupportedConsecutiveBotusSentences(sourceData)
-  }
+  internal fun validate(sourceData: CalculationSourceData): List<ValidationMessage> = validateUnsupportedConsecutiveBotusSentences(sourceData)
 
   private fun validateUnsupportedConsecutiveBotusSentences(sourceData: CalculationSourceData): List<ValidationMessage> {
     val consecutiveSentences = sourceData.sentenceAndOffences
@@ -34,9 +32,7 @@ class BotusValidationService(
     return emptyList()
   }
 
-  private fun isBotusSentence(sentence: SentenceAndOffenceWithReleaseArrangements): Boolean {
-    return SentenceCalculationType.from(sentence.sentenceCalculationType) == BOTUS
-  }
+  private fun isBotusSentence(sentence: SentenceAndOffenceWithReleaseArrangements): Boolean = SentenceCalculationType.from(sentence.sentenceCalculationType) == BOTUS
 
   private fun isBotusAdjacentSentence(sourceData: CalculationSourceData, index: Int): Boolean {
     val sentence = sourceData.sentenceAndOffences.firstOrNull { it.sentenceSequence == index }

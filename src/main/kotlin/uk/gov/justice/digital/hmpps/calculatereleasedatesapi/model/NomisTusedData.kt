@@ -8,7 +8,5 @@ data class NomisTusedData(
   val comment: String?,
   val offenderNo: String,
 ) {
-  fun getLatestTusedDate(): LocalDate? {
-    return latestOverrideTused ?: latestTused
-  }
+  fun getLatestTusedDate(): LocalDate? = latestOverrideTused ?: latestTused
 }

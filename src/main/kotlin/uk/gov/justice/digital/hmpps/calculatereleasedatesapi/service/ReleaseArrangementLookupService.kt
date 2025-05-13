@@ -32,9 +32,7 @@ class ReleaseArrangementLookupService(
     }
   }
 
-  private fun checkForSDSPlus(sentencesAndOffences: List<SentenceAndOffence>): List<SDSPlusCheckResult> {
-    return sdsPlusReleaseArrangementLookupService.checkForSDSPlus(sentencesAndOffences)
-  }
+  private fun checkForSDSPlus(sentencesAndOffences: List<SentenceAndOffence>): List<SDSPlusCheckResult> = sdsPlusReleaseArrangementLookupService.checkForSDSPlus(sentencesAndOffences)
 
   private fun fetchSdsExclusions(excludeIfSDSPlus: List<SDSPlusCheckResult>): Map<String, SDSEarlyReleaseExclusionForOffenceCode> {
     val offenceCodesExcludingSDSPlus = sdsReleaseArrangementLookupService.offenceCodesExcludingSDSPlus(excludeIfSDSPlus)

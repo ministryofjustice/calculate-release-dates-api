@@ -31,7 +31,11 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource.JsonTransf
     Once a file is added to any of the directories, all calls will be stubbed, if not all directories have an
     entry for the given prisoner id, the mock will fallback to a default json file.
  */
-class PrisonApiExtension : BeforeAllCallback, AfterAllCallback, BeforeEachCallback, ParameterResolver {
+class PrisonApiExtension :
+  BeforeAllCallback,
+  AfterAllCallback,
+  BeforeEachCallback,
+  ParameterResolver {
   companion object {
     @JvmField
     val prisonApi = PrisonApiMockServer()
@@ -141,13 +145,9 @@ class PrisonApiExtension : BeforeAllCallback, AfterAllCallback, BeforeEachCallba
     prisonApi.stop()
   }
 
-  override fun supportsParameter(parameterContext: ParameterContext, context: ExtensionContext): Boolean {
-    return parameterContext.parameter.type == MockPrisonService::class.java
-  }
+  override fun supportsParameter(parameterContext: ParameterContext, context: ExtensionContext): Boolean = parameterContext.parameter.type == MockPrisonService::class.java
 
-  override fun resolveParameter(parameterContext: ParameterContext, context: ExtensionContext): Any {
-    return MockPrisonService(prisonApi, objectMapper, jsonTransformation)
-  }
+  override fun resolveParameter(parameterContext: ParameterContext, context: ExtensionContext): Any = MockPrisonService(prisonApi, objectMapper, jsonTransformation)
 }
 
 class MockPrisonService(
@@ -170,9 +170,7 @@ class MockPrisonService(
     return this
   }
 
-  fun withStub(mappingBuilder: MappingBuilder): StubMapping {
-    return prisonApi.stubFor(mappingBuilder)
-  }
+  fun withStub(mappingBuilder: MappingBuilder): StubMapping = prisonApi.stubFor(mappingBuilder)
 }
 
 class PrisonApiMockServer : WireMockServer(WIREMOCK_PORT) {
@@ -180,103 +178,94 @@ class PrisonApiMockServer : WireMockServer(WIREMOCK_PORT) {
     private const val WIREMOCK_PORT = 8332
   }
 
-  fun stubGetPrisonerDetails(prisonerId: String, json: String): StubMapping =
-    stubFor(
-      get("/api/offenders/$prisonerId")
-        .willReturn(
-          aResponse()
-            .withHeader("Content-Type", "application/json")
-            .withBody(json)
-            .withStatus(200),
-        ),
-    )
+  fun stubGetPrisonerDetails(prisonerId: String, json: String): StubMapping = stubFor(
+    get("/api/offenders/$prisonerId")
+      .willReturn(
+        aResponse()
+          .withHeader("Content-Type", "application/json")
+          .withBody(json)
+          .withStatus(200),
+      ),
+  )
 
-  fun stubGetSentencesAndOffences(bookingId: Long, json: String): StubMapping =
-    stubFor(
-      get("/api/offender-sentences/booking/$bookingId/sentences-and-offences")
-        .willReturn(
-          aResponse()
-            .withHeader("Content-Type", "application/json")
-            .withBody(json)
-            .withStatus(200),
-        ),
-    )
+  fun stubGetSentencesAndOffences(bookingId: Long, json: String): StubMapping = stubFor(
+    get("/api/offender-sentences/booking/$bookingId/sentences-and-offences")
+      .willReturn(
+        aResponse()
+          .withHeader("Content-Type", "application/json")
+          .withBody(json)
+          .withStatus(200),
+      ),
+  )
 
-  fun stubGetReturnToCustody(bookingId: Long, json: String): StubMapping =
-    stubFor(
-      get("/api/bookings/$bookingId/fixed-term-recall")
-        .willReturn(
-          aResponse()
-            .withHeader("Content-Type", "application/json")
-            .withBody(json)
-            .withStatus(200),
-        ),
-    )
+  fun stubGetReturnToCustody(bookingId: Long, json: String): StubMapping = stubFor(
+    get("/api/bookings/$bookingId/fixed-term-recall")
+      .willReturn(
+        aResponse()
+          .withHeader("Content-Type", "application/json")
+          .withBody(json)
+          .withStatus(200),
+      ),
+  )
 
-  fun stubGetReturnToCustodyNotFound(bookingId: Long): StubMapping =
-    stubFor(
-      get("/api/bookings/$bookingId/fixed-term-recall")
-        .willReturn(
-          aResponse()
-            .withStatus(404)
-            .withHeader("Content-Type", "application/json")
-            .withBody("""{"error": "Fixed Term Recall details not found"}"""),
-        ),
-    )
+  fun stubGetReturnToCustodyNotFound(bookingId: Long): StubMapping = stubFor(
+    get("/api/bookings/$bookingId/fixed-term-recall")
+      .willReturn(
+        aResponse()
+          .withStatus(404)
+          .withHeader("Content-Type", "application/json")
+          .withBody("""{"error": "Fixed Term Recall details not found"}"""),
+      ),
+  )
 
-  fun stubGetSentenceAdjustments(bookingId: Long, json: String): StubMapping =
-    stubFor(
-      get("/api/adjustments/$bookingId/sentence-and-booking")
-        .willReturn(
-          aResponse()
-            .withHeader("Content-Type", "application/json")
-            .withBody(json)
-            .withStatus(200),
-        ),
-    )
+  fun stubGetSentenceAdjustments(bookingId: Long, json: String): StubMapping = stubFor(
+    get("/api/adjustments/$bookingId/sentence-and-booking")
+      .willReturn(
+        aResponse()
+          .withHeader("Content-Type", "application/json")
+          .withBody(json)
+          .withStatus(200),
+      ),
+  )
 
-  fun stubPostOffenderDates(bookingId: Long): StubMapping =
-    stubFor(
-      post("/api/offender-dates/$bookingId")
-        .willReturn(
-          aResponse()
-            .withHeader("Content-Type", "application/json")
-            .withStatus(200),
-        ),
-    )
+  fun stubPostOffenderDates(bookingId: Long): StubMapping = stubFor(
+    post("/api/offender-dates/$bookingId")
+      .willReturn(
+        aResponse()
+          .withHeader("Content-Type", "application/json")
+          .withStatus(200),
+      ),
+  )
 
-  fun stubOffenderFinePayments(bookingId: Long, json: String): StubMapping =
-    stubFor(
-      get("/api/offender-fine-payment/booking/$bookingId")
-        .willReturn(
-          aResponse()
-            .withHeader("Content-Type", "application/json")
-            .withBody(json)
-            .withStatus(200),
-        ),
-    )
+  fun stubOffenderFinePayments(bookingId: Long, json: String): StubMapping = stubFor(
+    get("/api/offender-fine-payment/booking/$bookingId")
+      .willReturn(
+        aResponse()
+          .withHeader("Content-Type", "application/json")
+          .withBody(json)
+          .withStatus(200),
+      ),
+  )
 
-  fun stubExternalMovements(prisonerId: String, json: String): StubMapping =
-    stubFor(
-      get(urlPathEqualTo("/api/movements/offender/$prisonerId"))
-        .willReturn(
-          aResponse()
-            .withHeader("Content-Type", "application/json")
-            .withBody(json)
-            .withStatus(200),
-        ),
-    )
+  fun stubExternalMovements(prisonerId: String, json: String): StubMapping = stubFor(
+    get(urlPathEqualTo("/api/movements/offender/$prisonerId"))
+      .willReturn(
+        aResponse()
+          .withHeader("Content-Type", "application/json")
+          .withBody(json)
+          .withStatus(200),
+      ),
+  )
 
-  fun stubPrisonCalculablePrisoners(establishmentId: String, json: String): StubMapping =
-    stubFor(
-      get("/api/prison/$establishmentId/booking/latest/paged/calculable-prisoner?page=0")
-        .willReturn(
-          aResponse()
-            .withHeader("Content-Type", "application/json")
-            .withBody(json)
-            .withStatus(200),
-        ),
-    )
+  fun stubPrisonCalculablePrisoners(establishmentId: String, json: String): StubMapping = stubFor(
+    get("/api/prison/$establishmentId/booking/latest/paged/calculable-prisoner?page=0")
+      .willReturn(
+        aResponse()
+          .withHeader("Content-Type", "application/json")
+          .withBody(json)
+          .withStatus(200),
+      ),
+  )
 
   fun stubCaseloads(json: String): StubMapping = stubFor(
     get(urlPathEqualTo("/api/users/me/caseLoads"))

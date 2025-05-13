@@ -34,21 +34,15 @@ class SingleTermSentence(
   @JsonIgnore
   override lateinit var releaseDateTypes: ReleaseDateTypes
 
-  override fun buildString(): String {
-    return "SingleTermSentence\t:\t\n" +
-      "Number of sentences\t:\t${standardSentences.size}\n" +
-      "Sentence Types\t:\t$releaseDateTypes\n" +
-      "Number of Days in Sentence\t:\t${getLengthInDays()}\n" +
-      sentenceCalculation.buildString(releaseDateTypes.initialTypes)
-  }
+  override fun buildString(): String = "SingleTermSentence\t:\t\n" +
+    "Number of sentences\t:\t${standardSentences.size}\n" +
+    "Sentence Types\t:\t$releaseDateTypes\n" +
+    "Number of Days in Sentence\t:\t${getLengthInDays()}\n" +
+    sentenceCalculation.buildString(releaseDateTypes.initialTypes)
 
-  override fun isCalculationInitialised(): Boolean {
-    return this::sentenceCalculation.isInitialized
-  }
+  override fun isCalculationInitialised(): Boolean = this::sentenceCalculation.isInitialized
 
-  override fun isIdentificationTrackInitialized(): Boolean {
-    return this::identificationTrack.isInitialized
-  }
+  override fun isIdentificationTrackInitialized(): Boolean = this::identificationTrack.isInitialized
   fun combinedDuration(): Duration {
     val firstSentence = standardSentences.get(0)
     val secondSentence = standardSentences.get(1)
@@ -60,20 +54,14 @@ class SingleTermSentence(
     return Duration(durationElements)
   }
 
-  override fun getLengthInDays(): Int {
-    return combinedDuration().getLengthInDays(sentencedAt)
-  }
+  override fun getLengthInDays(): Int = combinedDuration().getLengthInDays(sentencedAt)
 
-  override fun hasAnyEdsOrSopcSentence(): Boolean {
-    return false
-  }
+  override fun hasAnyEdsOrSopcSentence(): Boolean = false
 
-  private fun earliestSentencedAt(firstStandardSentence: AbstractSentence, secondStandardSentence: AbstractSentence): LocalDate {
-    return if (firstStandardSentence.sentencedAt.isBefore(secondStandardSentence.sentencedAt)) {
-      firstStandardSentence.sentencedAt
-    } else {
-      secondStandardSentence.sentencedAt
-    }
+  private fun earliestSentencedAt(firstStandardSentence: AbstractSentence, secondStandardSentence: AbstractSentence): LocalDate = if (firstStandardSentence.sentencedAt.isBefore(secondStandardSentence.sentencedAt)) {
+    firstStandardSentence.sentencedAt
+  } else {
+    secondStandardSentence.sentencedAt
   }
 
   private fun latestExpiryDate(firstStandardSentence: AbstractSentence, secondStandardSentence: AbstractSentence): LocalDate? {
@@ -92,7 +80,5 @@ class SingleTermSentence(
   override fun calculateErsed(): Boolean = identificationTrack.calculateErsed()
 
   @JsonIgnore
-  override fun sentenceParts(): List<AbstractSentence> {
-    return standardSentences
-  }
+  override fun sentenceParts(): List<AbstractSentence> = standardSentences
 }

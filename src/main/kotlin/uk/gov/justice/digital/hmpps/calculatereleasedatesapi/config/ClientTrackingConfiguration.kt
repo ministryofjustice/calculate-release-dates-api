@@ -38,20 +38,18 @@ class ClientTrackingInterceptor : HandlerInterceptor {
     return true
   }
 
-  private fun findUserAndClient(req: HttpServletRequest): Pair<String?, String?> =
-    req.getHeader(HttpHeaders.AUTHORIZATION)
-      ?.takeIf { it.startsWith("Bearer ") }
-      ?.let { getClaimsFromJWT(it) }
-      ?.let { it.getClaim("user_name") as String? to it.getClaim("client_id") as String? }
-      ?: (null to null)
+  private fun findUserAndClient(req: HttpServletRequest): Pair<String?, String?> = req.getHeader(HttpHeaders.AUTHORIZATION)
+    ?.takeIf { it.startsWith("Bearer ") }
+    ?.let { getClaimsFromJWT(it) }
+    ?.let { it.getClaim("user_name") as String? to it.getClaim("client_id") as String? }
+    ?: (null to null)
 
-  private fun getClaimsFromJWT(token: String): JWTClaimsSet? =
-    try {
-      SignedJWT.parse(token.replace("Bearer ", ""))
-    } catch (e: ParseException) {
-      log.warn("problem decoding jwt public key for application insights", e)
-      null
-    }?.jwtClaimsSet
+  private fun getClaimsFromJWT(token: String): JWTClaimsSet? = try {
+    SignedJWT.parse(token.replace("Bearer ", ""))
+  } catch (e: ParseException) {
+    log.warn("problem decoding jwt public key for application insights", e)
+    null
+  }?.jwtClaimsSet
 
   companion object {
     private val log = LoggerFactory.getLogger(this::class.java)

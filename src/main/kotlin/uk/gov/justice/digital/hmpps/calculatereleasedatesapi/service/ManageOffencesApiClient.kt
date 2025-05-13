@@ -59,24 +59,22 @@ class ManageOffencesApiClient(@Qualifier("manageOffencesApiWebClient") private v
       .block() ?: throw CouldNotGetMoOffenceInformation("Sds early release exclusions schedule otherwise failed for offence lookup failed for $offencesList, cannot proceed to perform a sentence calculation")
   }
 
-  fun getToreraOffenceCodes(): List<String> {
-    return webClient.get()
-      .uri("/schedule/torera-offence-codes")
-      .retrieve()
-      .bodyToMono(typeReference<List<String>>())
-      .retryWhen(
-        Retry
-          .backoff(5, Duration.ofMillis(100))
-          .maxBackoff(Duration.ofSeconds(5))
-          .doBeforeRetry { retrySignal ->
-            log.warn("getToreraOffenceCodes: Retrying [Attempt: ${retrySignal.totalRetries() + 1}] due to ${retrySignal.failure().message}. ")
-          }
-          .onRetryExhaustedThrow { _, _ ->
-            throw MaxRetryAchievedException("getToreraOffenceCodes: Max retries - lookup failed, cannot proceed to perform a sentence calculation")
-          },
-      )
-      .block() ?: throw CouldNotGetMoOffenceInformation("getToreraOffenceCodes request failed to load")
-  }
+  fun getToreraOffenceCodes(): List<String> = webClient.get()
+    .uri("/schedule/torera-offence-codes")
+    .retrieve()
+    .bodyToMono(typeReference<List<String>>())
+    .retryWhen(
+      Retry
+        .backoff(5, Duration.ofMillis(100))
+        .maxBackoff(Duration.ofSeconds(5))
+        .doBeforeRetry { retrySignal ->
+          log.warn("getToreraOffenceCodes: Retrying [Attempt: ${retrySignal.totalRetries() + 1}] due to ${retrySignal.failure().message}. ")
+        }
+        .onRetryExhaustedThrow { _, _ ->
+          throw MaxRetryAchievedException("getToreraOffenceCodes: Max retries - lookup failed, cannot proceed to perform a sentence calculation")
+        },
+    )
+    .block() ?: throw CouldNotGetMoOffenceInformation("getToreraOffenceCodes request failed to load")
 
   class MaxRetryAchievedException(message: String?) : RuntimeException(message)
 }

@@ -17,8 +17,6 @@ class TestUtil private constructor() {
       return mapper.registerKotlinModule()
     }
 
-    fun minimalTestCaseMapper(): ObjectMapper {
-      return objectMapper().setDefaultPropertyInclusion(JsonInclude.Include.NON_DEFAULT)
-    }
+    fun minimalTestCaseMapper(): ObjectMapper = objectMapper().setDefaultPropertyInclusion(JsonInclude.Include.NON_DEFAULT)
   }
 }

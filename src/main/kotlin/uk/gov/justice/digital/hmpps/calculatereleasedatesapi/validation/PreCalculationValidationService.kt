@@ -53,12 +53,10 @@ class PreCalculationValidationService(
     return messages
   }
 
-  private fun getRemandAndTaggedBail(sourceData: CalculationSourceData): List<RemandAndTaggedBail> {
-    return sourceData.bookingAndSentenceAdjustments.fold(
-      { adjustments -> adjustments.sentenceAdjustments.filter { it.type == SentenceAdjustmentType.REMAND || it.type == SentenceAdjustmentType.TAGGED_BAIL }.map { RemandAndTaggedBail(it.sentenceSequence, it.type.toString()) } },
-      { adjustments -> adjustments.filter { it.adjustmentType == AdjustmentDto.AdjustmentType.REMAND || it.adjustmentType == AdjustmentDto.AdjustmentType.TAGGED_BAIL }.map { RemandAndTaggedBail(it.sentenceSequence!!, it.adjustmentType.toString()) } },
-    )
-  }
+  private fun getRemandAndTaggedBail(sourceData: CalculationSourceData): List<RemandAndTaggedBail> = sourceData.bookingAndSentenceAdjustments.fold(
+    { adjustments -> adjustments.sentenceAdjustments.filter { it.type == SentenceAdjustmentType.REMAND || it.type == SentenceAdjustmentType.TAGGED_BAIL }.map { RemandAndTaggedBail(it.sentenceSequence, it.type.toString()) } },
+    { adjustments -> adjustments.filter { it.adjustmentType == AdjustmentDto.AdjustmentType.REMAND || it.adjustmentType == AdjustmentDto.AdjustmentType.TAGGED_BAIL }.map { RemandAndTaggedBail(it.sentenceSequence!!, it.adjustmentType.toString()) } },
+  )
 
   fun validateOffenderSupported(prisonerDetails: PrisonerDetails): List<ValidationMessage> {
     val hasPtdAlert = prisonerDetails.activeAlerts().any {

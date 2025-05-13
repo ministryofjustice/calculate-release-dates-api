@@ -55,12 +55,10 @@ class HdcedCalculator(
     return true
   }
 
-  fun hasSdsPlus(sentence: CalculableSentence): Boolean {
-    return if (sentence is ConsecutiveSentence) {
-      sentence.orderedSentences.any { it.isSDSPlusEligibleSentenceTypeLengthAndOffence }
-    } else {
-      sentence.isSDSPlusEligibleSentenceTypeLengthAndOffence
-    }
+  fun hasSdsPlus(sentence: CalculableSentence): Boolean = if (sentence is ConsecutiveSentence) {
+    sentence.orderedSentences.any { it.isSDSPlusEligibleSentenceTypeLengthAndOffence }
+  } else {
+    sentence.isSDSPlusEligibleSentenceTypeLengthAndOffence
   }
 
   private data class HdcedParams(
@@ -86,7 +84,8 @@ class HdcedCalculator(
     if (adjustedReleasePointIsLessThanMinimumEligiblePeriod(
         sentenceCalculation,
         sentence,
-      ) || unadjustedReleasePointIsLessThanMinimumCustodialPeriod(params.custodialPeriod)
+      ) ||
+      unadjustedReleasePointIsLessThanMinimumCustodialPeriod(params.custodialPeriod)
     ) {
       sentenceCalculation.homeDetentionCurfewEligibilityDate = null
       sentenceCalculation.numberOfDaysToHomeDetentionCurfewEligibilityDate = 0
@@ -289,8 +288,7 @@ class HdcedCalculator(
     sentenceCalculation.adjustments.unusedAdaDays -
     sentenceCalculation.adjustments.servedAdaDays
 
-  private fun getDeductedDays(sentenceCalculation: SentenceCalculation) =
-    sentenceCalculation.adjustments.deductions
+  private fun getDeductedDays(sentenceCalculation: SentenceCalculation) = sentenceCalculation.adjustments.deductions
 
   private fun calculateHdcedMinimumCustodialPeriodUsingPreHdc365Rules(
     sentence: CalculableSentence,
@@ -342,18 +340,15 @@ class HdcedCalculator(
     sentence: CalculableSentence,
     hdced: LocalDate,
     params: HdcedParams,
-  ) =
-    // Is the HDCED date BEFORE additional days are added less than the minimum.
+  ) = // Is the HDCED date BEFORE additional days are added less than the minimum.
     sentence.sentencedAt.plusDays(hdcedConfiguration.minimumDaysOnHdc).isAfterOrEqualTo(hdced.minusDays(params.addedDays))
 
   private fun adjustedReleasePointIsLessThanMinimumEligiblePeriod(
     sentenceCalculation: SentenceCalculation,
     sentence: CalculableSentence,
-  ) =
-    sentenceCalculation.adjustedDeterminateReleaseDate.isBefore(sentence.sentencedAt.plusDays(hdcedConfiguration.minimumDaysOnHdc))
+  ) = sentenceCalculation.adjustedDeterminateReleaseDate.isBefore(sentence.sentencedAt.plusDays(hdcedConfiguration.minimumDaysOnHdc))
 
-  private fun unadjustedReleasePointIsLessThanMinimumCustodialPeriod(custodialPeriod: Double) =
-    custodialPeriod < hdcedConfiguration.minimumCustodialPeriodDays
+  private fun unadjustedReleasePointIsLessThanMinimumCustodialPeriod(custodialPeriod: Double) = custodialPeriod < hdcedConfiguration.minimumCustodialPeriodDays
 
   private fun addHdc365Rule(baseRules: Set<CalculationRule>): Set<CalculationRule> = baseRules + HDC_180
 

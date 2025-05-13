@@ -25,30 +25,20 @@ data class ExtendedDeterminateSentence(
   override val isSDSPlusEligibleSentenceTypeLengthAndOffence: Boolean = false
   override val isSDSPlusOffenceInPeriod: Boolean = false
 
-  override fun buildString(): String {
-    return "ExtendedDeterminateSentence\t:\t\n" +
-      "Identification Track\t:\t${identificationTrack}\n" +
-      "Custodial duration\t:\t${custodialDuration}\n" +
-      "Extension duration\t:\t${extensionDuration}\n" +
-      "Sentence Types\t:\t$recallType\n" +
-      "Release Date Types\t:\t$releaseDateTypes\n" +
-      "Number of Days in Sentence\t:\t${getLengthInDays()}\n" +
-      sentenceCalculation.buildString(releaseDateTypes.initialTypes)
-  }
+  override fun buildString(): String = "ExtendedDeterminateSentence\t:\t\n" +
+    "Identification Track\t:\t${identificationTrack}\n" +
+    "Custodial duration\t:\t${custodialDuration}\n" +
+    "Extension duration\t:\t${extensionDuration}\n" +
+    "Sentence Types\t:\t$recallType\n" +
+    "Release Date Types\t:\t$releaseDateTypes\n" +
+    "Number of Days in Sentence\t:\t${getLengthInDays()}\n" +
+    sentenceCalculation.buildString(releaseDateTypes.initialTypes)
 
   @JsonIgnore
-  fun getCustodialLengthInDays(): Int {
-    return custodialDuration.getLengthInDays(sentencedAt)
-  }
+  fun getCustodialLengthInDays(): Int = custodialDuration.getLengthInDays(sentencedAt)
 
-  fun combinedDuration(): Duration {
-    return custodialDuration.appendAll(extensionDuration.durationElements)
-  }
-  override fun getLengthInDays(): Int {
-    return combinedDuration().getLengthInDays(sentencedAt)
-  }
+  fun combinedDuration(): Duration = custodialDuration.appendAll(extensionDuration.durationElements)
+  override fun getLengthInDays(): Int = combinedDuration().getLengthInDays(sentencedAt)
 
-  override fun hasAnyEdsOrSopcSentence(): Boolean {
-    return true
-  }
+  override fun hasAnyEdsOrSopcSentence(): Boolean = true
 }

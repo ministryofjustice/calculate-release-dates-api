@@ -1105,30 +1105,29 @@ class CalculationResultEnrichmentServiceTest {
     return ReleaseDate(date, type)
   }
 
-  private fun sentenceAndOffence(sentenceCalculationType: String, sentenceDate: LocalDate = LocalDate.of(2020, 1, 2), bookingId: Long = 0, sentenceSequence: Int = 0, lineSequence: Int = 0, sentenceTerm: Int = 5, isSdsPlus: Boolean = false, isSDSPlusEligibleSentenceTypeLengthAndOffence: Boolean = false, isSDSPlusOffenceInPeriod: Boolean = false) =
-    SentenceAndOffenceWithReleaseArrangements(
-      bookingId = bookingId,
-      sentenceSequence = sentenceSequence,
-      lineSequence = lineSequence,
-      caseSequence = 1,
-      sentenceDate = sentenceDate,
-      terms = listOf(
-        SentenceTerms(years = sentenceTerm),
-      ),
-      sentenceStatus = "A",
-      sentenceCategory = "SEN",
-      sentenceCalculationType = sentenceCalculationType,
-      sentenceTypeDescription = "DESC",
-      offence = offenderOffence,
-      caseReference = null,
-      fineAmount = null,
-      courtDescription = null,
-      consecutiveToSequence = null,
-      isSDSPlus = isSdsPlus,
-      isSDSPlusEligibleSentenceTypeLengthAndOffence = isSDSPlusEligibleSentenceTypeLengthAndOffence,
-      isSDSPlusOffenceInPeriod = isSDSPlusOffenceInPeriod,
-      hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
-    )
+  private fun sentenceAndOffence(sentenceCalculationType: String, sentenceDate: LocalDate = LocalDate.of(2020, 1, 2), bookingId: Long = 0, sentenceSequence: Int = 0, lineSequence: Int = 0, sentenceTerm: Int = 5, isSdsPlus: Boolean = false, isSDSPlusEligibleSentenceTypeLengthAndOffence: Boolean = false, isSDSPlusOffenceInPeriod: Boolean = false) = SentenceAndOffenceWithReleaseArrangements(
+    bookingId = bookingId,
+    sentenceSequence = sentenceSequence,
+    lineSequence = lineSequence,
+    caseSequence = 1,
+    sentenceDate = sentenceDate,
+    terms = listOf(
+      SentenceTerms(years = sentenceTerm),
+    ),
+    sentenceStatus = "A",
+    sentenceCategory = "SEN",
+    sentenceCalculationType = sentenceCalculationType,
+    sentenceTypeDescription = "DESC",
+    offence = offenderOffence,
+    caseReference = null,
+    fineAmount = null,
+    courtDescription = null,
+    consecutiveToSequence = null,
+    isSDSPlus = isSdsPlus,
+    isSDSPlusEligibleSentenceTypeLengthAndOffence = isSDSPlusEligibleSentenceTypeLengthAndOffence,
+    isSDSPlusOffenceInPeriod = isSDSPlusOffenceInPeriod,
+    hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
+  )
 
   private val offenderOffence = OffenderOffence(
     123,

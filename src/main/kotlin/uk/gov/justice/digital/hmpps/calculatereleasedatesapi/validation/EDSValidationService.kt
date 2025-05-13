@@ -25,23 +25,13 @@ class EDSValidationService(private val validationUtilities: ValidationUtilities)
     }
   }
 
-  private fun isEds(type: SentenceCalculationType): Boolean {
-    return type in listOf(SentenceCalculationType.EDS18, SentenceCalculationType.EDS21, SentenceCalculationType.EDSU18)
-  }
+  private fun isEds(type: SentenceCalculationType): Boolean = type in listOf(SentenceCalculationType.EDS18, SentenceCalculationType.EDS21, SentenceCalculationType.EDSU18)
 
-  private fun isBeforeEdsStartDate(sentenceAndOffence: SentenceAndOffence): Boolean {
-    return sentenceAndOffence.sentenceDate.isBefore(ImportantDates.EDS18_SENTENCE_TYPES_START_DATE)
-  }
+  private fun isBeforeEdsStartDate(sentenceAndOffence: SentenceAndOffence): Boolean = sentenceAndOffence.sentenceDate.isBefore(ImportantDates.EDS18_SENTENCE_TYPES_START_DATE)
 
-  private fun isLaspo(type: SentenceCalculationType): Boolean {
-    return type == SentenceCalculationType.LASPO_AR
-  }
+  private fun isLaspo(type: SentenceCalculationType): Boolean = type == SentenceCalculationType.LASPO_AR
 
-  private fun isAfterLaspoEndDate(sentenceAndOffence: SentenceAndOffence): Boolean {
-    return sentenceAndOffence.sentenceDate.isAfterOrEqualTo(ImportantDates.LASPO_AR_SENTENCE_TYPES_END_DATE)
-  }
+  private fun isAfterLaspoEndDate(sentenceAndOffence: SentenceAndOffence): Boolean = sentenceAndOffence.sentenceDate.isAfterOrEqualTo(ImportantDates.LASPO_AR_SENTENCE_TYPES_END_DATE)
 
-  private fun createValidationMessage(validationCode: ValidationCode, sentenceAndOffence: SentenceAndOffence): ValidationMessage {
-    return ValidationMessage(validationCode, validationUtilities.getCaseSeqAndLineSeq(sentenceAndOffence))
-  }
+  private fun createValidationMessage(validationCode: ValidationCode, sentenceAndOffence: SentenceAndOffence): ValidationMessage = ValidationMessage(validationCode, validationUtilities.getCaseSeqAndLineSeq(sentenceAndOffence))
 }
