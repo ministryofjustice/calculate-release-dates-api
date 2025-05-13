@@ -19,5 +19,4 @@ object ImportantDates {
   val SENTENCING_ACT_2020_COMMENCEMENT: LocalDate = LocalDate.of(2020, 12, 1)
   val HDC_365_COMMENCEMENT_DATE: LocalDate = LocalDate.of(2025, 6, 3)
   val SHPO_BREACH_OFFENCE_FROM_DATE: LocalDate = LocalDate.of(2020, 12, 1)
-  val HDC12_DATE = LocalDate.of(2025, 6, 3)
 }

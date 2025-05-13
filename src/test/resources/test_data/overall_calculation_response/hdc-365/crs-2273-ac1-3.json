@@ -1,10 +1,10 @@
 {
   "dates": {
-    "SLED": "2022-05-22",
+    "SLED": "2025-12-08",
     "CRD": "2025-07-04",
     "HDCED": "2025-06-11",
     "TUSED": "2026-06-26",
-    "ESED": "2026-06-26"
+    "ESED": "2025-12-23"
   },
-  "effectiveSentenceLength": "P4Y2M"
+  "effectiveSentenceLength": "P9M"
 }
