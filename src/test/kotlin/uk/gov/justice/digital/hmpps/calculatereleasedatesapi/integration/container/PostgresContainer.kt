@@ -1,7 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.container
 
 import org.slf4j.LoggerFactory
-import org.springframework.core.io.DefaultResourceLoader
 import org.testcontainers.containers.PostgreSQLContainer
 import org.testcontainers.containers.output.Slf4jLogConsumer
 import org.testcontainers.containers.wait.strategy.Wait
@@ -17,8 +16,6 @@ object PostgresContainer {
     }
 
     val logConsumer = Slf4jLogConsumer(log).withPrefix("postgresql")
-
-    val resourceLoader = DefaultResourceLoader()
 
     return PostgreSQLContainer<Nothing>("postgres:17").apply {
       withEnv("HOSTNAME_EXTERNAL", "localhost")
