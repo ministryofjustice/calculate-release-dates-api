@@ -24,10 +24,6 @@ jobs:
       jdk_tag: "21.0"
       localstack_tag: "3"
       services: "sns,sqs"
-      postgres_tag: "17"
-      postgres_username: "calculate_release_dates"
-      postgres_password: "calculate_release_dates"
-      postgres_db: "calculate_release_dates"
     steps:
       - checkout
       - restore_cache:
