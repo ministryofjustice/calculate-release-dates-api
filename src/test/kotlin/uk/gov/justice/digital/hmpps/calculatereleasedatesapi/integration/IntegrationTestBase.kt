@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -25,6 +26,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationRe
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualEntrySelectedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmitCalculationRequest
+import java.sql.DriverManager
 
 /*
 ** The abstract parent class for integration tests.
@@ -44,6 +46,23 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmitCalcula
 @Import(TestBuildPropertiesConfiguration::class)
 @ActiveProfiles("test")
 open class IntegrationTestBase internal constructor() {
+
+  @BeforeEach
+  fun clearDown() {
+    val db = DriverManager.getConnection(
+      pgContainer!!.jdbcUrl,
+      pgContainer.username,
+      pgContainer.password,
+    )
+
+    val resetSql = javaClass.getResource("/test_data/reset-base-data.sql")
+      ?.readText() ?: error("Could not load reset-base-data.sql")
+
+    val baseDataSql = javaClass.getResource("/test_data/load-base-data.sql")
+      ?.readText() ?: error("Could not load load-base-data.sql")
+
+    db.use { conn -> conn.createStatement().use { stmt -> stmt.execute(resetSql + baseDataSql) } }
+  }
 
   @Suppress("SpringJavaInjectionPointsAutowiringInspection")
   @Autowired
