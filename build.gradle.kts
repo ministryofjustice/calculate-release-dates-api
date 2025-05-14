@@ -80,6 +80,10 @@ dependencies {
   testImplementation("org.testcontainers:postgresql:1.20.6")
   testImplementation("io.github.hakky54:logcaptor:2.9.3")
   testImplementation("org.testcontainers:localstack:1.20.3")
+
+  if (project.hasProperty("docs")) {
+    implementation("com.h2database:h2")
+  }
 }
 
 jacoco {
