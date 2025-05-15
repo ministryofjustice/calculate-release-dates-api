@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
 import org.springframework.context.annotation.Import
@@ -47,13 +48,25 @@ import java.sql.DriverManager
 @ActiveProfiles("test")
 open class IntegrationTestBase internal constructor() {
 
+  @Value("\${spring.datasource.url}")
+  lateinit var dbConnectionString: String
+  @Value("\${spring.datasource.username}")
+  lateinit var dbUsername: String
+  @Value("\${spring.datasource.password}")
+  lateinit var dbPassword: String
+
   @BeforeEach
   fun clearDown() {
-    val db = DriverManager.getConnection(
-      pgContainer!!.jdbcUrl,
-      pgContainer.username,
-      pgContainer.password,
-    )
+
+    val db = if (pgContainer == null) {
+      DriverManager.getConnection(dbConnectionString, dbUsername, dbPassword)
+    } else {
+      DriverManager.getConnection(
+        pgContainer!!.jdbcUrl,
+        pgContainer.username,
+        pgContainer.password,
+      )
+    }
 
     val resetSql = javaClass.getResource("/test_data/reset-base-data.sql")
       ?.readText() ?: error("Could not load reset-base-data.sql")
