@@ -140,12 +140,11 @@ class HdcedCalculator(
    * If a consecutive sentence spans both before and after the HDC365 commencement date,
    * ensure the HDC date defaults to the commencement date when the calculated date falls before it.
    */
-  private fun getDefaultHdcDate(hdcedDate: LocalDate, sentence: CalculableSentence) =
-    if (sentence is ConsecutiveSentence && sentence.hasSentencesBeforeAndAfter(HDC_365_COMMENCEMENT_DATE)) {
-      maxOf(hdcedDate, HDC_365_COMMENCEMENT_DATE)
-    } else {
-      hdcedDate
-    }
+  private fun getDefaultHdcDate(hdcedDate: LocalDate, sentence: CalculableSentence) = if (sentence is ConsecutiveSentence && sentence.hasSentencesBeforeAndAfter(HDC_365_COMMENCEMENT_DATE)) {
+    maxOf(hdcedDate, HDC_365_COMMENCEMENT_DATE)
+  } else {
+    hdcedDate
+  }
 
   private fun setToPreHdc365Values(sentenceCalculation: SentenceCalculation) {
     sentenceCalculation.numberOfDaysToHomeDetentionCurfewEligibilityDate = sentenceCalculation.noDaysToHdcedByCalcType[InterimHdcCalcType.HDCED_PRE_365_RULES]!!
