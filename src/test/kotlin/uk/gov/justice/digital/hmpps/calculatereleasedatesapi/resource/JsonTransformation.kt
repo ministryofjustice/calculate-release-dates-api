@@ -5,7 +5,6 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BotusSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
@@ -28,11 +27,6 @@ class JsonTransformation {
   fun loadSentence(testData: String): StandardDeterminateSentence {
     val json = getJsonTest("$testData.json", "sentence")
     return mapper.readValue(json, StandardDeterminateSentence::class.java)
-  }
-
-  fun loadBotusSentence(testData: String): BotusSentence {
-    val json = getJsonTest("$testData.json", "sentence")
-    return mapper.readValue(json, BotusSentence::class.java)
   }
 
   fun loadBooking(testData: String): Pair<Booking, CalculationUserInputs> {

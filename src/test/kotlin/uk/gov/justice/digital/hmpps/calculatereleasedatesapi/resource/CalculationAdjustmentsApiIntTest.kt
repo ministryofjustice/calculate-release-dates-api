@@ -83,7 +83,11 @@ class CalculationAdjustmentsApiIntTest : IntegrationTestBase() {
       .orElseThrow { EntityNotFoundException("No calculation request exists for id ${result.calculationRequestId}") }
 
     assertThat(calculationRequest.adjustmentsVersion).isEqualTo(1)
-    assertThat(calculationRequest.adjustments.toString()).isEqualTo(TestUtil.objectMapper().writeValueAsString(storedAdjustmentsApiAdjustments))
+
+    val mapper = TestUtil.objectMapper()
+    val storedAdjustmentsJson = mapper.readTree(mapper.writeValueAsString(storedAdjustmentsApiAdjustments))
+
+    assertThat(calculationRequest.adjustments).isEqualTo(storedAdjustmentsJson)
 
     // Check Analysed adjustments are now all SAME.
     analysedAdjustments = getAnalysedAdjustments(prisoner)

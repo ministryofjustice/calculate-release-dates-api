@@ -63,7 +63,7 @@ open class IntegrationTestBase internal constructor() {
       DriverManager.getConnection(dbConnectionString, dbUsername, dbPassword)
     } else {
       DriverManager.getConnection(
-        pgContainer!!.jdbcUrl,
+        pgContainer.jdbcUrl,
         pgContainer.username,
         pgContainer.password,
       )

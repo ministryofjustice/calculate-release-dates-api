@@ -8,10 +8,10 @@ import org.mockito.Mockito
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.MediaType
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter
 import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers
@@ -36,7 +36,7 @@ import java.util.UUID
 @WebMvcTest(controllers = [ComparisonController::class])
 class ComparisonControllerTest {
 
-  @MockBean
+  @MockitoBean
   private lateinit var comparisonService: ComparisonService
 
   private lateinit var mvc: MockMvc
@@ -71,7 +71,7 @@ class ComparisonControllerTest {
 
     val result = mvc.perform(
       MockMvcRequestBuilders
-        .post("/comparison/")
+        .post("/comparison")
         .header("Authorization", "Bearer token")
         .contentType(MediaType.APPLICATION_JSON)
         .accept(MediaType.APPLICATION_JSON)
@@ -89,7 +89,7 @@ class ComparisonControllerTest {
     whenever(comparisonService.listComparisons()).thenReturn(comparisonList)
 
     val result = mvc.perform(
-      MockMvcRequestBuilders.get("/comparison/")
+      MockMvcRequestBuilders.get("/comparison")
         .accept(MediaType.APPLICATION_JSON),
     )
       .andDo(MockMvcResultHandlers.print())
@@ -106,7 +106,7 @@ class ComparisonControllerTest {
     whenever(comparisonService.getCountOfPersonsInComparisonByComparisonReference(shortReference)).thenReturn(7)
 
     val result = mvc.perform(
-      MockMvcRequestBuilders.get("/comparison/$shortReference/count/")
+      MockMvcRequestBuilders.get("/comparison/$shortReference/count")
         .accept(MediaType.APPLICATION_JSON),
     )
       .andExpect(MockMvcResultMatchers.status().isOk)
