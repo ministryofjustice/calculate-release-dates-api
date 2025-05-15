@@ -50,14 +50,15 @@ open class IntegrationTestBase internal constructor() {
 
   @Value("\${spring.datasource.url}")
   lateinit var dbConnectionString: String
+
   @Value("\${spring.datasource.username}")
   lateinit var dbUsername: String
+
   @Value("\${spring.datasource.password}")
   lateinit var dbPassword: String
 
   @BeforeEach
   fun clearDown() {
-
     val db = if (pgContainer == null) {
       DriverManager.getConnection(dbConnectionString, dbUsername, dbPassword)
     } else {
