@@ -43,11 +43,10 @@ class AdjustmentValidationService {
     }
   }
 
-  internal fun validateAdjustmentsBeforeCalculation(adjustments: Either<BookingAndSentenceAdjustments, List<AdjustmentDto>>): List<ValidationMessage> =
-    adjustments.fold(
-      this::validateAdjustmentsBeforeCalculation,
-      this::validateAdjustmentsBeforeCalculation,
-    )
+  internal fun validateAdjustmentsBeforeCalculation(adjustments: Either<BookingAndSentenceAdjustments, List<AdjustmentDto>>): List<ValidationMessage> = adjustments.fold(
+    this::validateAdjustmentsBeforeCalculation,
+    this::validateAdjustmentsBeforeCalculation,
+  )
 
   internal fun validateAdjustmentsBeforeCalculation(adjustments: BookingAndSentenceAdjustments): List<ValidationMessage> = mutableListOf<ValidationMessage>().apply {
     addAll(validateAllRemandHasFromAndToDates(adjustments))

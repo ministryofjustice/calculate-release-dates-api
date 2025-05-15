@@ -12,12 +12,8 @@ import java.util.concurrent.Executor
 class AsyncConfiguration {
 
   @Bean(name = ["threadPoolTaskExecutor"])
-  fun threadPoolTaskExecutor(): Executor {
-    return ThreadPoolTaskExecutor()
-  }
+  fun threadPoolTaskExecutor(): Executor = ThreadPoolTaskExecutor()
 
   @Bean
-  fun taskExecutor(delegate: ThreadPoolTaskExecutor): DelegatingSecurityContextAsyncTaskExecutor {
-    return DelegatingSecurityContextAsyncTaskExecutor(delegate)
-  }
+  fun taskExecutor(delegate: ThreadPoolTaskExecutor): DelegatingSecurityContextAsyncTaskExecutor = DelegatingSecurityContextAsyncTaskExecutor(delegate)
 }

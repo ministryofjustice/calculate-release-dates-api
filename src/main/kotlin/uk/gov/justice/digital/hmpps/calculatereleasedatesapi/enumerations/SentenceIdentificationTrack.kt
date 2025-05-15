@@ -34,22 +34,18 @@ enum class SentenceIdentificationTrack(
   fun isMultiplierFixed(): Boolean = multiplier != null
   fun fixedMultiplier(): Double = multiplier!!
 
-  fun calculateErsed(): Boolean {
-    return listOf(
-      SDS_AFTER_CJA_LASPO,
-      SOPC_PED_AT_HALFWAY,
-      SDS_TWO_THIRDS_RELEASE,
-      EDS_AUTOMATIC_RELEASE,
-      EDS_DISCRETIONARY_RELEASE,
-      SOPC_PED_AT_TWO_THIRDS,
-      SDS_STANDARD_RELEASE,
-      SDS_EARLY_RELEASE,
-      SDS_PLUS_RELEASE,
-      SDS_STANDARD_RELEASE_T3_EXCLUSION,
-    ).contains(this)
-  }
+  fun calculateErsed(): Boolean = listOf(
+    SDS_AFTER_CJA_LASPO,
+    SOPC_PED_AT_HALFWAY,
+    SDS_TWO_THIRDS_RELEASE,
+    EDS_AUTOMATIC_RELEASE,
+    EDS_DISCRETIONARY_RELEASE,
+    SOPC_PED_AT_TWO_THIRDS,
+    SDS_STANDARD_RELEASE,
+    SDS_EARLY_RELEASE,
+    SDS_PLUS_RELEASE,
+    SDS_STANDARD_RELEASE_T3_EXCLUSION,
+  ).contains(this)
 
-  fun isEarlyReleaseTrancheOneTwo(): Boolean {
-    return listOf(SDS_STANDARD_RELEASE_T3_EXCLUSION, SDS_EARLY_RELEASE).contains(this)
-  }
+  fun isEarlyReleaseTrancheOneTwo(): Boolean = listOf(SDS_STANDARD_RELEASE_T3_EXCLUSION, SDS_EARLY_RELEASE).contains(this)
 }

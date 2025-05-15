@@ -79,7 +79,5 @@ class WorkingDayControllerTest {
     assertThat(result.response.contentAsString).isEqualTo(mapper.writeValueAsString(workingDay))
   }
 
-  private fun dateFormat(date: LocalDate): String {
-    return date.format(DateTimeFormatter.ISO_DATE)
-  }
+  private fun dateFormat(date: LocalDate): String = date.format(DateTimeFormatter.ISO_DATE)
 }

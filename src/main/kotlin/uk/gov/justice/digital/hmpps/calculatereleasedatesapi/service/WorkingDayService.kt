@@ -12,13 +12,9 @@ import java.time.LocalDate
 class WorkingDayService(
   private val bankHolidayService: BankHolidayService,
 ) {
-  fun nextWorkingDay(date: LocalDate): WorkingDay {
-    return iterateOverNonWorkingDays(date) { it.plusDays(1) }
-  }
+  fun nextWorkingDay(date: LocalDate): WorkingDay = iterateOverNonWorkingDays(date) { it.plusDays(1) }
 
-  fun previousWorkingDay(date: LocalDate): WorkingDay {
-    return iterateOverNonWorkingDays(date) { it.minusDays(1) }
-  }
+  fun previousWorkingDay(date: LocalDate): WorkingDay = iterateOverNonWorkingDays(date) { it.minusDays(1) }
 
   private fun iterateOverNonWorkingDays(date: LocalDate, increment: (LocalDate) -> LocalDate): WorkingDay {
     var adjustedForWeekend = false

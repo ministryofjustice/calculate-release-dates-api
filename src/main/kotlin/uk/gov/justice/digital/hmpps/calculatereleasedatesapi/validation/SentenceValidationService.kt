@@ -49,12 +49,10 @@ class SentenceValidationService(
     val caseSequence: Int,
   )
 
-  private fun validateConsecutiveChains(sentences: List<SentenceAndOffence>): List<ValidationMessage> {
-    return if (featuresToggles.concurrentConsecutiveSentencesEnabled) {
-      validateConsecutiveSentenceUniqueWithDuration(sentences)
-    } else {
-      validateConsecutiveSentenceUnique(sentences)
-    }
+  private fun validateConsecutiveChains(sentences: List<SentenceAndOffence>): List<ValidationMessage> = if (featuresToggles.concurrentConsecutiveSentencesEnabled) {
+    validateConsecutiveSentenceUniqueWithDuration(sentences)
+  } else {
+    validateConsecutiveSentenceUnique(sentences)
   }
 
   private fun validateConsecutiveChainsForBulkCalculation(sentences: List<SentenceAndOffence>): List<ValidationMessage> {
@@ -161,24 +159,20 @@ class SentenceValidationService(
     )
   }
 
-  private fun validateSentence(it: SentenceAndOffence): List<ValidationMessage> {
-    return listOfNotNull(
-      validateWithoutOffenceDate(it),
-      validateOffenceDateAfterSentenceDate(it),
-      validateOffenceRangeDateAfterSentenceDate(it),
-    ) + validateDuration(it) + listOfNotNull(
-      section91ValidationService.validate(it),
-      edsValidationService.validate(it),
-      sopcValidationService.validate(it).firstOrNull(),
-      fineValidationService.validateFineAmount(it),
-    )
-  }
+  private fun validateSentence(it: SentenceAndOffence): List<ValidationMessage> = listOfNotNull(
+    validateWithoutOffenceDate(it),
+    validateOffenceDateAfterSentenceDate(it),
+    validateOffenceRangeDateAfterSentenceDate(it),
+  ) + validateDuration(it) + listOfNotNull(
+    section91ValidationService.validate(it),
+    edsValidationService.validate(it),
+    sopcValidationService.validate(it).firstOrNull(),
+    fineValidationService.validateFineAmount(it),
+  )
 
-  internal fun validateSentenceForManualEntry(it: SentenceAndOffence): List<ValidationMessage> {
-    return listOfNotNull(
-      validateWithoutOffenceDate(it),
-    )
-  }
+  internal fun validateSentenceForManualEntry(it: SentenceAndOffence): List<ValidationMessage> = listOfNotNull(
+    validateWithoutOffenceDate(it),
+  )
 
   private fun validateWithoutOffenceDate(sentencesAndOffence: SentenceAndOffence): ValidationMessage? {
     // It's valid to not have an end date for many offence types, but the start date must always be present in

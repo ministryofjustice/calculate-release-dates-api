@@ -18,33 +18,29 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.pris
 @Service
 class SourceDataMapper(private val objectMapper: ObjectMapper) {
 
-  fun mapSentencesAndOffences(calculationRequest: CalculationRequest): List<SentenceAndOffenceWithReleaseArrangements> {
-    return when (calculationRequest.sentenceAndOffencesVersion) {
-      0 -> {
-        val reader = objectMapper.readerFor(object : TypeReference<List<PrisonApiDataVersions.Version0.SentenceAndOffences>>() {})
-        val sentencesAndOffences: List<PrisonApiDataVersions.Version0.SentenceAndOffences> = reader.readValue(calculationRequest.sentenceAndOffences)
-        sentencesAndOffences.flatMap(PrisonApiDataVersions.Version0.SentenceAndOffences::toLatest)
-      }
-      1 -> {
-        val reader = objectMapper.readerFor(object : TypeReference<List<PrisonApiSentenceAndOffences>>() {})
-        reader.readValue<List<PrisonApiSentenceAndOffences>>(calculationRequest.sentenceAndOffences)
-          .flatMap(PrisonApiSentenceAndOffences::toLatest)
-      }
-      2 -> {
-        val reader = objectMapper.readerFor(object : TypeReference<List<SentenceAndOffencesWithSDSPlus>>() {})
-        reader.readValue<List<SentenceAndOffencesWithSDSPlus>>(calculationRequest.sentenceAndOffences)
-          .flatMap(SentenceAndOffencesWithSDSPlus::toLatest)
-      }
-      else -> {
-        val reader = objectMapper.readerFor(object : TypeReference<List<SentenceAndOffenceWithReleaseArrangements>>() {})
-        reader.readValue(calculationRequest.sentenceAndOffences)
-      }
+  fun mapSentencesAndOffences(calculationRequest: CalculationRequest): List<SentenceAndOffenceWithReleaseArrangements> = when (calculationRequest.sentenceAndOffencesVersion) {
+    0 -> {
+      val reader = objectMapper.readerFor(object : TypeReference<List<PrisonApiDataVersions.Version0.SentenceAndOffences>>() {})
+      val sentencesAndOffences: List<PrisonApiDataVersions.Version0.SentenceAndOffences> = reader.readValue(calculationRequest.sentenceAndOffences)
+      sentencesAndOffences.flatMap(PrisonApiDataVersions.Version0.SentenceAndOffences::toLatest)
+    }
+    1 -> {
+      val reader = objectMapper.readerFor(object : TypeReference<List<PrisonApiSentenceAndOffences>>() {})
+      reader.readValue<List<PrisonApiSentenceAndOffences>>(calculationRequest.sentenceAndOffences)
+        .flatMap(PrisonApiSentenceAndOffences::toLatest)
+    }
+    2 -> {
+      val reader = objectMapper.readerFor(object : TypeReference<List<SentenceAndOffencesWithSDSPlus>>() {})
+      reader.readValue<List<SentenceAndOffencesWithSDSPlus>>(calculationRequest.sentenceAndOffences)
+        .flatMap(SentenceAndOffencesWithSDSPlus::toLatest)
+    }
+    else -> {
+      val reader = objectMapper.readerFor(object : TypeReference<List<SentenceAndOffenceWithReleaseArrangements>>() {})
+      reader.readValue(calculationRequest.sentenceAndOffences)
     }
   }
 
-  fun mapPrisonerDetails(calculationRequest: CalculationRequest): PrisonerDetails {
-    return objectMapper.convertValue(calculationRequest.prisonerDetails, PrisonerDetails::class.java)
-  }
+  fun mapPrisonerDetails(calculationRequest: CalculationRequest): PrisonerDetails = objectMapper.convertValue(calculationRequest.prisonerDetails, PrisonerDetails::class.java)
 
   fun mapBookingAndSentenceAdjustments(calculationRequest: CalculationRequest): BookingAndSentenceAdjustments {
     return when (calculationRequest.adjustmentsVersion) {
@@ -57,23 +53,19 @@ class SourceDataMapper(private val objectMapper: ObjectMapper) {
     }
   }
 
-  fun mapAdjustments(calculationRequest: CalculationRequest): List<AdjustmentDto> {
-    return when (calculationRequest.adjustmentsVersion) {
-      0 -> {
-        val bookingAndSentenceAdjustments = mapBookingAndSentenceAdjustments(calculationRequest)
-        val prisoner = mapPrisonerDetails(calculationRequest)
-        bookingAndSentenceAdjustments.upgrade(prisoner)
-      }
-      else -> {
-        val reader = objectMapper.readerFor(object : TypeReference<List<AdjustmentDto>>() {})
-        reader.readValue(calculationRequest.adjustments)
-      }
+  fun mapAdjustments(calculationRequest: CalculationRequest): List<AdjustmentDto> = when (calculationRequest.adjustmentsVersion) {
+    0 -> {
+      val bookingAndSentenceAdjustments = mapBookingAndSentenceAdjustments(calculationRequest)
+      val prisoner = mapPrisonerDetails(calculationRequest)
+      bookingAndSentenceAdjustments.upgrade(prisoner)
+    }
+    else -> {
+      val reader = objectMapper.readerFor(object : TypeReference<List<AdjustmentDto>>() {})
+      reader.readValue(calculationRequest.adjustments)
     }
   }
 
-  fun mapReturnToCustodyDate(calculationRequest: CalculationRequest): ReturnToCustodyDate {
-    return objectMapper.convertValue(calculationRequest.returnToCustodyDate, ReturnToCustodyDate::class.java)
-  }
+  fun mapReturnToCustodyDate(calculationRequest: CalculationRequest): ReturnToCustodyDate = objectMapper.convertValue(calculationRequest.returnToCustodyDate, ReturnToCustodyDate::class.java)
 
   fun mapOffenderFinePayment(calculationRequest: CalculationRequest): List<OffenderFinePayment> {
     val reader = objectMapper.readerFor(object : TypeReference<List<OffenderFinePayment>>() {})

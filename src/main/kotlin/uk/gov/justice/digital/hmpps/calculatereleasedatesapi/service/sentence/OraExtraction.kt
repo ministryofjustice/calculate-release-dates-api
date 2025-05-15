@@ -15,9 +15,8 @@ fun latestDateType(dateType: ReleaseDateType, sentences: List<CalculableSentence
   .filter { it.isCalculationInitialised() && it.releaseDateTypes.contains(dateType) }
   .maxByOrNull { it.sentenceCalculation.expiryDate }
 
-fun hasOraAndNoneOra(sentences: List<CalculableSentence>) =
-  sentences.any { (it is StandardDeterminateSentence) && it.isOraSentence() } &&
-    sentences.any { (it is StandardDeterminateSentence) && !it.isOraSentence() && it.durationIsLessThan(12, MONTHS) }
+fun hasOraAndNoneOra(sentences: List<CalculableSentence>) = sentences.any { (it is StandardDeterminateSentence) && it.isOraSentence() } &&
+  sentences.any { (it is StandardDeterminateSentence) && !it.isOraSentence() && it.durationIsLessThan(12, MONTHS) }
 
 fun oraAndNoneOraExtraction(
   latestReleaseTypes: List<ReleaseDateType>,

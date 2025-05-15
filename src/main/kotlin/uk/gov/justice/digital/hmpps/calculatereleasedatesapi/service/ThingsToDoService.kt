@@ -39,21 +39,15 @@ class ThingsToDoService(
       hasNewSentenceAdjustments(adjustments)
   }
 
-  private fun hasNewOrUpdatedSentences(sentencesAndOffences: List<AnalysedSentenceAndOffence>): Boolean {
-    return sentencesAndOffences.any {
-      it.sentenceAndOffenceAnalysis in listOf(SentenceAndOffenceAnalysis.NEW, SentenceAndOffenceAnalysis.UPDATED)
-    }
+  private fun hasNewOrUpdatedSentences(sentencesAndOffences: List<AnalysedSentenceAndOffence>): Boolean = sentencesAndOffences.any {
+    it.sentenceAndOffenceAnalysis in listOf(SentenceAndOffenceAnalysis.NEW, SentenceAndOffenceAnalysis.UPDATED)
   }
 
-  private fun hasNewBookingAdjustments(adjustments: AnalysedBookingAndSentenceAdjustments): Boolean {
-    return adjustments.bookingAdjustments.any {
-      it.analysisResult == AnalysedBookingAndSentenceAdjustmentAnalysisResult.NEW
-    }
+  private fun hasNewBookingAdjustments(adjustments: AnalysedBookingAndSentenceAdjustments): Boolean = adjustments.bookingAdjustments.any {
+    it.analysisResult == AnalysedBookingAndSentenceAdjustmentAnalysisResult.NEW
   }
 
-  private fun hasNewSentenceAdjustments(adjustments: AnalysedBookingAndSentenceAdjustments): Boolean {
-    return adjustments.sentenceAdjustments.any {
-      it.analysisResult == AnalysedBookingAndSentenceAdjustmentAnalysisResult.NEW
-    }
+  private fun hasNewSentenceAdjustments(adjustments: AnalysedBookingAndSentenceAdjustments): Boolean = adjustments.sentenceAdjustments.any {
+    it.analysisResult == AnalysedBookingAndSentenceAdjustmentAnalysisResult.NEW
   }
 }

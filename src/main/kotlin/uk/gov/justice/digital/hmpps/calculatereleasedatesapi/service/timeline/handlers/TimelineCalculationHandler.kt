@@ -20,39 +20,31 @@ abstract class TimelineCalculationHandler(
   fun multiplierFnForDate(
     timelineCalculationDate: LocalDate,
     earlyReleaseCommencementDate: LocalDate?,
-  ): (identification: SentenceIdentificationTrack) -> Double {
-    return { identification -> multiplierForIdentification(timelineCalculationDate, earlyReleaseCommencementDate, identification) }
-  }
+  ): (identification: SentenceIdentificationTrack) -> Double = { identification -> multiplierForIdentification(timelineCalculationDate, earlyReleaseCommencementDate, identification) }
 
   /**
    Historic release point is before SDS40 tranching started.
    */
-  fun historicMultiplierFnForDate(): (identification: SentenceIdentificationTrack) -> Double {
-    return { identification -> multiplierForIdentification(trancheConfiguration.trancheOneCommencementDate.minusDays(1), null, identification) }
-  }
+  fun historicMultiplierFnForDate(): (identification: SentenceIdentificationTrack) -> Double = { identification -> multiplierForIdentification(trancheConfiguration.trancheOneCommencementDate.minusDays(1), null, identification) }
 
   private fun multiplierForIdentification(
     timelineCalculationDate: LocalDate,
     earlyReleaseCommencementDate: LocalDate?,
     identification: SentenceIdentificationTrack,
-  ): Double {
-    return if (identification.isMultiplierFixed()) {
-      identification.fixedMultiplier()
-    } else {
-      earlyReleaseMultiplier(timelineCalculationDate, earlyReleaseCommencementDate, identification)
-    }
+  ): Double = if (identification.isMultiplierFixed()) {
+    identification.fixedMultiplier()
+  } else {
+    earlyReleaseMultiplier(timelineCalculationDate, earlyReleaseCommencementDate, identification)
   }
 
-  private fun earlyReleaseMultiplier(timelineCalculationDate: LocalDate, earlyReleaseCommencementDate: LocalDate?, identification: SentenceIdentificationTrack): Double {
-    return if (timelineCalculationDate.isAfterOrEqualTo(trancheConfiguration.trancheThreeCommencementDate) && identification == SentenceIdentificationTrack.SDS_STANDARD_RELEASE_T3_EXCLUSION) {
-      Constants.HALF
-    } else if (timelineCalculationDate.isAfterOrEqualTo(
-        earlyReleaseCommencementDate ?: trancheConfiguration.trancheOneCommencementDate,
-      )
-    ) {
-      releasePointConfiguration.earlyReleasePoint
-    } else {
-      Constants.HALF
-    }
+  private fun earlyReleaseMultiplier(timelineCalculationDate: LocalDate, earlyReleaseCommencementDate: LocalDate?, identification: SentenceIdentificationTrack): Double = if (timelineCalculationDate.isAfterOrEqualTo(trancheConfiguration.trancheThreeCommencementDate) && identification == SentenceIdentificationTrack.SDS_STANDARD_RELEASE_T3_EXCLUSION) {
+    Constants.HALF
+  } else if (timelineCalculationDate.isAfterOrEqualTo(
+      earlyReleaseCommencementDate ?: trancheConfiguration.trancheOneCommencementDate,
+    )
+  ) {
+    releasePointConfiguration.earlyReleasePoint
+  } else {
+    Constants.HALF
   }
 }

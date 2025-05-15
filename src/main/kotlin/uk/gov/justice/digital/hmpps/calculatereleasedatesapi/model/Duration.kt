@@ -28,9 +28,7 @@ data class Duration(
 ) {
 
   // PSI 5.5 Converting a Sentence in to Days
-  fun getLengthInDays(startDate: LocalDate): Int {
-    return (DAYS.between(startDate, getEndDate(startDate)) + 1).toInt()
-  }
+  fun getLengthInDays(startDate: LocalDate): Int = (DAYS.between(startDate, getEndDate(startDate)) + 1).toInt()
 
   // PSI 5.5 Converting a Sentence in to Days
   fun getEndDate(startDate: LocalDate): LocalDate {
@@ -63,18 +61,14 @@ data class Duration(
     return calculatedDate
   }
 
-  override fun toString(): String {
-    return this.durationElements.entries.sortedByDescending { it.key.ordinal }
-      .filter { it.value != 0L }
-      .joinToString(separator = " ") { "${it.value} ${nameForUnit(it.key, it.value)}" }
-  }
+  override fun toString(): String = this.durationElements.entries.sortedByDescending { it.key.ordinal }
+    .filter { it.value != 0L }
+    .joinToString(separator = " ") { "${it.value} ${nameForUnit(it.key, it.value)}" }
 
-  private fun nameForUnit(unit: ChronoUnit, size: Long): String {
-    return if (size == 1L) {
-      unit.toString().lowercase().dropLast(1) // Remove 's'
-    } else {
-      unit.toString().lowercase()
-    }
+  private fun nameForUnit(unit: ChronoUnit, size: Long): String = if (size == 1L) {
+    unit.toString().lowercase().dropLast(1) // Remove 's'
+  } else {
+    unit.toString().lowercase()
   }
 
   fun toPeriodString(sentencedAt: LocalDate): String {
@@ -104,42 +98,30 @@ data class Duration(
   }
 
   @JsonIgnore
-  fun isEmpty(): Boolean {
-    return this.durationElements.entries.none { it.value != 0L }
-  }
+  fun isEmpty(): Boolean = this.durationElements.entries.none { it.value != 0L }
 
   @JsonIgnore
-  fun isNotEmpty(): Boolean {
-    return !this.isEmpty()
-  }
+  fun isNotEmpty(): Boolean = !this.isEmpty()
 
   @JsonIgnore
-  fun hasMonthsOrYears(): Boolean {
-    return this.getMonthAndYearPart().isNotEmpty()
-  }
+  fun hasMonthsOrYears(): Boolean = this.getMonthAndYearPart().isNotEmpty()
 
   @JsonIgnore
-  fun hasDaysOrWeeks(): Boolean {
-    return this.getDayAndWeekPart().isNotEmpty()
-  }
+  fun hasDaysOrWeeks(): Boolean = this.getDayAndWeekPart().isNotEmpty()
 
   @JsonIgnore
-  fun getMonthAndYearPart(): Duration {
-    return Duration(
-      mapOf(
-        MONTHS to this.durationElements.getOrDefault(MONTHS, 0),
-        YEARS to this.durationElements.getOrDefault(YEARS, 0L),
-      ).filter { entry -> entry.value != 0L },
-    )
-  }
+  fun getMonthAndYearPart(): Duration = Duration(
+    mapOf(
+      MONTHS to this.durationElements.getOrDefault(MONTHS, 0),
+      YEARS to this.durationElements.getOrDefault(YEARS, 0L),
+    ).filter { entry -> entry.value != 0L },
+  )
 
   @JsonIgnore
-  fun getDayAndWeekPart(): Duration {
-    return Duration(
-      mapOf(
-        WEEKS to this.durationElements.getOrDefault(WEEKS, 0),
-        DAYS to this.durationElements.getOrDefault(DAYS, 0L),
-      ).filter { entry -> entry.value != 0L },
-    )
-  }
+  fun getDayAndWeekPart(): Duration = Duration(
+    mapOf(
+      WEEKS to this.durationElements.getOrDefault(WEEKS, 0),
+      DAYS to this.durationElements.getOrDefault(DAYS, 0L),
+    ).filter { entry -> entry.value != 0L },
+  )
 }

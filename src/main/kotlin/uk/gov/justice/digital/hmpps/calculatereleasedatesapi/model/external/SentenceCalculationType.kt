@@ -156,13 +156,11 @@ enum class SentenceCalculationType(
 
   companion object {
 
-    fun from(sentenceCalculationType: String): SentenceCalculationType =
-      entries.firstOrNull { it.primaryName == sentenceCalculationType }
-        ?: entries.firstOrNull { it.name == sentenceCalculationType }
-        ?: UNIDENTIFIED
+    fun from(sentenceCalculationType: String): SentenceCalculationType = entries.firstOrNull { it.primaryName == sentenceCalculationType }
+      ?: entries.firstOrNull { it.name == sentenceCalculationType }
+      ?: UNIDENTIFIED
 
-    fun isCalculable(sentenceCalculationType: String): Boolean =
-      !(isIndeterminate(sentenceCalculationType) || isUnimplementedSentence(sentenceCalculationType))
+    fun isCalculable(sentenceCalculationType: String): Boolean = !(isIndeterminate(sentenceCalculationType) || isUnimplementedSentence(sentenceCalculationType))
 
     fun isIndeterminate(sentenceCalculationType: String): Boolean = from(sentenceCalculationType).sentenceType == Indeterminate
 
@@ -175,20 +173,17 @@ enum class SentenceCalculationType(
     fun isSDSPlusEligible(
       sentenceCalculationType: String,
       eligibilityType: SDSPlusEligibilityType = SDSPlusEligibilityType.NONE,
-    ): Boolean {
-      return when (eligibilityType) {
-        SDSPlusEligibilityType.NONE -> from(sentenceCalculationType).sdsPlusEligibilityType != SDSPlusEligibilityType.NONE
-        SDSPlusEligibilityType.SECTION250 -> from(sentenceCalculationType).sdsPlusEligibilityType == SDSPlusEligibilityType.SECTION250
-        SDSPlusEligibilityType.SDS -> from(sentenceCalculationType).sdsPlusEligibilityType == SDSPlusEligibilityType.SDS
-      }
+    ): Boolean = when (eligibilityType) {
+      SDSPlusEligibilityType.NONE -> from(sentenceCalculationType).sdsPlusEligibilityType != SDSPlusEligibilityType.NONE
+      SDSPlusEligibilityType.SECTION250 -> from(sentenceCalculationType).sdsPlusEligibilityType == SDSPlusEligibilityType.SECTION250
+      SDSPlusEligibilityType.SDS -> from(sentenceCalculationType).sdsPlusEligibilityType == SDSPlusEligibilityType.SDS
     }
 
-    fun isToreraEligible(sentenceCalculationType: String, eligibilityType: ToreraEligibilityType): Boolean =
-      try {
-        from(sentenceCalculationType).toreraEligibilityType == eligibilityType
-      } catch (error: IllegalArgumentException) {
-        false
-      }
+    fun isToreraEligible(sentenceCalculationType: String, eligibilityType: ToreraEligibilityType): Boolean = try {
+      from(sentenceCalculationType).toreraEligibilityType == eligibilityType
+    } catch (error: IllegalArgumentException) {
+      false
+    }
   }
 
   enum class SDSPlusEligibilityType {

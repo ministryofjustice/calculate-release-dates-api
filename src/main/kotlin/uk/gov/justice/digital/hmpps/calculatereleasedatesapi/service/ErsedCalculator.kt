@@ -49,9 +49,7 @@ class ErsedCalculator(val ersedConfiguration: ErsedConfiguration) {
     return null
   }
 
-  private fun isNotBeforeCJAAndLASPOIfSDS(sentence: CalculableSentence): Boolean {
-    return !(sentence is StandardDeterminateSentence && sentence.isBeforeCJAAndLASPO())
-  }
+  private fun isNotBeforeCJAAndLASPOIfSDS(sentence: CalculableSentence): Boolean = !(sentence is StandardDeterminateSentence && sentence.isBeforeCJAAndLASPO())
 
   private fun calculateErsedMinOrMax(
     sentence: CalculableSentence,

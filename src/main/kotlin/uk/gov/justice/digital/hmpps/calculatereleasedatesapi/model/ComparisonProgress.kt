@@ -9,24 +9,22 @@ data class ComparisonProgress(
   val expectedCompletionTime: LocalDateTime?,
 ) {
   companion object {
-    fun from(comparisonStatus: ComparisonStatusValue, numberOfPeopleCompared: Long, numberOfPeopleExpected: Long, calculatedAt: LocalDateTime): ComparisonProgress {
-      return if (comparisonStatus == ComparisonStatusValue.PROCESSING) {
-        val completionRatio = (numberOfPeopleCompared.toDouble() / numberOfPeopleExpected.toDouble())
-        val secondsSoFar = ChronoUnit.SECONDS.between(calculatedAt, LocalDateTime.now())
+    fun from(comparisonStatus: ComparisonStatusValue, numberOfPeopleCompared: Long, numberOfPeopleExpected: Long, calculatedAt: LocalDateTime): ComparisonProgress = if (comparisonStatus == ComparisonStatusValue.PROCESSING) {
+      val completionRatio = (numberOfPeopleCompared.toDouble() / numberOfPeopleExpected.toDouble())
+      val secondsSoFar = ChronoUnit.SECONDS.between(calculatedAt, LocalDateTime.now())
 
-        val percentageComplete = completionRatio * 100
-        val expectedCompletionTime = if (percentageComplete == 0.toDouble()) {
-          null
-        } else {
-          calculatedAt.plusSeconds((secondsSoFar / completionRatio).toLong())
-        }
-        ComparisonProgress(percentageComplete, expectedCompletionTime)
+      val percentageComplete = completionRatio * 100
+      val expectedCompletionTime = if (percentageComplete == 0.toDouble()) {
+        null
       } else {
-        ComparisonProgress(
-          percentageComplete = 100.toDouble(),
-          expectedCompletionTime = null,
-        )
+        calculatedAt.plusSeconds((secondsSoFar / completionRatio).toLong())
       }
+      ComparisonProgress(percentageComplete, expectedCompletionTime)
+    } else {
+      ComparisonProgress(
+        percentageComplete = 100.toDouble(),
+        expectedCompletionTime = null,
+      )
     }
   }
 }

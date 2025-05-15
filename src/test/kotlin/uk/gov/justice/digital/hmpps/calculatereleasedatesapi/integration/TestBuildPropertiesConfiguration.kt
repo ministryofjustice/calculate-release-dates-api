@@ -32,7 +32,5 @@ class TestBuildPropertiesConfiguration {
    */
   @Bean
   @ConditionalOnMissingBean(BuildProperties::class)
-  fun buildProperties(): BuildProperties {
-    return TEST_BUILD_PROPERTIES
-  }
+  fun buildProperties(): BuildProperties = TEST_BUILD_PROPERTIES
 }

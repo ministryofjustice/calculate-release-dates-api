@@ -31,7 +31,5 @@ class ReferenceDataController {
       ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
     ],
   )
-  fun getDateTypeDefinitions(): List<DateTypeDefinition> {
-    return ReleaseDateType.entries.map { DateTypeDefinition(it.name, it.description) }
-  }
+  fun getDateTypeDefinitions(): List<DateTypeDefinition> = ReleaseDateType.entries.map { DateTypeDefinition(it.name, it.description) }
 }

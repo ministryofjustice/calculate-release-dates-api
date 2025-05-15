@@ -8,9 +8,7 @@ data class Offence(
   val offenceCode: String? = null,
 ) {
   @JsonIgnore
-  fun isCivilOffence(): Boolean {
-    return offenceCode != null && CIVIL_OFFENCE_CODES.contains(offenceCode)
-  }
+  fun isCivilOffence(): Boolean = offenceCode != null && CIVIL_OFFENCE_CODES.contains(offenceCode)
 
   companion object {
     val CIVIL_OFFENCE_CODES = listOf(

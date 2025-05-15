@@ -25,9 +25,7 @@ class SDSPlusReleaseArrangementLookupService(
     }
   }
 
-  private fun getOffencesByOffenceCode(sentencesAndOffences: List<SentenceAndOffence>): List<String> {
-    return sentencesAndOffences.map { it.offence.offenceCode }.sorted()
-  }
+  private fun getOffencesByOffenceCode(sentencesAndOffences: List<SentenceAndOffence>): List<String> = sentencesAndOffences.map { it.offence.offenceCode }.sorted()
 
   companion object {
     val log: Logger = LoggerFactory.getLogger(this::class.java)

@@ -147,9 +147,7 @@ class ComparisonController(
     @Parameter(required = true, example = "A1B2C3D4", description = "The short reference of the mismatch")
     @PathVariable("mismatchReference")
     mismatchReference: String,
-  ): ComparisonPersonOverview {
-    return comparisonService.getComparisonPersonByShortReference(comparisonReference, mismatchReference)
-  }
+  ): ComparisonPersonOverview = comparisonService.getComparisonPersonByShortReference(comparisonReference, mismatchReference)
 
   @GetMapping("/{comparisonReference}/mismatch/{mismatchReference}/json")
   @PreAuthorize("hasAnyRole('ROLE_RELEASE_DATE_COMPARER')")
@@ -171,9 +169,7 @@ class ComparisonController(
     comparisonReference: String,
     @Parameter(required = true, example = "A1B2C3D4", description = "The short reference of the mismatch")
     @PathVariable("mismatchReference") mismatchReference: String,
-  ): PersonComparisonJson {
-    return comparisonService.getComparisonPersonJson(comparisonReference, mismatchReference)
-  }
+  ): PersonComparisonJson = comparisonService.getComparisonPersonJson(comparisonReference, mismatchReference)
 
   @PostMapping(value = ["{comparisonReference}/mismatch/{mismatchReference}/discrepancy"])
   @PreAuthorize("hasAnyRole('ROLE_RELEASE_DATE_COMPARER')")
@@ -223,9 +219,7 @@ class ComparisonController(
     @Parameter(required = true, example = "A1B2C3D4", description = "The short reference of the mismatch")
     @PathVariable("mismatchReference")
     mismatchReference: String,
-  ): ComparisonDiscrepancySummary {
-    return comparisonService.getComparisonPersonDiscrepancy(comparisonReference, mismatchReference)
-  }
+  ): ComparisonDiscrepancySummary = comparisonService.getComparisonPersonDiscrepancy(comparisonReference, mismatchReference)
 
   companion object {
     val log: Logger = LoggerFactory.getLogger(this::class.java)

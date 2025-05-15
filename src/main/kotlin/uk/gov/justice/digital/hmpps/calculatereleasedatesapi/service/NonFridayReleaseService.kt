@@ -18,9 +18,7 @@ class NonFridayReleaseService(
     private val supportedTypes = setOf(ReleaseDateType.CRD, ReleaseDateType.ARD, ReleaseDateType.PRRD, ReleaseDateType.ETD, ReleaseDateType.MTD, ReleaseDateType.LTD)
   }
 
-  fun getDate(date: ReleaseDate): NonFridayReleaseDay {
-    return if (date.type in supportedTypes) getDate(date.date) else NonFridayReleaseDay(date.date, false)
-  }
+  fun getDate(date: ReleaseDate): NonFridayReleaseDay = if (date.type in supportedTypes) getDate(date.date) else NonFridayReleaseDay(date.date, false)
 
   fun getDate(date: LocalDate): NonFridayReleaseDay {
     if (date.isBefore(LocalDate.now(clock))) {

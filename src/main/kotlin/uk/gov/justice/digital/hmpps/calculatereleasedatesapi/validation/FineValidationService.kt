@@ -33,19 +33,13 @@ class FineValidationService(private val validationUtilities: ValidationUtilities
     return validationMessages
   }
 
-  private fun getFineSentences(sourceData: CalculationSourceData): List<SentenceAndOffence> {
-    return sourceData.sentenceAndOffences.filter {
-      SentenceCalculationType.from(it.sentenceCalculationType).sentenceType == SentenceType.AFine
-    }
+  private fun getFineSentences(sourceData: CalculationSourceData): List<SentenceAndOffence> = sourceData.sentenceAndOffences.filter {
+    SentenceCalculationType.from(it.sentenceCalculationType).sentenceType == SentenceType.AFine
   }
 
-  private fun hasFinePayments(sourceData: CalculationSourceData): Boolean {
-    return sourceData.offenderFinePayments.isNotEmpty()
-  }
+  private fun hasFinePayments(sourceData: CalculationSourceData): Boolean = sourceData.offenderFinePayments.isNotEmpty()
 
-  private fun hasConsecutiveFineSentence(fineSentences: List<SentenceAndOffence>): Boolean {
-    return fineSentences.any { it.consecutiveToSequence != null }
-  }
+  private fun hasConsecutiveFineSentence(fineSentences: List<SentenceAndOffence>): Boolean = fineSentences.any { it.consecutiveToSequence != null }
 
   private fun hasConsecutiveToFineSentence(sourceData: CalculationSourceData, fineSentences: List<SentenceAndOffence>): Boolean {
     val sentenceSequenceMap: Map<Int?, SentenceAndOffence> = sourceData.sentenceAndOffences.associateBy { it.sentenceSequence }
@@ -64,7 +58,5 @@ class FineValidationService(private val validationUtilities: ValidationUtilities
     return null
   }
 
-  private fun isFineSentence(sentencesAndOffence: SentenceAndOffence): Boolean {
-    return SentenceCalculationType.from(sentencesAndOffence.sentenceCalculationType).sentenceType == SentenceType.AFine
-  }
+  private fun isFineSentence(sentencesAndOffence: SentenceAndOffence): Boolean = SentenceCalculationType.from(sentencesAndOffence.sentenceCalculationType).sentenceType == SentenceType.AFine
 }

@@ -9,17 +9,15 @@ import java.time.temporal.ChronoUnit
 @Service
 class SentenceAggregator {
 
-  fun getDaysInGroup(startDate: LocalDate, sentences: List<CalculableSentence>, durationSupplier: (sentence: CalculableSentence) -> Duration): Int {
-    return if (sentences.all { it.isDto() }) {
-      val days = DurationAggregator(sentences.map(durationSupplier)).calculateDays(startDate)
-      val between = ChronoUnit.DAYS.between(startDate, startDate.plusMonths(24)).toInt()
-      if (days >= between) {
-        between
-      } else {
-        days
-      }
+  fun getDaysInGroup(startDate: LocalDate, sentences: List<CalculableSentence>, durationSupplier: (sentence: CalculableSentence) -> Duration): Int = if (sentences.all { it.isDto() }) {
+    val days = DurationAggregator(sentences.map(durationSupplier)).calculateDays(startDate)
+    val between = ChronoUnit.DAYS.between(startDate, startDate.plusMonths(24)).toInt()
+    if (days >= between) {
+      between
     } else {
-      DurationAggregator(sentences.map(durationSupplier)).calculateDays(startDate)
+      days
     }
+  } else {
+    DurationAggregator(sentences.map(durationSupplier)).calculateDays(startDate)
   }
 }

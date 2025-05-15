@@ -639,8 +639,7 @@ class BookingExtractionService(
       latestReleaseDate,
       sentences,
       effectiveSentenceLength,
-    )?.let {
-        oraAndNoneOra: ConcurrentOraAndNonOraDetails ->
+    )?.let { oraAndNoneOra: ConcurrentOraAndNonOraDetails ->
       return oraAndNoneOra
     }
 

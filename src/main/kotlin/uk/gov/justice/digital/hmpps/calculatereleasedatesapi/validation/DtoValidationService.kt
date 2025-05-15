@@ -56,21 +56,15 @@ class DtoValidationService {
     return messages
   }
 
-  private fun hasDtoRecallTerms(sentenceAndOffence: SentenceAndOffence): Boolean {
-    return sentenceAndOffence.terms.any {
-      it.code == SentenceTerms.BREACH_OF_SUPERVISION_REQUIREMENTS_TERM_CODE || it.code == SentenceTerms.BREACH_DUE_TO_IMPRISONABLE_OFFENCE_TERM_CODE
-    }
+  private fun hasDtoRecallTerms(sentenceAndOffence: SentenceAndOffence): Boolean = sentenceAndOffence.terms.any {
+    it.code == SentenceTerms.BREACH_OF_SUPERVISION_REQUIREMENTS_TERM_CODE || it.code == SentenceTerms.BREACH_DUE_TO_IMPRISONABLE_OFFENCE_TERM_CODE
   }
 
-  private fun isConsecutiveToNonDto(sentenceAndOffence: SentenceAndOffence, sourceData: CalculationSourceData): Boolean {
-    return sentenceAndOffence.consecutiveToSequence != null && sequenceNotDto(sentenceAndOffence.consecutiveToSequence!!, sourceData)
-  }
+  private fun isConsecutiveToNonDto(sentenceAndOffence: SentenceAndOffence, sourceData: CalculationSourceData): Boolean = sentenceAndOffence.consecutiveToSequence != null && sequenceNotDto(sentenceAndOffence.consecutiveToSequence!!, sourceData)
 
-  private fun hasNonDtoConsecutiveToIt(sentenceAndOffence: SentenceAndOffence, sourceData: CalculationSourceData): Boolean {
-    return sourceData.sentenceAndOffences.any {
-      it.consecutiveToSequence == sentenceAndOffence.sentenceSequence &&
-        SentenceCalculationType.from(it.sentenceCalculationType).sentenceType != SentenceType.DetentionAndTrainingOrder
-    }
+  private fun hasNonDtoConsecutiveToIt(sentenceAndOffence: SentenceAndOffence, sourceData: CalculationSourceData): Boolean = sourceData.sentenceAndOffences.any {
+    it.consecutiveToSequence == sentenceAndOffence.sentenceSequence &&
+      SentenceCalculationType.from(it.sentenceCalculationType).sentenceType != SentenceType.DetentionAndTrainingOrder
   }
 
   private fun sequenceNotDto(consecutiveSequence: Int, sourceData: CalculationSourceData): Boolean {

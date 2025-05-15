@@ -187,15 +187,13 @@ class UnadjustedReleaseDate(
     return daysToRelease + daysToPed
   }
 
-  private fun determinePedMultiplier(identification: SentenceIdentificationTrack): Double {
-    return when (identification) {
-      SentenceIdentificationTrack.SOPC_PED_AT_TWO_THIRDS,
-      SentenceIdentificationTrack.EDS_DISCRETIONARY_RELEASE,
-      -> 2 / 3.toDouble()
+  private fun determinePedMultiplier(identification: SentenceIdentificationTrack): Double = when (identification) {
+    SentenceIdentificationTrack.SOPC_PED_AT_TWO_THIRDS,
+    SentenceIdentificationTrack.EDS_DISCRETIONARY_RELEASE,
+    -> 2 / 3.toDouble()
 
-      SentenceIdentificationTrack.SOPC_PED_AT_HALFWAY -> 1 / 2.toDouble()
-      else -> throw UnsupportedOperationException("Unknown identification for a PED calculation $identification")
-    }
+    SentenceIdentificationTrack.SOPC_PED_AT_HALFWAY -> 1 / 2.toDouble()
+    else -> throw UnsupportedOperationException("Unknown identification for a PED calculation $identification")
   }
 }
 

@@ -8,11 +8,9 @@ import org.springframework.retry.support.RetryTemplate
 class RetryConfiguration {
 
   @Bean("bulkComparisonRetryTemplate")
-  fun bulkComparisonRetryTemplate(): RetryTemplate {
-    return RetryTemplate
-      .builder()
-      .maxAttempts(3)
-      .fixedBackoff(250)
-      .build()
-  }
+  fun bulkComparisonRetryTemplate(): RetryTemplate = RetryTemplate
+    .builder()
+    .maxAttempts(3)
+    .fixedBackoff(250)
+    .build()
 }

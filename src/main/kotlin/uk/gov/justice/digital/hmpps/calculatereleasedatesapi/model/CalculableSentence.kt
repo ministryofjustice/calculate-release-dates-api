@@ -31,33 +31,25 @@ interface CalculableSentence {
     val log: Logger = LoggerFactory.getLogger(this::class.java)
   }
 
-  fun durationIsLessThan(length: Long, period: ChronoUnit): Boolean {
-    return (
-      getLengthInDays() <
-        ChronoUnit.DAYS.between(this.sentencedAt, this.sentencedAt.plus(length, period))
-      )
-  }
+  fun durationIsLessThan(length: Long, period: ChronoUnit): Boolean = (
+    getLengthInDays() <
+      ChronoUnit.DAYS.between(this.sentencedAt, this.sentencedAt.plus(length, period))
+    )
 
-  fun durationIsLessThanEqualTo(length: Long, period: ChronoUnit): Boolean {
-    return (
-      getLengthInDays() <=
-        ChronoUnit.DAYS.between(this.sentencedAt, this.sentencedAt.plus(length, period))
-      )
-  }
+  fun durationIsLessThanEqualTo(length: Long, period: ChronoUnit): Boolean = (
+    getLengthInDays() <=
+      ChronoUnit.DAYS.between(this.sentencedAt, this.sentencedAt.plus(length, period))
+    )
 
-  fun durationIsGreaterThan(length: Long, period: ChronoUnit): Boolean {
-    return (
-      getLengthInDays() >
-        ChronoUnit.DAYS.between(this.sentencedAt, this.sentencedAt.plus(length, period))
-      )
-  }
+  fun durationIsGreaterThan(length: Long, period: ChronoUnit): Boolean = (
+    getLengthInDays() >
+      ChronoUnit.DAYS.between(this.sentencedAt, this.sentencedAt.plus(length, period))
+    )
 
-  fun durationIsGreaterThanOrEqualTo(length: Long, period: ChronoUnit): Boolean {
-    return (
-      getLengthInDays() >=
-        ChronoUnit.DAYS.between(this.sentencedAt, this.sentencedAt.plus(length, period))
-      )
-  }
+  fun durationIsGreaterThanOrEqualTo(length: Long, period: ChronoUnit): Boolean = (
+    getLengthInDays() >=
+      ChronoUnit.DAYS.between(this.sentencedAt, this.sentencedAt.plus(length, period))
+    )
 
   @JsonIgnore
   fun getHalfSentenceDate(): LocalDate {
@@ -69,113 +61,103 @@ interface CalculableSentence {
   fun getLengthInDays(): Int
 
   @JsonIgnore
-  fun isRecall(): Boolean {
-    return recallType != null
-  }
+  fun isRecall(): Boolean = recallType != null
 
   @JsonIgnore
-  fun isOrExclusivelyBotus(): Boolean {
-    return false
-  }
+  fun isOrExclusivelyBotus(): Boolean = false
 
   @JsonIgnore
   fun hasAnyEdsOrSopcSentence(): Boolean
 
   @JsonIgnore
-  fun getReleaseDateType(): ReleaseDateType {
-    return when {
-      isRecall() -> {
-        ReleaseDateType.PRRD
-      }
-      releaseDateTypes.getReleaseDateTypes().contains(ReleaseDateType.PED) && this.sentenceCalculation.extendedDeterminateParoleEligibilityDate == null -> {
-        ReleaseDateType.PED
-      }
-      sentenceCalculation.isReleaseDateConditional -> {
-        ReleaseDateType.CRD
-      }
-      releaseDateTypes.contains(ReleaseDateType.MTD) -> {
-        ReleaseDateType.MTD
-      }
-      else -> {
-        ReleaseDateType.ARD
-      }
+  fun getReleaseDateType(): ReleaseDateType = when {
+    isRecall() -> {
+      ReleaseDateType.PRRD
+    }
+    releaseDateTypes.getReleaseDateTypes().contains(ReleaseDateType.PED) && this.sentenceCalculation.extendedDeterminateParoleEligibilityDate == null -> {
+      ReleaseDateType.PED
+    }
+    sentenceCalculation.isReleaseDateConditional -> {
+      ReleaseDateType.CRD
+    }
+    releaseDateTypes.contains(ReleaseDateType.MTD) -> {
+      ReleaseDateType.MTD
+    }
+    else -> {
+      ReleaseDateType.ARD
     }
   }
 
   @JsonIgnore
-  fun totalDuration(): Duration {
-    return when (this) {
-      is StandardDeterminateSentence -> {
-        this.duration
-      }
+  fun totalDuration(): Duration = when (this) {
+    is StandardDeterminateSentence -> {
+      this.duration
+    }
 
-      is AFineSentence -> {
-        this.duration
-      }
+    is AFineSentence -> {
+      this.duration
+    }
 
-      is ExtendedDeterminateSentence -> {
-        this.combinedDuration()
-      }
+    is ExtendedDeterminateSentence -> {
+      this.combinedDuration()
+    }
 
-      is SopcSentence -> {
-        this.combinedDuration()
-      }
+    is SopcSentence -> {
+      this.combinedDuration()
+    }
 
-      is SingleTermSentence -> {
-        this.combinedDuration()
-      }
+    is SingleTermSentence -> {
+      this.combinedDuration()
+    }
 
-      is DetentionAndTrainingOrderSentence -> {
-        this.duration
-      }
+    is DetentionAndTrainingOrderSentence -> {
+      this.duration
+    }
 
-      is BotusSentence -> {
-        this.duration
-      }
+    is BotusSentence -> {
+      this.duration
+    }
 
-      else -> {
-        throw UnknownError("Unknown sentence")
-      }
+    else -> {
+      throw UnknownError("Unknown sentence")
     }
   }
 
   @JsonIgnore
-  fun custodialDuration(): Duration {
-    return when (this) {
-      is StandardDeterminateSentence -> {
-        this.duration
-      }
+  fun custodialDuration(): Duration = when (this) {
+    is StandardDeterminateSentence -> {
+      this.duration
+    }
 
-      is AFineSentence -> {
-        this.duration
-      }
+    is AFineSentence -> {
+      this.duration
+    }
 
-      is ExtendedDeterminateSentence -> {
-        this.custodialDuration
-      }
+    is ExtendedDeterminateSentence -> {
+      this.custodialDuration
+    }
 
-      is SopcSentence -> {
-        this.custodialDuration
-      }
+    is SopcSentence -> {
+      this.custodialDuration
+    }
 
-      is SingleTermSentence -> {
-        this.combinedDuration()
-      }
+    is SingleTermSentence -> {
+      this.combinedDuration()
+    }
 
-      is DtoSingleTermSentence -> {
-        this.combinedDuration()
-      }
+    is DtoSingleTermSentence -> {
+      this.combinedDuration()
+    }
 
-      is DetentionAndTrainingOrderSentence -> {
-        this.duration
-      }
-      is BotusSentence -> {
-        this.duration
-      }
+    is DetentionAndTrainingOrderSentence -> {
+      this.duration
+    }
+    is BotusSentence -> {
+      this.duration
+    }
 
-      else -> {
-        throw UnknownError("Unknown sentence")
-      }
+    else -> {
+      throw UnknownError("Unknown sentence")
     }
   }
 
@@ -189,11 +171,9 @@ interface CalculableSentence {
   fun isIdentificationTrackInitialized(): Boolean
 
   @JsonIgnore
-  fun isDto(): Boolean {
-    return this is DetentionAndTrainingOrderSentence ||
-      (this is ConsecutiveSentence && this.orderedSentences.all { it is DetentionAndTrainingOrderSentence }) ||
-      this is DtoSingleTermSentence
-  }
+  fun isDto(): Boolean = this is DetentionAndTrainingOrderSentence ||
+    (this is ConsecutiveSentence && this.orderedSentences.all { it is DetentionAndTrainingOrderSentence }) ||
+    this is DtoSingleTermSentence
 
   @JsonIgnore
   fun sentenceParts(): List<AbstractSentence>

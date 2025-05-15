@@ -10,6 +10,5 @@ class ValidationUtilities {
     if (a.caseSequence < b.caseSequence) return -1
     return a.lineSequence - b.lineSequence
   }
-  internal fun getCaseSeqAndLineSeq(sentencesAndOffence: SentenceAndOffence) =
-    listOf(sentencesAndOffence.caseSequence.toString(), sentencesAndOffence.lineSequence.toString())
+  internal fun getCaseSeqAndLineSeq(sentencesAndOffence: SentenceAndOffence) = listOf(sentencesAndOffence.caseSequence.toString(), sentencesAndOffence.lineSequence.toString())
 }

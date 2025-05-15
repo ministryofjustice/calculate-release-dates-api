@@ -29,28 +29,24 @@ class TrancheAllocationService(
     }
   }
 
-  private fun getSentencesForTrancheRules(sentences: List<CalculableSentence>): List<CalculableSentence> =
-    sentences.flatMap { it.sentenceParts() }.filter { sentence ->
-      isEligibleForTrancheRules(sentence) &&
-        sentence.sentencedAt.isBefore(trancheConfiguration.trancheOneCommencementDate)
-    }
+  private fun getSentencesForTrancheRules(sentences: List<CalculableSentence>): List<CalculableSentence> = sentences.flatMap { it.sentenceParts() }.filter { sentence ->
+    isEligibleForTrancheRules(sentence) &&
+      sentence.sentencedAt.isBefore(trancheConfiguration.trancheOneCommencementDate)
+  }
 
-  private fun isEligibleForTrancheRules(sentence: CalculableSentence): Boolean =
-    (
-      sentence.identificationTrack.isEarlyReleaseTrancheOneTwo() ||
-        sentence.identificationTrack == SentenceIdentificationTrack.SDS_STANDARD_RELEASE
-      ) &&
-      !sentence.isRecall()
+  private fun isEligibleForTrancheRules(sentence: CalculableSentence): Boolean = (
+    sentence.identificationTrack.isEarlyReleaseTrancheOneTwo() ||
+      sentence.identificationTrack == SentenceIdentificationTrack.SDS_STANDARD_RELEASE
+    ) &&
+    !sentence.isRecall()
 
-  private fun isApplicableForTranche1(sentences: List<CalculableSentence>): Boolean =
-    tranche.isBookingApplicableForTrancheCriteria(
-      sentences,
-      TrancheType.TRANCHE_ONE,
-    )
+  private fun isApplicableForTranche1(sentences: List<CalculableSentence>): Boolean = tranche.isBookingApplicableForTrancheCriteria(
+    sentences,
+    TrancheType.TRANCHE_ONE,
+  )
 
-  private fun isApplicableForTranche2(sentences: List<CalculableSentence>): Boolean =
-    tranche.isBookingApplicableForTrancheCriteria(
-      sentences,
-      TrancheType.TRANCHE_TWO,
-    )
+  private fun isApplicableForTranche2(sentences: List<CalculableSentence>): Boolean = tranche.isBookingApplicableForTrancheCriteria(
+    sentences,
+    TrancheType.TRANCHE_TWO,
+  )
 }

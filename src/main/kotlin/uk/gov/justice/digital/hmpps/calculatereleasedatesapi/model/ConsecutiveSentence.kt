@@ -26,51 +26,45 @@ class ConsecutiveSentence(val orderedSentences: List<AbstractSentence>) : Calcul
   @JsonIgnore
   override lateinit var releaseDateTypes: ReleaseDateTypes
 
-  override fun buildString(): String {
-    return "StandardDeterminateConsecutiveSentence\t:\t\n" +
-      "Number of sentences\t:\t${orderedSentences.size}\n" +
-      "Sentence Types\t:\t$releaseDateTypes\n" +
-      "Number of Days in Sentence\t:\t${getLengthInDays()}\n" +
-      sentenceCalculation.buildString(releaseDateTypes.initialTypes)
-  }
+  override fun buildString(): String = "StandardDeterminateConsecutiveSentence\t:\t\n" +
+    "Number of sentences\t:\t${orderedSentences.size}\n" +
+    "Sentence Types\t:\t$releaseDateTypes\n" +
+    "Number of Days in Sentence\t:\t${getLengthInDays()}\n" +
+    sentenceCalculation.buildString(releaseDateTypes.initialTypes)
 
-  override fun isCalculationInitialised(): Boolean {
-    return this::sentenceCalculation.isInitialized
-  }
+  override fun isCalculationInitialised(): Boolean = this::sentenceCalculation.isInitialized
 
-  fun getCombinedDuration(): Duration {
-    return this.orderedSentences.map {
-      when (it) {
-        is StandardDeterminateSentence -> {
-          it.duration
-        }
-
-        is ExtendedDeterminateSentence -> {
-          it.combinedDuration()
-        }
-
-        is SopcSentence -> {
-          it.combinedDuration()
-        }
-
-        is DetentionAndTrainingOrderSentence -> {
-          it.duration
-        }
-
-        is BotusSentence -> {
-          it.duration
-        }
-
-        is AFineSentence -> {
-          it.duration
-        }
-
-        else -> {
-          throw UnsupportedOperationException("Unknown type of sentence in a consecutive sentence ${it.javaClass}")
-        }
+  fun getCombinedDuration(): Duration = this.orderedSentences.map {
+    when (it) {
+      is StandardDeterminateSentence -> {
+        it.duration
       }
-    }.reduce { acc, duration -> acc.appendAll(duration.durationElements) }
-  }
+
+      is ExtendedDeterminateSentence -> {
+        it.combinedDuration()
+      }
+
+      is SopcSentence -> {
+        it.combinedDuration()
+      }
+
+      is DetentionAndTrainingOrderSentence -> {
+        it.duration
+      }
+
+      is BotusSentence -> {
+        it.duration
+      }
+
+      is AFineSentence -> {
+        it.duration
+      }
+
+      else -> {
+        throw UnsupportedOperationException("Unknown type of sentence in a consecutive sentence ${it.javaClass}")
+      }
+    }
+  }.reduce { acc, duration -> acc.appendAll(duration.durationElements) }
 
   override fun getLengthInDays(): Int {
     val duration = getCombinedDuration()
@@ -82,79 +76,42 @@ class ConsecutiveSentence(val orderedSentences: List<AbstractSentence>) : Calcul
     return duration.getLengthInDays(sentencedAt)
   }
 
-  private fun isMoreThanTwoYears(duration: Duration) =
-    duration.getLengthInDays(sentencedAt) > ChronoUnit.DAYS.between(this.sentencedAt, this.sentencedAt.plus(24, ChronoUnit.MONTHS))
+  private fun isMoreThanTwoYears(duration: Duration) = duration.getLengthInDays(sentencedAt) > ChronoUnit.DAYS.between(this.sentencedAt, this.sentencedAt.plus(24, ChronoUnit.MONTHS))
 
-  override fun hasAnyEdsOrSopcSentence(): Boolean {
-    return hasExtendedSentence() || hasSopcSentence()
-  }
+  override fun hasAnyEdsOrSopcSentence(): Boolean = hasExtendedSentence() || hasSopcSentence()
 
-  fun allSentencesAreStandardSentences(): Boolean {
-    return orderedSentences.all { it is StandardDeterminateSentence }
-  }
+  fun allSentencesAreStandardSentences(): Boolean = orderedSentences.all { it is StandardDeterminateSentence }
 
-  fun hasExtendedSentence(): Boolean {
-    return orderedSentences.any { it is ExtendedDeterminateSentence }
-  }
+  fun hasExtendedSentence(): Boolean = orderedSentences.any { it is ExtendedDeterminateSentence }
 
-  fun hasSopcSentence(): Boolean {
-    return orderedSentences.any { it is SopcSentence }
-  }
+  fun hasSopcSentence(): Boolean = orderedSentences.any { it is SopcSentence }
 
-  private fun hasAfterCjaLaspo(): Boolean {
-    return orderedSentences.any { it is StandardDeterminateSentence && it.isAfterCJAAndLASPO() }
-  }
+  private fun hasAfterCjaLaspo(): Boolean = orderedSentences.any { it is StandardDeterminateSentence && it.isAfterCJAAndLASPO() }
 
-  private fun hasBeforeCjaLaspo(): Boolean {
-    return orderedSentences.any { it is StandardDeterminateSentence && it.isBeforeCJAAndLASPO() }
-  }
+  private fun hasBeforeCjaLaspo(): Boolean = orderedSentences.any { it is StandardDeterminateSentence && it.isBeforeCJAAndLASPO() }
 
-  fun hasOraSentences(): Boolean {
-    return orderedSentences.any { it is StandardDeterminateSentence && it.isOraSentence() }
-  }
+  fun hasOraSentences(): Boolean = orderedSentences.any { it is StandardDeterminateSentence && it.isOraSentence() }
 
-  fun hasNonOraSentences(): Boolean {
-    return orderedSentences.any { it is StandardDeterminateSentence && !it.isOraSentence() }
-  }
+  fun hasNonOraSentences(): Boolean = orderedSentences.any { it is StandardDeterminateSentence && !it.isOraSentence() }
 
-  fun isMadeUpOfBeforeAndAfterCjaLaspoSentences(): Boolean {
-    return hasBeforeCjaLaspo() && hasAfterCjaLaspo()
-  }
+  fun isMadeUpOfBeforeAndAfterCjaLaspoSentences(): Boolean = hasBeforeCjaLaspo() && hasAfterCjaLaspo()
 
-  fun isMadeUpOfOnlyBeforeCjaLaspoSentences(): Boolean {
-    return hasBeforeCjaLaspo() && !hasAfterCjaLaspo()
-  }
+  fun isMadeUpOfOnlyBeforeCjaLaspoSentences(): Boolean = hasBeforeCjaLaspo() && !hasAfterCjaLaspo()
 
-  fun isMadeUpOfOnlyAfterCjaLaspoSentences(): Boolean {
-    return hasAfterCjaLaspo() && !hasBeforeCjaLaspo()
-  }
+  fun isMadeUpOfOnlyAfterCjaLaspoSentences(): Boolean = hasAfterCjaLaspo() && !hasBeforeCjaLaspo()
 
-  fun isMadeUpOfOnlySdsPlusSentences(): Boolean {
-    return orderedSentences.all { it is StandardDeterminateSentence && it.isSDSPlus }
-  }
+  fun isMadeUpOfOnlySdsPlusSentences(): Boolean = orderedSentences.all { it is StandardDeterminateSentence && it.isSDSPlus }
 
-  fun hasDiscretionaryRelease(): Boolean {
-    return orderedSentences.any { it is ExtendedDeterminateSentence && !it.automaticRelease }
-  }
+  fun hasDiscretionaryRelease(): Boolean = orderedSentences.any { it is ExtendedDeterminateSentence && !it.automaticRelease }
 
-  override fun calculateErsed(): Boolean {
-    return orderedSentences.any { it.identificationTrack.calculateErsed() }
-  }
+  override fun calculateErsed(): Boolean = orderedSentences.any { it.identificationTrack.calculateErsed() }
 
-  fun isMadeUpOfOnlyDtos(): Boolean {
-    return orderedSentences.all { it is DetentionAndTrainingOrderSentence }
-  }
+  fun isMadeUpOfOnlyDtos(): Boolean = orderedSentences.all { it is DetentionAndTrainingOrderSentence }
 
-  override fun isIdentificationTrackInitialized(): Boolean {
-    return this::identificationTrack.isInitialized
-  }
+  override fun isIdentificationTrackInitialized(): Boolean = this::identificationTrack.isInitialized
 
-  override fun isOrExclusivelyBotus(): Boolean {
-    return orderedSentences.all { it.isOrExclusivelyBotus() }
-  }
+  override fun isOrExclusivelyBotus(): Boolean = orderedSentences.all { it.isOrExclusivelyBotus() }
 
   @JsonIgnore
-  override fun sentenceParts(): List<AbstractSentence> {
-    return orderedSentences
-  }
+  override fun sentenceParts(): List<AbstractSentence> = orderedSentences
 }

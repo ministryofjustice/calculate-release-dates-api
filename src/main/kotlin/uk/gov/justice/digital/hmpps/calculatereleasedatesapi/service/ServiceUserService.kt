@@ -11,13 +11,10 @@ import java.util.stream.Collectors
 @Service
 class ServiceUserService {
 
-  fun getCurrentAuthentication(): AuthAwareAuthenticationToken =
-    SecurityContextHolder.getContext().authentication as AuthAwareAuthenticationToken?
-      ?: throw IllegalStateException("User is not authenticated")
+  fun getCurrentAuthentication(): AuthAwareAuthenticationToken = SecurityContextHolder.getContext().authentication as AuthAwareAuthenticationToken?
+    ?: throw IllegalStateException("User is not authenticated")
 
-  fun getUsername(): String {
-    return getCurrentAuthentication().principal
-  }
+  fun getUsername(): String = getCurrentAuthentication().principal
 
   fun hasRoles(allowedRoles: List<String>): Boolean {
     val roles = allowedRoles.stream()
@@ -26,9 +23,7 @@ class ServiceUserService {
     return hasMatchingRole(roles, getCurrentAuthentication())
   }
 
-  private fun hasMatchingRole(roles: List<String>, authentication: Authentication?): Boolean {
-    return authentication != null &&
-      authentication.authorities.stream()
-        .anyMatch { a: GrantedAuthority? -> roles.contains(RegExUtils.replaceFirst(a!!.authority, "ROLE_", "")) }
-  }
+  private fun hasMatchingRole(roles: List<String>, authentication: Authentication?): Boolean = authentication != null &&
+    authentication.authorities.stream()
+      .anyMatch { a: GrantedAuthority? -> roles.contains(RegExUtils.replaceFirst(a!!.authority, "ROLE_", "")) }
 }

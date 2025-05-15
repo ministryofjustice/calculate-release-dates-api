@@ -142,9 +142,7 @@ class ManualComparisonController(
     @Parameter(required = true, example = "A1B2C3D4", description = "The short reference of the mismatch")
     @PathVariable("mismatchReference")
     mismatchReference: String,
-  ): ComparisonPersonOverview {
-    return manualComparisonService.getComparisonPersonByShortReference(comparisonReference, mismatchReference)
-  }
+  ): ComparisonPersonOverview = manualComparisonService.getComparisonPersonByShortReference(comparisonReference, mismatchReference)
 
   @PostMapping(value = ["{comparisonReference}/mismatch/{mismatchReference}/discrepancy"])
   @PreAuthorize("hasAnyRole('ROLE_RELEASE_DATE_MANUAL_COMPARER')")
@@ -169,9 +167,7 @@ class ManualComparisonController(
     @Valid
     @RequestBody
     discrepancyInput: CreateComparisonDiscrepancyRequest,
-  ): ComparisonDiscrepancySummary {
-    return manualComparisonService.createDiscrepancy(comparisonReference, mismatchReference, discrepancyInput)
-  }
+  ): ComparisonDiscrepancySummary = manualComparisonService.createDiscrepancy(comparisonReference, mismatchReference, discrepancyInput)
 
   @GetMapping(value = ["{comparisonReference}/mismatch/{mismatchReference}/discrepancy"])
   @PreAuthorize("hasAnyRole('ROLE_RELEASE_DATE_MANUAL_COMPARER')")
@@ -193,7 +189,5 @@ class ManualComparisonController(
     @Parameter(required = true, example = "A1B2C3D4", description = "The short reference of the mismatch")
     @PathVariable("mismatchReference")
     mismatchReference: String,
-  ): ComparisonDiscrepancySummary {
-    return manualComparisonService.getComparisonPersonDiscrepancy(comparisonReference, mismatchReference)
-  }
+  ): ComparisonDiscrepancySummary = manualComparisonService.getComparisonPersonDiscrepancy(comparisonReference, mismatchReference)
 }

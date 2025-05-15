@@ -8,10 +8,10 @@ import org.mockito.Mockito
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.MediaType
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter
 import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
@@ -35,7 +35,7 @@ import java.util.UUID
 @WebMvcTest(controllers = [ManualComparisonController::class])
 class ManualComparisonControllerTest {
 
-  @MockBean
+  @MockitoBean
   private lateinit var manualComparisonService: ManualComparisonService
 
   private lateinit var mvc: MockMvc
@@ -70,7 +70,7 @@ class ManualComparisonControllerTest {
 
     val result = mvc.perform(
       MockMvcRequestBuilders
-        .post("/comparison/manual/")
+        .post("/comparison/manual")
         .header("Authorization", "Bearer token")
         .contentType(MediaType.APPLICATION_JSON)
         .accept(MediaType.APPLICATION_JSON)
@@ -88,7 +88,7 @@ class ManualComparisonControllerTest {
     whenever(manualComparisonService.listManual()).thenReturn(listOf(ComparisonSummary("ABCD1234", null, ComparisonType.MANUAL, ComparisonStatusValue.PROCESSING, startTime, "JOEL", 0, 10, 5, 0)))
 
     val result = mvc.perform(
-      MockMvcRequestBuilders.get("/comparison/manual/")
+      MockMvcRequestBuilders.get("/comparison/manual")
         .accept(MediaType.APPLICATION_JSON),
     )
       .andExpect(MockMvcResultMatchers.status().isOk)

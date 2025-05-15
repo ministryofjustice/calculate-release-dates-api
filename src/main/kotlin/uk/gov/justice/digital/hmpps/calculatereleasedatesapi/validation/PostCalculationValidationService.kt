@@ -78,10 +78,9 @@ class PostCalculationValidationService(
    *
    * All releases post Tranche 3 commencement date are SDS-50
    */
-  private fun filterSXOffenceDates(sentence: CalculableSentence): Boolean =
-    sentence.sentenceCalculation.adjustedDeterminateReleaseDate.isAfterOrEqualTo(trancheConfiguration.trancheOneCommencementDate) &&
-      sentence.sentenceCalculation.adjustedDeterminateReleaseDate.isBefore(trancheConfiguration.trancheThreeCommencementDate) &&
-      (!sentence.isRecall() || sentence.sentenceCalculation.topUpSupervisionDate != null)
+  private fun filterSXOffenceDates(sentence: CalculableSentence): Boolean = sentence.sentenceCalculation.adjustedDeterminateReleaseDate.isAfterOrEqualTo(trancheConfiguration.trancheOneCommencementDate) &&
+    sentence.sentenceCalculation.adjustedDeterminateReleaseDate.isBefore(trancheConfiguration.trancheThreeCommencementDate) &&
+    (!sentence.isRecall() || sentence.sentenceCalculation.topUpSupervisionDate != null)
 
   companion object {
     private val log = LoggerFactory.getLogger(this::class.java)

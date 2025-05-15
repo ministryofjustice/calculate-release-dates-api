@@ -26,10 +26,9 @@ class SDSReleaseArrangementLookupService {
     return endOfSentence.isAfterOrEqualTo(endOfFourYears)
   }
 
-  internal fun offenceCodesExcludingSDSPlus(checkedForSDSPlus: List<SDSPlusCheckResult>): List<String> =
-    checkedForSDSPlus
-      .filterNot { it.isSDSPlus }
-      .map { it.sentenceAndOffence.offence.offenceCode }.sorted()
+  internal fun offenceCodesExcludingSDSPlus(checkedForSDSPlus: List<SDSPlusCheckResult>): List<String> = checkedForSDSPlus
+    .filterNot { it.isSDSPlus }
+    .map { it.sentenceAndOffence.offence.offenceCode }.sorted()
   internal fun exclusionForOffence(
     exclusionsForOffences: Map<String, SDSEarlyReleaseExclusionForOffenceCode>,
     sentenceAndOffence: SentenceAndOffence,
@@ -72,11 +71,9 @@ class SDSReleaseArrangementLookupService {
   private fun evaluateViolentExclusion(
     sentenceAndOffence: SentenceAndOffence,
     isT3: Boolean,
-  ): SDSEarlyReleaseExclusionType {
-    return if (fourYearsOrMore(sentenceAndOffence)) {
-      if (isT3) SDSEarlyReleaseExclusionType.VIOLENT_T3 else SDSEarlyReleaseExclusionType.VIOLENT
-    } else {
-      SDSEarlyReleaseExclusionType.NO
-    }
+  ): SDSEarlyReleaseExclusionType = if (fourYearsOrMore(sentenceAndOffence)) {
+    if (isT3) SDSEarlyReleaseExclusionType.VIOLENT_T3 else SDSEarlyReleaseExclusionType.VIOLENT
+  } else {
+    SDSEarlyReleaseExclusionType.NO
   }
 }

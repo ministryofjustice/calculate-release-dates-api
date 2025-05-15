@@ -19,45 +19,30 @@ data class SentenceAdjustments(
   val deductions: Long
     get() = taggedBail + remand + recallTaggedBail + recallRemand
 
-  fun adjustmentsForInitialReleaseWithoutAwarded(): Long {
-    return ualDuringCustody - deductions
-  }
+  fun adjustmentsForInitialReleaseWithoutAwarded(): Long = ualDuringCustody - deductions
 
-  fun adjustmentsForInitialRelease(): Long {
-    return adjustmentsForInitialReleaseWithoutAwarded() + awardedDuringCustody - servedAdaDays
-  }
+  fun adjustmentsForInitialRelease(): Long = adjustmentsForInitialReleaseWithoutAwarded() + awardedDuringCustody - servedAdaDays
 
-  private fun deductionsAndUalForWholeSentencePeriod(): Long {
-    return ualDuringCustody + ualAfterDeterminateRelease - deductions
-  }
+  private fun deductionsAndUalForWholeSentencePeriod(): Long = ualDuringCustody + ualAfterDeterminateRelease - deductions
 
-  fun adjustmentsForLicenseExpiry(): Long {
-    return deductionsAndUalForWholeSentencePeriod()
-  }
+  fun adjustmentsForLicenseExpiry(): Long = deductionsAndUalForWholeSentencePeriod()
 
-  fun adjustmentsForTused(): Long {
-    return deductionsAndUalForWholeSentencePeriod()
-  }
+  fun adjustmentsForTused(): Long = deductionsAndUalForWholeSentencePeriod()
 
-  fun adjustmentsForStandardRecall(): Long {
-    return deductionsAndUalForWholeSentencePeriod()
-  }
+  fun adjustmentsForStandardRecall(): Long = deductionsAndUalForWholeSentencePeriod()
 
-  fun adjustmentsForFixedTermRecall(): Long {
-    return ualAfterFtr + awardedAfterDeterminateRelease
-  }
+  fun adjustmentsForFixedTermRecall(): Long = ualAfterFtr + awardedAfterDeterminateRelease
 
-  fun totalAdjustmentDays(): Long =
-    taggedBail +
-      remand +
-      recallTaggedBail +
-      recallRemand +
-      awardedDuringCustody +
-      ualDuringCustody +
-      awardedAfterDeterminateRelease +
-      ualAfterDeterminateRelease +
-      ualAfterFtr +
-      servedAdaDays +
-      unusedAdaDays +
-      unusedLicenceAdaDays
+  fun totalAdjustmentDays(): Long = taggedBail +
+    remand +
+    recallTaggedBail +
+    recallRemand +
+    awardedDuringCustody +
+    ualDuringCustody +
+    awardedAfterDeterminateRelease +
+    ualAfterDeterminateRelease +
+    ualAfterFtr +
+    servedAdaDays +
+    unusedAdaDays +
+    unusedLicenceAdaDays
 }

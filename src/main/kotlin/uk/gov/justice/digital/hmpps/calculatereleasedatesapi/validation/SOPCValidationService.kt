@@ -46,19 +46,11 @@ class SOPCValidationService(private val validationUtilities: ValidationUtilities
     return messages
   }
 
-  private fun isSopc(sentenceCalculationType: SentenceCalculationType): Boolean {
-    return sentenceCalculationType == SentenceCalculationType.SOPC18 || sentenceCalculationType == SentenceCalculationType.SOPC21
-  }
+  private fun isSopc(sentenceCalculationType: SentenceCalculationType): Boolean = sentenceCalculationType == SentenceCalculationType.SOPC18 || sentenceCalculationType == SentenceCalculationType.SOPC21
 
-  private fun isSec236A(sentenceCalculationType: SentenceCalculationType): Boolean {
-    return sentenceCalculationType == SentenceCalculationType.SEC236A
-  }
+  private fun isSec236A(sentenceCalculationType: SentenceCalculationType): Boolean = sentenceCalculationType == SentenceCalculationType.SEC236A
 
-  private fun isBeforeSec91EndDate(sentencesAndOffence: SentenceAndOffence): Boolean {
-    return sentencesAndOffence.sentenceDate.isBefore(ImportantDates.SEC_91_END_DATE)
-  }
+  private fun isBeforeSec91EndDate(sentencesAndOffence: SentenceAndOffence): Boolean = sentencesAndOffence.sentenceDate.isBefore(ImportantDates.SEC_91_END_DATE)
 
-  private fun isAfterOrEqualToSec91EndDate(sentencesAndOffence: SentenceAndOffence): Boolean {
-    return sentencesAndOffence.sentenceDate.isAfterOrEqualTo(ImportantDates.SEC_91_END_DATE)
-  }
+  private fun isAfterOrEqualToSec91EndDate(sentencesAndOffence: SentenceAndOffence): Boolean = sentencesAndOffence.sentenceDate.isAfterOrEqualTo(ImportantDates.SEC_91_END_DATE)
 }

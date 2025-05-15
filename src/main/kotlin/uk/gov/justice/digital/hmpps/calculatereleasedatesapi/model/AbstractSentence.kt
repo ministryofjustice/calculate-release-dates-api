@@ -47,15 +47,9 @@ abstract class AbstractSentence(
 
   override fun calculateErsed(): Boolean = identificationTrack.calculateErsed()
 
-  override fun isCalculationInitialised(): Boolean {
-    return this::sentenceCalculation.isInitialized
-  }
-  override fun isIdentificationTrackInitialized(): Boolean {
-    return this::identificationTrack.isInitialized
-  }
+  override fun isCalculationInitialised(): Boolean = this::sentenceCalculation.isInitialized
+  override fun isIdentificationTrackInitialized(): Boolean = this::identificationTrack.isInitialized
 
   @JsonIgnore
-  override fun sentenceParts(): List<AbstractSentence> {
-    return listOf(this)
-  }
+  override fun sentenceParts(): List<AbstractSentence> = listOf(this)
 }

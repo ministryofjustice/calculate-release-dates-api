@@ -58,19 +58,17 @@ class CalculationSourceDataService(
     prisonerDetails: PrisonerDetails,
     sentenceAndOffences: List<SentenceAndOffenceWithReleaseArrangements>,
     activeOnly: Boolean,
-  ): Either<BookingAndSentenceAdjustments, List<AdjustmentDto>> {
-    return if (featureToggles.useAdjustmentsApi) {
-      val statuses = if (activeOnly) {
-        listOf(AdjustmentDto.Status.ACTIVE)
-      } else {
-        listOf(AdjustmentDto.Status.ACTIVE, AdjustmentDto.Status.INACTIVE)
-      }
-      val earliestSentenceDate = sentenceAndOffences.minOfOrNull { it.sentenceDate }
-      adjustmentsApiClient.getAdjustmentsByPerson(prisonerDetails.offenderNo, earliestSentenceDate, statuses)
-        .right()
+  ): Either<BookingAndSentenceAdjustments, List<AdjustmentDto>> = if (featureToggles.useAdjustmentsApi) {
+    val statuses = if (activeOnly) {
+      listOf(AdjustmentDto.Status.ACTIVE)
     } else {
-      prisonService.getBookingAndSentenceAdjustments(prisonerDetails.bookingId, activeOnly).left()
+      listOf(AdjustmentDto.Status.ACTIVE, AdjustmentDto.Status.INACTIVE)
     }
+    val earliestSentenceDate = sentenceAndOffences.minOfOrNull { it.sentenceDate }
+    adjustmentsApiClient.getAdjustmentsByPerson(prisonerDetails.offenderNo, earliestSentenceDate, statuses)
+      .right()
+  } else {
+    prisonService.getBookingAndSentenceAdjustments(prisonerDetails.bookingId, activeOnly).left()
   }
 
   companion object {
@@ -89,16 +87,12 @@ class InactiveDataOptions private constructor(
   private val overrideToIncludeInactiveData: Boolean,
 ) {
 
-  fun activeOnly(featureToggle: Boolean): Boolean {
-    return !includeInactive(featureToggle)
-  }
+  fun activeOnly(featureToggle: Boolean): Boolean = !includeInactive(featureToggle)
 
-  private fun includeInactive(featureToggle: Boolean): Boolean {
-    return if (overrideToIncludeInactiveData) {
-      true
-    } else {
-      featureToggle
-    }
+  private fun includeInactive(featureToggle: Boolean): Boolean = if (overrideToIncludeInactiveData) {
+    true
+  } else {
+    featureToggle
   }
 
   override fun equals(other: Any?): Boolean {
@@ -110,9 +104,7 @@ class InactiveDataOptions private constructor(
     return overrideToIncludeInactiveData == other.overrideToIncludeInactiveData
   }
 
-  override fun hashCode(): Int {
-    return overrideToIncludeInactiveData.hashCode()
-  }
+  override fun hashCode(): Int = overrideToIncludeInactiveData.hashCode()
 
   companion object {
     fun default(): InactiveDataOptions = InactiveDataOptions(false)

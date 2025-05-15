@@ -22,11 +22,7 @@ enum class SDSEarlyReleaseExclusionType {
 }
 
 class SDSEarlyReleaseExclusionTypeDeserializer : StdDeserializer<SDSEarlyReleaseExclusionType>(SDSEarlyReleaseExclusionType::class.java) {
-  override fun deserialize(jsonParser: JsonParser, ctxt: DeserializationContext): SDSEarlyReleaseExclusionType {
-    return SDSEarlyReleaseExclusionType.valueOf(jsonParser.valueAsString)
-  }
+  override fun deserialize(jsonParser: JsonParser, ctxt: DeserializationContext): SDSEarlyReleaseExclusionType = SDSEarlyReleaseExclusionType.valueOf(jsonParser.valueAsString)
 
-  override fun getNullValue(ctxt: DeserializationContext): SDSEarlyReleaseExclusionType {
-    return SDSEarlyReleaseExclusionType.NO
-  }
+  override fun getNullValue(ctxt: DeserializationContext): SDSEarlyReleaseExclusionType = SDSEarlyReleaseExclusionType.NO
 }

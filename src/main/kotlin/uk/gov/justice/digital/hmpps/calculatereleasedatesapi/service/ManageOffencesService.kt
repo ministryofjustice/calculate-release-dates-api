@@ -9,15 +9,9 @@ class ManageOffencesService(
   private val manageOffencesApiClient: ManageOffencesApiClient,
 ) {
 
-  fun getPcscMarkersForOffenceCodes(offenceCodes: List<String>): List<OffencePcscMarkers> {
-    return manageOffencesApiClient.getPCSCMarkersForOffences(offenceCodes)
-  }
+  fun getPcscMarkersForOffenceCodes(offenceCodes: List<String>): List<OffencePcscMarkers> = manageOffencesApiClient.getPCSCMarkersForOffences(offenceCodes)
 
-  fun getSdsExclusionsForOffenceCodes(offenceCodes: List<String>): List<SDSEarlyReleaseExclusionForOffenceCode> {
-    return manageOffencesApiClient.getSdsExclusionsForOffenceCodes(offenceCodes)
-  }
+  fun getSdsExclusionsForOffenceCodes(offenceCodes: List<String>): List<SDSEarlyReleaseExclusionForOffenceCode> = manageOffencesApiClient.getSdsExclusionsForOffenceCodes(offenceCodes)
 
-  fun getToreraOffenceCodes(): List<String> {
-    return manageOffencesApiClient.getToreraOffenceCodes()
-  }
+  fun getToreraOffenceCodes(): List<String> = manageOffencesApiClient.getToreraOffenceCodes()
 }

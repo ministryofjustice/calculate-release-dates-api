@@ -9,25 +9,21 @@ data class OverallSentenceLength(
   val days: Long = 0,
 ) {
 
-  fun toDuration(): Duration {
-    return Duration(
-      mapOf(
-        ChronoUnit.YEARS to years,
-        ChronoUnit.MONTHS to months,
-        ChronoUnit.WEEKS to weeks,
-        ChronoUnit.DAYS to days,
-      ),
-    )
-  }
+  fun toDuration(): Duration = Duration(
+    mapOf(
+      ChronoUnit.YEARS to years,
+      ChronoUnit.MONTHS to months,
+      ChronoUnit.WEEKS to weeks,
+      ChronoUnit.DAYS to days,
+    ),
+  )
 
   companion object {
-    fun fromDuration(duration: Duration): OverallSentenceLength {
-      return OverallSentenceLength(
-        duration.durationElements[ChronoUnit.YEARS] ?: 0,
-        duration.durationElements[ChronoUnit.MONTHS] ?: 0,
-        duration.durationElements[ChronoUnit.WEEKS] ?: 0,
-        duration.durationElements[ChronoUnit.DAYS] ?: 0,
-      )
-    }
+    fun fromDuration(duration: Duration): OverallSentenceLength = OverallSentenceLength(
+      duration.durationElements[ChronoUnit.YEARS] ?: 0,
+      duration.durationElements[ChronoUnit.MONTHS] ?: 0,
+      duration.durationElements[ChronoUnit.WEEKS] ?: 0,
+      duration.durationElements[ChronoUnit.DAYS] ?: 0,
+    )
   }
 }

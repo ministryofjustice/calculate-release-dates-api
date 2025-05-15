@@ -37,44 +37,36 @@ class SDSPlusCheckResult(
     isSDSPlus = isSDSPlusEligibleSentenceTypeLengthAndOffence && isSDSPlusOffenceInPeriod
   }
 
-  private fun eligibleSentenceTypeLengthAndOffence(): Boolean {
-    return when (eligibilityType) {
-      SentenceCalculationType.SDSPlusEligibilityType.SDS -> {
-        when {
-          (sevenYearsOrMore() && (offenceMarkers?.pcscMarkers?.inListA == true || offenceMarkers?.pcscMarkers?.inListD == true || listDExtended)) -> true
-          (fourToUnderSeven() && offenceMarkers?.pcscMarkers?.inListB == true) -> true
-          else -> false
-        }
+  private fun eligibleSentenceTypeLengthAndOffence(): Boolean = when (eligibilityType) {
+    SentenceCalculationType.SDSPlusEligibilityType.SDS -> {
+      when {
+        (sevenYearsOrMore() && (offenceMarkers?.pcscMarkers?.inListA == true || offenceMarkers?.pcscMarkers?.inListD == true || listDExtended)) -> true
+        (fourToUnderSeven() && offenceMarkers?.pcscMarkers?.inListB == true) -> true
+        else -> false
       }
-      SentenceCalculationType.SDSPlusEligibilityType.SECTION250 -> {
-        sevenYearsOrMore() && offenceMarkers?.pcscMarkers?.inListC == true
-      }
-      else -> false
     }
+    SentenceCalculationType.SDSPlusEligibilityType.SECTION250 -> {
+      sevenYearsOrMore() && offenceMarkers?.pcscMarkers?.inListC == true
+    }
+    else -> false
   }
 
-  private fun offenceWithinDateRangeForLists(): Boolean {
-    return when (eligibilityType) {
-      SentenceCalculationType.SDSPlusEligibilityType.SDS -> evaluateSdsEligibility()
-      SentenceCalculationType.SDSPlusEligibilityType.SECTION250 -> sentencedAfterPcsc()
-      SentenceCalculationType.SDSPlusEligibilityType.NONE -> false
-    }
+  private fun offenceWithinDateRangeForLists(): Boolean = when (eligibilityType) {
+    SentenceCalculationType.SDSPlusEligibilityType.SDS -> evaluateSdsEligibility()
+    SentenceCalculationType.SDSPlusEligibilityType.SECTION250 -> sentencedAfterPcsc()
+    SentenceCalculationType.SDSPlusEligibilityType.NONE -> false
   }
 
-  private fun evaluateSdsEligibility(): Boolean {
-    return when {
-      fourToUnderSeven() -> sentencedAfterPcsc()
-      sevenYearsOrMore() -> evaluateEligibilityForSevenYearsOrMore()
-      else -> false
-    }
+  private fun evaluateSdsEligibility(): Boolean = when {
+    fourToUnderSeven() -> sentencedAfterPcsc()
+    sevenYearsOrMore() -> evaluateEligibilityForSevenYearsOrMore()
+    else -> false
   }
 
-  private fun evaluateEligibilityForSevenYearsOrMore(): Boolean {
-    return if (listDExtended) {
-      sentencedAfterPcsc()
-    } else {
-      sentencedAfterPcsc() || offenceMarkers?.pcscMarkers?.inListA == true && sentencedWithinOriginalSdsPlusWindow()
-    }
+  private fun evaluateEligibilityForSevenYearsOrMore(): Boolean = if (listDExtended) {
+    sentencedAfterPcsc()
+  } else {
+    sentencedAfterPcsc() || offenceMarkers?.pcscMarkers?.inListA == true && sentencedWithinOriginalSdsPlusWindow()
   }
 
   private fun getSentenceEligibilityType(sentenceCalculationType: String): SentenceCalculationType.SDSPlusEligibilityType {
@@ -89,14 +81,10 @@ class SDSPlusCheckResult(
     return SentenceCalculationType.SDSPlusEligibilityType.NONE
   }
 
-  private fun sentencedWithinOriginalSdsPlusWindow(): Boolean {
-    return sentenceAndOffence.sentenceDate.isAfterOrEqualTo(ImportantDates.SDS_PLUS_COMMENCEMENT_DATE) &&
-      !sentencedAfterPcsc()
-  }
+  private fun sentencedWithinOriginalSdsPlusWindow(): Boolean = sentenceAndOffence.sentenceDate.isAfterOrEqualTo(ImportantDates.SDS_PLUS_COMMENCEMENT_DATE) &&
+    !sentencedAfterPcsc()
 
-  private fun sentencedAfterPcsc(): Boolean {
-    return sentenceAndOffence.sentenceDate.isAfterOrEqualTo(ImportantDates.PCSC_COMMENCEMENT_DATE)
-  }
+  private fun sentencedAfterPcsc(): Boolean = sentenceAndOffence.sentenceDate.isAfterOrEqualTo(ImportantDates.PCSC_COMMENCEMENT_DATE)
 
   private fun endOfSentence(): LocalDate {
     val term = sentenceAndOffence.terms[0]

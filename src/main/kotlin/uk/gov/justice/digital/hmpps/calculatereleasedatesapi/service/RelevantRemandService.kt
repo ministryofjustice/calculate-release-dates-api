@@ -68,65 +68,57 @@ class RelevantRemandService(
     )
   }
 
-  private fun filterSentencesAndAdjustmentsForRelevantRemandCalc(sourceData: CalculationSourceData, request: RelevantRemandCalculationRequest): CalculationSourceData {
-    return sourceData.copy(
-      sentenceAndOffences = sourceData.sentenceAndOffences.filter { it.sentenceDate.isBeforeOrEqualTo(request.calculateAt) },
-      bookingAndSentenceAdjustments = sourceData.bookingAndSentenceAdjustments.fold(
-        { filterAdjustmentsFromPrisonApi(it, sourceData, request) },
-        { filterAdjustmentsFromAdjustmentsApi(it, sourceData, request) },
-      ),
-    )
-  }
+  private fun filterSentencesAndAdjustmentsForRelevantRemandCalc(sourceData: CalculationSourceData, request: RelevantRemandCalculationRequest): CalculationSourceData = sourceData.copy(
+    sentenceAndOffences = sourceData.sentenceAndOffences.filter { it.sentenceDate.isBeforeOrEqualTo(request.calculateAt) },
+    bookingAndSentenceAdjustments = sourceData.bookingAndSentenceAdjustments.fold(
+      { filterAdjustmentsFromPrisonApi(it, sourceData, request) },
+      { filterAdjustmentsFromAdjustmentsApi(it, sourceData, request) },
+    ),
+  )
 
   private fun filterAdjustmentsFromPrisonApi(
     bookingAndSentenceAdjustments: BookingAndSentenceAdjustments,
     sourceData: CalculationSourceData,
     request: RelevantRemandCalculationRequest,
-  ): Either<BookingAndSentenceAdjustments, List<AdjustmentDto>> {
-    return bookingAndSentenceAdjustments.copy(
-      sentenceAdjustments = bookingAndSentenceAdjustments.sentenceAdjustments.filter { !listOf(SentenceAdjustmentType.REMAND, SentenceAdjustmentType.RECALL_SENTENCE_REMAND, SentenceAdjustmentType.UNUSED_REMAND).contains(it.type) } +
-        request.relevantRemands.map {
-          val sentence = findSentence(sourceData.sentenceAndOffences, it.sentenceSequence)
-          val adjustmentType: SentenceAdjustmentType =
-            if (sentence != null && SentenceCalculationType.isCalculable(sentence.sentenceCalculationType)) {
-              val sentenceType = SentenceCalculationType.from(sentence.sentenceCalculationType)
-              if (sentenceType.recallType != null) {
-                SentenceAdjustmentType.RECALL_SENTENCE_REMAND
-              } else {
-                SentenceAdjustmentType.REMAND
-              }
+  ): Either<BookingAndSentenceAdjustments, List<AdjustmentDto>> = bookingAndSentenceAdjustments.copy(
+    sentenceAdjustments = bookingAndSentenceAdjustments.sentenceAdjustments.filter { !listOf(SentenceAdjustmentType.REMAND, SentenceAdjustmentType.RECALL_SENTENCE_REMAND, SentenceAdjustmentType.UNUSED_REMAND).contains(it.type) } +
+      request.relevantRemands.map {
+        val sentence = findSentence(sourceData.sentenceAndOffences, it.sentenceSequence)
+        val adjustmentType: SentenceAdjustmentType =
+          if (sentence != null && SentenceCalculationType.isCalculable(sentence.sentenceCalculationType)) {
+            val sentenceType = SentenceCalculationType.from(sentence.sentenceCalculationType)
+            if (sentenceType.recallType != null) {
+              SentenceAdjustmentType.RECALL_SENTENCE_REMAND
             } else {
               SentenceAdjustmentType.REMAND
             }
-          SentenceAdjustment(it.sentenceSequence, true, it.from, it.to, it.days, adjustmentType)
-        },
-    ).left()
-  }
+          } else {
+            SentenceAdjustmentType.REMAND
+          }
+        SentenceAdjustment(it.sentenceSequence, true, it.from, it.to, it.days, adjustmentType)
+      },
+  ).left()
 
   private fun filterAdjustmentsFromAdjustmentsApi(
     adjustments: List<AdjustmentDto>,
     sourceData: CalculationSourceData,
     request: RelevantRemandCalculationRequest,
-  ): Either<BookingAndSentenceAdjustments, List<AdjustmentDto>> {
-    return (
-      adjustments.filter { !listOf(AdjustmentDto.AdjustmentType.REMAND, AdjustmentDto.AdjustmentType.UNUSED_DEDUCTIONS).contains(it.adjustmentType) } +
-        request.relevantRemands.map {
-          AdjustmentDto(
-            bookingId = request.sentence.bookingId,
-            fromDate = it.from,
-            toDate = it.to,
-            effectiveDays = it.days,
-            adjustmentType = AdjustmentDto.AdjustmentType.REMAND,
-            person = sourceData.prisonerDetails.offenderNo,
-            sentenceSequence = it.sentenceSequence,
-          )
-        }
-      ).right()
-  }
+  ): Either<BookingAndSentenceAdjustments, List<AdjustmentDto>> = (
+    adjustments.filter { !listOf(AdjustmentDto.AdjustmentType.REMAND, AdjustmentDto.AdjustmentType.UNUSED_DEDUCTIONS).contains(it.adjustmentType) } +
+      request.relevantRemands.map {
+        AdjustmentDto(
+          bookingId = request.sentence.bookingId,
+          fromDate = it.from,
+          toDate = it.to,
+          effectiveDays = it.days,
+          adjustmentType = AdjustmentDto.AdjustmentType.REMAND,
+          person = sourceData.prisonerDetails.offenderNo,
+          sentenceSequence = it.sentenceSequence,
+        )
+      }
+    ).right()
 
-  private fun findSentence(sentenceAndOffences: List<SentenceAndOffence>, sentenceSequence: Int): SentenceAndOffence? {
-    return sentenceAndOffences.find { it.sentenceSequence == sentenceSequence }
-  }
+  private fun findSentence(sentenceAndOffences: List<SentenceAndOffence>, sentenceSequence: Int): SentenceAndOffence? = sentenceAndOffences.find { it.sentenceSequence == sentenceSequence }
   companion object {
     val log: Logger = LoggerFactory.getLogger(this::class.java)
   }

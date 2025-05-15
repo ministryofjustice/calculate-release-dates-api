@@ -18,20 +18,17 @@ data class Person(
 
   val alerts: List<Alert>,
 ) {
-  fun isActiveSexOffender(): Boolean {
-    return activeAlerts().any {
-      it.alertType == "S" &&
-        (
-          it.alertCode == "SOR" || // Sex offence register
-            it.alertCode == "SR" // On sex offender register
-          )
-    }
+  fun isActiveSexOffender(): Boolean = activeAlerts().any {
+    it.alertType == "S" &&
+      (
+        it.alertCode == "SOR" ||
+          // Sex offence register
+          it.alertCode == "SR" // On sex offender register
+        )
   }
 
-  private fun activeAlerts(): List<Alert> {
-    return alerts.filter {
-      it.dateCreated.isBeforeOrEqualTo(LocalDate.now()) &&
-        (it.dateExpires == null || it.dateExpires.isAfter(LocalDate.now()))
-    }
+  private fun activeAlerts(): List<Alert> = alerts.filter {
+    it.dateCreated.isBeforeOrEqualTo(LocalDate.now()) &&
+      (it.dateExpires == null || it.dateExpires.isAfter(LocalDate.now()))
   }
 }

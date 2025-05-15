@@ -47,8 +47,7 @@ class ClientTrackingInterceptor : HandlerInterceptor {
   }
 
   @Throws(ParseException::class)
-  private fun getClaimsFromJWT(token: String): JWTClaimsSet =
-    SignedJWT.parse(token.replace("Bearer ", "")).jwtClaimsSet
+  private fun getClaimsFromJWT(token: String): JWTClaimsSet = SignedJWT.parse(token.replace("Bearer ", "")).jwtClaimsSet
 
   companion object {
     private val log = LoggerFactory.getLogger(ClientTrackingInterceptor::class.java)

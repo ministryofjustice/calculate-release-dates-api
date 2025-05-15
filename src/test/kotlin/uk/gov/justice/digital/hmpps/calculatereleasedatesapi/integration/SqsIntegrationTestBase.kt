@@ -8,10 +8,10 @@ import org.junit.jupiter.api.BeforeEach
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
-import org.springframework.boot.test.mock.mockito.SpyBean
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.DynamicPropertyRegistry
 import org.springframework.test.context.DynamicPropertySource
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean
 import software.amazon.awssdk.services.sqs.model.PurgeQueueRequest
 import software.amazon.awssdk.services.sqs.model.ReceiveMessageRequest
 import software.amazon.awssdk.services.sqs.model.ReceiveMessageResponse
@@ -29,7 +29,7 @@ class SqsIntegrationTestBase : IntegrationTestBase() {
   @Autowired
   private lateinit var hmppsQueueService: HmppsQueueService
 
-  @SpyBean
+  @MockitoSpyBean
   protected lateinit var hmppsSqsPropertiesSpy: HmppsSqsProperties
 
   protected val bulkComparisonQueue by lazy { hmppsQueueService.findByQueueId("bulkcomparison") as HmppsQueue }
@@ -55,11 +55,7 @@ class SqsIntegrationTestBase : IntegrationTestBase() {
 
   protected fun jsonString(any: Any) = objectMapper.writeValueAsString(any) as String
 
-  fun getNumberOfMessagesCurrentlyOnQueue(): Int? {
-    return bulkComparisonQueue.sqsClient.countMessagesOnQueue(bulkComparisonQueue.queueUrl).get()
-  }
+  fun getNumberOfMessagesCurrentlyOnQueue(): Int? = bulkComparisonQueue.sqsClient.countMessagesOnQueue(bulkComparisonQueue.queueUrl).get()
 
-  fun getLatestMessage(): ReceiveMessageResponse? {
-    return bulkComparisonQueue.sqsClient.receiveMessage(ReceiveMessageRequest.builder().maxNumberOfMessages(2).queueUrl(bulkComparisonQueue.queueUrl).build()).get()
-  }
+  fun getLatestMessage(): ReceiveMessageResponse? = bulkComparisonQueue.sqsClient.receiveMessage(ReceiveMessageRequest.builder().maxNumberOfMessages(2).queueUrl(bulkComparisonQueue.queueUrl).build()).get()
 }

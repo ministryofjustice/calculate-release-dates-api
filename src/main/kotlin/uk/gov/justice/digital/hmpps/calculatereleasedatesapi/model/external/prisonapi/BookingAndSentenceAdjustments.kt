@@ -12,92 +12,84 @@ data class BookingAndSentenceAdjustments(
   val sentenceAdjustments: List<SentenceAdjustment>,
 ) {
 
-  fun upgrade(prisoner: PrisonerDetails): List<AdjustmentDto> {
-    return bookingAdjustments.map {
-      AdjustmentDto(
-        bookingId = prisoner.bookingId,
-        adjustmentType = AdjustmentDto.AdjustmentType.entries.find { type ->
-          try {
-            toBookingAdjustmentType(type) == it.type
-          } catch (e: Exception) {
-            false
-          }
-        }!!,
-        person = prisoner.offenderNo,
-        fromDate = it.fromDate,
-        toDate = it.toDate,
-        days = it.numberOfDays,
-        effectiveDays = it.numberOfDays,
-        status = if (it.active) AdjustmentDto.Status.ACTIVE else AdjustmentDto.Status.INACTIVE,
-      )
-    } + sentenceAdjustments.map {
-      AdjustmentDto(
-        bookingId = prisoner.bookingId,
-        adjustmentType = AdjustmentDto.AdjustmentType.entries.find { type ->
-          try {
-            toSentenceAdjustmentType(type) == it.type
-          } catch (e: Exception) {
-            false
-          }
-        }!!,
-        person = prisoner.offenderNo,
-        fromDate = it.fromDate,
-        toDate = it.toDate,
-        days = it.numberOfDays,
-        effectiveDays = it.numberOfDays,
-        status = if (it.active) AdjustmentDto.Status.ACTIVE else AdjustmentDto.Status.INACTIVE,
-        sentenceSequence = it.sentenceSequence,
-      )
-    }
+  fun upgrade(prisoner: PrisonerDetails): List<AdjustmentDto> = bookingAdjustments.map {
+    AdjustmentDto(
+      bookingId = prisoner.bookingId,
+      adjustmentType = AdjustmentDto.AdjustmentType.entries.find { type ->
+        try {
+          toBookingAdjustmentType(type) == it.type
+        } catch (e: Exception) {
+          false
+        }
+      }!!,
+      person = prisoner.offenderNo,
+      fromDate = it.fromDate,
+      toDate = it.toDate,
+      days = it.numberOfDays,
+      effectiveDays = it.numberOfDays,
+      status = if (it.active) AdjustmentDto.Status.ACTIVE else AdjustmentDto.Status.INACTIVE,
+    )
+  } + sentenceAdjustments.map {
+    AdjustmentDto(
+      bookingId = prisoner.bookingId,
+      adjustmentType = AdjustmentDto.AdjustmentType.entries.find { type ->
+        try {
+          toSentenceAdjustmentType(type) == it.type
+        } catch (e: Exception) {
+          false
+        }
+      }!!,
+      person = prisoner.offenderNo,
+      fromDate = it.fromDate,
+      toDate = it.toDate,
+      days = it.numberOfDays,
+      effectiveDays = it.numberOfDays,
+      status = if (it.active) AdjustmentDto.Status.ACTIVE else AdjustmentDto.Status.INACTIVE,
+      sentenceSequence = it.sentenceSequence,
+    )
   }
 
   companion object {
-    private fun toSentenceAdjustmentType(type: AdjustmentDto.AdjustmentType): SentenceAdjustmentType {
-      return when (type) {
-        AdjustmentDto.AdjustmentType.REMAND -> SentenceAdjustmentType.REMAND
-        AdjustmentDto.AdjustmentType.TAGGED_BAIL -> SentenceAdjustmentType.TAGGED_BAIL
-        AdjustmentDto.AdjustmentType.UNUSED_DEDUCTIONS -> SentenceAdjustmentType.UNUSED_REMAND
-        AdjustmentDto.AdjustmentType.CUSTODY_ABROAD -> SentenceAdjustmentType.TIME_SPENT_IN_CUSTODY_ABROAD
-        AdjustmentDto.AdjustmentType.APPEAL_APPLICANT -> SentenceAdjustmentType.TIME_SPENT_AS_AN_APPEAL_APPLICANT
-        else -> throw IllegalArgumentException("Unknown adjustment type $type")
-      }
+    private fun toSentenceAdjustmentType(type: AdjustmentDto.AdjustmentType): SentenceAdjustmentType = when (type) {
+      AdjustmentDto.AdjustmentType.REMAND -> SentenceAdjustmentType.REMAND
+      AdjustmentDto.AdjustmentType.TAGGED_BAIL -> SentenceAdjustmentType.TAGGED_BAIL
+      AdjustmentDto.AdjustmentType.UNUSED_DEDUCTIONS -> SentenceAdjustmentType.UNUSED_REMAND
+      AdjustmentDto.AdjustmentType.CUSTODY_ABROAD -> SentenceAdjustmentType.TIME_SPENT_IN_CUSTODY_ABROAD
+      AdjustmentDto.AdjustmentType.APPEAL_APPLICANT -> SentenceAdjustmentType.TIME_SPENT_AS_AN_APPEAL_APPLICANT
+      else -> throw IllegalArgumentException("Unknown adjustment type $type")
     }
 
-    private fun toBookingAdjustmentType(type: AdjustmentDto.AdjustmentType): BookingAdjustmentType {
-      return when (type) {
-        AdjustmentDto.AdjustmentType.UNLAWFULLY_AT_LARGE -> BookingAdjustmentType.UNLAWFULLY_AT_LARGE
-        AdjustmentDto.AdjustmentType.LAWFULLY_AT_LARGE -> BookingAdjustmentType.LAWFULLY_AT_LARGE
-        AdjustmentDto.AdjustmentType.ADDITIONAL_DAYS_AWARDED -> BookingAdjustmentType.ADDITIONAL_DAYS_AWARDED
-        AdjustmentDto.AdjustmentType.RESTORATION_OF_ADDITIONAL_DAYS_AWARDED -> BookingAdjustmentType.RESTORED_ADDITIONAL_DAYS_AWARDED
-        AdjustmentDto.AdjustmentType.SPECIAL_REMISSION -> BookingAdjustmentType.SPECIAL_REMISSION
-        else -> throw IllegalArgumentException("Unknown adjustment type $type")
-      }
+    private fun toBookingAdjustmentType(type: AdjustmentDto.AdjustmentType): BookingAdjustmentType = when (type) {
+      AdjustmentDto.AdjustmentType.UNLAWFULLY_AT_LARGE -> BookingAdjustmentType.UNLAWFULLY_AT_LARGE
+      AdjustmentDto.AdjustmentType.LAWFULLY_AT_LARGE -> BookingAdjustmentType.LAWFULLY_AT_LARGE
+      AdjustmentDto.AdjustmentType.ADDITIONAL_DAYS_AWARDED -> BookingAdjustmentType.ADDITIONAL_DAYS_AWARDED
+      AdjustmentDto.AdjustmentType.RESTORATION_OF_ADDITIONAL_DAYS_AWARDED -> BookingAdjustmentType.RESTORED_ADDITIONAL_DAYS_AWARDED
+      AdjustmentDto.AdjustmentType.SPECIAL_REMISSION -> BookingAdjustmentType.SPECIAL_REMISSION
+      else -> throw IllegalArgumentException("Unknown adjustment type $type")
     }
 
-    fun downgrade(adjustments: List<AdjustmentDto>): BookingAndSentenceAdjustments {
-      return BookingAndSentenceAdjustments(
-        sentenceAdjustments = adjustments.filter { SENTENCE_ADJUSTMENT_TYPES.contains(it.adjustmentType) }.map {
-          SentenceAdjustment(
-            sentenceSequence = it.sentenceSequence!!,
-            toDate = it.toDate,
-            fromDate = it.fromDate,
-            active = it.status == AdjustmentDto.Status.ACTIVE,
-            numberOfDays = it.effectiveDays!!,
-            type = toSentenceAdjustmentType(it.adjustmentType),
-          )
-        },
-        bookingAdjustments = adjustments.filterNot { SENTENCE_ADJUSTMENT_TYPES.contains(it.adjustmentType) }.map {
-          BookingAdjustment(
-            toDate = it.toDate,
-            fromDate = it.fromDate!!,
-            active = it.status == AdjustmentDto.Status.ACTIVE,
-            numberOfDays = it.effectiveDays!!,
-            type = toBookingAdjustmentType(it.adjustmentType),
+    fun downgrade(adjustments: List<AdjustmentDto>): BookingAndSentenceAdjustments = BookingAndSentenceAdjustments(
+      sentenceAdjustments = adjustments.filter { SENTENCE_ADJUSTMENT_TYPES.contains(it.adjustmentType) }.map {
+        SentenceAdjustment(
+          sentenceSequence = it.sentenceSequence!!,
+          toDate = it.toDate,
+          fromDate = it.fromDate,
+          active = it.status == AdjustmentDto.Status.ACTIVE,
+          numberOfDays = it.effectiveDays!!,
+          type = toSentenceAdjustmentType(it.adjustmentType),
+        )
+      },
+      bookingAdjustments = adjustments.filterNot { SENTENCE_ADJUSTMENT_TYPES.contains(it.adjustmentType) }.map {
+        BookingAdjustment(
+          toDate = it.toDate,
+          fromDate = it.fromDate!!,
+          active = it.status == AdjustmentDto.Status.ACTIVE,
+          numberOfDays = it.effectiveDays!!,
+          type = toBookingAdjustmentType(it.adjustmentType),
 
-          )
-        },
-      )
-    }
+        )
+      },
+    )
 
     private val SENTENCE_ADJUSTMENT_TYPES = listOf(AdjustmentDto.AdjustmentType.REMAND, AdjustmentDto.AdjustmentType.TAGGED_BAIL, AdjustmentDto.AdjustmentType.UNUSED_DEDUCTIONS, AdjustmentDto.AdjustmentType.APPEAL_APPLICANT, AdjustmentDto.AdjustmentType.CUSTODY_ABROAD)
   }

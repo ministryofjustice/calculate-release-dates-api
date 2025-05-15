@@ -38,9 +38,7 @@ class SourceDataProxyController(
       ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
     ],
   )
-  fun getSentencesAndOffences(@PathVariable bookingId: Long): List<AnalysedSentenceAndOffence> {
-    return sentenceAndOffenceService.getSentencesAndOffences(bookingId)
-  }
+  fun getSentencesAndOffences(@PathVariable bookingId: Long): List<AnalysedSentenceAndOffence> = sentenceAndOffenceService.getSentencesAndOffences(bookingId)
 
   @GetMapping(value = ["/booking-and-sentence-adjustments/{bookingId}"])
   @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")
@@ -56,9 +54,7 @@ class SourceDataProxyController(
       ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
     ],
   )
-  fun getBookingAndSentenceAdjustments(@PathVariable bookingId: Long): AnalysedBookingAndSentenceAdjustments {
-    return adjustmentsService.getAnalysedBookingAndSentenceAdjustments(bookingId)
-  }
+  fun getBookingAndSentenceAdjustments(@PathVariable bookingId: Long): AnalysedBookingAndSentenceAdjustments = adjustmentsService.getAnalysedBookingAndSentenceAdjustments(bookingId)
 
   @GetMapping(value = ["/adjustments/{prisonerId}"])
   @PreAuthorize("hasAnyRole('VIEW_PRISONER_DATA', 'RELEASE_DATES_CALCULATOR')")
@@ -74,7 +70,5 @@ class SourceDataProxyController(
       ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
     ],
   )
-  fun getAdjustments(@PathVariable prisonerId: String): List<AnalysedAdjustment> {
-    return adjustmentsService.getAnalysedAdjustments(prisonerId)
-  }
+  fun getAdjustments(@PathVariable prisonerId: String): List<AnalysedAdjustment> = adjustmentsService.getAnalysedAdjustments(prisonerId)
 }

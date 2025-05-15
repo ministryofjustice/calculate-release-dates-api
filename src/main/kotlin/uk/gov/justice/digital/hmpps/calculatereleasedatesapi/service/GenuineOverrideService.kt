@@ -58,11 +58,9 @@ class GenuineOverrideService(
     }.orElseThrow { CouldNotSaveGenuineOverrideException("Could not find new calculation to store against Genuine Override") }
   }
 
-  fun getGenuineOverride(calculationReference: String): GenuineOverrideResponse {
-    return genuineOverrideRepository.findBySavedCalculationCalculationReference(UUID.fromString(calculationReference)).map {
-      GenuineOverrideResponse(it.reason, it.originalCalculationRequest.calculationReference.toString(), it.savedCalculation?.calculationReference.toString(), it.isOverridden)
-    }.orElseThrow { GenuineOverrideNotFoundException("Could not find genuine override for reference: $calculationReference") }
-  }
+  fun getGenuineOverride(calculationReference: String): GenuineOverrideResponse = genuineOverrideRepository.findBySavedCalculationCalculationReference(UUID.fromString(calculationReference)).map {
+    GenuineOverrideResponse(it.reason, it.originalCalculationRequest.calculationReference.toString(), it.savedCalculation?.calculationReference.toString(), it.isOverridden)
+  }.orElseThrow { GenuineOverrideNotFoundException("Could not find genuine override for reference: $calculationReference") }
   private companion object {
     private const val GENUINE_OVERRIDE = true
   }

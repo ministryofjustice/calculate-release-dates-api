@@ -11,17 +11,11 @@ import java.util.Date
 
 object CalculationParamsTestConfigHelper {
 
-  fun releasePointMultiplierConfigurationForTests(params: String = "calculation-params"): ReleasePointMultipliersConfiguration {
-    return Binder(propertySource(params)).bind("release-point-multipliers", ReleasePointMultipliersConfiguration::class.java).get()
-  }
+  fun releasePointMultiplierConfigurationForTests(params: String = "calculation-params"): ReleasePointMultipliersConfiguration = Binder(propertySource(params)).bind("release-point-multipliers", ReleasePointMultipliersConfiguration::class.java).get()
 
-  fun hdcedConfigurationForTests(params: String = "calculation-params"): HdcedConfiguration {
-    return Binder(propertySource(params)).bind("hdced", HdcedConfiguration::class.java).get()
-  }
+  fun hdcedConfigurationForTests(params: String = "calculation-params"): HdcedConfiguration = Binder(propertySource(params)).bind("hdced", HdcedConfiguration::class.java).get()
 
-  fun ersedConfigurationForTests(params: String = "calculation-params"): ErsedConfiguration {
-    return Binder(propertySource(params)).bind("ersed", ErsedConfiguration::class.java).get()
-  }
+  fun ersedConfigurationForTests(params: String = "calculation-params"): ErsedConfiguration = Binder(propertySource(params)).bind("ersed", ErsedConfiguration::class.java).get()
 
   fun sdsEarlyReleaseTrancheOneDate(params: String = "calculation-params"): LocalDate {
     val configurationProperty = propertySource(params).getConfigurationProperty(ConfigurationPropertyName.of("sds-early-release-tranches.tranche-one-date"))

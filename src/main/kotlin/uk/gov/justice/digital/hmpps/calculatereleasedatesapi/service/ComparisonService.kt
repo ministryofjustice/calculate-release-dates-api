@@ -159,10 +159,11 @@ class ComparisonService(
     }
   }
 
-  private fun userIsAllowedToViewThisComparison(comparison: Comparison) =
-    comparison.prison != null && (
+  private fun userIsAllowedToViewThisComparison(comparison: Comparison) = comparison.prison != null &&
+    (
       prisonService.getCurrentUserPrisonsList()
-        .contains(comparison.prison) || comparison.prison == "all"
+        .contains(comparison.prison) ||
+        comparison.prison == "all"
       )
 
   fun createDiscrepancy(
@@ -176,7 +177,8 @@ class ComparisonService(
     val comparisonPerson =
       comparisonPersonRepository.findByComparisonIdAndShortReference(comparison.id, comparisonPersonReference)
         ?: throw EntityNotFoundException("Could not find comparison person with reference: $comparisonPersonReference")
-    if (comparisonPerson.establishment != null && prisonService.getCurrentUserPrisonsList()
+    if (comparisonPerson.establishment != null &&
+      prisonService.getCurrentUserPrisonsList()
         .contains(comparisonPerson.establishment)
     ) {
       return comparisonDiscrepancyService.createDiscrepancy(comparison, comparisonPerson, discrepancyRequest)

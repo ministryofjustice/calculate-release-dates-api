@@ -25,9 +25,7 @@ class ReleaseDateTypes(
     return initialTypes
   }
 
-  operator fun contains(releaseDateType: ReleaseDateType): Boolean {
-    return getReleaseDateTypes().contains(releaseDateType)
-  }
+  operator fun contains(releaseDateType: ReleaseDateType): Boolean = getReleaseDateTypes().contains(releaseDateType)
 
   companion object {
     private const val INT_EIGHTEEN = 18
