@@ -13,9 +13,9 @@ import org.mockito.kotlin.doThrow
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.mock.mockito.SpyBean
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.MediaType
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonPerson
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonStatusValue
@@ -41,7 +41,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.Comparis
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.PrisonService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationService
-import java.lang.IllegalArgumentException
 
 class ComparisonEventIntTest(private val mockManageOffencesClient: MockManageOffencesClient, private val mockPrisonService: MockPrisonService) : SqsIntegrationTestBase() {
 
@@ -51,10 +50,10 @@ class ComparisonEventIntTest(private val mockManageOffencesClient: MockManageOff
   @Autowired
   lateinit var comparisonRepository: ComparisonRepository
 
-  @SpyBean
+  @MockitoSpyBean
   lateinit var validationService: ValidationService
 
-  @SpyBean
+  @MockitoSpyBean
   lateinit var prisonService: PrisonService
 
   @BeforeEach

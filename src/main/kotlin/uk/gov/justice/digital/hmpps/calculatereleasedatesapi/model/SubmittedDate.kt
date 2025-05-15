@@ -7,7 +7,5 @@ data class SubmittedDate(
   val month: Int,
   val year: Int,
 ) {
-  fun toLocalDate(): LocalDate {
-    return LocalDate.of(year, month, day)
-  }
+  fun toLocalDate(): LocalDate = LocalDate.of(year, month, day)
 }

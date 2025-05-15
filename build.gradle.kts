@@ -5,10 +5,10 @@ import org.jlleitschuh.gradle.ktlint.tasks.KtLintFormatTask
 import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "6.0.8"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "8.1.0"
   id("org.springdoc.openapi-gradle-plugin") version "1.9.0"
-  kotlin("plugin.spring") version "2.0.21"
-  kotlin("plugin.jpa") version "2.0.21"
+  kotlin("plugin.spring") version "2.1.20"
+  kotlin("plugin.jpa") version "2.1.20"
   id("jacoco")
   id("org.openapi.generator") version "7.11.0"
 }
@@ -19,6 +19,8 @@ configurations {
     exclude(group = "logback-classic")
   }
 }
+
+ext["hibernate.version"] = "6.5.3.Final"
 
 dependencies {
 
@@ -46,7 +48,7 @@ dependencies {
   // Database dependencies
   runtimeOnly("org.flywaydb:flyway-core")
   runtimeOnly("org.flywaydb:flyway-database-postgresql")
-  runtimeOnly("org.postgresql:postgresql:42.7.4")
+  runtimeOnly("org.postgresql:postgresql")
 
   // JWT
   implementation("io.jsonwebtoken:jjwt-api:0.12.6")
@@ -54,9 +56,9 @@ dependencies {
   runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.12.6")
 
   implementation("io.arrow-kt:arrow-core:2.0.0")
-  implementation("io.hypersistence:hypersistence-utils-hibernate-60:3.9.0")
+  implementation("io.hypersistence:hypersistence-utils-hibernate-63:3.9.9")
   // OpenAPI
-  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0")
+  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.8")
 
   implementation("com.amazonaws:amazon-sqs-java-messaging-lib:2.1.3")
   implementation("io.awspring.cloud:spring-cloud-aws-messaging:2.4.4")
@@ -72,12 +74,12 @@ dependencies {
   testImplementation("org.springframework.security:spring-security-test")
   testImplementation("org.awaitility:awaitility-kotlin:4.2.2")
   testImplementation("net.javacrumbs.json-unit:json-unit-assertj:4.0.0")
-  testImplementation("io.swagger.parser.v3:swagger-parser-v2-converter:2.1.23")
+  testImplementation("io.swagger.parser.v3:swagger-parser-v2-converter:2.1.26")
   testImplementation("org.mockito:mockito-inline:5.2.0")
   testImplementation("org.junit.jupiter:junit-jupiter:5.11.3")
-  testImplementation("com.h2database:h2")
+  testImplementation("org.testcontainers:postgresql:1.20.6")
+  testImplementation("org.testcontainers:localstack:1.20.6")
   testImplementation("io.github.hakky54:logcaptor:2.9.3")
-  testImplementation("org.testcontainers:localstack:1.20.3")
 
   if (project.hasProperty("docs")) {
     implementation("com.h2database:h2")
@@ -100,7 +102,7 @@ tasks.jacocoTestCoverageVerification {
 }
 
 kotlin {
-  jvmToolchain(21)
+  compilerOptions.jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21
 }
 
 dependencyCheck {

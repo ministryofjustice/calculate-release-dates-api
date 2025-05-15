@@ -68,9 +68,10 @@ class TimelineSentenceCalculationHandler(
   private fun newlySentencedIsConsecutiveToAnyExistingSentences(timelineTrackingData: TimelineTrackingData, newlySentenced: List<AbstractSentence>): Boolean {
     with(timelineTrackingData) {
       return newlySentenced.any { new ->
-        new.consecutiveSentenceUUIDs.isNotEmpty() && currentSentenceGroup.any { existing ->
-          existing.sentenceParts().map { it.identifier }.contains(new.consecutiveSentenceUUIDs[0])
-        }
+        new.consecutiveSentenceUUIDs.isNotEmpty() &&
+          currentSentenceGroup.any { existing ->
+            existing.sentenceParts().map { it.identifier }.contains(new.consecutiveSentenceUUIDs[0])
+          }
       }
     }
   }

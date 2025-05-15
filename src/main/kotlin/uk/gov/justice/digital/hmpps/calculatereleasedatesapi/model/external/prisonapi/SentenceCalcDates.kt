@@ -82,47 +82,44 @@ data class SentenceCalcDates(
     ReleaseDateType.TUSED to (topupSupervisionExpiryOverrideDate ?: topupSupervisionExpiryCalculatedDate),
     ReleaseDateType.DPRRD to (dtoPostRecallReleaseDateOverride ?: dtoPostRecallReleaseDate),
   )
-  fun toCalculatedMap(): Map<ReleaseDateType, LocalDate?> =
-    mapOf(
-      ReleaseDateType.SED to sentenceExpiryCalculatedDate,
-      ReleaseDateType.ARD to automaticReleaseDate,
-      ReleaseDateType.CRD to conditionalReleaseDate,
-      ReleaseDateType.NPD to nonParoleDate,
-      ReleaseDateType.PRRD to postRecallReleaseDate,
-      ReleaseDateType.LED to licenceExpiryCalculatedDate,
-      ReleaseDateType.HDCED to homeDetentionCurfewEligibilityCalculatedDate,
-      ReleaseDateType.PED to paroleEligibilityCalculatedDate,
-      ReleaseDateType.ETD to etdCalculatedDate,
-      ReleaseDateType.MTD to mtdCalculatedDate,
-      ReleaseDateType.LTD to ltdCalculatedDate,
-      ReleaseDateType.TUSED to topupSupervisionExpiryCalculatedDate,
-      ReleaseDateType.DPRRD to dtoPostRecallReleaseDate,
-      ReleaseDateType.ESED to effectiveSentenceEndDate,
-    )
+  fun toCalculatedMap(): Map<ReleaseDateType, LocalDate?> = mapOf(
+    ReleaseDateType.SED to sentenceExpiryCalculatedDate,
+    ReleaseDateType.ARD to automaticReleaseDate,
+    ReleaseDateType.CRD to conditionalReleaseDate,
+    ReleaseDateType.NPD to nonParoleDate,
+    ReleaseDateType.PRRD to postRecallReleaseDate,
+    ReleaseDateType.LED to licenceExpiryCalculatedDate,
+    ReleaseDateType.HDCED to homeDetentionCurfewEligibilityCalculatedDate,
+    ReleaseDateType.PED to paroleEligibilityCalculatedDate,
+    ReleaseDateType.ETD to etdCalculatedDate,
+    ReleaseDateType.MTD to mtdCalculatedDate,
+    ReleaseDateType.LTD to ltdCalculatedDate,
+    ReleaseDateType.TUSED to topupSupervisionExpiryCalculatedDate,
+    ReleaseDateType.DPRRD to dtoPostRecallReleaseDate,
+    ReleaseDateType.ESED to effectiveSentenceEndDate,
+  )
 
-  fun toOverrideMap(): Map<ReleaseDateType, LocalDate?> =
-    mapOf(
-      ReleaseDateType.HDCED to homeDetentionCurfewEligibilityOverrideDate,
-      ReleaseDateType.ETD to etdOverrideDate,
-      ReleaseDateType.MTD to mtdOverrideDate,
-      ReleaseDateType.LTD to ltdOverrideDate,
-      ReleaseDateType.DPRRD to dtoPostRecallReleaseDateOverride,
-      ReleaseDateType.ARD to automaticReleaseOverrideDate,
-      ReleaseDateType.CRD to conditionalReleaseOverrideDate,
-      ReleaseDateType.PED to paroleEligibilityOverrideDate,
-      ReleaseDateType.NPD to nonParoleOverrideDate,
-      ReleaseDateType.LED to licenceExpiryOverrideDate,
-      ReleaseDateType.PRRD to postRecallReleaseOverrideDate,
-      ReleaseDateType.SED to sentenceExpiryOverrideDate,
-      ReleaseDateType.TUSED to topupSupervisionExpiryOverrideDate,
-      ReleaseDateType.HDCAD to homeDetentionCurfewActualDate,
-      ReleaseDateType.APD to actualParoleDate,
-      ReleaseDateType.ROTL to releaseOnTemporaryLicenceDate,
-      ReleaseDateType.ERSED to earlyRemovalSchemeEligibilityDate,
-      ReleaseDateType.TERSED to tariffEarlyRemovalSchemeEligibilityDate,
-      ReleaseDateType.Tariff to tariffDate,
-    )
+  fun toOverrideMap(): Map<ReleaseDateType, LocalDate?> = mapOf(
+    ReleaseDateType.HDCED to homeDetentionCurfewEligibilityOverrideDate,
+    ReleaseDateType.ETD to etdOverrideDate,
+    ReleaseDateType.MTD to mtdOverrideDate,
+    ReleaseDateType.LTD to ltdOverrideDate,
+    ReleaseDateType.DPRRD to dtoPostRecallReleaseDateOverride,
+    ReleaseDateType.ARD to automaticReleaseOverrideDate,
+    ReleaseDateType.CRD to conditionalReleaseOverrideDate,
+    ReleaseDateType.PED to paroleEligibilityOverrideDate,
+    ReleaseDateType.NPD to nonParoleOverrideDate,
+    ReleaseDateType.LED to licenceExpiryOverrideDate,
+    ReleaseDateType.PRRD to postRecallReleaseOverrideDate,
+    ReleaseDateType.SED to sentenceExpiryOverrideDate,
+    ReleaseDateType.TUSED to topupSupervisionExpiryOverrideDate,
+    ReleaseDateType.HDCAD to homeDetentionCurfewActualDate,
+    ReleaseDateType.APD to actualParoleDate,
+    ReleaseDateType.ROTL to releaseOnTemporaryLicenceDate,
+    ReleaseDateType.ERSED to earlyRemovalSchemeEligibilityDate,
+    ReleaseDateType.TERSED to tariffEarlyRemovalSchemeEligibilityDate,
+    ReleaseDateType.Tariff to tariffDate,
+  )
 
-  fun isSameComparableCalculatedDates(other: SentenceCalcDates): Boolean =
-    toComparableCalculatedMap() == other.toComparableCalculatedMap()
+  fun isSameComparableCalculatedDates(other: SentenceCalcDates): Boolean = toComparableCalculatedMap() == other.toComparableCalculatedMap()
 }

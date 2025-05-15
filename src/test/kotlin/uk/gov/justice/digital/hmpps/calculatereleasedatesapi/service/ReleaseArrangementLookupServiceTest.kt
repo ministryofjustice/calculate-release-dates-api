@@ -448,12 +448,10 @@ class ReleaseArrangementLookupServiceTest {
     verify(mockManageOffencesService).getSdsExclusionsForOffenceCodes(sds40Offences)
   }
 
-  private fun createSentence(offenceCode: String, sequence: Int): NormalisedSentenceAndOffence {
-    return nonSDSPlusSentenceAndOffenceFourYears.copy(
-      offence = nonSDSPlusSentenceAndOffenceFourYears.offence.copy(offenceCode = offenceCode),
-      sentenceSequence = sequence,
-    )
-  }
+  private fun createSentence(offenceCode: String, sequence: Int): NormalisedSentenceAndOffence = nonSDSPlusSentenceAndOffenceFourYears.copy(
+    offence = nonSDSPlusSentenceAndOffenceFourYears.offence.copy(offenceCode = offenceCode),
+    sentenceSequence = sequence,
+  )
 
   private fun assertSentence(sentence: SentenceAndOffenceWithReleaseArrangements, isSDSPlus: Boolean, exclusionType: SDSEarlyReleaseExclusionType, sequence: Int) {
     assertThat(sentence.isSDSPlus).isEqualTo(isSDSPlus)
@@ -786,17 +784,15 @@ class ReleaseArrangementLookupServiceTest {
 
     private const val OFFENCE_CODE_SOME_PCSC_MARKERS = "A123456"
 
-    fun pcscListNoMarkers(offenceCode: String): OffencePcscMarkers {
-      return OffencePcscMarkers(
-        offenceCode = offenceCode,
-        pcscMarkers = PcscMarkers(
-          inListA = false,
-          inListB = false,
-          inListC = false,
-          inListD = false,
-        ),
-      )
-    }
+    fun pcscListNoMarkers(offenceCode: String): OffencePcscMarkers = OffencePcscMarkers(
+      offenceCode = offenceCode,
+      pcscMarkers = PcscMarkers(
+        inListA = false,
+        inListB = false,
+        inListC = false,
+        inListD = false,
+      ),
+    )
 
     private val pcscListAMarkers = OffencePcscMarkers(
       offenceCode = OFFENCE_CODE_SOME_PCSC_MARKERS,
@@ -839,8 +835,6 @@ class ReleaseArrangementLookupServiceTest {
     )
 
     @JvmStatic
-    fun provideEligibleSentenceTypes(): List<SentenceCalculationType> {
-      return SentenceCalculationType.entries.filter { SentenceCalculationType.isSDS40Eligible(it.name) }
-    }
+    fun provideEligibleSentenceTypes(): List<SentenceCalculationType> = SentenceCalculationType.entries.filter { SentenceCalculationType.isSDS40Eligible(it.name) }
   }
 }

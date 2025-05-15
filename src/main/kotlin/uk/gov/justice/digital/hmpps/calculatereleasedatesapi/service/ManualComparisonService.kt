@@ -45,15 +45,11 @@ class ManualComparisonService(
     return initialComparisonCreated
   }
 
-  fun listManual(): List<ComparisonSummary> {
-    return comparisonRepository.findAllByComparisonTypeIsIn(manualComparisonTypes()).map { transform(it) }
-  }
+  fun listManual(): List<ComparisonSummary> = comparisonRepository.findAllByComparisonTypeIsIn(manualComparisonTypes()).map { transform(it) }
 
-  fun getCountOfPersonsInComparisonByComparisonReference(shortReference: String): Long {
-    return comparisonRepository.findByComparisonShortReference(shortReference)?.let {
-      comparisonPersonRepository.countByComparisonId(it.id)
-    } ?: 0
-  }
+  fun getCountOfPersonsInComparisonByComparisonReference(shortReference: String): Long = comparisonRepository.findByComparisonShortReference(shortReference)?.let {
+    comparisonPersonRepository.countByComparisonId(it.id)
+  } ?: 0
 
   fun getComparisonByComparisonReference(comparisonReference: String): ComparisonOverview {
     val comparison = comparisonRepository.findByComparisonShortReference(comparisonReference) ?: throw EntityNotFoundException("No comparison results exist for comparisonReference $comparisonReference ")

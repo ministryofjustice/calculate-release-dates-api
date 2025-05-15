@@ -17,7 +17,11 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.manageoffencesapi.OffencePcscMarkers
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.manageoffencesapi.PcscMarkers
 
-class ManageOffencesApiExtension : BeforeAllCallback, AfterAllCallback, BeforeEachCallback, ParameterResolver {
+class ManageOffencesApiExtension :
+  BeforeAllCallback,
+  AfterAllCallback,
+  BeforeEachCallback,
+  ParameterResolver {
   companion object {
     @JvmField
     val manageOffencesApi = ManageOffencesMockServer()
@@ -45,13 +49,9 @@ class ManageOffencesApiExtension : BeforeAllCallback, AfterAllCallback, BeforeEa
     manageOffencesApi.resetRequests()
   }
 
-  override fun supportsParameter(parameterContext: ParameterContext, context: ExtensionContext): Boolean {
-    return parameterContext.parameter.type == MockManageOffencesClient::class.java
-  }
+  override fun supportsParameter(parameterContext: ParameterContext, context: ExtensionContext): Boolean = parameterContext.parameter.type == MockManageOffencesClient::class.java
 
-  override fun resolveParameter(parameterContext: ParameterContext, context: ExtensionContext): Any {
-    return MockManageOffencesClient(manageOffencesApi, objectMapper)
-  }
+  override fun resolveParameter(parameterContext: ParameterContext, context: ExtensionContext): Any = MockManageOffencesClient(manageOffencesApi, objectMapper)
 }
 
 class ManageOffencesMockServer : WireMockServer(WIREMOCK_PORT) {
@@ -59,14 +59,13 @@ class ManageOffencesMockServer : WireMockServer(WIREMOCK_PORT) {
     private const val WIREMOCK_PORT = 8335
   }
 
-  fun stubMOResponse(): StubMapping =
-    stubFor(
-      get(urlMatching("/schedule/pcsc-indicators\\?offenceCodes=COML025A"))
-        .willReturn(
-          aResponse()
-            .withHeader("Content-Type", "application/json")
-            .withBody(
-              """[
+  fun stubMOResponse(): StubMapping = stubFor(
+    get(urlMatching("/schedule/pcsc-indicators\\?offenceCodes=COML025A"))
+      .willReturn(
+        aResponse()
+          .withHeader("Content-Type", "application/json")
+          .withBody(
+            """[
                 {
                     "offenceCode": "COML025A",
                     "pcscMarkers": {
@@ -77,21 +76,20 @@ class ManageOffencesMockServer : WireMockServer(WIREMOCK_PORT) {
                     }
                 }
             ]
-              """.trimIndent(),
-            )
-            .withStatus(200),
-        ),
-    )
+            """.trimIndent(),
+          )
+          .withStatus(200),
+      ),
+  )
 
-  fun stubSX03014MOResponse(): StubMapping =
-    stubFor(
-      get(urlMatching("/schedule/pcsc-indicators\\?offenceCodes=(SX03014|SX03013A)"))
-        .atPriority(1)
-        .willReturn(
-          aResponse()
-            .withHeader("Content-Type", "application/json")
-            .withBody(
-              """[
+  fun stubSX03014MOResponse(): StubMapping = stubFor(
+    get(urlMatching("/schedule/pcsc-indicators\\?offenceCodes=(SX03014|SX03013A)"))
+      .atPriority(1)
+      .willReturn(
+        aResponse()
+          .withHeader("Content-Type", "application/json")
+          .withBody(
+            """[
                 {
                     "offenceCode": "{{request.query.offenceCodes}}",
                     "pcscMarkers": {
@@ -102,21 +100,20 @@ class ManageOffencesMockServer : WireMockServer(WIREMOCK_PORT) {
                     }
                 }
             ]
-              """.trimIndent(),
-            )
-            .withStatus(200)
-            .withTransformers("response-template"),
-        ),
-    )
+            """.trimIndent(),
+          )
+          .withStatus(200)
+          .withTransformers("response-template"),
+      ),
+  )
 
-  fun stubMOMultipleResults(): StubMapping =
-    stubFor(
-      get(urlMatching("/schedule/pcsc-indicators\\?offenceCodes=COML022,COML025A"))
-        .willReturn(
-          aResponse()
-            .withHeader("Content-Type", "application/json")
-            .withBody(
-              """[
+  fun stubMOMultipleResults(): StubMapping = stubFor(
+    get(urlMatching("/schedule/pcsc-indicators\\?offenceCodes=COML022,COML025A"))
+      .willReturn(
+        aResponse()
+          .withHeader("Content-Type", "application/json")
+          .withBody(
+            """[
                 {
                     "offenceCode": "COML025A",
                     "pcscMarkers": {
@@ -136,21 +133,20 @@ class ManageOffencesMockServer : WireMockServer(WIREMOCK_PORT) {
                     }
                 }
             ]
-              """.trimIndent(),
-            )
-            .withStatus(200),
-        ),
-    )
+            """.trimIndent(),
+          )
+          .withStatus(200),
+      ),
+  )
 
-  fun stubBaseResponse(): StubMapping =
-    stubFor(
-      get(urlMatching("/schedule/pcsc-indicators\\?offenceCodes=([A-Za-z0-9]+)"))
-        .atPriority(Int.MAX_VALUE)
-        .willReturn(
-          aResponse()
-            .withHeader("Content-Type", "application/json")
-            .withBody(
-              """[
+  fun stubBaseResponse(): StubMapping = stubFor(
+    get(urlMatching("/schedule/pcsc-indicators\\?offenceCodes=([A-Za-z0-9]+)"))
+      .atPriority(Int.MAX_VALUE)
+      .willReturn(
+        aResponse()
+          .withHeader("Content-Type", "application/json")
+          .withBody(
+            """[
                 {
                     "offenceCode": "{{request.query.offenceCodes}}",
                     "pcscMarkers": {
@@ -161,12 +157,12 @@ class ManageOffencesMockServer : WireMockServer(WIREMOCK_PORT) {
                     }
                 }
             ]
-              """.trimIndent(),
-            )
-            .withStatus(200)
-            .withTransformers("response-template"),
-        ),
-    )
+            """.trimIndent(),
+          )
+          .withStatus(200)
+          .withTransformers("response-template"),
+      ),
+  )
   fun stubSpecificResponse(offences: String, json: String): StubMapping = stubFor(
     get(urlMatching("/schedule/pcsc-indicators\\?offenceCodes=$offences"))
       .willReturn(
@@ -254,9 +250,7 @@ class MockManageOffencesClient(
     manageOffencesApi.stubSpecificResponse(offences, objectMapper.writeValueAsString(moResponseToMock.toList()))
     return this
   }
-  fun withStub(mappingBuilder: MappingBuilder): StubMapping {
-    return manageOffencesApi.stubFor(mappingBuilder)
-  }
+  fun withStub(mappingBuilder: MappingBuilder): StubMapping = manageOffencesApi.stubFor(mappingBuilder)
   fun noneInPCSC(offences: List<String>): MockManageOffencesClient {
     val defaultMarkers = offences.map { offenceCode ->
       OffencePcscMarkers(

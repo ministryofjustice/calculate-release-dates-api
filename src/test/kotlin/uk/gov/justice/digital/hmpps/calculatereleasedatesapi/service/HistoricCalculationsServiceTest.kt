@@ -75,11 +75,7 @@ class HistoricCalculationsServiceTest {
     assertThat(result[0].establishment).isNull()
   }
 
-  private fun sentenceCalculationSummary(comment: String): SentenceCalculationSummary {
-    return SentenceCalculationSummary(456, "123", "bob", "davies", "RNI", "Ranby (HMP)", 1, LocalDateTime.now(), 4, comment, "reason", "user")
-  }
+  private fun sentenceCalculationSummary(comment: String): SentenceCalculationSummary = SentenceCalculationSummary(456, "123", "bob", "davies", "RNI", "Ranby (HMP)", 1, LocalDateTime.now(), 4, comment, "reason", "user")
 
-  private fun calculationRequest(): CalculationRequest {
-    return CalculationRequest(1, reference, "123", 4565, CalculationStatus.CONFIRMED.name, calculatedAt = LocalDateTime.now(), prisonerLocation = "CDI")
-  }
+  private fun calculationRequest(): CalculationRequest = CalculationRequest(1, reference, "123", 4565, CalculationStatus.CONFIRMED.name, calculatedAt = LocalDateTime.now(), prisonerLocation = "CDI")
 }

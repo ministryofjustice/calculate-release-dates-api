@@ -115,7 +115,9 @@ class BookingTimelineService(
       }
       latestCalculation =
         timelineCalculator.getLatestCalculation(
-          releasedSentenceGroups.map { it.sentences }, offender, returnToCustodyDate,
+          releasedSentenceGroups.map { it.sentences },
+          offender,
+          returnToCustodyDate,
         ).copy(
           sdsEarlyReleaseAllocatedTranche = trancheAndCommencement.first,
           sdsEarlyReleaseTranche = trancheAndCommencement.first,
@@ -141,18 +143,16 @@ class BookingTimelineService(
     }
   }
 
-  private fun handlerFor(type: TimelineCalculationType): TimelineCalculationHandler {
-    return when (type) {
-      TimelineCalculationType.SENTENCED -> timelineSentenceCalculationHandler
-      TimelineCalculationType.ADDITIONAL_DAYS, TimelineCalculationType.RESTORATION_DAYS -> timelineAwardedAdjustmentCalculationHandler
-      TimelineCalculationType.UAL -> timelineUalAdjustmentCalculationHandler
-      TimelineCalculationType.TRANCHE_1,
-      TimelineCalculationType.TRANCHE_2,
-      -> timelineTrancheCalculationHandler
-      TimelineCalculationType.TRANCHE_3 -> trancheThreeCalculationHandler
-      TimelineCalculationType.EXTERNAL_ADMISSION -> timelineExternalAdmissionMovementCalculationHandler
-      TimelineCalculationType.EXTERNAL_RELEASE -> timelineExternalReleaseMovementCalculationHandler
-    }
+  private fun handlerFor(type: TimelineCalculationType): TimelineCalculationHandler = when (type) {
+    TimelineCalculationType.SENTENCED -> timelineSentenceCalculationHandler
+    TimelineCalculationType.ADDITIONAL_DAYS, TimelineCalculationType.RESTORATION_DAYS -> timelineAwardedAdjustmentCalculationHandler
+    TimelineCalculationType.UAL -> timelineUalAdjustmentCalculationHandler
+    TimelineCalculationType.TRANCHE_1,
+    TimelineCalculationType.TRANCHE_2,
+    -> timelineTrancheCalculationHandler
+    TimelineCalculationType.TRANCHE_3 -> trancheThreeCalculationHandler
+    TimelineCalculationType.EXTERNAL_ADMISSION -> timelineExternalAdmissionMovementCalculationHandler
+    TimelineCalculationType.EXTERNAL_RELEASE -> timelineExternalReleaseMovementCalculationHandler
   }
 
   private fun calculateLatestCustodialRelease(timelineTrackingData: TimelineTrackingData) {
@@ -160,7 +160,8 @@ class BookingTimelineService(
       if (currentSentenceGroup.isNotEmpty()) {
         val latestReleaseSentence = currentSentenceGroup.maxBy { it.sentenceCalculation.adjustedDeterminateReleaseDate }
         val releaseDate =
-          if (beforeTrancheCalculation != null && latestReleaseSentence.sentenceCalculation.adjustedDeterminateReleaseDate.isBefore(
+          if (beforeTrancheCalculation != null &&
+            latestReleaseSentence.sentenceCalculation.adjustedDeterminateReleaseDate.isBefore(
               trancheAndCommencement.second!!,
             )
           ) {
@@ -202,23 +203,21 @@ class BookingTimelineService(
     }
   }
 
-  private fun getCalculationsByDate(sentences: List<CalculableSentence>, futureData: TimelineFutureData, externalMovements: List<ExternalMovement>): Map<LocalDate, List<TimelineCalculationDate>> {
-    return (
-      sentences.flatMap { it.sentenceParts().map { part -> TimelineCalculationDate(part.sentencedAt, TimelineCalculationType.SENTENCED) } } +
-        futureData.additional.map { TimelineCalculationDate(it.appliesToSentencesFrom, TimelineCalculationType.ADDITIONAL_DAYS) } +
-        futureData.restored.map { TimelineCalculationDate(it.appliesToSentencesFrom, TimelineCalculationType.RESTORATION_DAYS) } +
-        futureData.ual.map { TimelineCalculationDate(it.appliesToSentencesFrom, TimelineCalculationType.UAL) } +
-        listOf(
-          TimelineCalculationDate(trancheConfiguration.trancheOneCommencementDate, TimelineCalculationType.TRANCHE_1),
-          TimelineCalculationDate(trancheConfiguration.trancheTwoCommencementDate, TimelineCalculationType.TRANCHE_2),
-          TimelineCalculationDate(trancheConfiguration.trancheThreeCommencementDate, TimelineCalculationType.TRANCHE_3),
-        ) +
-        externalMovements.map { TimelineCalculationDate(it.movementDate, if (it.direction == ExternalMovementDirection.OUT) TimelineCalculationType.EXTERNAL_RELEASE else TimelineCalculationType.EXTERNAL_ADMISSION) }
-      )
-      .sortedBy { it.date }
-      .distinct()
-      .groupBy { it.date }
-  }
+  private fun getCalculationsByDate(sentences: List<CalculableSentence>, futureData: TimelineFutureData, externalMovements: List<ExternalMovement>): Map<LocalDate, List<TimelineCalculationDate>> = (
+    sentences.flatMap { it.sentenceParts().map { part -> TimelineCalculationDate(part.sentencedAt, TimelineCalculationType.SENTENCED) } } +
+      futureData.additional.map { TimelineCalculationDate(it.appliesToSentencesFrom, TimelineCalculationType.ADDITIONAL_DAYS) } +
+      futureData.restored.map { TimelineCalculationDate(it.appliesToSentencesFrom, TimelineCalculationType.RESTORATION_DAYS) } +
+      futureData.ual.map { TimelineCalculationDate(it.appliesToSentencesFrom, TimelineCalculationType.UAL) } +
+      listOf(
+        TimelineCalculationDate(trancheConfiguration.trancheOneCommencementDate, TimelineCalculationType.TRANCHE_1),
+        TimelineCalculationDate(trancheConfiguration.trancheTwoCommencementDate, TimelineCalculationType.TRANCHE_2),
+        TimelineCalculationDate(trancheConfiguration.trancheThreeCommencementDate, TimelineCalculationType.TRANCHE_3),
+      ) +
+      externalMovements.map { TimelineCalculationDate(it.movementDate, if (it.direction == ExternalMovementDirection.OUT) TimelineCalculationType.EXTERNAL_RELEASE else TimelineCalculationType.EXTERNAL_ADMISSION) }
+    )
+    .sortedBy { it.date }
+    .distinct()
+    .groupBy { it.date }
 
   companion object {
     val log: Logger = LoggerFactory.getLogger(this::class.java)

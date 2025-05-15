@@ -98,12 +98,11 @@ class SDSEarlyReleaseDefaultingRulesService(
 
   private fun getArdOrCrd(
     dates: MutableMap<ReleaseDateType, LocalDate>,
-  ): Pair<ReleaseDateType, LocalDate?> =
-    when {
-      dates.containsKey(ReleaseDateType.ARD) -> ReleaseDateType.ARD to dates.getValue(ReleaseDateType.ARD)
-      dates.containsKey(ReleaseDateType.CRD) -> ReleaseDateType.CRD to dates.getValue(ReleaseDateType.CRD)
-      else -> throw IllegalStateException("Neither ARD or CRD found in dates")
-    }
+  ): Pair<ReleaseDateType, LocalDate?> = when {
+    dates.containsKey(ReleaseDateType.ARD) -> ReleaseDateType.ARD to dates.getValue(ReleaseDateType.ARD)
+    dates.containsKey(ReleaseDateType.CRD) -> ReleaseDateType.CRD to dates.getValue(ReleaseDateType.CRD)
+    else -> throw IllegalStateException("Neither ARD or CRD found in dates")
+  }
 
   private fun adjustHdcedAndPrrdBasedOnCrdOrArd(
     dates: MutableMap<ReleaseDateType, LocalDate>,
@@ -195,8 +194,7 @@ class SDSEarlyReleaseDefaultingRulesService(
     }
   }
 
-  private fun shouldAdjustTused(dates: Map<ReleaseDateType, LocalDate>, latestReleaseDate: LocalDate): Boolean =
-    dates.containsKey(ReleaseDateType.TUSED) && latestReleaseDate.isBefore(trancheConfiguration.trancheOneCommencementDate)
+  private fun shouldAdjustTused(dates: Map<ReleaseDateType, LocalDate>, latestReleaseDate: LocalDate): Boolean = dates.containsKey(ReleaseDateType.TUSED) && latestReleaseDate.isBefore(trancheConfiguration.trancheOneCommencementDate)
 
   private fun applyStandardTused(
     dates: MutableMap<ReleaseDateType, LocalDate>,
@@ -211,20 +209,17 @@ class SDSEarlyReleaseDefaultingRulesService(
     }
   }
 
-  private fun hasEligibleRecallTusedSentence(sentences: List<CalculableSentence>): Boolean {
-    return sentences.any { sentence ->
-      sentence.releaseDateTypes.contains(ReleaseDateType.TUSED) &&
-        sentence.recallType != null &&
-        when (sentence) {
-          is StandardDeterminateSentence -> true
-          is ConsecutiveSentence -> hasStandardDeterminateSentence(sentence)
-          else -> false
-        }
-    }
+  private fun hasEligibleRecallTusedSentence(sentences: List<CalculableSentence>): Boolean = sentences.any { sentence ->
+    sentence.releaseDateTypes.contains(ReleaseDateType.TUSED) &&
+      sentence.recallType != null &&
+      when (sentence) {
+        is StandardDeterminateSentence -> true
+        is ConsecutiveSentence -> hasStandardDeterminateSentence(sentence)
+        else -> false
+      }
   }
 
-  private fun hasStandardDeterminateSentence(sentence: ConsecutiveSentence): Boolean =
-    sentence.orderedSentences.any { it is StandardDeterminateSentence }
+  private fun hasStandardDeterminateSentence(sentence: ConsecutiveSentence): Boolean = sentence.orderedSentences.any { it is StandardDeterminateSentence }
 
   fun hasAnyReleaseBeforeTrancheCommencement(
     early: CalculationResult,
@@ -327,15 +322,13 @@ class SDSEarlyReleaseDefaultingRulesService(
     early: LocalDate?,
     standard: LocalDate?,
     trancheCommencementDate: LocalDate?,
-  ): Boolean =
-    trancheCommencementDate != null && early != null && early < trancheCommencementDate && standard != null && standard >= trancheCommencementDate
+  ): Boolean = trancheCommencementDate != null && early != null && early < trancheCommencementDate && standard != null && standard >= trancheCommencementDate
 
   private fun shouldUseStandardDate(
     standard: LocalDate?,
     early: LocalDate?,
     trancheCommencementDate: LocalDate?,
-  ): Boolean =
-    standard != null && (trancheCommencementDate == null || standard.isBefore(trancheCommencementDate) || standard == early)
+  ): Boolean = standard != null && (trancheCommencementDate == null || standard.isBefore(trancheCommencementDate) || standard == early)
 
   private fun applyTrancheCommencementDate(context: ReleaseDateContext, early: LocalDate) {
     context.dates[context.dateType] = context.trancheCommencementDate!!
@@ -409,8 +402,7 @@ class SDSEarlyReleaseDefaultingRulesService(
     standard: LocalDate?,
     early: LocalDate?,
     trancheCommencementDate: LocalDate?,
-  ): Boolean =
-    standard != null && (trancheCommencementDate == null || standard.isBefore(trancheCommencementDate) || standard == early)
+  ): Boolean = standard != null && (trancheCommencementDate == null || standard.isBefore(trancheCommencementDate) || standard == early)
 
   private fun updateBreakdown(
     dateType: ReleaseDateType,

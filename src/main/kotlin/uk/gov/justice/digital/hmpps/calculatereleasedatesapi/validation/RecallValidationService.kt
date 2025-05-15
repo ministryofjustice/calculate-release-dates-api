@@ -67,7 +67,9 @@ class RecallValidationService(
             it.type in setOf(
               SentenceAdjustmentType.REMAND,
               SentenceAdjustmentType.RECALL_SENTENCE_REMAND,
-            ) && it.fromDate != null && it.toDate != null
+            ) &&
+              it.fromDate != null &&
+              it.toDate != null
           }.map {
             RemandPeriodToValidate(
               it.sentenceSequence,
@@ -127,12 +129,10 @@ class RecallValidationService(
     return Triple(recallLength, has14DayFTRSentence, has28DayFTRSentence)
   }
 
-  internal fun validateUnsupportedRecallTypes(calculationOutput: CalculationOutput, booking: Booking): List<ValidationMessage> {
-    return if (hasUnsupportedRecallType(calculationOutput, booking)) {
-      listOf(ValidationMessage(ValidationCode.UNSUPPORTED_SDS40_RECALL_SENTENCE_TYPE))
-    } else {
-      emptyList()
-    }
+  internal fun validateUnsupportedRecallTypes(calculationOutput: CalculationOutput, booking: Booking): List<ValidationMessage> = if (hasUnsupportedRecallType(calculationOutput, booking)) {
+    listOf(ValidationMessage(ValidationCode.UNSUPPORTED_SDS40_RECALL_SENTENCE_TYPE))
+  } else {
+    emptyList()
   }
 
   private fun hasUnsupportedRecallType(calculationOutput: CalculationOutput, booking: Booking): Boolean {
@@ -191,7 +191,8 @@ class RecallValidationService(
 
     if (
       ftr14NoUnder12MonthDuration &&
-      !maxFtrSentenceIsLessThan12Months && recallLength == 14
+      !maxFtrSentenceIsLessThan12Months &&
+      recallLength == 14
     ) {
       validationMessages += ValidationMessage(ValidationCode.FTR_14_DAYS_SENTENCE_GE_12_MONTHS)
     }
@@ -289,17 +290,23 @@ class RecallValidationService(
     val closest12MonthSentence = ftrSentences.findClosest12MonthOrGreaterSentence(sledProducingSentence, returnToCustodyDate)
 
     return when {
-      sledSentenceOver12Months && closestUnder12MonthSentence !== null && closestUnder12MonthSentence.recallType == FIXED_TERM_RECALL_14 &&
+      sledSentenceOver12Months &&
+        closestUnder12MonthSentence !== null &&
+        closestUnder12MonthSentence.recallType == FIXED_TERM_RECALL_14 &&
         abs(ChronoUnit.DAYS.between(closestUnder12MonthSentence.sentenceCalculation.adjustedExpiryDate, calculatedSled)) >= 14 -> {
         listOf(ValidationMessage(ValidationCode.FTR_TYPE_14_DAYS_SENTENCE_GT_12_MONTHS))
       }
 
-      sledSentenceUnder12Months && closest12MonthSentence != null && sledProducingSentence.recallType == FIXED_TERM_RECALL_14 &&
+      sledSentenceUnder12Months &&
+        closest12MonthSentence != null &&
+        sledProducingSentence.recallType == FIXED_TERM_RECALL_14 &&
         abs(ChronoUnit.DAYS.between(returnToCustodyDate, closest12MonthSentence.sentenceCalculation.adjustedExpiryDate)) >= 14 -> {
         listOf(ValidationMessage(ValidationCode.FTR_TYPE_14_DAYS_SENTENCE_GAP_GT_14_DAYS))
       }
 
-      closest12MonthSentence !== null && sledProducingSentence.recallType == FIXED_TERM_RECALL_28 && sledSentenceUnder12Months &&
+      closest12MonthSentence !== null &&
+        sledProducingSentence.recallType == FIXED_TERM_RECALL_28 &&
+        sledSentenceUnder12Months &&
         abs(ChronoUnit.DAYS.between(returnToCustodyDate, closest12MonthSentence.sentenceCalculation.adjustedExpiryDate)) <= 14 -> {
         listOf(ValidationMessage(ValidationCode.FTR_TYPE_28_DAYS_SENTENCE_GAP_LT_14_DAYS))
       }

@@ -10,7 +10,5 @@ enum class ValidationType {
   CONCURRENT_CONSECUTIVE,
   ;
 
-  fun isUnsupported(): Boolean {
-    return listOf(UNSUPPORTED_OFFENCE, UNSUPPORTED_SENTENCE, UNSUPPORTED_CALCULATION, MANUAL_ENTRY_JOURNEY_REQUIRED).contains(this)
-  }
+  fun isUnsupported(): Boolean = listOf(UNSUPPORTED_OFFENCE, UNSUPPORTED_SENTENCE, UNSUPPORTED_CALCULATION, MANUAL_ENTRY_JOURNEY_REQUIRED).contains(this)
 }

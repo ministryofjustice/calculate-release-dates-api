@@ -9,7 +9,10 @@ import org.junit.jupiter.api.extension.BeforeAllCallback
 import org.junit.jupiter.api.extension.BeforeEachCallback
 import org.junit.jupiter.api.extension.ExtensionContext
 
-class BankHolidayApiExtension : BeforeAllCallback, AfterAllCallback, BeforeEachCallback {
+class BankHolidayApiExtension :
+  BeforeAllCallback,
+  AfterAllCallback,
+  BeforeEachCallback {
   companion object {
     @JvmField
     val bankholidayApi = BankHolidayApiMockServer()
@@ -36,14 +39,13 @@ class BankHolidayApiMockServer : WireMockServer(WIREMOCK_PORT) {
   }
 
   @Suppress("LongMethod")
-  fun stubBankHolidays(): StubMapping =
-    stubFor(
-      get("/bank-holidays.json")
-        .willReturn(
-          aResponse()
-            .withHeader("Content-Type", "application/json")
-            .withBody(
-              """{
+  fun stubBankHolidays(): StubMapping = stubFor(
+    get("/bank-holidays.json")
+      .willReturn(
+        aResponse()
+          .withHeader("Content-Type", "application/json")
+          .withBody(
+            """{
                  "england-and-wales":{
                     "division":"england-and-wales",
                     "events":[
@@ -1212,9 +1214,9 @@ class BankHolidayApiMockServer : WireMockServer(WIREMOCK_PORT) {
                     ]
                  }
               }
-              """.trimIndent(),
-            )
-            .withStatus(200),
-        ),
-    )
+            """.trimIndent(),
+          )
+          .withStatus(200),
+      ),
+  )
 }

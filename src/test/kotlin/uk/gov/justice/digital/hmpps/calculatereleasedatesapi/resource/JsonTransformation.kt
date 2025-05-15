@@ -5,7 +5,6 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BotusSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
@@ -28,11 +27,6 @@ class JsonTransformation {
   fun loadSentence(testData: String): StandardDeterminateSentence {
     val json = getJsonTest("$testData.json", "sentence")
     return mapper.readValue(json, StandardDeterminateSentence::class.java)
-  }
-
-  fun loadBotusSentence(testData: String): BotusSentence {
-    val json = getJsonTest("$testData.json", "sentence")
-    return mapper.readValue(json, BotusSentence::class.java)
   }
 
   fun loadBooking(testData: String): Pair<Booking, CalculationUserInputs> {
@@ -64,46 +58,26 @@ class JsonTransformation {
     return mapper.readValue(json, object : TypeReference<List<DatesAndHints>>() {})
   }
 
-  fun getAllPrisonerDetails(): Map<String, PrisonerDetails> {
-    return getAllJsonFromDir("api_integration/prisoners")
-      .mapValues { mapper.readValue(it.value, PrisonerDetails::class.java) }
-  }
+  fun getAllPrisonerDetails(): Map<String, PrisonerDetails> = getAllJsonFromDir("api_integration/prisoners")
+    .mapValues { mapper.readValue(it.value, PrisonerDetails::class.java) }
 
-  fun getAllSentenceAndOffencesJson(): Map<String, String> {
-    return getAllJsonFromDir("api_integration/sentences")
-  }
+  fun getAllSentenceAndOffencesJson(): Map<String, String> = getAllJsonFromDir("api_integration/sentences")
 
-  fun getAllPrisonApiAdjustments(): Map<String, String> {
-    return getAllJsonFromDir("api_integration/prisonapiadjustments")
-  }
+  fun getAllPrisonApiAdjustments(): Map<String, String> = getAllJsonFromDir("api_integration/prisonapiadjustments")
 
-  fun getAllAdjustments(): Map<String, String> {
-    return getAllJsonFromDir("api_integration/adjustments")
-  }
+  fun getAllAdjustments(): Map<String, String> = getAllJsonFromDir("api_integration/adjustments")
 
-  fun getAllReturnToCustodyDatesJson(): Map<String, String> {
-    return getAllJsonFromDir("api_integration/returntocustody")
-  }
+  fun getAllReturnToCustodyDatesJson(): Map<String, String> = getAllJsonFromDir("api_integration/returntocustody")
 
-  fun getAllOffenderFinePaymentsJson(): Map<String, String> {
-    return getAllJsonFromDir("api_integration/finepayments")
-  }
+  fun getAllOffenderFinePaymentsJson(): Map<String, String> = getAllJsonFromDir("api_integration/finepayments")
 
-  fun getAllPrisonCalculablePrisonersJson(): Map<String, String> {
-    return getAllJsonFromDir("prisonCalculablePrisoners")
-  }
+  fun getAllPrisonCalculablePrisonersJson(): Map<String, String> = getAllJsonFromDir("prisonCalculablePrisoners")
 
-  fun getAllExternalMovementsJson(): Map<String, String> {
-    return getAllJsonFromDir("api_integration/externalmovements")
-  }
+  fun getAllExternalMovementsJson(): Map<String, String> = getAllJsonFromDir("api_integration/externalmovements")
 
-  fun getApiIntegrationJson(fileName: String, type: String): String {
-    return getResourceAsText("/test_data/api_integration/$type/$fileName.json")
-  }
+  fun getApiIntegrationJson(fileName: String, type: String): String = getResourceAsText("/test_data/api_integration/$type/$fileName.json")
 
-  fun getJsonTest(fileName: String, calculationType: String): String {
-    return getResourceAsText("/test_data/$calculationType/$fileName")
-  }
+  fun getJsonTest(fileName: String, calculationType: String): String = getResourceAsText("/test_data/$calculationType/$fileName")
 
   fun getAllIntegrationPrisonerNames(): List<String> = getAllFilenamesFromDir("api_integration")
 

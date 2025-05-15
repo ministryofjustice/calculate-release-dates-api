@@ -27,12 +27,8 @@ class Section91ValidationService(private val validationUtilities: ValidationUtil
     }
   }
 
-  private fun isNotSec91SentenceType(sentenceCalculationType: SentenceCalculationType): Boolean {
-    return sentenceCalculationType != SentenceCalculationType.SEC91_03 &&
-      sentenceCalculationType != SentenceCalculationType.SEC91_03_ORA
-  }
+  private fun isNotSec91SentenceType(sentenceCalculationType: SentenceCalculationType): Boolean = sentenceCalculationType != SentenceCalculationType.SEC91_03 &&
+    sentenceCalculationType != SentenceCalculationType.SEC91_03_ORA
 
-  private fun isAfterSec91EndDate(sentencesAndOffence: SentenceAndOffence): Boolean {
-    return sentencesAndOffence.sentenceDate.isAfterOrEqualTo(ImportantDates.SEC_91_END_DATE)
-  }
+  private fun isAfterSec91EndDate(sentencesAndOffence: SentenceAndOffence): Boolean = sentencesAndOffence.sentenceDate.isAfterOrEqualTo(ImportantDates.SEC_91_END_DATE)
 }

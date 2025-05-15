@@ -10,11 +10,9 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Bank
 class BankHolidayApiClient(@Qualifier("bankHolidayApiWebClient") private val webClient: WebClient) {
   private inline fun <reified T> typeReference() = object : ParameterizedTypeReference<T>() {}
 
-  fun getBankHolidays(): BankHolidays {
-    return webClient.get()
-      .uri("/bank-holidays.json")
-      .retrieve()
-      .bodyToMono(typeReference<BankHolidays>())
-      .block()!!
-  }
+  fun getBankHolidays(): BankHolidays = webClient.get()
+    .uri("/bank-holidays.json")
+    .retrieve()
+    .bodyToMono(typeReference<BankHolidays>())
+    .block()!!
 }

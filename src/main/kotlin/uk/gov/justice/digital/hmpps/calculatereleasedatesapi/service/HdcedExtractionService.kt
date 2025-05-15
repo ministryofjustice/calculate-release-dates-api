@@ -104,58 +104,46 @@ class HdcedExtractionService(
     )
   }
 
-  private fun getLatestHdcedEligibleSentence(sentences: List<CalculableSentence>): CalculableSentence? {
-    return extractionService.mostRecentSentenceOrNull(
-      sentences.filter { !it.isRecall() && !it.isDto() },
-      SentenceCalculation::releaseDate,
-    )
-  }
+  private fun getLatestHdcedEligibleSentence(sentences: List<CalculableSentence>): CalculableSentence? = extractionService.mostRecentSentenceOrNull(
+    sentences.filter { !it.isRecall() && !it.isDto() },
+    SentenceCalculation::releaseDate,
+  )
 
-  private fun getLatestAdjustedReleaseDate(mostRecentSentencesByReleaseDate: List<CalculableSentence>): LocalDate {
-    return mostRecentSentencesByReleaseDate[0].sentenceCalculation.releaseDate
-  }
+  private fun getLatestAdjustedReleaseDate(mostRecentSentencesByReleaseDate: List<CalculableSentence>): LocalDate = mostRecentSentencesByReleaseDate[0].sentenceCalculation.releaseDate
 
-  private fun hasLatestEligibleSentenceGotHdcedDate(latestEligibleSentences: CalculableSentence?): Boolean {
-    return latestEligibleSentences?.sentenceCalculation?.homeDetentionCurfewEligibilityDate != null
-  }
+  private fun hasLatestEligibleSentenceGotHdcedDate(latestEligibleSentences: CalculableSentence?): Boolean = latestEligibleSentences?.sentenceCalculation?.homeDetentionCurfewEligibilityDate != null
 
   private fun getMostRecentHDCEDSentenceApplying14DayRule(
     sentences: List<CalculableSentence>,
     latestReleaseDate: LocalDate,
-  ): CalculableSentence? {
-    return extractionService.mostRecentSentenceOrNull(
-      sentences.filter { !latestReleaseDate.isBefore(it.sentencedAt.plusDays(14)) },
-      SentenceCalculation::homeDetentionCurfewEligibilityDate,
-    )
-  }
+  ): CalculableSentence? = extractionService.mostRecentSentenceOrNull(
+    sentences.filter { !latestReleaseDate.isBefore(it.sentencedAt.plusDays(14)) },
+    SentenceCalculation::homeDetentionCurfewEligibilityDate,
+  )
 
   private fun getLatestConflictingNonHdcSentence(
     sentences: List<CalculableSentence>,
     hdcedDate: LocalDate,
     hdcedSentence: CalculableSentence,
-  ): Pair<CalculableSentence?, LocalDate?> {
-    return getLatestConflictingSentence(
-      sentences.filter { it.sentenceCalculation.homeDetentionCurfewEligibilityDate == null },
-      hdcedDate,
-      hdcedSentence,
-    )
-  }
+  ): Pair<CalculableSentence?, LocalDate?> = getLatestConflictingSentence(
+    sentences.filter { it.sentenceCalculation.homeDetentionCurfewEligibilityDate == null },
+    hdcedDate,
+    hdcedSentence,
+  )
 
   private fun resolveEligibilityDate(
     hdcedSentence: CalculableSentence,
     conflictingSentence: Pair<CalculableSentence?, LocalDate?>,
-  ): Pair<LocalDate, ReleaseDateCalculationBreakdown> {
-    return if (hdcedSentence != conflictingSentence.first &&
-      conflictingSentence.first != null &&
-      conflictingSentence.second != null
-    ) {
-      getReleaseDateCalculationBreakDownFromLatestConflictingSentence(
-        conflictingSentence,
-        hdcedSentence.sentenceCalculation.homeDetentionCurfewEligibilityDate!!,
-      )
-    } else {
-      hdcedSentence.sentenceCalculation.homeDetentionCurfewEligibilityDate!! to
-        hdcedSentence.sentenceCalculation.breakdownByReleaseDateType[HDCED]!!
-    }
+  ): Pair<LocalDate, ReleaseDateCalculationBreakdown> = if (hdcedSentence != conflictingSentence.first &&
+    conflictingSentence.first != null &&
+    conflictingSentence.second != null
+  ) {
+    getReleaseDateCalculationBreakDownFromLatestConflictingSentence(
+      conflictingSentence,
+      hdcedSentence.sentenceCalculation.homeDetentionCurfewEligibilityDate!!,
+    )
+  } else {
+    hdcedSentence.sentenceCalculation.homeDetentionCurfewEligibilityDate!! to
+      hdcedSentence.sentenceCalculation.breakdownByReleaseDateType[HDCED]!!
   }
 }

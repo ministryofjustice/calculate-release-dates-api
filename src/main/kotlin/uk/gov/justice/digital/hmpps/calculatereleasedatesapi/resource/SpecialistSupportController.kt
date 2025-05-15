@@ -42,9 +42,7 @@ class SpecialistSupportController(
   )
   fun storeGenuineOverride(
     @RequestBody genuineOverrideRequest: GenuineOverrideRequest,
-  ): GenuineOverrideResponse {
-    return genuineOverrideService.createGenuineOverride(genuineOverrideRequest)
-  }
+  ): GenuineOverrideResponse = genuineOverrideService.createGenuineOverride(genuineOverrideRequest)
 
   @PostMapping(value = ["/genuine-override/calculation"])
   @PreAuthorize("hasAnyRole('SYSTEM_USER', 'CRDS_SPECIALIST_SUPPORT')")
@@ -60,9 +58,7 @@ class SpecialistSupportController(
       ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
     ],
   )
-  fun storeGenuineOverrideDates(@RequestBody genuineOverrideRequest: GenuineOverrideDateRequest): GenuineOverrideDateResponse {
-    return genuineOverrideService.storeGenuineOverrideDates(genuineOverrideRequest)
-  }
+  fun storeGenuineOverrideDates(@RequestBody genuineOverrideRequest: GenuineOverrideDateRequest): GenuineOverrideDateResponse = genuineOverrideService.storeGenuineOverrideDates(genuineOverrideRequest)
 
   @GetMapping(value = ["genuine-override/calculation/{calculationReference}"])
   @PreAuthorize("hasAnyRole('SYSTEM_USER', 'CRDS_SPECIALIST_SUPPORT', 'RELEASE_DATES_CALCULATOR')")
@@ -79,7 +75,5 @@ class SpecialistSupportController(
       ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
     ],
   )
-  fun getGenuineOverride(@PathVariable calculationReference: String): GenuineOverrideResponse {
-    return genuineOverrideService.getGenuineOverride(calculationReference)
-  }
+  fun getGenuineOverride(@PathVariable calculationReference: String): GenuineOverrideResponse = genuineOverrideService.getGenuineOverride(calculationReference)
 }
