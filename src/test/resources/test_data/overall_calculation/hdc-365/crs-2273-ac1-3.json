@@ -1,0 +1,52 @@
+{
+  "offender": {
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
+  },
+  "sentences": [
+    {
+      "offence": {
+        "committedAt": "2022-04-20",
+        "offenceCode": "TH68068"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 8
+        }
+      },
+      "sentencedAt": "2025-03-24",
+      "identifier": "cb304745-d781-47d3-b931-4baa31551fc5"
+    },
+    {
+      "offence": {
+        "committedAt": "2022-04-20",
+        "offenceCode": "TH68068"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 1
+        }
+      },
+      "sentencedAt": "2025-06-04",
+      "consecutiveSentenceUUIDs": ["cb304745-d781-47d3-b931-4baa31551fc5"]
+    }
+  ],
+  "adjustments": {
+    "REMAND": [
+      {
+        "appliesToSentencesFrom": "2025-03-24",
+        "numberOfDays": 15,
+        "fromDate": "2025-03-09",
+        "toDate": "2025-03-23"
+      }
+    ],
+    "ADDITIONAL_DAYS_AWARDED": [
+      {
+        "appliesToSentencesFrom": "2025-06-06",
+        "numberOfDays": 8,
+        "fromDate": "2025-06-06",
+        "toDate": "2025-06-13"
+      }
+    ]
+  }
+}
