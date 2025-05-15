@@ -11,7 +11,7 @@ spring:
       WRITE_DATES_AS_TIMESTAMPS: false
 
   datasource:
-    url: 'jdbc:postgresql://localhost:5433/calculate_release_dates'
+    url: 'jdbc:postgresql://localhost:5432/calculate_release_dates'
     username: calculate_release_dates
     password: calculate_release_dates
 

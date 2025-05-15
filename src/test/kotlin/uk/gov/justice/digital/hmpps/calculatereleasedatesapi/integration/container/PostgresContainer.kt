@@ -30,7 +30,7 @@ object PostgresContainer {
   }
 
   private fun isPostgresRunning(): Boolean = try {
-    val serverSocket = ServerSocket(5433)
+    val serverSocket = ServerSocket(5432)
     serverSocket.localPort == 0
   } catch (_: IOException) {
     true
