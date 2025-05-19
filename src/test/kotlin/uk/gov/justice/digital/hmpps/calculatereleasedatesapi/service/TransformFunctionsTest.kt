@@ -775,8 +775,8 @@ class TransformFunctionsTest {
       bookingId = BOOKING_ID,
       offenderNo = PRISONER_ID,
       dateOfBirth = DOB,
-      firstName = "Harry",
-      lastName = "Houdini",
+      firstName = "Zimmy",
+      lastName = "Cnys",
     )
 
     val SentenceRecallTypePairs = listOf(

@@ -15,11 +15,11 @@ import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.test.context.web.WebAppConfiguration
 import org.springframework.test.web.servlet.MockMvc
@@ -72,25 +72,25 @@ import java.util.UUID
 @ContextConfiguration(classes = [CalculationController::class])
 @WebAppConfiguration
 class CalculationControllerTest {
-  @MockBean
+  @MockitoBean
   private lateinit var calculationTransactionalService: CalculationTransactionalService
 
-  @MockBean
+  @MockitoBean
   private lateinit var detailedCalculationResultsService: DetailedCalculationResultsService
 
-  @MockBean
+  @MockitoBean
   private lateinit var relevantRemandService: RelevantRemandService
 
-  @MockBean
+  @MockitoBean
   private lateinit var latestCalculationService: LatestCalculationService
 
-  @MockBean
+  @MockitoBean
   private lateinit var calculationBreakdownService: CalculationBreakdownService
 
-  @MockBean
+  @MockitoBean
   private lateinit var offenderKeyDatesService: OffenderKeyDatesService
 
-  @MockBean
+  @MockitoBean
   private lateinit var recallService: RecallService
 
   @Autowired
