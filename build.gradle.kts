@@ -116,6 +116,9 @@ openApi {
   outputDir.set(layout.buildDirectory.dir("docs"))
   outputFileName.set("openapi.json")
   customBootRun.args.set(listOf("--spring.profiles.active=dev,localstack,docs"))
+  customBootRun.environment.set(
+    mapOf("AWS_REGION" to "eu-west-2")
+  )
 }
 
 afterEvaluate {
