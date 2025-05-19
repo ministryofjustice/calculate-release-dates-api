@@ -61,13 +61,16 @@ dependencies {
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.8")
 
   implementation("com.amazonaws:amazon-sqs-java-messaging-lib:2.1.3")
-  implementation("io.awspring.cloud:spring-cloud-aws-messaging:2.4.4")
+  implementation("io.awspring.cloud:spring-cloud-aws-starter:3.3.0")
+  implementation("io.awspring.cloud:spring-cloud-aws-core:3.3.0")
+  implementation("io.awspring.cloud:spring-cloud-aws-sns:3.3.0")
+  implementation("io.awspring.cloud:spring-cloud-aws-sqs:3.3.0")
   implementation("org.springframework:spring-jms:6.2.0")
   implementation("com.google.code.gson:gson:2.11.0")
   implementation("org.apache.commons:commons-text:1.13.0")
 
   // SQS
-  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:5.2.2")
+  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:5.4.4")
 
   // Test dependencies
   testImplementation("org.wiremock:wiremock-standalone:3.9.2")
