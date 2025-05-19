@@ -233,8 +233,8 @@ class DetailedCalculationResultsServiceTest {
     1,
     "asd",
     dateOfBirth = LocalDate.of(1980, 1, 1),
-    firstName = "Harry",
-    lastName = "Houdini",
+    firstName = "Zimmy",
+    lastName = "Cnys",
   )
   private val adjustments = BookingAndSentenceAdjustments(
     bookingAdjustments = emptyList(),
