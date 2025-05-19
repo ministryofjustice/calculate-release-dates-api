@@ -35019,7 +35019,7 @@
           "judgeName": {
             "type": "string",
             "description": "Judge name, where available",
-            "example": "Harris"
+            "example": "Default Name"
           },
           "directionCode": {
             "type": "string",

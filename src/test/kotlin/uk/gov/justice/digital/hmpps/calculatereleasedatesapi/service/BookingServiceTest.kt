@@ -118,8 +118,8 @@ class BookingServiceTest {
     bookingId,
     prisonerId,
     dateOfBirth = DOB,
-    firstName = "Harry",
-    lastName = "Houdini",
+    firstName = "Zimmy",
+    lastName = "Cnys",
   )
   val returnToCustodyDate = ReturnToCustodyDate(bookingId, LocalDate.of(2022, 3, 15))
   private val offenderFineFinePayment = listOf(OffenderFinePayment(bookingId = 1, paymentDate = LocalDate.of(1, 2, 3), paymentAmount = BigDecimal("10000.88")))
