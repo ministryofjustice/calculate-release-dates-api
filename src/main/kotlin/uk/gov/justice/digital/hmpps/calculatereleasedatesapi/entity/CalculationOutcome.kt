@@ -1,9 +1,11 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity
 
 import jakarta.persistence.Entity
+import jakarta.persistence.FetchType
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
+import jakarta.persistence.OneToOne
 import jakarta.persistence.Table
 import jakarta.validation.constraints.NotNull
 import java.time.LocalDate
@@ -21,4 +23,7 @@ data class CalculationOutcome(
 
   @NotNull
   val calculationDateType: String = "",
+
+  @OneToOne(mappedBy = "calculationOutcome", fetch = FetchType.LAZY, optional = true)
+  val dominantHistoricCalculationOutcome: DominantHistoricCalculationOutcome? = null
 )
