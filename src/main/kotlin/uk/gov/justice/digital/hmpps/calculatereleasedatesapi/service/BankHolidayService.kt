@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.BankHolidayCache
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BankHolidays
@@ -23,6 +22,7 @@ class BankHolidayService(
   private val bankHolidayApiClient: BankHolidayApiClient,
   private val bankHolidayCacheRepository: BankHolidayCacheRepository,
   private val objectMapper: ObjectMapper,
+  private val bankHolidayTransactionService: BankHolidayTransactionService,
 ) {
 
   @Transactional
@@ -45,15 +45,11 @@ class BankHolidayService(
     }
   }
 
-  @Transactional(propagation = Propagation.REQUIRES_NEW)
   fun getBankHolidays(): BankHolidays {
     val cached = bankHolidayCacheRepository.findFirstByOrderByIdAsc()
 
     return if (cached == null) {
-      val bankHolidays = bankHolidayApiClient.getBankHolidays()
-      val cache = BankHolidayCache(cachedAt = LocalDateTime.now(), data = objectToJson(bankHolidays, objectMapper))
-      bankHolidayCacheRepository.save(cache)
-      bankHolidays
+      bankHolidayTransactionService.saveNewBankHolidays()
     } else {
       objectMapper.convertValue(cached.data, BankHolidays::class.java)
     }
