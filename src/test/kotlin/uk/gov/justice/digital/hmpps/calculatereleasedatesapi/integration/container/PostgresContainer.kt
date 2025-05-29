@@ -22,6 +22,7 @@ object PostgresContainer {
       withDatabaseName("calculate_release_dates")
       withUsername("calculate_release_dates")
       withPassword("calculate_release_dates")
+      setCommand("postgres", "-c", "max_connections=1000")
       setWaitStrategy(Wait.forListeningPort())
       withReuse(false)
       start()
