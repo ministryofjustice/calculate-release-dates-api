@@ -3,7 +3,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.PED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.NoValidReturnToCustodyDateException
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.SentenceAggregator
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.sentence.SentenceAggregator
 import java.time.LocalDate
 import kotlin.math.ceil
 import kotlin.properties.Delegates

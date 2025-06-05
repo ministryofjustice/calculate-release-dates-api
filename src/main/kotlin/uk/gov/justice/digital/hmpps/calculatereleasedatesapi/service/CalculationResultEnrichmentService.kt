@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcomeHistoricOverride
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.HistoricalTusedSource
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
@@ -30,6 +31,7 @@ class CalculationResultEnrichmentService(
     calculationBreakdown: CalculationBreakdown?,
     historicalTusedSource: HistoricalTusedSource? = null,
     sentenceDateOverrides: List<String> = listOf(),
+    historicOverrides: List<CalculationOutcomeHistoricOverride>,
   ): Map<ReleaseDateType, DetailedDate> {
     val releaseDatesMap = releaseDates.associateBy { it.type }
     return releaseDatesMap.mapValues { (_, releaseDate) ->
@@ -45,6 +47,7 @@ class CalculationResultEnrichmentService(
           sentenceAndOffences,
           historicalTusedSource,
           sentenceDateOverrides,
+          historicOverrides,
         ),
       )
     }
@@ -58,12 +61,15 @@ class CalculationResultEnrichmentService(
     sentenceAndOffences: List<SentenceAndOffenceWithReleaseArrangements>?,
     historicalTusedSource: HistoricalTusedSource? = null,
     sentenceDateOverrides: List<String>,
+    historicOverrides: List<CalculationOutcomeHistoricOverride>,
   ): List<ReleaseDateHint> {
     val hints = mutableListOf<ReleaseDateHint?>()
 
     if (sentenceDateOverrides.contains(type.name)) {
       hints += ReleaseDateHint("Manually overridden")
     }
+
+    hasHistoricOverride(type, historicOverrides)?.let { hints += it }
 
     hints += nonFridayReleaseDateOrWeekendAdjustmentHintOrNull(type, date)
 
@@ -251,6 +257,15 @@ class CalculationResultEnrichmentService(
   private fun hasConcurrentDtoAndCrdArdSentence(sentencesAndOffences: List<SentenceAndOffence>?): Boolean = sentencesAndOffences != null &&
     sentencesAndOffences.any { sentence -> sentence.sentenceCalculationType in dtoSentenceTypes } &&
     sentencesAndOffences.any { sentence -> sentence.sentenceCalculationType !in dtoSentenceTypes }
+
+  private fun hasHistoricOverride(
+    dateType: ReleaseDateType,
+    historicOverrides: List<CalculationOutcomeHistoricOverride>,
+  ): ReleaseDateHint? = historicOverrides
+    .map { it.calculationOutcome.calculationDateType }
+    .mapNotNull { runCatching { ReleaseDateType.valueOf(it) }.getOrNull() }
+    .firstOrNull { it == dateType }
+    ?.let { ReleaseDateHint("Dominant $dateType from a previous sentence") }
 
   private fun sds40Hint(type: ReleaseDateType, calculationBreakdown: CalculationBreakdown): ReleaseDateHint? {
     if (calculationBreakdown.breakdownByReleaseDateType.containsKey(type)) {

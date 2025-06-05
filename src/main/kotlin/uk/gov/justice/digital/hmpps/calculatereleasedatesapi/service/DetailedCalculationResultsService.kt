@@ -12,6 +12,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOr
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedCalculationResults
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDate
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeHistoricOverrideRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 
 @Service
@@ -23,6 +24,7 @@ open class DetailedCalculationResultsService(
   private val calculationRequestRepository: CalculationRequestRepository,
   private val calculationResultEnrichmentService: CalculationResultEnrichmentService,
   private val prisonService: PrisonService,
+  private val historicOverrideRepository: CalculationOutcomeHistoricOverrideRepository,
 ) {
 
   @Transactional(readOnly = true)
@@ -40,6 +42,8 @@ open class DetailedCalculationResultsService(
 
     val sentenceDateOverrides = prisonService.getSentenceOverrides(calculationRequest.bookingId, releaseDates)
 
+    val historicDates = historicOverrideRepository.findByCalculationRequestId(calculationRequestId)
+
     return DetailedCalculationResults(
       calculationContext(calculationRequestId, calculationRequest),
       calculationResultEnrichmentService.addDetailToCalculationDates(
@@ -48,6 +52,7 @@ open class DetailedCalculationResultsService(
         calculationBreakdown,
         calculationRequest.historicalTusedSource,
         sentenceDateOverrides,
+        historicDates,
       ),
       approvedDates(calculationRequest.approvedDatesSubmissions.firstOrNull()),
       CalculationOriginalData(

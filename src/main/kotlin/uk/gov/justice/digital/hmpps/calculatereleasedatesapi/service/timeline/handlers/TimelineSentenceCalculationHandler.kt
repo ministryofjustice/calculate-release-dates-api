@@ -8,7 +8,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSen
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.UnadjustedReleaseDate
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.SentenceCombinationService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.sentence.SentenceCombinationService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculator
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineHandleResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineTrackingData

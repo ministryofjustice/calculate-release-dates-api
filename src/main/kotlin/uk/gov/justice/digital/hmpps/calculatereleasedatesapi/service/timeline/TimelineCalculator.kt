@@ -11,7 +11,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Term
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.BookingExtractionService
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.SentenceAdjustedCalculationService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.sentence.SentenceAdjustedCalculationService
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 

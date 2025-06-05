@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
+package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.sentence
 
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -24,6 +24,9 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ErsedCalculator
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.HdcedCalculator
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.TusedCalculator
 import java.time.temporal.ChronoUnit.DAYS
 import java.time.temporal.ChronoUnit.MONTHS
 import kotlin.math.ceil

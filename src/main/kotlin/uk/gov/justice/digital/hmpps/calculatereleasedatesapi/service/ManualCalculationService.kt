@@ -22,6 +22,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Upda
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationReasonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.sentence.SentenceCombinationService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.sentence.SentenceIdentificationService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationType.MANUAL_ENTRY_JOURNEY_REQUIRED
 import java.time.LocalDate
@@ -163,7 +165,7 @@ class ManualCalculationService(
   ): Map<ReleaseDateType, LocalDate?>? {
     val calculationRequest = calculationRequestRepository.findById(calculationRequestId)
       .orElseThrow { EntityNotFoundException("No calculation request exists") }
-    val dates = calculationOutcomes.map { ReleaseDateType.valueOf(it.calculationDateType) to it.outcomeDate }.toMap()
+    val dates = calculationOutcomes.associate { ReleaseDateType.valueOf(it.calculationDateType) to it.outcomeDate }
     val updateOffenderDates = UpdateOffenderDates(
       calculationUuid = calculationRequest.calculationReference,
       submissionUser = serviceUserService.getUsername(),

@@ -15,6 +15,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationSo
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.LatestCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OffenderKeyDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeHistoricOverrideRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 
 @Component
@@ -24,6 +25,7 @@ class LatestCalculationService(
   private val calculationRequestRepository: CalculationRequestRepository,
   private val calculationResultEnrichmentService: CalculationResultEnrichmentService,
   private val calculationBreakdownService: CalculationBreakdownService,
+  private val historicOverrideRepository: CalculationOutcomeHistoricOverrideRepository,
   private val sourceDataMapper: SourceDataMapper,
 ) {
 
@@ -34,16 +36,12 @@ class LatestCalculationService(
       val latestCrdsCalc = calculationRequestRepository.findFirstByPrisonerIdAndCalculationStatusOrderByCalculatedAtDesc(prisonerId)
       if (latestCrdsCalc.isEmpty || !isSameCalc(prisonerCalculation, latestCrdsCalc.get())) {
         val nomisReason = prisonService.getNOMISCalcReasons().find { it.code == prisonerCalculation.reasonCode }?.description ?: prisonerCalculation.reasonCode
-        toLatestCalculation(
-          CalculationSource.NOMIS,
+        toLatestNomisCalculation(
           prisonerId,
           bookingId,
-          null,
+          bookingId,
           prisonerCalculation,
           nomisReason,
-          null,
-          null,
-          null,
         )
       } else {
         val calculationRequest = latestCrdsCalc.get()
@@ -54,7 +52,7 @@ class LatestCalculationService(
         val sentenceAndOffences = calculationRequest.sentenceAndOffences?.let { sourceDataMapper.mapSentencesAndOffences(calculationRequest) }
         val breakdown = calculationBreakdownService.getBreakdownSafely(calculationRequest).getOrNull()
         toLatestCalculation(
-          CalculationSource.CRDS,
+          calculationRequest.id,
           prisonerId,
           bookingId,
           calculationRequest.id,
@@ -85,7 +83,7 @@ class LatestCalculationService(
   }
 
   private fun toLatestCalculation(
-    calculationSource: CalculationSource,
+    calculationRequestId: Long,
     prisonerId: String,
     bookingId: Long,
     calculationReference: Long?,
@@ -98,6 +96,7 @@ class LatestCalculationService(
   ): LatestCalculation {
     val dates = offenderKeyDatesService.releaseDates(prisonerCalculation)
     val sentenceDateOverrides = prisonService.getSentenceOverrides(bookingId, dates)
+    val historicDates = historicOverrideRepository.findByCalculationRequestId(calculationRequestId)
     return LatestCalculation(
       prisonerId,
       bookingId,
@@ -105,13 +104,42 @@ class LatestCalculationService(
       calculationReference,
       location,
       reason,
-      calculationSource,
+      CalculationSource.CRDS,
       calculationResultEnrichmentService.addDetailToCalculationDates(
         dates,
         sentenceAndOffences,
         breakdown,
         historicalTusedSource,
         sentenceDateOverrides,
+        historicDates,
+      ).values.toList(),
+    )
+  }
+
+  private fun toLatestNomisCalculation(
+    prisonerId: String,
+    bookingId: Long,
+    calculationReference: Long?,
+    prisonerCalculation: OffenderKeyDates,
+    reason: String,
+  ): LatestCalculation {
+    val dates = offenderKeyDatesService.releaseDates(prisonerCalculation)
+    val sentenceDateOverrides = prisonService.getSentenceOverrides(bookingId, dates)
+    return LatestCalculation(
+      prisonerId,
+      bookingId,
+      prisonerCalculation.calculatedAt,
+      calculationReference,
+      null,
+      reason,
+      CalculationSource.NOMIS,
+      calculationResultEnrichmentService.addDetailToCalculationDates(
+        dates,
+        null,
+        null,
+        null,
+        sentenceDateOverrides,
+        emptyList(),
       ).values.toList(),
     )
   }

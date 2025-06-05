@@ -17,7 +17,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.BookingAndSentenceAdjustments
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ApprovedDatesSubmissionRepository
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeHistoricOverrideRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationReasonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
@@ -32,6 +32,9 @@ class CalculationTransactionalServiceValidationTest {
   private val calculationRequestRepository = mock<CalculationRequestRepository>()
   private val calculationOutcomeRepository = mock<CalculationOutcomeRepository>()
   private val calculationReasonRepository = mock<CalculationReasonRepository>()
+  private val calculationConfirmationService = mock<CalculationConfirmationService>()
+  private val dominantHistoricCalculationOutcomeRepository = mock<CalculationOutcomeHistoricOverrideRepository>()
+  private val dominantHistoricDateService = DominantHistoricDateService()
   private val prisonService = mock<PrisonService>()
   private val calculationSourceDataService = mock<CalculationSourceDataService>()
   private val eventService = mock<EventService>()
@@ -39,7 +42,6 @@ class CalculationTransactionalServiceValidationTest {
   private val calculationService = mock<CalculationService>()
   private val validationService = mock<ValidationService>()
   private val serviceUserService = mock<ServiceUserService>()
-  private val approvedDatesSubmissionRepository = mock<ApprovedDatesSubmissionRepository>()
   private val nomisCommentService = mock<NomisCommentService>()
   private val trancheOutcomeRepository = mock<TrancheOutcomeRepository>()
 
@@ -75,6 +77,7 @@ class CalculationTransactionalServiceValidationTest {
       calculationRequestRepository,
       calculationOutcomeRepository,
       calculationReasonRepository,
+      dominantHistoricCalculationOutcomeRepository,
       TestUtil.objectMapper(),
       prisonService,
       calculationSourceDataService,
@@ -84,7 +87,8 @@ class CalculationTransactionalServiceValidationTest {
       validationService,
       eventService,
       serviceUserService,
-      approvedDatesSubmissionRepository,
+      calculationConfirmationService,
+      dominantHistoricDateService,
       nomisCommentService,
       TEST_BUILD_PROPERTIES,
       trancheOutcomeRepository,

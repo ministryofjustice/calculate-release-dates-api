@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 import arrow.core.left
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvFileSource
@@ -21,6 +22,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationP
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.sdsEarlyReleaseTrancheTwoDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.SDS40TrancheConfiguration
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcome
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcomeHistoricOverride
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.PRELIMINARY
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
@@ -39,12 +42,16 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Calc
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.RegionBankHolidays
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.BookingAndSentenceAdjustments
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ApprovedDatesSubmissionRepository
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeHistoricOverrideRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationReasonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.TrancheOutcomeRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource.JsonTransformation
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.sentence.SentenceAdjustedCalculationService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.sentence.SentenceCombinationService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.sentence.SentenceIdentificationService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.sentence.SentencesExtractionService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.BookingTimelineService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineAdjustmentService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculator
@@ -67,13 +74,15 @@ class HintTextTest {
   private val calculationRequestRepository = mock<CalculationRequestRepository>()
   private val calculationOutcomeRepository = mock<CalculationOutcomeRepository>()
   private val calculationReasonRepository = mock<CalculationReasonRepository>()
+  private val dominantHistoricCalculationOutcomeRepository = mock<CalculationOutcomeHistoricOverrideRepository>()
+  private val calculationConfirmationService = mock<CalculationConfirmationService>()
+  private val dominantHistoricDateService = DominantHistoricDateService()
   private val prisonService = mock<PrisonService>()
   private val calculationSourceDataService = mock<CalculationSourceDataService>()
   private val eventService = mock<EventService>()
   private val bookingService = mock<BookingService>()
   private val validationService = mock<ValidationService>()
   private val serviceUserService = mock<ServiceUserService>()
-  private val approvedDatesSubmissionRepository = mock<ApprovedDatesSubmissionRepository>()
   private val nomisCommentService = mock<NomisCommentService>()
   private val bankHolidayService = mock<BankHolidayService>()
   private val trancheOutcomeRepository = mock<TrancheOutcomeRepository>()
@@ -87,11 +96,34 @@ class HintTextTest {
     }
   }
 
+  @Test
+  fun `Historic SLED date`() {
+    val historicDates = listOf(
+      CalculationOutcomeHistoricOverride(
+        id = 1,
+        calculationRequestId = 1,
+        calculationOutcomeDate = LocalDate.now(),
+        historicCalculationOutcomeId = 1,
+        historicCalculationOutcomeDate = LocalDate.now(),
+        calculationOutcome = CalculationOutcome(
+          id = 10,
+          calculationRequestId = 10,
+          outcomeDate = LocalDate.now(),
+          calculationDateType = ReleaseDateType.SLED.name,
+        ),
+      ),
+    )
+    runHintText("crs-2348-sled", historicDates)
+  }
+
   @ParameterizedTest
   @CsvFileSource(resources = ["/test_data/hint-text.csv"], numLinesToSkip = 1)
   fun `Test Hint Texts`(testCase: String) {
-    log.info("Running test-case $testCase")
+    runHintText(testCase, emptyList())
+  }
 
+  private fun runHintText(testCase: String, historicDates: List<CalculationOutcomeHistoricOverride>) {
+    log.info("Running test-case $testCase")
     val (booking, calculationUserInputs) = jsonTransformation.loadHintTextBooking(testCase)
     val calculation = calculationService.calculateReleaseDates(booking, calculationUserInputs)
     val calculatedReleaseDates = createCalculatedReleaseDates(calculation.calculationResult)
@@ -101,6 +133,7 @@ class HintTextTest {
       dates = calculation.calculationResult.dates,
       calculationBreakdown = calculationBreakdown,
       booking = booking,
+      historicOverrides = historicDates,
     )
 
     val actualDatesAndHints = mapToDatesAndHints(breakdownWithHints)
@@ -123,6 +156,7 @@ class HintTextTest {
       calculationBreakdown = calculationBreakdown,
       sentenceOverrideDates = calculation.calculationResult.dates.map { it.key.name },
       booking = booking,
+      emptyList(),
     )
 
     val actualDatesAndHints = mapToDatesAndHints(breakdownWithHints)
@@ -157,12 +191,14 @@ class HintTextTest {
     calculationBreakdown: CalculationBreakdown,
     sentenceOverrideDates: List<String> = emptyList(),
     booking: Booking,
+    historicOverrides: List<CalculationOutcomeHistoricOverride> = emptyList(),
   ): Map<ReleaseDateType, DetailedDate> = calculationResultEnrichmentService.addDetailToCalculationDates(
     releaseDates = dates.map { ReleaseDate(date = it.value, type = it.key) },
     sentenceAndOffences = SOURCE_DATA.sentenceAndOffences,
     calculationBreakdown = calculationBreakdown,
     historicalTusedSource = booking.historicalTusedData?.historicalTusedSource,
     sentenceDateOverrides = sentenceOverrideDates,
+    historicOverrides,
   )
 
   private fun mapToDatesAndHints(breakdownWithHints: Map<ReleaseDateType, DetailedDate>): List<DatesAndHints> = breakdownWithHints.map {
@@ -265,6 +301,7 @@ class HintTextTest {
     calculationRequestRepository,
     calculationOutcomeRepository,
     calculationReasonRepository,
+    dominantHistoricCalculationOutcomeRepository,
     TestUtil.objectMapper(),
     prisonService,
     calculationSourceDataService,
@@ -274,7 +311,8 @@ class HintTextTest {
     validationService,
     eventService,
     serviceUserService,
-    approvedDatesSubmissionRepository,
+    calculationConfirmationService,
+    dominantHistoricDateService,
     nomisCommentService,
     TEST_BUILD_PROPERTIES,
     trancheOutcomeRepository,

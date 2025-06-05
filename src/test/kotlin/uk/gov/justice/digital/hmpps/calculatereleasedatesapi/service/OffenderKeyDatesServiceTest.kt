@@ -92,6 +92,7 @@ open class OffenderKeyDatesServiceTest {
         isNull(),
         isNull(),
         anyList(),
+        emptyList(),
       ),
     ).thenReturn(detailedDates)
     whenever(prisonService.getNOMISCalcReasons()).thenReturn(
@@ -181,6 +182,7 @@ open class OffenderKeyDatesServiceTest {
         isNull(),
         isNull(),
         anyList(),
+        emptyList(),
       ),
     ).thenReturn(detailedDates)
 
@@ -280,6 +282,7 @@ open class OffenderKeyDatesServiceTest {
         isNull(),
         isNull(),
         anyList(),
+        emptyList(),
       ),
     )
       .thenThrow(NoSuchElementException("Error"))
@@ -325,6 +328,7 @@ open class OffenderKeyDatesServiceTest {
         isNull(),
         isNull(),
         anyList(),
+        emptyList(),
       ),
     ).thenReturn(detailedDates)
 

@@ -14,6 +14,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NomisCalculat
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OffenderKeyDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDatesAndCalculationContext
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeHistoricOverrideRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource.CalculationController
 
@@ -23,6 +24,7 @@ class OffenderKeyDatesService(
   private val prisonService: PrisonService,
   private val calculationResultEnrichmentService: CalculationResultEnrichmentService,
   private val calculationRequestRepository: CalculationRequestRepository,
+  private val historicOverrideRepository: CalculationOutcomeHistoricOverrideRepository,
 ) {
 
   fun getKeyDatesByCalcId(calculationRequestId: Long): ReleaseDatesAndCalculationContext {
@@ -43,6 +45,8 @@ class OffenderKeyDatesService(
 
     val sentenceDateOverrides = prisonService.getSentenceOverrides(calculationRequest.bookingId, dates)
 
+    val historicDates = historicOverrideRepository.findByCalculationRequestId(calculationRequestId)
+
     val enrichedDates = runCatching {
       calculationResultEnrichmentService.addDetailToCalculationDates(
         dates,
@@ -50,6 +54,7 @@ class OffenderKeyDatesService(
         null,
         null,
         sentenceDateOverrides,
+        historicDates,
       ).values.toList()
     }.getOrElse { throw CrdWebException("Unable to retrieve offender key dates", HttpStatus.NOT_FOUND) }
 
@@ -81,6 +86,7 @@ class OffenderKeyDatesService(
       null,
       null,
       listOf(),
+      emptyList(),
     ).values.toList()
 
     val nomisReason =
@@ -108,6 +114,7 @@ class OffenderKeyDatesService(
       null,
       null,
       sentenceDateOverrides,
+      emptyList(),
     ).values.toList()
 
     val nomisReason =
