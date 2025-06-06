@@ -8,8 +8,9 @@ import org.springframework.boot.info.BuildProperties
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.adjustmentsapi.model.AdjustmentDto
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ApprovedDates
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ApprovedDatesSubmission
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcome
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcomeHistoricOverride
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationType
@@ -19,9 +20,9 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Calcul
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.ERROR
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.PRELIMINARY
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.HistoricalTusedSource
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.BreakdownChangedSinceLastCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CalculationDataHasChangedError
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CalculationNotFoundException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.PreconditionFailedException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.PrisonApiDataNotFoundException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
@@ -29,6 +30,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedRel
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationFragments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationRequestModel
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualEntrySelectedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
@@ -36,9 +38,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmitCalcula
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ReturnToCustodyDate
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.UpdateOffenderDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.BookingAndSentenceAdjustments
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ApprovedDatesSubmissionRepository
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeHistoricOverrideRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationReasonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
@@ -46,6 +47,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.TrancheO
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessage
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationService
+import java.time.LocalDate
 import java.util.UUID
 
 @Service
@@ -53,19 +55,19 @@ class CalculationTransactionalService(
   private val calculationRequestRepository: CalculationRequestRepository,
   private val calculationOutcomeRepository: CalculationOutcomeRepository,
   private val calculationReasonRepository: CalculationReasonRepository,
+  private val calculationOutcomeHistoricOverrideRepository: CalculationOutcomeHistoricOverrideRepository,
   private val objectMapper: ObjectMapper,
-  private val prisonService: PrisonService,
   private val calculationSourceDataService: CalculationSourceDataService,
   private val sourceDataMapper: SourceDataMapper,
   private val calculationService: CalculationService,
   private val bookingService: BookingService,
   private val validationService: ValidationService,
-  private val eventService: EventService,
   private val serviceUserService: ServiceUserService,
-  private val approvedDatesSubmissionRepository: ApprovedDatesSubmissionRepository,
-  private val nomisCommentService: NomisCommentService,
+  private val calculationConfirmationService: CalculationConfirmationService,
+  private val dominantHistoricDateService: DominantHistoricDateService,
   private val buildProperties: BuildProperties,
   private val trancheOutcomeRepository: TrancheOutcomeRepository,
+  private val featureToggles: FeatureToggles,
 ) {
 
   /*
@@ -184,7 +186,6 @@ class CalculationTransactionalService(
         booking,
         sourceData,
         calculationUserInputs,
-        error,
         reasonForCalculation,
         calculationRequestModel.otherReasonDescription,
       )
@@ -258,12 +259,12 @@ class CalculationTransactionalService(
         historicalTusedSource,
       )
       if (!approvedDates.isNullOrEmpty()) {
-        storeApprovedDates(calculation, approvedDates)
+        calculationConfirmationService.storeApprovedDates(calculation, approvedDates)
       }
-      writeToNomisAndPublishEvent(prisonerId, booking, calculation, approvedDates, isSpecialistSupport)
+      calculationConfirmationService.writeToNomisAndPublishEvent(prisonerId, booking, calculation, approvedDates, isSpecialistSupport)
       return calculation
     } catch (error: Exception) {
-      recordError(booking, sourceData, userInput, error, reasonForCalculation, otherReasonForCalculation)
+      recordError(booking, sourceData, userInput, reasonForCalculation, otherReasonForCalculation)
       throw error
     }
   }
@@ -281,28 +282,45 @@ class CalculationTransactionalService(
     historicalTusedSource: HistoricalTusedSource? = null,
     usernameOverride: String? = null,
   ): CalculatedReleaseDates {
-    val calculationRequest =
-      calculationRequestRepository.save(
-        transform(
-          booking,
-          usernameOverride ?: serviceUserService.getUsername(),
-          calculationStatus,
-          sourceData,
-          reasonForCalculation,
-          objectMapper,
-          otherCalculationReason,
-          calculationUserInputs,
-          calculationFragments,
-          calculationType,
-          historicalTusedSource,
-          buildProperties.version,
-        ),
-      )
+    val calculationRequest = calculationRequestRepository.save(
+      transform(
+        booking,
+        usernameOverride ?: serviceUserService.getUsername(),
+        calculationStatus,
+        sourceData,
+        reasonForCalculation,
+        objectMapper,
+        otherCalculationReason,
+        calculationUserInputs,
+        calculationFragments,
+        calculationType,
+        historicalTusedSource,
+        buildProperties.version,
+      ),
+    )
+
     val calculationOutput = calculationService.calculateReleaseDates(booking, calculationUserInputs)
     val calculationResult = calculationOutput.calculationResult
-    calculationResult.dates.forEach {
-      calculationOutcomeRepository.save(transform(calculationRequest, it.key, it.value))
+    val calculationDates = calculationResult.dates.toMutableMap()
+
+    if (featureToggles.historicSled) {
+      val sledDate = calculationDates[ReleaseDateType.SLED]
+      val historicDates = historicDatesFromSled(sourceData.prisonerDetails.offenderNo, sledDate)
+      if (sledDate !== null && historicDates !== null) {
+        persistCalculationDatesWithHistoricOverrides(
+          sledDate,
+          calculationRequest,
+          calculationResult,
+          historicDates,
+          calculationDates,
+        )
+      } else {
+        persistCalculationDates(calculationRequest, calculationDates)
+      }
+    } else {
+      persistCalculationDates(calculationRequest, calculationDates)
     }
+
     trancheOutcomeRepository.save(
       TrancheOutcome(
         calculationRequest = calculationRequest,
@@ -313,7 +331,7 @@ class CalculationTransactionalService(
     )
 
     return CalculatedReleaseDates(
-      dates = calculationResult.dates,
+      dates = calculationDates,
       effectiveSentenceLength = calculationResult.effectiveSentenceLength,
       prisonerId = sourceData.prisonerDetails.offenderNo,
       bookingId = sourceData.prisonerDetails.bookingId,
@@ -330,6 +348,65 @@ class CalculationTransactionalService(
       sdsEarlyReleaseTranche = calculationResult.sdsEarlyReleaseTranche,
       calculationOutput = calculationOutput,
     )
+  }
+
+  private fun historicDatesFromSled(
+    offenderNo: String,
+    sledDate: LocalDate?,
+  ): List<CalculationOutcome>? = sledDate?.let {
+    calculationOutcomeRepository
+      .getDominantHistoricDates(offenderNo, it)
+      .takeIf { results -> results.isNotEmpty() }
+  }
+
+  private fun persistCalculationDates(
+    calculationRequest: CalculationRequest,
+    calculationDates: Map<ReleaseDateType, LocalDate>,
+  ) = calculationDates.forEach { (type, date) ->
+    calculationOutcomeRepository.save(transform(calculationRequest, type, date))
+  }
+
+  /**
+   * Persist new outcome dates using historic outcome dates where present
+   * Create CalculationOutcomeHistoricOverride for each
+   */
+  private fun persistCalculationDatesWithHistoricOverrides(
+    sledDate: LocalDate,
+    calculationRequest: CalculationRequest,
+    calculationResult: CalculationResult,
+    historicDates: List<CalculationOutcome>,
+    calculationDates: MutableMap<ReleaseDateType, LocalDate>,
+  ) {
+    val overridesByType = dominantHistoricDateService.calculateFromSled(sledDate, historicDates)
+
+    val historicOverrideIds = historicDates
+      .filter { overridesByType.containsKey(ReleaseDateType.valueOf(it.calculationDateType)) }
+      .associate { ReleaseDateType.valueOf(it.calculationDateType) to it.id }
+
+    overridesByType.forEach { (type, date) -> calculationDates[type] = date }
+
+    if (ReleaseDateType.SLED !in overridesByType) {
+      calculationDates.remove(ReleaseDateType.SLED)
+    }
+
+    val newOutcomesByType = calculationDates.map { (type, date) ->
+      val outcome = calculationOutcomeRepository.save(transform(calculationRequest, type, date))
+      ReleaseDateType.valueOf(outcome.calculationDateType) to outcome
+    }.toMap()
+
+    overridesByType.forEach { (type, historicDate) ->
+      val historicId = historicOverrideIds[type] ?: return@forEach
+      val resultDate = calculationResult.dates[type] ?: return@forEach
+      val calculationOutcome = newOutcomesByType[type] ?: return@forEach
+      val overrideRecord = CalculationOutcomeHistoricOverride(
+        calculationRequestId = calculationRequest.id,
+        calculationOutcomeDate = resultDate,
+        historicCalculationOutcomeId = historicId,
+        historicCalculationOutcomeDate = historicDate,
+        calculationOutcome = calculationOutcome,
+      )
+      calculationOutcomeHistoricOverrideRepository.save(overrideRecord)
+    }
   }
 
   @Transactional(readOnly = true)
@@ -432,90 +509,6 @@ class CalculationTransactionalService(
   }
 
   @Transactional(readOnly = true)
-  fun writeToNomisAndPublishEvent(
-    prisonerId: String,
-    booking: Booking,
-    calculation: CalculatedReleaseDates,
-    approvedDates: List<ManualEntrySelectedDate>?,
-    isSpecialistSupport: Boolean? = false,
-  ) {
-    val calculationRequest = calculationRequestRepository.findById(calculation.calculationRequestId)
-      .orElseThrow { EntityNotFoundException("No calculation request exists") }
-
-    val updateOffenderDates = UpdateOffenderDates(
-      calculationUuid = calculationRequest.calculationReference,
-      submissionUser = serviceUserService.getUsername(),
-      keyDates = transform(calculation, approvedDates),
-      noDates = false,
-      reason = calculationRequest.reasonForCalculation?.nomisReason,
-      comment = nomisCommentService.getNomisComment(calculationRequest, isSpecialistSupport!!, approvedDates),
-    )
-    try {
-      prisonService.postReleaseDates(booking.bookingId, updateOffenderDates)
-    } catch (ex: Exception) {
-      log.error("Nomis write failed: ${ex.message}")
-      throw EntityNotFoundException(
-        "Writing release dates to NOMIS failed for prisonerId $prisonerId " +
-          "and bookingId ${booking.bookingId}",
-      )
-    }
-    runCatching {
-      eventService.publishReleaseDatesChangedEvent(prisonerId, booking.bookingId)
-    }.onFailure { error ->
-      log.error(
-        "Failed to send release-dates-changed-event for prisoner ID $prisonerId",
-        error,
-      )
-    }
-  }
-
-  @Transactional
-  fun recordError(
-    booking: Booking,
-    sourceData: CalculationSourceData,
-    calculationUserInputs: CalculationUserInputs?,
-    error: Exception,
-    reasonForCalculation: CalculationReason?,
-    otherReasonForCalculation: String?,
-  ) {
-    calculationRequestRepository.save(
-      transform(
-        booking,
-        serviceUserService.getUsername(),
-        ERROR,
-        sourceData,
-        reasonForCalculation,
-        objectMapper,
-        otherReasonForCalculation,
-        calculationUserInputs,
-        version = buildProperties.version,
-      ),
-    )
-  }
-
-  @Transactional
-  fun storeApprovedDates(calculation: CalculatedReleaseDates, approvedDates: List<ManualEntrySelectedDate>) {
-    val foundCalculation = calculationRequestRepository.findById(calculation.calculationRequestId)
-    foundCalculation.map {
-      val submittedDatesToSave = approvedDates.map { approvedDate ->
-        ApprovedDates(
-          calculationDateType = approvedDate.dateType.name,
-          outcomeDate = approvedDate.date!!.toLocalDate(),
-        )
-      }
-      val approvedDatesSubmission = ApprovedDatesSubmission(
-        calculationRequest = it,
-        bookingId = it.bookingId,
-        prisonerId = it.prisonerId,
-        submittedByUsername = it.calculatedByUsername,
-        approvedDates = submittedDatesToSave,
-      )
-      approvedDatesSubmissionRepository.save(approvedDatesSubmission)
-    }
-      .orElseThrow { CalculationNotFoundException("Could not find calculation with request id: ${calculation.calculationRequestId}") }
-  }
-
-  @Transactional(readOnly = true)
   fun findCalculationResultsByCalculationReference(
     calculationReference: String,
     checkForChange: Boolean = false,
@@ -542,6 +535,28 @@ class CalculationTransactionalService(
 
   @Transactional(readOnly = true)
   fun validateRequestedDates(dates: List<String>): List<ValidationMessage> = validationService.validateRequestedDates(dates)
+
+  fun recordError(
+    booking: Booking,
+    sourceData: CalculationSourceData,
+    calculationUserInputs: CalculationUserInputs?,
+    reasonForCalculation: CalculationReason?,
+    otherReasonForCalculation: String?,
+  ) {
+    calculationRequestRepository.save(
+      transform(
+        booking,
+        serviceUserService.getUsername(),
+        ERROR,
+        sourceData,
+        reasonForCalculation,
+        objectMapper,
+        otherReasonForCalculation,
+        calculationUserInputs,
+        version = buildProperties.version,
+      ),
+    )
+  }
 
   companion object {
     val log: Logger = LoggerFactory.getLogger(this::class.java)

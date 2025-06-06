@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CrdWebException
@@ -14,6 +15,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NomisCalculat
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OffenderKeyDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDatesAndCalculationContext
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeHistoricOverrideRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource.CalculationController
 
@@ -23,6 +25,8 @@ class OffenderKeyDatesService(
   private val prisonService: PrisonService,
   private val calculationResultEnrichmentService: CalculationResultEnrichmentService,
   private val calculationRequestRepository: CalculationRequestRepository,
+  private val calculationOutcomeHistoricOverrideRepository: CalculationOutcomeHistoricOverrideRepository,
+  private val featureToggles: FeatureToggles,
 ) {
 
   fun getKeyDatesByCalcId(calculationRequestId: Long): ReleaseDatesAndCalculationContext {
@@ -43,6 +47,8 @@ class OffenderKeyDatesService(
 
     val sentenceDateOverrides = prisonService.getSentenceOverrides(calculationRequest.bookingId, dates)
 
+    val historicDates = if (featureToggles.historicSled) calculationOutcomeHistoricOverrideRepository.findByCalculationRequestId(calculationRequestId) else emptyList()
+
     val enrichedDates = runCatching {
       calculationResultEnrichmentService.addDetailToCalculationDates(
         dates,
@@ -50,6 +56,7 @@ class OffenderKeyDatesService(
         null,
         null,
         sentenceDateOverrides,
+        historicDates,
       ).values.toList()
     }.getOrElse { throw CrdWebException("Unable to retrieve offender key dates", HttpStatus.NOT_FOUND) }
 
@@ -81,6 +88,7 @@ class OffenderKeyDatesService(
       null,
       null,
       listOf(),
+      emptyList(),
     ).values.toList()
 
     val nomisReason =
@@ -108,6 +116,7 @@ class OffenderKeyDatesService(
       null,
       null,
       sentenceDateOverrides,
+      emptyList(),
     ).values.toList()
 
     val nomisReason =

@@ -15,7 +15,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AnalysedAdjus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AnalysedBookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AnalysedSentenceAndOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.AdjustmentsService
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.SentenceAndOffenceService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.sentence.SentenceAndOffenceService
 
 @RestController
 @RequestMapping(produces = [MediaType.APPLICATION_JSON_VALUE])

@@ -85,11 +85,16 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Sent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.UpdateOffenderDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ApprovedDatesSubmissionRepository
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeHistoricOverrideRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationReasonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.TrancheOutcomeRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource.JsonTransformation
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.sentence.SentenceAdjustedCalculationService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.sentence.SentenceCombinationService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.sentence.SentenceIdentificationService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.sentence.SentencesExtractionService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.BookingTimelineService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineAdjustmentService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculator
@@ -132,6 +137,8 @@ class CalculationTransactionalServiceTest {
   private val calculationRequestRepository = mock<CalculationRequestRepository>()
   private val calculationOutcomeRepository = mock<CalculationOutcomeRepository>()
   private val calculationReasonRepository = mock<CalculationReasonRepository>()
+  private val calculationOutcomeHistoricOverrideRepository = mock<CalculationOutcomeHistoricOverrideRepository>()
+  private val dominantHistoricDateService = DominantHistoricDateService()
   private val manageOffencesService = mock<ManageOffencesService>()
   private val prisonService = mock<PrisonService>()
   private val calculationSourceDataService = mock<CalculationSourceDataService>()
@@ -144,6 +151,14 @@ class CalculationTransactionalServiceTest {
   private val bankHolidayService = mock<BankHolidayService>()
   private val trancheOutcomeRepository = mock<TrancheOutcomeRepository>()
   private val fixedTermRecallsService = FixedTermRecallsService()
+  private val calculationConfirmationService = CalculationConfirmationService(
+    calculationRequestRepository,
+    serviceUserService,
+    nomisCommentService,
+    prisonService,
+    eventService,
+    approvedDatesSubmissionRepository,
+  )
 
   private val fakeSourceData = CalculationSourceData(
     emptyList(),
@@ -394,7 +409,7 @@ class CalculationTransactionalServiceTest {
     )
     whenever(nomisCommentService.getNomisComment(any(), any(), any())).thenReturn("The NOMIS Reason")
 
-    calculationTransactionalService().writeToNomisAndPublishEvent(
+    calculationConfirmationService.writeToNomisAndPublishEvent(
       PRISONER_ID,
       BOOKING.copy(sentences = listOf(StandardSENTENCE.copy(duration = ZERO_DURATION))),
       BOOKING_CALCULATION.copy(
@@ -444,7 +459,7 @@ class CalculationTransactionalServiceTest {
     ).thenThrow(EntityNotFoundException("test ex"))
 
     val exception = assertThrows<EntityNotFoundException> {
-      calculationTransactionalService().writeToNomisAndPublishEvent(
+      calculationConfirmationService.writeToNomisAndPublishEvent(
         PRISONER_ID,
         BOOKING,
         BOOKING_CALCULATION,
@@ -477,7 +492,7 @@ class CalculationTransactionalServiceTest {
     ).thenThrow(EntityNotFoundException("test ex"))
 
     try {
-      calculationTransactionalService().writeToNomisAndPublishEvent(
+      calculationConfirmationService.writeToNomisAndPublishEvent(
         PRISONER_ID,
         BOOKING,
         BOOKING_CALCULATION,
@@ -544,7 +559,7 @@ class CalculationTransactionalServiceTest {
         CALCULATION_REQUEST_WITH_OUTCOMES.copy(inputData = INPUT_DATA),
       ),
     )
-    calculationTransactionalService().writeToNomisAndPublishEvent(
+    calculationConfirmationService.writeToNomisAndPublishEvent(
       PRISONER_ID,
       BOOKING.copy(sentences = listOf(StandardSENTENCE.copy(duration = ZERO_DURATION))),
       BOOKING_CALCULATION.copy(
@@ -587,7 +602,7 @@ class CalculationTransactionalServiceTest {
     )
     whenever(nomisCommentService.getNomisComment(any(), any(), any())).thenReturn("The NOMIS Reason")
 
-    calculationTransactionalService().writeToNomisAndPublishEvent(
+    calculationConfirmationService.writeToNomisAndPublishEvent(
       PRISONER_ID,
       BOOKING.copy(sentences = listOf(StandardSENTENCE.copy(duration = ZERO_DURATION))),
       BOOKING_CALCULATION.copy(
@@ -773,19 +788,19 @@ class CalculationTransactionalServiceTest {
       calculationRequestRepository,
       calculationOutcomeRepository,
       calculationReasonRepository,
+      calculationOutcomeHistoricOverrideRepository,
       TestUtil.objectMapper(),
-      prisonService,
       calculationSourceDataService,
       sourceDataMapper,
       calculationService,
       bookingService,
       validationServiceToUse,
-      eventService,
       serviceUserService,
-      approvedDatesSubmissionRepository,
-      nomisCommentService,
+      calculationConfirmationService,
+      dominantHistoricDateService,
       TEST_BUILD_PROPERTIES,
       trancheOutcomeRepository,
+      FeatureToggles(historicSled = true),
     ) to calculationService
   }
 
