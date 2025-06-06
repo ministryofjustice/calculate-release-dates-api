@@ -10,9 +10,10 @@ hdced:
 
 ersed:
   max-period-days: 544
+  release-point: 0.5
 
 release-point-multipliers:
-  earlyReleasePoint: 0.4
+  early-release-point: 0.4
 sds-early-release-tranches:
   tranche-one-date: 2024-09-10
   tranche-two-date: 2024-10-22

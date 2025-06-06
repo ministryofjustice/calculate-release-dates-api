@@ -15,54 +15,61 @@ import java.time.temporal.ChronoUnit
 import kotlin.math.ceil
 
 @Service
-class ErsedCalculator(val ersedConfiguration: ErsedConfiguration) {
+class ErsedCalculator(private val ersedConfiguration: ErsedConfiguration) {
 
   fun generateEarlyReleaseSchemeEligibilityDateBreakdown(
     sentence: CalculableSentence,
     sentenceCalculation: SentenceCalculation,
   ) {
-    val ersed = calculateErsed(sentence, sentenceCalculation)
+    val ersed = calculateErsed(sentence, sentenceCalculation) ?: return
 
-    if (ersed != null) {
-      val addedDays = sentenceCalculation.adjustments.ualDuringCustody + sentenceCalculation.adjustments.awardedDuringCustody
-      if (ersed.releaseDate.minusDays(addedDays).isBefore(sentence.sentencedAt)) {
-        sentenceCalculation.breakdownByReleaseDateType[ReleaseDateType.ERSED] =
-          ReleaseDateCalculationBreakdown(
-            releaseDate = sentence.sentencedAt.plusDays(addedDays.toLong()),
-            unadjustedDate = sentence.sentencedAt,
-            adjustedDays = addedDays.toLong(),
-            rules = setOf(CalculationRule.ERSED_BEFORE_SENTENCE_DATE),
-          )
+    val addedDays = sentenceCalculation.adjustments.ualDuringCustody + sentenceCalculation.adjustments.awardedDuringCustody
+    val adjustedErsed = ersed.releaseDate.minusDays(addedDays)
+
+    sentenceCalculation.breakdownByReleaseDateType[ReleaseDateType.ERSED] =
+      if (adjustedErsed.isBefore(sentence.sentencedAt)) {
+        ReleaseDateCalculationBreakdown(
+          releaseDate = sentence.sentencedAt.plusDays(addedDays),
+          unadjustedDate = sentence.sentencedAt,
+          adjustedDays = addedDays,
+          rules = setOf(CalculationRule.ERSED_BEFORE_SENTENCE_DATE),
+        )
       } else {
-        sentenceCalculation.breakdownByReleaseDateType[ReleaseDateType.ERSED] = ersed
+        ersed
       }
-    }
   }
 
   private fun calculateErsed(
     sentence: CalculableSentence,
     sentenceCalculation: SentenceCalculation,
-  ): ReleaseDateCalculationBreakdown? {
-    if (!sentence.isRecall() && sentence.calculateErsed() && isNotBeforeCJAAndLASPOIfSDS(sentence)) {
-      return calculateErsedMinOrMax(sentence, sentenceCalculation)
-    }
-    return null
+  ): ReleaseDateCalculationBreakdown? = when {
+    sentence.isRecall() -> null
+    !sentence.calculateErsed() -> null
+    !isEligibleUnderCJAAndLASPO(sentence) -> null
+    else -> calculateErsedMinOrMax(sentence, sentenceCalculation)
   }
 
-  private fun isNotBeforeCJAAndLASPOIfSDS(sentence: CalculableSentence): Boolean = !(sentence is StandardDeterminateSentence && sentence.isBeforeCJAAndLASPO())
+  private fun isEligibleUnderCJAAndLASPO(sentence: CalculableSentence): Boolean = sentence !is StandardDeterminateSentence || !sentence.isBeforeCJAAndLASPO()
 
   private fun calculateErsedMinOrMax(
     sentence: CalculableSentence,
     sentenceCalculation: SentenceCalculation,
   ): ReleaseDateCalculationBreakdown {
-    val effectiveRelease =
-      sentenceCalculation.extendedDeterminateParoleEligibilityDate ?: sentenceCalculation.adjustedDeterminateReleaseDate
+    val isExtended = sentenceCalculation.extendedDeterminateParoleEligibilityDate != null
+    val effectiveRelease = if (isExtended) {
+      sentenceCalculation.extendedDeterminateParoleEligibilityDate!!
+    } else {
+      sentenceCalculation.adjustedDeterminateReleaseDate
+    }
+
+    val unadjustedEffectiveRelease = sentenceCalculation.unadjustedExtendedDeterminateParoleEligibilityDate
+      ?: sentenceCalculation.unadjustedReleaseDate.unadjustedDeterminateReleaseDate
+
     val maxEffectiveErsed = effectiveRelease.minusDays(ersedConfiguration.maxPeriodDays.toLong())
-    val maxEffectiveErsedReleaseCalcBreakdown = ReleaseDateCalculationBreakdown(
+    val maxEffectiveErsedBreakdown = ReleaseDateCalculationBreakdown(
       rules = setOf(CalculationRule.ERSED_MAX_PERIOD),
       releaseDate = maxEffectiveErsed,
-      unadjustedDate = sentenceCalculation.unadjustedExtendedDeterminateParoleEligibilityDate
-        ?: sentenceCalculation.unadjustedReleaseDate.unadjustedDeterminateReleaseDate,
+      unadjustedDate = unadjustedEffectiveRelease,
       adjustedDays = ChronoUnit.DAYS.between(
         sentenceCalculation.unadjustedReleaseDate.unadjustedDeterminateReleaseDate,
         sentenceCalculation.adjustedDeterminateReleaseDate,
@@ -71,29 +78,26 @@ class ErsedCalculator(val ersedConfiguration: ErsedConfiguration) {
         CalculationRule.ERSED_MAX_PERIOD to AdjustmentDuration(-ersedConfiguration.maxPeriodDays.toLong(), ChronoUnit.DAYS),
       ),
     )
-    val release = sentenceCalculation.unadjustedExtendedDeterminateParoleEligibilityDate
-      ?: sentenceCalculation.unadjustedReleaseDate.unadjustedDeterminateReleaseDate
 
-    val daysUntilRelease = ChronoUnit.DAYS.between(sentence.sentencedAt, release).plus(1).toInt()
-    // ERS requires that half of custodial period be served before a prisoner is eligible
-    val unadjustedErsed =
-      sentence.sentencedAt
-        .plusDays(ceil(daysUntilRelease.toDouble() / 2).toLong())
-    val minimumEffectiveErsed = unadjustedErsed
+    val daysUntilRelease = ChronoUnit.DAYS.between(sentence.sentencedAt, unadjustedEffectiveRelease).plus(1).toInt()
+    val unadjustedMinimumErsed = sentence.sentencedAt
+      .plusDays(ceil(daysUntilRelease * ersedConfiguration.releasePoint).toLong())
+    val minimumEffectiveErsed = unadjustedMinimumErsed
       .plusDays(sentenceCalculation.adjustments.adjustmentsForInitialRelease())
-    val minimumEffectiveErsedReleaseCalcBreakdown = ReleaseDateCalculationBreakdown(
+
+    val minimumEffectiveErsedBreakdown = ReleaseDateCalculationBreakdown(
       rules = setOf(CalculationRule.ERSED_MIN_EFFECTIVE_DATE),
       releaseDate = minimumEffectiveErsed,
-      unadjustedDate = unadjustedErsed,
-      adjustedDays = ChronoUnit.DAYS.between(unadjustedErsed, minimumEffectiveErsed),
+      unadjustedDate = unadjustedMinimumErsed,
+      adjustedDays = ChronoUnit.DAYS.between(unadjustedMinimumErsed, minimumEffectiveErsed),
     )
 
-    log.info("Minimum effective ERSED: $minimumEffectiveErsed, Maximum effective ERSED $maxEffectiveErsed")
-
     return if (minimumEffectiveErsed.isAfter(maxEffectiveErsed)) {
-      minimumEffectiveErsedReleaseCalcBreakdown
+      log.info("Using minimum effective ERSED ($minimumEffectiveErsed) as it exceeds max limit ($maxEffectiveErsed)")
+      minimumEffectiveErsedBreakdown
     } else {
-      maxEffectiveErsedReleaseCalcBreakdown
+      log.info("Using maximum effective ERSED ($maxEffectiveErsed)")
+      maxEffectiveErsedBreakdown
     }
   }
 
