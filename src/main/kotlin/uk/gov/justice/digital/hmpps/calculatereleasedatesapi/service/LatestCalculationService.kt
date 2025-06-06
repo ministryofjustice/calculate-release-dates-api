@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.reactive.function.client.WebClientResponseException
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.HistoricalTusedSource
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
@@ -25,8 +26,9 @@ class LatestCalculationService(
   private val calculationRequestRepository: CalculationRequestRepository,
   private val calculationResultEnrichmentService: CalculationResultEnrichmentService,
   private val calculationBreakdownService: CalculationBreakdownService,
-  private val historicOverrideRepository: CalculationOutcomeHistoricOverrideRepository,
+  private val calculationOutcomeHistoricOverrideRepository: CalculationOutcomeHistoricOverrideRepository,
   private val sourceDataMapper: SourceDataMapper,
+  private val featureToggles: FeatureToggles,
 ) {
 
   @Transactional(readOnly = true)
@@ -38,7 +40,6 @@ class LatestCalculationService(
         val nomisReason = prisonService.getNOMISCalcReasons().find { it.code == prisonerCalculation.reasonCode }?.description ?: prisonerCalculation.reasonCode
         toLatestNomisCalculation(
           prisonerId,
-          bookingId,
           bookingId,
           prisonerCalculation,
           nomisReason,
@@ -96,7 +97,7 @@ class LatestCalculationService(
   ): LatestCalculation {
     val dates = offenderKeyDatesService.releaseDates(prisonerCalculation)
     val sentenceDateOverrides = prisonService.getSentenceOverrides(bookingId, dates)
-    val historicDates = historicOverrideRepository.findByCalculationRequestId(calculationRequestId)
+    val historicDates = if (featureToggles.historicSled) calculationOutcomeHistoricOverrideRepository.findByCalculationRequestId(calculationRequestId) else emptyList()
     return LatestCalculation(
       prisonerId,
       bookingId,
@@ -119,7 +120,6 @@ class LatestCalculationService(
   private fun toLatestNomisCalculation(
     prisonerId: String,
     bookingId: Long,
-    calculationReference: Long?,
     prisonerCalculation: OffenderKeyDates,
     reason: String,
   ): LatestCalculation {
@@ -129,7 +129,7 @@ class LatestCalculationService(
       prisonerId,
       bookingId,
       prisonerCalculation.calculatedAt,
-      calculationReference,
+      null,
       null,
       reason,
       CalculationSource.NOMIS,

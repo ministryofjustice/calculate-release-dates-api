@@ -68,6 +68,7 @@ feature-toggles:
   externalMovementsSds40: true
   externalMovementsAdjustmentSharing: true
   concurrentConsecutiveSentencesEnabled: true
+  historicSled: true
 
 hdced4:
   hdc4-commencement-date: 2025-01-01

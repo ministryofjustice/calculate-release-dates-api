@@ -12,6 +12,7 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
@@ -46,7 +47,16 @@ class LatestCalculationServiceTest {
   private val historicOverrideRepository = mock<CalculationOutcomeHistoricOverrideRepository>()
   private val sourceDataMapper: SourceDataMapper = mock()
   private val offenderKeyDatesService: OffenderKeyDatesService = mock()
-  private val service = LatestCalculationService(prisonService, offenderKeyDatesService, calculationRequestRepository, calculationResultEnrichmentService, calculationBreakdownService, historicOverrideRepository, sourceDataMapper)
+  private val service = LatestCalculationService(
+    prisonService,
+    offenderKeyDatesService,
+    calculationRequestRepository,
+    calculationResultEnrichmentService,
+    calculationBreakdownService,
+    historicOverrideRepository,
+    sourceDataMapper,
+    FeatureToggles(historicSled = true),
+  )
   private val objectMapper = TestUtil.objectMapper()
   private val prisonerId = "ABC123"
   private val bookingId = 123456L

@@ -157,3 +157,4 @@ feature-toggles:
   externalMovementsAdjustmentSharing: ${EXTERNAL_MOVEMENTS_ADJUSTMENTS_FEATURE_TOGGLE:false}
   useAdjustmentsApi: ${USE_ADJUSTMENTS_API:false}
   concurrentConsecutiveSentencesEnabled: ${CONCURRENT_CONSECUTIVE_SENTENCES_ENABLED:false}
+  historic-sled: ${HISTORIC_SLED_ENABLED:false}

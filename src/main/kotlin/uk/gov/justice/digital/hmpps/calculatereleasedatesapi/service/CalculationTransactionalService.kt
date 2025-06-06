@@ -8,6 +8,7 @@ import org.springframework.boot.info.BuildProperties
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.adjustmentsapi.model.AdjustmentDto
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcome
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcomeHistoricOverride
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationReason
@@ -56,19 +57,17 @@ class CalculationTransactionalService(
   private val calculationReasonRepository: CalculationReasonRepository,
   private val calculationOutcomeHistoricOverrideRepository: CalculationOutcomeHistoricOverrideRepository,
   private val objectMapper: ObjectMapper,
-  private val prisonService: PrisonService,
   private val calculationSourceDataService: CalculationSourceDataService,
   private val sourceDataMapper: SourceDataMapper,
   private val calculationService: CalculationService,
   private val bookingService: BookingService,
   private val validationService: ValidationService,
-  private val eventService: EventService,
   private val serviceUserService: ServiceUserService,
   private val calculationConfirmationService: CalculationConfirmationService,
   private val dominantHistoricDateService: DominantHistoricDateService,
-  private val nomisCommentService: NomisCommentService,
   private val buildProperties: BuildProperties,
   private val trancheOutcomeRepository: TrancheOutcomeRepository,
+  private val featureToggles: FeatureToggles,
 ) {
 
   /*
@@ -303,17 +302,21 @@ class CalculationTransactionalService(
     val calculationOutput = calculationService.calculateReleaseDates(booking, calculationUserInputs)
     val calculationResult = calculationOutput.calculationResult
     val calculationDates = calculationResult.dates.toMutableMap()
-    val sledDate = calculationDates[ReleaseDateType.SLED]
-    val historicDates = historicDatesFromSled(sourceData.prisonerDetails.offenderNo, sledDate)
 
-    if (sledDate !== null && historicDates !== null) {
-      persistCalculationDatesWithHistoricOverrides(
-        sledDate,
-        calculationRequest,
-        calculationResult,
-        historicDates,
-        calculationDates,
-      )
+    if (featureToggles.historicSled) {
+      val sledDate = calculationDates[ReleaseDateType.SLED]
+      val historicDates = historicDatesFromSled(sourceData.prisonerDetails.offenderNo, sledDate)
+      if (sledDate !== null && historicDates !== null) {
+        persistCalculationDatesWithHistoricOverrides(
+          sledDate,
+          calculationRequest,
+          calculationResult,
+          historicDates,
+          calculationDates,
+        )
+      } else {
+        persistCalculationDates(calculationRequest, calculationDates)
+      }
     } else {
       persistCalculationDates(calculationRequest, calculationDates)
     }

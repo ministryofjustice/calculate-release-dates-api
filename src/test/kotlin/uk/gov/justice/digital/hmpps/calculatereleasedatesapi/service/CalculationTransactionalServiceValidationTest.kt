@@ -10,6 +10,7 @@ import org.mockito.kotlin.inOrder
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.TestBuildPropertiesConfiguration.Companion.TEST_BUILD_PROPERTIES
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOutput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
@@ -79,19 +80,17 @@ class CalculationTransactionalServiceValidationTest {
       calculationReasonRepository,
       dominantHistoricCalculationOutcomeRepository,
       TestUtil.objectMapper(),
-      prisonService,
       calculationSourceDataService,
       sourceDataMapper,
       calculationService,
       bookingService,
       validationService,
-      eventService,
       serviceUserService,
       calculationConfirmationService,
       dominantHistoricDateService,
-      nomisCommentService,
       TEST_BUILD_PROPERTIES,
       trancheOutcomeRepository,
+      FeatureToggles(historicSled = true),
     )
   }
 

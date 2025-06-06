@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 import jakarta.persistence.EntityNotFoundException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ApprovedDatesSubmission
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
@@ -24,7 +25,8 @@ open class DetailedCalculationResultsService(
   private val calculationRequestRepository: CalculationRequestRepository,
   private val calculationResultEnrichmentService: CalculationResultEnrichmentService,
   private val prisonService: PrisonService,
-  private val historicOverrideRepository: CalculationOutcomeHistoricOverrideRepository,
+  private val calculationOutcomeHistoricOverrideRepository: CalculationOutcomeHistoricOverrideRepository,
+  private val featureToggles: FeatureToggles,
 ) {
 
   @Transactional(readOnly = true)
@@ -42,7 +44,7 @@ open class DetailedCalculationResultsService(
 
     val sentenceDateOverrides = prisonService.getSentenceOverrides(calculationRequest.bookingId, releaseDates)
 
-    val historicDates = historicOverrideRepository.findByCalculationRequestId(calculationRequestId)
+    val historicDates = if (featureToggles.historicSled) calculationOutcomeHistoricOverrideRepository.findByCalculationRequestId(calculationRequestId) else emptyList()
 
     return DetailedCalculationResults(
       calculationContext(calculationRequestId, calculationRequest),

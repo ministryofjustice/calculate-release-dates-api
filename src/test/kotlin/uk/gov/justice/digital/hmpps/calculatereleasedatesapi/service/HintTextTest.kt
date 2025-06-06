@@ -303,19 +303,17 @@ class HintTextTest {
     calculationReasonRepository,
     dominantHistoricCalculationOutcomeRepository,
     TestUtil.objectMapper(),
-    prisonService,
     calculationSourceDataService,
     sourceDataMapper,
     calculationService,
     bookingService,
     validationService,
-    eventService,
     serviceUserService,
     calculationConfirmationService,
     dominantHistoricDateService,
-    nomisCommentService,
     TEST_BUILD_PROPERTIES,
     trancheOutcomeRepository,
+    FeatureToggles(historicSled = true),
   )
 
   private val today: LocalDate = LocalDate.now()

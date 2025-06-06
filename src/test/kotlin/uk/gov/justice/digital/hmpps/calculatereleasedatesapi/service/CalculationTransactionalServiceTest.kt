@@ -137,8 +137,7 @@ class CalculationTransactionalServiceTest {
   private val calculationRequestRepository = mock<CalculationRequestRepository>()
   private val calculationOutcomeRepository = mock<CalculationOutcomeRepository>()
   private val calculationReasonRepository = mock<CalculationReasonRepository>()
-  private val calculationConfirmationService = mock<CalculationConfirmationService>()
-  private val dominantHistoricCalculationOutcomeRepository = mock<CalculationOutcomeHistoricOverrideRepository>()
+  private val calculationOutcomeHistoricOverrideRepository = mock<CalculationOutcomeHistoricOverrideRepository>()
   private val dominantHistoricDateService = DominantHistoricDateService()
   private val manageOffencesService = mock<ManageOffencesService>()
   private val prisonService = mock<PrisonService>()
@@ -152,6 +151,14 @@ class CalculationTransactionalServiceTest {
   private val bankHolidayService = mock<BankHolidayService>()
   private val trancheOutcomeRepository = mock<TrancheOutcomeRepository>()
   private val fixedTermRecallsService = FixedTermRecallsService()
+  private val calculationConfirmationService = CalculationConfirmationService(
+    calculationRequestRepository,
+    serviceUserService,
+    nomisCommentService,
+    prisonService,
+    eventService,
+    approvedDatesSubmissionRepository,
+  )
 
   private val fakeSourceData = CalculationSourceData(
     emptyList(),
@@ -781,21 +788,19 @@ class CalculationTransactionalServiceTest {
       calculationRequestRepository,
       calculationOutcomeRepository,
       calculationReasonRepository,
-      dominantHistoricCalculationOutcomeRepository,
+      calculationOutcomeHistoricOverrideRepository,
       TestUtil.objectMapper(),
-      prisonService,
       calculationSourceDataService,
       sourceDataMapper,
       calculationService,
       bookingService,
       validationServiceToUse,
-      eventService,
       serviceUserService,
       calculationConfirmationService,
       dominantHistoricDateService,
-      nomisCommentService,
       TEST_BUILD_PROPERTIES,
       trancheOutcomeRepository,
+      FeatureToggles(historicSled = true),
     ) to calculationService
   }
 
