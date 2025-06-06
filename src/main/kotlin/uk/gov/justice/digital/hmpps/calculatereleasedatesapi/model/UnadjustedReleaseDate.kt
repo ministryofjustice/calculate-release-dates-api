@@ -76,15 +76,25 @@ class UnadjustedReleaseDate(
     }
 
     if (sentence.isRecall()) {
-      if (sentence.recallType == RecallType.STANDARD_RECALL) {
-        this.numberOfDaysToPostRecallReleaseDate = releaseDateCalculation.numberOfDaysToSentenceExpiryDate
-        this.unadjustedPostRecallReleaseDate = unadjustedExpiryDate
-      } else if (sentence.recallType == RecallType.FIXED_TERM_RECALL_14) {
-        this.numberOfDaysToPostRecallReleaseDate = 14
-        this.unadjustedPostRecallReleaseDate = calculateFixedTermRecall(14)
-      } else if (sentence.recallType == RecallType.FIXED_TERM_RECALL_28) {
-        this.numberOfDaysToPostRecallReleaseDate = 28
-        this.unadjustedPostRecallReleaseDate = calculateFixedTermRecall(28)
+      when (val recallType = sentence.recallType) {
+        RecallType.STANDARD_RECALL -> {
+          this.numberOfDaysToPostRecallReleaseDate = releaseDateCalculation.numberOfDaysToSentenceExpiryDate
+          this.unadjustedPostRecallReleaseDate = unadjustedExpiryDate
+        }
+
+        RecallType.FIXED_TERM_RECALL_14,
+        RecallType.FIXED_TERM_RECALL_28,
+        RecallType.FIXED_TERM_RECALL_56,
+        -> {
+          val days = recallType.lengthInDays!!
+          this.numberOfDaysToPostRecallReleaseDate = days
+          this.unadjustedPostRecallReleaseDate = calculateFixedTermRecall(days)
+        }
+
+        RecallType.STANDARD_RECALL_255 ->
+          error("STANDARD_RECALL_255 is not supported yet")
+        null ->
+          error("Recall type is missing, with a recall, on sentence: $sentence")
       }
     }
   }
