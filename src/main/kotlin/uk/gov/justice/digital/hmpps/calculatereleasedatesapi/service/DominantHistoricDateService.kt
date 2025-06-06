@@ -12,6 +12,10 @@ class DominantHistoricDateService {
     sled: LocalDate,
     dominantHistoricDates: List<CalculationOutcome>,
   ): Map<ReleaseDateType, LocalDate> {
+    if (dominantHistoricDates.isEmpty()) {
+      return mapOf(ReleaseDateType.SLED to sled)
+    }
+
     val historicDatesByType = dominantHistoricDates.associateBy { it.calculationDateType }
 
     val historicSled = historicDatesByType[ReleaseDateType.SLED.name]?.outcomeDate
@@ -19,17 +23,18 @@ class DominantHistoricDateService {
     val historicSed = historicDatesByType[ReleaseDateType.SED.name]?.outcomeDate
 
     val historicSledExists = historicSled != null
-    val ledIsAfterSled = historicSledExists && historicLed != null && historicLed > historicSled
-    val sedIsAfterLed = historicSledExists && historicSed != null && historicLed != null && historicSed > historicLed
+    val ledIsAfterSled = historicSledExists && historicLed != null && historicLed.isAfter(historicSled)
+    val sedIsAfterLed = historicSledExists && historicSed != null && historicLed != null && historicSed.isAfter(historicLed)
 
     return when {
+      historicSledExists && historicSled.isBefore(sled) -> calculateDominantSled(sled)
       historicSledExists && (ledIsAfterSled || sedIsAfterLed) -> calculateDominantLedAndSed(historicSled, historicSed, historicLed)
       historicSledExists -> calculateDominantSled(historicSled)
       else -> calculateDominantLedAndSed(sled, historicSed, historicLed)
     }
   }
 
-  fun calculateDominantSled(historicSled: LocalDate): Map<ReleaseDateType, LocalDate> = mapOf(ReleaseDateType.SLED to historicSled)
+  fun calculateDominantSled(dominantSled: LocalDate): Map<ReleaseDateType, LocalDate> = mapOf(ReleaseDateType.SLED to dominantSled)
 
   fun calculateDominantLedAndSed(
     sled: LocalDate,
