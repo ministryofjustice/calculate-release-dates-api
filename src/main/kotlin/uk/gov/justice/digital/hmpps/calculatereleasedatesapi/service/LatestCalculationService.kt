@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.reactive.function.client.WebClientResponseException
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.HistoricalTusedSource
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
@@ -15,6 +16,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationSo
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.LatestCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OffenderKeyDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeHistoricOverrideRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 
 @Component
@@ -24,7 +26,9 @@ class LatestCalculationService(
   private val calculationRequestRepository: CalculationRequestRepository,
   private val calculationResultEnrichmentService: CalculationResultEnrichmentService,
   private val calculationBreakdownService: CalculationBreakdownService,
+  private val calculationOutcomeHistoricOverrideRepository: CalculationOutcomeHistoricOverrideRepository,
   private val sourceDataMapper: SourceDataMapper,
+  private val featureToggles: FeatureToggles,
 ) {
 
   @Transactional(readOnly = true)
@@ -34,16 +38,11 @@ class LatestCalculationService(
       val latestCrdsCalc = calculationRequestRepository.findFirstByPrisonerIdAndCalculationStatusOrderByCalculatedAtDesc(prisonerId)
       if (latestCrdsCalc.isEmpty || !isSameCalc(prisonerCalculation, latestCrdsCalc.get())) {
         val nomisReason = prisonService.getNOMISCalcReasons().find { it.code == prisonerCalculation.reasonCode }?.description ?: prisonerCalculation.reasonCode
-        toLatestCalculation(
-          CalculationSource.NOMIS,
+        toLatestNomisCalculation(
           prisonerId,
           bookingId,
-          null,
           prisonerCalculation,
           nomisReason,
-          null,
-          null,
-          null,
         )
       } else {
         val calculationRequest = latestCrdsCalc.get()
@@ -54,7 +53,7 @@ class LatestCalculationService(
         val sentenceAndOffences = calculationRequest.sentenceAndOffences?.let { sourceDataMapper.mapSentencesAndOffences(calculationRequest) }
         val breakdown = calculationBreakdownService.getBreakdownSafely(calculationRequest).getOrNull()
         toLatestCalculation(
-          CalculationSource.CRDS,
+          calculationRequest.id,
           prisonerId,
           bookingId,
           calculationRequest.id,
@@ -85,7 +84,7 @@ class LatestCalculationService(
   }
 
   private fun toLatestCalculation(
-    calculationSource: CalculationSource,
+    calculationRequestId: Long,
     prisonerId: String,
     bookingId: Long,
     calculationReference: Long?,
@@ -98,6 +97,7 @@ class LatestCalculationService(
   ): LatestCalculation {
     val dates = offenderKeyDatesService.releaseDates(prisonerCalculation)
     val sentenceDateOverrides = prisonService.getSentenceOverrides(bookingId, dates)
+    val historicDates = if (featureToggles.historicSled) calculationOutcomeHistoricOverrideRepository.findByCalculationRequestId(calculationRequestId) else emptyList()
     return LatestCalculation(
       prisonerId,
       bookingId,
@@ -105,13 +105,41 @@ class LatestCalculationService(
       calculationReference,
       location,
       reason,
-      calculationSource,
+      CalculationSource.CRDS,
       calculationResultEnrichmentService.addDetailToCalculationDates(
         dates,
         sentenceAndOffences,
         breakdown,
         historicalTusedSource,
         sentenceDateOverrides,
+        historicDates,
+      ).values.toList(),
+    )
+  }
+
+  private fun toLatestNomisCalculation(
+    prisonerId: String,
+    bookingId: Long,
+    prisonerCalculation: OffenderKeyDates,
+    reason: String,
+  ): LatestCalculation {
+    val dates = offenderKeyDatesService.releaseDates(prisonerCalculation)
+    val sentenceDateOverrides = prisonService.getSentenceOverrides(bookingId, dates)
+    return LatestCalculation(
+      prisonerId,
+      bookingId,
+      prisonerCalculation.calculatedAt,
+      null,
+      null,
+      reason,
+      CalculationSource.NOMIS,
+      calculationResultEnrichmentService.addDetailToCalculationDates(
+        dates,
+        null,
+        null,
+        null,
+        sentenceDateOverrides,
+        emptyList(),
       ).values.toList(),
     )
   }

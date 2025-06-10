@@ -1,7 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.helpers
 
 import io.jsonwebtoken.Jwts
-import io.jsonwebtoken.SignatureAlgorithm
 import org.springframework.context.annotation.Bean
 import org.springframework.http.HttpHeaders
 import org.springframework.security.oauth2.jwt.JwtDecoder
@@ -54,11 +53,11 @@ class JwtAuthHelper {
     .also { scope?.let { scope -> it["scope"] = scope } }
     .let {
       Jwts.builder()
-        .setId(jwtId)
-        .setSubject(subject)
-        .addClaims(it.toMap())
-        .setExpiration(Date(System.currentTimeMillis() + expiryTime.toMillis()))
-        .signWith(SignatureAlgorithm.RS256, keyPair.private)
+        .id(jwtId)
+        .subject(subject)
+        .claims(it.toMap())
+        .expiration(Date(System.currentTimeMillis() + expiryTime.toMillis()))
+        .signWith(keyPair.private)
         .compact()
     }
 }

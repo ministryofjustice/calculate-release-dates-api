@@ -3,17 +3,17 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 import arrow.core.left
 import arrow.core.right
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.ArgumentMatchers.anyList
-import org.mockito.InjectMocks
-import org.mockito.Mock
-import org.mockito.Mockito
+import org.mockito.Mockito.mock
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.any
 import org.mockito.kotlin.isNull
 import org.mockito.kotlin.whenever
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationType
@@ -28,6 +28,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OffenderKeyDa
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateHint
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDatesAndCalculationContext
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeHistoricOverrideRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -37,17 +38,22 @@ import java.util.UUID
 @ExtendWith(MockitoExtension::class)
 open class OffenderKeyDatesServiceTest {
 
-  @Mock
-  lateinit var calculationResultEnrichmentService: CalculationResultEnrichmentService
+  private val calculationResultEnrichmentService: CalculationResultEnrichmentService = mock(CalculationResultEnrichmentService::class.java)
+  private val prisonService: PrisonService = mock(PrisonService::class.java)
+  private val calculationRequestRepository: CalculationRequestRepository = mock(CalculationRequestRepository::class.java)
+  private val calculationOutcomeHistoricOverrideRepository: CalculationOutcomeHistoricOverrideRepository = mock(CalculationOutcomeHistoricOverrideRepository::class.java)
+  private lateinit var underTest: OffenderKeyDatesService
 
-  @Mock
-  lateinit var prisonService: PrisonService
-
-  @Mock
-  lateinit var calculationRequestRepository: CalculationRequestRepository
-
-  @InjectMocks
-  lateinit var underTest: OffenderKeyDatesService
+  @BeforeEach
+  fun setUp() {
+    underTest = OffenderKeyDatesService(
+      prisonService,
+      calculationResultEnrichmentService,
+      calculationRequestRepository,
+      calculationOutcomeHistoricOverrideRepository,
+      FeatureToggles(historicSled = true),
+    )
+  }
 
   private val now = LocalDateTime.now()
   val reference: UUID = UUID.randomUUID()
@@ -87,10 +93,11 @@ open class OffenderKeyDatesServiceTest {
     whenever(prisonService.getNOMISOffenderKeyDates(any())).thenReturn(offenderKeyDates.right())
     whenever(
       calculationResultEnrichmentService.addDetailToCalculationDates(
-        Mockito.anyList(),
+        anyList(),
         isNull(),
         isNull(),
         isNull(),
+        anyList(),
         anyList(),
       ),
     ).thenReturn(detailedDates)
@@ -176,10 +183,90 @@ open class OffenderKeyDatesServiceTest {
     whenever(calculationRequestRepository.findById(calcRequestId)).thenReturn(Optional.of(calcRequest))
     whenever(
       calculationResultEnrichmentService.addDetailToCalculationDates(
-        Mockito.anyList(),
+        anyList(),
         isNull(),
         isNull(),
         isNull(),
+        anyList(),
+        anyList(),
+      ),
+    ).thenReturn(detailedDates)
+
+    val result = underTest.getKeyDatesByCalcId(calcRequestId)
+
+    assertThat(result).isEqualTo(expected)
+  }
+
+  @Test
+  fun `Test historic SLED`() {
+    val bookingId = 5636121L
+    val calcRequestId = 1L
+    val offenderKeyDates = OffenderKeyDates(
+      reasonCode = "FS",
+      calculatedAt = LocalDateTime.of(2024, 2, 29, 10, 30),
+      comment = null,
+      licenceExpiryDate = LocalDate.of(2024, 1, 1),
+      sentenceExpiryDate = LocalDate.of(2024, 1, 1),
+    )
+    val expected = ReleaseDatesAndCalculationContext(
+      CalculationContext(
+        calcRequestId,
+        bookingId,
+        "A1234AB",
+        CalculationStatus.CONFIRMED,
+        reference,
+        CalculationReason(-1, false, false, "SLED test", false, null, null, 1),
+        null,
+        LocalDate.of(2024, 1, 1),
+        CalculationType.CALCULATED,
+      ),
+      listOf(
+        DetailedDate(
+          ReleaseDateType.SLED,
+          ReleaseDateType.SLED.description,
+          LocalDate.of(2024, 1, 1),
+          listOf(ReleaseDateHint("Dominant SLED from a previous sentence")),
+        ),
+      ),
+    )
+    val detailedDates = mapOf(
+      ReleaseDateType.SLED to DetailedDate(
+        ReleaseDateType.SLED,
+        ReleaseDateType.SLED.description,
+        LocalDate.of(2024, 1, 1),
+        listOf(ReleaseDateHint("Dominant SLED from a previous sentence")),
+      ),
+    )
+    val calcRequest = CalculationRequest(
+      1,
+      reference,
+      "A1234AB",
+      bookingId,
+      CalculationStatus.CONFIRMED.name,
+      calculatedAt = LocalDateTime.of(2024, 1, 1, 0, 0),
+      reasonForCalculation = CalculationReason(
+        -1,
+        false,
+        false,
+        "SLED test",
+        false,
+        null,
+        null,
+        1,
+      ),
+      otherReasonForCalculation = null,
+      calculationType = CalculationType.CALCULATED,
+    )
+
+    whenever(prisonService.getOffenderKeyDates(any())).thenReturn(offenderKeyDates.right())
+    whenever(calculationRequestRepository.findById(calcRequestId)).thenReturn(Optional.of(calcRequest))
+    whenever(
+      calculationResultEnrichmentService.addDetailToCalculationDates(
+        anyList(),
+        isNull(),
+        isNull(),
+        isNull(),
+        anyList(),
         anyList(),
       ),
     ).thenReturn(detailedDates)
@@ -275,10 +362,11 @@ open class OffenderKeyDatesServiceTest {
     whenever(calculationRequestRepository.findById(calcRequestId)).thenReturn(Optional.of(calcRequest))
     whenever(
       calculationResultEnrichmentService.addDetailToCalculationDates(
-        Mockito.anyList(),
+        anyList(),
         isNull(),
         isNull(),
         isNull(),
+        anyList(),
         anyList(),
       ),
     )
@@ -320,10 +408,11 @@ open class OffenderKeyDatesServiceTest {
     whenever(prisonService.getNOMISOffenderKeyDates(any())).thenReturn(offenderKeyDates.right())
     whenever(
       calculationResultEnrichmentService.addDetailToCalculationDates(
-        Mockito.anyList(),
+        anyList(),
         isNull(),
         isNull(),
         isNull(),
+        anyList(),
         anyList(),
       ),
     ).thenReturn(detailedDates)
