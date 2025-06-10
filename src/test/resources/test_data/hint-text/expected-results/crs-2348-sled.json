@@ -1,0 +1,25 @@
+[
+  {
+    "type": "SLED",
+    "date": "2029-07-06",
+    "hints": ["Dominant SLED from a previous sentence"]
+  },
+  {
+    "type": "CRD",
+    "date": "2025-11-29",
+    "hints": [
+      "Friday, 28 November 2025 when adjusted to a working day",
+      "40% date has been applied"
+    ]
+  },
+  {
+    "type": "HDCED",
+    "date": "2025-06-03",
+    "hints": []
+  },
+  {
+    "type": "ESED",
+    "date": "2029-07-06",
+    "hints": []
+  }
+]

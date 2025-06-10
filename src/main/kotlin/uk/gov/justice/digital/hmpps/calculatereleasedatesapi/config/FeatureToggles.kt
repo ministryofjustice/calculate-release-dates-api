@@ -9,6 +9,7 @@ data class FeatureToggles(
   var concurrentConsecutiveSentencesEnabled: Boolean = false,
   var externalMovementsSds40: Boolean = false,
   var externalMovementsAdjustmentSharing: Boolean = false,
+  var historicSled: Boolean = false,
 ) {
 
   val externalMovementsEnabled: Boolean

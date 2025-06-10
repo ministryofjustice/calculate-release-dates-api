@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
+package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.sentence
 
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.SDS40TrancheConfiguration
@@ -42,10 +42,14 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyRelea
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SingleTermSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SopcSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.HdcedCalculator
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.A_FINE_TEN_MILLION_FULL_RELEASE_DATE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.CJA_DATE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.LASPO_DATE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.PCSC_COMMENCEMENT_DATE
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.TusedCalculator
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.offenceIsTrancheThreeAffected
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
 import java.math.BigDecimal
 import java.time.temporal.ChronoUnit
@@ -322,7 +326,10 @@ class SentenceIdentificationService(
       else -> sdsStandardOrEarlyRelease(sentence)
     }
 
-    val preOraLessThanTwelve = sentence.durationIsLessThan(TWELVE, ChronoUnit.MONTHS) && sentence.offence.committedAt.isBefore(ImportantDates.ORA_DATE)
+    val preOraLessThanTwelve = sentence.durationIsLessThan(TWELVE, ChronoUnit.MONTHS) &&
+      sentence.offence.committedAt.isBefore(
+        ImportantDates.ORA_DATE,
+      )
     val oneDateSentence = sentence.durationIsLessThanEqualTo(ONE, ChronoUnit.DAYS)
     val sentenceDoesntHaveLicensePeriod = preOraLessThanTwelve || oneDateSentence
     if (sentenceDoesntHaveLicensePeriod) {

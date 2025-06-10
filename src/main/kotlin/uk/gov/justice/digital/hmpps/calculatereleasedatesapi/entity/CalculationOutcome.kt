@@ -15,10 +15,11 @@ data class CalculationOutcome(
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   val id: Long = -1,
 
+  @NotNull
   val calculationRequestId: Long,
 
   val outcomeDate: LocalDate? = LocalDate.now(),
 
   @NotNull
-  val calculationDateType: String = "",
+  val calculationDateType: String,
 )

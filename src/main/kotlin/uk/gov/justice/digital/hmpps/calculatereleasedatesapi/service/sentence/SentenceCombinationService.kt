@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
+package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.sentence
 
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
