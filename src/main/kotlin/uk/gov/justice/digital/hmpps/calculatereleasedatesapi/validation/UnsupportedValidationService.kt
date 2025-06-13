@@ -24,6 +24,11 @@ class UnsupportedValidationService {
     }
     return emptyList()
   }
+  fun validateUnsupportedGenericConspiracyOffence(
+    sentencesAndOffences: List<SentenceAndOffenceWithReleaseArrangements>,
+  ): List<ValidationMessage> = sentencesAndOffences.filter { it.offence.offenceCode == "CL77036" }.map {
+    ValidationMessage(ValidationCode.UNSUPPORTED_GENERIC_CONSPIRACY_OFFENCE)
+  }
 
   internal fun validateUnsupported97BreachOffencesAfter1Dec2020(sentencesAndOffence: List<SentenceAndOffenceWithReleaseArrangements>): List<ValidationMessage> {
     val unSupportedEncouragingOffenceCodes = findUnsupported97BreachOffencesAfter1Dec2020(sentencesAndOffence)

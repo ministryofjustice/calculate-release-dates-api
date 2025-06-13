@@ -347,6 +347,40 @@ class ValidationServiceTest {
   }
 
   @ParameterizedTest
+  @ValueSource(strings = ["CL77036"])
+  fun `Test Sentences with unsupported offenceCode CL77036 returns validation message`(offenceCode: String) {
+    // Arrange
+    val invalidSentence = validSdsSentence.copy(
+      offence = validSdsSentence.offence.copy(offenceCode = offenceCode),
+    )
+
+    // Act
+    val result =
+      validationService.validateBeforeCalculation(
+        CalculationSourceData(
+          sentenceAndOffences = listOf(
+            SentenceAndOffenceWithReleaseArrangements(
+              source = invalidSentence,
+              isSdsPlus = false,
+              isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+              isSDSPlusOffenceInPeriod = false,
+              hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
+            ),
+          ),
+          prisonerDetails = VALID_PRISONER,
+          bookingAndSentenceAdjustments = VALID_ADJUSTMENTS,
+          offenderFinePayments = listOf(),
+          returnToCustodyDate = null,
+        ),
+        USER_INPUTS,
+      )
+
+    // Assert
+    assertThat(result).isNotEmpty
+    assertThat(result[0].code).isEqualTo(ValidationCode.UNSUPPORTED_GENERIC_CONSPIRACY_OFFENCE)
+  }
+
+  @ParameterizedTest
   @ValueSource(strings = ["SC07002", "SC07003", "SC07004", "SC07005", "SC07006", "SC07007", "SC07008", "SC07009", "SC07010", "SC07011", "SC07012", "SC07013"])
   fun `Test Sentences with unsupported offenceCodes SC07002 to SC07013 returns validation message`(offenceCode: String) {
     // Arrange

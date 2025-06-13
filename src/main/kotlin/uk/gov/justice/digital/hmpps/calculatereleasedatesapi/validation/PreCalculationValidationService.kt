@@ -98,6 +98,7 @@ class PreCalculationValidationService(
   internal fun validateUnsupportedOffences(sentencesAndOffence: List<SentenceAndOffenceWithReleaseArrangements>): List<ValidationMessage> {
     val messages =
       unsupportedValidationService.validateUnsupportedEncouragingOffences(sentencesAndOffence).toMutableList()
+    messages += unsupportedValidationService.validateUnsupportedGenericConspiracyOffence(sentencesAndOffence)
     messages += unsupportedValidationService.validateUnsupported97BreachOffencesAfter1Dec2020(sentencesAndOffence)
     messages += unsupportedValidationService.validateUnsupportedSuspendedOffences(sentencesAndOffence)
 

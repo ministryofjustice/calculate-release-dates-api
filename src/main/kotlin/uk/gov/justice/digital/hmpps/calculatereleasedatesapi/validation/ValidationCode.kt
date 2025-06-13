@@ -98,11 +98,19 @@ enum class ValidationCode(val message: String, val validationType: ValidationTyp
       "For example, ‘Encouraging/Assisting’ a Rape SX03001 would be SX03001E.",
     UNSUPPORTED_OFFENCE,
   ),
+  UNSUPPORTED_GENERIC_CONSPIRACY_OFFENCE(
+    "The offence code CL77036 is a generic conspiracy offence and should not be used.\n" +
+      "Any offences that include the inchoate 'Conspiracy' must be recorded as the underlying act, ending in the letter 'C'\n" +
+      "For example, Conspiracy to Bribe BA10010 would be BA10010C.",
+    UNSUPPORTED_OFFENCE,
+  ),
+
   UNSUPPORTED_BREACH_97(
     "Breaches of restraining orders committed on or after 01 December 2020 must be sentenced under the 2020 Sentencing Act.\n" +
       "Go to NOMIS and change the offence code from PH97003 to SE20002.",
     UNSUPPORTED_OFFENCE,
   ),
+
   UNSUPPORTED_SUSPENDED_OFFENCE("Replace this offence in NOMIS with the original offence they were sentenced for, then reload this page.", SUSPENDED_OFFENCE),
   FTR_NO_RETURN_TO_CUSTODY_DATE("The Fixed term recall must have a 'return to custody' date"),
   NO_SENTENCES("Prisoner has no sentences"),
