@@ -129,8 +129,13 @@ class ValidationIntTest(private val mockManageOffencesClient: MockManageOffences
   }
 
   @Test
-  fun `Run validation on inactive data`() {
+  fun `Run validation on inactive data not included`() {
     runValidationAndCheckMessages(INACTIVE_PRISONER_ID, emptyList())
+  }
+
+  @Test
+  fun `Run validation on inactive data included`() {
+    runValidationAndCheckMessages(INACTIVE_PRISONER_ID, listOf(ValidationMessage(OFFENCE_MISSING_DATE, arguments = listOf("1", "3"))), true)
   }
 
   @Test
@@ -277,9 +282,9 @@ class ValidationIntTest(private val mockManageOffencesClient: MockManageOffences
     assertThat(validationMessages).isEqualTo(messages)
   }
 
-  private fun runValidationAndCheckMessages(prisonerId: String, messages: List<ValidationMessage>) {
+  private fun runValidationAndCheckMessages(prisonerId: String, messages: List<ValidationMessage>, includeInactiveData: Boolean? = null) {
     val validationMessages = webTestClient.post()
-      .uri("/validation/$prisonerId/full-validation")
+      .uri("/validation/$prisonerId/full-validation" + if (includeInactiveData == true) "?includeInactiveData=true" else "")
       .accept(MediaType.APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
       .exchange()
