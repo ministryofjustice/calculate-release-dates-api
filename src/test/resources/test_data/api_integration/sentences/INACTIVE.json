@@ -18,8 +18,8 @@
        "offences": [
            {
              "offenderChargeId": 3932689,
-             "offenceStartDate": "2021-05-02",
-             "offenceCode": "ML17006",
+             "offenceStartDate": null,
+             "offenceCode": "CE79179",
              "offenceDescription": "Act as manager / officer / sole practitioner / beneficial owner without approval",
              "indicators": [
                  "99"

@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationTransactionalService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.InactiveDataOptions
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessage
 
 @RestController
@@ -46,11 +47,18 @@ class ValidationController(
     @Parameter(required = true, example = "A1234AB", description = "The prisoners ID (aka nomsId)")
     @PathVariable("prisonerId")
     prisonerId: String,
+    @Parameter(required = false, description = "Include inactive data within validation. Defaults to false")
+    @RequestParam("includeInactiveData")
+    includeInactiveData: Boolean?,
     @RequestBody
     calculationUserInputs: CalculationUserInputs?,
   ): List<ValidationMessage> {
     log.info("Request received to validate prisonerId $prisonerId")
-    return calculationTransactionalService.fullValidation(prisonerId, calculationUserInputs ?: CalculationUserInputs())
+    return calculationTransactionalService.fullValidation(
+      prisonerId,
+      calculationUserInputs ?: CalculationUserInputs(),
+      if (includeInactiveData == true) InactiveDataOptions.overrideToIncludeInactiveData() else InactiveDataOptions.default(),
+    )
   }
 
   @GetMapping(value = ["/{prisonerId}/supported-validation"])
