@@ -42,7 +42,7 @@ class PreCalculationValidationService(
     }
 
     if (adjustments.size > 0) {
-      val adjustmentString = adjustments.joinToString(separator = " and ") { it.toString().lowercase() }
+      val adjustmentString = adjustments.joinToString(separator = " and ") { it.lowercase() }
       messages.add(
         ValidationMessage(
           ValidationCode.PRE_PCSC_DTO_WITH_ADJUSTMENT,
@@ -95,14 +95,7 @@ class PreCalculationValidationService(
     return messages
   }
 
-  internal fun validateUnsupportedOffences(sentencesAndOffence: List<SentenceAndOffenceWithReleaseArrangements>): List<ValidationMessage> {
-    val messages =
-      unsupportedValidationService.validateUnsupportedEncouragingOffences(sentencesAndOffence).toMutableList()
-    messages += unsupportedValidationService.validateUnsupported97BreachOffencesAfter1Dec2020(sentencesAndOffence)
-    messages += unsupportedValidationService.validateUnsupportedSuspendedOffences(sentencesAndOffence)
-
-    return messages
-  }
+  internal fun validateUnsupportedOffences(sentencesAndOffence: List<SentenceAndOffenceWithReleaseArrangements>): List<ValidationMessage> = unsupportedValidationService.validateUnsupportedOffenceCodes(sentencesAndOffence)
 
   fun validateSe20Offences(data: CalculationSourceData): List<ValidationMessage> {
     val invalidOffences = data.sentenceAndOffences.filter {
