@@ -2,14 +2,14 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 
 data class OverallSentenceLengthComparison(
   val custodialLength: OverallSentenceLength,
-  val licenseLength: OverallSentenceLength?,
+  val licenceLength: OverallSentenceLength?,
   val custodialLengthMatches: Boolean,
-  val licenseLengthMatches: Boolean?,
+  val licenceLengthMatches: Boolean?,
 ) {
   constructor(
     custodialLength: Duration,
-    licenseLength: Duration?,
+    licenceLength: Duration?,
     custodialLengthMatches: Boolean,
-    licenseLengthMatches: Boolean?,
-  ) : this(OverallSentenceLength.fromDuration(custodialLength), if (licenseLength != null) OverallSentenceLength.fromDuration(licenseLength) else null, custodialLengthMatches, licenseLengthMatches)
+    licenceLengthMatches: Boolean?,
+  ) : this(OverallSentenceLength.fromDuration(custodialLength), if (licenceLength != null) OverallSentenceLength.fromDuration(licenceLength) else null, custodialLengthMatches, licenceLengthMatches)
 }

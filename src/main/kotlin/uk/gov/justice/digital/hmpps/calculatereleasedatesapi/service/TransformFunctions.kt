@@ -196,13 +196,13 @@ fun transform(
     ExtendedDeterminateSentence::class.java -> {
       val imprisonmentTerm = sentence.terms.firstOrNull { it.code == SentenceTerms.IMPRISONMENT_TERM_CODE }
         ?: throw MissingTermException("Missing IMPRISONMENT_TERM_CODE for ExtendedDeterminateSentence")
-      val licenseTerm = sentence.terms.firstOrNull { it.code == SentenceTerms.LICENCE_TERM_CODE }
+      val licenceTerm = sentence.terms.firstOrNull { it.code == SentenceTerms.LICENCE_TERM_CODE }
         ?: throw MissingTermException("Missing LICENCE_TERM_CODE for ExtendedDeterminateSentence")
 
       ExtendedDeterminateSentence(
         sentencedAt = sentence.sentenceDate,
         custodialDuration = transform(imprisonmentTerm),
-        extensionDuration = transform(licenseTerm),
+        extensionDuration = transform(licenceTerm),
         automaticRelease = listOf(SentenceCalculationType.LASPO_AR, SentenceCalculationType.LR_LASPO_AR).contains(sentenceCalculationType),
         offence = offence,
         identifier = generateUUIDForSentence(sentence.bookingId, sentence.sentenceSequence),
@@ -218,13 +218,13 @@ fun transform(
     SopcSentence::class.java -> {
       val imprisonmentTerm = sentence.terms.firstOrNull { it.code == SentenceTerms.IMPRISONMENT_TERM_CODE }
         ?: throw MissingTermException("Missing IMPRISONMENT_TERM_CODE for SopcSentence")
-      val licenseTerm = sentence.terms.firstOrNull { it.code == SentenceTerms.LICENCE_TERM_CODE }
+      val licenceTerm = sentence.terms.firstOrNull { it.code == SentenceTerms.LICENCE_TERM_CODE }
         ?: throw MissingTermException("Missing LICENCE_TERM_CODE for SopcSentence")
 
       SopcSentence(
         sentencedAt = sentence.sentenceDate,
         custodialDuration = transform(imprisonmentTerm),
-        extensionDuration = transform(licenseTerm),
+        extensionDuration = transform(licenceTerm),
         sdopcu18 = sentenceCalculationType == SentenceCalculationType.SDOPCU18,
         offence = offence,
         identifier = generateUUIDForSentence(sentence.bookingId, sentence.sentenceSequence),

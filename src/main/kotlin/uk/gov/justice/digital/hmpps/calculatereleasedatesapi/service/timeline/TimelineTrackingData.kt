@@ -20,7 +20,7 @@ data class TimelineTrackingData(
 
   val releasedSentenceGroups: MutableList<SentenceGroup> = emptyList<SentenceGroup>().toMutableList(),
   val currentSentenceGroup: MutableList<CalculableSentence> = emptyList<CalculableSentence>().toMutableList(),
-  val licenseSentences: MutableList<CalculableSentence> = emptyList<CalculableSentence>().toMutableList(),
+  val licenceSentences: MutableList<CalculableSentence> = emptyList<CalculableSentence>().toMutableList(),
 
   var inPrison: Boolean = true,
   var trancheAndCommencement: Pair<SDSEarlyReleaseTranche, LocalDate?> = SDSEarlyReleaseTranche.TRANCHE_0 to null,

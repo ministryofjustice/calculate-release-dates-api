@@ -173,19 +173,19 @@ class BookingExtractionService(
       latestUnadjustedExpiryDate,
     )
 
-    val latestLicenseExpirySentence: CalculableSentence? = extractionService.mostRecentSentenceOrNull(
+    val latestLicenceExpirySentence: CalculableSentence? = extractionService.mostRecentSentenceOrNull(
       sentences,
       SentenceCalculation::licenceExpiryDate,
     )
-    val latestLicenseExpiryDate: LocalDate? = latestLicenseExpirySentence?.sentenceCalculation?.licenceExpiryDate
+    val latestLicenceExpiryDate: LocalDate? = latestLicenceExpirySentence?.sentenceCalculation?.licenceExpiryDate
 
     val latestNonParoleDate: LocalDate? = extractManyNonParoleDate(sentences, latestReleaseDate)
 
     val latestHDCEDAndBreakdown =
       hdcedExtractionService.extractManyHomeDetentionCurfewEligibilityDate(sentences, mostRecentSentencesByReleaseDate)
 
-    val latestTUSEDAndBreakdown = if (latestLicenseExpiryDate != null) {
-      extractManyTopUpSuperVisionDate(sentences, latestLicenseExpiryDate)
+    val latestTUSEDAndBreakdown = if (latestLicenceExpiryDate != null) {
+      extractManyTopUpSuperVisionDate(sentences, latestLicenceExpiryDate)
     } else if (isTusedableDtos(sentences, offender)) {
       val latestTUSEDSentence = sentences
         .filter { it.sentenceCalculation.topUpSupervisionDate != null }
@@ -214,7 +214,7 @@ class BookingExtractionService(
       SentenceCalculation::notionalConditionalReleaseDate,
     )
 
-    if (latestExpiryDate == latestLicenseExpiryDate &&
+    if (latestExpiryDate == latestLicenceExpiryDate &&
       mostRecentSentenceByExpiryDate.releaseDateTypes.getReleaseDateTypes()
         .contains(SLED)
     ) {
@@ -237,19 +237,19 @@ class BookingExtractionService(
       dates[SED] = latestExpiryDate
       breakdownByReleaseDateType[SED] =
         mostRecentSentenceByExpiryDate.sentenceCalculation.breakdownByReleaseDateType[SED]!!
-      if (latestLicenseExpiryDate != null &&
-        concurrentOraAndNonOraDetails.canHaveLicenseExpiry &&
-        latestLicenseExpiryDate.isAfterOrEqualTo(
+      if (latestLicenceExpiryDate != null &&
+        concurrentOraAndNonOraDetails.canHaveLicenceExpiry &&
+        latestLicenceExpiryDate.isAfterOrEqualTo(
           latestReleaseDate,
         )
       ) {
-        dates[LED] = latestLicenseExpiryDate
-        if (latestLicenseExpirySentence.sentenceCalculation.breakdownByReleaseDateType.containsKey(LED)) {
+        dates[LED] = latestLicenceExpiryDate
+        if (latestLicenceExpirySentence.sentenceCalculation.breakdownByReleaseDateType.containsKey(LED)) {
           breakdownByReleaseDateType[LED] =
-            latestLicenseExpirySentence.sentenceCalculation.breakdownByReleaseDateType[LED]!!
-        } else if (latestLicenseExpirySentence.sentenceCalculation.breakdownByReleaseDateType.containsKey(SLED)) {
+            latestLicenceExpirySentence.sentenceCalculation.breakdownByReleaseDateType[LED]!!
+        } else if (latestLicenceExpirySentence.sentenceCalculation.breakdownByReleaseDateType.containsKey(SLED)) {
           breakdownByReleaseDateType[LED] =
-            latestLicenseExpirySentence.sentenceCalculation.breakdownByReleaseDateType[SLED]!!
+            latestLicenceExpirySentence.sentenceCalculation.breakdownByReleaseDateType[SLED]!!
         }
       }
     }
@@ -587,7 +587,7 @@ class BookingExtractionService(
 
   private fun extractManyTopUpSuperVisionDate(
     sentences: List<CalculableSentence>,
-    latestLicenseExpiryDate: LocalDate,
+    latestLicenceExpiryDate: LocalDate,
   ): Pair<LocalDate, ReleaseDateCalculationBreakdown>? {
     val (historicTUSEDs, calculatedTUSEDs) = sentences.partition { it is BotusSentence }
 
@@ -617,7 +617,7 @@ class BookingExtractionService(
       val breakdown = sentence.sentenceCalculation.breakdownByReleaseDateType[TUSED]
 
       // CRS-2260 Added breakdown != null check - this can be null in this BOTUS scenario via the full-validation endpoint (fullValidationFromBookingData)
-      if (topUpDate != null && breakdown != null && topUpDate.isAfter(latestLicenseExpiryDate)) {
+      if (topUpDate != null && breakdown != null && topUpDate.isAfter(latestLicenceExpiryDate)) {
         topUpDate to breakdown
       } else {
         null
@@ -648,23 +648,23 @@ class BookingExtractionService(
       if (sentences.all { offender.underEighteenAt(it.sentenceCalculation.releaseDate) } &&
         effectiveSentenceLength.toTotalMonths() < 12
       ) {
-        return ConcurrentOraAndNonOraDetails(isReleaseDateConditional = false, canHaveLicenseExpiry = true)
+        return ConcurrentOraAndNonOraDetails(isReleaseDateConditional = false, canHaveLicenceExpiry = true)
       }
 
       if (sentences.any { !it.isDto() } && sentences.all { !offender.underEighteenAt(it.sentenceCalculation.releaseDate) }) {
-        return ConcurrentOraAndNonOraDetails(isReleaseDateConditional = true, canHaveLicenseExpiry = true)
+        return ConcurrentOraAndNonOraDetails(isReleaseDateConditional = true, canHaveLicenceExpiry = true)
       }
     }
 
     return ConcurrentOraAndNonOraDetails(
       sentences.any { it.sentenceCalculation.licenceExpiryDate?.isAfterOrEqualTo(latestReleaseDate) ?: false },
-      canHaveLicenseExpiry = true,
+      canHaveLicenceExpiry = true,
     )
   }
 
   data class ConcurrentOraAndNonOraDetails(
     val isReleaseDateConditional: Boolean,
-    val canHaveLicenseExpiry: Boolean,
+    val canHaveLicenceExpiry: Boolean,
   )
 
   companion object {

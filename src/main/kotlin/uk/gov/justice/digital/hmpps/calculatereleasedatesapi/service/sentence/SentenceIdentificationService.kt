@@ -331,8 +331,8 @@ class SentenceIdentificationService(
         ImportantDates.ORA_DATE,
       )
     val oneDateSentence = sentence.durationIsLessThanEqualTo(ONE, ChronoUnit.DAYS)
-    val sentenceDoesntHaveLicensePeriod = preOraLessThanTwelve || oneDateSentence
-    if (sentenceDoesntHaveLicensePeriod) {
+    val sentenceDoesntHaveLicencePeriod = preOraLessThanTwelve || oneDateSentence
+    if (sentenceDoesntHaveLicencePeriod) {
       releaseDateTypes.addAll(
         listOf(
           SED,

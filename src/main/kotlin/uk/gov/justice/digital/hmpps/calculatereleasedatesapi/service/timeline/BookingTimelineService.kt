@@ -82,7 +82,7 @@ class BookingTimelineService(
     )
 
     calculationsByDate.forEach { (timelineCalculationDate, calculations) ->
-      checkForReleasesAndLicenseExpiry(timelineCalculationDate, timelineTrackingData)
+      checkForReleasesAndLicenceExpiry(timelineCalculationDate, timelineTrackingData)
 
       val results = calculations.sortedBy { it.type.ordinal }.map {
         handlerFor(it.type).handle(timelineCalculationDate, timelineTrackingData)
@@ -174,7 +174,7 @@ class BookingTimelineService(
     }
   }
 
-  private fun checkForReleasesAndLicenseExpiry(date: LocalDate, timelineTrackingData: TimelineTrackingData) {
+  private fun checkForReleasesAndLicenceExpiry(date: LocalDate, timelineTrackingData: TimelineTrackingData) {
     with(timelineTrackingData) {
       if (date.isAfter(latestRelease.first)) {
         if (currentSentenceGroup.isNotEmpty()) {
@@ -188,15 +188,15 @@ class BookingTimelineService(
           )
           currentSentenceGroup.forEach {
             if (it.sentenceCalculation.licenceExpiryDate?.isAfter(date) == true) {
-              licenseSentences.add(it)
+              licenceSentences.add(it)
             }
           }
           currentSentenceGroup.clear()
         }
         latestCalculation = timelineCalculator.getLatestCalculation(releasedSentenceGroups.map { it.sentences }, offender, returnToCustodyDate)
       }
-      if (licenseSentences.isNotEmpty()) {
-        licenseSentences.removeIf {
+      if (licenceSentences.isNotEmpty()) {
+        licenceSentences.removeIf {
           date.isAfter(it.sentenceCalculation.licenceExpiryDate)
         }
       }

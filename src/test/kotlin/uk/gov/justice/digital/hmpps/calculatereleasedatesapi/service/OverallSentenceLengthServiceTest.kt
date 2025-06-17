@@ -109,7 +109,7 @@ class OverallSentenceLengthServiceTest {
   }
 
   @Nested
-  inner class CustodialAndLicenseDurationTests {
+  inner class CustodialAndLicenceDurationTests {
     @Test
     fun `Consecutive sentences only`() {
       val request = OverallSentenceLengthRequest(
@@ -176,7 +176,7 @@ class OverallSentenceLengthServiceTest {
     }
 
     @Test
-    fun `Concurrent sentences longest custodial is not longest license`() {
+    fun `Concurrent sentences longest custodial is not longest licence`() {
       val request = OverallSentenceLengthRequest(
         consecutiveSentences = emptyList(),
         concurrentSentences = listOf(
