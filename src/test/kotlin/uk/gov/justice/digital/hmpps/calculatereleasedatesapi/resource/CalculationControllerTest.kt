@@ -59,7 +59,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.Calculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.DetailedCalculationResultsService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.LatestCalculationService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.OffenderKeyDatesService
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.RecallService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.RecordARecallService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.RelevantRemandService
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -91,7 +91,7 @@ class CalculationControllerTest {
   private lateinit var offenderKeyDatesService: OffenderKeyDatesService
 
   @MockitoBean
-  private lateinit var recallService: RecallService
+  private lateinit var recordARecallService: RecordARecallService
 
   @Autowired
   private lateinit var mvc: MockMvc
@@ -117,7 +117,7 @@ class CalculationControllerTest {
           latestCalculationService,
           calculationBreakdownService,
           offenderKeyDatesService,
-          recallService,
+          recordARecallService,
         ),
       )
       .setControllerAdvice(ControllerAdvice())
@@ -555,7 +555,7 @@ class CalculationControllerTest {
       calculationDate = LocalDate.of(2024, 1, 1),
     )
 
-    whenever(recallService.calculateForRecordARecall(prisonerId)).thenReturn(calculatedReleaseDates)
+    whenever(recordARecallService.calculateForRecordARecall(prisonerId)).thenReturn(calculatedReleaseDates)
 
     val result = mvc.perform(
       post("/calculation/record-a-recall/$prisonerId")
