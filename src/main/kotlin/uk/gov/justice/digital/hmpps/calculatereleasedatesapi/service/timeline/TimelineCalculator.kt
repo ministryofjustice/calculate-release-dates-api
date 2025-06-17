@@ -26,7 +26,7 @@ class TimelineCalculator(
     sentences.flatten().forEach {
       sentenceAdjustedCalculationService.calculateDatesFromAdjustments(it, offender)
     }
-    val adjustAgain = calculateUnusedLicenseAdas(sentences)
+    val adjustAgain = calculateUnusedLicenceAdas(sentences)
     if (adjustAgain) {
       sentences.flatten().forEach {
         sentenceAdjustedCalculationService.calculateDatesFromAdjustments(it, offender)
@@ -40,14 +40,14 @@ class TimelineCalculator(
     )
   }
 
-  fun calculateUnusedLicenseAdas(sentenceGroups: List<List<CalculableSentence>>): Boolean {
-    var anyUnusedLicenseAads = false
+  fun calculateUnusedLicenceAdas(sentenceGroups: List<List<CalculableSentence>>): Boolean {
+    var anyUnusedLicenceAdas = false
     sentenceGroups.forEach { group ->
       val expiry = group.maxOfOrNull { it.sentenceCalculation.expiryDate }
       if (expiry == null) {
         return@forEach
       }
-      val unusedLicenseDays = group.filter {
+      val unusedLicenceDays = group.filter {
         val ledBreakdown = it.sentenceCalculation.breakdownByReleaseDateType[ReleaseDateType.LED]
         ledBreakdown != null &&
           ledBreakdown.rules.contains(CalculationRule.LED_CONSEC_ORA_AND_NON_ORA) &&
@@ -58,17 +58,17 @@ class TimelineCalculator(
         ChronoUnit.DAYS.between(expiry, it.sentenceCalculation.licenceExpiryDate!!)
       }
 
-      if (unusedLicenseDays != null && unusedLicenseDays > 0) {
+      if (unusedLicenceDays != null && unusedLicenceDays > 0) {
         setAdjustments(
           group,
           SentenceAdjustments(
-            unusedLicenceAdaDays = unusedLicenseDays,
+            unusedLicenceAdaDays = unusedLicenceDays,
           ),
         )
-        anyUnusedLicenseAads = true
+        anyUnusedLicenceAdas = true
       }
     }
-    return anyUnusedLicenseAads
+    return anyUnusedLicenceAdas
   }
 
   fun calculateUnusedAdas(sentenceGroups: List<List<CalculableSentence>>) {

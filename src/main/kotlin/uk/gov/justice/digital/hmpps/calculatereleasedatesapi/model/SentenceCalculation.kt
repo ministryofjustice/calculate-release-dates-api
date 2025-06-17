@@ -78,7 +78,7 @@ data class SentenceCalculation(
   val adjustedExpiryDate: LocalDate
     get() {
       return unadjustedReleaseDate.unadjustedExpiryDate
-        .plusDays(adjustments.adjustmentsForLicenseExpiry())
+        .plusDays(adjustments.adjustmentsForLicenceExpiry())
     }
 
   val releaseDateWithoutAwarded: LocalDate

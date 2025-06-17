@@ -25,7 +25,7 @@ class TimelineAwardedAdjustmentCalculationHandler(
       val radaDays = radas.map { it.numberOfDays }.reduceOrNull { acc, it -> acc + it }?.toLong() ?: 0L
 
       if (currentSentenceGroup.isEmpty()) {
-        val ftrSentences = licenseSentences.filter { it.recallType?.isFixedTermRecall == true }
+        val ftrSentences = licenceSentences.filter { it.recallType?.isFixedTermRecall == true }
         if (ftrSentences.isNotEmpty() && timelineCalculationDate.isAfterOrEqualTo(timelineTrackingData.returnToCustodyDate!!)) {
           // We are in FTR time
           timelineCalculator.setAdjustments(
@@ -34,7 +34,7 @@ class TimelineAwardedAdjustmentCalculationHandler(
               awardedAfterDeterminateRelease = adaDays - radaDays,
             ),
           )
-        } else if (licenseSentences.none { it.isRecall() }) {
+        } else if (licenceSentences.none { it.isRecall() }) {
           // This is a PADA. No calculation required. Set value here to be applied to later sentences.
           padas += adaDays - radaDays
           return TimelineHandleResult(requiresCalculation = false)

@@ -25,7 +25,7 @@ data class SentenceAdjustments(
 
   private fun deductionsAndUalForWholeSentencePeriod(): Long = ualDuringCustody + ualAfterDeterminateRelease - deductions
 
-  fun adjustmentsForLicenseExpiry(): Long = deductionsAndUalForWholeSentencePeriod()
+  fun adjustmentsForLicenceExpiry(): Long = deductionsAndUalForWholeSentencePeriod()
 
   fun adjustmentsForTused(): Long = deductionsAndUalForWholeSentencePeriod()
 

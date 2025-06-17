@@ -40,7 +40,7 @@
       "days": 0
     }],
     "sentenceCalculationType": "LR_ORA",
-    "sentenceTypeDescription": "License recall",
+    "sentenceTypeDescription": "Licence recall",
     "offences": [
       {
         "offenderChargeId": 3932624,

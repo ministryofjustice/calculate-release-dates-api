@@ -42,12 +42,12 @@ fun oraAndNoneOraExtraction(
   ) {
     ConcurrentOraAndNonOraDetails(
       isReleaseDateConditional = false,
-      canHaveLicenseExpiry = false,
+      canHaveLicenceExpiry = false,
     )
   } else {
     ConcurrentOraAndNonOraDetails(
       isReleaseDateConditional = true,
-      canHaveLicenseExpiry = true,
+      canHaveLicenceExpiry = true,
     )
   }
 }
