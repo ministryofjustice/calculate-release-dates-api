@@ -43,7 +43,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.DetailedCal
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.InactiveDataOptions
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.LatestCalculationService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.OffenderKeyDatesService
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.RecallService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.RecordARecallService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.RelevantRemandService
 
 @RestController
@@ -56,7 +56,7 @@ class CalculationController(
   private val latestCalculationService: LatestCalculationService,
   private val calculationBreakdownService: CalculationBreakdownService,
   private val offenderKeyDatesService: OffenderKeyDatesService,
-  private val recallService: RecallService,
+  private val recordARecallService: RecordARecallService,
 ) {
   @PostMapping(value = ["/{prisonerId}"])
   @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")
@@ -85,6 +85,7 @@ class CalculationController(
     return calculationTransactionalService.calculate(prisonerId, calculationRequestModel)
   }
 
+  @Deprecated("Use endpoint within RecordARecallController ")
   @PostMapping(value = ["/record-a-recall/{prisonerId}"])
   @PreAuthorize("hasRole('RECORD_A_RECALL')")
   @ResponseBody
@@ -106,7 +107,7 @@ class CalculationController(
     prisonerId: String,
   ): CalculatedReleaseDates {
     log.info("Request received to calculate release dates for a recall of $prisonerId")
-    return recallService.calculateForRecordARecall(prisonerId)
+    return recordARecallService.calculateForRecordARecall(prisonerId)
   }
 
   @PostMapping(value = ["/{prisonerId}/test"])

@@ -56,6 +56,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.mana
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.manageoffencesapi.PcscMarkers
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource.ValidationIntTest.Companion.VALIDATION_PRISONER_ID
 import java.time.Duration
 import java.time.LocalDate
 
@@ -1208,18 +1209,31 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
   fun `Run calculation using the record-a-recall endpoint for a prisoner (based on example 13 from the unit tests)`() {
     val result = createCalculationForRecordARecall(PRISONER_ID)
 
-    val calculationRequest = calculationRequestRepository.findById(result.calculationRequestId)
-      .orElseThrow { EntityNotFoundException("No calculation request exists for id ${result.calculationRequestId}") }
+    assertThat(result.validationMessages).isEmpty()
+
+    val calculationResult = result.calculatedReleaseDates!!
+
+    val calculationRequest = calculationRequestRepository.findById(calculationResult.calculationRequestId)
+      .orElseThrow { EntityNotFoundException("No calculation request exists for id ${calculationResult.calculationRequestId}") }
 
     assertThat(calculationRequest.calculationStatus).isEqualTo("RECORD_A_RECALL")
-    assertThat(result.dates[SLED]).isEqualTo(LocalDate.of(2016, 11, 6))
-    assertThat(result.dates[CRD]).isEqualTo(LocalDate.of(2016, 1, 6))
-    assertThat(result.dates[TUSED]).isEqualTo(LocalDate.of(2017, 1, 6))
-    assertThat(result.dates[HDCED]).isEqualTo(LocalDate.of(2015, 8, 7))
-    assertThat(result.dates[ESED]).isEqualTo(LocalDate.of(2016, 11, 16))
+    assertThat(calculationResult.dates[SLED]).isEqualTo(LocalDate.of(2016, 11, 6))
+    assertThat(calculationResult.dates[CRD]).isEqualTo(LocalDate.of(2016, 1, 6))
+    assertThat(calculationResult.dates[TUSED]).isEqualTo(LocalDate.of(2017, 1, 6))
+    assertThat(calculationResult.dates[HDCED]).isEqualTo(LocalDate.of(2015, 8, 7))
+    assertThat(calculationResult.dates[ESED]).isEqualTo(LocalDate.of(2016, 11, 16))
     assertThat(calculationRequest.inputData["offender"]["reference"].asText()).isEqualTo(PRISONER_ID)
     assertThat(calculationRequest.inputData["sentences"][0]["offence"]["committedAt"].asText())
       .isEqualTo("2015-03-17")
+  }
+
+  @Test
+  fun `Run calculation using the record-a-recall endpoint for a prisoner with validation failures`() {
+    mockManageOffencesClient.noneInPCSC(listOf("GBH", "SX03014"))
+    val result = createCalculationForRecordARecall(VALIDATION_PRISONER_ID)
+
+    assertThat(result.validationMessages).isNotEmpty()
+    assertThat(result.calculatedReleaseDates).isNull()
   }
 
   @Test
