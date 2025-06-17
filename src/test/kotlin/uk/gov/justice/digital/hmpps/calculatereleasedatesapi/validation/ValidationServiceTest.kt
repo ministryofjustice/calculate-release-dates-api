@@ -567,7 +567,7 @@ class ValidationServiceTest {
   }
 
   @Test
-  fun `Test EDS sentences should have license term`() {
+  fun `Test EDS sentences should have licence term`() {
     val sentence = validEdsSentence.copy(
       terms = listOf(
         SentenceTerms(1, 0, 0, 0, SentenceTerms.IMPRISONMENT_TERM_CODE),
@@ -604,7 +604,7 @@ class ValidationServiceTest {
   }
 
   @Test
-  fun `Test EDS sentences should have license term of at least 1 year`() {
+  fun `Test EDS sentences should have licence term of at least 1 year`() {
     val sentences = listOf(
       validEdsSentence.copy(
         terms = listOf(
@@ -656,7 +656,7 @@ class ValidationServiceTest {
   }
 
   @Test
-  fun `Test EDS sentences should have license term of at least 1 year valid`() {
+  fun `Test EDS sentences should have licence term of at least 1 year valid`() {
     val sentences = listOf(
       validEdsSentence.copy(
         terms = listOf(
@@ -703,7 +703,7 @@ class ValidationServiceTest {
   }
 
   @Test
-  fun `Test EDS sentences should have license term of at less than 8 years`() {
+  fun `Test EDS sentences should have licence term of at less than 8 years`() {
     val sentences = listOf(
       validEdsSentence.copy(
         terms = listOf(
@@ -847,7 +847,7 @@ class ValidationServiceTest {
   }
 
   @Test
-  fun `Test EDS sentences shouldnt have more than one license term or imprisonment term`() {
+  fun `Test EDS sentences shouldnt have more than one licence term or imprisonment term`() {
     val sentences = listOf(
       validEdsSentence.copy(
         terms = listOf(
@@ -1056,7 +1056,7 @@ class ValidationServiceTest {
   }
 
   @Test
-  fun `Test SOPC sentences should have license term of exactly 1 year`() {
+  fun `Test SOPC sentences should have licence term of exactly 1 year`() {
     val sentences = listOf(
       validSopcSentence.copy(
         terms = listOf(

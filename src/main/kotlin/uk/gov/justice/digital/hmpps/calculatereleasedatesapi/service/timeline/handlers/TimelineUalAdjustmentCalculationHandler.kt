@@ -24,18 +24,18 @@ class TimelineUalAdjustmentCalculationHandler(
 
       setAdjustmentsDuringCustodialPeriod(timelineCalculationDate, timelineTrackingData, ualDays)
 
-      setAdjustmentsDuringLicensePeriod(timelineCalculationDate, timelineTrackingData, ualDays)
+      setAdjustmentsDuringLicencePeriod(timelineCalculationDate, timelineTrackingData, ualDays)
 
       futureData.ual -= ual
     }
     return TimelineHandleResult()
   }
 
-  private fun setAdjustmentsDuringLicensePeriod(timelineCalculationDate: LocalDate, timelineTrackingData: TimelineTrackingData, ualDays: Long) {
+  private fun setAdjustmentsDuringLicencePeriod(timelineCalculationDate: LocalDate, timelineTrackingData: TimelineTrackingData, ualDays: Long) {
     with(timelineTrackingData) {
       val hasFixedTermRecall =
-        returnToCustodyDate != null && licenseSentences.any { it.recallType?.isFixedTermRecall == true }
-      licenseSentences.filter { it.isRecall() }.forEach { sentence ->
+        returnToCustodyDate != null && licenceSentences.any { it.recallType?.isFixedTermRecall == true }
+      licenceSentences.filter { it.isRecall() }.forEach { sentence ->
         val ualAfterFtr =
           if (hasFixedTermRecall &&
             timelineCalculationDate.isAfterOrEqualTo(returnToCustodyDate!!) &&
