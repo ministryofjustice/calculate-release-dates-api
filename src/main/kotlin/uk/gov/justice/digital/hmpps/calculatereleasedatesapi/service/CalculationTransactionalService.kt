@@ -167,6 +167,15 @@ class CalculationTransactionalService(
     calculationType: CalculationStatus = PRELIMINARY,
   ): CalculatedReleaseDates {
     val sourceData = calculationSourceDataService.getCalculationSourceData(prisonerId, inactiveDataOptions)
+    return calculate(sourceData, calculationRequestModel, calculationType)
+  }
+
+  @Transactional
+  fun calculate(
+    sourceData: CalculationSourceData,
+    calculationRequestModel: CalculationRequestModel,
+    calculationType: CalculationStatus = PRELIMINARY,
+  ): CalculatedReleaseDates {
     val calculationUserInputs = calculationRequestModel.calculationUserInputs ?: CalculationUserInputs()
     val booking = bookingService.getBooking(sourceData, calculationUserInputs)
     val reasonForCalculation = calculationReasonRepository.findById(calculationRequestModel.calculationReasonId)
