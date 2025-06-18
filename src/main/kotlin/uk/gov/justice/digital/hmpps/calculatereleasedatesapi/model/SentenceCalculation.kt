@@ -157,6 +157,9 @@ data class SentenceCalculation(
       _licenceExpiryDate = value
     }
 
+/*
+ * This function will return the license expiry date at the point of initial release. If there was an immediate release and then a recall, more remand/tagged bail will be usable and therefore the license expiry will change, this returns the expiry before that change.
+*/
   val licenceExpiryAtInitialRelease: LocalDate?
     get() {
       val adjustmentDaysForInitialRelease = adjustments.adjustmentsForInitialRelease()
