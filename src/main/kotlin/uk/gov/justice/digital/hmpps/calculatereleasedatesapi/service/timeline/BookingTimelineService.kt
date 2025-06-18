@@ -187,7 +187,7 @@ class BookingTimelineService(
             ),
           )
           currentSentenceGroup.forEach {
-            if (it.sentenceCalculation.licenceExpiryDate?.isAfter(date) == true) {
+            if (it.sentenceCalculation.licenceExpiryAtInitialRelease?.isAfter(date) == true) {
               licenceSentences.add(it)
             }
           }
@@ -197,7 +197,7 @@ class BookingTimelineService(
       }
       if (licenceSentences.isNotEmpty()) {
         licenceSentences.removeIf {
-          date.isAfter(it.sentenceCalculation.licenceExpiryDate)
+          date.isAfter(it.sentenceCalculation.licenceExpiryAtInitialRelease)
         }
       }
     }
