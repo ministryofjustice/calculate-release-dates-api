@@ -114,6 +114,30 @@ class DominantHistoricDateServiceTest {
   }
 
   @Test
+  fun `should calculate LED and SED and return SLED if both dates are equal`() {
+    val calculatedSled = LocalDate.of(2020, 1, 1)
+    val historicLed = LocalDate.of(2021, 1, 1)
+    val historicSed = LocalDate.of(2021, 1, 1)
+    val outcomes = listOf(
+      CalculationOutcome(
+        calculationRequestId = 2L,
+        outcomeDate = historicLed,
+        calculationDateType = ReleaseDateType.LED.name,
+      ),
+      CalculationOutcome(
+        calculationRequestId = 3L,
+        outcomeDate = historicSed,
+        calculationDateType = ReleaseDateType.SED.name,
+      ),
+    )
+
+    val overrides = service.calculateFromSled(calculatedSled, outcomes)
+
+    assertEquals(overrides.containsKey(ReleaseDateType.SLED), true)
+    assertEquals(historicLed, overrides[ReleaseDateType.SLED])
+  }
+
+  @Test
   fun `should use SED where no historic SLED exists`() {
     val calculatedSled = LocalDate.of(2022, 1, 1)
     val outcomes = listOf(

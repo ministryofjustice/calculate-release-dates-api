@@ -314,7 +314,7 @@ class CalculationTransactionalService(
 
     if (featureToggles.historicSled) {
       val sledDate = calculationDates[ReleaseDateType.SLED]
-      val historicDates = historicDatesFromSled(sourceData.prisonerDetails.offenderNo, sledDate)
+      val historicDates = sledDate?.let { historicDatesFromSled(sourceData.prisonerDetails.offenderNo, it) }
       if (sledDate !== null && historicDates !== null) {
         persistCalculationDatesWithHistoricOverrides(
           sledDate,
@@ -359,7 +359,7 @@ class CalculationTransactionalService(
     )
   }
 
-  private fun historicDatesFromSled(
+  fun historicDatesFromSled(
     offenderNo: String,
     sledDate: LocalDate?,
   ): List<CalculationOutcome>? = sledDate?.let {
@@ -387,6 +387,16 @@ class CalculationTransactionalService(
     calculationDates: MutableMap<ReleaseDateType, LocalDate>,
   ) {
     val overridesByType = dominantHistoricDateService.calculateFromSled(sledDate, historicDates)
+
+    /**
+     * Add SLED to calculation dates if historic dates include LED and SED with the same date
+     * We need to combine the two dates to a SLED in such an instance
+     */
+    overridesByType[ReleaseDateType.SLED]?.let { sledOverride ->
+      if (historicDates.none { it.calculationDateType == ReleaseDateType.SLED.name }) {
+        calculationDates[ReleaseDateType.SLED] = sledOverride
+      }
+    }
 
     val historicOverrideIds = historicDates
       .filter { overridesByType.containsKey(ReleaseDateType.valueOf(it.calculationDateType)) }

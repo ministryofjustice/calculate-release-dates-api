@@ -40,10 +40,14 @@ class DominantHistoricDateService {
     sled: LocalDate,
     sed: LocalDate?,
     led: LocalDate?,
-  ): Map<ReleaseDateType, LocalDate> = mapOf(
-    ReleaseDateType.SED to latestDate(sled, sed),
-    ReleaseDateType.LED to latestDate(sled, led),
-  )
+  ): Map<ReleaseDateType, LocalDate> = if (sed is LocalDate && led is LocalDate && sed.isEqual(led)) {
+    mapOf(ReleaseDateType.SLED to sed)
+  } else {
+    mapOf(
+      ReleaseDateType.SED to latestDate(sled, sed),
+      ReleaseDateType.LED to latestDate(sled, led),
+    )
+  }
 
   fun latestDate(currentDate: LocalDate, historicDate: LocalDate?) = when {
     historicDate !== null && historicDate > currentDate -> historicDate

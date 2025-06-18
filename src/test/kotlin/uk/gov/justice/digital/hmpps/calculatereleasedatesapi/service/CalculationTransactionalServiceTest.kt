@@ -49,8 +49,11 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ERSED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ESED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.HDCAD
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.HDCED
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.LED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ROTL
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SED
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SLED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CalculationDataHasChangedError
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.PreconditionFailedException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.TestBuildPropertiesConfiguration.Companion.TEST_BUILD_PROPERTIES
@@ -241,13 +244,19 @@ class CalculationTransactionalServiceTest {
     } else {
       val bookingData = jsonTransformation.loadCalculationResult("$exampleType/$exampleNumber")
       val result = bookingData.first
-      assertEquals(result.dates.entries.sortedBy { it.key }, calculatedReleaseDates.calculationResult.dates.entries.sortedBy { it.key })
+      assertEquals(
+        result.dates.entries.sortedBy { it.key },
+        calculatedReleaseDates.calculationResult.dates.entries.sortedBy { it.key },
+      )
       assertEquals(result.effectiveSentenceLength, calculatedReleaseDates.calculationResult.effectiveSentenceLength)
       if (assertSds40 == true) {
         assertEquals(result.affectedBySds40, calculatedReleaseDates.calculationResult.affectedBySds40)
       }
       if (bookingData.second.contains("sdsEarlyReleaseAllocatedTranche")) {
-        assertEquals(result.sdsEarlyReleaseAllocatedTranche, calculatedReleaseDates.calculationResult.sdsEarlyReleaseAllocatedTranche)
+        assertEquals(
+          result.sdsEarlyReleaseAllocatedTranche,
+          calculatedReleaseDates.calculationResult.sdsEarlyReleaseAllocatedTranche,
+        )
         assertEquals(result.sdsEarlyReleaseTranche, calculatedReleaseDates.calculationResult.sdsEarlyReleaseTranche)
       }
     }
@@ -331,7 +340,12 @@ class CalculationTransactionalServiceTest {
         CALCULATION_REQUEST_WITH_OUTCOMES,
       ),
     )
-    whenever(calculationSourceDataService.getCalculationSourceData(CALCULATION_REQUEST_WITH_OUTCOMES.prisonerId, InactiveDataOptions.default())).thenReturn(
+    whenever(
+      calculationSourceDataService.getCalculationSourceData(
+        CALCULATION_REQUEST_WITH_OUTCOMES.prisonerId,
+        InactiveDataOptions.default(),
+      ),
+    ).thenReturn(
       fakeSourceData,
     )
     whenever(bookingService.getBooking(fakeSourceData, CalculationUserInputs())).thenReturn(BOOKING)
@@ -355,7 +369,12 @@ class CalculationTransactionalServiceTest {
         PRELIMINARY.name,
       ),
     ).thenReturn(Optional.empty())
-    whenever(calculationSourceDataService.getCalculationSourceData(CALCULATION_REQUEST_WITH_OUTCOMES.prisonerId, InactiveDataOptions.default())).thenReturn(
+    whenever(
+      calculationSourceDataService.getCalculationSourceData(
+        CALCULATION_REQUEST_WITH_OUTCOMES.prisonerId,
+        InactiveDataOptions.default(),
+      ),
+    ).thenReturn(
       fakeSourceData,
     )
     whenever(bookingService.getBooking(fakeSourceData, CalculationUserInputs())).thenReturn(BOOKING)
@@ -376,7 +395,12 @@ class CalculationTransactionalServiceTest {
     whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
     whenever(calculationRequestRepository.findByIdAndCalculationStatus(CALCULATION_REQUEST_ID, PRELIMINARY.name))
       .thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES.copy(inputData = INPUT_DATA)))
-    whenever(calculationSourceDataService.getCalculationSourceData(CALCULATION_REQUEST_WITH_OUTCOMES.prisonerId, InactiveDataOptions.default())).thenReturn(
+    whenever(
+      calculationSourceDataService.getCalculationSourceData(
+        CALCULATION_REQUEST_WITH_OUTCOMES.prisonerId,
+        InactiveDataOptions.default(),
+      ),
+    ).thenReturn(
       fakeSourceData,
     )
     whenever(bookingService.getBooking(fakeSourceData, CalculationUserInputs())).thenReturn(BOOKING)
@@ -501,6 +525,212 @@ class CalculationTransactionalServiceTest {
     } catch (ex: Exception) {
       fail("Exception was thrown!")
     }
+  }
+
+  @Test
+  fun `Calculation with historic equal LED and SED should result in single SLED outcome`() {
+    val requestAndOutcomes = CALCULATION_REQUEST_WITH_OUTCOMES.copy(
+      calculationOutcomes = CALCULATION_REQUEST_WITH_OUTCOMES.calculationOutcomes.plus(
+        CALCULATION_OUTCOME_SLED,
+      ),
+    )
+    val calculationTransactionalService = calculationTransactionalService()
+    val expectedSled = LocalDate.of(2026, 2, 2)
+    whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
+    whenever(calculationRequestRepository.findByIdAndCalculationStatus(any(), any()))
+      .thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES.copy(inputData = INPUT_DATA)))
+    whenever(
+      calculationSourceDataService.getCalculationSourceData(
+        CALCULATION_REQUEST_WITH_OUTCOMES.prisonerId,
+        InactiveDataOptions.default(),
+      ),
+    ).thenReturn(
+      fakeSourceData,
+    )
+    whenever(calculationRequestRepository.findById(any())).thenReturn(
+      Optional.of(requestAndOutcomes),
+    )
+    whenever(bookingService.getBooking(fakeSourceData, CalculationUserInputs())).thenReturn(BOOKING)
+    whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
+    whenever(calculationRequestRepository.findById(CALCULATION_REQUEST_ID)).thenReturn(Optional.of(requestAndOutcomes))
+    whenever(nomisCommentService.getNomisComment(any(), any(), any())).thenReturn("The NOMIS Reason")
+    whenever(calculationTransactionalService.historicDatesFromSled(fakeSourceData.prisonerDetails.offenderNo, expectedSled)).thenReturn(
+      listOf(
+        CalculationOutcome(
+          calculationRequestId = 1,
+          outcomeDate = FIFTH_APRIL_2021,
+          calculationDateType = LED.name,
+        ),
+        CalculationOutcome(
+          calculationRequestId = 2,
+          outcomeDate = FIFTH_APRIL_2021,
+          calculationDateType = SED.name,
+        ),
+      ),
+    )
+    val sledOutcome = CalculationOutcome(
+      id = -1,
+      calculationRequestId = CALCULATION_REQUEST_ID,
+      outcomeDate = FIFTH_APRIL_2021,
+      calculationDateType = SLED.name,
+    )
+    val crdOutcome = CalculationOutcome(
+      id = -1,
+      calculationRequestId = CALCULATION_REQUEST_ID,
+      outcomeDate = LocalDate.of(2023, 8, 4),
+      calculationDateType = CRD.name,
+    )
+    val hdcedOutcome = CalculationOutcome(
+      id = -1,
+      calculationRequestId = CALCULATION_REQUEST_ID,
+      outcomeDate = LocalDate.of(2023, 2, 6),
+      calculationDateType = HDCED.name,
+    )
+    val esedOutcome = CalculationOutcome(
+      id = -1,
+      calculationRequestId = CALCULATION_REQUEST_ID,
+      outcomeDate = LocalDate.of(2026, 2, 2),
+      calculationDateType = ESED.name,
+    )
+    whenever(calculationOutcomeRepository.save(crdOutcome)).thenReturn(crdOutcome)
+    whenever(calculationOutcomeRepository.save(hdcedOutcome)).thenReturn(hdcedOutcome)
+    whenever(calculationOutcomeRepository.save(esedOutcome)).thenReturn(esedOutcome)
+    whenever(calculationOutcomeRepository.save(sledOutcome)).thenReturn(sledOutcome)
+    whenever(nomisCommentService.getNomisComment(any(), any(), any())).thenReturn("The NOMIS Reason")
+    val submission = ApprovedDatesSubmission(
+      calculationRequest = CALCULATION_REQUEST,
+      prisonerId = PRISONER_ID,
+      bookingId = BOOKING_ID,
+      submittedByUsername = USERNAME,
+    )
+    whenever(approvedDatesSubmissionRepository.save(any())).thenReturn(submission)
+    val calculation = calculationTransactionalService.validateAndConfirmCalculation(
+      CALCULATION_REQUEST_ID,
+      SubmitCalculationRequest(
+        calculationFragments = CalculationFragments(""),
+        approvedDates = listOf(
+          ManualEntrySelectedDate(ROTL, "rotl text", SubmittedDate(1, 1, 2020)),
+          ManualEntrySelectedDate(APD, "apd text", SubmittedDate(1, 2, 2020)),
+          ManualEntrySelectedDate(HDCAD, "hdcad text", SubmittedDate(1, 3, 2020)),
+        ),
+      ),
+    )
+    assertEquals(
+      calculation.dates,
+      mapOf(
+        SLED to sledOutcome.outcomeDate,
+        CRD to crdOutcome.outcomeDate,
+        HDCED to hdcedOutcome.outcomeDate,
+        ESED to esedOutcome.outcomeDate,
+      ),
+    )
+  }
+
+  @Test
+  fun `Calculation with historic LED and SED should result in separate LED and SED outcome`() {
+    val requestAndOutcomes = CALCULATION_REQUEST_WITH_OUTCOMES.copy(
+      calculationOutcomes = CALCULATION_REQUEST_WITH_OUTCOMES.calculationOutcomes.plus(
+        CALCULATION_OUTCOME_SLED,
+      ),
+    )
+    val calculationTransactionalService = calculationTransactionalService()
+    val expectedSled = LocalDate.of(2026, 2, 2)
+    whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
+    whenever(calculationRequestRepository.findByIdAndCalculationStatus(any(), any()))
+      .thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES.copy(inputData = INPUT_DATA)))
+    whenever(
+      calculationSourceDataService.getCalculationSourceData(
+        CALCULATION_REQUEST_WITH_OUTCOMES.prisonerId,
+        InactiveDataOptions.default(),
+      ),
+    ).thenReturn(
+      fakeSourceData,
+    )
+    whenever(calculationRequestRepository.findById(any())).thenReturn(
+      Optional.of(requestAndOutcomes),
+    )
+    whenever(bookingService.getBooking(fakeSourceData, CalculationUserInputs())).thenReturn(BOOKING)
+    whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
+    whenever(calculationRequestRepository.findById(CALCULATION_REQUEST_ID)).thenReturn(Optional.of(requestAndOutcomes))
+    whenever(nomisCommentService.getNomisComment(any(), any(), any())).thenReturn("The NOMIS Reason")
+    whenever(calculationTransactionalService.historicDatesFromSled(fakeSourceData.prisonerDetails.offenderNo, expectedSled)).thenReturn(
+      listOf(
+        CalculationOutcome(
+          calculationRequestId = 1,
+          outcomeDate = FIFTH_APRIL_2021.plusYears(10),
+          calculationDateType = LED.name,
+        ),
+        CalculationOutcome(
+          calculationRequestId = 2,
+          outcomeDate = FIFTH_APRIL_2021.plusYears(8),
+          calculationDateType = SED.name,
+        ),
+      ),
+    )
+    val ledOutcome = CalculationOutcome(
+      id = -1,
+      calculationRequestId = CALCULATION_REQUEST_ID,
+      outcomeDate = FIFTH_APRIL_2021.plusYears(10),
+      calculationDateType = LED.name,
+    )
+    val sedOutcome = CalculationOutcome(
+      id = -1,
+      calculationRequestId = CALCULATION_REQUEST_ID,
+      outcomeDate = FIFTH_APRIL_2021.plusYears(8),
+      calculationDateType = SED.name,
+    )
+    val crdOutcome = CalculationOutcome(
+      id = -1,
+      calculationRequestId = CALCULATION_REQUEST_ID,
+      outcomeDate = LocalDate.of(2023, 8, 4),
+      calculationDateType = CRD.name,
+    )
+    val hdcedOutcome = CalculationOutcome(
+      id = -1,
+      calculationRequestId = CALCULATION_REQUEST_ID,
+      outcomeDate = LocalDate.of(2023, 2, 6),
+      calculationDateType = HDCED.name,
+    )
+    val esedOutcome = CalculationOutcome(
+      id = -1,
+      calculationRequestId = CALCULATION_REQUEST_ID,
+      outcomeDate = LocalDate.of(2026, 2, 2),
+      calculationDateType = ESED.name,
+    )
+    whenever(calculationOutcomeRepository.save(crdOutcome)).thenReturn(crdOutcome)
+    whenever(calculationOutcomeRepository.save(hdcedOutcome)).thenReturn(hdcedOutcome)
+    whenever(calculationOutcomeRepository.save(esedOutcome)).thenReturn(esedOutcome)
+    whenever(calculationOutcomeRepository.save(ledOutcome)).thenReturn(ledOutcome)
+    whenever(calculationOutcomeRepository.save(sedOutcome)).thenReturn(sedOutcome)
+    whenever(nomisCommentService.getNomisComment(any(), any(), any())).thenReturn("The NOMIS Reason")
+    val submission = ApprovedDatesSubmission(
+      calculationRequest = CALCULATION_REQUEST,
+      prisonerId = PRISONER_ID,
+      bookingId = BOOKING_ID,
+      submittedByUsername = USERNAME,
+    )
+    whenever(approvedDatesSubmissionRepository.save(any())).thenReturn(submission)
+    val calculation = calculationTransactionalService.validateAndConfirmCalculation(
+      CALCULATION_REQUEST_ID,
+      SubmitCalculationRequest(
+        calculationFragments = CalculationFragments(""),
+        approvedDates = listOf(
+          ManualEntrySelectedDate(ROTL, "rotl text", SubmittedDate(1, 1, 2020)),
+          ManualEntrySelectedDate(APD, "apd text", SubmittedDate(1, 2, 2020)),
+          ManualEntrySelectedDate(HDCAD, "hdcad text", SubmittedDate(1, 3, 2020)),
+        ),
+      ),
+    )
+    assertEquals(
+      calculation.dates,
+      mapOf(
+        LED to ledOutcome.outcomeDate,
+        SED to sedOutcome.outcomeDate,
+        CRD to crdOutcome.outcomeDate,
+        HDCED to hdcedOutcome.outcomeDate,
+        ESED to esedOutcome.outcomeDate,
+      ),
+    )
   }
 
   @Test
@@ -938,6 +1168,11 @@ class CalculationTransactionalServiceTest {
     )
     private val CALCULATION_OUTCOME_SED = CalculationOutcome(
       calculationDateType = SED.name,
+      outcomeDate = THIRD_FEB_2021,
+      calculationRequestId = CALCULATION_REQUEST_ID,
+    )
+    private val CALCULATION_OUTCOME_SLED = CalculationOutcome(
+      calculationDateType = SLED.name,
       outcomeDate = THIRD_FEB_2021,
       calculationRequestId = CALCULATION_REQUEST_ID,
     )
