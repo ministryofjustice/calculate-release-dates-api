@@ -10,6 +10,7 @@ data class FeatureToggles(
   var externalMovementsSds40: Boolean = false,
   var externalMovementsAdjustmentSharing: Boolean = false,
   var historicSled: Boolean = false,
+  var ftr48ManualJourney: Boolean = false,
 ) {
 
   val externalMovementsEnabled: Boolean
