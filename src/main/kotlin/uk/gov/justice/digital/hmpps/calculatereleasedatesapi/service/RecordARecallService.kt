@@ -3,39 +3,18 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 import jakarta.persistence.EntityNotFoundException
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.RECORD_A_RECALL
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationRequestModel
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecordARecallResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationReasonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationService
 
 @Service
 class RecordARecallService(
   private val calculationSourceDataService: CalculationSourceDataService,
-  private val validationService: ValidationService,
   private val calculationTransactionalService: CalculationTransactionalService,
   private val calculationReasonRepository: CalculationReasonRepository,
 ) {
-
-  @Deprecated("Use endpoint within RecordARecallController ")
-  fun calculateForRecordARecall(prisonerId: String): CalculatedReleaseDates {
-    val recallReason = calculationReasonRepository.findByDisplayName(RECALL_REASON)
-      ?: throw EntityNotFoundException()
-
-    val calculationRequestModel = CalculationRequestModel(
-      calculationReasonId = recallReason.id,
-      otherReasonDescription = RECALL_REASON,
-      calculationUserInputs = null,
-    )
-    return calculationTransactionalService.calculate(
-      prisonerId,
-      calculationRequestModel,
-      InactiveDataOptions.overrideToIncludeInactiveData(),
-      calculationType = RECORD_A_RECALL,
-    )
-  }
 
   fun calculateAndValidateForRecordARecall(prisonerId: String): RecordARecallResult {
     val inactiveDataOptions = InactiveDataOptions.overrideToIncludeInactiveData()
