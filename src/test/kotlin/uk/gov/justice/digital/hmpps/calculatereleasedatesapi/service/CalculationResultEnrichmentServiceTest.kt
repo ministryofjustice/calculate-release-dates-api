@@ -11,6 +11,8 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcome
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcomeHistoricOverride
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.HistoricalTusedSource
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
@@ -1125,8 +1127,116 @@ class CalculationResultEnrichmentServiceTest {
         emptyList(),
         emptyList(),
       )
+    assertThat(results[crdType]?.hints).isEqualTo(listOf(ReleaseDateHint("40% date has been applied")))
+  }
+
+  @Test
+  fun `Historic SLED hint text should be returned`() {
+    val (crdDate, crdType) = getReleaseDateAndStubAdjustments(ReleaseDateType.CRD, LocalDate.of(2021, 2, 3))
+    val (sledDate, sledType) = getReleaseDateAndStubAdjustments(ReleaseDateType.SLED, LocalDate.of(2021, 2, 3))
+    val releaseDates = listOf(ReleaseDate(crdDate, crdType), ReleaseDate(sledDate, sledType))
+    val calculationBreakdown = CalculationBreakdown(
+      emptyList(),
+      null,
+      mapOf(
+        ReleaseDateType.CRD to ReleaseDateCalculationBreakdown(setOf(CalculationRule.SDS_EARLY_RELEASE_APPLIES)),
+        ReleaseDateType.SLED to ReleaseDateCalculationBreakdown(setOf(CalculationRule.SDS_STANDARD_RELEASE_APPLIES)),
+      ),
+    )
+    val results = calculationResultEnrichmentService()
+      .addDetailToCalculationDates(
+        releaseDates,
+        listOf(
+          sentenceAndOffenceWithReleaseArrangements.copy(
+            sentenceCalculationType = SentenceCalculationType.ADIMP.name,
+            sentenceDate = LocalDate.of(2024, 1, 17),
+          ),
+          sentenceAndOffenceWithReleaseArrangements.copy(
+            sentenceCalculationType = SentenceCalculationType.AFINE.name,
+            sentenceDate = LocalDate.of(2024, 9, 24),
+          ),
+        ),
+        calculationBreakdown,
+        null,
+        emptyList(),
+        listOf(
+          CalculationOutcomeHistoricOverride(
+            calculationRequestId = 1,
+            calculationOutcomeDate = LocalDate.of(2024, 10, 24),
+            historicCalculationOutcomeId = 1,
+            historicCalculationOutcomeDate = LocalDate.of(2024, 10, 24),
+            calculationOutcome = CalculationOutcome(
+              calculationRequestId = 1,
+              outcomeDate = LocalDate.of(2024, 10, 24),
+              calculationDateType = "SLED",
+            ),
+          ),
+        ),
+      )
 
     assertThat(results[crdType]?.hints).isEqualTo(listOf(ReleaseDateHint("40% date has been applied")))
+    assertThat(results[sledType]?.hints).isEqualTo(listOf(ReleaseDateHint("Dominant SLED from a previous sentence")))
+  }
+
+  @Test
+  fun `Historic LED and SED hint text should be returned`() {
+    val (crdDate, crdType) = getReleaseDateAndStubAdjustments(ReleaseDateType.CRD, LocalDate.of(2021, 2, 3))
+    val (sedDate, sedType) = getReleaseDateAndStubAdjustments(ReleaseDateType.SED, LocalDate.of(2022, 2, 4))
+    val (ledDate, ledType) = getReleaseDateAndStubAdjustments(ReleaseDateType.LED, LocalDate.of(2023, 2, 4))
+    val releaseDates = listOf(ReleaseDate(crdDate, crdType), ReleaseDate(sedDate, sedType), ReleaseDate(ledDate, ledType))
+    val calculationBreakdown = CalculationBreakdown(
+      emptyList(),
+      null,
+      mapOf(
+        ReleaseDateType.CRD to ReleaseDateCalculationBreakdown(setOf(CalculationRule.SDS_EARLY_RELEASE_APPLIES)),
+        ReleaseDateType.SLED to ReleaseDateCalculationBreakdown(setOf(CalculationRule.SDS_STANDARD_RELEASE_APPLIES)),
+      ),
+    )
+    val results = calculationResultEnrichmentService()
+      .addDetailToCalculationDates(
+        releaseDates,
+        listOf(
+          sentenceAndOffenceWithReleaseArrangements.copy(
+            sentenceCalculationType = SentenceCalculationType.ADIMP.name,
+            sentenceDate = LocalDate.of(2024, 1, 17),
+          ),
+          sentenceAndOffenceWithReleaseArrangements.copy(
+            sentenceCalculationType = SentenceCalculationType.AFINE.name,
+            sentenceDate = LocalDate.of(2024, 9, 24),
+          ),
+        ),
+        calculationBreakdown,
+        null,
+        emptyList(),
+        listOf(
+          CalculationOutcomeHistoricOverride(
+            calculationRequestId = 1,
+            calculationOutcomeDate = LocalDate.of(2024, 10, 24),
+            historicCalculationOutcomeId = 1,
+            historicCalculationOutcomeDate = LocalDate.of(2024, 10, 24),
+            calculationOutcome = CalculationOutcome(
+              calculationRequestId = 1,
+              outcomeDate = LocalDate.of(2024, 10, 24),
+              calculationDateType = "LED",
+            ),
+          ),
+          CalculationOutcomeHistoricOverride(
+            calculationRequestId = 2,
+            calculationOutcomeDate = LocalDate.of(2024, 11, 25),
+            historicCalculationOutcomeId = 1,
+            historicCalculationOutcomeDate = LocalDate.of(2024, 10, 24),
+            calculationOutcome = CalculationOutcome(
+              calculationRequestId = 1,
+              outcomeDate = LocalDate.of(2024, 11, 20),
+              calculationDateType = "SED",
+            ),
+          ),
+        ),
+      )
+
+    assertThat(results[crdType]?.hints).isEqualTo(listOf(ReleaseDateHint("40% date has been applied")))
+    assertThat(results[sedType]?.hints).isEqualTo(listOf(ReleaseDateHint("Dominant SED from a previous sentence")))
+    assertThat(results[ledType]?.hints).isEqualTo(listOf(ReleaseDateHint("Dominant LED from a previous sentence")))
   }
 
   private fun getReleaseDateAndStubAdjustments(type: ReleaseDateType, date: LocalDate): ReleaseDate {
