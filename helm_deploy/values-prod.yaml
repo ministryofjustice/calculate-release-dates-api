@@ -15,6 +15,7 @@ generic-service:
     MANAGE-OFFENCES_API_URL: https://manage-offences-api.hmpps.service.justice.gov.uk
     SUPPORT_INACTIVE_SENTENCES_AND_ADJUSTMENTS: "false"
     HISTORIC_SLED_ENABLED: "false"
+    FTR_48_MANUAL_JOURNEY: "false"
 
   serviceAccountName: calculate-release-dates-api-prod
 
