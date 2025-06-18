@@ -34,7 +34,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationR
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.CONFIRMED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.PRELIMINARY
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.RECORD_A_RECALL
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SDSEarlyReleaseTranche
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CrdWebException
@@ -537,36 +536,6 @@ class CalculationControllerTest {
           errorMessage,
         ),
       )
-  }
-
-  @Test
-  fun `Test POST of a RECORD_A_RECALL calculation`() {
-    val prisonerId = "A1234AB"
-    val bookingId = 9995L
-
-    val calculatedReleaseDates = CalculatedReleaseDates(
-      calculationRequestId = 9991L,
-      dates = mapOf(),
-      calculationStatus = RECORD_A_RECALL,
-      bookingId = bookingId,
-      prisonerId = prisonerId,
-      calculationReference = UUID.randomUUID(),
-      calculationReason = calculationReason,
-      calculationDate = LocalDate.of(2024, 1, 1),
-    )
-
-    whenever(recordARecallService.calculateForRecordARecall(prisonerId)).thenReturn(calculatedReleaseDates)
-
-    val result = mvc.perform(
-      post("/calculation/record-a-recall/$prisonerId")
-        .accept(APPLICATION_JSON)
-        .contentType(APPLICATION_JSON),
-    )
-      .andExpect(status().isOk)
-      .andExpect(content().contentType(APPLICATION_JSON))
-      .andReturn()
-
-    assertThat(mapper.readValue(result.response.contentAsString, CalculatedReleaseDates::class.java)).isEqualTo(calculatedReleaseDates)
   }
 
   private val calculationReason = CalculationReason(-1, false, false, "Reason", false, null, null, null)
