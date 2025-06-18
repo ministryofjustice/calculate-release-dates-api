@@ -21,17 +21,23 @@ class TimelineUalAdjustmentCalculationHandler(
     with(timelineTrackingData) {
       val ual = futureData.ual.filter { it.appliesToSentencesFrom == timelineCalculationDate }
       val ualDays = ual.map { it.numberOfDays }.reduceOrNull { acc, it -> acc + it }?.toLong() ?: 0L
+      val lastDayOfUal = ual.mapNotNull { it.toDate }.maxOrNull()
 
-      setAdjustmentsDuringCustodialPeriod(timelineCalculationDate, timelineTrackingData, ualDays)
+      setAdjustmentsDuringCustodialPeriod(timelineCalculationDate, timelineTrackingData, ualDays, lastDayOfUal)
 
-      setAdjustmentsDuringLicencePeriod(timelineCalculationDate, timelineTrackingData, ualDays)
+      setAdjustmentsDuringLicencePeriod(timelineCalculationDate, timelineTrackingData, ualDays, lastDayOfUal)
 
       futureData.ual -= ual
     }
     return TimelineHandleResult()
   }
 
-  private fun setAdjustmentsDuringLicencePeriod(timelineCalculationDate: LocalDate, timelineTrackingData: TimelineTrackingData, ualDays: Long) {
+  private fun setAdjustmentsDuringLicencePeriod(
+    timelineCalculationDate: LocalDate,
+    timelineTrackingData: TimelineTrackingData,
+    ualDays: Long,
+    lastDayOfUal: LocalDate?,
+  ) {
     with(timelineTrackingData) {
       val hasFixedTermRecall =
         returnToCustodyDate != null && licenceSentences.any { it.recallType?.isFixedTermRecall == true }
@@ -52,12 +58,21 @@ class TimelineUalAdjustmentCalculationHandler(
           ualAfterDeterminateRelease = sentenceCalculation.adjustments.ualAfterDeterminateRelease + ualDays,
           ualAfterFtr = sentenceCalculation.adjustments.ualAfterFtr + ualAfterFtr,
         )
+        sentenceCalculation.lastDayOfUal = lastDayOfUal
       }
     }
   }
 
-  private fun setAdjustmentsDuringCustodialPeriod(timelineCalculationDate: LocalDate, timelineTrackingData: TimelineTrackingData, ualDays: Long) {
+  private fun setAdjustmentsDuringCustodialPeriod(
+    timelineCalculationDate: LocalDate,
+    timelineTrackingData: TimelineTrackingData,
+    ualDays: Long,
+    lastDayOfUal: LocalDate?,
+  ) {
     with(timelineTrackingData) {
+      currentSentenceGroup.forEach {
+        it.sentenceCalculation.lastDayOfUal = lastDayOfUal
+      }
       val (sentencesBeforeReleaseDate, sentencesAfterReleaseDate) = currentSentenceGroup.partition { timelineCalculationDate.isBeforeOrEqualTo(it.sentenceCalculation.adjustedDeterminateReleaseDate) }
       timelineCalculator.setAdjustments(
         sentencesBeforeReleaseDate,

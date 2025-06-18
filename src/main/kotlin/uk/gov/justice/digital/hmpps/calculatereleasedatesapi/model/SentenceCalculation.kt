@@ -4,6 +4,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Interi
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import kotlin.math.abs
 
 data class SentenceCalculation(
   val unadjustedReleaseDate: UnadjustedReleaseDate,
@@ -11,6 +12,7 @@ data class SentenceCalculation(
   val calculateErsed: Boolean,
   var trancheCommencement: LocalDate? = null,
   val sentence: CalculableSentence = unadjustedReleaseDate.sentence,
+  var lastDayOfUal: LocalDate? = null,
 ) {
   val releaseDateCalculation: ReleaseDateCalculation get() = unadjustedReleaseDate.releaseDateCalculation
   val numberOfDaysToSentenceExpiryDate: Int get() = releaseDateCalculation.numberOfDaysToSentenceExpiryDate
@@ -98,9 +100,7 @@ data class SentenceCalculation(
     get() {
       if (sentence.isRecall()) {
         if (sentence.recallType == RecallType.STANDARD_RECALL) {
-          return unadjustedPostRecallReleaseDate?.plusDays(
-            adjustments.adjustmentsForStandardRecall(),
-          )
+          return expiryDate
         }
         if (sentence.recallType!!.isFixedTermRecall) {
           // Fixed term recalls only apply adjustments from return to custody date
@@ -157,6 +157,20 @@ data class SentenceCalculation(
       _licenceExpiryDate = value
     }
 
+/*
+ * This function will return the license expiry date at the point of initial release. If there was an immediate release and then a recall, more remand/tagged bail will be usable and therefore the license expiry will change, this returns the expiry before that change.
+*/
+  val licenceExpiryAtInitialRelease: LocalDate?
+    get() {
+      val adjustmentDaysForInitialRelease = adjustments.adjustmentsForInitialRelease()
+      return if (adjustmentDaysForInitialRelease < 0 && abs(adjustmentDaysForInitialRelease) > numberOfDaysToDeterminateReleaseDate) {
+        val unusedDays = abs(adjustmentDaysForInitialRelease) - numberOfDaysToDeterminateReleaseDate
+        licenceExpiryDate?.plusDays(unusedDays)
+      } else {
+        licenceExpiryDate
+      }
+    }
+
   //  Home Detention Curfew Eligibility Date(HDCED)
   var numberOfDaysToHomeDetentionCurfewEligibilityDate: Long = 0
   var homeDetentionCurfewEligibilityDate: LocalDate? = null
@@ -207,7 +221,7 @@ data class SentenceCalculation(
 
   val expiryDate: LocalDate
     get() {
-      return maxOf(adjustedExpiryDate, sentence.sentencedAt)
+      return listOfNotNull(adjustedExpiryDate, sentence.sentencedAt, lastDayOfUal?.plusDays(1)).max()
     }
   var topUpSupervisionDate: LocalDate? = null
   var isReleaseDateConditional: Boolean = false
