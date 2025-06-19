@@ -45,7 +45,7 @@ enum class ValidationCode(val message: String, val validationType: ValidationTyp
   FTR_TYPE_28_DAYS_SENTENCE_GAP_LT_14_DAYS("<h4>Incorrect recall term</h4><p>A 28-day fixed term recall has been selected.</p><p>Based on the sentence information, this should be a 14-day fixed term recall.</p><p>Change the fixed term recall to 14 days.</p><br/>"),
   FTR_TYPE_28_DAYS_SENTENCE_LT_12_MONTHS("The sentence length is less than 12 months, so the fixed term sentence type should be 14 days."),
   FTR_TYPE_28_DAYS_AGGREGATE_LT_12_MONTHS("The aggregate sentence length for the consecutive sentences is less than 12 months, so the fixed term sentence type should be 14 days."),
-  FTR_TYPE_48_DAYS_OVERLAPPING_SENTENCE("Unsupported FTR48 calculation"),
+  FTR_TYPE_48_DAYS_OVERLAPPING_SENTENCE("Unsupported FTR48 calculation", MANUAL_ENTRY_JOURNEY_REQUIRED),
   LASPO_AR_SENTENCE_TYPE_INCORRECT("The sentence type for court case %s count %s is invalid for the sentence date entered."),
   MORE_THAN_ONE_IMPRISONMENT_TERM("Court case %s count %s must only have one imprisonment term."),
   MORE_THAN_ONE_LICENCE_TERM("Court case %s count %s must only have one licence term."),
