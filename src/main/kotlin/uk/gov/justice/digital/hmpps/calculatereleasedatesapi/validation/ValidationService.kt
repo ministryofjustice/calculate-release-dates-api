@@ -7,6 +7,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOu
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffence
+import kotlin.collections.plusAssign
 
 @Service
 class ValidationService(
@@ -84,6 +85,7 @@ class ValidationService(
     messages += adjustmentValidationService.validateRemandOverlappingSentences(calculationOutput, booking)
     messages += adjustmentValidationService.validateAdditionAdjustmentsInsideLatestReleaseDate(calculationOutput, booking)
     messages += recallValidationService.validateFixedTermRecallAfterCalc(calculationOutput, booking)
+    messages += recallValidationService.validateFtrFortyOverlap(booking.sentences)
     messages += recallValidationService.validateUnsupportedRecallTypes(calculationOutput, booking)
     messages += postCalculationValidationService.validateSDSImposedConsecBetweenTrancheDatesForTrancheTwoPrisoner(booking, calculationOutput)
     messages += postCalculationValidationService.validateSHPOContainingSX03Offences(booking, calculationOutput)

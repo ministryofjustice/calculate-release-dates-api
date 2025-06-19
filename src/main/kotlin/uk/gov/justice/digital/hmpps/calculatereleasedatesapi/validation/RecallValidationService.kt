@@ -21,6 +21,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Sent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType.Companion.from
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.FTR_48_COMMENCEMENT_DATE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.findClosest12MonthOrGreaterSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.findClosestUnder12MonthSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
@@ -273,6 +274,20 @@ class RecallValidationService(
       }
     }
     return messages
+  }
+
+  internal fun validateFtrFortyOverlap(sentences: List<AbstractSentence>): List<ValidationMessage> = if (
+    featureToggles.ftr48ManualJourney &&
+    sentences.any {
+      it.recallType == FIXED_TERM_RECALL_28 &&
+        it.sentencedAt.isBefore(FTR_48_COMMENCEMENT_DATE) &&
+        it.durationIsGreaterThanOrEqualTo(12, MONTHS) &&
+        it.durationIsLessThan(48, MONTHS)
+    }
+  ) {
+    listOf(ValidationMessage(ValidationCode.FTR_TYPE_48_DAYS_OVERLAPPING_SENTENCE))
+  } else {
+    emptyList()
   }
 
   private fun validateMixedDurations(
