@@ -65,7 +65,13 @@ class ErsedCalculator(private val ersedConfiguration: ErsedConfiguration) {
     val unadjustedEffectiveRelease = sentenceCalculation.unadjustedExtendedDeterminateParoleEligibilityDate
       ?: sentenceCalculation.unadjustedReleaseDate.unadjustedDeterminateReleaseDate
 
-    val maxEffectiveErsed = effectiveRelease.minusDays(ersedConfiguration.maxPeriodDays.toLong())
+    val maxEffectiveErsed = effectiveRelease.minus(ersedConfiguration.maxPeriod)
+
+    val (unit, amount) = when {
+      ersedConfiguration.maxPeriod.years > 0 -> ChronoUnit.YEARS to -ersedConfiguration.maxPeriod.years.toLong()
+      else -> ChronoUnit.DAYS to -ersedConfiguration.maxPeriod.days.toLong()
+    }
+
     val maxEffectiveErsedBreakdown = ReleaseDateCalculationBreakdown(
       rules = setOf(CalculationRule.ERSED_MAX_PERIOD),
       releaseDate = maxEffectiveErsed,
@@ -75,7 +81,7 @@ class ErsedCalculator(private val ersedConfiguration: ErsedConfiguration) {
         sentenceCalculation.adjustedDeterminateReleaseDate,
       ),
       rulesWithExtraAdjustments = mapOf(
-        CalculationRule.ERSED_MAX_PERIOD to AdjustmentDuration(-ersedConfiguration.maxPeriodDays.toLong(), ChronoUnit.DAYS),
+        CalculationRule.ERSED_MAX_PERIOD to AdjustmentDuration(amount, unit),
       ),
     )
 
