@@ -41,7 +41,7 @@ class RecallValidationServiceTest {
         on { recallType } doReturn RecallType.FIXED_TERM_RECALL_28
         on { sentencedAt } doReturn LocalDate.of(2020, 1, 1)
         on { durationIsGreaterThanOrEqualTo(12, ChronoUnit.MONTHS) } doReturn true
-        on { durationIsLessThan(4, ChronoUnit.YEARS) } doReturn true
+        on { durationIsLessThan(48, ChronoUnit.MONTHS) } doReturn true
       }
 
       val result = recallValidationService.validateFtrFortyOverlap(listOf(sentence))
@@ -64,12 +64,12 @@ class RecallValidationServiceTest {
     }
 
     @Test
-    fun `returns empty list when duration is 4 years or more`() {
+    fun `returns empty list when duration is 48 months or more`() {
       val sentence = mock<AbstractSentence> {
         on { recallType } doReturn RecallType.FIXED_TERM_RECALL_28
         on { sentencedAt } doReturn LocalDate.of(2020, 1, 1)
         on { durationIsGreaterThanOrEqualTo(12, ChronoUnit.MONTHS) } doReturn true
-        on { durationIsLessThan(4, ChronoUnit.YEARS) } doReturn false
+        on { durationIsLessThan(48, ChronoUnit.MONTHS) } doReturn false
       }
 
       val result = recallValidationService.validateFtrFortyOverlap(listOf(sentence))
