@@ -282,7 +282,7 @@ class RecallValidationService(
       it.recallType == FIXED_TERM_RECALL_28 &&
         it.sentencedAt.isBefore(FTR_48_COMMENCEMENT_DATE) &&
         it.durationIsGreaterThanOrEqualTo(12, MONTHS) &&
-        it.durationIsLessThan(4, ChronoUnit.YEARS)
+        it.durationIsLessThan(48, MONTHS)
     }
   ) {
     listOf(ValidationMessage(ValidationCode.FTR_TYPE_48_DAYS_OVERLAPPING_SENTENCE))
