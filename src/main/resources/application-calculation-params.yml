@@ -9,7 +9,7 @@ hdced:
   custodial-period-above-midpoint-deduction-days-post-hdc-365: 364
 
 ersed:
-  max-period-days: 544
+  max-period: P544D
   release-point: 0.5
 
 release-point-multipliers:
