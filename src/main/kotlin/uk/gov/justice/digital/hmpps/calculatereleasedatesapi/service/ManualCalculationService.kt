@@ -24,6 +24,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.Calculat
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.sentence.SentenceCombinationService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.sentence.SentenceIdentificationService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessage
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationType.MANUAL_ENTRY_JOURNEY_REQUIRED
 import java.time.LocalDate
@@ -102,9 +103,12 @@ class ManualCalculationService(
       val savedCalculationRequest = calculationRequestRepository.save(calculationRequest)
 
       val preCalcManualJourneyErrors = validationService.validateSupportedSentencesAndCalculations(sourceData)
+      val validationMessages = mutableListOf<ValidationMessage>()
+      validationMessages.addAll(preCalcManualJourneyErrors.unsupportedCalculationMessages)
+      validationMessages.addAll(preCalcManualJourneyErrors.unsupportedSentenceMessages)
 
-      if (preCalcManualJourneyErrors.isNotEmpty()) {
-        savedCalculationRequest.manualCalculationReason = preCalcManualJourneyErrors.map { transform(savedCalculationRequest, it) }
+      if (validationMessages.isNotEmpty()) {
+        savedCalculationRequest.manualCalculationReason = validationMessages.map { transform(savedCalculationRequest, it) }
         calculationRequestRepository.save(savedCalculationRequest)
       } else {
         val calculationOutput = calculationService.calculateReleaseDates(
