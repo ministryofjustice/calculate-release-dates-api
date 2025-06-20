@@ -35,6 +35,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualEntrySelectedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmitCalculationRequest
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SupportedValidationResponse
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ReturnToCustodyDate
@@ -154,7 +155,7 @@ class CalculationTransactionalService(
   }
 
   @Transactional(readOnly = true)
-  fun supportedValidation(prisonerId: String, inactiveDataOptions: InactiveDataOptions = InactiveDataOptions.default()): List<ValidationMessage> {
+  fun supportedValidation(prisonerId: String, inactiveDataOptions: InactiveDataOptions = InactiveDataOptions.default()): SupportedValidationResponse {
     val sourceData = calculationSourceDataService.getCalculationSourceData(prisonerId, inactiveDataOptions)
     return validationService.validateSupportedSentencesAndCalculations(sourceData)
   }

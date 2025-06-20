@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.http.MediaType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.MockManageOffencesClient
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SupportedValidationResponse
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.manageoffencesapi.OffencePcscMarkers
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.manageoffencesapi.PcscMarkers
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode
@@ -120,7 +121,7 @@ class ValidationIntTest(private val mockManageOffencesClient: MockManageOffences
 
   @Test
   fun `Run supported validation for unsupported DTO concurrent to recall`() {
-    runSupportedValidationAndCheckMessages("CRS-1145-AC1", listOf(ValidationMessage(code = UNSUPPORTED_CALCULATION_DTO_WITH_RECALL)))
+    runSupportedValidationAndCheckMessages("CRS-1145-AC1", listOf(), listOf(ValidationMessage(code = UNSUPPORTED_CALCULATION_DTO_WITH_RECALL)))
   }
 
   @Test
@@ -254,7 +255,7 @@ class ValidationIntTest(private val mockManageOffencesClient: MockManageOffences
     )
   }
 
-  private fun runSupportedValidationAndCheckMessages(prisonerId: String, messages: List<ValidationMessage>) {
+  private fun runSupportedValidationAndCheckMessages(prisonerId: String, unsupportedSentenceMessages: List<ValidationMessage>, unsupportedCalculationMessages: List<ValidationMessage> = emptyList()) {
     val validationMessages = webTestClient.get()
       .uri("/validation/$prisonerId/supported-validation")
       .accept(MediaType.APPLICATION_JSON)
@@ -262,10 +263,11 @@ class ValidationIntTest(private val mockManageOffencesClient: MockManageOffences
       .exchange()
       .expectStatus().isOk
       .expectHeader().contentType(MediaType.APPLICATION_JSON)
-      .expectBodyList(ValidationMessage::class.java)
+      .expectBody(SupportedValidationResponse::class.java)
       .returnResult().responseBody!!
 
-    assertThat(validationMessages).isEqualTo(messages)
+    assertThat(validationMessages.unsupportedCalculationMessages).hasSameElementsAs(unsupportedCalculationMessages)
+    assertThat(validationMessages.unsupportedSentenceMessages).hasSameElementsAs(unsupportedSentenceMessages)
   }
 
   private fun runValidateForManualEntry(prisonerId: String, messages: List<ValidationMessage>) {
