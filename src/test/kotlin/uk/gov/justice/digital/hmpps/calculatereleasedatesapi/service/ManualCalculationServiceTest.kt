@@ -36,6 +36,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyRelea
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmittedDate
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SupportedValidationResponse
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderKeyDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
@@ -406,13 +407,24 @@ class ManualCalculationServiceTest {
 
   @Test
   fun `Check noDates is set correctly when indeterminate`() {
-    whenever(calculationSourceDataService.getCalculationSourceData(PRISONER_ID, InactiveDataOptions.default())).thenReturn(FAKE_SOURCE_DATA)
+    whenever(
+      calculationSourceDataService.getCalculationSourceData(
+        PRISONER_ID,
+        InactiveDataOptions.default(),
+      ),
+    ).thenReturn(FAKE_SOURCE_DATA)
     whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
     whenever(calculationRequestRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES))
     whenever(calculationReasonRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REASON))
     whenever(bookingService.getBooking(FAKE_SOURCE_DATA, CalculationUserInputs())).thenReturn(BOOKING)
     whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
     whenever(nomisCommentService.getManualNomisComment(any(), any(), any())).thenReturn("The NOMIS Reason")
+    whenever(validationService.validateSupportedSentencesAndCalculations(any())).thenReturn(
+      SupportedValidationResponse(
+        listOf(),
+        listOf(),
+      ),
+    )
     val manualCalcRequest = ManualEntrySelectedDate(ReleaseDateType.None, "None of the dates apply", null)
     val manualEntryRequest = ManualEntryRequest(listOf(manualCalcRequest), 1L, "")
     manualCalculationService.storeManualCalculation(PRISONER_ID, manualEntryRequest)
@@ -430,15 +442,30 @@ class ManualCalculationServiceTest {
 
   @Test
   fun `Check noDates is set correctly for determinate manual entry`() {
-    whenever(calculationSourceDataService.getCalculationSourceData(PRISONER_ID, InactiveDataOptions.default())).thenReturn(FAKE_SOURCE_DATA)
+    whenever(
+      calculationSourceDataService.getCalculationSourceData(
+        PRISONER_ID,
+        InactiveDataOptions.default(),
+      ),
+    ).thenReturn(FAKE_SOURCE_DATA)
     whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
     whenever(calculationRequestRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES))
     whenever(calculationReasonRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REASON))
     whenever(bookingService.getBooking(FAKE_SOURCE_DATA, CalculationUserInputs())).thenReturn(BOOKING)
     whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
     whenever(nomisCommentService.getManualNomisComment(any(), any(), any())).thenReturn("The NOMIS Reason")
+    whenever(validationService.validateSupportedSentencesAndCalculations(any())).thenReturn(
+      SupportedValidationResponse(
+        listOf(),
+        listOf(),
+      ),
+    )
 
-    val manualCalcRequest = ManualEntrySelectedDate(ReleaseDateType.CRD, "CRD also known as the Conditional Release Date", SubmittedDate(3, 3, 2023))
+    val manualCalcRequest = ManualEntrySelectedDate(
+      ReleaseDateType.CRD,
+      "CRD also known as the Conditional Release Date",
+      SubmittedDate(3, 3, 2023),
+    )
     val manualEntryRequest = ManualEntryRequest(listOf(manualCalcRequest), 1L, "")
 
     manualCalculationService.storeManualCalculation(PRISONER_ID, manualEntryRequest)
@@ -456,7 +483,12 @@ class ManualCalculationServiceTest {
 
   @Test
   fun `Check type is set to Genuine Override when its a genuine override`() {
-    whenever(calculationSourceDataService.getCalculationSourceData(PRISONER_ID, InactiveDataOptions.default())).thenReturn(FAKE_SOURCE_DATA)
+    whenever(
+      calculationSourceDataService.getCalculationSourceData(
+        PRISONER_ID,
+        InactiveDataOptions.default(),
+      ),
+    ).thenReturn(FAKE_SOURCE_DATA)
     whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
     whenever(calculationRequestRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES))
     whenever(calculationReasonRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REASON))
@@ -464,11 +496,15 @@ class ManualCalculationServiceTest {
     whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
     whenever(nomisCommentService.getManualNomisComment(any(), any(), any())).thenReturn("The NOMIS Reason")
 
-    val manualCalcRequest = ManualEntrySelectedDate(ReleaseDateType.CRD, "CRD also known as the Conditional Release Date", SubmittedDate(3, 3, 2023))
+    val manualCalcRequest = ManualEntrySelectedDate(
+      ReleaseDateType.CRD,
+      "CRD also known as the Conditional Release Date",
+      SubmittedDate(3, 3, 2023),
+    )
     val manualEntryRequest = ManualEntryRequest(listOf(manualCalcRequest), 1L, "")
 
     manualCalculationService.storeManualCalculation(PRISONER_ID, manualEntryRequest, true)
-    verify(calculationRequestRepository).save(calculationRequestArgumentCaptor.capture())
+    verify(calculationRequestRepository, times(2)).save(calculationRequestArgumentCaptor.capture())
     val actualRequest = calculationRequestArgumentCaptor.firstValue
     assertThat(actualRequest.calculationType).isEqualTo(CalculationType.MANUAL_OVERRIDE)
   }
@@ -476,7 +512,12 @@ class ManualCalculationServiceTest {
   @Test
   fun `Check type is set to manual indeterminate when indeterminate sentences are present`() {
     val offence = OffenderOffence(1L, LocalDate.of(2015, 1, 1), null, "ADIMP", "description", listOf("A"))
-    whenever(calculationSourceDataService.getCalculationSourceData(PRISONER_ID, InactiveDataOptions.default())).thenReturn(FAKE_SOURCE_DATA)
+    whenever(
+      calculationSourceDataService.getCalculationSourceData(
+        PRISONER_ID,
+        InactiveDataOptions.default(),
+      ),
+    ).thenReturn(FAKE_SOURCE_DATA)
     whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
     whenever(calculationRequestRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES))
     whenever(calculationReasonRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REASON))
@@ -508,28 +549,51 @@ class ManualCalculationServiceTest {
       ),
     )
 
-    val manualCalcRequest = ManualEntrySelectedDate(ReleaseDateType.CRD, "CRD also known as the Conditional Release Date", SubmittedDate(3, 3, 2023))
+    val manualCalcRequest = ManualEntrySelectedDate(
+      ReleaseDateType.CRD,
+      "CRD also known as the Conditional Release Date",
+      SubmittedDate(3, 3, 2023),
+    )
     val manualEntryRequest = ManualEntryRequest(listOf(manualCalcRequest), 1L, "")
 
     manualCalculationService.storeManualCalculation(PRISONER_ID, manualEntryRequest, false)
-    verify(calculationRequestRepository).save(calculationRequestArgumentCaptor.capture())
+    verify(calculationRequestRepository, times(2)).save(calculationRequestArgumentCaptor.capture())
     val actualRequest = calculationRequestArgumentCaptor.firstValue
     assertThat(actualRequest.calculationType).isEqualTo(CalculationType.MANUAL_INDETERMINATE)
   }
 
   @Test
   fun `Check ESL is set to zero when exception is thrown calculating ESL`() {
-    whenever(calculationSourceDataService.getCalculationSourceData(PRISONER_ID, InactiveDataOptions.default())).thenReturn(FAKE_SOURCE_DATA)
+    whenever(
+      calculationSourceDataService.getCalculationSourceData(
+        PRISONER_ID,
+        InactiveDataOptions.default(),
+      ),
+    ).thenReturn(FAKE_SOURCE_DATA)
     whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
     whenever(calculationRequestRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES))
     whenever(calculationReasonRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REASON))
     whenever(bookingService.getBooking(FAKE_SOURCE_DATA, CalculationUserInputs())).thenReturn(BOOKING)
     whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
     whenever(nomisCommentService.getManualNomisComment(any(), any(), any())).thenReturn("The NOMIS Reason")
-
+    whenever(validationService.validateSupportedSentencesAndCalculations(any())).thenReturn(
+      SupportedValidationResponse(
+        listOf(),
+        listOf(),
+      ),
+    )
     // Throw exception during consecutive sentence creation
-    whenever(sentenceCombinationService.createConsecutiveSentences(any(), any())).thenThrow(NullPointerException("An error was thrown"))
-    val manualCalcRequest = ManualEntrySelectedDate(ReleaseDateType.CRD, "CRD also known as the Conditional Release Date", SubmittedDate(3, 3, 2023))
+    whenever(
+      sentenceCombinationService.createConsecutiveSentences(
+        any(),
+        any(),
+      ),
+    ).thenThrow(NullPointerException("An error was thrown"))
+    val manualCalcRequest = ManualEntrySelectedDate(
+      ReleaseDateType.CRD,
+      "CRD also known as the Conditional Release Date",
+      SubmittedDate(3, 3, 2023),
+    )
     val manualEntryRequest = ManualEntryRequest(listOf(manualCalcRequest), 1L, "")
 
     manualCalculationService.storeManualCalculation(PRISONER_ID, manualEntryRequest, false)
@@ -545,7 +609,12 @@ class ManualCalculationServiceTest {
 
   @Test
   fun `Check type dates for bookings with fines can be manually set`() {
-    whenever(calculationSourceDataService.getCalculationSourceData(PRISONER_ID, InactiveDataOptions.default())).thenReturn(FAKE_SOURCE_DATA)
+    whenever(
+      calculationSourceDataService.getCalculationSourceData(
+        PRISONER_ID,
+        InactiveDataOptions.default(),
+      ),
+    ).thenReturn(FAKE_SOURCE_DATA)
     whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
     whenever(calculationRequestRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES))
     whenever(calculationReasonRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REASON))
@@ -553,18 +622,27 @@ class ManualCalculationServiceTest {
     whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
     whenever(nomisCommentService.getManualNomisComment(any(), any(), any())).thenReturn("The NOMIS Reason")
 
-    val manualCalcRequest = ManualEntrySelectedDate(ReleaseDateType.CRD, "CRD also known as the Conditional Release Date", SubmittedDate(3, 3, 2023))
+    val manualCalcRequest = ManualEntrySelectedDate(
+      ReleaseDateType.CRD,
+      "CRD also known as the Conditional Release Date",
+      SubmittedDate(3, 3, 2023),
+    )
     val manualEntryRequest = ManualEntryRequest(listOf(manualCalcRequest), 1L, "")
 
     manualCalculationService.storeManualCalculation(PRISONER_ID, manualEntryRequest, false)
-    verify(calculationRequestRepository).save(calculationRequestArgumentCaptor.capture())
+    verify(calculationRequestRepository, times(2)).save(calculationRequestArgumentCaptor.capture())
     val actualRequest = calculationRequestArgumentCaptor.firstValue
     assertThat(actualRequest.calculationType).isEqualTo(CalculationType.MANUAL_DETERMINATE)
   }
 
   @Test
   fun `Check manual journey records validation reasons`() {
-    whenever(calculationSourceDataService.getCalculationSourceData(PRISONER_ID, InactiveDataOptions.default())).thenReturn(FAKE_SOURCE_DATA)
+    whenever(
+      calculationSourceDataService.getCalculationSourceData(
+        PRISONER_ID,
+        InactiveDataOptions.default(),
+      ),
+    ).thenReturn(FAKE_SOURCE_DATA)
     whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
     whenever(calculationRequestRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES))
     whenever(calculationReasonRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REASON))
@@ -572,13 +650,20 @@ class ManualCalculationServiceTest {
     whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
     whenever(nomisCommentService.getManualNomisComment(any(), any(), any())).thenReturn("The NOMIS Reason")
     whenever(validationService.validateSupportedSentencesAndCalculations(any())).thenReturn(
-      listOf(
-        ValidationMessage(ValidationCode.UNSUPPORTED_CALCULATION_DTO_WITH_RECALL),
-        ValidationMessage(ValidationCode.BOTUS_CONSECUTIVE_TO_OTHER_SENTENCE),
+      SupportedValidationResponse(
+        unsupportedSentenceMessages = listOf(),
+        unsupportedCalculationMessages = listOf(
+          ValidationMessage(ValidationCode.UNSUPPORTED_CALCULATION_DTO_WITH_RECALL),
+          ValidationMessage(ValidationCode.BOTUS_CONSECUTIVE_TO_OTHER_SENTENCE),
+        ),
       ),
     )
 
-    val manualCalcRequest = ManualEntrySelectedDate(ReleaseDateType.CRD, "CRD also known as the Conditional Release Date", SubmittedDate(3, 3, 2023))
+    val manualCalcRequest = ManualEntrySelectedDate(
+      ReleaseDateType.CRD,
+      "CRD also known as the Conditional Release Date",
+      SubmittedDate(3, 3, 2023),
+    )
     val manualEntryRequest = ManualEntryRequest(listOf(manualCalcRequest), 1L, "")
 
     manualCalculationService.storeManualCalculation(PRISONER_ID, manualEntryRequest, false)
@@ -591,7 +676,12 @@ class ManualCalculationServiceTest {
 
   @Test
   fun `Check manual journey records validation reasons for post calculation errors`() {
-    whenever(calculationSourceDataService.getCalculationSourceData(PRISONER_ID, InactiveDataOptions.default())).thenReturn(FAKE_SOURCE_DATA)
+    whenever(
+      calculationSourceDataService.getCalculationSourceData(
+        PRISONER_ID,
+        InactiveDataOptions.default(),
+      ),
+    ).thenReturn(FAKE_SOURCE_DATA)
     whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
     whenever(calculationRequestRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES))
     whenever(calculationReasonRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REASON))
@@ -605,7 +695,12 @@ class ManualCalculationServiceTest {
         mock(),
       ),
     )
-    whenever(validationService.validateSupportedSentencesAndCalculations(any())).thenReturn(emptyList())
+    whenever(validationService.validateSupportedSentencesAndCalculations(any())).thenReturn(
+      SupportedValidationResponse(
+        listOf(),
+        listOf(),
+      ),
+    )
     whenever(validationService.validateBookingAfterCalculation(any(), any())).thenReturn(
       listOf(
         ValidationMessage(ValidationCode.UNSUPPORTED_SDS40_RECALL_SENTENCE_TYPE),
@@ -613,7 +708,11 @@ class ManualCalculationServiceTest {
       ),
     )
 
-    val manualCalcRequest = ManualEntrySelectedDate(ReleaseDateType.CRD, "CRD also known as the Conditional Release Date", SubmittedDate(3, 3, 2023))
+    val manualCalcRequest = ManualEntrySelectedDate(
+      ReleaseDateType.CRD,
+      "CRD also known as the Conditional Release Date",
+      SubmittedDate(3, 3, 2023),
+    )
     val manualEntryRequest = ManualEntryRequest(listOf(manualCalcRequest), 1L, "")
 
     manualCalculationService.storeManualCalculation(PRISONER_ID, manualEntryRequest, false)
@@ -627,7 +726,14 @@ class ManualCalculationServiceTest {
   private companion object {
     private const val BOOKING_ID = 12345L
     private val THIRD_FEB_2021 = LocalDate.of(2021, 2, 3)
-    private val FIVE_YEAR_DURATION = Duration(mutableMapOf(ChronoUnit.DAYS to 0L, ChronoUnit.WEEKS to 0L, ChronoUnit.MONTHS to 0L, ChronoUnit.YEARS to 5L))
+    private val FIVE_YEAR_DURATION = Duration(
+      mutableMapOf(
+        ChronoUnit.DAYS to 0L,
+        ChronoUnit.WEEKS to 0L,
+        ChronoUnit.MONTHS to 0L,
+        ChronoUnit.YEARS to 5L,
+      ),
+    )
     private const val PRISONER_ID = "A1234AJ"
 
     private val BASE_DETERMINATE_SENTENCE = NormalisedSentenceAndOffence(

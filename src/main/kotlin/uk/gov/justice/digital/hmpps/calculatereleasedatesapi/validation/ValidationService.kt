@@ -96,8 +96,10 @@ class ValidationService(
     val sentencesAndOffences = sourceData.sentenceAndOffences
     val sortedSentences = sentencesAndOffences.sortedWith(validationUtilities::sortByCaseNumberAndLineSequence)
 
-    return SupportedValidationResponse(preCalculationValidationService.validateSupportedSentences(sortedSentences).distinct(),
-      preCalculationValidationService.validateUnsupportedCalculation(sourceData).distinct())
+    return SupportedValidationResponse(
+      preCalculationValidationService.validateSupportedSentences(sortedSentences).distinct(),
+      preCalculationValidationService.validateUnsupportedCalculation(sourceData).distinct(),
+    )
   }
 
   fun validateBeforeCalculation(booking: Booking): List<ValidationMessage> {
