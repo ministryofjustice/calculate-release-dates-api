@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOutput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SupportedValidationResponse
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffence
 
@@ -91,16 +92,12 @@ class ValidationService(
     return messages
   }
 
-  internal fun validateSupportedSentencesAndCalculations(sourceData: CalculationSourceData): List<ValidationMessage> {
+  internal fun validateSupportedSentencesAndCalculations(sourceData: CalculationSourceData): SupportedValidationResponse {
     val sentencesAndOffences = sourceData.sentenceAndOffences
     val sortedSentences = sentencesAndOffences.sortedWith(validationUtilities::sortByCaseNumberAndLineSequence)
-    val validationMessages = mutableListOf<ValidationMessage>()
-    validationMessages += preCalculationValidationService.validateSupportedSentences(sortedSentences)
-    if (validationMessages.isEmpty()) {
-      validationMessages += preCalculationValidationService.validateUnsupportedCalculation(sourceData)
-    }
 
-    return validationMessages.toList()
+    return SupportedValidationResponse(preCalculationValidationService.validateSupportedSentences(sortedSentences).distinct(),
+      preCalculationValidationService.validateUnsupportedCalculation(sourceData).distinct())
   }
 
   fun validateBeforeCalculation(booking: Booking): List<ValidationMessage> {
