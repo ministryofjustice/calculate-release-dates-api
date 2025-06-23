@@ -22,7 +22,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqual
 import java.time.LocalDate
 
 @Service
-class TimelineAdjustmentService {
+class TimelinePostTrancheAdjustmentService {
   fun applyTrancheAdjustmentLogic(
     calculation: CalculationResult,
     adjustments: Adjustments,

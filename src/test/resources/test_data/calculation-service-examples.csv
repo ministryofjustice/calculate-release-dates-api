@@ -718,3 +718,4 @@ custom-examples,crs-2339-1,,,,,
 tranches,crs-2329-tranche-bug,,,FALSE,,TRUE
 tranches,crs-2329-tranche-bug-test-updated-adjs-1,,,FALSE,,TRUE
 tranches,crs-2329-tranche-bug-test-updated-adjs-2,,,FALSE,,TRUE
+custom-examples,crs-2378-ada-post-tranche-error,,,,,
