@@ -56,6 +56,8 @@ class SingleTermSentence(
 
   override fun getLengthInDays(): Int = combinedDuration().getLengthInDays(sentencedAt)
 
+  override fun getLengthInMonths(): Int = combinedDuration().getLengthInMonths(sentencedAt)
+
   override fun hasAnyEdsOrSopcSentence(): Boolean = false
 
   private fun earliestSentencedAt(firstStandardSentence: AbstractSentence, secondStandardSentence: AbstractSentence): LocalDate = if (firstStandardSentence.sentencedAt.isBefore(secondStandardSentence.sentencedAt)) {
