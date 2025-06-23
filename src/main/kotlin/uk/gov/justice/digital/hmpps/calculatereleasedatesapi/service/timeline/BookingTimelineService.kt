@@ -45,7 +45,7 @@ class BookingTimelineService(
   private val timelineUalAdjustmentCalculationHandler: TimelineUalAdjustmentCalculationHandler,
   private val timelineExternalReleaseMovementCalculationHandler: TimelineExternalReleaseMovementCalculationHandler,
   private val timelineExternalAdmissionMovementCalculationHandler: TimelineExternalAdmissionMovementCalculationHandler,
-  private val timelineAdjustmentService: TimelineAdjustmentService,
+  private val timelinePostTrancheAdjustmentService: TimelinePostTrancheAdjustmentService,
 ) {
 
   fun calculate(
@@ -124,15 +124,21 @@ class BookingTimelineService(
         )
 
       if (beforeTrancheCalculation != null) {
+        val allSentences = releasedSentenceGroups.flatMap { it.sentences }
         latestCalculation = sdsEarlyReleaseDefaultingRulesService.applySDSEarlyReleaseRulesAndFinalizeDates(
           latestCalculation,
           beforeTrancheCalculation!!,
           trancheAndCommencement.second!!,
           trancheAndCommencement.first,
-          releasedSentenceGroups.flatMap { it.sentences },
+          allSentences,
         )
-
-        latestCalculation = timelineAdjustmentService.applyTrancheAdjustmentLogic(latestCalculation, adjustments, trancheAndCommencement)
+        if (allSentences.none { it.sentencedAt.isAfter(trancheAndCommencement.second!!) }) {
+          latestCalculation = timelinePostTrancheAdjustmentService.applyTrancheAdjustmentLogic(
+            latestCalculation,
+            adjustments,
+            trancheAndCommencement,
+          )
+        }
       }
 
       return CalculationOutput(

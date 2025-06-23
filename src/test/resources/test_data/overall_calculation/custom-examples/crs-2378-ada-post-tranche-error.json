@@ -1,0 +1,110 @@
+{
+  "offender": {
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
+  },
+  "sentences": [
+    {
+      "offence": {
+        "committedAt": "2022-11-18",
+        "offenceCode": "PR52044"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 20
+        }
+      },
+      "sentencedAt": "2024-03-15"
+    },
+    {
+      "offence": {
+        "committedAt": "2024-01-16",
+        "offenceCode": "PR52044"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 13
+        }
+      },
+      "sentencedAt": "2024-10-08"
+    },
+    {
+      "offence": {
+        "committedAt": "2023-04-18",
+        "offenceCode": "PR52044"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 7
+        }
+      },
+      "sentencedAt": "2024-10-08"
+    },
+    {
+      "offence": {
+        "committedAt": "2023-04-18",
+        "offenceCode": "OF61017"
+      },
+      "duration": {
+        "durationElements": {
+          "YEARS": 3
+        }
+      },
+      "sentencedAt": "2024-10-08",
+      "identifier": "0c47c9a9-e039-3d9b-a33f-b2f7d92d9de5"
+    },
+    {
+      "offence": {
+        "committedAt": "2022-09-12",
+        "offenceCode": "OF61102"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 10
+        }
+      },
+      "sentencedAt": "2025-01-29",
+      "consecutiveSentenceUUIDs": [
+        "0c47c9a9-e039-3d9b-a33f-b2f7d92d9de5"
+      ]
+    },
+    {
+      "offence": {
+        "committedAt": "2024-07-02",
+        "offenceCode": "PR52043"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 6
+        }
+      },
+      "sentencedAt": "2025-04-11",
+      "identifier": "b4414094-b28d-3365-b30c-010a57164321"
+    },
+    {
+      "offence": {
+        "committedAt": "2024-07-02",
+        "offenceCode": "MD71530"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 6
+        }
+      },
+      "sentencedAt": "2025-04-11",
+      "consecutiveSentenceUUIDs": [
+        "b4414094-b28d-3365-b30c-010a57164321"
+      ]
+    }
+  ],
+  "adjustments": {
+    "ADDITIONAL_DAYS_AWARDED": [
+      {
+        "appliesToSentencesFrom": "2025-04-28",
+        "numberOfDays": 28,
+        "fromDate": "2025-04-28",
+        "toDate": "2025-05-25"
+      }
+    ]
+  }
+}
