@@ -117,7 +117,7 @@ class RecallValidationServiceTest {
       val sentence = mock<AbstractSentence> {
         val sentenceParts = listOf(
           mockSentencePartWithMonths(6),
-          mockSentencePartWithMonths(5)
+          mockSentencePartWithMonths(5),
         )
         on { recallType } doReturn RecallType.FIXED_TERM_RECALL_28
         on { sentencedAt } doReturn LocalDate.of(2020, 1, 1)
