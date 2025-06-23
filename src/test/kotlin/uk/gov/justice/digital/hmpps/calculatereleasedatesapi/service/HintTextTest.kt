@@ -53,8 +53,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.sentence.Se
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.sentence.SentenceIdentificationService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.sentence.SentencesExtractionService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.BookingTimelineService
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineAdjustmentService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculator
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelinePostTrancheAdjustmentService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers.TimelineAwardedAdjustmentCalculationHandler
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers.TimelineExternalAdmissionMovementCalculationHandler
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers.TimelineExternalReleaseMovementCalculationHandler
@@ -275,7 +275,7 @@ class HintTextTest {
     timelineCalculator,
   )
 
-  private val timelineAdjustmentService = TimelineAdjustmentService()
+  private val timelinePostTrancheAdjustmentService = TimelinePostTrancheAdjustmentService()
 
   private val bookingTimelineService = BookingTimelineService(
     workingDayService,
@@ -289,7 +289,7 @@ class HintTextTest {
     timelineUalAdjustmentCalculationHandler,
     timelineExternalReleaseMovementCalculationHandler,
     timelineExternalAdmissionMovementCalculationHandler,
-    timelineAdjustmentService,
+    timelinePostTrancheAdjustmentService,
   )
   private val sourceDataMapper = SourceDataMapper(TestUtil.objectMapper())
   private val calculationService = CalculationService(
