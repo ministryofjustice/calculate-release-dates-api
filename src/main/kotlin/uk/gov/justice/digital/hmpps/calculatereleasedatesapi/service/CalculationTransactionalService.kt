@@ -157,7 +157,31 @@ class CalculationTransactionalService(
   @Transactional(readOnly = true)
   fun supportedValidation(prisonerId: String, inactiveDataOptions: InactiveDataOptions = InactiveDataOptions.default()): SupportedValidationResponse {
     val sourceData = calculationSourceDataService.getCalculationSourceData(prisonerId, inactiveDataOptions)
-    return validationService.validateSupportedSentencesAndCalculations(sourceData)
+    val noInputs = CalculationUserInputs()
+    val booking = bookingService.getBooking(sourceData, noInputs)
+
+    val supportedResponse = validationService.validateSupportedSentencesAndCalculations(sourceData)
+    if (
+      supportedResponse.unsupportedSentenceMessages.isNotEmpty() ||
+      supportedResponse.unsupportedCalculationMessages.isNotEmpty()
+    ) {
+      return supportedResponse
+    }
+    val bookingValidationMessages = validationService.validateBeforeCalculation(booking)
+
+    if (bookingValidationMessages.isNotEmpty()) {
+      throw IllegalStateException("Unexpected: manual entry journey should not be triggered by pre-calculation validation at this stage.")
+    }
+    val calculationOutput = calculationService.calculateReleaseDates(
+      booking,
+      noInputs,
+    )
+
+    val manualEntryMessages = validationService.validateManualEntryJourneyRequirements(booking, calculationOutput)
+
+    return supportedResponse.copy(
+      unsupportedManualMessages = manualEntryMessages,
+    )
   }
 
   @Transactional

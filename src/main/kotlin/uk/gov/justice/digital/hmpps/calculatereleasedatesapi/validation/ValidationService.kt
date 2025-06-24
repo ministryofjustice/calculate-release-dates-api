@@ -86,11 +86,20 @@ class ValidationService(
     messages += adjustmentValidationService.validateRemandOverlappingSentences(calculationOutput, booking)
     messages += adjustmentValidationService.validateAdditionAdjustmentsInsideLatestReleaseDate(calculationOutput, booking)
     messages += recallValidationService.validateFixedTermRecallAfterCalc(calculationOutput, booking)
+    messages += validateManualEntryJourneyRequirements(booking, calculationOutput)
+
+    return messages
+  }
+
+  fun validateManualEntryJourneyRequirements(
+    booking: Booking,
+    calculationOutput: CalculationOutput,
+  ): List<ValidationMessage> {
+    val messages = mutableListOf<ValidationMessage>()
     messages += recallValidationService.validateFtrFortyOverlap(booking.sentences)
     messages += recallValidationService.validateUnsupportedRecallTypes(calculationOutput, booking)
     messages += postCalculationValidationService.validateSDSImposedConsecBetweenTrancheDatesForTrancheTwoPrisoner(booking, calculationOutput)
     messages += postCalculationValidationService.validateSHPOContainingSX03Offences(booking, calculationOutput)
-
     return messages
   }
 
