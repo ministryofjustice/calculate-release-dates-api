@@ -1,0 +1,184 @@
+{
+  "offender": {
+    "reference": "A2304CZ",
+    "dateOfBirth": "1990-03-26",
+    "isActiveSexOffender": false
+  },
+  "bookingId": 2843230,
+  "sentences": [
+    {
+      "type": "StandardSentence",
+      "offence": {
+        "committedAt": "2023-05-05",
+        "offenceCode": "TH68036"
+      },
+      "duration": {
+        "durationElements": {
+          "DAYS": 0,
+          "WEEKS": 0,
+          "YEARS": 4,
+          "MONTHS": 0
+        }
+      },
+      "isSDSPlus": false,
+      "identifier": "52cae93a-72f9-3933-81fe-4c5d49da6bbc",
+      "recallType": null,
+      "sentencedAt": "2024-06-12",
+      "caseSequence": 2,
+      "lineSequence": 1,
+      "caseReference": "35NT1374723",
+      "consecutiveSentenceUUIDs": [],
+      "isSDSPlusOffenceInPeriod": true,
+      "hasAnSDSEarlyReleaseExclusion": "NO",
+      "isSDSPlusEligibleSentenceTypeLengthAndOffence": false
+    },
+    {
+      "type": "StandardSentence",
+      "offence": {
+        "committedAt": "2023-05-11",
+        "offenceCode": "TH68036"
+      },
+      "duration": {
+        "durationElements": {
+          "DAYS": 0,
+          "WEEKS": 0,
+          "YEARS": 3,
+          "MONTHS": 6
+        }
+      },
+      "isSDSPlus": false,
+      "identifier": "c0563ff1-0ccd-31d8-8be9-54a433a50e1a",
+      "recallType": null,
+      "sentencedAt": "2024-06-12",
+      "caseSequence": 2,
+      "lineSequence": 2,
+      "caseReference": "35NT1374723",
+      "consecutiveSentenceUUIDs": [],
+      "isSDSPlusOffenceInPeriod": false,
+      "hasAnSDSEarlyReleaseExclusion": "NO",
+      "isSDSPlusEligibleSentenceTypeLengthAndOffence": false
+    },
+    {
+      "type": "StandardSentence",
+      "offence": {
+        "committedAt": "2023-05-11",
+        "offenceCode": "TH68073"
+      },
+      "duration": {
+        "durationElements": {
+          "DAYS": 0,
+          "WEEKS": 0,
+          "YEARS": 1,
+          "MONTHS": 0
+        }
+      },
+      "isSDSPlus": false,
+      "identifier": "212467f2-b46a-3208-9df3-0647b4fe4ff2",
+      "recallType": null,
+      "sentencedAt": "2024-06-12",
+      "caseSequence": 2,
+      "lineSequence": 3,
+      "caseReference": "35NT1374723",
+      "consecutiveSentenceUUIDs": [],
+      "isSDSPlusOffenceInPeriod": false,
+      "hasAnSDSEarlyReleaseExclusion": "NO",
+      "isSDSPlusEligibleSentenceTypeLengthAndOffence": false
+    },
+    {
+      "type": "StandardSentence",
+      "offence": {
+        "committedAt": "2023-05-12",
+        "offenceCode": "COML016"
+      },
+      "duration": {
+        "durationElements": {
+          "DAYS": 0,
+          "WEEKS": 0,
+          "YEARS": 0,
+          "MONTHS": 2
+        }
+      },
+      "isSDSPlus": false,
+      "identifier": "279b9247-5bbd-3abd-b443-4c47e8139015",
+      "recallType": null,
+      "sentencedAt": "2024-06-12",
+      "caseSequence": 1,
+      "lineSequence": 4,
+      "caseReference": "35NT1374623",
+      "consecutiveSentenceUUIDs": [
+        "52cae93a-72f9-3933-81fe-4c5d49da6bbc"
+      ],
+      "isSDSPlusOffenceInPeriod": false,
+      "hasAnSDSEarlyReleaseExclusion": "NO",
+      "isSDSPlusEligibleSentenceTypeLengthAndOffence": false
+    },
+    {
+      "type": "StandardSentence",
+      "offence": {
+        "committedAt": "2023-05-11",
+        "offenceCode": "RT88026"
+      },
+      "duration": {
+        "durationElements": {
+          "DAYS": 0,
+          "WEEKS": 0,
+          "YEARS": 0,
+          "MONTHS": 10
+        }
+      },
+      "isSDSPlus": false,
+      "identifier": "44c52a46-6a22-39f0-9533-0b4a5a8c60d1",
+      "recallType": null,
+      "sentencedAt": "2024-06-12",
+      "caseSequence": 1,
+      "lineSequence": 5,
+      "caseReference": "35NT1374623",
+      "consecutiveSentenceUUIDs": [
+        "279b9247-5bbd-3abd-b443-4c47e8139015"
+      ],
+      "isSDSPlusOffenceInPeriod": false,
+      "hasAnSDSEarlyReleaseExclusion": "NO",
+      "isSDSPlusEligibleSentenceTypeLengthAndOffence": false
+    },
+    {
+      "type": "StandardSentence",
+      "offence": {
+        "committedAt": "2023-05-11",
+        "offenceCode": "RT88333"
+      },
+      "duration": {
+        "durationElements": {
+          "DAYS": 0,
+          "WEEKS": 0,
+          "YEARS": 0,
+          "MONTHS": 3
+        }
+      },
+      "isSDSPlus": false,
+      "identifier": "33aa71e6-23dc-3e64-ad35-8d42b906c26a",
+      "recallType": null,
+      "sentencedAt": "2024-06-12",
+      "caseSequence": 1,
+      "lineSequence": 6,
+      "caseReference": "35NT1374623",
+      "consecutiveSentenceUUIDs": [],
+      "isSDSPlusOffenceInPeriod": false,
+      "hasAnSDSEarlyReleaseExclusion": "NO",
+      "isSDSPlusEligibleSentenceTypeLengthAndOffence": false
+    }
+  ],
+  "adjustments": {
+    "REMAND": [
+      {
+        "toDate": "2024-06-11",
+        "fromDate": "2023-05-13",
+        "numberOfDays": 396,
+        "appliesToSentencesFrom": "2024-06-12"
+      }
+    ]
+  },
+  "externalMovements": [],
+  "historicalTusedData": null,
+  "returnToCustodyDate": null,
+  "fixedTermRecallDetails": null
+}
