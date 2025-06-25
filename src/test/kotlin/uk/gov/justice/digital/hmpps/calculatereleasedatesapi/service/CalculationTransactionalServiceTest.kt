@@ -194,6 +194,7 @@ class CalculationTransactionalServiceTest {
     assertSds40: Boolean? = false,
     expectedValidationException: String? = null,
     expectedValidationMessage: String? = null,
+    featureTogglesStr: String? = null,
   ) {
     log.info("Testing example $exampleType/$exampleNumber")
     whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST)
@@ -214,7 +215,8 @@ class CalculationTransactionalServiceTest {
         sdsEarlyReleaseTrancheTwoDate(defaultParams(params)),
         sdsEarlyReleaseTrancheThreeDate(defaultParams(params)),
       )
-      val myValidationService = getActiveValidationService(sentencesExtractionService, trancheConfiguration)
+      val featureToggles = parseFeatureToggles(featureTogglesStr)
+      val myValidationService = getActiveValidationService(sentencesExtractionService, trancheConfiguration, featureToggles)
 
       returnedValidationMessages = myValidationService.validateBookingAfterCalculation(
         calculatedReleaseDates,
@@ -1034,13 +1036,31 @@ class CalculationTransactionalServiceTest {
     ) to calculationService
   }
 
+  fun parseFeatureToggles(toggleStr: String?): FeatureToggles {
+    val defaults = FeatureToggles()
+    if (toggleStr.isNullOrBlank()) return defaults
+
+    val toggleMap = toggleStr.split(';').associate {
+      val (key, value) = it.split('=').map(String::trim)
+      key to value.toBooleanStrict()
+    }
+
+    return FeatureToggles(
+      supportInactiveSentencesAndAdjustments = toggleMap["supportInactiveSentencesAndAdjustments"] ?: defaults.supportInactiveSentencesAndAdjustments,
+      useAdjustmentsApi = toggleMap["useAdjustmentsApi"] ?: defaults.useAdjustmentsApi,
+      concurrentConsecutiveSentencesEnabled = toggleMap["concurrentConsecutiveSentencesEnabled"] ?: defaults.concurrentConsecutiveSentencesEnabled,
+      externalMovementsSds40 = toggleMap["externalMovementsSds40"] ?: defaults.externalMovementsSds40,
+      externalMovementsAdjustmentSharing = toggleMap["externalMovementsAdjustmentSharing"] ?: defaults.externalMovementsAdjustmentSharing,
+      historicSled = toggleMap["historicSled"] ?: defaults.historicSled,
+      ftr48ManualJourney = toggleMap["ftr48ManualJourney"] ?: defaults.ftr48ManualJourney,
+    )
+  }
+
   private fun getActiveValidationService(
     sentencesExtractionService: SentencesExtractionService,
     trancheConfiguration: SDS40TrancheConfiguration,
+    featureToggles: FeatureToggles = FeatureToggles(),
   ): ValidationService {
-    val featureToggles = FeatureToggles(
-      concurrentConsecutiveSentencesEnabled = true,
-    )
     val validationUtilities = ValidationUtilities()
     val fineValidationService = FineValidationService(validationUtilities)
     val adjustmentValidationService = AdjustmentValidationService()
