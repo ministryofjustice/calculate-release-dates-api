@@ -33,5 +33,7 @@ data class AFineSentence(
 
   override fun getLengthInDays(): Int = duration.getLengthInDays(this.sentencedAt)
 
+  override fun getLengthInMonths(): Int = duration.getLengthInMonths(sentencedAt)
+
   override fun hasAnyEdsOrSopcSentence(): Boolean = false
 }
