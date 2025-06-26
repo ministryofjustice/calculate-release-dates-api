@@ -30,6 +30,8 @@ data class Duration(
   // PSI 5.5 Converting a Sentence in to Days
   fun getLengthInDays(startDate: LocalDate): Int = (DAYS.between(startDate, getEndDate(startDate)) + 1).toInt()
 
+  fun getLengthInMonths(startDate: LocalDate): Int = (MONTHS.between(startDate, getEndDate(startDate)) + 1).toInt()
+
   // PSI 5.5 Converting a Sentence in to Days
   fun getEndDate(startDate: LocalDate): LocalDate {
     val years = durationElements.getOrDefault(YEARS, 0L)

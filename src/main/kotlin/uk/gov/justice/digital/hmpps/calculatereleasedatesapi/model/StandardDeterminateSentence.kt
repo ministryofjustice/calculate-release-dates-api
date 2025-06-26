@@ -35,6 +35,8 @@ data class StandardDeterminateSentence(
 
   override fun getLengthInDays(): Int = duration.getLengthInDays(this.sentencedAt)
 
+  override fun getLengthInMonths(): Int = duration.getLengthInMonths(sentencedAt)
+
   override fun hasAnyEdsOrSopcSentence(): Boolean = false
 
   @JsonIgnore
