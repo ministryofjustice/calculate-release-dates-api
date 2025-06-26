@@ -17,6 +17,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.Validati
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.A_FINE_SENTENCE_WITH_PAYMENTS
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.BROKEN_CONSECUTIVE_CHAINS
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.CONCURRENT_CONSECUTIVE_SENTENCES_DURATION
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.DTO_CONSECUTIVE_TO_SENTENCE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.OFFENCE_DATE_AFTER_SENTENCE_RANGE_DATE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.OFFENCE_DATE_AFTER_SENTENCE_START_DATE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.OFFENCE_MISSING_DATE
@@ -25,6 +26,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.Validati
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.REMAND_OVERLAPS_WITH_REMAND
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.SEC_91_SENTENCE_TYPE_INCORRECT
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.SENTENCE_HAS_MULTIPLE_TERMS
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.UNABLE_TO_DETERMINE_SHPO_RELEASE_PROVISIONS
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.UNSUPPORTED_CALCULATION_DTO_WITH_RECALL
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.UNSUPPORTED_DTO_RECALL_SEC104_SEC105
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.UNSUPPORTED_SENTENCE_TYPE
@@ -116,6 +118,28 @@ class ValidationIntTest(private val mockManageOffencesClient: MockManageOffences
     runSupportedValidationAndCheckMessages(
       UNSUPPORTED_SENTENCE_PRISONER_ID,
       listOf(ValidationMessage(UNSUPPORTED_SENTENCE_TYPE, listOf("2003", "This sentence is unsupported"))),
+      listOf(),
+      listOf(),
+    )
+  }
+
+  @Test
+  fun `Run supported validation on unsupported calculation data`() {
+    runSupportedValidationAndCheckMessages(
+      UNSUPPORTED_CALC_DTO_CONSECUTIVE_TO_SENTENCE,
+      listOf(),
+      listOf(ValidationMessage(DTO_CONSECUTIVE_TO_SENTENCE, listOf())),
+      listOf(),
+    )
+  }
+
+  @Test
+  fun `Run supported validation on manual entry sentence data`() {
+    runSupportedValidationAndCheckMessages(
+      MANUAL_UNABLE_TO_DETERMINE_SHPO_RELEASE_PROVISIONS,
+      listOf(),
+      listOf(),
+      listOf(ValidationMessage(UNABLE_TO_DETERMINE_SHPO_RELEASE_PROVISIONS, listOf())),
     )
   }
 
@@ -236,7 +260,7 @@ class ValidationIntTest(private val mockManageOffencesClient: MockManageOffences
     runValidationAndCheckMessages(
       "CRS-2283-1",
       listOf(
-        ValidationMessage(ValidationCode.CONCURRENT_CONSECUTIVE_SENTENCES_DURATION, listOf("0", "12", "0", "0")),
+        ValidationMessage(CONCURRENT_CONSECUTIVE_SENTENCES_DURATION, listOf("0", "12", "0", "0")),
       ),
     )
 
@@ -244,7 +268,7 @@ class ValidationIntTest(private val mockManageOffencesClient: MockManageOffences
     runValidationAndCheckMessages(
       "CRS-2283-2",
       listOf(
-        ValidationMessage(ValidationCode.CONCURRENT_CONSECUTIVE_SENTENCES_DURATION, listOf("0", "3", "1", "0")),
+        ValidationMessage(CONCURRENT_CONSECUTIVE_SENTENCES_DURATION, listOf("0", "3", "1", "0")),
       ),
     )
 
@@ -255,7 +279,7 @@ class ValidationIntTest(private val mockManageOffencesClient: MockManageOffences
     )
   }
 
-  private fun runSupportedValidationAndCheckMessages(prisonerId: String, unsupportedSentenceMessages: List<ValidationMessage>, unsupportedCalculationMessages: List<ValidationMessage> = emptyList()) {
+  private fun runSupportedValidationAndCheckMessages(prisonerId: String, unsupportedSentenceMessages: List<ValidationMessage>, unsupportedCalculationMessages: List<ValidationMessage> = emptyList(), unsupportedManualMessages: List<ValidationMessage> = emptyList()) {
     val validationMessages = webTestClient.get()
       .uri("/validation/$prisonerId/supported-validation")
       .accept(MediaType.APPLICATION_JSON)
@@ -268,6 +292,7 @@ class ValidationIntTest(private val mockManageOffencesClient: MockManageOffences
 
     assertThat(validationMessages.unsupportedCalculationMessages).hasSameElementsAs(unsupportedCalculationMessages)
     assertThat(validationMessages.unsupportedSentenceMessages).hasSameElementsAs(unsupportedSentenceMessages)
+    assertThat(validationMessages.unsupportedManualMessages).hasSameElementsAs(unsupportedManualMessages)
   }
 
   private fun runValidateForManualEntry(prisonerId: String, messages: List<ValidationMessage>) {
@@ -303,6 +328,8 @@ class ValidationIntTest(private val mockManageOffencesClient: MockManageOffences
     const val REMAND_OVERLAPS_WITH_SENTENCE_PRISONER_ID = "REM-SEN"
     const val VALIDATION_PRISONER_ID = "VALIDATION"
     const val UNSUPPORTED_SENTENCE_PRISONER_ID = "UNSUPP_SENT"
+    const val UNSUPPORTED_CALC_DTO_CONSECUTIVE_TO_SENTENCE = "UNSUPPORTED_CALC_DTO_CONSECUTIVE_TO_SENTENCE"
+    const val MANUAL_UNABLE_TO_DETERMINE_SHPO_RELEASE_PROVISIONS = "MANUAL_UNABLE_TO_DETERMINE_SHPO_RELEASE_PROVISIONS"
     const val UNSUPPORTED_PRISONER_PRISONER_ID = "UNSUPP_PRIS"
     const val INACTIVE_PRISONER_ID = "INACTIVE"
     const val MISSING_OFFENCE_START_DATE_SENTENCE = "CRS-1634-no-offence-start-date"
