@@ -1,0 +1,29 @@
+[
+  {
+    "caseSequence": 1,
+    "lineSequence": 1,
+    "sentenceDate": "2023-12-14",
+    "bookingId": 100,
+    "sentenceSequence": 1,
+    "sentenceStatus": "A",
+    "sentenceCategory": "2003",
+    "terms": [
+      {
+        "years": 2,
+        "months": 3,
+        "weeks": 0,
+        "days": 0
+      }
+    ],
+    "sentenceCalculationType": "ADIMP_ORA",
+    "sentenceTypeDescription": "Standard determinate sentence",
+    "offences": [
+      {
+        "offenderChargeId": 1000001,
+        "offenceStartDate": "2022-08-01",
+        "offenceDescription": "Sexual activity with a child under 13",
+        "offenceCode": "SX03220"
+      }
+    ]
+  }
+]

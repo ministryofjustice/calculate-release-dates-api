@@ -5,4 +5,5 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.Validati
 data class SupportedValidationResponse(
   val unsupportedSentenceMessages: List<ValidationMessage> = listOf(),
   val unsupportedCalculationMessages: List<ValidationMessage> = listOf(),
+  val unsupportedManualMessages: List<ValidationMessage> = listOf(),
 )
