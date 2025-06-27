@@ -9,7 +9,9 @@ data class SentenceAdjustment(
   val toDate: LocalDate? = null,
   val numberOfDays: Int,
   val type: SentenceAdjustmentType,
-)
+) {
+  var bookingId: Long? = null
+}
 
 enum class SentenceAdjustmentType {
   RECALL_SENTENCE_REMAND,

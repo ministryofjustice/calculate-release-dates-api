@@ -1,9 +1,9 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.unuseddeductions.service
 
-import arrow.core.right
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.adjustmentsapi.model.AdjustmentDto
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentsSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.UnusedDeductionCalculationResponse
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.BookingService
@@ -26,7 +26,7 @@ class UnusedDeductionsCalculationService(
 
   fun calculate(adjustments: List<AdjustmentDto>, offenderNo: String): UnusedDeductionCalculationResponse {
     val prisoner = prisonService.getOffenderDetail(offenderNo)
-    val sourceData = sourceDataService.getCalculationSourceData(prisoner, InactiveDataOptions.default()).copy(bookingAndSentenceAdjustments = adjustments.right())
+    val sourceData = sourceDataService.getCalculationSourceData(prisoner, InactiveDataOptions.default()).copy(bookingAndSentenceAdjustments = AdjustmentsSourceData(adjustmentsApiData = adjustments))
 
     val calculationUserInputs = CalculationUserInputs(useOffenceIndicators = true)
 

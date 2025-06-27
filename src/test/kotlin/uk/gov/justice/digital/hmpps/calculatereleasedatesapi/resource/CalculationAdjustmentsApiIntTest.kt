@@ -30,6 +30,7 @@ class CalculationAdjustmentsApiIntTest : IntegrationTestBase() {
   @Test
   fun `Adjustments API integration`() {
     val prisoner = "ADJ-API"
+    println(prisoner.hashCode().toLong())
 
     // Firstly all adjustments are "NEW"
     var analysedAdjustments = getAnalysedAdjustments(prisoner)
