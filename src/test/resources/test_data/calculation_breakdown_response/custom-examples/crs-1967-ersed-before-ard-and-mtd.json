@@ -20,6 +20,10 @@
       },
       "lineSequence": 1,
       "caseSequence": 1,
+      "externalSentenceId": {
+        "sentenceSequence": 0,
+        "bookingId": 0
+      },
       "caseReference": null
     }
   ],

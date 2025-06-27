@@ -12,9 +12,10 @@ data class BotusSentence(
   override val consecutiveSentenceUUIDs: List<UUID> = listOf(),
   override val caseSequence: Int? = null,
   override val lineSequence: Int? = null,
+  override val externalSentenceId: ExternalSentenceId? = null,
   var latestTusedDate: LocalDate? = null,
   var latestTusedSource: HistoricalTusedSource? = null,
-) : AbstractSentence(offence, sentencedAt, identifier, consecutiveSentenceUUIDs, caseSequence, lineSequence),
+) : AbstractSentence(offence, sentencedAt, identifier, consecutiveSentenceUUIDs, caseSequence, lineSequence, externalSentenceId),
   Term {
   override val isSDSPlus: Boolean = false
   override val isSDSPlusEligibleSentenceTypeLengthAndOffence: Boolean = false

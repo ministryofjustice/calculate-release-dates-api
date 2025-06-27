@@ -20,6 +20,10 @@
       },
       "lineSequence": 0,
       "caseSequence": 0,
+      "externalSentenceId": {
+        "sentenceSequence": 0,
+        "bookingId": 0
+      },
       "caseReference": null
     }
   ],
@@ -45,6 +49,10 @@
       {
         "lineSequence": 0,
         "caseSequence": 0,
+        "externalSentenceId": {
+          "sentenceSequence": 0,
+          "bookingId": 0
+        },
         "caseReference": null,
         "sentenceLength": "39 months",
         "sentenceLengthDays": 1187,
@@ -54,6 +62,10 @@
       {
         "lineSequence": 0,
         "caseSequence": 0,
+        "externalSentenceId": {
+          "sentenceSequence": 0,
+          "bookingId": 0
+        },
         "caseReference": null,
         "sentenceLength": "39 months",
         "sentenceLengthDays": 1187,
@@ -63,6 +75,10 @@
       {
         "lineSequence": 0,
         "caseSequence": 0,
+        "externalSentenceId": {
+          "sentenceSequence": 0,
+          "bookingId": 0
+        },
         "caseReference": null,
         "sentenceLength": "6 months",
         "sentenceLengthDays": 183,
