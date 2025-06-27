@@ -72,15 +72,12 @@ class PreCalculationValidationService(
   fun validateSupportedSentences(sentencesAndOffences: List<SentenceAndOffence>): List<ValidationMessage> {
     val supportedCategories = listOf("2003", "2020")
     val validationMessages = sentencesAndOffences.filter {
-      !SentenceCalculationType.isCalculable(it.sentenceCalculationType) || !supportedCategories.contains(it.sentenceCategory)
-    }
-      .map {
-        ValidationMessage(
-          ValidationCode.UNSUPPORTED_SENTENCE_TYPE,
-          listOf(it.sentenceCategory, it.sentenceTypeDescription),
-        )
-      }
-      .toMutableList()
+      !SentenceCalculationType.isCalculable(it.sentenceCalculationType) ||
+        !supportedCategories.contains(it.sentenceCategory)
+    }.map {
+      val displayName = SentenceCalculationType.displayName(it)
+      ValidationMessage(ValidationCode.UNSUPPORTED_SENTENCE_TYPE, listOf(displayName))
+    }.toMutableList()
 
     validationMessages += toreraValidationService.validateToreraExempt(sentencesAndOffences)
 

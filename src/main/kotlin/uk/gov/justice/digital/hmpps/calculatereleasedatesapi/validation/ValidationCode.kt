@@ -21,13 +21,13 @@ enum class ValidationCode(val message: String, val validationType: ValidationTyp
     "A default term is consecutive to another default term or sentence.",
     UNSUPPORTED_CALCULATION,
   ),
-  DTO_RECALL("A detention and training order has a SEC104 or SEC105 breach term.", UNSUPPORTED_CALCULATION), // can still be used when parsing historic comparisons
+  DTO_RECALL("A DTO SEC104 or SEC105 has a breach term.", UNSUPPORTED_CALCULATION), // can still be used when parsing historic comparisons
   A_FINE_SENTENCE_MISSING_FINE_AMOUNT("Court case %s count %s must include a fine amount."),
   A_FINE_SENTENCE_WITH_PAYMENTS("Any of the fine amount for a default term has been paid.", UNSUPPORTED_CALCULATION),
   CUSTODIAL_PERIOD_EXTINGUISHED_REMAND("The release date cannot be before the sentence date. Go back to NOMIS and reduce the amount of remand entered"),
   CUSTODIAL_PERIOD_EXTINGUISHED_TAGGED_BAIL("The release date cannot be before the sentence date. Go back to NOMIS and reduce the amount of tagged bail entered"),
   DTO_CONSECUTIVE_TO_SENTENCE("A DTO is consecutive to a sentence type that is not a DTO", UNSUPPORTED_CALCULATION),
-  DTO_HAS_SENTENCE_CONSECUTIVE_TO_IT("A sentence type that is not a DTO is consecutive to a DTO", UNSUPPORTED_CALCULATION),
+  DTO_HAS_SENTENCE_CONSECUTIVE_TO_IT("A non-DTO sentence is consecutive to a DTO.", UNSUPPORTED_CALCULATION),
   EDS18_EDS21_EDSU18_SENTENCE_TYPE_INCORRECT("The sentence type for court case %s count %s is invalid for the sentence date entered."),
   EDS_LICENCE_TERM_LESS_THAN_ONE_YEAR("Court case %s count %s must have a licence term of at least one year."),
   EDS_LICENCE_TERM_MORE_THAN_EIGHT_YEARS("Court case %s count %s must have a licence term that does not exceed 8 years."),
@@ -64,10 +64,10 @@ enum class ValidationCode(val message: String, val validationType: ValidationTyp
   SENTENCE_HAS_NO_LICENCE_TERM("Court case %s count %s must include a licence term."),
   SOPC18_SOPC21_SENTENCE_TYPE_INCORRECT("The sentence type for court case %s count %s is invalid for the sentence date entered."),
   SOPC_LICENCE_TERM_NOT_12_MONTHS("Court case %s count %s must include a licence term of 12 months or 1 year."),
-  SDS_TORERA_EXCLUSION("SDS TORERA offences must be calculated manually"),
-  SOPC_TORERA_EXCLUSION("SOPC TORERA offences must be calculated manually"),
+  SDS_TORERA_EXCLUSION("The calculation includes SDS TORERA offences, which must be calculated manually."),
+  SOPC_TORERA_EXCLUSION("The calculation includes SOPC TORERA offences, which must be calculated manually."),
   UNSUPPORTED_ADJUSTMENT_LAWFULLY_AT_LARGE(
-    "There is a Lawfully at Large (LAL) adjustment on the associated booking",
+    "A Lawfully at large (LAL) adjustment has been recorded.",
     UNSUPPORTED_CALCULATION,
   ),
   UNSUPPORTED_ADJUSTMENT_SPECIAL_REMISSION(
@@ -75,23 +75,23 @@ enum class ValidationCode(val message: String, val validationType: ValidationTyp
     UNSUPPORTED_CALCULATION,
   ),
   UNSUPPORTED_ADJUSTMENT_TIME_SPENT_IN_CUSTODY_ABROAD(
-    "There is a time spent in custody abroad (TCA) adjustment on the associated sentence",
+    "A Time spent in custody abroad (TCA) adjustment has been recorded.",
     UNSUPPORTED_CALCULATION,
   ),
   UNSUPPORTED_ADJUSTMENT_TIME_SPENT_AS_AN_APPEAL_APPLICANT(
-    "There is a time spent as an appeal applicant (TSA) adjustment on the associated sentence",
+    "A Time spent as an appeal applicant (TSA) adjustment has been recorded.",
     UNSUPPORTED_CALCULATION,
   ),
   UNSUPPORTED_DTO_RECALL_SEC104_SEC105("A detention and training order has a SEC104 or SEC105 breach term.", UNSUPPORTED_CALCULATION),
-  UNSUPPORTED_SENTENCE_TYPE("Unsupported sentence type %s %s", UNSUPPORTED_SENTENCE),
+  UNSUPPORTED_SENTENCE_TYPE("%s", UNSUPPORTED_SENTENCE),
   ZERO_IMPRISONMENT_TERM("Court case %s count %s must include an imprisonment term greater than zero."),
-  UNSUPPORTED_CALCULATION_DTO_WITH_RECALL("Unsupported calculation - DTO and recall", UNSUPPORTED_CALCULATION),
+  UNSUPPORTED_CALCULATION_DTO_WITH_RECALL("The calculation includes DTO and recalls, which must be calculated manually.", UNSUPPORTED_CALCULATION),
   PRE_PCSC_DTO_WITH_ADJUSTMENT("If a Detention and training order (DTO) has a sentence date before 28 June 2022, %s cannot be applied."),
-  BOTUS_CONSECUTIVE_TO_OTHER_SENTENCE("BOTUS consecutive with other sentence type", UNSUPPORTED_CALCULATION),
-  BOTUS_CONSECUTIVE_OR_CONCURRENT_TO_OTHER_SENTENCE("BOTUS concurrent/consecutive with other sentence type", UNSUPPORTED_CALCULATION),
-  UNSUPPORTED_SDS40_RECALL_SENTENCE_TYPE("Unsupported recalls for SDS40", MANUAL_ENTRY_JOURNEY_REQUIRED),
+  BOTUS_CONSECUTIVE_TO_OTHER_SENTENCE("A BOTUS licence is consecutive with another sentence type.", UNSUPPORTED_CALCULATION),
+  BOTUS_CONSECUTIVE_OR_CONCURRENT_TO_OTHER_SENTENCE("A BOTUS licence is concurrent/consecutive with another sentence type", UNSUPPORTED_CALCULATION),
+  UNSUPPORTED_SDS40_RECALL_SENTENCE_TYPE("The calculation includes unsupported recalls for SDS40.", MANUAL_ENTRY_JOURNEY_REQUIRED),
   UNSUPPORTED_SDS40_CONSECUTIVE_SDS_BETWEEN_TRANCHE_COMMENCEMENTS(
-    "Unsupported consecutive SDS for tranche 2 prisoner, sentenced between tranche commencement dates",
+    "The SDS40 calculation includes unsupported SDS for tranche 2 prisoners, who have been sentenced between tranche commencement dates.",
     MANUAL_ENTRY_JOURNEY_REQUIRED,
   ),
   UNSUPPORTED_OFFENCE_ENCOURAGING_OR_ASSISTING(
@@ -116,7 +116,7 @@ enum class ValidationCode(val message: String, val validationType: ValidationTyp
   FTR_NO_RETURN_TO_CUSTODY_DATE("The Fixed term recall must have a 'return to custody' date"),
   NO_SENTENCES("Prisoner has no sentences"),
   UNABLE_TO_DETERMINE_SHPO_RELEASE_PROVISIONS(
-    "Unable to determine release provisions for SHPO SX03 offence in scope of SDS40",
+    "The calculation requires release provisions for SHPO SX03, which cannot be determined by the service.",
     MANUAL_ENTRY_JOURNEY_REQUIRED,
   ),
   SE2020_INVALID_OFFENCE_DETAIL(

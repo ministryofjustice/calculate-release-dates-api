@@ -1663,7 +1663,7 @@ class ValidationServiceTest {
 
     assertThat(result).isEqualTo(
       listOf(
-        ValidationMessage(UNSUPPORTED_SENTENCE_TYPE, listOf("1991", "This is a sentence type")),
+        ValidationMessage(UNSUPPORTED_SENTENCE_TYPE, listOf("1991 This is a sentence type")),
       ),
     )
   }
