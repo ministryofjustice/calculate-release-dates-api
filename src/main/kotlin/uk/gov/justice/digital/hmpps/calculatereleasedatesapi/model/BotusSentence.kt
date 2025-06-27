@@ -30,8 +30,6 @@ data class BotusSentence(
 
   override fun getLengthInDays(): Int = duration.getLengthInDays(this.sentencedAt)
 
-  override fun getLengthInMonths(): Int = duration.getLengthInMonths(sentencedAt)
-
   override fun hasAnyEdsOrSopcSentence(): Boolean = false
 
   override fun isOrExclusivelyBotus(): Boolean = true
