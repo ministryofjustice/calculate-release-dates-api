@@ -39,7 +39,5 @@ data class SopcSentence(
   fun combinedDuration(): Duration = custodialDuration.appendAll(extensionDuration.durationElements)
   override fun getLengthInDays(): Int = combinedDuration().getLengthInDays(sentencedAt)
 
-  override fun getLengthInMonths(): Int = combinedDuration().getLengthInMonths(sentencedAt)
-
   override fun hasAnyEdsOrSopcSentence(): Boolean = true
 }

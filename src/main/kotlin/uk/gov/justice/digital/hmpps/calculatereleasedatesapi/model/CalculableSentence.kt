@@ -61,9 +61,6 @@ interface CalculableSentence {
   fun getLengthInDays(): Int
 
   @JsonIgnore
-  fun getLengthInMonths(): Int
-
-  @JsonIgnore
   fun isRecall(): Boolean = recallType != null
 
   @JsonIgnore

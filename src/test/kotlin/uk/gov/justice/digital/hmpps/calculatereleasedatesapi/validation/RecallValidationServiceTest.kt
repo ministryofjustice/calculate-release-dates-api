@@ -1,24 +1,30 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation
 
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.junit.jupiter.MockitoExtension
-import org.mockito.kotlin.anyOrNull
-import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.mock
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.sdsEarlyReleaseTrancheOneDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.sdsEarlyReleaseTrancheThreeDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.sdsEarlyReleaseTrancheTwoDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.SDS40TrancheConfiguration
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AbstractSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.FTR_48_COMMENCEMENT_DATE
 import java.time.LocalDate
+import java.time.temporal.ChronoUnit.DAYS
+import java.time.temporal.ChronoUnit.MONTHS
+import java.time.temporal.ChronoUnit.WEEKS
+import java.time.temporal.ChronoUnit.YEARS
+import java.util.*
 
 @ExtendWith(MockitoExtension::class)
 class RecallValidationServiceTest {
@@ -36,25 +42,12 @@ class RecallValidationServiceTest {
   @Nested
   @DisplayName("validateFtrFortyOverlap")
   inner class ValidateFtrFortyOverlapTests {
-    fun mockSentencePartWithMonths(months: Int): AbstractSentence {
-      val duration = mock<Duration> {
-        on { getLengthInMonths(anyOrNull()) } doReturn months
-      }
-      return mock {
-        on { totalDuration() } doReturn duration
-      }
-    }
+    @Test
+    fun `returns validation message when all sentences matches all conditions`() {
+      val sentence24Months = createSingleFTRSentence(SENTENCE_DATE_BEFORE_COMMENCEMENT, 24L)
+      val calculationOutput = listOf(sentence24Months)
 
-    @Test()
-    fun `returns validation message when sentence matches all conditions`() {
-      val sentenceParts = listOf(mockSentencePartWithMonths(24))
-      val sentence = mock<AbstractSentence> {
-        on { recallType } doReturn RecallType.FIXED_TERM_RECALL_28
-        on { sentencedAt } doReturn LocalDate.of(2020, 1, 1)
-        on { sentenceParts() } doReturn sentenceParts
-      }
-
-      val result = recallValidationService.validateFtrFortyOverlap(listOf(sentence))
+      val result = recallValidationService.validateFtrFortyOverlap(calculationOutput)
 
       assertEquals(1, result.size)
       assertEquals(ValidationCode.FTR_TYPE_48_DAYS_OVERLAPPING_SENTENCE, result.first().code)
@@ -62,18 +55,11 @@ class RecallValidationServiceTest {
 
     @Test
     fun `returns validation message when aggregate sentence matches all conditions`() {
-      val sentenceParts = listOf(
-        mockSentencePartWithMonths(24),
-        mockSentencePartWithMonths(23),
-      )
+      val consecutiveSentence = createConsecutiveFTRSentence(SENTENCE_DATE_BEFORE_COMMENCEMENT, 24L, 23L)
 
-      val sentence = mock<AbstractSentence> {
-        on { recallType } doReturn RecallType.FIXED_TERM_RECALL_28
-        on { sentencedAt } doReturn LocalDate.of(2020, 1, 1)
-        on { sentenceParts() } doReturn sentenceParts
-      }
+      val calculationOutput = listOf(consecutiveSentence)
 
-      val result = recallValidationService.validateFtrFortyOverlap(listOf(sentence))
+      val result = recallValidationService.validateFtrFortyOverlap(calculationOutput)
 
       assertEquals(1, result.size)
       assertEquals(ValidationCode.FTR_TYPE_48_DAYS_OVERLAPPING_SENTENCE, result.first().code)
@@ -81,18 +67,10 @@ class RecallValidationServiceTest {
 
     @Test
     fun `returns validation message when aggregate duration is 12 months or more`() {
-      val sentenceParts = listOf(
-        mockSentencePartWithMonths(6),
-        mockSentencePartWithMonths(6),
-      )
+      val consecutiveSentence = createConsecutiveFTRSentence(SENTENCE_DATE_BEFORE_COMMENCEMENT, 6L, 6L)
+      val calculationOutput = listOf(consecutiveSentence)
 
-      val sentence = mock<AbstractSentence> {
-        on { recallType } doReturn RecallType.FIXED_TERM_RECALL_28
-        on { sentencedAt } doReturn LocalDate.of(2020, 1, 1)
-        on { sentenceParts() } doReturn sentenceParts
-      }
-
-      val result = recallValidationService.validateFtrFortyOverlap(listOf(sentence))
+      val result = recallValidationService.validateFtrFortyOverlap(calculationOutput)
 
       assertEquals(1, result.size)
       assertEquals(ValidationCode.FTR_TYPE_48_DAYS_OVERLAPPING_SENTENCE, result.first().code)
@@ -100,75 +78,102 @@ class RecallValidationServiceTest {
 
     @Test
     fun `returns empty list when duration is less than 12 months`() {
-      val sentence = mock<AbstractSentence> {
-        val sentenceParts = listOf(mockSentencePartWithMonths(11))
-        on { recallType } doReturn RecallType.FIXED_TERM_RECALL_28
-        on { sentencedAt } doReturn LocalDate.of(2020, 1, 1)
-        on { sentenceParts() } doReturn sentenceParts
-      }
+      val sentence11Months = createSingleFTRSentence(SENTENCE_DATE_BEFORE_COMMENCEMENT, 11L)
+      val calculationOutput = listOf(sentence11Months)
 
-      val result = recallValidationService.validateFtrFortyOverlap(listOf(sentence))
-
-      assert(result.isEmpty())
+      val result = recallValidationService.validateFtrFortyOverlap(calculationOutput)
+      assertThat(result).isEmpty()
     }
 
     @Test
     fun `returns empty list when aggregate duration is less than 12 months`() {
-      val sentence = mock<AbstractSentence> {
-        val sentenceParts = listOf(
-          mockSentencePartWithMonths(6),
-          mockSentencePartWithMonths(5),
-        )
-        on { recallType } doReturn RecallType.FIXED_TERM_RECALL_28
-        on { sentencedAt } doReturn LocalDate.of(2020, 1, 1)
-        on { sentenceParts() } doReturn sentenceParts
-      }
+      val consecutiveSentence = createConsecutiveFTRSentence(SENTENCE_DATE_BEFORE_COMMENCEMENT, 6L, 5L)
+      val calculationOutput = listOf(consecutiveSentence)
 
-      val result = recallValidationService.validateFtrFortyOverlap(listOf(sentence))
+      val result = recallValidationService.validateFtrFortyOverlap(calculationOutput)
 
-      assert(result.isEmpty())
+      assertThat(result).isEmpty()
     }
 
     @Test
     fun `returns empty list when aggregate duration is 48 months or more`() {
-      val sentenceParts = listOf(
-        mockSentencePartWithMonths(24),
-        mockSentencePartWithMonths(24),
-      )
+      val consecutiveSentence = createConsecutiveFTRSentence(SENTENCE_DATE_BEFORE_COMMENCEMENT, 24L, 24L)
+      val calculationOutput = listOf(consecutiveSentence)
 
-      val sentence = mock<AbstractSentence> {
-        on { recallType } doReturn RecallType.FIXED_TERM_RECALL_28
-        on { sentencedAt } doReturn LocalDate.of(2020, 1, 1)
-        on { sentenceParts() } doReturn sentenceParts
-      }
+      val result = recallValidationService.validateFtrFortyOverlap(calculationOutput)
 
-      val result = recallValidationService.validateFtrFortyOverlap(listOf(sentence))
-
-      assert(result.isEmpty())
+      assertThat(result).isEmpty()
     }
 
     @Test
     fun `returns empty list when sentence is after FTR 48 commencement date`() {
-      val sentence = mock<AbstractSentence> {
-        on { recallType } doReturn RecallType.FIXED_TERM_RECALL_28
-        on { sentencedAt } doReturn FTR_48_COMMENCEMENT_DATE.plusDays(1)
-      }
+      val sentence18Months = createSingleFTRSentence(FTR_48_COMMENCEMENT_DATE.plusDays(1), 18L)
+      val calculationOutput = listOf(sentence18Months)
 
-      val result = recallValidationService.validateFtrFortyOverlap(listOf(sentence))
+      val result = recallValidationService.validateFtrFortyOverlap(calculationOutput)
 
-      assert(result.isEmpty())
+      assertThat(result).isEmpty()
     }
 
     @Test
     fun `returns empty list when sentence is on FTR 48 commencement date`() {
-      val sentence = mock<AbstractSentence> {
-        on { recallType } doReturn RecallType.FIXED_TERM_RECALL_28
-        on { sentencedAt } doReturn FTR_48_COMMENCEMENT_DATE
-      }
+      val sentence18Months = createSingleFTRSentence(FTR_48_COMMENCEMENT_DATE, 18L)
+      val calculationOutput = listOf(sentence18Months)
 
-      val result = recallValidationService.validateFtrFortyOverlap(listOf(sentence))
+      val result = recallValidationService.validateFtrFortyOverlap(calculationOutput)
 
-      assert(result.isEmpty())
+      assertThat(result).isEmpty()
     }
+  }
+
+  private fun createConsecutiveFTRSentence(sentenceDate: LocalDate, firstSentenceLengthMonths: Long, secondSentenceLengthMonths: Long): ConsecutiveSentence {
+    val consecutiveSentencePartOne = StandardDeterminateSentence(
+      sentencedAt = sentenceDate,
+      duration = Duration(mutableMapOf(DAYS to 0L, WEEKS to 0L, MONTHS to firstSentenceLengthMonths, YEARS to 0L)),
+      offence = Offence(
+        committedAt = sentenceDate,
+        offenceCode = "PL96003",
+      ),
+      identifier = UUID.randomUUID(),
+      lineSequence = 1,
+      caseSequence = 1,
+      recallType = RecallType.FIXED_TERM_RECALL_28,
+      isSDSPlus = false,
+      hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
+    )
+    val consecutiveSentencePartTwo = StandardDeterminateSentence(
+      sentencedAt = sentenceDate,
+      duration = Duration(mutableMapOf(DAYS to 0L, WEEKS to 0L, MONTHS to secondSentenceLengthMonths, YEARS to 0L)),
+      offence = Offence(
+        committedAt = sentenceDate,
+        offenceCode = "PL96003",
+      ),
+      identifier = UUID.randomUUID(),
+      lineSequence = 2,
+      caseSequence = 1,
+      recallType = RecallType.FIXED_TERM_RECALL_28,
+      isSDSPlus = false,
+      hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
+      consecutiveSentenceUUIDs = listOf(consecutiveSentencePartOne.identifier),
+    )
+    return ConsecutiveSentence(listOf(consecutiveSentencePartOne, consecutiveSentencePartTwo))
+  }
+
+  private fun createSingleFTRSentence(sentenceDate: LocalDate, months: Long) = StandardDeterminateSentence(
+    sentencedAt = sentenceDate,
+    duration = Duration(mutableMapOf(DAYS to 0L, WEEKS to 0L, MONTHS to months, YEARS to 0L)),
+    offence = Offence(
+      committedAt = sentenceDate,
+      offenceCode = "PL96003",
+    ),
+    identifier = UUID.randomUUID(),
+    lineSequence = 1,
+    caseSequence = 1,
+    recallType = RecallType.FIXED_TERM_RECALL_28,
+    isSDSPlus = false,
+    hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
+  )
+  private companion object {
+    val SENTENCE_DATE_BEFORE_COMMENCEMENT: LocalDate = LocalDate.of(2015, 1, 1)
   }
 }

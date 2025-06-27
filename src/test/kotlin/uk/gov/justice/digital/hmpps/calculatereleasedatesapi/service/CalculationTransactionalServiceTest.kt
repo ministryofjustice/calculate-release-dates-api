@@ -1037,7 +1037,7 @@ class CalculationTransactionalServiceTest {
   }
 
   fun parseFeatureToggles(toggleStr: String?): FeatureToggles {
-    val defaults = FeatureToggles()
+    val defaults = FeatureToggles(ftr48ManualJourney = true)
     if (toggleStr.isNullOrBlank()) return defaults
 
     val toggleMap = toggleStr.split(';').associate {
@@ -1046,13 +1046,13 @@ class CalculationTransactionalServiceTest {
     }
 
     return FeatureToggles(
-      supportInactiveSentencesAndAdjustments = toggleMap["supportInactiveSentencesAndAdjustments"] ?: defaults.supportInactiveSentencesAndAdjustments,
-      useAdjustmentsApi = toggleMap["useAdjustmentsApi"] ?: defaults.useAdjustmentsApi,
-      concurrentConsecutiveSentencesEnabled = toggleMap["concurrentConsecutiveSentencesEnabled"] ?: defaults.concurrentConsecutiveSentencesEnabled,
-      externalMovementsSds40 = toggleMap["externalMovementsSds40"] ?: defaults.externalMovementsSds40,
-      externalMovementsAdjustmentSharing = toggleMap["externalMovementsAdjustmentSharing"] ?: defaults.externalMovementsAdjustmentSharing,
-      historicSled = toggleMap["historicSled"] ?: defaults.historicSled,
-      ftr48ManualJourney = toggleMap["ftr48ManualJourney"] ?: defaults.ftr48ManualJourney,
+      supportInactiveSentencesAndAdjustments = toggleMap[FeatureToggles::supportInactiveSentencesAndAdjustments.name] ?: defaults.supportInactiveSentencesAndAdjustments,
+      useAdjustmentsApi = toggleMap[FeatureToggles::useAdjustmentsApi.name] ?: defaults.useAdjustmentsApi,
+      concurrentConsecutiveSentencesEnabled = toggleMap[FeatureToggles::concurrentConsecutiveSentencesEnabled.name] ?: defaults.concurrentConsecutiveSentencesEnabled,
+      externalMovementsSds40 = toggleMap[FeatureToggles::externalMovementsSds40.name] ?: defaults.externalMovementsSds40,
+      externalMovementsAdjustmentSharing = toggleMap[FeatureToggles::externalMovementsAdjustmentSharing.name] ?: defaults.externalMovementsAdjustmentSharing,
+      historicSled = toggleMap[FeatureToggles::historicSled.name] ?: defaults.historicSled,
+      ftr48ManualJourney = toggleMap[FeatureToggles::ftr48ManualJourney.name] ?: defaults.ftr48ManualJourney,
     )
   }
 

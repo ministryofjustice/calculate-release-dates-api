@@ -19,7 +19,6 @@ data class DetentionAndTrainingOrderSentence(
   override val isSDSPlusEligibleSentenceTypeLengthAndOffence: Boolean = false
   override val isSDSPlusOffenceInPeriod: Boolean = false
   override fun getLengthInDays(): Int = duration.getLengthInDays(this.sentencedAt)
-  override fun getLengthInMonths(): Int = duration.getLengthInMonths(sentencedAt)
 
   override fun hasAnyEdsOrSopcSentence(): Boolean = false
 
