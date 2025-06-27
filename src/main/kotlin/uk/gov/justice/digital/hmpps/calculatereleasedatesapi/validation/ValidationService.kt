@@ -96,7 +96,7 @@ class ValidationService(
     calculationOutput: CalculationOutput,
   ): List<ValidationMessage> {
     val messages = mutableListOf<ValidationMessage>()
-    messages += recallValidationService.validateFtrFortyOverlap(booking.sentences)
+    messages += recallValidationService.validateFtrFortyOverlap(calculationOutput.sentences)
     messages += recallValidationService.validateUnsupportedRecallTypes(calculationOutput, booking)
     messages += postCalculationValidationService.validateSDSImposedConsecBetweenTrancheDatesForTrancheTwoPrisoner(booking, calculationOutput)
     messages += postCalculationValidationService.validateSHPOContainingSX03Offences(booking, calculationOutput)

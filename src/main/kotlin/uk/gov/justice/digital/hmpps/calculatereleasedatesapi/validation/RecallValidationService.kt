@@ -276,17 +276,15 @@ class RecallValidationService(
     return messages
   }
 
-  internal fun validateFtrFortyOverlap(sentences: List<AbstractSentence>): List<ValidationMessage> {
-    if (featureToggles.ftr48ManualJourney && sentences.any(::ftr48AffectedSentence)) {
+  internal fun validateFtrFortyOverlap(sentences: List<CalculableSentence>): List<ValidationMessage> {
+    val possibleSentences = sentences.filter { it.recallType == FIXED_TERM_RECALL_28 && it.sentencedAt.isBefore(FTR_48_COMMENCEMENT_DATE) }
+    if (featureToggles.ftr48ManualJourney &&
+      possibleSentences.isNotEmpty() &&
+      possibleSentences.all { it.durationIsGreaterThanOrEqualTo(12, MONTHS) && it.durationIsLessThan(48, MONTHS) }
+    ) {
       return listOf(ValidationMessage(ValidationCode.FTR_TYPE_48_DAYS_OVERLAPPING_SENTENCE))
     }
     return emptyList()
-  }
-
-  private fun ftr48AffectedSentence(sentence: AbstractSentence): Boolean {
-    if (sentence.recallType != FIXED_TERM_RECALL_28 || sentence.sentencedAt.isAfter(FTR_48_COMMENCEMENT_DATE)) return false
-    val totalDurationInMonths = sentence.sentenceParts().sumOf { s -> s.totalDuration().getLengthInMonths(s.sentencedAt) }
-    return totalDurationInMonths >= 12 && totalDurationInMonths < 48
   }
 
   private fun validateMixedDurations(

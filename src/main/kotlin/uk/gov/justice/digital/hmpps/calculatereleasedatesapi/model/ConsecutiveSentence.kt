@@ -76,8 +76,6 @@ class ConsecutiveSentence(val orderedSentences: List<AbstractSentence>) : Calcul
     return duration.getLengthInDays(sentencedAt)
   }
 
-  override fun getLengthInMonths(): Int = getCombinedDuration().getLengthInMonths(sentencedAt)
-
   private fun isMoreThanTwoYears(duration: Duration) = duration.getLengthInDays(sentencedAt) > ChronoUnit.DAYS.between(this.sentencedAt, this.sentencedAt.plus(24, ChronoUnit.MONTHS))
 
   override fun hasAnyEdsOrSopcSentence(): Boolean = hasExtendedSentence() || hasSopcSentence()
