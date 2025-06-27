@@ -16,13 +16,14 @@ data class StandardDeterminateSentence(
   override val consecutiveSentenceUUIDs: List<UUID> = listOf(),
   override val caseSequence: Int? = null,
   override val lineSequence: Int? = null,
+  override val externalSentenceId: ExternalSentenceId? = null,
   override val caseReference: String? = null,
   override val recallType: RecallType? = null,
   override val isSDSPlus: Boolean,
   override val isSDSPlusEligibleSentenceTypeLengthAndOffence: Boolean = isSDSPlus,
   override val isSDSPlusOffenceInPeriod: Boolean = isSDSPlus,
   val hasAnSDSEarlyReleaseExclusion: SDSEarlyReleaseExclusionType,
-) : AbstractSentence(offence, sentencedAt, identifier, consecutiveSentenceUUIDs, caseSequence, lineSequence, caseReference, recallType) {
+) : AbstractSentence(offence, sentencedAt, identifier, consecutiveSentenceUUIDs, caseSequence, lineSequence, externalSentenceId, caseReference, recallType) {
 
   override fun buildString(): String = "Sentence\t:\t\n" +
     "Identification Track\t:\t${identificationTrack}\n" +

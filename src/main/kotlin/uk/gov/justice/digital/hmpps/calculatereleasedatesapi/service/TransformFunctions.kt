@@ -87,6 +87,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DiscrepancyCa
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExternalMovement
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExternalSentenceId
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.GenuineOverrideResponse
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.HistoricalTusedData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualEntrySelectedDate
@@ -148,6 +149,7 @@ fun transform(
     listOf()
   }
 
+  val externalSentenceId = ExternalSentenceId(sentence.sentenceSequence, sentence.bookingId)
   val sentenceCalculationType = SentenceCalculationType.from(sentence.sentenceCalculationType)
   when (sentenceCalculationType.sentenceType?.sentenceClazz) {
     AFineSentence::class.java -> {
@@ -159,6 +161,7 @@ fun transform(
         consecutiveSentenceUUIDs = consecutiveSentenceUUIDs,
         caseSequence = sentence.caseSequence,
         lineSequence = sentence.lineSequence,
+        externalSentenceId = externalSentenceId,
         caseReference = sentence.caseReference,
         recallType = sentenceCalculationType.recallType,
         fineAmount = sentence.fineAmount,
@@ -174,6 +177,7 @@ fun transform(
         consecutiveSentenceUUIDs = consecutiveSentenceUUIDs,
         caseSequence = sentence.caseSequence,
         lineSequence = sentence.lineSequence,
+        externalSentenceId = externalSentenceId,
         caseReference = sentence.caseReference,
         recallType = sentenceCalculationType.recallType,
       )
@@ -188,6 +192,7 @@ fun transform(
         consecutiveSentenceUUIDs = consecutiveSentenceUUIDs,
         caseSequence = sentence.caseSequence,
         lineSequence = sentence.lineSequence,
+        externalSentenceId = externalSentenceId,
         latestTusedDate = historicalTusedData?.tused,
         latestTusedSource = historicalTusedData?.historicalTusedSource,
       )
@@ -209,6 +214,7 @@ fun transform(
         consecutiveSentenceUUIDs = consecutiveSentenceUUIDs,
         caseSequence = sentence.caseSequence,
         lineSequence = sentence.lineSequence,
+        externalSentenceId = externalSentenceId,
         caseReference = sentence.caseReference,
         recallType = sentenceCalculationType.recallType,
       )
@@ -231,6 +237,7 @@ fun transform(
         consecutiveSentenceUUIDs = consecutiveSentenceUUIDs,
         caseSequence = sentence.caseSequence,
         lineSequence = sentence.lineSequence,
+        externalSentenceId = externalSentenceId,
         caseReference = sentence.caseReference,
         recallType = sentenceCalculationType.recallType,
       )
@@ -246,6 +253,7 @@ fun transform(
         consecutiveSentenceUUIDs = consecutiveSentenceUUIDs,
         caseSequence = sentence.caseSequence,
         lineSequence = sentence.lineSequence,
+        externalSentenceId = externalSentenceId,
         caseReference = sentence.caseReference,
         recallType = sentenceCalculationType.recallType,
         isSDSPlus = sentence.isSDSPlus,
@@ -549,6 +557,7 @@ fun transform(
         extractDates(sentence),
         sentence.lineSequence ?: 0,
         sentence.caseSequence ?: 0,
+        sentence.externalSentenceId ?: ExternalSentenceId(0, 0),
         sentence.caseReference,
       )
     }.sortedWith(compareBy({ it.caseSequence }, { it.lineSequence })),
@@ -578,6 +587,7 @@ fun transform(
             ConsecutiveSentencePart(
               sentencePart.lineSequence ?: 0,
               sentencePart.caseSequence ?: 0,
+              sentencePart.externalSentenceId ?: ExternalSentenceId(0, 0),
               sentencePart.caseReference,
               if (sentencePart is StandardDeterminateSentence) sentencePart.duration.toString() else "",
               sentencePart.getLengthInDays(),

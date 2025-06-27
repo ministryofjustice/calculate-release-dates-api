@@ -20,6 +20,10 @@
       },
       "lineSequence": 4,
       "caseSequence": 1,
+      "externalSentenceId": {
+        "sentenceSequence": 0,
+        "bookingId": 0
+      },
       "caseReference": "012100588062"
     },
     {
@@ -42,6 +46,10 @@
       },
       "lineSequence": 4,
       "caseSequence": 1,
+      "externalSentenceId": {
+        "sentenceSequence": 0,
+        "bookingId": 0
+      },
       "caseReference": "012100588062"
     },
     {
@@ -64,6 +72,10 @@
       },
       "lineSequence": 3,
       "caseSequence": 2,
+      "externalSentenceId": {
+        "sentenceSequence": 0,
+        "bookingId": 0
+      },
       "caseReference": null
     }
   ],
