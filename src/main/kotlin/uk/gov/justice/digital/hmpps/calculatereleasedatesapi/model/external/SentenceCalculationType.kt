@@ -126,7 +126,7 @@ enum class SentenceCalculationType(
   AR(sentenceType = UNIMPLEMENTED_SENTENCE_TYPE),
   EPP(sentenceType = UNIMPLEMENTED_SENTENCE_TYPE),
   CIVIL(sentenceType = UNIMPLEMENTED_SENTENCE_TYPE, displayName = "Civil imprisonment"),
-  EXT(sentenceType = UNIMPLEMENTED_SENTENCE_TYPE, displayName = "extended sec 86 of PCC(S) act 2000"),
+  EXT(sentenceType = UNIMPLEMENTED_SENTENCE_TYPE, displayName = "Extended sec 86 of PCC(S) act 2000"),
   SEC91(sentenceType = UNIMPLEMENTED_SENTENCE_TYPE, displayName = "Serious offence under 18 POCCA 2000"),
   VOO(sentenceType = UNIMPLEMENTED_SENTENCE_TYPE),
   STS18(sentenceType = UNIMPLEMENTED_SENTENCE_TYPE),
