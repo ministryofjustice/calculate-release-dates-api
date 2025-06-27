@@ -28,20 +28,20 @@ enum class SentenceCalculationType(
   //region SDS / ORA Sentences
   ADIMP(sentenceType = StandardDeterminate, toreraEligibilityType = ToreraEligibilityType.SDS, sdsPlusEligibilityType = SDSPlusEligibilityType.SDS),
   ADIMP_ORA(sentenceType = StandardDeterminate, toreraEligibilityType = ToreraEligibilityType.SDS, sdsPlusEligibilityType = SDSPlusEligibilityType.SDS),
-  YOI(sentenceType = StandardDeterminate, toreraEligibilityType = ToreraEligibilityType.SDS, sdsPlusEligibilityType = SDSPlusEligibilityType.SDS, displayName = "Young offender institution"),
-  YOI_ORA(sentenceType = StandardDeterminate, toreraEligibilityType = ToreraEligibilityType.SDS, sdsPlusEligibilityType = SDSPlusEligibilityType.SDS),
-  SEC250(sentenceType = StandardDeterminate, toreraEligibilityType = ToreraEligibilityType.SDS, sdsPlusEligibilityType = SDSPlusEligibilityType.SECTION250),
-  SEC250_ORA(sentenceType = StandardDeterminate, toreraEligibilityType = ToreraEligibilityType.SDS, sdsPlusEligibilityType = SDSPlusEligibilityType.SECTION250),
   SEC91_03(sentenceType = StandardDeterminate, sdsPlusEligibilityType = SDSPlusEligibilityType.SECTION250),
   SEC91_03_ORA(sentenceType = StandardDeterminate, sdsPlusEligibilityType = SDSPlusEligibilityType.SECTION250),
+  SEC250(sentenceType = StandardDeterminate, toreraEligibilityType = ToreraEligibilityType.SDS, sdsPlusEligibilityType = SDSPlusEligibilityType.SECTION250),
+  SEC250_ORA(sentenceType = StandardDeterminate, toreraEligibilityType = ToreraEligibilityType.SDS, sdsPlusEligibilityType = SDSPlusEligibilityType.SECTION250),
+  YOI(sentenceType = StandardDeterminate, toreraEligibilityType = ToreraEligibilityType.SDS, sdsPlusEligibilityType = SDSPlusEligibilityType.SDS, displayName = "Young offender institution"),
+  YOI_ORA(sentenceType = StandardDeterminate, toreraEligibilityType = ToreraEligibilityType.SDS, sdsPlusEligibilityType = SDSPlusEligibilityType.SDS),
   //endregion
 
   //region Extended Determinate Sentences
-  LASPO_AR(sentenceType = ExtendedDeterminate),
-  LASPO_DR(sentenceType = ExtendedDeterminate),
   EDS18(sentenceType = ExtendedDeterminate),
   EDS21(sentenceType = ExtendedDeterminate),
   EDSU18(sentenceType = ExtendedDeterminate),
+  LASPO_AR(sentenceType = ExtendedDeterminate),
+  LASPO_DR(sentenceType = ExtendedDeterminate),
   //endregion
 
   //region SOPC Sentences
@@ -61,7 +61,6 @@ enum class SentenceCalculationType(
   //region Standard Recall Sentences
   LR(sentenceType = StandardDeterminate, recallType = STANDARD_RECALL),
   LR_ORA(sentenceType = StandardDeterminate, recallType = STANDARD_RECALL),
-  LR_YOI_ORA(sentenceType = StandardDeterminate, recallType = STANDARD_RECALL),
   LR_SEC91_ORA(sentenceType = StandardDeterminate, recallType = STANDARD_RECALL),
   LRSEC250_ORA(sentenceType = StandardDeterminate, recallType = STANDARD_RECALL),
   LR_EDS18(sentenceType = ExtendedDeterminate, recallType = STANDARD_RECALL),
@@ -72,6 +71,7 @@ enum class SentenceCalculationType(
   LR_SEC236A(sentenceType = Sopc, recallType = STANDARD_RECALL),
   LR_SOPC18(sentenceType = Sopc, recallType = STANDARD_RECALL),
   LR_SOPC21(sentenceType = Sopc, recallType = STANDARD_RECALL),
+  LR_YOI_ORA(sentenceType = StandardDeterminate, recallType = STANDARD_RECALL),
   //endregion
 
   //region Fixed Term Recall Sentences
@@ -108,8 +108,8 @@ enum class SentenceCalculationType(
   //endregion
 
   //region Indeterminate Recall Sentences
-
   LR_ALP(sentenceType = Indeterminate, recallType = STANDARD_RECALL, displayName = "Recall from automatic life"),
+  LR_ALP_CDE18(sentenceType = Indeterminate, recallType = STANDARD_RECALL),
   LR_ALP_CDE21(sentenceType = Indeterminate, recallType = STANDARD_RECALL, displayName = "Recall from automatic life sec 283 sentencing code (21+)"),
   LR_ALP_LASPO(sentenceType = Indeterminate, recallType = STANDARD_RECALL, displayName = "Automatic life sec 224A 03"),
   LR_DLP(sentenceType = Indeterminate, recallType = STANDARD_RECALL, displayName = "Recall from discretionary life"),
@@ -117,7 +117,6 @@ enum class SentenceCalculationType(
   LR_IPP(sentenceType = Indeterminate, recallType = STANDARD_RECALL, displayName = "Licence recall from IPP sentence"),
   LR_LIFE(sentenceType = Indeterminate, recallType = STANDARD_RECALL, displayName = "Recall to custody indeterminate sentence"),
   LR_MLP(sentenceType = Indeterminate, recallType = STANDARD_RECALL, displayName = "Recall to custody mandatory life"),
-
   //endregion
 
   //region UNSUPPORTED(null) Sentence Types
