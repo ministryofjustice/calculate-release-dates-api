@@ -42,6 +42,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetentionAndT
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExternalMovementReason
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExternalSentenceId
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.MismatchType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NormalisedSentenceAndOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
@@ -129,6 +130,7 @@ class TransformFunctionsTest {
         consecutiveSentenceUUIDs = mutableListOf(UUID.nameUUIDFromBytes(("$bookingId-$consecutiveTo").toByteArray())),
         lineSequence = lineSequence,
         caseSequence = caseSequence,
+        externalSentenceId = ExternalSentenceId(sequence, bookingId),
         isSDSPlus = true,
         isSDSPlusEligibleSentenceTypeLengthAndOffence = true,
         isSDSPlusOffenceInPeriod = true,
@@ -518,6 +520,7 @@ class TransformFunctionsTest {
       identifier = UUID.nameUUIDFromBytes(("$BOOKING_ID-$sequence").toByteArray()),
       lineSequence = lineSequence,
       caseSequence = caseSequence,
+      externalSentenceId = ExternalSentenceId(sequence, BOOKING_ID),
       isSDSPlus = true,
       isSDSPlusEligibleSentenceTypeLengthAndOffence = true,
       isSDSPlusOffenceInPeriod = true,

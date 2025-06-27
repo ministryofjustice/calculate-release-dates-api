@@ -142,6 +142,5 @@ data class BookingLevelSourceData(
     offenderFinePayments = this.offenderFinePayments + data.offenderFinePayments,
     returnToCustodyDate = this.returnToCustodyDate ?: data.returnToCustodyDate,
     fixedTermRecallDetails = this.fixedTermRecallDetails ?: data.fixedTermRecallDetails,
-    // Historical tused and external movements are booking agnostic.
   )
 }

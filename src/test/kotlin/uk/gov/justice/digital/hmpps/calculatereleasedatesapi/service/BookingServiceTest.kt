@@ -14,6 +14,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationSentenceUserInput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExternalSentenceId
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType
@@ -152,6 +153,7 @@ class BookingServiceTest {
             ),
             lineSequence = lineSequence,
             caseSequence = caseSequence,
+            externalSentenceId = ExternalSentenceId(sentenceSequence = sequence, bookingId = bookingId),
             recallType = RecallType.FIXED_TERM_RECALL_28,
             isSDSPlus = false,
             hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
@@ -208,6 +210,7 @@ class BookingServiceTest {
             ),
             lineSequence = lineSequence,
             caseSequence = caseSequence,
+            externalSentenceId = ExternalSentenceId(sentenceSequence = sequence, bookingId = bookingId),
             recallType = RecallType.FIXED_TERM_RECALL_28,
             isSDSPlus = false,
             hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
@@ -266,6 +269,7 @@ class BookingServiceTest {
             ),
             lineSequence = lineSequence,
             caseSequence = caseSequence,
+            externalSentenceId = ExternalSentenceId(sentenceSequence = sequence, bookingId = bookingId),
             recallType = RecallType.FIXED_TERM_RECALL_28,
             isSDSPlus = false,
             hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
@@ -322,6 +326,7 @@ class BookingServiceTest {
             ),
             lineSequence = lineSequence,
             caseSequence = caseSequence,
+            externalSentenceId = ExternalSentenceId(sentenceSequence = sequence, bookingId = bookingId),
             recallType = RecallType.FIXED_TERM_RECALL_28,
             isSDSPlus = false,
             hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
@@ -378,6 +383,7 @@ class BookingServiceTest {
             ),
             lineSequence = lineSequence,
             caseSequence = caseSequence,
+            externalSentenceId = ExternalSentenceId(sentenceSequence = sequence, bookingId = bookingId),
             recallType = RecallType.FIXED_TERM_RECALL_28,
             isSDSPlus = false,
             hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,

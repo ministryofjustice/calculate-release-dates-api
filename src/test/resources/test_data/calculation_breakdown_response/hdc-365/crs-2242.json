@@ -22,6 +22,10 @@
       {
         "lineSequence": 2,
         "caseSequence": 1,
+        "externalSentenceId": {
+          "sentenceSequence": 0,
+          "bookingId": 0
+        },
         "caseReference": "62WN0674224",
         "sentenceLength": "1 month",
         "sentenceLengthDays": 31,
@@ -31,6 +35,10 @@
       {
         "lineSequence": 1,
         "caseSequence": 2,
+        "externalSentenceId": {
+          "sentenceSequence": 0,
+          "bookingId": 0
+        },
         "caseReference": "62WN0673124",
         "sentenceLength": "34 months",
         "sentenceLengthDays": 1034,

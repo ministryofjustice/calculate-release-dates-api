@@ -20,6 +20,10 @@
       },
       "lineSequence": 2,
       "caseSequence": 1,
+      "externalSentenceId": {
+        "sentenceSequence": 0,
+        "bookingId": 0
+      },
       "caseReference": null
     }
   ],
@@ -45,6 +49,10 @@
       {
         "lineSequence": 1,
         "caseSequence": 1,
+        "externalSentenceId": {
+          "sentenceSequence": 0,
+          "bookingId": 0
+        },
         "caseReference": null,
         "sentenceLength": "4 months",
         "sentenceLengthDays": 120,
@@ -54,6 +62,10 @@
       {
         "lineSequence": 3,
         "caseSequence": 1,
+        "externalSentenceId": {
+          "sentenceSequence": 0,
+          "bookingId": 0
+        },
         "caseReference": null,
         "sentenceLength": "3 months",
         "sentenceLengthDays": 89,

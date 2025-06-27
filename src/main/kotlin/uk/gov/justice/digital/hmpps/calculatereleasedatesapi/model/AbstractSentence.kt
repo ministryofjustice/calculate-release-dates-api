@@ -33,6 +33,7 @@ abstract class AbstractSentence(
   open val consecutiveSentenceUUIDs: List<UUID> = listOf(),
   open val caseSequence: Int? = null,
   open val lineSequence: Int? = null,
+  open val externalSentenceId: ExternalSentenceId? = null,
   open val caseReference: String? = null,
   override val recallType: RecallType? = null,
 ) : CalculableSentence {

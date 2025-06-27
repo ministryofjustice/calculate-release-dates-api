@@ -20,6 +20,10 @@
       },
       "lineSequence": 3,
       "caseSequence": 1,
+      "externalSentenceId": {
+        "sentenceSequence": 0,
+        "bookingId": 0
+      },
       "caseReference": "T20207226"
     },
     {
@@ -42,6 +46,10 @@
       },
       "lineSequence": 4,
       "caseSequence": 1,
+      "externalSentenceId": {
+        "sentenceSequence": 0,
+        "bookingId": 0
+      },
       "caseReference": "T20207226"
     },
     {
@@ -64,6 +72,10 @@
       },
       "lineSequence": 5,
       "caseSequence": 1,
+      "externalSentenceId": {
+        "sentenceSequence": 0,
+        "bookingId": 0
+      },
       "caseReference": "T20207226"
     },
     {
@@ -86,6 +98,10 @@
       },
       "lineSequence": 1,
       "caseSequence": 2,
+      "externalSentenceId": {
+        "sentenceSequence": 0,
+        "bookingId": 0
+      },
       "caseReference": "STD LR"
     },
     {
@@ -108,6 +124,10 @@
       },
       "lineSequence": 2,
       "caseSequence": 2,
+      "externalSentenceId": {
+        "sentenceSequence": 0,
+        "bookingId": 0
+      },
       "caseReference": "STD LR"
     }
   ],

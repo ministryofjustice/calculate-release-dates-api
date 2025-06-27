@@ -20,6 +20,10 @@
       },
       "lineSequence": 1,
       "caseSequence": 1,
+      "externalSentenceId": {
+        "sentenceSequence": 0,
+        "bookingId": 0
+      },
       "caseReference": "ABC123"
     },
     {
@@ -42,6 +46,10 @@
       },
       "lineSequence": 2,
       "caseSequence": 1,
+      "externalSentenceId": {
+        "sentenceSequence": 0,
+        "bookingId": 0
+      },
       "caseReference": "ABC123"
     },
     {
@@ -64,6 +72,10 @@
       },
       "lineSequence": 3,
       "caseSequence": 1,
+      "externalSentenceId": {
+        "sentenceSequence": 0,
+        "bookingId": 0
+      },
       "caseReference": "ABC123"
     },
     {
@@ -86,6 +98,10 @@
       },
       "lineSequence": 4,
       "caseSequence": 1,
+      "externalSentenceId": {
+        "sentenceSequence": 0,
+        "bookingId": 0
+      },
       "caseReference": "ABC123"
     },
     {
@@ -108,6 +124,10 @@
       },
       "lineSequence": 5,
       "caseSequence": 1,
+      "externalSentenceId": {
+        "sentenceSequence": 0,
+        "bookingId": 0
+      },
       "caseReference": "ABC123"
     },
     {
@@ -130,6 +150,10 @@
       },
       "lineSequence": 6,
       "caseSequence": 1,
+      "externalSentenceId": {
+        "sentenceSequence": 0,
+        "bookingId": 0
+      },
       "caseReference": "ABC123"
     }
   ],

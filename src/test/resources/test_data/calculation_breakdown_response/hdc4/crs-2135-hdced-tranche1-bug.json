@@ -20,6 +20,10 @@
       },
       "lineSequence": 0,
       "caseSequence": 0,
+      "externalSentenceId": {
+        "sentenceSequence": 0,
+        "bookingId": 0
+      },
       "caseReference": null
     },
     {
@@ -42,6 +46,10 @@
       },
       "lineSequence": 0,
       "caseSequence": 0,
+      "externalSentenceId": {
+        "sentenceSequence": 0,
+        "bookingId": 0
+      },
       "caseReference": null
     },
     {
@@ -64,6 +72,10 @@
       },
       "lineSequence": 0,
       "caseSequence": 0,
+      "externalSentenceId": {
+        "sentenceSequence": 0,
+        "bookingId": 0
+      },
       "caseReference": null
     }
   ],
