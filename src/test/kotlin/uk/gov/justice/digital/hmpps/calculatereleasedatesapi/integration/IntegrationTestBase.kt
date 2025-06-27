@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
 import org.springframework.context.annotation.Import
+import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.test.context.ActiveProfiles
@@ -28,6 +29,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualEntrySelectedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecordARecallResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmitCalculationRequest
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSentenceAndOffences
 import java.sql.DriverManager
 
 /*
@@ -132,6 +134,16 @@ open class IntegrationTestBase internal constructor() {
     .expectStatus().isOk
     .expectHeader().contentType(MediaType.APPLICATION_JSON)
     .expectBody(CalculatedReleaseDates::class.java)
+    .returnResult().responseBody!!
+
+  protected fun getSentencesAndOffencesForCalculation(calculationId: Long) = webTestClient.get()
+    .uri("/calculation/sentence-and-offences/$calculationId")
+    .accept(MediaType.APPLICATION_JSON)
+    .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+    .exchange()
+    .expectStatus().isOk
+    .expectHeader().contentType(MediaType.APPLICATION_JSON)
+    .expectBody(object : ParameterizedTypeReference<List<PrisonApiSentenceAndOffences>>() {})
     .returnResult().responseBody!!
 
   companion object {

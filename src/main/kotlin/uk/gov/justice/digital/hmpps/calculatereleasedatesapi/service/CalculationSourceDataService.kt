@@ -1,19 +1,19 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
-import arrow.core.Either
-import arrow.core.left
-import arrow.core.right
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.adjustmentsapi.model.AdjustmentDto
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentsSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.FixedTermRecallDetails
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderFinePayment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ReturnToCustodyDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType.Companion.from
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.BookingAndSentenceAdjustments
 
 @Service
 class CalculationSourceDataService(
@@ -22,53 +22,70 @@ class CalculationSourceDataService(
   private val botusTusedService: BotusTusedService,
   private val adjustmentsApiClient: AdjustmentsApiClient,
 ) {
-  //  The activeDataOnly flag is only used by a test endpoint (1000 calcs test, which is used to test historic data)
-  fun getCalculationSourceData(prisonerId: String, inactiveDataOptions: InactiveDataOptions): CalculationSourceData {
+
+  fun getCalculationSourceData(prisonerId: String, inactiveDataOptions: InactiveDataOptions, olderBookingsToInclude: List<Long> = emptyList()): CalculationSourceData {
     val prisonerDetails = prisonService.getOffenderDetail(prisonerId)
-    return getCalculationSourceData(prisonerDetails, inactiveDataOptions)
+    return getCalculationSourceData(prisonerDetails, inactiveDataOptions, olderBookingsToInclude)
   }
 
-  fun getCalculationSourceData(prisonerDetails: PrisonerDetails, inactiveDataOptions: InactiveDataOptions): CalculationSourceData {
+  fun getCalculationSourceData(prisonerDetails: PrisonerDetails, inactiveDataOptions: InactiveDataOptions, olderBookingsToInclude: List<Long> = emptyList()): CalculationSourceData {
+    var data = getBookingLevelSourceData(prisonerDetails, prisonerDetails.bookingId, inactiveDataOptions)
+    olderBookingsToInclude.forEach {
+      data = data.appendOlderBooking(getBookingLevelSourceData(prisonerDetails, it, inactiveDataOptions, olderBooking = true))
+    }
+    return getCalculationSourceData(prisonerDetails, data)
+  }
+
+  private fun getBookingLevelSourceData(prisonerDetails: PrisonerDetails, bookingId: Long, inactiveDataOptions: InactiveDataOptions, olderBooking: Boolean = false): BookingLevelSourceData {
     val activeOnly = inactiveDataOptions.activeOnly(featureToggles.supportInactiveSentencesAndAdjustments)
 
-    val sentenceAndOffences = prisonService.getSentencesAndOffences(prisonerDetails.bookingId, activeOnly)
-    val adjustments = getAdjustments(prisonerDetails, sentenceAndOffences, activeOnly)
+    val sentenceAndOffences = prisonService.getSentencesAndOffences(bookingId, activeOnly)
+    val adjustments = getAdjustments(prisonerDetails.offenderNo, bookingId, activeOnly, olderBooking)
     val bookingHasFixedTermRecall = sentenceAndOffences.any { from(it.sentenceCalculationType).recallType?.isFixedTermRecall == true }
-    val (ftrDetails, returnToCustodyDate) = prisonService.getFixedTermRecallDetails(prisonerDetails.bookingId, bookingHasFixedTermRecall)
+    val (ftrDetails, returnToCustodyDate) = prisonService.getFixedTermRecallDetails(bookingId, bookingHasFixedTermRecall)
     val bookingHasAFine = sentenceAndOffences.any { from(it.sentenceCalculationType).sentenceType == SentenceType.AFine }
-    val offenderFinePayments = if (bookingHasAFine) prisonService.getOffenderFinePayments(prisonerDetails.bookingId) else listOf()
-    val tusedData = prisonService.getLatestTusedDataForBotus(prisonerDetails.offenderNo).getOrNull()
-    val bookingHasBotus = sentenceAndOffences.any { from(it.sentenceCalculationType).sentenceType == SentenceType.Botus }
-    val historicalTusedData = if (tusedData != null && bookingHasBotus) botusTusedService.identifyTused(tusedData) else null
-    val externalMovements = prisonService.getExternalMovements(sentenceAndOffences, prisonerDetails)
-
-    return CalculationSourceData(
+    val offenderFinePayments = if (bookingHasAFine) prisonService.getOffenderFinePayments(bookingId) else listOf()
+    return BookingLevelSourceData(
       sentenceAndOffences,
-      prisonerDetails,
       adjustments,
       offenderFinePayments,
       returnToCustodyDate,
       ftrDetails,
+    )
+  }
+
+  private fun getCalculationSourceData(prisonerDetails: PrisonerDetails, bookingLevelSourceData: BookingLevelSourceData): CalculationSourceData {
+    val bookingHasBotus = bookingLevelSourceData.sentenceAndOffences.any { from(it.sentenceCalculationType).sentenceType == SentenceType.Botus }
+    val tusedData = if (bookingHasBotus) prisonService.getLatestTusedDataForBotus(prisonerDetails.offenderNo).getOrNull() else null
+    val historicalTusedData = tusedData?.let { botusTusedService.identifyTused(it) }
+    val externalMovements = prisonService.getExternalMovements(bookingLevelSourceData.sentenceAndOffences, prisonerDetails.offenderNo)
+
+    return CalculationSourceData(
+      bookingLevelSourceData.sentenceAndOffences,
+      prisonerDetails,
+      bookingLevelSourceData.adjustments,
+      bookingLevelSourceData.offenderFinePayments,
+      bookingLevelSourceData.returnToCustodyDate,
+      bookingLevelSourceData.fixedTermRecallDetails,
       historicalTusedData,
       externalMovements,
     )
   }
 
   private fun getAdjustments(
-    prisonerDetails: PrisonerDetails,
-    sentenceAndOffences: List<SentenceAndOffenceWithReleaseArrangements>,
+    prisonerId: String,
+    bookingId: Long,
     activeOnly: Boolean,
-  ): Either<BookingAndSentenceAdjustments, List<AdjustmentDto>> = if (featureToggles.useAdjustmentsApi) {
+    isOldBooking: Boolean,
+  ): AdjustmentsSourceData = if (featureToggles.useAdjustmentsApi) {
     val statuses = if (activeOnly) {
       listOf(AdjustmentDto.Status.ACTIVE)
     } else {
       listOf(AdjustmentDto.Status.ACTIVE, AdjustmentDto.Status.INACTIVE)
     }
-    val earliestSentenceDate = sentenceAndOffences.minOfOrNull { it.sentenceDate }
-    adjustmentsApiClient.getAdjustmentsByPerson(prisonerDetails.offenderNo, earliestSentenceDate, statuses)
-      .right()
+    AdjustmentsSourceData(adjustmentsApiData = adjustmentsApiClient.getAdjustmentsByPerson(prisonerId, statuses, currentPeriodOfCustody = !isOldBooking).filter { it.bookingId == bookingId })
   } else {
-    prisonService.getBookingAndSentenceAdjustments(prisonerDetails.bookingId, activeOnly).left()
+    AdjustmentsSourceData(prisonApiData = prisonService.getBookingAndSentenceAdjustments(bookingId, activeOnly))
   }
 
   companion object {
@@ -110,4 +127,21 @@ class InactiveDataOptions private constructor(
     fun default(): InactiveDataOptions = InactiveDataOptions(false)
     fun overrideToIncludeInactiveData(): InactiveDataOptions = InactiveDataOptions(true)
   }
+}
+data class BookingLevelSourceData(
+  val sentenceAndOffences: List<SentenceAndOffenceWithReleaseArrangements>,
+  val adjustments: AdjustmentsSourceData,
+  val offenderFinePayments: List<OffenderFinePayment> = listOf(),
+  val returnToCustodyDate: ReturnToCustodyDate?,
+  val fixedTermRecallDetails: FixedTermRecallDetails? = null,
+) {
+
+  fun appendOlderBooking(data: BookingLevelSourceData): BookingLevelSourceData = copy(
+    sentenceAndOffences = this.sentenceAndOffences + data.sentenceAndOffences,
+    adjustments = this.adjustments.appendOlderBooking(data.adjustments),
+    offenderFinePayments = this.offenderFinePayments + data.offenderFinePayments,
+    returnToCustodyDate = this.returnToCustodyDate ?: data.returnToCustodyDate,
+    fixedTermRecallDetails = this.fixedTermRecallDetails ?: data.fixedTermRecallDetails,
+    // Historical tused and external movements are booking agnostic.
+  )
 }

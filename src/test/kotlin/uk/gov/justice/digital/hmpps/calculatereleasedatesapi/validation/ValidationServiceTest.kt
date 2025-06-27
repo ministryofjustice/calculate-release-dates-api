@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation
 
-import arrow.core.left
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
@@ -18,6 +17,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SDSEarlyReleaseTranche
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustments
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentsSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOutput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
@@ -1017,29 +1017,31 @@ class ValidationServiceTest {
           )
         },
         VALID_PRISONER,
-        BookingAndSentenceAdjustments(
-          listOf(
-            BookingAdjustment(
-              active = true,
-              fromDate = LocalDate.now().plusDays(1),
-              type = BookingAdjustmentType.ADDITIONAL_DAYS_AWARDED,
-              numberOfDays = 5,
+        AdjustmentsSourceData(
+          prisonApiData = BookingAndSentenceAdjustments(
+            listOf(
+              BookingAdjustment(
+                active = true,
+                fromDate = LocalDate.now().plusDays(1),
+                type = BookingAdjustmentType.ADDITIONAL_DAYS_AWARDED,
+                numberOfDays = 5,
+              ),
+              BookingAdjustment(
+                active = true,
+                fromDate = LocalDate.now().plusDays(1),
+                type = BookingAdjustmentType.RESTORED_ADDITIONAL_DAYS_AWARDED,
+                numberOfDays = 5,
+              ),
+              BookingAdjustment(
+                active = true,
+                fromDate = LocalDate.now().plusDays(1),
+                type = BookingAdjustmentType.UNLAWFULLY_AT_LARGE,
+                numberOfDays = 5,
+              ),
             ),
-            BookingAdjustment(
-              active = true,
-              fromDate = LocalDate.now().plusDays(1),
-              type = BookingAdjustmentType.RESTORED_ADDITIONAL_DAYS_AWARDED,
-              numberOfDays = 5,
-            ),
-            BookingAdjustment(
-              active = true,
-              fromDate = LocalDate.now().plusDays(1),
-              type = BookingAdjustmentType.UNLAWFULLY_AT_LARGE,
-              numberOfDays = 5,
-            ),
+            listOf(),
           ),
-          listOf(),
-        ).left(),
+        ),
         listOf(),
         null,
       ),
@@ -1409,7 +1411,7 @@ class ValidationServiceTest {
             )
           },
           VALID_PRISONER,
-          adjustments.left(),
+          AdjustmentsSourceData(prisonApiData = adjustments),
           listOf(),
           null,
         ),
@@ -1473,7 +1475,7 @@ class ValidationServiceTest {
             )
           },
           VALID_PRISONER,
-          adjustments.left(),
+          AdjustmentsSourceData(prisonApiData = adjustments),
           listOf(),
           null,
         ),
@@ -1682,7 +1684,7 @@ class ValidationServiceTest {
           ),
         ),
         prisonerDetails = VALID_PRISONER,
-        bookingAndSentenceAdjustments = lawfullyAtLargeBookingAdjustment.left(),
+        bookingAndSentenceAdjustments = AdjustmentsSourceData(prisonApiData = lawfullyAtLargeBookingAdjustment),
         returnToCustodyDate = null,
       ),
       calculationUserInputs = USER_INPUTS,
@@ -1707,7 +1709,7 @@ class ValidationServiceTest {
           ),
         ),
         prisonerDetails = VALID_PRISONER,
-        bookingAndSentenceAdjustments = specialRemissionBookingAdjustment.left(),
+        bookingAndSentenceAdjustments = AdjustmentsSourceData(prisonApiData = specialRemissionBookingAdjustment),
         returnToCustodyDate = null,
       ),
       calculationUserInputs = CalculationUserInputs(),
@@ -1732,7 +1734,7 @@ class ValidationServiceTest {
           ),
         ),
         prisonerDetails = VALID_PRISONER,
-        bookingAndSentenceAdjustments = timeSpentInCustodyAbroadSentenceAdjustment.left(),
+        bookingAndSentenceAdjustments = AdjustmentsSourceData(prisonApiData = timeSpentInCustodyAbroadSentenceAdjustment),
         returnToCustodyDate = null,
       ),
       calculationUserInputs = CalculationUserInputs(),
@@ -1757,7 +1759,7 @@ class ValidationServiceTest {
           ),
         ),
         prisonerDetails = VALID_PRISONER,
-        bookingAndSentenceAdjustments = timeSpentAsAnAppealApplicantSentenceAdjustment.left(),
+        bookingAndSentenceAdjustments = AdjustmentsSourceData(prisonApiData = timeSpentAsAnAppealApplicantSentenceAdjustment),
         returnToCustodyDate = null,
       ),
       calculationUserInputs = CalculationUserInputs(),
@@ -2452,7 +2454,7 @@ class ValidationServiceTest {
               ),
             ),
             prisonerDetails = VALID_PRISONER,
-            bookingAndSentenceAdjustments = adjustment.left(),
+            bookingAndSentenceAdjustments = AdjustmentsSourceData(prisonApiData = adjustment),
             returnToCustodyDate = null,
           ),
           USER_INPUTS,
@@ -2489,7 +2491,7 @@ class ValidationServiceTest {
               ),
             ),
             prisonerDetails = VALID_PRISONER,
-            bookingAndSentenceAdjustments = adjustment.left(),
+            bookingAndSentenceAdjustments = AdjustmentsSourceData(prisonApiData = adjustment),
             returnToCustodyDate = null,
           ),
           calculationUserInputs = USER_INPUTS,
@@ -2526,7 +2528,7 @@ class ValidationServiceTest {
               ),
             ),
             prisonerDetails = VALID_PRISONER,
-            bookingAndSentenceAdjustments = adjustment.left(),
+            bookingAndSentenceAdjustments = AdjustmentsSourceData(prisonApiData = adjustment),
             returnToCustodyDate = null,
           ),
           USER_INPUTS,
@@ -2563,7 +2565,7 @@ class ValidationServiceTest {
               ),
             ),
             prisonerDetails = VALID_PRISONER,
-            bookingAndSentenceAdjustments = adjustment.left(),
+            bookingAndSentenceAdjustments = AdjustmentsSourceData(prisonApiData = adjustment),
             returnToCustodyDate = null,
           ),
           USER_INPUTS,
@@ -3504,7 +3506,7 @@ class ValidationServiceTest {
     val returnToCustodyDate = ReturnToCustodyDate(COMPANION_BOOKING_ID, LocalDate.of(2022, 3, 15))
     private val USER_INPUTS = CalculationUserInputs()
     private val VALID_PRISONER = PrisonerDetails(offenderNo = "", bookingId = 1, dateOfBirth = LocalDate.of(1, 2, 3))
-    private val VALID_ADJUSTMENTS = BookingAndSentenceAdjustments(emptyList(), emptyList()).left()
+    private val VALID_ADJUSTMENTS = AdjustmentsSourceData(prisonApiData = BookingAndSentenceAdjustments(emptyList(), emptyList()))
     private const val BOOKING_ID = 100091L
     private val RETURN_TO_CUSTODY_DATE = LocalDate.of(2022, 3, 15)
     private val FTR_DETAILS_14 = FixedTermRecallDetails(BOOKING_ID, RETURN_TO_CUSTODY_DATE, 14)

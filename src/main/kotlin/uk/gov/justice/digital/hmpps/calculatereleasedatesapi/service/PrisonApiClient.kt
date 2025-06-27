@@ -27,6 +27,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.pris
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.PrisonApiExternalMovement
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.SentenceDetail
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.prisonapi.model.CalculablePrisoner
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.prisonapi.model.PrisonerInPrisonSummary
 import java.time.Duration
 import java.time.LocalDate
 
@@ -207,4 +208,13 @@ class PrisonApiClient(
         else -> Mono.just("Unknown: status code was ${response.statusCode().value()}".left())
       }
     }.block()!!
+
+  fun getPrisonerInPrisonSummary(prisonerId: String): PrisonerInPrisonSummary {
+    log.info("Requesting getPrisonerInPrisonSummary for $prisonerId")
+    return systemAuthWebClient.get()
+      .uri("/api/offenders/$prisonerId/prison-timeline")
+      .retrieve()
+      .bodyToMono(PrisonerInPrisonSummary::class.java)
+      .block()!!
+  }
 }

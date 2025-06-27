@@ -7,21 +7,17 @@ import org.springframework.core.ParameterizedTypeReference
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.adjustmentsapi.model.AdjustmentDto
-import java.time.LocalDate
 
 @Service
 class AdjustmentsApiClient(@Qualifier("adjustmentsApiWebClient") private val webClient: WebClient) {
   private inline fun <reified T> typeReference() = object : ParameterizedTypeReference<T>() {}
   private val log = LoggerFactory.getLogger(this::class.java)
 
-  fun getAdjustmentsByPerson(prisonerId: String, sentenceEnvelopeDate: LocalDate?, statuses: List<AdjustmentDto.Status>, currentPeriodOfCustody: Boolean = true): List<AdjustmentDto> {
+  fun getAdjustmentsByPerson(prisonerId: String, statuses: List<AdjustmentDto.Status>, currentPeriodOfCustody: Boolean = true): List<AdjustmentDto> {
     log.info("Getting adjustment details for prisoner $prisonerId")
     return webClient.get()
       .uri { builder ->
         builder.path("/adjustments")
-        if (sentenceEnvelopeDate != null) {
-          builder.queryParam("sentenceEnvelopeDate", sentenceEnvelopeDate.toString())
-        }
         builder.queryParam("currentPeriodOfCustody", currentPeriodOfCustody)
         builder.queryParam("person", prisonerId)
         builder.queryParam("status", statuses.map { it.toString() })

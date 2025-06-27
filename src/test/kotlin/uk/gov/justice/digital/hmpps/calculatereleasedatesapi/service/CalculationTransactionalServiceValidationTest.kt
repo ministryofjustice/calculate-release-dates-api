@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
-import arrow.core.left
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.junit.jupiter.MockitoExtension
@@ -12,6 +11,7 @@ import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.TestBuildPropertiesConfiguration.Companion.TEST_BUILD_PROPERTIES
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentsSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOutput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
@@ -97,10 +97,12 @@ class CalculationTransactionalServiceValidationTest {
   private val fakeSourceData = CalculationSourceData(
     emptyList(),
     PrisonerDetails(offenderNo = "", bookingId = 1, dateOfBirth = LocalDate.of(1, 2, 3)),
-    BookingAndSentenceAdjustments(
-      emptyList(),
-      emptyList(),
-    ).left(),
+    AdjustmentsSourceData(
+      prisonApiData = BookingAndSentenceAdjustments(
+        emptyList(),
+        emptyList(),
+      ),
+    ),
     listOf(),
     null,
   )

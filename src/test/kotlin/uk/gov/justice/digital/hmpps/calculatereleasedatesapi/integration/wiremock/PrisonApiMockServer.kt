@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock
 
+import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.MappingBuilder
@@ -21,6 +22,9 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CaseLo
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Agency
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CaseLoad
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NomisCalculationReason
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSentenceAndOffences
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.prisonapi.model.PrisonPeriod
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.prisonapi.model.PrisonerInPrisonSummary
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource.JsonTransformation
 
 /*
@@ -66,66 +70,77 @@ class PrisonApiExtension :
     val externalMovements = jsonTransformation.getAllExternalMovementsJson()
     val defaultExternalMovements = externalMovements[DEFAULT]!!
 
+    val prisonerInPrisonSummaries = jsonTransformation.getAllPrisonerInPrison()
+
     val returnToCustodyDates = jsonTransformation.getAllReturnToCustodyDatesJson()
 
     val allPrisoners = jsonTransformation.getAllIntegrationPrisonerNames().distinct()
     allPrisoners.forEach {
+      val bookingId = it.hashCode().toLong()
       val prisoner = if (prisoners.containsKey(it)) {
-        log.info("Stubbing prisoner details prisonerId $it, bookingId ${it.hashCode().toLong()} from file $it")
+        log.info("Stubbing prisoner details prisonerId $it, from file $it")
         // There is a matching json for the prisoner
-        prisoners[it]!!.copy(bookingId = it.hashCode().toLong(), offenderNo = it)
+        prisoners[it]!!.copy(bookingId = bookingId, offenderNo = it)
       } else {
-        log.info("Stubbing prisoner details prisonerId $it, bookingId ${it.hashCode().toLong()} from file $DEFAULT")
+        log.info("Stubbing prisoner details prisonerId $it, from file $DEFAULT")
         // There is no matching json for the prisoner for this adjustment/offence. Use the generic prisoner
-        defaultPrisoner.copy(bookingId = it.hashCode().toLong(), offenderNo = it)
+        defaultPrisoner.copy(bookingId = bookingId, offenderNo = it)
       }
       prisonApi.stubGetPrisonerDetails(it, objectMapper.writeValueAsString(prisoner))
 
       val adjustment = if (adjustments.containsKey(it)) {
-        log.info("Stubbing prison api adjustments prisonerId $it, bookingId ${it.hashCode().toLong()} from file $it")
+        log.info("Stubbing prison api adjustments prisonerId $it, bookingId $bookingId from file $it")
         adjustments[it]!!
       } else {
-        log.info("Stubbing prison api adjustments prisonerId $it, bookingId ${it.hashCode().toLong()} from file $DEFAULT")
+        log.info("Stubbing prison api adjustments prisonerId $it, bookingId $bookingId from file $DEFAULT")
         defaultAdjustment
       }
-      prisonApi.stubGetSentenceAdjustments(it.hashCode().toLong(), adjustment)
+      prisonApi.stubGetSentenceAdjustments(bookingId, adjustment)
 
       val sentence = if (sentences.containsKey(it)) {
-        log.info("Stubbing sentences prisonerId $it, bookingId ${it.hashCode().toLong()} from file $it")
+        log.info("Stubbing sentences prisonerId $it, bookingId $bookingId from file $it")
         sentences[it]!!
       } else {
-        log.info("Stubbing sentences prisonerId $it, bookingId ${it.hashCode().toLong()} from file $DEFAULT")
+        log.info("Stubbing sentences prisonerId $it, bookingId $bookingId from file $DEFAULT")
         defaultSentence
       }
-      prisonApi.stubGetSentencesAndOffences(it.hashCode().toLong(), sentence)
+      prisonApi.stubGetSentencesAndOffences(bookingId, sentence)
 
       if (returnToCustodyDates.containsKey(it)) {
-        log.info("Stubbing return to custody prisonerId $it, bookingId ${it.hashCode().toLong()} from file $it")
-        prisonApi.stubGetReturnToCustody(it.hashCode().toLong(), returnToCustodyDates[it]!!)
+        log.info("Stubbing return to custody prisonerId $it, bookingId $bookingId from file $it")
+        prisonApi.stubGetReturnToCustody(bookingId, returnToCustodyDates[it]!!)
       } else {
-        log.info("No return to custody to stub for prisonerId $it, bookingId ${it.hashCode().toLong()}")
-        prisonApi.stubGetReturnToCustodyNotFound(it.hashCode().toLong())
+        log.info("No return to custody to stub for prisonerId $it, bookingId $bookingId")
+        prisonApi.stubGetReturnToCustodyNotFound(bookingId)
       }
 
       val finePayment = if (finePayments.containsKey(it)) {
-        log.info("Stubbing offender fine payments prisonerId $it, bookingId ${it.hashCode().toLong()} from file $it")
+        log.info("Stubbing offender fine payments prisonerId $it,from file $it")
         finePayments[it]!!
       } else {
-        log.info("Stubbing offender fine payments prisonerId $it, bookingId ${it.hashCode().toLong()} from file $DEFAULT")
+        log.info("Stubbing offender fine payments prisonerId $it, from file $DEFAULT")
         defaultFinePayment
       }
-      prisonApi.stubOffenderFinePayments(it.hashCode().toLong(), finePayment)
+      prisonApi.stubOffenderFinePayments(bookingId, finePayment)
 
       val externalMovement = if (externalMovements.containsKey(it)) {
-        log.info("Stubbing external movements prisonerId $it, bookingId ${it.hashCode().toLong()} from file $it")
+        log.info("Stubbing external movements prisonerId $it, from file $it")
         externalMovements[it]!!
       } else {
-        log.info("Stubbing external movements prisonerId $it, bookingId ${it.hashCode().toLong()} from file $DEFAULT")
+        log.info("Stubbing external movements prisonerId $it, from file $DEFAULT")
         defaultExternalMovements
       }
       prisonApi.stubExternalMovements(it, externalMovement)
 
-      prisonApi.stubPostOffenderDates(it.hashCode().toLong())
+      prisonApi.stubPostOffenderDates(bookingId)
+
+      if (prisonerInPrisonSummaries.containsKey(it)) {
+        log.info("Stubbing prisoner in prison summary $it, from file $it")
+        prisonApi.stubGetPrisonerInPrisonSummary(it, prisonerInPrisonSummaries[it]!!)
+      } else {
+        log.info("Stubbing prisoner in prison summary $it, from default booking.")
+        prisonApi.stubGetPrisonerInPrisonSummary(it, listOf(bookingId))
+      }
 
       val prisonCalculablePrisonersJson = jsonTransformation.getAllPrisonCalculablePrisonersJson()
 
@@ -188,15 +203,19 @@ class PrisonApiMockServer : WireMockServer(WIREMOCK_PORT) {
       ),
   )
 
-  fun stubGetSentencesAndOffences(bookingId: Long, json: String): StubMapping = stubFor(
-    get("/api/offender-sentences/booking/$bookingId/sentences-and-offences")
-      .willReturn(
-        aResponse()
-          .withHeader("Content-Type", "application/json")
-          .withBody(json)
-          .withStatus(200),
-      ),
-  )
+  fun stubGetSentencesAndOffences(bookingId: Long, json: String): StubMapping {
+    val sentences = TestUtil.objectMapper().readValue(json, object : TypeReference<List<PrisonApiSentenceAndOffences>>() {})
+    val jsonWithCorrectBookings = sentences.map { it.copy(bookingId = bookingId) }
+    return stubFor(
+      get("/api/offender-sentences/booking/$bookingId/sentences-and-offences")
+        .willReturn(
+          aResponse()
+            .withHeader("Content-Type", "application/json")
+            .withBody(TestUtil.objectMapper().writeValueAsString(jsonWithCorrectBookings))
+            .withStatus(200),
+        ),
+    )
+  }
 
   fun stubGetReturnToCustody(bookingId: Long, json: String): StubMapping = stubFor(
     get("/api/bookings/$bookingId/fixed-term-recall")
@@ -295,5 +314,38 @@ class PrisonApiMockServer : WireMockServer(WIREMOCK_PORT) {
           .withBody(json)
           .withStatus(200),
       ),
+  )
+
+  fun stubGetPrisonerInPrisonSummary(prisonerId: String, json: String): StubMapping = stubFor(
+    get(urlPathEqualTo("/api/offenders/$prisonerId/prison-timeline"))
+      .willReturn(
+        aResponse()
+          .withHeader("Content-Type", "application/json")
+          .withBody(json)
+          .withStatus(200),
+      ),
+  )
+
+  fun stubGetPrisonerInPrisonSummary(prisonerId: String, bookingIds: List<Long>): StubMapping = stubGetPrisonerInPrisonSummary(
+    prisonerId,
+    TestUtil.objectMapper().writeValueAsString(
+      PrisonerInPrisonSummary(
+        prisonerId,
+        bookingIds.mapIndexed { index, it ->
+          PrisonPeriod(
+            bookNumber = "ABC" + it,
+            bookingSequence = index,
+            bookingId = it,
+            // Not required by CRDS.
+            entryDate = "",
+            prisons = emptyList(),
+            transfers = emptyList(),
+            movementDates = emptyList(),
+            releaseDate = "",
+
+          )
+        },
+      ),
+    ),
   )
 }

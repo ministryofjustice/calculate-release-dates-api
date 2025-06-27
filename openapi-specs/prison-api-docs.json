@@ -11,7 +11,7 @@
       "name": "MIT",
       "url": "https://opensource.org/licenses/MIT"
     },
-    "version": "2025-03-14.29371.fcbff59"
+    "version": "2025-06-25.72.ea3cbbe"
   },
   "servers": [
     {
@@ -1171,6 +1171,71 @@
         }
       }
     },
+    "/api/offenders/{offenderNo}/sexual-orientation": {
+      "put": {
+        "tags": [
+          "offenders"
+        ],
+        "summary": "Update the prisoner's sexual orientation on the latest booking. Requires the PRISON_API__PRISONER_PROFILE__RW role.",
+        "operationId": "updateSexualOrientation",
+        "parameters": [
+          {
+            "name": "offenderNo",
+            "in": "path",
+            "description": "The prisoner number",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateSexualOrientation"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "The sexual orientation has been updated."
+          },
+          "400": {
+            "description": "Invalid request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Requested resource not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unrecoverable error occurred whilst processing request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/offenders/{offenderNo}/religion": {
       "put": {
         "tags": [
@@ -1383,6 +1448,108 @@
           },
           "404": {
             "description": "Requested resource not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unrecoverable error occurred whilst processing request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/offenders/{offenderNo}/phone-numbers/{phoneNumberId}": {
+      "put": {
+        "tags": [
+          "offenders"
+        ],
+        "summary": "Update a phone number for the prisoner",
+        "operationId": "updateOffenderPhoneNumber",
+        "parameters": [
+          {
+            "name": "offenderNo",
+            "in": "path",
+            "description": "The prisoner number",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "phoneNumberId",
+            "in": "path",
+            "description": "The phone number ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OffenderPhoneNumberCreateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Phone number updated.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Telephone"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - user not authorised to update phone numbers.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Prisoner or phone number ID not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "423": {
+            "description": "Record in use for this phone ID id (possibly in P-Nomis).",
             "content": {
               "application/json": {
                 "schema": {
@@ -1652,6 +1819,108 @@
         }
       }
     },
+    "/api/offenders/{offenderNo}/email-addresses/{emailAddressId}": {
+      "put": {
+        "tags": [
+          "offenders"
+        ],
+        "summary": "Update an email number for the prisoner",
+        "operationId": "updateOffenderEmailAddress",
+        "parameters": [
+          {
+            "name": "offenderNo",
+            "in": "path",
+            "description": "The prisoner number",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "emailAddressId",
+            "in": "path",
+            "description": "The email address ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OffenderEmailAddressCreateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Email address updated.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Email"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - user not authorised to update email addresses.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Prisoner or email address ID not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "423": {
+            "description": "Record in use for this email address ID id (possibly in P-Nomis).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unrecoverable error occurred whilst processing request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/offenders/{offenderNo}/discharge-to-hospital": {
       "put": {
         "tags": [
@@ -1894,6 +2163,73 @@
         }
       }
     },
+    "/api/offenders/{offenderNo}/core-person-record/secondary-language": {
+      "put": {
+        "tags": [
+          "core-person-record",
+          "offenders"
+        ],
+        "summary": "Adds or replaces core person record secondary language data.",
+        "description": "Requires the PRISON_API__PRISONER_PROFILE__RW role.",
+        "operationId": "addSecondaryLanguage",
+        "parameters": [
+          {
+            "name": "offenderNo",
+            "in": "path",
+            "description": "The offender number",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CorePersonSecondaryLanguageRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "A core person secondary language has been added or updated."
+          },
+          "400": {
+            "description": "Invalid request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Requested resource not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unrecoverable error occurred whilst processing request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/offenders/{offenderNo}/core-person-record/physical-attributes": {
       "get": {
         "tags": [
@@ -1979,6 +2315,73 @@
         "responses": {
           "204": {
             "description": "The core person physical attributes have been updated."
+          },
+          "400": {
+            "description": "Invalid request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Requested resource not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unrecoverable error occurred whilst processing request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/offenders/{offenderNo}/core-person-record/language-preferences": {
+      "put": {
+        "tags": [
+          "core-person-record",
+          "offenders"
+        ],
+        "summary": "Update core person record language preferences of a prisoner.",
+        "description": "Requires the PRISON_API__PRISONER_PROFILE__RW role.",
+        "operationId": "updateLanguagePreferences",
+        "parameters": [
+          {
+            "name": "offenderNo",
+            "in": "path",
+            "description": "The offender number",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CorePersonLanguagePreferencesRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "The core person language preferences have been updated."
           },
           "400": {
             "description": "Invalid request.",
@@ -3550,6 +3953,57 @@
       }
     },
     "/api/aliases/{offenderId}": {
+      "get": {
+        "tags": [
+          "aliases"
+        ],
+        "summary": "Retrieve a specific aliases for the prisoner. Requires the PRISON_API__PRISONER_PROFILE__RW role.",
+        "operationId": "getAlias",
+        "parameters": [
+          {
+            "name": "offenderId",
+            "in": "path",
+            "description": "The alias identifier (offenderId)",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Alias successfully returned.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CorePersonRecordAlias"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Requested resource not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unrecoverable error occurred whilst processing request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
       "put": {
         "tags": [
           "aliases"
@@ -3601,6 +4055,173 @@
           },
           "404": {
             "description": "Requested resource not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unrecoverable error occurred whilst processing request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/aliases/{offenderId}/offender-identifiers/{offenderIdSeq}": {
+      "get": {
+        "tags": [
+          "offender-identifiers"
+        ],
+        "summary": "Get a single identifier for the alias by sequence id",
+        "operationId": "getOffenderIdentifier",
+        "parameters": [
+          {
+            "name": "offenderId",
+            "in": "path",
+            "description": "The alias identifier (offenderId)",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "offenderIdSeq",
+            "in": "path",
+            "description": "The sequence id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OffenderIdentifier"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - user not authorised to view identifiers.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Requested resource not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unrecoverable error occurred whilst processing request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "offender-identifiers"
+        ],
+        "summary": "Update an existing identifier for the alias",
+        "operationId": "updateOffenderIdentifier",
+        "parameters": [
+          {
+            "name": "offenderId",
+            "in": "path",
+            "description": "The alias identifier (offenderId)",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "offenderIdSeq",
+            "in": "path",
+            "description": "The identifier sequence",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OffenderIdentifierUpdateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Identifier updated."
+          },
+          "400": {
+            "description": "Invalid request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - user not authorised to update identifiers.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Identifier not found.",
             "content": {
               "application/json": {
                 "schema": {
@@ -4510,6 +5131,75 @@
         }
       }
     },
+    "/api/staff": {
+      "post": {
+        "tags": [
+          "staff"
+        ],
+        "summary": "Retrieve details for multiple staff members using ids.",
+        "description": "Security note: staff details are only available for the current user unless client has ROLE_STAFF_SEARCH.",
+        "operationId": "getStaffDetails",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "format": "int64"
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/StaffDetail"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Requested resource not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unrecoverable error occurred whilst processing request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/smoketest/offenders/{offenderNo}/details": {
       "post": {
         "tags": [
@@ -4567,6 +5257,81 @@
       }
     },
     "/api/service-prisons/{serviceCode}/prison/{prisonId}": {
+      "get": {
+        "tags": [
+          "service-prisons"
+        ],
+        "summary": "Returns if the service is switched on for the specified service code / prison id.",
+        "description": "Returns 204 if the service is switched on for the service code / prison id combination.\n    If the service is not switched on then 404 is returned.\n    This endpoint also takes into account the special `*ALL*` prison id - if the service code has a prison entry of\n    `*ALL*` then the service is deemed to be switched on for all prisons and will therefore return 204 irrespective of the\n    prison id that is passed in.\n    Requires ROLE_PRISON_API__SERVICE_AGENCY_SWITCHES__RO.\n  ",
+        "operationId": "checkServicePrison",
+        "parameters": [
+          {
+            "name": "serviceCode",
+            "in": "path",
+            "description": "The code of the service from the EXTERNAL_SERVICES table",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "ACTIVITY"
+          },
+          {
+            "name": "prisonId",
+            "in": "path",
+            "description": "The id of the prison",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "MDI"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Service is switched on for the service code and prison id."
+          },
+          "401": {
+            "description": "A valid auth token was not presented",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "The auth token does not have the necessary role",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The service code does not exist or the service is not switched on for the prison.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unrecoverable error occurred whilst processing request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
       "post": {
         "tags": [
           "service-prisons"
@@ -5375,6 +6140,7 @@
         "tags": [
           "schedules"
         ],
+        "summary": "Requires role VIEW_ACTIVITIES",
         "description": "<p>This endpoint uses the REPLICA database.</p>",
         "operationId": "getAppointmentsForOffenders",
         "parameters": [
@@ -6337,6 +7103,300 @@
         }
       }
     },
+    "/api/offenders/{offenderNo}/phone-numbers": {
+      "get": {
+        "tags": [
+          "offenders"
+        ],
+        "summary": "Get phone numbers for a prisoner.",
+        "operationId": "getOffenderNumbers",
+        "parameters": [
+          {
+            "name": "offenderNo",
+            "in": "path",
+            "description": "The prisoner number",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Telephone"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - user not authorised to view prisoner phone numbers.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unrecoverable error occurred whilst processing request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "offenders"
+        ],
+        "summary": "Add a phone number for the prisoner",
+        "operationId": "addOffenderPhoneNumbers",
+        "parameters": [
+          {
+            "name": "offenderNo",
+            "in": "path",
+            "description": "The prisoner number",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OffenderPhoneNumberCreateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Phone number added.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Telephone"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - user not authorised to add phone numbers.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Prisoner not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unrecoverable error occurred whilst processing request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/offenders/{offenderNo}/offender-identifiers": {
+      "get": {
+        "tags": [
+          "offender-identifiers"
+        ],
+        "summary": "Get all identifiers for the prisoner (with or without alias identifiers)",
+        "operationId": "getAllOffenderIdentifiers",
+        "parameters": [
+          {
+            "name": "offenderNo",
+            "in": "path",
+            "description": "The prisoner number",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "includeAliases",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/OffenderIdentifier"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - user not authorised to view identifiers.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unrecoverable error occurred whilst processing request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "offender-identifiers"
+        ],
+        "summary": "Add identifiers for the prisoner on the current working name",
+        "operationId": "addOffenderIdentifiers",
+        "parameters": [
+          {
+            "name": "offenderNo",
+            "in": "path",
+            "description": "The prisoner number",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/OffenderIdentifierCreateRequest"
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Identifiers added."
+          },
+          "400": {
+            "description": "Invalid request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - user not authorised to add identifiers.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Prisoner not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unrecoverable error occurred whilst processing request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/offenders/{offenderNo}/military-records": {
       "get": {
         "tags": [
@@ -6475,6 +7535,151 @@
         }
       }
     },
+    "/api/offenders/{offenderNo}/email-addresses": {
+      "get": {
+        "tags": [
+          "offenders"
+        ],
+        "summary": "Get email addresses for a prisoner.",
+        "operationId": "getOffenderEmails",
+        "parameters": [
+          {
+            "name": "offenderNo",
+            "in": "path",
+            "description": "The prisoner number",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Email"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - user not authorised to view prisoner email addresses.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unrecoverable error occurred whilst processing request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "offenders"
+        ],
+        "summary": "Add an email address for the prisoner",
+        "operationId": "addOffenderEmailAddress",
+        "parameters": [
+          {
+            "name": "offenderNo",
+            "in": "path",
+            "description": "The prisoner number",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OffenderEmailAddressCreateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Email address added.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Email"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - user not authorised to add email addresses",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Prisoner not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unrecoverable error occurred whilst processing request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/offenders/{offenderNo}/booking": {
       "post": {
         "tags": [
@@ -6560,6 +7765,59 @@
       }
     },
     "/api/offenders/{offenderNo}/aliases": {
+      "get": {
+        "tags": [
+          "aliases"
+        ],
+        "summary": "Retrieve all aliases (including the working name alias) for the prisoner. Requires the PRISON_API__PRISONER_PROFILE__RW role.",
+        "operationId": "getAliases",
+        "parameters": [
+          {
+            "name": "offenderNo",
+            "in": "path",
+            "description": "The prisoner number",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Aliases successfully returned.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CorePersonRecordAlias"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Requested resource not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unrecoverable error occurred whilst processing request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
       "post": {
         "tags": [
           "aliases"
@@ -7749,6 +9007,54 @@
         }
       }
     },
+    "/api/movements/offenders/latest-arrival-date": {
+      "post": {
+        "tags": [
+          "movements"
+        ],
+        "summary": "Get the dates of the latest arrival into prison for multiple offenders",
+        "operationId": "getLatestArrivalDate",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "description": "The required offender numbers (mandatory)",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/OffenderLatestArrivalDate"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unrecoverable error occurred whilst processing request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/key-worker/{agencyId}/current-allocations": {
       "post": {
         "tags": [
@@ -7898,8 +9204,8 @@
         "tags": [
           "images"
         ],
-        "summary": "DEV USE ONLY *** Upload a new image for a prisoner.",
-        "description": "Requires ROLE_IMAGE_UPLOAD, write scope and a user in the token.",
+        "summary": "Upload a new image for a prisoner.",
+        "description": "Requires PRISON_API__PRISONER_PROFILE__RW. Additionally scales the image to 480 x 600 and creates a thumbnail 240 x 300 (4:5 aspect ratio).",
         "operationId": "putImageMultiPart",
         "parameters": [
           {
@@ -7954,7 +9260,7 @@
             }
           },
           "403": {
-            "description": "IMAGE_UPLOAD role required to access endpoint",
+            "description": "PRISON_API__PRISONER_PROFILE__RW role required to access endpoint",
             "content": {
               "application/json": {
                 "schema": {
@@ -8996,7 +10302,8 @@
             "description": "problem type",
             "required": true,
             "schema": {
-              "type": "string"
+              "type": "string",
+              "minLength": 1
             },
             "example": "DISAB"
           },
@@ -11373,7 +12680,7 @@
           "users"
         ],
         "summary": "List of locations accessible to current user.",
-        "description": "List of locations accessible to current user.<p>This endpoint uses the REPLICA database.</p>",
+        "description": "Deprecated - Use /locations/prison/{prisonId}/residential-first-level instead in the locations-inside-prison-api<p>This endpoint uses the REPLICA database.</p>",
         "operationId": "getMyLocations",
         "parameters": [
           {
@@ -11431,7 +12738,8 @@
               }
             }
           }
-        }
+        },
+        "deprecated": true
       }
     },
     "/api/users/me/caseLoads": {
@@ -11480,6 +12788,118 @@
           },
           "404": {
             "description": "Requested resource not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unrecoverable error occurred whilst processing request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/transactions/prison/{prison_id}/offenders/{noms_id}/accounts/{account_code}": {
+      "get": {
+        "tags": [
+          "unilink",
+          "integration-api"
+        ],
+        "summary": "Retrieve an offender's financial transaction history for cash, spends or savings.",
+        "description": "\n            Transactions are returned in NOMIS order (Descending date followed by id).<br/>\n            All transaction amounts are represented as pence values.<br/>\n            Requires UNILINK or PRISON_API__HMPPS_INTEGRATION_API role.\n            ",
+        "operationId": "getAccountTransactions_1",
+        "parameters": [
+          {
+            "name": "prison_id",
+            "in": "path",
+            "description": "Prison ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "WLI"
+          },
+          {
+            "name": "noms_id",
+            "in": "path",
+            "description": "Offender Noms Id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "A1404AE"
+          },
+          {
+            "name": "account_code",
+            "in": "path",
+            "description": "Account code",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "spends",
+                "cash",
+                "savings"
+              ]
+            },
+            "example": "spends"
+          },
+          {
+            "name": "from_date",
+            "in": "query",
+            "description": "Start date for transactions (defaults to today if not supplied)",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            },
+            "example": "2019-04-01"
+          },
+          {
+            "name": "to_date",
+            "in": "query",
+            "description": "To date for transactions",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            },
+            "example": "2019-05-01"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PrisonerTransactions"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Not a digital prison.  Prison not found. Offender has no account at this prison.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Prison, offender or accountType not found",
             "content": {
               "application/json": {
                 "schema": {
@@ -12016,6 +13436,7 @@
           "service-prisons"
         ],
         "summary": "Retrieve a list of prisons switched on for the service code",
+        "description": "Returns a list of prisons switched on for the service code.\n      A special prisonId of `*ALL*` is used to designate that the service is switched on for all prisons.\n      Requires ROLE_PRISON_API__SERVICE_AGENCY_SWITCHES__RO.\n    ",
         "operationId": "getServicePrisons",
         "parameters": [
           {
@@ -13620,7 +15041,7 @@
             "schema": {
               "type": "string",
               "description": "Location ID of parent of the cells",
-              "example": "1212312"
+              "example": 1212312
             },
             "example": 1212312
           }
@@ -14075,7 +15496,8 @@
           "integration-api",
           "offenders"
         ],
-        "summary": "Full details about the current state of an offender. Requires GLOBAL_SEARCH, VIEW_PRISONER_DATA or a user token with valid offender access",
+        "summary": "Full details about the current state of an offender",
+        "description": "Requires GLOBAL_SEARCH, VIEW_PRISONER_DATA or a user token with valid offender access",
         "operationId": "getOffender_1",
         "parameters": [
           {
@@ -14509,79 +15931,6 @@
         }
       }
     },
-    "/api/offenders/{offenderNo}/offender-identifiers": {
-      "get": {
-        "tags": [
-          "offenders"
-        ],
-        "summary": "Get all identifiers for the prisoner (with or without alias identifiers)",
-        "operationId": "getAllOffenderIdentifiers",
-        "parameters": [
-          {
-            "name": "offenderNo",
-            "in": "path",
-            "description": "The prisoner number",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "includeAliases",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "boolean"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/OffenderIdentifier"
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid request.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden - user not authorised to view identifiers.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Unrecoverable error occurred whilst processing request.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/api/offenders/{offenderNo}/incidents": {
       "get": {
         "tags": [
@@ -14886,6 +16235,60 @@
           },
           "404": {
             "description": "Offender does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unrecoverable error occurred whilst processing request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/offenders/{offenderNo}/core-person-record/communication-needs": {
+      "get": {
+        "tags": [
+          "core-person-record",
+          "offenders"
+        ],
+        "summary": "Get core person record communication needs of a prisoner",
+        "description": "Requires the PRISON_API__PRISONER_PROFILE__RW role.",
+        "operationId": "getCommunicationNeeds",
+        "parameters": [
+          {
+            "name": "offenderNo",
+            "in": "path",
+            "description": "The offender number",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CorePersonCommunicationNeeds"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Offender not found.",
             "content": {
               "application/json": {
                 "schema": {
@@ -17136,7 +18539,7 @@
           "movements"
         ],
         "summary": "Get the date of the latest arrival into prison for the offender",
-        "operationId": "getLatestArrivalDate",
+        "operationId": "getLatestArrivalDate_1",
         "parameters": [
           {
             "name": "offenderNumber",
@@ -17289,6 +18692,42 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/movements/booking/{bookingId}": {
+      "get": {
+        "tags": [
+          "movements"
+        ],
+        "summary": "Get all movements (with sequence numbers) for booking",
+        "operationId": "getMovementsByBooking",
+        "parameters": [
+          {
+            "name": "bookingId",
+            "in": "path",
+            "description": "The booking id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/BookingMovement"
+                  }
                 }
               }
             }
@@ -19623,6 +21062,71 @@
         }
       }
     },
+    "/api/bookings/{bookingId}/reasonable-adjustments/all": {
+      "get": {
+        "tags": [
+          "integration-api",
+          "bookings"
+        ],
+        "summary": "Reasonable Adjustment Information",
+        "description": "Reasonable Adjustment Information. Requires booking access (via caseload) or GLOBAL_SEARCH or VIEW_PRISONER_DATA role.",
+        "operationId": "getAllReasonableAdjustments",
+        "parameters": [
+          {
+            "name": "bookingId",
+            "in": "path",
+            "description": "The offender booking id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReasonableAdjustments"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Requested resource not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unrecoverable error occurred whilst processing request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/bookings/{bookingId}/property": {
       "get": {
         "tags": [
@@ -19653,6 +21157,70 @@
                   "items": {
                     "$ref": "#/components/schemas/PropertyContainer"
                   }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Requested resource not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unrecoverable error occurred whilst processing request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/bookings/{bookingId}/personal-care-needs/all": {
+      "get": {
+        "tags": [
+          "bookings"
+        ],
+        "summary": "Personal Care Needs",
+        "description": "Personal Care Need. Requires booking access (via caseload) or GLOBAL_SEARCH or VIEW_PRISONER_DATA role.",
+        "operationId": "getAllPersonalCareNeeds",
+        "parameters": [
+          {
+            "name": "bookingId",
+            "in": "path",
+            "description": "The offender booking id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PersonalCareNeeds"
                 }
               }
             }
@@ -22743,6 +24311,72 @@
         }
       }
     },
+    "/api/offenders/{offenderNo}/core-person-record/secondary-language/{languageCode}": {
+      "delete": {
+        "tags": [
+          "core-person-record",
+          "offenders"
+        ],
+        "summary": "Deletes core person record secondary language data.",
+        "description": "Requires the PRISON_API__PRISONER_PROFILE__RW role.",
+        "operationId": "deleteSecondaryLanguage",
+        "parameters": [
+          {
+            "name": "offenderNo",
+            "in": "path",
+            "description": "The offender number",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "languageCode",
+            "in": "path",
+            "description": "The code for the secondary language to delete",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "A core person secondary language has been deleted."
+          },
+          "400": {
+            "description": "Invalid request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Requested resource not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unrecoverable error occurred whilst processing request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/bookings/{bookingId}/court-hearings/{hearingId}/cancel": {
       "delete": {
         "tags": [
@@ -22820,12 +24454,14 @@
           "caseLoadId": {
             "type": "string",
             "description": "Case Load ID",
-            "example": "MDI"
+            "example": "MDI",
+            "minLength": 1
           },
           "description": {
             "type": "string",
             "description": "Full description of the case load",
-            "example": "Moorland Closed (HMP & YOI)"
+            "example": "Moorland Closed (HMP & YOI)",
+            "minLength": 1
           },
           "type": {
             "type": "string",
@@ -22835,7 +24471,8 @@
               "INST",
               "APP"
             ],
-            "example": "INST"
+            "example": "INST",
+            "minLength": 1
           },
           "caseloadFunction": {
             "type": "string",
@@ -22878,7 +24515,8 @@
           "userMessage": {
             "type": "string",
             "description": "Concise error reason for end-user consumption.",
-            "example": "Entity Not Found"
+            "example": "Entity Not Found",
+            "minLength": 1
           },
           "developerMessage": {
             "type": "string",
@@ -23326,17 +24964,17 @@
           "primary": {
             "type": "boolean",
             "description": "Primary Address",
-            "example": "Y"
+            "example": true
           },
           "mail": {
             "type": "boolean",
             "description": "Mail Address",
-            "example": "Y"
+            "example": true
           },
           "noFixedAddress": {
             "type": "boolean",
             "description": "No Fixed Address",
-            "example": "N"
+            "example": false
           },
           "startDate": {
             "type": "string",
@@ -23534,32 +25172,38 @@
           "offenderNo": {
             "type": "string",
             "description": "Offender Unique Reference",
-            "example": "G3878UK"
+            "example": "G3878UK",
+            "minLength": 1
           },
           "alertType": {
             "type": "string",
             "description": "Alert Type",
-            "example": "X"
+            "example": "X",
+            "minLength": 1
           },
           "alertTypeDescription": {
             "type": "string",
             "description": "Alert Type Description",
-            "example": "Security"
+            "example": "Security",
+            "minLength": 1
           },
           "alertCode": {
             "type": "string",
             "description": "Alert Code",
-            "example": "XER"
+            "example": "XER",
+            "minLength": 1
           },
           "alertCodeDescription": {
             "type": "string",
             "description": "Alert Code Description",
-            "example": "Escape Risk"
+            "example": "Escape Risk",
+            "minLength": 1
           },
           "comment": {
             "type": "string",
             "description": "Alert comments",
-            "example": "Profession lock pick."
+            "example": "Profession lock pick.",
+            "minLength": 1
           },
           "dateCreated": {
             "type": "string",
@@ -23612,7 +25256,15 @@
             "description": "Last name of the user who last modified the alert",
             "example": "Smith"
           }
-        }
+        },
+        "required": [
+          "alertCode",
+          "alertCodeDescription",
+          "alertType",
+          "alertTypeDescription",
+          "comment",
+          "offenderNo"
+        ]
       },
       "Alias": {
         "type": "object",
@@ -23626,7 +25278,8 @@
           "firstName": {
             "type": "string",
             "description": "First name of offender alias",
-            "example": "Mike"
+            "example": "Mike",
+            "minLength": 1
           },
           "middleName": {
             "type": "string",
@@ -23636,7 +25289,8 @@
           "lastName": {
             "type": "string",
             "description": "Last name of offender alias",
-            "example": "Smith"
+            "example": "Smith",
+            "minLength": 1
           },
           "age": {
             "type": "integer",
@@ -23653,7 +25307,8 @@
           "gender": {
             "type": "string",
             "description": "Gender",
-            "example": "Male"
+            "example": "Male",
+            "minLength": 1
           },
           "ethnicity": {
             "type": "string",
@@ -23684,6 +25339,9 @@
           }
         },
         "required": [
+          "firstName",
+          "gender",
+          "lastName",
           "offenderId"
         ]
       },
@@ -23700,27 +25358,32 @@
           "offenderNo": {
             "type": "string",
             "description": "Offender number (e.g. NOMS Number).",
-            "example": "GV09876N"
+            "example": "GV09876N",
+            "minLength": 1
           },
           "classificationCode": {
             "type": "string",
             "description": "Classification code",
-            "example": "C"
+            "example": "C",
+            "minLength": 1
           },
           "classification": {
             "type": "string",
             "description": "Classification description",
-            "example": "Cat C"
+            "example": "Cat C",
+            "minLength": 1
           },
           "assessmentCode": {
             "type": "string",
             "description": "Identifies the type of assessment",
-            "example": "CATEGORY"
+            "example": "CATEGORY",
+            "minLength": 1
           },
           "assessmentDescription": {
             "type": "string",
             "description": "Assessment description",
-            "example": "Categorisation"
+            "example": "Categorisation",
+            "minLength": 1
           },
           "cellSharingAlertFlag": {
             "type": "boolean",
@@ -23781,7 +25444,14 @@
             "description": "Username who made the assessment",
             "example": "NGK33Y"
           }
-        }
+        },
+        "required": [
+          "assessmentCode",
+          "assessmentDescription",
+          "classification",
+          "classificationCode",
+          "offenderNo"
+        ]
       },
       "AssignedLivingUnit": {
         "type": "object",
@@ -23789,7 +25459,8 @@
         "properties": {
           "agencyId": {
             "type": "string",
-            "description": "Agency Id"
+            "description": "Agency Id",
+            "minLength": 1
           },
           "locationId": {
             "type": "integer",
@@ -23798,18 +25469,30 @@
           },
           "description": {
             "type": "string",
-            "description": "Living Unit Desc"
+            "description": "Living Unit Desc",
+            "minLength": 1
           },
           "agencyName": {
             "type": "string",
-            "description": "Name of the agency where this living unit resides"
+            "description": "Name of the agency where this living unit resides",
+            "minLength": 1
           }
-        }
+        },
+        "required": [
+          "agencyId",
+          "agencyName",
+          "description"
+        ]
       },
       "Email": {
         "type": "object",
         "description": "An Email Address",
         "properties": {
+          "emailAddressId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Email address ID"
+          },
           "email": {
             "type": "string",
             "description": "Email"
@@ -23823,7 +25506,8 @@
           "offenderNo": {
             "type": "string",
             "description": "Offender Unique Reference",
-            "example": "A1234AA"
+            "example": "A1234AA",
+            "minLength": 1
           },
           "bookingId": {
             "type": "integer",
@@ -23847,7 +25531,8 @@
           },
           "firstName": {
             "type": "string",
-            "description": "First Name"
+            "description": "First Name",
+            "minLength": 1
           },
           "middleName": {
             "type": "string",
@@ -23855,7 +25540,8 @@
           },
           "lastName": {
             "type": "string",
-            "description": "Last Name"
+            "description": "Last Name",
+            "minLength": 1
           },
           "dateOfBirth": {
             "type": "string",
@@ -24120,7 +25806,14 @@
             "description": "the current prison id or the last prison before release",
             "example": "MDI"
           }
-        }
+        },
+        "required": [
+          "firstName",
+          "lastName",
+          "offenderId",
+          "offenderNo",
+          "rootOffenderId"
+        ]
       },
       "OffenceHistoryDetail": {
         "type": "object",
@@ -24147,17 +25840,20 @@
           "offenceDescription": {
             "type": "string",
             "description": "Description associated with the offence code",
-            "example": "Commit an act / series of acts with intent to pervert the course of public justice"
+            "example": "Commit an act / series of acts with intent to pervert the course of public justice",
+            "minLength": 1
           },
           "offenceCode": {
             "type": "string",
             "description": "Reference Code",
-            "example": "RR84070"
+            "example": "RR84070",
+            "minLength": 1
           },
           "statuteCode": {
             "type": "string",
             "description": "Statute code",
-            "example": "RR84"
+            "example": "RR84",
+            "minLength": 1
           },
           "mostSerious": {
             "type": "boolean",
@@ -24215,7 +25911,12 @@
             "type": "boolean",
             "description": "Primary sentence - true if it is not a consecutive sentence, false if it is a consecutive sentence, null if no sentence found for the charge. This will not be populated if called from /offenderNo/{offenderNo}/offenceHistory, /offenders/{offenderNo} or /bookings/offenderNo/{offenderNo}"
           }
-        }
+        },
+        "required": [
+          "offenceCode",
+          "offenceDescription",
+          "statuteCode"
+        ]
       },
       "OffenderIdentifier": {
         "type": "object",
@@ -24224,12 +25925,14 @@
           "type": {
             "type": "string",
             "description": "Type of offender identifier",
-            "example": "PNC"
+            "example": "PNC",
+            "minLength": 1
           },
           "value": {
             "type": "string",
             "description": "The value of the offender identifier",
-            "example": "1231/XX/121"
+            "example": "1231/XX/121",
+            "minLength": 1
           },
           "offenderNo": {
             "type": "string",
@@ -24278,8 +25981,18 @@
             "format": "int64",
             "description": "Root Offender ID",
             "example": 654321
+          },
+          "offenderIdSeq": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Identifier sequence",
+            "example": 123456
           }
-        }
+        },
+        "required": [
+          "type",
+          "value"
+        ]
       },
       "OffenderSentenceTerms": {
         "type": "object",
@@ -24437,12 +26150,14 @@
           "sexCode": {
             "type": "string",
             "description": "Gender Code",
-            "example": "M"
+            "example": "M",
+            "minLength": 1
           },
           "gender": {
             "type": "string",
             "description": "Gender",
-            "example": "Male"
+            "example": "Male",
+            "minLength": 1
           },
           "raceCode": {
             "type": "string",
@@ -24489,7 +26204,11 @@
             "description": "Weight in Kilograms",
             "example": 67
           }
-        }
+        },
+        "required": [
+          "gender",
+          "sexCode"
+        ]
       },
       "PhysicalCharacteristic": {
         "type": "object",
@@ -24497,22 +26216,30 @@
         "properties": {
           "type": {
             "type": "string",
-            "description": "Type code of physical characteristic"
+            "description": "Type code of physical characteristic",
+            "minLength": 1
           },
           "characteristic": {
             "type": "string",
-            "description": "Type of physical characteristic"
+            "description": "Type of physical characteristic",
+            "minLength": 1
           },
           "detail": {
             "type": "string",
-            "description": "Detailed information about the physical characteristic"
+            "description": "Detailed information about the physical characteristic",
+            "minLength": 1
           },
           "imageId": {
             "type": "integer",
             "format": "int64",
             "description": "Image Id Ref"
           }
-        }
+        },
+        "required": [
+          "characteristic",
+          "detail",
+          "type"
+        ]
       },
       "PhysicalMark": {
         "type": "object",
@@ -24520,30 +26247,42 @@
         "properties": {
           "type": {
             "type": "string",
-            "description": "Type of Mark"
+            "description": "Type of Mark",
+            "minLength": 1
           },
           "side": {
             "type": "string",
-            "description": "Left or Right Side"
+            "description": "Left or Right Side",
+            "minLength": 1
           },
           "bodyPart": {
             "type": "string",
-            "description": "Where on the body"
+            "description": "Where on the body",
+            "minLength": 1
           },
           "orientation": {
             "type": "string",
-            "description": "Image orientation"
+            "description": "Image orientation",
+            "minLength": 1
           },
           "comment": {
             "type": "string",
-            "description": "More information"
+            "description": "More information",
+            "minLength": 1
           },
           "imageId": {
             "type": "integer",
             "format": "int64",
             "description": "Image Id Ref"
           }
-        }
+        },
+        "required": [
+          "bodyPart",
+          "comment",
+          "orientation",
+          "side",
+          "type"
+        ]
       },
       "ProfileInformation": {
         "type": "object",
@@ -24551,17 +26290,25 @@
         "properties": {
           "type": {
             "type": "string",
-            "description": "Type of profile information"
+            "description": "Type of profile information",
+            "minLength": 1
           },
           "question": {
             "type": "string",
-            "description": "Profile Question"
+            "description": "Profile Question",
+            "minLength": 1
           },
           "resultValue": {
             "type": "string",
-            "description": "Profile Result Answer"
+            "description": "Profile Result Answer",
+            "minLength": 1
           }
-        }
+        },
+        "required": [
+          "question",
+          "resultValue",
+          "type"
+        ]
       },
       "RefCodeAndDescription": {
         "type": "object",
@@ -24907,12 +26654,14 @@
           "number": {
             "type": "string",
             "description": "Telephone number",
-            "example": "0114 2345678"
+            "example": "0114 2345678",
+            "minLength": 1
           },
           "type": {
             "type": "string",
             "description": "Telephone type",
-            "example": "TEL"
+            "example": "TEL",
+            "minLength": 1
           },
           "ext": {
             "type": "string",
@@ -25058,6 +26807,20 @@
           "smokerStatus"
         ]
       },
+      "UpdateSexualOrientation": {
+        "type": "object",
+        "description": "Update to prisoner sexual orientation",
+        "properties": {
+          "sexualOrientation": {
+            "type": "string",
+            "description": "The sexual orientation code",
+            "example": "HET"
+          }
+        },
+        "required": [
+          "sexualOrientation"
+        ]
+      },
       "UpdateReligion": {
         "type": "object",
         "description": "Update to prisoner religion",
@@ -25081,7 +26844,7 @@
           },
           "verified": {
             "type": "boolean",
-            "default": "false",
+            "default": false,
             "description": "Has the religious belief been verified?",
             "example": false
           }
@@ -25214,6 +26977,37 @@
           "movementReasonCode",
           "prisonId",
           "recallTime"
+        ]
+      },
+      "OffenderPhoneNumberCreateRequest": {
+        "type": "object",
+        "description": "Offender Phone Number Create Request",
+        "properties": {
+          "phoneNumberType": {
+            "type": "string",
+            "description": "Type of offender phone number",
+            "example": "BUS",
+            "maxLength": 12,
+            "minLength": 0
+          },
+          "phoneNumber": {
+            "type": "string",
+            "description": "The phone number",
+            "example": "01234 567 890",
+            "maxLength": 40,
+            "minLength": 0
+          },
+          "extension": {
+            "type": "string",
+            "description": "The telephone extension",
+            "example": 123,
+            "maxLength": 7,
+            "minLength": 0
+          }
+        },
+        "required": [
+          "phoneNumber",
+          "phoneNumberType"
         ]
       },
       "UpdateNationality": {
@@ -25354,6 +27148,22 @@
           "bookingId"
         ]
       },
+      "OffenderEmailAddressCreateRequest": {
+        "type": "object",
+        "description": "Offender Email Address Create Request",
+        "properties": {
+          "emailAddress": {
+            "type": "string",
+            "description": "The email address",
+            "example": "foo@bar.example",
+            "maxLength": 240,
+            "minLength": 0
+          }
+        },
+        "required": [
+          "emailAddress"
+        ]
+      },
       "RequestToDischargePrisoner": {
         "type": "object",
         "description": "Request release of prisoner",
@@ -25475,6 +27285,38 @@
           "dateTime"
         ]
       },
+      "CorePersonSecondaryLanguageRequest": {
+        "type": "object",
+        "description": "Secondary language request. Used to add or update secondary language information.",
+        "properties": {
+          "language": {
+            "type": "string",
+            "description": "Language reference code. Uses the `LANG` reference data domain.",
+            "example": "ENG"
+          },
+          "canRead": {
+            "type": "boolean",
+            "description": "Reading proficiency",
+            "example": true
+          },
+          "canWrite": {
+            "type": "boolean",
+            "description": "Writing proficiency",
+            "example": true
+          },
+          "canSpeak": {
+            "type": "boolean",
+            "description": "Speaking proficiency",
+            "example": true
+          }
+        },
+        "required": [
+          "canRead",
+          "canSpeak",
+          "canWrite",
+          "language"
+        ]
+      },
       "CorePersonPhysicalAttributesRequest": {
         "type": "object",
         "description": "Core Person Record Physical Attributes Request. Used to create or update physical attributes.",
@@ -25522,6 +27364,27 @@
           "shoeSize": {
             "type": "string",
             "description": "Shoe size"
+          }
+        }
+      },
+      "CorePersonLanguagePreferencesRequest": {
+        "type": "object",
+        "description": "Language Preferences Request. Used to create or update language preferences.",
+        "properties": {
+          "preferredSpokenLanguageCode": {
+            "type": "string",
+            "description": "Preferred spoken language code. Uses the `LANG` reference data domain.",
+            "example": "ENG"
+          },
+          "preferredWrittenLanguageCode": {
+            "type": "string",
+            "description": "Preferred written language code. Uses the `LANG` reference data domain.",
+            "example": "ENG"
+          },
+          "interpreterRequired": {
+            "type": "boolean",
+            "description": "Is interpreter required",
+            "example": true
           }
         }
       },
@@ -25581,7 +27444,8 @@
           "approvalStatus": {
             "type": "string",
             "description": "Approval status. Must be one of the 'HDC_APPROVE' reference codes",
-            "example": "APPROVED"
+            "example": "APPROVED",
+            "minLength": 1
           },
           "refusedReason": {
             "type": "string",
@@ -25621,7 +27485,8 @@
           },
           "reviewCommitteeCode": {
             "type": "string",
-            "description": "Department, reference code in domain 'ASSESS_COMM'. Normally 'REVIEW'"
+            "description": "Department, reference code in domain 'ASSESS_COMM'. Normally 'REVIEW'",
+            "minLength": 1
           },
           "committeeCommentText": {
             "type": "string",
@@ -25692,7 +27557,8 @@
           },
           "category": {
             "type": "string",
-            "description": "Category code, reference code in domain 'SUP_LVL_TYPE'"
+            "description": "Category code, reference code in domain 'SUP_LVL_TYPE'",
+            "minLength": 1
           },
           "evaluationDate": {
             "type": "string",
@@ -25702,7 +27568,8 @@
           "reviewCommitteeCode": {
             "type": "string",
             "description": "Department, reference code in domain 'ASSESS_COMM'. Normally 'REVIEW'",
-            "example": "REVIEW"
+            "example": "REVIEW",
+            "minLength": 1
           },
           "approvedCategoryComment": {
             "type": "string",
@@ -25800,11 +27667,13 @@
           "code": {
             "type": "string",
             "description": "Reference Code",
-            "example": "RR84070"
+            "example": "RR84070",
+            "minLength": 1
           },
           "description": {
             "type": "string",
-            "description": "Description of offence"
+            "description": "Description of offence",
+            "minLength": 1
           },
           "statuteCode": {
             "$ref": "#/components/schemas/StatuteDto",
@@ -25937,12 +27806,14 @@
           "offenderNo": {
             "type": "string",
             "description": "Offender number (e.g. NOMS Number).",
-            "example": "A1234AA"
+            "example": "A1234AA",
+            "minLength": 1
           },
           "firstName": {
             "type": "string",
             "description": "Offender first name.",
-            "example": "JOHN"
+            "example": "JOHN",
+            "minLength": 1
           },
           "middleName": {
             "type": "string",
@@ -25952,7 +27823,8 @@
           "lastName": {
             "type": "string",
             "description": "Offender last name.",
-            "example": "SMITH"
+            "example": "SMITH",
+            "minLength": 1
           },
           "dateOfBirth": {
             "type": "string",
@@ -25969,7 +27841,8 @@
           "agencyId": {
             "type": "string",
             "description": "Identifier of agency that offender is associated with.",
-            "example": "MDI"
+            "example": "MDI",
+            "minLength": 1
           },
           "assignedLivingUnitId": {
             "type": "integer",
@@ -26254,9 +28127,17 @@
             "minLength": 0,
             "pattern": "^[A-Z|a-z ,.'-]+$"
           },
-          "middleName": {
+          "middleName1": {
             "type": "string",
-            "description": "Prisoner's middle name.",
+            "description": "Prisoner's first middle name.",
+            "example": "Middleone",
+            "maxLength": 35,
+            "minLength": 0,
+            "pattern": "^[A-Z|a-z ,.'-]+$"
+          },
+          "middleName2": {
+            "type": "string",
+            "description": "Prisoner's second middle name.",
             "example": "Middleone",
             "maxLength": 35,
             "minLength": 0,
@@ -26286,7 +28167,8 @@
               "NS",
               "REF"
             ],
-            "example": "F"
+            "example": "F",
+            "minLength": 1
           },
           "title": {
             "type": "string",
@@ -26359,9 +28241,14 @@
             "description": "First name",
             "example": "John"
           },
-          "middleName": {
+          "middleName1": {
             "type": "string",
-            "description": "Middle name",
+            "description": "Middle name 1",
+            "example": "Middleone"
+          },
+          "middleName2": {
+            "type": "string",
+            "description": "Middle name 2",
             "example": "Middleone"
           },
           "lastName": {
@@ -26426,6 +28313,29 @@
           "description"
         ]
       },
+      "OffenderIdentifierUpdateRequest": {
+        "type": "object",
+        "description": "Offender Identifier Update Request",
+        "properties": {
+          "identifier": {
+            "type": "string",
+            "description": "The value of the offender identifier",
+            "example": "1231/XX/121",
+            "maxLength": 20,
+            "minLength": 0
+          },
+          "issuedAuthorityText": {
+            "type": "string",
+            "description": "Issuing Authority Information",
+            "example": "Important info",
+            "maxLength": 240,
+            "minLength": 0
+          }
+        },
+        "required": [
+          "identifier"
+        ]
+      },
       "RequestToUpdateAgency": {
         "type": "object",
         "description": "Update Agency Request",
@@ -26433,7 +28343,8 @@
           "description": {
             "type": "string",
             "description": "Agency description.",
-            "example": "Moorland (HMP & YOI)"
+            "example": "Moorland (HMP & YOI)",
+            "minLength": 1
           },
           "longDescription": {
             "type": "string",
@@ -26467,6 +28378,7 @@
               "PSY"
             ],
             "example": "INST",
+            "minLength": 1,
             "pattern": "^[a-zA-Z0-9]+$"
           },
           "active": {
@@ -26506,7 +28418,8 @@
           "addressType": {
             "type": "string",
             "description": "Address Type. Note: Reference domain is ADDR_TYPE",
-            "example": "BUS"
+            "example": "BUS",
+            "minLength": 1
           },
           "flat": {
             "type": "string",
@@ -26516,7 +28429,8 @@
           "premise": {
             "type": "string",
             "description": "Premise",
-            "example": "Liverpool Prison"
+            "example": "Liverpool Prison",
+            "minLength": 1
           },
           "street": {
             "type": "string",
@@ -26556,12 +28470,12 @@
           "primary": {
             "type": "boolean",
             "description": "Primary Address",
-            "example": "Y"
+            "example": true
           },
           "noFixedAddress": {
             "type": "boolean",
             "description": "No Fixed Address",
-            "example": "N"
+            "example": false
           },
           "startDate": {
             "type": "string",
@@ -26589,11 +28503,13 @@
         "properties": {
           "number": {
             "type": "string",
-            "description": "Telephone number"
+            "description": "Telephone number",
+            "minLength": 1
           },
           "type": {
             "type": "string",
-            "description": "Telephone type"
+            "description": "Telephone type",
+            "minLength": 1
           },
           "ext": {
             "type": "string",
@@ -26613,7 +28529,15 @@
             "type": "string",
             "description": "Valid transaction type for the prison_id",
             "enum": [
-              "CANT,REFND,PHONE,MRPR,MTDS,DTDS,CASHD,RELA,RELS"
+              "CANT",
+              "REFND",
+              "PHONE",
+              "MRPR",
+              "MTDS",
+              "DTDS",
+              "CASHD",
+              "RELA",
+              "RELS"
             ],
             "example": "CANT"
           },
@@ -26761,17 +28685,20 @@
           "username": {
             "type": "string",
             "description": "Username",
-            "example": "DEMO_USER1"
+            "example": "DEMO_USER1",
+            "minLength": 1
           },
           "firstName": {
             "type": "string",
             "description": "First Name",
-            "example": "John"
+            "example": "John",
+            "minLength": 1
           },
           "lastName": {
             "type": "string",
             "description": "Last Name",
-            "example": "Smith"
+            "example": "Smith",
+            "minLength": 1
           },
           "thumbnailId": {
             "type": "integer",
@@ -26842,16 +28769,82 @@
           "username"
         ]
       },
+      "StaffDetail": {
+        "type": "object",
+        "description": "Staff Details",
+        "properties": {
+          "staffId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Unique identifier for staff member.",
+            "example": 423142
+          },
+          "firstName": {
+            "type": "string",
+            "description": "Staff member's first name.",
+            "example": "JOHN",
+            "minLength": 1
+          },
+          "lastName": {
+            "type": "string",
+            "description": "Staff member's last name.",
+            "example": "SMITH",
+            "minLength": 1
+          },
+          "status": {
+            "type": "string",
+            "description": "Status of staff member.",
+            "enum": [
+              "ACTIVE",
+              "INACTIVE"
+            ],
+            "example": "ACTIVE",
+            "minLength": 1
+          },
+          "thumbnailId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Identifier for staff member image.",
+            "example": 231232
+          },
+          "gender": {
+            "type": "string",
+            "description": "Gender of Staff Member",
+            "enum": [
+              "M",
+              "F",
+              "NK",
+              "NS",
+              "REF"
+            ],
+            "example": "M"
+          },
+          "dateOfBirth": {
+            "type": "string",
+            "format": "date",
+            "description": "Date of Birth of Staff Member",
+            "example": "1970-01-02"
+          }
+        },
+        "required": [
+          "firstName",
+          "lastName",
+          "staffId",
+          "status"
+        ]
+      },
       "UpdatePrisonerDetails": {
         "type": "object",
         "properties": {
           "firstName": {
             "type": "string",
-            "example": "John"
+            "example": "John",
+            "minLength": 1
           },
           "lastName": {
             "type": "string",
-            "example": "Smith"
+            "example": "Smith",
+            "minLength": 1
           }
         },
         "required": [
@@ -26866,12 +28859,14 @@
           "prisonId": {
             "type": "string",
             "description": "ID of prison",
-            "example": "MDI"
+            "example": "MDI",
+            "minLength": 1
           },
           "prison": {
             "type": "string",
             "description": "Name of prison",
-            "example": "Moorland (HMP)"
+            "example": "Moorland (HMP)",
+            "minLength": 1
           }
         },
         "required": [
@@ -26885,7 +28880,8 @@
         "properties": {
           "offenderNo": {
             "type": "string",
-            "description": "Offender number (e.g. NOMS Number)"
+            "description": "Offender number (e.g. NOMS Number)",
+            "minLength": 1
           },
           "eventId": {
             "type": "integer",
@@ -26904,27 +28900,33 @@
           },
           "firstName": {
             "type": "string",
-            "description": "Offender first name"
+            "description": "Offender first name",
+            "minLength": 1
           },
           "lastName": {
             "type": "string",
-            "description": "Offender last name"
+            "description": "Offender last name",
+            "minLength": 1
           },
           "cellLocation": {
             "type": "string",
-            "description": "Offender cell"
+            "description": "Offender cell",
+            "minLength": 1
           },
           "event": {
             "type": "string",
-            "description": "Event code"
+            "description": "Event code",
+            "minLength": 1
           },
           "eventType": {
             "type": "string",
-            "description": "Event type, e.g. VISIT, APP, PRISON_ACT"
+            "description": "Event type, e.g. VISIT, APP, PRISON_ACT",
+            "minLength": 1
           },
           "eventDescription": {
             "type": "string",
-            "description": "Description of event code"
+            "description": "Description of event code",
+            "minLength": 1
           },
           "eventLocation": {
             "type": "string",
@@ -26937,7 +28939,8 @@
           },
           "eventStatus": {
             "type": "string",
-            "description": "The event's status. Includes 'CANC', meaning cancelled for 'VISIT'"
+            "description": "The event's status. Includes 'CANC', meaning cancelled for 'VISIT'",
+            "minLength": 1
           },
           "comment": {
             "type": "string",
@@ -27153,7 +29156,8 @@
           "offenderNo": {
             "type": "string",
             "description": "The prisoner's unique offender number (aka NOMS Number in the UK).",
-            "example": "A0000AA"
+            "example": "A0000AA",
+            "minLength": 1
           },
           "title": {
             "type": "string",
@@ -27168,7 +29172,8 @@
           "firstName": {
             "type": "string",
             "description": "The prisoner's first name.",
-            "example": "Thorfinn"
+            "example": "Thorfinn",
+            "minLength": 1
           },
           "middleNames": {
             "type": "string",
@@ -27178,7 +29183,8 @@
           "lastName": {
             "type": "string",
             "description": "The prisoner's last name.",
-            "example": "Torf-Einarsson"
+            "example": "Torf-Einarsson",
+            "minLength": 1
           },
           "dateOfBirth": {
             "type": "string",
@@ -27189,12 +29195,14 @@
           "gender": {
             "type": "string",
             "description": "The prisoner's gender.",
-            "example": "Female"
+            "example": "Female",
+            "minLength": 1
           },
           "sexCode": {
             "type": "string",
             "description": "The prisoner's gender code.",
-            "example": "F"
+            "example": "F",
+            "minLength": 1
           },
           "nationalities": {
             "type": "string",
@@ -27204,7 +29212,8 @@
           "currentlyInPrison": {
             "type": "string",
             "description": "Flag (Y or N) to indicate if prisoner is currently in prison.",
-            "example": "N"
+            "example": "N",
+            "minLength": 1
           },
           "latestBookingId": {
             "type": "integer",
@@ -27312,12 +29321,14 @@
           "currentWorkingFirstName": {
             "type": "string",
             "description": "The prisoner's current working first name.",
-            "example": "Thorfinn"
+            "example": "Thorfinn",
+            "minLength": 1
           },
           "currentWorkingLastName": {
             "type": "string",
             "description": "The prisoner's current working last name.",
-            "example": "Torf-Einarsson"
+            "example": "Torf-Einarsson",
+            "minLength": 1
           },
           "currentWorkingBirthDate": {
             "type": "string",
@@ -27541,6 +29552,37 @@
           "lastName"
         ]
       },
+      "OffenderIdentifierCreateRequest": {
+        "type": "object",
+        "description": "Offender Identifier Create Request",
+        "properties": {
+          "identifierType": {
+            "type": "string",
+            "description": "Type of offender identifier",
+            "example": "PNC",
+            "maxLength": 12,
+            "minLength": 0
+          },
+          "identifier": {
+            "type": "string",
+            "description": "The value of the offender identifier",
+            "example": "1231/XX/121",
+            "maxLength": 20,
+            "minLength": 0
+          },
+          "issuedAuthorityText": {
+            "type": "string",
+            "description": "Issuing Authority Information",
+            "example": "Important info",
+            "maxLength": 240,
+            "minLength": 0
+          }
+        },
+        "required": [
+          "identifier",
+          "identifierType"
+        ]
+      },
       "CreateAlias": {
         "type": "object",
         "description": "Create a prisoner alias",
@@ -27553,10 +29595,18 @@
             "minLength": 0,
             "pattern": "^[A-Z|a-z ,.'-]+$"
           },
-          "middleName": {
+          "middleName1": {
             "type": "string",
-            "description": "Prisoner's middle name.",
+            "description": "Prisoner's first middle name.",
             "example": "Middleone",
+            "maxLength": 35,
+            "minLength": 0,
+            "pattern": "^[A-Z|a-z ,.'-]+$"
+          },
+          "middleName2": {
+            "type": "string",
+            "description": "Prisoner's second middle name.",
+            "example": "Middletwo",
             "maxLength": 35,
             "minLength": 0,
             "pattern": "^[A-Z|a-z ,.'-]+$"
@@ -27585,7 +29635,8 @@
               "NS",
               "REF"
             ],
-            "example": "F"
+            "example": "F",
+            "minLength": 1
           },
           "title": {
             "type": "string",
@@ -27707,22 +29758,26 @@
           "offenderNo": {
             "type": "string",
             "description": "Offender Unique Reference",
-            "example": "A1000AA"
+            "example": "A1000AA",
+            "minLength": 1
           },
           "firstName": {
             "type": "string",
             "description": "First Name",
-            "example": "John"
+            "example": "John",
+            "minLength": 1
           },
           "lastName": {
             "type": "string",
             "description": "Last Name",
-            "example": "Smith"
+            "example": "Smith",
+            "minLength": 1
           },
           "agencyLocationId": {
             "type": "string",
             "description": "Agency Id",
-            "example": "LEI"
+            "example": "LEI",
+            "minLength": 1
           },
           "mostRecentActiveBooking": {
             "type": "boolean",
@@ -27740,11 +29795,13 @@
           },
           "agencyLocationDesc": {
             "type": "string",
-            "description": "Agency Description"
+            "description": "Agency Description",
+            "minLength": 1
           },
           "internalLocationDesc": {
             "type": "string",
-            "description": "Description of the location within the prison"
+            "description": "Description of the location within the prison",
+            "minLength": 1
           },
           "facialImageId": {
             "type": "integer",
@@ -28126,7 +30183,8 @@
           "offenceCode": {
             "type": "string",
             "description": "Offence code",
-            "example": "COML025"
+            "example": "COML025",
+            "minLength": 1
           },
           "schedule": {
             "type": "string",
@@ -28215,7 +30273,8 @@
         "properties": {
           "offenderNo": {
             "type": "string",
-            "description": "Display Prisoner Number (UK is NOMS ID)"
+            "description": "Display Prisoner Number (UK is NOMS ID)",
+            "minLength": 1
           },
           "bookingId": {
             "type": "integer",
@@ -28226,29 +30285,35 @@
             "format": "date"
           },
           "firstName": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1
           },
           "middleName": {
             "type": "string"
           },
           "lastName": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1
           },
           "fromAgency": {
             "type": "string",
-            "description": "Agency travelling from"
+            "description": "Agency travelling from",
+            "minLength": 1
           },
           "fromAgencyDescription": {
             "type": "string",
-            "description": "Description for Agency travelling from"
+            "description": "Description for Agency travelling from",
+            "minLength": 1
           },
           "toAgency": {
             "type": "string",
-            "description": "Agency travelling to"
+            "description": "Agency travelling to",
+            "minLength": 1
           },
           "toAgencyDescription": {
             "type": "string",
-            "description": "Description for Agency travelling to"
+            "description": "Description for Agency travelling to",
+            "minLength": 1
           },
           "movementType": {
             "type": "string",
@@ -28260,27 +30325,31 @@
               "TAP",
               "TRN"
             ],
-            "example": "ADM"
+            "example": "ADM",
+            "minLength": 1
           },
           "movementTypeDescription": {
             "type": "string",
-            "description": "Description of the movement type"
+            "description": "Description of the movement type",
+            "minLength": 1
           },
           "movementReason": {
             "type": "string",
-            "description": "Reason code for the movement"
+            "description": "Reason code for the movement",
+            "minLength": 1
           },
           "movementReasonDescription": {
             "type": "string",
-            "description": "Description of the movement reason"
+            "description": "Description of the movement reason",
+            "minLength": 1
           },
           "directionCode": {
             "type": "string",
-            "description": "IN or OUT"
+            "description": "IN or OUT",
+            "minLength": 1
           },
           "movementTime": {
             "type": "string",
-            "format": "partial-time",
             "description": "Movement time"
           },
           "movementDate": {
@@ -28318,7 +30387,8 @@
         "properties": {
           "offenderNo": {
             "type": "string",
-            "description": "Display Prisoner Number (UK is NOMS ID)"
+            "description": "Display Prisoner Number (UK is NOMS ID)",
+            "minLength": 1
           },
           "createDateTime": {
             "type": "string",
@@ -28363,7 +30433,8 @@
               "TAP",
               "TRN"
             ],
-            "example": "ADM"
+            "example": "ADM",
+            "minLength": 1
           },
           "movementTypeDescription": {
             "type": "string",
@@ -28371,7 +30442,8 @@
           },
           "directionCode": {
             "type": "string",
-            "description": "IN or OUT"
+            "description": "IN or OUT",
+            "minLength": 1
           },
           "movementDate": {
             "type": "string",
@@ -28380,7 +30452,6 @@
           },
           "movementTime": {
             "type": "string",
-            "format": "partial-time",
             "description": "Movement time"
           },
           "movementReason": {
@@ -28408,6 +30479,26 @@
           "offenderNo"
         ]
       },
+      "OffenderLatestArrivalDate": {
+        "type": "object",
+        "properties": {
+          "offenderNo": {
+            "type": "string",
+            "description": "The offender of the offender",
+            "example": "A1234AA"
+          },
+          "latestArrivalDate": {
+            "type": "string",
+            "format": "date",
+            "description": "The latest arrival date for the offender",
+            "example": "2020-12-09"
+          }
+        },
+        "required": [
+          "latestArrivalDate",
+          "offenderNo"
+        ]
+      },
       "KeyWorkerAllocationDetail": {
         "type": "object",
         "description": "Key worker allocation details",
@@ -28419,11 +30510,13 @@
           },
           "offenderNo": {
             "type": "string",
-            "description": "Offender Unique Reference"
+            "description": "Offender Unique Reference",
+            "minLength": 1
           },
           "firstName": {
             "type": "string",
-            "description": "First Name"
+            "description": "First Name",
+            "minLength": 1
           },
           "middleNames": {
             "type": "string",
@@ -28431,7 +30524,8 @@
           },
           "lastName": {
             "type": "string",
-            "description": "Last Name"
+            "description": "Last Name",
+            "minLength": 1
           },
           "staffId": {
             "type": "integer",
@@ -28440,7 +30534,8 @@
           },
           "agencyId": {
             "type": "string",
-            "description": "Agency Id"
+            "description": "Agency Id",
+            "minLength": 1
           },
           "assigned": {
             "type": "string",
@@ -28453,7 +30548,8 @@
           },
           "internalLocationDesc": {
             "type": "string",
-            "description": "Description of the location within the prison"
+            "description": "Description of the location within the prison",
+            "minLength": 1
           }
         },
         "required": [
@@ -28473,7 +30569,8 @@
         "properties": {
           "offenderNo": {
             "type": "string",
-            "description": "Offender Unique Reference"
+            "description": "Offender Unique Reference",
+            "minLength": 1
           },
           "staffId": {
             "type": "integer",
@@ -28482,7 +30579,8 @@
           },
           "agencyId": {
             "type": "string",
-            "description": "Agency Id"
+            "description": "Agency Id",
+            "minLength": 1
           },
           "assigned": {
             "type": "string",
@@ -28504,11 +30602,13 @@
           },
           "userId": {
             "type": "string",
-            "description": "Username of user who processed allocation"
+            "description": "Username of user who processed allocation",
+            "minLength": 1
           },
           "active": {
             "type": "string",
-            "description": "Y"
+            "description": "Y",
+            "minLength": 1
           },
           "created": {
             "type": "string",
@@ -28521,7 +30621,8 @@
           },
           "createdBy": {
             "type": "string",
-            "description": "Username of user who created allocation record"
+            "description": "Username of user who created allocation record",
+            "minLength": 1
           },
           "modified": {
             "type": "string",
@@ -28589,7 +30690,8 @@
               "SCAR",
               "OTH"
             ],
-            "example": "FACE"
+            "example": "FACE",
+            "minLength": 1
           },
           "imageOrientation": {
             "type": "string",
@@ -28619,7 +30721,8 @@
               "LIP",
               "NOSE"
             ],
-            "example": "FRONT"
+            "example": "FRONT",
+            "minLength": 1
           },
           "imageType": {
             "type": "string",
@@ -28629,7 +30732,8 @@
               "OFF_BKG",
               "OIC"
             ],
-            "example": "OFF_BKG"
+            "example": "OFF_BKG",
+            "minLength": 1
           },
           "objectId": {
             "type": "integer",
@@ -28848,17 +30952,20 @@
           "offenderNo": {
             "type": "string",
             "description": "Offender No",
-            "example": "ZWE12A"
+            "example": "ZWE12A",
+            "minLength": 1
           },
           "caseNoteType": {
             "type": "string",
             "description": "Case Note Type",
-            "example": "KA"
+            "example": "KA",
+            "minLength": 1
           },
           "caseNoteSubType": {
             "type": "string",
             "description": "Case Note Sub Type",
-            "example": "KS"
+            "example": "KS",
+            "minLength": 1
           },
           "numCaseNotes": {
             "type": "integer",
@@ -29014,12 +31121,14 @@
           "caseNoteType": {
             "type": "string",
             "description": "Case Note Type",
-            "example": "KA"
+            "example": "KA",
+            "minLength": 1
           },
           "caseNoteSubType": {
             "type": "string",
             "description": "Case Note Sub Type",
-            "example": "KS"
+            "example": "KS",
+            "minLength": 1
           },
           "numCaseNotes": {
             "type": "integer",
@@ -29256,7 +31365,8 @@
           },
           "eventClass": {
             "type": "string",
-            "description": "Class of event"
+            "description": "Class of event",
+            "minLength": 1
           },
           "eventId": {
             "type": "integer",
@@ -29265,23 +31375,28 @@
           },
           "eventStatus": {
             "type": "string",
-            "description": "Status of event"
+            "description": "Status of event",
+            "minLength": 1
           },
           "eventType": {
             "type": "string",
-            "description": "Type of scheduled event (as a code)"
+            "description": "Type of scheduled event (as a code)",
+            "minLength": 1
           },
           "eventTypeDesc": {
             "type": "string",
-            "description": "Description of scheduled event type"
+            "description": "Description of scheduled event type",
+            "minLength": 1
           },
           "eventSubType": {
             "type": "string",
-            "description": "Sub type (or reason) of scheduled event (as a code)"
+            "description": "Sub type (or reason) of scheduled event (as a code)",
+            "minLength": 1
           },
           "eventSubTypeDesc": {
             "type": "string",
-            "description": "Description of scheduled event sub type"
+            "description": "Description of scheduled event sub type",
+            "minLength": 1
           },
           "eventDate": {
             "type": "string",
@@ -29322,7 +31437,8 @@
           },
           "eventSource": {
             "type": "string",
-            "description": "Code identifying underlying source of event data"
+            "description": "Code identifying underlying source of event data",
+            "minLength": 1
           },
           "eventSourceCode": {
             "type": "string",
@@ -29385,16 +31501,19 @@
           },
           "bookingNo": {
             "type": "string",
-            "description": "Booking Number"
+            "description": "Booking Number",
+            "minLength": 1
           },
           "offenderNo": {
             "type": "string",
             "description": "Offender Unique Reference",
-            "example": "A1234AA"
+            "example": "A1234AA",
+            "minLength": 1
           },
           "firstName": {
             "type": "string",
-            "description": "First Name"
+            "description": "First Name",
+            "minLength": 1
           },
           "middleName": {
             "type": "string",
@@ -29402,11 +31521,13 @@
           },
           "lastName": {
             "type": "string",
-            "description": "Last Name"
+            "description": "Last Name",
+            "minLength": 1
           },
           "agencyId": {
             "type": "string",
-            "description": "Identifier of agency to which the prisoner is associated."
+            "description": "Identifier of agency to which the prisoner is associated.",
+            "minLength": 1
           },
           "assignedLivingUnitId": {
             "type": "integer",
@@ -29482,17 +31603,20 @@
           },
           "offenceDescription": {
             "type": "string",
-            "description": "Description of offence"
+            "description": "Description of offence",
+            "minLength": 1
           },
           "offenceCode": {
             "type": "string",
             "description": "Reference Code",
-            "example": "RR84070"
+            "example": "RR84070",
+            "minLength": 1
           },
           "statuteCode": {
             "type": "string",
             "description": "Statute code",
-            "example": "RR84"
+            "example": "RR84",
+            "minLength": 1
           }
         },
         "required": [
@@ -29728,12 +31852,14 @@
             "type": "string",
             "description": "Agency identifier.",
             "example": "MDI",
+            "minLength": 1,
             "pattern": "^[a-zA-Z0-9]+$"
           },
           "description": {
             "type": "string",
             "description": "Agency description.",
-            "example": "Moorland (HMP & YOI)"
+            "example": "Moorland (HMP & YOI)",
+            "minLength": 1
           },
           "longDescription": {
             "type": "string",
@@ -29767,6 +31893,7 @@
               "PSY"
             ],
             "example": "INST",
+            "minLength": 1,
             "pattern": "^[a-zA-Z0-9]+$"
           },
           "courtType": {
@@ -30349,11 +32476,13 @@
           },
           "locationType": {
             "type": "string",
-            "description": "Location type."
+            "description": "Location type.",
+            "minLength": 1
           },
           "description": {
             "type": "string",
-            "description": "Location description."
+            "description": "Location description.",
+            "minLength": 1
           },
           "locationUsage": {
             "type": "string",
@@ -30361,7 +32490,8 @@
           },
           "agencyId": {
             "type": "string",
-            "description": "Identifier of Agency this location is associated with."
+            "description": "Identifier of Agency this location is associated with.",
+            "minLength": 1
           },
           "parentLocationId": {
             "type": "integer",
@@ -30710,11 +32840,13 @@
           },
           "roleCode": {
             "type": "string",
-            "description": "code for this role"
+            "description": "code for this role",
+            "minLength": 1
           },
           "roleName": {
             "type": "string",
-            "description": "Full text description of the role type"
+            "description": "Full text description of the role type",
+            "minLength": 1
           },
           "parentRoleCode": {
             "type": "string",
@@ -30731,65 +32863,63 @@
           "roleName"
         ]
       },
-      "StaffDetail": {
+      "PrisonerTransaction": {
         "type": "object",
-        "description": "Staff Details",
         "properties": {
-          "staffId": {
+          "id": {
+            "type": "string",
+            "description": "Transaction ID",
+            "example": "204564839-3"
+          },
+          "type": {
+            "$ref": "#/components/schemas/CodeDescription",
+            "description": "The type of transaction"
+          },
+          "description": {
+            "type": "string",
+            "description": "Transaction description",
+            "example": "Transfer In Regular from caseload PVR"
+          },
+          "amount": {
             "type": "integer",
             "format": "int64",
-            "description": "Unique identifier for staff member.",
-            "example": 423142
+            "description": "Amount in pence",
+            "example": 12345
           },
-          "firstName": {
-            "type": "string",
-            "description": "Staff member's first name.",
-            "example": "JOHN"
-          },
-          "lastName": {
-            "type": "string",
-            "description": "Staff member's last name.",
-            "example": "SMITH"
-          },
-          "status": {
-            "type": "string",
-            "description": "Status of staff member.",
-            "enum": [
-              "ACTIVE",
-              "INACTIVE"
-            ],
-            "example": "ACTIVE"
-          },
-          "thumbnailId": {
-            "type": "integer",
-            "format": "int64",
-            "description": "Identifier for staff member image.",
-            "example": 231232
-          },
-          "gender": {
-            "type": "string",
-            "description": "Gender of Staff Member",
-            "enum": [
-              "M",
-              "F",
-              "NK",
-              "NS",
-              "REF"
-            ],
-            "example": "M"
-          },
-          "dateOfBirth": {
+          "date": {
             "type": "string",
             "format": "date",
-            "description": "Date of Birth of Staff Member",
-            "example": "1970-01-02"
+            "description": "Date of the transaction",
+            "example": "2016-10-21"
+          },
+          "clientUniqueRef": {
+            "type": "string",
+            "description": "A reference unique to the client making the post. Maximum size 64 characters, only alphabetic, numeric, '-' and '_' are allowed",
+            "example": "CLIENT121131-0_11"
           }
         },
         "required": [
-          "firstName",
-          "lastName",
-          "staffId",
-          "status"
+          "amount",
+          "date",
+          "description",
+          "id",
+          "type"
+        ]
+      },
+      "PrisonerTransactions": {
+        "type": "object",
+        "description": "Account Transactions",
+        "properties": {
+          "transactions": {
+            "type": "array",
+            "description": "List of account transactions",
+            "items": {
+              "$ref": "#/components/schemas/PrisonerTransaction"
+            }
+          }
+        },
+        "required": [
+          "transactions"
         ]
       },
       "StaffRole": {
@@ -30798,7 +32928,8 @@
         "properties": {
           "role": {
             "type": "string",
-            "description": "A code that defines staff member's role at agency."
+            "description": "A code that defines staff member's role at agency.",
+            "minLength": 1
           },
           "roleDescription": {
             "type": "string",
@@ -30822,12 +32953,14 @@
           "firstName": {
             "type": "string",
             "description": "Staff member's first name.",
-            "example": "JOHN"
+            "example": "JOHN",
+            "minLength": 1
           },
           "lastName": {
             "type": "string",
             "description": "Staff member's last name.",
-            "example": "SMITH"
+            "example": "SMITH",
+            "minLength": 1
           },
           "status": {
             "type": "string",
@@ -30836,7 +32969,8 @@
               "ACTIVE",
               "INACTIVE"
             ],
-            "example": "ACTIVE"
+            "example": "ACTIVE",
+            "minLength": 1
           },
           "thumbnailId": {
             "type": "integer",
@@ -30865,7 +32999,8 @@
           "agencyId": {
             "type": "string",
             "description": "Agency at which staff member is performing role.",
-            "example": "LEI"
+            "example": "LEI",
+            "minLength": 1
           },
           "agencyDescription": {
             "type": "string",
@@ -30887,7 +33022,8 @@
           "position": {
             "type": "string",
             "description": "A code that defines staff member's position at agency.",
-            "example": "PRO"
+            "example": "PRO",
+            "minLength": 1
           },
           "positionDescription": {
             "type": "string",
@@ -30897,7 +33033,8 @@
           "role": {
             "type": "string",
             "description": "A code that defines staff member's role at agency.",
-            "example": "KW"
+            "example": "KW",
+            "minLength": 1
           },
           "roleDescription": {
             "type": "string",
@@ -30937,27 +33074,33 @@
         "properties": {
           "offenderNo": {
             "type": "string",
-            "description": "Offender number (e.g. NOMS Number)"
+            "description": "Offender number (e.g. NOMS Number)",
+            "minLength": 1
           },
           "firstName": {
             "type": "string",
-            "description": "Offender first name"
+            "description": "Offender first name",
+            "minLength": 1
           },
           "lastName": {
             "type": "string",
-            "description": "Offender last name"
+            "description": "Offender last name",
+            "minLength": 1
           },
           "event": {
             "type": "string",
-            "description": "Event code"
+            "description": "Event code",
+            "minLength": 1
           },
           "eventType": {
             "type": "string",
-            "description": "Event type, e.g. VISIT, APP, PRISON_ACT"
+            "description": "Event type, e.g. VISIT, APP, PRISON_ACT",
+            "minLength": 1
           },
           "eventDescription": {
             "type": "string",
-            "description": "Description of event code"
+            "description": "Description of event code",
+            "minLength": 1
           },
           "eventLocation": {
             "type": "string",
@@ -30965,7 +33108,8 @@
           },
           "eventStatus": {
             "type": "string",
-            "description": "The event's status. Includes 'CANC', meaning cancelled for 'VISIT'"
+            "description": "The event's status. Includes 'CANC', meaning cancelled for 'VISIT'",
+            "minLength": 1
           },
           "comment": {
             "type": "string",
@@ -31073,6 +33217,10 @@
           "agencyId": {
             "type": "string",
             "description": "Agency the appointment belongs to"
+          },
+          "eventStatus": {
+            "type": "string",
+            "description": "The event status for this appointment, one of SCH (scheduled), COMP (completed), EXP (expired) or CANC (cancelled)"
           }
         }
       },
@@ -31082,23 +33230,28 @@
         "properties": {
           "domain": {
             "type": "string",
-            "description": "Reference domain name"
+            "description": "Reference domain name",
+            "minLength": 1
           },
           "description": {
             "type": "string",
-            "description": "Reference domain description."
+            "description": "Reference domain description.",
+            "minLength": 1
           },
           "domainStatus": {
             "type": "string",
-            "description": "Reference domain status."
+            "description": "Reference domain status.",
+            "minLength": 1
           },
           "ownerCode": {
             "type": "string",
-            "description": "Reference domain owner."
+            "description": "Reference domain owner.",
+            "minLength": 1
           },
           "applnCode": {
             "type": "string",
-            "description": "Application that uses reference domain."
+            "description": "Application that uses reference domain.",
+            "minLength": 1
           },
           "parentDomain": {
             "type": "string",
@@ -31263,12 +33416,6 @@
             "type": "integer",
             "format": "int32"
           },
-          "first": {
-            "type": "boolean"
-          },
-          "last": {
-            "type": "boolean"
-          },
           "size": {
             "type": "integer",
             "format": "int32"
@@ -31286,12 +33433,18 @@
           "sort": {
             "$ref": "#/components/schemas/SortObject"
           },
-          "pageable": {
-            "$ref": "#/components/schemas/PageableObject"
+          "first": {
+            "type": "boolean"
+          },
+          "last": {
+            "type": "boolean"
           },
           "numberOfElements": {
             "type": "integer",
             "format": "int32"
+          },
+          "pageable": {
+            "$ref": "#/components/schemas/PageableObject"
           },
           "empty": {
             "type": "boolean"
@@ -31308,14 +33461,14 @@
           "sort": {
             "$ref": "#/components/schemas/SortObject"
           },
+          "pageSize": {
+            "type": "integer",
+            "format": "int32"
+          },
           "paged": {
             "type": "boolean"
           },
           "pageNumber": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "pageSize": {
             "type": "integer",
             "format": "int32"
           },
@@ -31337,6 +33490,74 @@
             "type": "boolean"
           }
         }
+      },
+      "OffenderLanguageDto": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "description": "A LOV from domain LANG_TYPE",
+            "enum": [
+              "PRIM",
+              "SEC",
+              "PREF_SPEAK",
+              "PREF_WRITE"
+            ]
+          },
+          "code": {
+            "type": "string",
+            "description": "The actual language code, from domain LANG",
+            "example": "ENG"
+          },
+          "readSkill": {
+            "type": "string",
+            "description": "The level of reading skill, from domain LANG_SKILLS:\n    |Y  Yes\n    |A\tAverage\n    |D\tDyslexia\n    |G\tGood\n    |N\tNil\n    |P\tPoor\n    |R\tRefused",
+            "enum": [
+              "Y",
+              "N",
+              "A",
+              "D",
+              "G",
+              "P",
+              "R"
+            ]
+          },
+          "writeSkill": {
+            "type": "string",
+            "description": "The level of writing skill, see description for readSkill",
+            "enum": [
+              "Y",
+              "N",
+              "A",
+              "D",
+              "G",
+              "P",
+              "R"
+            ]
+          },
+          "speakSkill": {
+            "type": "string",
+            "description": "The level of speaking skill, see description for readSkill",
+            "enum": [
+              "Y",
+              "N",
+              "A",
+              "D",
+              "G",
+              "P",
+              "R"
+            ]
+          },
+          "interpreterRequested": {
+            "type": "boolean",
+            "description": "Whether interpreter requested"
+          }
+        },
+        "required": [
+          "code",
+          "interpreterRequested",
+          "type"
+        ]
       },
       "PrisonerSearchDetails": {
         "type": "object",
@@ -31389,13 +33610,6 @@
             "type": "string",
             "description": "Prison ID",
             "example": "MDI"
-          },
-          "alerts": {
-            "type": "array",
-            "description": "List of alert details for the active booking",
-            "items": {
-              "$ref": "#/components/schemas/Alert"
-            }
           },
           "assignedLivingUnit": {
             "$ref": "#/components/schemas/AssignedLivingUnit",
@@ -31500,6 +33714,15 @@
             ],
             "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}$"
           },
+          "lastAdmissionTime": {
+            "type": "string",
+            "description": "Time of transfer into the current or most recent prison",
+            "example": "2021-07-05T10:35:17",
+            "examples": [
+              "2021-07-05T10:35:17"
+            ],
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}$"
+          },
           "legalStatus": {
             "type": "string",
             "description": "Legal Status",
@@ -31540,8 +33763,8 @@
           "receptionDate": {
             "type": "string",
             "format": "date",
-            "description": "Date prisoner was received into the prison.",
-            "example": "1980-01-01"
+            "description": "Date prisoner was first received into prison in their current or most recent term.",
+            "example": "2023-01-01"
           },
           "locationDescription": {
             "type": "string",
@@ -31576,10 +33799,30 @@
           },
           "allConvictedOffences": {
             "type": "array",
-            "description": "Convicted offences for ALL bookings.",
+            "description": "Convicted offences for ALL bookings",
             "items": {
               "$ref": "#/components/schemas/OffenceHistoryDetail"
             }
+          },
+          "personalCareNeeds": {
+            "type": "array",
+            "description": "Personal Care Needs. Specific types are selected for the prisoner profile : DISAB, MATSTAT, PHY, PSYCH, SC",
+            "items": {
+              "$ref": "#/components/schemas/PersonalCareNeed"
+            }
+          },
+          "languages": {
+            "type": "array",
+            "description": "Languages spoken, read or written",
+            "items": {
+              "$ref": "#/components/schemas/OffenderLanguageDto"
+            }
+          },
+          "imageId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "The prisoner's current facial image can be retrieved by plugging this id into the endpoint /api/images/{prisonerNumber}/data?imageId={imageId}",
+            "example": 341221
           }
         },
         "required": [
@@ -31620,12 +33863,6 @@
             "type": "integer",
             "format": "int32"
           },
-          "first": {
-            "type": "boolean"
-          },
-          "last": {
-            "type": "boolean"
-          },
           "size": {
             "type": "integer",
             "format": "int32"
@@ -31643,12 +33880,18 @@
           "sort": {
             "$ref": "#/components/schemas/SortObject"
           },
-          "pageable": {
-            "$ref": "#/components/schemas/PageableObject"
+          "first": {
+            "type": "boolean"
+          },
+          "last": {
+            "type": "boolean"
           },
           "numberOfElements": {
             "type": "integer",
             "format": "int32"
+          },
+          "pageable": {
+            "$ref": "#/components/schemas/PageableObject"
           },
           "empty": {
             "type": "boolean"
@@ -31905,11 +34148,13 @@
         "properties": {
           "identifierType": {
             "type": "string",
-            "description": "The identifier type"
+            "description": "The identifier type",
+            "minLength": 1
           },
           "identifierValue": {
             "type": "string",
-            "description": "The most recent identifier value of that type."
+            "description": "The most recent identifier value of that type.",
+            "minLength": 1
           }
         },
         "required": [
@@ -31961,7 +34206,8 @@
           "currency": {
             "type": "string",
             "description": "Currency of these amounts.",
-            "example": "GBP"
+            "example": "GBP",
+            "minLength": 1
           },
           "penceAmount": {
             "type": "integer",
@@ -32101,6 +34347,11 @@
             "format": "int64",
             "description": "The ID of this booking"
           },
+          "bookingSequence": {
+            "type": "integer",
+            "format": "int32",
+            "description": "The order sequence of this booking"
+          },
           "entryDate": {
             "type": "string",
             "description": "Date they first entered prison in this booking",
@@ -32144,6 +34395,7 @@
         "required": [
           "bookNumber",
           "bookingId",
+          "bookingSequence",
           "entryDate",
           "movementDates",
           "prisons",
@@ -32292,11 +34544,14 @@
           },
           "restrictionType": {
             "type": "string",
-            "description": "code of restriction type"
+            "description": "code of restriction type",
+            "example": "ACC"
           },
           "restrictionTypeDescription": {
             "type": "string",
-            "description": "description of restriction type"
+            "description": "description of restriction type",
+            "example": "Access Requirements",
+            "minLength": 1
           },
           "startDate": {
             "type": "string",
@@ -32876,7 +35131,8 @@
           "currency": {
             "type": "string",
             "description": "Currency of these amounts.",
-            "example": "GBP"
+            "example": "GBP",
+            "minLength": 1
           }
         },
         "required": [
@@ -32912,33 +35168,27 @@
           },
           "hair": {
             "$ref": "#/components/schemas/ProfileCode",
-            "description": "Hair type or colour. Note: uses PROFILE_TYPE of `HAIR`",
-            "example": "BROWN"
+            "description": "Hair type or colour"
           },
           "facialHair": {
             "$ref": "#/components/schemas/ProfileCode",
-            "description": "Facial hair type. Note: uses PROFILE_TYPE of `FACIAL_HAIR`",
-            "example": "BEARDED"
+            "description": "Facial hair type"
           },
           "face": {
             "$ref": "#/components/schemas/ProfileCode",
-            "description": "Face shape. Note: uses PROFILE_TYPE of `FACE`",
-            "example": "ROUND"
+            "description": "Face shape"
           },
           "build": {
             "$ref": "#/components/schemas/ProfileCode",
-            "description": "Build. Note: uses PROFILE_TYPE of `BUILD`",
-            "example": "MEDIUM"
+            "description": "Build"
           },
           "leftEyeColour": {
             "$ref": "#/components/schemas/ProfileCode",
-            "description": "Left eye colour. Note: uses PROFILE_TYPE of `L_EYE_C`",
-            "example": "BLUE"
+            "description": "Left eye colour"
           },
           "rightEyeColour": {
             "$ref": "#/components/schemas/ProfileCode",
-            "description": "Right eye colour. Note: uses PROFILE_TYPE of `R_EYE_C`",
-            "example": "BLUE"
+            "description": "Right eye colour"
           },
           "shoeSize": {
             "type": "string",
@@ -32947,7 +35197,7 @@
           }
         }
       },
-      "PK": {
+      "ProfileCodePK": {
         "type": "object",
         "properties": {
           "type": {
@@ -32988,7 +35238,7 @@
             "writeOnly": true
           },
           "id": {
-            "$ref": "#/components/schemas/PK"
+            "$ref": "#/components/schemas/ProfileCodePK"
           },
           "description": {
             "type": "string"
@@ -33066,6 +35316,114 @@
           "listSequence": {
             "type": "integer",
             "format": "int32"
+          }
+        }
+      },
+      "CorePersonCommunicationNeeds": {
+        "type": "object",
+        "description": "Core Person Record Communication Needs",
+        "properties": {
+          "prisonerNumber": {
+            "type": "string",
+            "description": "Prisoner number",
+            "example": "A1234BC"
+          },
+          "languagePreferences": {
+            "$ref": "#/components/schemas/CorePersonLanguagePreferences",
+            "description": "Language preferences"
+          },
+          "secondaryLanguages": {
+            "type": "array",
+            "description": "List of secondary languages",
+            "items": {
+              "$ref": "#/components/schemas/CorePersonSecondaryLanguage"
+            }
+          }
+        },
+        "required": [
+          "prisonerNumber",
+          "secondaryLanguages"
+        ]
+      },
+      "CorePersonLanguagePreferences": {
+        "type": "object",
+        "description": "Core Person Record Language Preferences",
+        "properties": {
+          "preferredSpokenLanguage": {
+            "$ref": "#/components/schemas/LanguageReferenceCode",
+            "description": "Preferred spoken language"
+          },
+          "preferredWrittenLanguage": {
+            "$ref": "#/components/schemas/LanguageReferenceCode",
+            "description": "Preferred written language"
+          },
+          "interpreterRequired": {
+            "type": "boolean",
+            "description": "Is interpreter required",
+            "example": true
+          }
+        }
+      },
+      "CorePersonSecondaryLanguage": {
+        "type": "object",
+        "description": "Secondary language information",
+        "properties": {
+          "language": {
+            "$ref": "#/components/schemas/LanguageReferenceCode",
+            "description": "Language reference code"
+          },
+          "canRead": {
+            "type": "boolean",
+            "description": "Reading proficiency"
+          },
+          "canWrite": {
+            "type": "boolean",
+            "description": "Writing proficiency"
+          },
+          "canSpeak": {
+            "type": "boolean",
+            "description": "Speaking proficiency"
+          }
+        },
+        "required": [
+          "canRead",
+          "canSpeak",
+          "canWrite",
+          "language"
+        ]
+      },
+      "LanguageReferenceCode": {
+        "type": "object",
+        "properties": {
+          "domain": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "listSequence": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "active": {
+            "type": "boolean"
+          },
+          "primaryKey": {
+            "$ref": "#/components/schemas/Pk"
+          }
+        }
+      },
+      "Pk": {
+        "type": "object",
+        "properties": {
+          "domain": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
           }
         }
       },
@@ -33217,7 +35575,8 @@
           },
           "restrictionTypeDescription": {
             "type": "string",
-            "description": "description of restriction type"
+            "description": "description of restriction type",
+            "minLength": 1
           },
           "startDate": {
             "type": "string",
@@ -34031,22 +36390,26 @@
           "offenderNo": {
             "type": "string",
             "description": "Offender Unique Reference",
-            "example": "A1000AA"
+            "example": "A1000AA",
+            "minLength": 1
           },
           "firstName": {
             "type": "string",
             "description": "First Name",
-            "example": "John"
+            "example": "John",
+            "minLength": 1
           },
           "lastName": {
             "type": "string",
             "description": "Last Name",
-            "example": "Smith"
+            "example": "Smith",
+            "minLength": 1
           },
           "agencyLocationId": {
             "type": "string",
             "description": "Agency Id",
-            "example": "LEI"
+            "example": "LEI",
+            "minLength": 1
           },
           "mostRecentActiveBooking": {
             "type": "boolean",
@@ -34474,7 +36837,8 @@
           "offenderNo": {
             "type": "string",
             "description": "Offender number (e.g. NOMS Number).",
-            "example": "GV09876N"
+            "example": "GV09876N",
+            "minLength": 1
           },
           "classificationCode": {
             "type": "string",
@@ -34484,7 +36848,8 @@
           "assessmentCode": {
             "type": "string",
             "description": "Identifies the type of assessment",
-            "example": "CSR"
+            "example": "CSR",
+            "minLength": 1
           },
           "cellSharingAlertFlag": {
             "type": "boolean",
@@ -34546,7 +36911,8 @@
           "offenderNo": {
             "type": "string",
             "description": "Offender number (e.g. NOMS Number).",
-            "example": "GV09876N"
+            "example": "GV09876N",
+            "minLength": 1
           },
           "classificationCode": {
             "type": "string",
@@ -34556,7 +36922,8 @@
           "assessmentCode": {
             "type": "string",
             "description": "Identifies the type of assessment",
-            "example": "CSR"
+            "example": "CSR",
+            "minLength": 1
           },
           "cellSharingAlertFlag": {
             "type": "boolean",
@@ -34703,12 +37070,6 @@
             "type": "integer",
             "format": "int32"
           },
-          "first": {
-            "type": "boolean"
-          },
-          "last": {
-            "type": "boolean"
-          },
           "size": {
             "type": "integer",
             "format": "int32"
@@ -34726,12 +37087,18 @@
           "sort": {
             "$ref": "#/components/schemas/SortObject"
           },
-          "pageable": {
-            "$ref": "#/components/schemas/PageableObject"
+          "first": {
+            "type": "boolean"
+          },
+          "last": {
+            "type": "boolean"
           },
           "numberOfElements": {
             "type": "integer",
             "format": "int32"
+          },
+          "pageable": {
+            "$ref": "#/components/schemas/PageableObject"
           },
           "empty": {
             "type": "boolean"
@@ -34744,11 +37111,13 @@
         "properties": {
           "offenderNo": {
             "type": "string",
-            "description": "Offender Unique Reference"
+            "description": "Offender Unique Reference",
+            "minLength": 1
           },
           "dateOfBirth": {
             "type": "string",
-            "format": "date"
+            "format": "date",
+            "minLength": 1
           },
           "reasonDescription": {
             "type": "string",
@@ -34756,13 +37125,15 @@
           },
           "timeOut": {
             "type": "string",
-            "format": "partial-time"
+            "minLength": 1
           },
           "firstName": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1
           },
           "lastName": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1
           },
           "toAddress": {
             "type": "string",
@@ -34837,7 +37208,6 @@
           },
           "movementTime": {
             "type": "string",
-            "format": "partial-time",
             "description": "Movement time"
           },
           "movementDateTime": {
@@ -35019,7 +37389,7 @@
           "judgeName": {
             "type": "string",
             "description": "Judge name, where available",
-            "example": "Default Name"
+            "example": "Harris"
           },
           "directionCode": {
             "type": "string",
@@ -35512,7 +37882,8 @@
         "properties": {
           "offenderNo": {
             "type": "string",
-            "description": "Display Prisoner Number"
+            "description": "Display Prisoner Number",
+            "minLength": 1
           },
           "bookingId": {
             "type": "integer",
@@ -35524,10 +37895,12 @@
             "format": "date"
           },
           "firstName": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1
           },
           "lastName": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1
           }
         },
         "required": [
@@ -35544,7 +37917,8 @@
         "properties": {
           "offenderNo": {
             "type": "string",
-            "description": "Display Prisoner Number"
+            "description": "Display Prisoner Number",
+            "minLength": 1
           },
           "bookingId": {
             "type": "integer",
@@ -35555,10 +37929,12 @@
             "format": "date"
           },
           "firstName": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1
           },
           "lastName": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1
           },
           "location": {
             "type": "string",
@@ -35574,6 +37950,71 @@
           "offenderNo"
         ]
       },
+      "BookingMovement": {
+        "type": "object",
+        "description": "Movement DTO",
+        "properties": {
+          "sequence": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Sequence number"
+          },
+          "fromAgency": {
+            "type": "string",
+            "description": "Agency travelling from"
+          },
+          "toAgency": {
+            "type": "string",
+            "description": "Agency travelling to"
+          },
+          "movementType": {
+            "type": "string",
+            "description": "ADM (admission), CRT (court), REL (release), TAP (temporary absence) or TRN (transfer)",
+            "enum": [
+              "ADM",
+              "CRT",
+              "REL",
+              "TAP",
+              "TRN"
+            ]
+          },
+          "directionCode": {
+            "type": "string",
+            "description": "IN or OUT"
+          },
+          "movementDateTime": {
+            "type": "string",
+            "description": "Movement timestamp",
+            "example": "2021-07-05T10:35:17",
+            "examples": [
+              "2021-07-05T10:35:17"
+            ],
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}$"
+          },
+          "movementReasonCode": {
+            "type": "string",
+            "description": "Code of movement reason"
+          },
+          "createdDateTime": {
+            "type": "string",
+            "description": "DB create timestamp",
+            "example": "2021-07-05T10:35:17",
+            "examples": [
+              "2021-07-05T10:35:17"
+            ],
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}$"
+          },
+          "modifiedDateTime": {
+            "type": "string",
+            "description": "DB modify timestamp",
+            "example": "2021-07-05T10:35:17",
+            "examples": [
+              "2021-07-05T10:35:17"
+            ],
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}$"
+          }
+        }
+      },
       "OutOnTemporaryAbsenceSummary": {
         "type": "object",
         "description": "Summary data for a completed movement",
@@ -35586,12 +38027,14 @@
           "firstName": {
             "type": "string",
             "description": "Prisoner first name.",
-            "example": "JOHN"
+            "example": "JOHN",
+            "minLength": 1
           },
           "lastName": {
             "type": "string",
             "description": "Prisoner's last name.",
-            "example": "SMITH"
+            "example": "SMITH",
+            "minLength": 1
           },
           "dateOfBirth": {
             "type": "string",
@@ -35660,15 +38103,18 @@
           },
           "firstName": {
             "type": "string",
-            "description": "Staff member's first name."
+            "description": "Staff member's first name.",
+            "minLength": 1
           },
           "lastName": {
             "type": "string",
-            "description": "Staff member's last name."
+            "description": "Staff member's last name.",
+            "minLength": 1
           },
           "status": {
             "type": "string",
-            "description": "Status of staff member."
+            "description": "Status of staff member.",
+            "minLength": 1
           },
           "thumbnailId": {
             "type": "integer",
@@ -36059,12 +38505,6 @@
             "type": "integer",
             "format": "int32"
           },
-          "first": {
-            "type": "boolean"
-          },
-          "last": {
-            "type": "boolean"
-          },
           "size": {
             "type": "integer",
             "format": "int32"
@@ -36082,12 +38522,18 @@
           "sort": {
             "$ref": "#/components/schemas/SortObject"
           },
-          "pageable": {
-            "$ref": "#/components/schemas/PageableObject"
+          "first": {
+            "type": "boolean"
+          },
+          "last": {
+            "type": "boolean"
           },
           "numberOfElements": {
             "type": "integer",
             "format": "int32"
+          },
+          "pageable": {
+            "$ref": "#/components/schemas/PageableObject"
           },
           "empty": {
             "type": "boolean"
@@ -36559,12 +39005,6 @@
             "type": "integer",
             "format": "int32"
           },
-          "first": {
-            "type": "boolean"
-          },
-          "last": {
-            "type": "boolean"
-          },
           "size": {
             "type": "integer",
             "format": "int32"
@@ -36582,12 +39022,18 @@
           "sort": {
             "$ref": "#/components/schemas/SortObject"
           },
-          "pageable": {
-            "$ref": "#/components/schemas/PageableObject"
+          "first": {
+            "type": "boolean"
+          },
+          "last": {
+            "type": "boolean"
           },
           "numberOfElements": {
             "type": "integer",
             "format": "int32"
+          },
+          "pageable": {
+            "$ref": "#/components/schemas/PageableObject"
           },
           "empty": {
             "type": "boolean"
@@ -36622,7 +39068,8 @@
               "SCH",
               "COMP",
               "CANC"
-            ]
+            ],
+            "minLength": 1
           },
           "eventStatusDescription": {
             "type": "string",
@@ -36639,7 +39086,8 @@
               "VISITOR",
               "CANC",
               "HMPOP"
-            ]
+            ],
+            "minLength": 1
           },
           "completionStatusDescription": {
             "type": "string",
@@ -36651,7 +39099,8 @@
             "enum": [
               "OFFI",
               "SCON"
-            ]
+            ],
+            "minLength": 1
           },
           "visitTypeDescription": {
             "type": "string",
@@ -36693,7 +39142,8 @@
             "enum": [
               "ATT",
               "ABS"
-            ]
+            ],
+            "minLength": 1
           },
           "eventOutcomeDescription": {
             "type": "string",
@@ -36742,7 +39192,8 @@
             "description": "List of visitors on visit",
             "items": {
               "$ref": "#/components/schemas/Visitor"
-            }
+            },
+            "minItems": 1
           },
           "visitDetails": {
             "$ref": "#/components/schemas/VisitDetails",
@@ -36760,7 +39211,8 @@
         "properties": {
           "relationship": {
             "type": "string",
-            "description": "Relationship of visitor to offender"
+            "description": "Relationship of visitor to offender",
+            "minLength": 1
           },
           "attended": {
             "type": "boolean",
@@ -36773,11 +39225,13 @@
           },
           "lastName": {
             "type": "string",
-            "description": "Last name of visitor"
+            "description": "Last name of visitor",
+            "minLength": 1
           },
           "firstName": {
             "type": "string",
-            "description": "First name of visitor"
+            "description": "First name of visitor",
+            "minLength": 1
           },
           "dateOfBirth": {
             "type": "string",
@@ -37015,12 +39469,14 @@
           "lastName": {
             "type": "string",
             "description": "Last name of the contact",
-            "example": "SMITH"
+            "example": "SMITH",
+            "minLength": 1
           },
           "firstName": {
             "type": "string",
             "description": "First Name",
-            "example": "JOHN"
+            "example": "JOHN",
+            "minLength": 1
           },
           "middleName": {
             "type": "string",
@@ -37030,7 +39486,8 @@
           "contactType": {
             "type": "string",
             "description": "Contact type",
-            "example": "O"
+            "example": "O",
+            "minLength": 1
           },
           "contactTypeDescription": {
             "type": "string",
@@ -37040,7 +39497,8 @@
           "relationship": {
             "type": "string",
             "description": "Relationship to prisoner",
-            "example": "RO"
+            "example": "RO",
+            "minLength": 1
           },
           "relationshipDescription": {
             "type": "string",
@@ -37175,12 +39633,6 @@
             "type": "integer",
             "format": "int32"
           },
-          "first": {
-            "type": "boolean"
-          },
-          "last": {
-            "type": "boolean"
-          },
           "size": {
             "type": "integer",
             "format": "int32"
@@ -37198,12 +39650,18 @@
           "sort": {
             "$ref": "#/components/schemas/SortObject"
           },
-          "pageable": {
-            "$ref": "#/components/schemas/PageableObject"
+          "first": {
+            "type": "boolean"
+          },
+          "last": {
+            "type": "boolean"
           },
           "numberOfElements": {
             "type": "integer",
             "format": "int32"
+          },
+          "pageable": {
+            "$ref": "#/components/schemas/PageableObject"
           },
           "empty": {
             "type": "boolean"
@@ -37221,11 +39679,13 @@
           },
           "type": {
             "type": "string",
-            "description": "Case note type."
+            "description": "Case note type.",
+            "minLength": 1
           },
           "subType": {
             "type": "string",
-            "description": "Case note sub-type."
+            "description": "Case note sub-type.",
+            "minLength": 1
           },
           "count": {
             "type": "integer",
@@ -37272,7 +39732,8 @@
           },
           "currency": {
             "type": "string",
-            "description": "Currency of these balances."
+            "description": "Currency of these balances.",
+            "minLength": 1
           }
         },
         "required": [
@@ -37294,12 +39755,6 @@
             "type": "integer",
             "format": "int32"
           },
-          "first": {
-            "type": "boolean"
-          },
-          "last": {
-            "type": "boolean"
-          },
           "size": {
             "type": "integer",
             "format": "int32"
@@ -37317,12 +39772,18 @@
           "sort": {
             "$ref": "#/components/schemas/SortObject"
           },
-          "pageable": {
-            "$ref": "#/components/schemas/PageableObject"
+          "first": {
+            "type": "boolean"
+          },
+          "last": {
+            "type": "boolean"
           },
           "numberOfElements": {
             "type": "integer",
             "format": "int32"
+          },
+          "pageable": {
+            "$ref": "#/components/schemas/PageableObject"
           },
           "empty": {
             "type": "boolean"
@@ -37347,12 +39808,14 @@
           "offenderNo": {
             "type": "string",
             "description": "Prisoner number (e.g. NOMS Number).",
-            "example": "A1234AA"
+            "example": "A1234AA",
+            "minLength": 1
           },
           "firstName": {
             "type": "string",
             "description": "Prisoner first name.",
-            "example": "JOHN"
+            "example": "JOHN",
+            "minLength": 1
           },
           "middleName": {
             "type": "string",
@@ -37362,7 +39825,8 @@
           "lastName": {
             "type": "string",
             "description": "Prisoner's last name.",
-            "example": "SMITH"
+            "example": "SMITH",
+            "minLength": 1
           },
           "dateOfBirth": {
             "type": "string",
@@ -37379,7 +39843,8 @@
           "agencyId": {
             "type": "string",
             "description": "Identifier of agency that prisoner is associated with.",
-            "example": "MDI"
+            "example": "MDI",
+            "minLength": 1
           },
           "assignedLivingUnitId": {
             "type": "integer",
@@ -37552,17 +40017,23 @@
         "properties": {
           "name": {
             "type": "string",
-            "description": "The name of the group"
+            "description": "The name of the group",
+            "minLength": 1
           },
           "key": {
             "type": "string",
-            "description": "A key for the group"
+            "description": "A key for the group",
+            "minLength": 1
           },
           "children": {
             "type": "array",
             "description": "The child groups of this group",
             "items": {
-              "$ref": "#/components/schemas/LocationGroup"
+              "description": "Cell Locations are grouped for unlock lists as a 2 level tree. The two levels are referred to as Location and Sub-Location in the digital prison services UI. Each (location/sub-location) group has a name that is understood by prison officers and also serves as a key to retrieve the corresponding Cell Locations and information about their occupants.",
+              "required": [
+                "key",
+                "name"
+              ]
             }
           }
         },
@@ -37587,7 +40058,8 @@
           },
           "description": {
             "type": "string",
-            "description": "Location description."
+            "description": "Location description.",
+            "minLength": 1
           }
         },
         "required": [
@@ -37602,12 +40074,14 @@
           "code": {
             "type": "string",
             "description": "Code.",
-            "example": "IM"
+            "example": "IM",
+            "minLength": 1
           },
           "description": {
             "type": "string",
             "description": "Description.",
-            "example": "Closed Young Offender Institute (Male)"
+            "example": "Closed Young Offender Institute (Male)",
+            "minLength": 1
           }
         },
         "required": [
@@ -37622,7 +40096,8 @@
           "agencyId": {
             "type": "string",
             "description": "Agency id",
-            "example": "MDI"
+            "example": "MDI",
+            "minLength": 1
           },
           "establishmentTypes": {
             "type": "array",
@@ -37702,46 +40177,56 @@
           "agencyId": {
             "type": "string",
             "description": "Identifier of agency/prison.",
-            "example": "MDI"
+            "example": "MDI",
+            "minLength": 1
           },
           "description": {
             "type": "string",
             "description": "Agency description.",
-            "example": "MOORLAND (HMP & YOI)"
+            "example": "MOORLAND (HMP & YOI)",
+            "minLength": 1
           },
           "formattedDescription": {
             "type": "string",
             "description": "Formatted agency description.",
-            "example": "Moorland (HMP & YOI)"
+            "example": "Moorland (HMP & YOI)",
+            "minLength": 1
           },
           "agencyType": {
             "type": "string",
             "description": "Type of agency.",
-            "example": "INST"
+            "example": "INST",
+            "minLength": 1
           },
           "addressType": {
             "type": "string",
-            "description": "Type of address."
+            "description": "Type of address.",
+            "minLength": 1
           },
           "premise": {
             "type": "string",
-            "description": "The Prison name."
+            "description": "The Prison name.",
+            "minLength": 1
           },
           "locality": {
             "type": "string",
-            "description": "Describes the geographic location."
+            "description": "Describes the geographic location.",
+            "minLength": 1
           },
           "city": {
             "type": "string",
-            "description": "Address city."
+            "description": "Address city.",
+            "minLength": 1
           },
           "country": {
             "type": "string",
-            "description": "Address country."
+            "description": "Address country.",
+            "minLength": 1
           },
           "postCode": {
             "type": "string",
-            "description": "Address postcode."
+            "description": "Address postcode.",
+            "minLength": 1
           },
           "phones": {
             "type": "array",

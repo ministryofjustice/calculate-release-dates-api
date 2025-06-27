@@ -1,7 +1,7 @@
 [
   {
     "id": "a832551d-79a2-406a-8672-db1759793b55",
-    "bookingId": 1085415,
+    "bookingId": -425274444,
     "person": "ADJ-API",
     "adjustmentType": "ADDITIONAL_DAYS_AWARDED",
     "toDate": null,
@@ -36,7 +36,7 @@
   },
   {
     "id": "1fcfc371-af9f-4360-8d7f-694795c63bee",
-    "bookingId": 1085415,
+    "bookingId": -425274444,
     "person": "ADJ-API",
     "adjustmentType": "UNLAWFULLY_AT_LARGE",
     "toDate": "2018-11-03",
@@ -67,7 +67,7 @@
   },
   {
     "id": "65b87bbc-46e3-4e91-87bb-f242cdc6d8fc",
-    "bookingId": 1085415,
+    "bookingId": -425274444,
     "person": "ADJ-API",
     "adjustmentType": "REMAND",
     "toDate": "2023-04-01",
@@ -100,7 +100,7 @@
   },
   {
     "id": "65b87bbc-46e3-4e91-87bb-f242cdc6d8fd",
-    "bookingId": 1085415,
+    "bookingId": -425274444,
     "person": "ADJ-API",
     "adjustmentType": "REMAND",
     "toDate": "2022-06-09",

@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
-import arrow.core.left
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -10,6 +9,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Adjust
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.UNLAWFULLY_AT_LARGE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustments
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentsSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationSentenceUserInput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
@@ -123,7 +123,7 @@ class BookingServiceTest {
   )
   val returnToCustodyDate = ReturnToCustodyDate(bookingId, LocalDate.of(2022, 3, 15))
   private val offenderFineFinePayment = listOf(OffenderFinePayment(bookingId = 1, paymentDate = LocalDate.of(1, 2, 3), paymentAmount = BigDecimal("10000.88")))
-  private val sourceData = CalculationSourceData(listOf(sentenceAndOffences), prisonerDetails, bookingAndSentenceAdjustment.left(), offenderFineFinePayment, returnToCustodyDate)
+  private val sourceData = CalculationSourceData(listOf(sentenceAndOffences), prisonerDetails, AdjustmentsSourceData(prisonApiData = bookingAndSentenceAdjustment), offenderFineFinePayment, returnToCustodyDate)
 
   @Test
   @Suppress("LongMethod")

@@ -11,14 +11,24 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.Validati
 
 @Service
 class RecordARecallService(
+  private val prisonService: PrisonService,
   private val calculationSourceDataService: CalculationSourceDataService,
   private val calculationTransactionalService: CalculationTransactionalService,
   private val calculationReasonRepository: CalculationReasonRepository,
 ) {
 
   fun calculateAndValidateForRecordARecall(prisonerId: String): RecordARecallResult {
+    val inPrisonSummary = prisonService.getPrisonerInPrisonSummary(prisonerId)
+    val bookings = inPrisonSummary.prisonPeriod?.map { it.bookingId to it.bookingSequence }?.distinct()?.sortedByDescending { it.second }?.map { it.first }
+
+    val penultimateBooking = if (bookings != null && bookings.size > 1) {
+      bookings[bookings.size - 2]
+    } else {
+      null
+    }
+
     val inactiveDataOptions = InactiveDataOptions.overrideToIncludeInactiveData()
-    val sourceData = calculationSourceDataService.getCalculationSourceData(prisonerId, inactiveDataOptions)
+    val sourceData = calculationSourceDataService.getCalculationSourceData(prisonerId, inactiveDataOptions, listOfNotNull(penultimateBooking))
     val validationResult = calculationTransactionalService.fullValidationFromSourceData(sourceData, CalculationUserInputs())
 
     if (validationResult.any { criticalValidationErrors.contains(it.code) }) {

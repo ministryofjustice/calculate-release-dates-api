@@ -1,12 +1,12 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation
 
-import arrow.core.Either
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.threeten.extra.LocalDateRange
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.adjustmentsapi.model.AdjustmentDto
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustment
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentsSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOutput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Term
@@ -20,7 +20,7 @@ import java.time.LocalDate
 @Service
 class AdjustmentValidationService {
 
-  internal fun validateIfAdjustmentsAreSupported(adjustments: Either<BookingAndSentenceAdjustments, List<AdjustmentDto>>): List<ValidationMessage> = adjustments.fold(
+  internal fun validateIfAdjustmentsAreSupported(adjustments: AdjustmentsSourceData) = adjustments.fold(
     { validateIfAdjustmentsAreSupported(it) },
     { validateIfAdjustmentsAreSupported(it) },
   )
@@ -43,7 +43,7 @@ class AdjustmentValidationService {
     }
   }
 
-  internal fun validateAdjustmentsBeforeCalculation(adjustments: Either<BookingAndSentenceAdjustments, List<AdjustmentDto>>): List<ValidationMessage> = adjustments.fold(
+  internal fun validateAdjustmentsBeforeCalculation(adjustments: AdjustmentsSourceData): List<ValidationMessage> = adjustments.fold(
     this::validateAdjustmentsBeforeCalculation,
     this::validateAdjustmentsBeforeCalculation,
   )

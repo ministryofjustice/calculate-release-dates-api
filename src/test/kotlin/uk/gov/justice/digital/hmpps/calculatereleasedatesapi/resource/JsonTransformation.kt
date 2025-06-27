@@ -81,6 +81,8 @@ class JsonTransformation {
 
   fun getAllIntegrationPrisonerNames(): List<String> = getAllFilenamesFromDir("api_integration")
 
+  fun getAllPrisonerInPrison(): Map<String, String> = getAllJsonFromDir("api_integration/prisonerinprison")
+
   fun getAllJsonFromDir(fileName: String): Map<String, String> {
     val json = mutableMapOf<String, String>()
     doAllInDir(fileName) { it ->
