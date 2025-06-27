@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
-import arrow.core.left
 import com.fasterxml.jackson.databind.JsonNode
 import io.hypersistence.utils.hibernate.type.json.internal.JacksonUtil
 import jakarta.persistence.EntityNotFoundException
@@ -58,6 +57,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.Calculat
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.PreconditionFailedException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.TestBuildPropertiesConfiguration.Companion.TEST_BUILD_PROPERTIES
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustments
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentsSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
@@ -166,10 +166,12 @@ class CalculationTransactionalServiceTest {
   private val fakeSourceData = CalculationSourceData(
     emptyList(),
     PrisonerDetails(offenderNo = "", bookingId = 1, dateOfBirth = LocalDate.of(1, 2, 3)),
-    BookingAndSentenceAdjustments(
-      emptyList(),
-      emptyList(),
-    ).left(),
+    AdjustmentsSourceData(
+      prisonApiData = BookingAndSentenceAdjustments(
+        emptyList(),
+        emptyList(),
+      ),
+    ),
     listOf(),
     null,
   )
@@ -872,7 +874,7 @@ class CalculationTransactionalServiceTest {
         CALCULATION_REQUEST_WITH_OUTCOMES,
       ),
     )
-    whenever(calculationSourceDataService.getCalculationSourceData(anyString(), eq(InactiveDataOptions.default()))).thenReturn(SOURCE_DATA)
+    whenever(calculationSourceDataService.getCalculationSourceData(anyString(), eq(InactiveDataOptions.default()), eq(emptyList()))).thenReturn(SOURCE_DATA)
     whenever(bookingService.getBooking(eq(SOURCE_DATA), any())).thenReturn(BOOKING)
     assertThrows<CalculationDataHasChangedError> {
       calculationTransactionalService().findCalculationResultsByCalculationReference(
@@ -1133,7 +1135,7 @@ class CalculationTransactionalServiceTest {
           ),
         ),
         prisonerDetails,
-        adjustments.left(),
+        AdjustmentsSourceData(prisonApiData = adjustments),
         emptyList(),
         null,
         null,

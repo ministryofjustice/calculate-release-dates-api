@@ -1,10 +1,10 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation
 
-import arrow.core.left
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.mock
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentsSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NormalisedSentenceAndOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
@@ -145,7 +145,7 @@ class BotusValidationServiceTest {
         )
       },
       prisonerDetails = VALID_PRISONER,
-      bookingAndSentenceAdjustments = VALID_ADJUSTMENTS.left(),
+      bookingAndSentenceAdjustments = AdjustmentsSourceData(prisonApiData = VALID_ADJUSTMENTS),
       offenderFinePayments = listOf(),
       returnToCustodyDate = null,
     )
@@ -161,7 +161,7 @@ class BotusValidationServiceTest {
         )
       },
       prisonerDetails = VALID_PRISONER,
-      bookingAndSentenceAdjustments = VALID_ADJUSTMENTS.left(),
+      bookingAndSentenceAdjustments = AdjustmentsSourceData(prisonApiData = VALID_ADJUSTMENTS),
       offenderFinePayments = listOf(),
       returnToCustodyDate = null,
     )
@@ -177,7 +177,7 @@ class BotusValidationServiceTest {
         )
       },
       prisonerDetails = VALID_PRISONER,
-      bookingAndSentenceAdjustments = VALID_ADJUSTMENTS.left(),
+      bookingAndSentenceAdjustments = AdjustmentsSourceData(prisonApiData = VALID_ADJUSTMENTS),
       offenderFinePayments = listOf(),
       returnToCustodyDate = null,
     )

@@ -1,13 +1,11 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
-import arrow.core.Either
-import arrow.core.left
-import arrow.core.right
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.adjustmentsapi.model.AdjustmentDto
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentsSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RelevantRemandCalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RelevantRemandCalculationResult
@@ -80,30 +78,33 @@ class RelevantRemandService(
     bookingAndSentenceAdjustments: BookingAndSentenceAdjustments,
     sourceData: CalculationSourceData,
     request: RelevantRemandCalculationRequest,
-  ): Either<BookingAndSentenceAdjustments, List<AdjustmentDto>> = bookingAndSentenceAdjustments.copy(
-    sentenceAdjustments = bookingAndSentenceAdjustments.sentenceAdjustments.filter { !listOf(SentenceAdjustmentType.REMAND, SentenceAdjustmentType.RECALL_SENTENCE_REMAND, SentenceAdjustmentType.UNUSED_REMAND).contains(it.type) } +
-      request.relevantRemands.map {
-        val sentence = findSentence(sourceData.sentenceAndOffences, it.sentenceSequence)
-        val adjustmentType: SentenceAdjustmentType =
-          if (sentence != null && SentenceCalculationType.isCalculable(sentence.sentenceCalculationType)) {
-            val sentenceType = SentenceCalculationType.from(sentence.sentenceCalculationType)
-            if (sentenceType.recallType != null) {
-              SentenceAdjustmentType.RECALL_SENTENCE_REMAND
+  ): AdjustmentsSourceData = AdjustmentsSourceData(
+    prisonApiData = bookingAndSentenceAdjustments.copy(
+      sentenceAdjustments = bookingAndSentenceAdjustments.sentenceAdjustments.filter { !listOf(SentenceAdjustmentType.REMAND, SentenceAdjustmentType.RECALL_SENTENCE_REMAND, SentenceAdjustmentType.UNUSED_REMAND).contains(it.type) } +
+        request.relevantRemands.map {
+          val sentence = findSentence(sourceData.sentenceAndOffences, it.sentenceSequence)
+          val adjustmentType: SentenceAdjustmentType =
+            if (sentence != null && SentenceCalculationType.isCalculable(sentence.sentenceCalculationType)) {
+              val sentenceType = SentenceCalculationType.from(sentence.sentenceCalculationType)
+              if (sentenceType.recallType != null) {
+                SentenceAdjustmentType.RECALL_SENTENCE_REMAND
+              } else {
+                SentenceAdjustmentType.REMAND
+              }
             } else {
               SentenceAdjustmentType.REMAND
             }
-          } else {
-            SentenceAdjustmentType.REMAND
-          }
-        SentenceAdjustment(it.sentenceSequence, true, it.from, it.to, it.days, adjustmentType)
-      },
-  ).left()
+          SentenceAdjustment(it.sentenceSequence, true, it.from, it.to, it.days, adjustmentType)
+        },
+    ),
+  )
 
   private fun filterAdjustmentsFromAdjustmentsApi(
     adjustments: List<AdjustmentDto>,
     sourceData: CalculationSourceData,
     request: RelevantRemandCalculationRequest,
-  ): Either<BookingAndSentenceAdjustments, List<AdjustmentDto>> = (
+  ): AdjustmentsSourceData = AdjustmentsSourceData(
+    adjustmentsApiData =
     adjustments.filter { !listOf(AdjustmentDto.AdjustmentType.REMAND, AdjustmentDto.AdjustmentType.UNUSED_DEDUCTIONS).contains(it.adjustmentType) } +
       request.relevantRemands.map {
         AdjustmentDto(
@@ -115,8 +116,8 @@ class RelevantRemandService(
           person = sourceData.prisonerDetails.offenderNo,
           sentenceSequence = it.sentenceSequence,
         )
-      }
-    ).right()
+      },
+  )
 
   private fun findSentence(sentenceAndOffences: List<SentenceAndOffence>, sentenceSequence: Int): SentenceAndOffence? = sentenceAndOffences.find { it.sentenceSequence == sentenceSequence }
   companion object {

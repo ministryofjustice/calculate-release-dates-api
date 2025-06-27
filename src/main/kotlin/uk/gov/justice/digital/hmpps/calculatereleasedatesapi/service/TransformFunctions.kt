@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
-import arrow.core.Either
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.JsonNodeFactory
@@ -62,6 +61,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AFineSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AbstractSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustments
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentsSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AnalysedSentenceAndOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BotusSentence
@@ -275,7 +275,7 @@ fun transform(prisonerDetails: PrisonerDetails): Offender = Offender(
 )
 
 fun transform(
-  adjustmentsSource: Either<BookingAndSentenceAdjustments, List<AdjustmentDto>>,
+  adjustmentsSource: AdjustmentsSourceData,
   sentencesAndOffences: List<SentenceAndOffence>,
 ): Adjustments = adjustmentsSource.fold(
   { transform(it, sentencesAndOffences) },
@@ -289,7 +289,7 @@ fun transform(
   val adjustments = Adjustments()
   adjustmentsSource
     .forEach {
-      val sentence: SentenceAndOffence? = if (it.sentenceSequence != null) sentencesAndOffences.find { sentence -> it.sentenceSequence == sentence.sentenceSequence } else null
+      val sentence: SentenceAndOffence? = if (it.sentenceSequence != null) sentencesAndOffences.find { sentence -> it.sentenceSequence == sentence.sentenceSequence && it.bookingId == sentence.bookingId } else null
       val adjustmentType = transform(it.adjustmentType, sentence)
       if (adjustmentType != null) {
         adjustments.addAdjustment(
@@ -351,7 +351,7 @@ private fun findSentenceForAdjustment(
   adjustment: SentenceAdjustment,
   sentencesAndOffences: List<SentenceAndOffence>,
 ): SentenceAndOffence? {
-  val sentence = sentencesAndOffences.find { adjustment.sentenceSequence == it.sentenceSequence }
+  val sentence = sentencesAndOffences.find { adjustment.sentenceSequence == it.sentenceSequence && (adjustment.bookingId == null || adjustment.bookingId == it.bookingId) }
   if (sentence == null) {
     return null
   } else {

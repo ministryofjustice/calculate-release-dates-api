@@ -1,0 +1,28 @@
+{
+  "prisonerNumber": "RCLLBOO1",
+  "prisonPeriod": [
+    {
+      "bookNumber": "65532A",
+      "bookingId": -1537188415,
+      "bookingSequence": 2,
+      "entryDate": "2020-04-01T15:23:32",
+      "releaseDate": "2025-01-03T15:28:02",
+      "movementDates": [],
+      "transfers": [],
+      "prisons": [
+        "KMI"
+      ]
+    },
+    {
+      "bookNumber": "65533A",
+      "bookingId": -1537188416,
+      "bookingSequence": 1,
+      "entryDate": "2025-02-05T15:29:20",
+      "movementDates": [],
+      "transfers": [],
+      "prisons": [
+        "KMI"
+      ]
+    }
+  ]
+}

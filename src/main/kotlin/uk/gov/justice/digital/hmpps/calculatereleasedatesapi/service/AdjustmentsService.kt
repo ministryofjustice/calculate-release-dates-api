@@ -20,7 +20,7 @@ class AdjustmentsService(
 ) {
 
   fun getAnalysedAdjustments(prisonerId: String): List<AnalysedAdjustment> {
-    val adjustments = adjustmentsApiClient.getAdjustmentsByPerson(prisonerId, null, listOf(AdjustmentDto.Status.ACTIVE))
+    val adjustments = adjustmentsApiClient.getAdjustmentsByPerson(prisonerId, listOf(AdjustmentDto.Status.ACTIVE))
 
     return calculationRequestRepository.findFirstByPrisonerIdAndCalculationStatusOrderByCalculatedAtDesc(prisonerId).map { calculationRequest ->
       if (calculationRequest.adjustments == null) {

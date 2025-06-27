@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
-import arrow.core.left
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -28,6 +27,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationR
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.PRELIMINARY
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.TestBuildPropertiesConfiguration.Companion.TEST_BUILD_PROPERTIES
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentsSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
@@ -351,10 +351,12 @@ class HintTextTest {
     private val SOURCE_DATA = CalculationSourceData(
       emptyList(),
       PrisonerDetails(offenderNo = "", bookingId = 1, dateOfBirth = LocalDate.of(1, 2, 3)),
-      BookingAndSentenceAdjustments(
-        emptyList(),
-        emptyList(),
-      ).left(),
+      AdjustmentsSourceData(
+        prisonApiData = BookingAndSentenceAdjustments(
+          emptyList(),
+          emptyList(),
+        ),
+      ),
       listOf(),
       null,
     )
