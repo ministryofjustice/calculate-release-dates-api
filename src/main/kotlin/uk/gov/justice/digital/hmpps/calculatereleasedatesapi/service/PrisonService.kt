@@ -22,6 +22,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Upda
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.PrisonApiExternalMovement
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.prisonapi.model.CalculablePrisoner
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.prisonapi.model.PrisonerInPrisonSummary
 import java.time.LocalDate
 
 @Service
@@ -33,12 +34,12 @@ class PrisonService(
 
   fun getExternalMovements(
     sentenceAndOffences: List<SentenceAndOffenceWithReleaseArrangements>,
-    prisonerDetails: PrisonerDetails,
+    prisonerId: String,
   ): List<PrisonApiExternalMovement> {
     if (featureToggles.externalMovementsEnabled) {
       val earliestSentenceDate = sentenceAndOffences.minOfOrNull { it.sentenceDate }
       if (earliestSentenceDate != null) {
-        return prisonApiClient.getExternalMovements(prisonerDetails.offenderNo, earliestSentenceDate)
+        return prisonApiClient.getExternalMovements(prisonerId, earliestSentenceDate)
       }
     }
     return emptyList()
@@ -65,7 +66,7 @@ class PrisonService(
   fun getBookingAndSentenceAdjustments(bookingId: Long, filterActive: Boolean = true): BookingAndSentenceAdjustments {
     val adjustments = prisonApiClient.getSentenceAndBookingAdjustments(bookingId)
     return BookingAndSentenceAdjustments(
-      sentenceAdjustments = adjustments.sentenceAdjustments.filter { (!filterActive || it.active) && it.numberOfDays > 0 },
+      sentenceAdjustments = adjustments.sentenceAdjustments.filter { (!filterActive || it.active) && it.numberOfDays > 0 }.map { it.apply { it.bookingId = bookingId } },
       bookingAdjustments = adjustments.bookingAdjustments.filter { (!filterActive || it.active) && it.numberOfDays > 0 },
     )
   }
@@ -138,6 +139,8 @@ class PrisonService(
   fun getNOMISOffenderKeyDates(offenderSentCalcId: Long): Either<String, OffenderKeyDates> = prisonApiClient.getNOMISOffenderKeyDates(offenderSentCalcId)
 
   fun getLatestTusedDataForBotus(nomisId: String): Either<String, NomisTusedData> = prisonApiClient.getLatestTusedDataForBotus(nomisId)
+
+  fun getPrisonerInPrisonSummary(prisonerId: String): PrisonerInPrisonSummary = prisonApiClient.getPrisonerInPrisonSummary(prisonerId)
 
   companion object {
     val log: Logger = LoggerFactory.getLogger(this::class.java)

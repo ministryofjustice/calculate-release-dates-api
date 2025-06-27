@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
-import arrow.core.left
 import com.fasterxml.jackson.databind.JsonNode
 import io.hypersistence.utils.hibernate.type.json.internal.JacksonUtil
 import jakarta.persistence.EntityNotFoundException
@@ -58,6 +57,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.Calculat
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.PreconditionFailedException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.TestBuildPropertiesConfiguration.Companion.TEST_BUILD_PROPERTIES
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustments
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentsSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
@@ -65,6 +65,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationFr
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOutput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExternalSentenceId
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualEntrySelectedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
@@ -166,10 +167,12 @@ class CalculationTransactionalServiceTest {
   private val fakeSourceData = CalculationSourceData(
     emptyList(),
     PrisonerDetails(offenderNo = "", bookingId = 1, dateOfBirth = LocalDate.of(1, 2, 3)),
-    BookingAndSentenceAdjustments(
-      emptyList(),
-      emptyList(),
-    ).left(),
+    AdjustmentsSourceData(
+      prisonApiData = BookingAndSentenceAdjustments(
+        emptyList(),
+        emptyList(),
+      ),
+    ),
     listOf(),
     null,
   )
@@ -194,6 +197,7 @@ class CalculationTransactionalServiceTest {
     assertSds40: Boolean? = false,
     expectedValidationException: String? = null,
     expectedValidationMessage: String? = null,
+    featureTogglesStr: String? = null,
   ) {
     log.info("Testing example $exampleType/$exampleNumber")
     whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST)
@@ -214,7 +218,8 @@ class CalculationTransactionalServiceTest {
         sdsEarlyReleaseTrancheTwoDate(defaultParams(params)),
         sdsEarlyReleaseTrancheThreeDate(defaultParams(params)),
       )
-      val myValidationService = getActiveValidationService(sentencesExtractionService, trancheConfiguration)
+      val featureToggles = parseFeatureToggles(featureTogglesStr)
+      val myValidationService = getActiveValidationService(sentencesExtractionService, trancheConfiguration, featureToggles)
 
       returnedValidationMessages = myValidationService.validateBookingAfterCalculation(
         calculatedReleaseDates,
@@ -872,7 +877,7 @@ class CalculationTransactionalServiceTest {
         CALCULATION_REQUEST_WITH_OUTCOMES,
       ),
     )
-    whenever(calculationSourceDataService.getCalculationSourceData(anyString(), eq(InactiveDataOptions.default()))).thenReturn(SOURCE_DATA)
+    whenever(calculationSourceDataService.getCalculationSourceData(anyString(), eq(InactiveDataOptions.default()), eq(emptyList()))).thenReturn(SOURCE_DATA)
     whenever(bookingService.getBooking(eq(SOURCE_DATA), any())).thenReturn(BOOKING)
     assertThrows<CalculationDataHasChangedError> {
       calculationTransactionalService().findCalculationResultsByCalculationReference(
@@ -1034,13 +1039,31 @@ class CalculationTransactionalServiceTest {
     ) to calculationService
   }
 
+  fun parseFeatureToggles(toggleStr: String?): FeatureToggles {
+    val defaults = FeatureToggles(ftr48ManualJourney = true)
+    if (toggleStr.isNullOrBlank()) return defaults
+
+    val toggleMap = toggleStr.split(';').associate {
+      val (key, value) = it.split('=').map(String::trim)
+      key to value.toBooleanStrict()
+    }
+
+    return FeatureToggles(
+      supportInactiveSentencesAndAdjustments = toggleMap[FeatureToggles::supportInactiveSentencesAndAdjustments.name] ?: defaults.supportInactiveSentencesAndAdjustments,
+      useAdjustmentsApi = toggleMap[FeatureToggles::useAdjustmentsApi.name] ?: defaults.useAdjustmentsApi,
+      concurrentConsecutiveSentencesEnabled = toggleMap[FeatureToggles::concurrentConsecutiveSentencesEnabled.name] ?: defaults.concurrentConsecutiveSentencesEnabled,
+      externalMovementsSds40 = toggleMap[FeatureToggles::externalMovementsSds40.name] ?: defaults.externalMovementsSds40,
+      externalMovementsAdjustmentSharing = toggleMap[FeatureToggles::externalMovementsAdjustmentSharing.name] ?: defaults.externalMovementsAdjustmentSharing,
+      historicSled = toggleMap[FeatureToggles::historicSled.name] ?: defaults.historicSled,
+      ftr48ManualJourney = toggleMap[FeatureToggles::ftr48ManualJourney.name] ?: defaults.ftr48ManualJourney,
+    )
+  }
+
   private fun getActiveValidationService(
     sentencesExtractionService: SentencesExtractionService,
     trancheConfiguration: SDS40TrancheConfiguration,
+    featureToggles: FeatureToggles = FeatureToggles(),
   ): ValidationService {
-    val featureToggles = FeatureToggles(
-      concurrentConsecutiveSentencesEnabled = true,
-    )
     val validationUtilities = ValidationUtilities()
     val fineValidationService = FineValidationService(validationUtilities)
     val adjustmentValidationService = AdjustmentValidationService()
@@ -1133,7 +1156,7 @@ class CalculationTransactionalServiceTest {
           ),
         ),
         prisonerDetails,
-        adjustments.left(),
+        AdjustmentsSourceData(prisonApiData = adjustments),
         emptyList(),
         null,
         null,
@@ -1181,14 +1204,13 @@ class CalculationTransactionalServiceTest {
       prisonerId = PRISONER_ID,
       bookingId = BOOKING_ID,
     )
-
     val INPUT_DATA: JsonNode =
       JacksonUtil.toJsonNode(
         "{\"externalMovements\":[], \"historicalTusedData\":null, \"offender\":{\"reference\":\"A1234AJ\",\"dateOfBirth\":\"1980-01-01\",\"isActiveSexOffender\":false}," +
           "\"sentences\":[{\"type\":\"StandardSentence\",\"offence\":{\"committedAt\":\"2021-02-03\"," +
           "\"offenceCode\":null},\"duration\":{\"durationElements\":{\"DAYS\":0,\"WEEKS\":0,\"MONTHS\":0,\"YEARS\":5}}," +
           "\"sentencedAt\":\"2021-02-03\",\"identifier\":\"5ac7a5ae-fa7b-4b57-a44f-8eddde24f5fa\"," +
-          "\"consecutiveSentenceUUIDs\":[],\"caseSequence\":1,\"lineSequence\":2,\"caseReference\":null," +
+          "\"consecutiveSentenceUUIDs\":[],\"caseSequence\":1,\"lineSequence\":2,\"externalSentenceId\":{\"sentenceSequence\":1,\"bookingId\":12345},\"caseReference\":null," +
           "\"recallType\":null,\"isSDSPlus\":false,\"isSDSPlusEligibleSentenceTypeLengthAndOffence\":false,\"isSDSPlusOffenceInPeriod\":false,\"hasAnSDSEarlyReleaseExclusion\":\"NO\"}],\"adjustments\":{},\"returnToCustodyDate\":null,\"fixedTermRecallDetails\":null," +
           "\"bookingId\":12345}",
       )
@@ -1246,6 +1268,7 @@ class CalculationTransactionalServiceTest {
       identifier = UUID.fromString("5ac7a5ae-fa7b-4b57-a44f-8eddde24f5fa"),
       caseSequence = 1,
       lineSequence = 2,
+      externalSentenceId = ExternalSentenceId(sentenceSequence = 1, bookingId = BOOKING_ID),
       isSDSPlus = false,
       isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
       hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,

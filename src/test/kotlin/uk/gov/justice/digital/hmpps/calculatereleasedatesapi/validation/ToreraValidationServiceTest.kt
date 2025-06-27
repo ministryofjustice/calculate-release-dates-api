@@ -2,10 +2,12 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import org.mockito.Mockito.mock
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
@@ -25,7 +27,11 @@ class ToreraValidationServiceTest {
       "NOT_19ZA",
     )
     whenever(manageOffencesService.getToreraOffenceCodes()).thenReturn(toreraOffenceCodes)
-    val result = toreraValidationService.validateToreraExempt(listOf(validSDSSentence))
+    val result = toreraValidationService.validateToreraExempt(
+      mock<CalculationSourceData> {
+        on { sentenceAndOffences } doReturn listOf(validSDSSentence)
+      },
+    )
 
     assertThat(result.count()).isEqualTo(1)
     assertThat(result.first()).isEqualTo(ValidationMessage(ValidationCode.SDS_TORERA_EXCLUSION))
@@ -38,7 +44,11 @@ class ToreraValidationServiceTest {
       "NOT_19ZA",
     )
     whenever(manageOffencesService.getToreraOffenceCodes()).thenReturn(toreraOffenceCodes)
-    val result = toreraValidationService.validateToreraExempt(listOf(validSopcSentence))
+    val result = toreraValidationService.validateToreraExempt(
+      mock<CalculationSourceData> {
+        on { sentenceAndOffences } doReturn listOf(validSopcSentence)
+      },
+    )
 
     assertThat(result.count()).isEqualTo(1)
     assertThat(result.first()).isEqualTo(ValidationMessage(ValidationCode.SOPC_TORERA_EXCLUSION))
@@ -52,7 +62,12 @@ class ToreraValidationServiceTest {
       "NOT_19ZA_ABC",
     )
     whenever(manageOffencesService.getToreraOffenceCodes()).thenReturn(toreraOffenceCodes)
-    val result = toreraValidationService.validateToreraExempt(listOf(validSDSSentence, validSopcSentence))
+
+    val result = toreraValidationService.validateToreraExempt(
+      mock<CalculationSourceData> {
+        on { sentenceAndOffences } doReturn listOf(validSDSSentence, validSopcSentence)
+      },
+    )
 
     assertThat(result.count()).isEqualTo(2)
     assertThat(result).isEqualTo(
@@ -67,7 +82,11 @@ class ToreraValidationServiceTest {
   fun `Test validateToreraExempt does not trigger for SDS sentence with no offence codes in schedule 19ZA`() {
     val toreraOffenceCodes = listOf("NOT_19ZA")
     whenever(manageOffencesService.getToreraOffenceCodes()).thenReturn(toreraOffenceCodes)
-    val result = toreraValidationService.validateToreraExempt(listOf(validSDSSentence))
+    val result = toreraValidationService.validateToreraExempt(
+      mock<CalculationSourceData> {
+        on { sentenceAndOffences } doReturn listOf(validSDSSentence)
+      },
+    )
     assertThat(result.count()).isEqualTo(0)
   }
 
@@ -75,7 +94,11 @@ class ToreraValidationServiceTest {
   fun `Test validateToreraExempt does not trigger for SOPC sentence with no offence codes in schedule 19ZA`() {
     val toreraOffenceCodes = listOf("NOT_19ZA")
     whenever(manageOffencesService.getToreraOffenceCodes()).thenReturn(toreraOffenceCodes)
-    val result = toreraValidationService.validateToreraExempt(listOf(validSopcSentence))
+    val result = toreraValidationService.validateToreraExempt(
+      mock<CalculationSourceData> {
+        on { sentenceAndOffences } doReturn listOf(validSopcSentence)
+      },
+    )
     assertThat(result.count()).isEqualTo(0)
   }
 
@@ -84,10 +107,12 @@ class ToreraValidationServiceTest {
     val toreraOffenceCodes = listOf("NOT_19ZA", toreraOffenceCode)
     whenever(manageOffencesService.getToreraOffenceCodes()).thenReturn(toreraOffenceCodes)
     val result = toreraValidationService.validateToreraExempt(
-      listOf(
-        validSDSSentence.copy(sentenceDate = SDS_DYO_TORERA_START_DATE),
-        validSDSSentence.copy(sentenceDate = SDS_DYO_TORERA_START_DATE.minusDays(1)),
-      ),
+      mock<CalculationSourceData> {
+        on { sentenceAndOffences } doReturn listOf(
+          validSDSSentence.copy(sentenceDate = SDS_DYO_TORERA_START_DATE),
+          validSDSSentence.copy(sentenceDate = SDS_DYO_TORERA_START_DATE.minusDays(1)),
+        )
+      },
     )
     assertThat(result.count()).isEqualTo(0)
   }
@@ -97,10 +122,12 @@ class ToreraValidationServiceTest {
     val toreraOffenceCodes = listOf(toreraOffenceCode)
     whenever(manageOffencesService.getToreraOffenceCodes()).thenReturn(toreraOffenceCodes)
     val result = toreraValidationService.validateToreraExempt(
-      listOf(
-        validSopcSentence.copy(sentenceDate = SOPC_TORERA_END_DATE),
-        validSopcSentence.copy(sentenceDate = SOPC_TORERA_END_DATE.plusDays(1)),
-      ),
+      mock<CalculationSourceData> {
+        on { sentenceAndOffences } doReturn listOf(
+          validSopcSentence.copy(sentenceDate = SOPC_TORERA_END_DATE),
+          validSopcSentence.copy(sentenceDate = SOPC_TORERA_END_DATE.plusDays(1)),
+        )
+      },
     )
     assertThat(result.count()).isEqualTo(0)
   }

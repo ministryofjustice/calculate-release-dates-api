@@ -1,7 +1,7 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation
 
 import org.springframework.stereotype.Service
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.SDS_DYO_TORERA_START_DATE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.SOPC_TORERA_END_DATE
@@ -12,10 +12,10 @@ class ToreraValidationService(
   private val manageOffencesService: ManageOffencesService,
 ) {
 
-  internal fun validateToreraExempt(sentenceAndOffences: List<SentenceAndOffence>): List<ValidationMessage> {
+  internal fun validateToreraExempt(sourceData: CalculationSourceData): List<ValidationMessage> {
     val messages = mutableListOf<ValidationMessage>()
-    val sdsCodes = getToreraSdsOffenceCodes(sentenceAndOffences)
-    val sopcCodes = getToreraSopcOffenceCodes(sentenceAndOffences)
+    val sdsCodes = getToreraSdsOffenceCodes(sourceData)
+    val sopcCodes = getToreraSopcOffenceCodes(sourceData)
     val sdsAndSopcOffenceCodes = sdsCodes.plus(sopcCodes)
 
     // if no SDS or SOPC offence codes are present, torera is not valid
@@ -41,16 +41,26 @@ class ToreraValidationService(
   /**
    * Any SDS sentences with a sentence date greater than 2005-04-04
    */
-  private fun getToreraSdsOffenceCodes(sentenceAndOffences: List<SentenceAndOffence>) = sentenceAndOffences
-    .filter { SentenceCalculationType.isToreraEligible(it.sentenceCalculationType, eligibilityType = SentenceCalculationType.ToreraEligibilityType.SDS) && it.sentenceDate > SDS_DYO_TORERA_START_DATE }
+  internal fun getToreraSdsOffenceCodes(sourceData: CalculationSourceData): Set<String> = sourceData.sentenceAndOffences.filter { s ->
+    SentenceCalculationType.isToreraEligible(
+      s.sentenceCalculationType,
+      eligibilityType = SentenceCalculationType.ToreraEligibilityType.SDS,
+    ) &&
+      s.sentenceDate > SDS_DYO_TORERA_START_DATE
+  }
     .map { it.offence.offenceCode }
     .toSet()
 
   /**
    * Any SOPC sentences with a sentence date before 2022-06-28
    */
-  private fun getToreraSopcOffenceCodes(sentencesAndOffence: List<SentenceAndOffence>) = sentencesAndOffence
-    .filter { SentenceCalculationType.isToreraEligible(it.sentenceCalculationType, eligibilityType = SentenceCalculationType.ToreraEligibilityType.SOPC) && it.sentenceDate < SOPC_TORERA_END_DATE }
+  internal fun getToreraSopcOffenceCodes(sourceData: CalculationSourceData): Set<String> = sourceData.sentenceAndOffences.filter { s ->
+    SentenceCalculationType.isToreraEligible(
+      s.sentenceCalculationType,
+      eligibilityType = SentenceCalculationType.ToreraEligibilityType.SOPC,
+    ) &&
+      s.sentenceDate < SOPC_TORERA_END_DATE
+  }
     .map { it.offence.offenceCode }
     .toSet()
 }

@@ -1,0 +1,25 @@
+[
+  {
+    "bookingId": -1537188415,
+    "sentenceSequence": 1,
+    "sentenceStatus": "A",
+    "sentenceCategory": "2003",
+    "sentenceCalculationType": "ADIMP_ORA",
+    "sentenceTypeDescription": "Standard Determinate",
+    "sentenceDate": "2024-06-01",
+    "terms": [{
+      "years": 2,
+      "months": 0,
+      "weeks": 0,
+      "days": 0
+    }],
+    "offences": [
+      {
+        "offenderChargeId": 1,
+        "offenceStartDate": "2023-01-01",
+        "offenceCode": "GBH",
+        "offenceDescription": "Grievous bodily harm"
+      }
+    ]
+  }
+]

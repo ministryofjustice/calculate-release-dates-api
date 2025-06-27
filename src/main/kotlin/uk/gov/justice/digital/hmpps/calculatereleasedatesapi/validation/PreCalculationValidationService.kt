@@ -79,8 +79,6 @@ class PreCalculationValidationService(
       ValidationMessage(ValidationCode.UNSUPPORTED_SENTENCE_TYPE, listOf(displayName))
     }.toMutableList()
 
-    validationMessages += toreraValidationService.validateToreraExempt(sentencesAndOffences)
-
     return validationMessages.toList()
   }
 
@@ -89,6 +87,7 @@ class PreCalculationValidationService(
     messages += adjustmentValidationService.validateIfAdjustmentsAreSupported(sourceData.bookingAndSentenceAdjustments)
     messages += dtoValidationService.validate(sourceData)
     messages += botusValidationService.validate(sourceData)
+    messages += toreraValidationService.validateToreraExempt(sourceData)
     return messages
   }
 

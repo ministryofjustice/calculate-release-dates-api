@@ -5,8 +5,10 @@ info.app:
 spring:
   application:
     name: calculate-release-dates-api
-  codec:
-    max-in-memory-size: 200MB
+
+  http:
+    codecs:
+      max-in-memory-size: 200MB
 
   jackson:
     date-format: "yyyy-MM-dd HH:mm:ss"
@@ -157,5 +159,5 @@ feature-toggles:
   externalMovementsAdjustmentSharing: ${EXTERNAL_MOVEMENTS_ADJUSTMENTS_FEATURE_TOGGLE:false}
   useAdjustmentsApi: ${USE_ADJUSTMENTS_API:false}
   concurrentConsecutiveSentencesEnabled: ${CONCURRENT_CONSECUTIVE_SENTENCES_ENABLED:false}
-  historic-sled: ${HISTORIC_SLED_ENABLED:false}
+  historicSled: ${HISTORIC_SLED_ENABLED:false}
   ftr48ManualJourney: ${FTR_48_MANUAL_JOURNEY:false}

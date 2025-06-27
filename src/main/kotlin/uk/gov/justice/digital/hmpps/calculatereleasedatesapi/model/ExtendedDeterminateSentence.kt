@@ -18,9 +18,10 @@ data class ExtendedDeterminateSentence(
   override val consecutiveSentenceUUIDs: List<UUID> = listOf(),
   override val caseSequence: Int? = null,
   override val lineSequence: Int? = null,
+  override val externalSentenceId: ExternalSentenceId? = null,
   override val caseReference: String?,
   override val recallType: RecallType? = null,
-) : AbstractSentence(offence, sentencedAt, identifier, consecutiveSentenceUUIDs, caseSequence, lineSequence, caseReference, recallType) {
+) : AbstractSentence(offence, sentencedAt, identifier, consecutiveSentenceUUIDs, caseSequence, lineSequence, externalSentenceId, caseReference, recallType) {
   override val isSDSPlus: Boolean = false
   override val isSDSPlusEligibleSentenceTypeLengthAndOffence: Boolean = false
   override val isSDSPlusOffenceInPeriod: Boolean = false
@@ -39,6 +40,5 @@ data class ExtendedDeterminateSentence(
 
   fun combinedDuration(): Duration = custodialDuration.appendAll(extensionDuration.durationElements)
   override fun getLengthInDays(): Int = combinedDuration().getLengthInDays(sentencedAt)
-
   override fun hasAnyEdsOrSopcSentence(): Boolean = true
 }
