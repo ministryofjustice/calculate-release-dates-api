@@ -109,7 +109,7 @@ class ValidationIntTest(private val mockManageOffencesClient: MockManageOffences
   fun `Run validation on unsupported sentence data`() {
     runValidationAndCheckMessages(
       UNSUPPORTED_SENTENCE_PRISONER_ID,
-      listOf(ValidationMessage(UNSUPPORTED_SENTENCE_TYPE, listOf("2003", "This sentence is unsupported"))),
+      listOf(ValidationMessage(UNSUPPORTED_SENTENCE_TYPE, listOf("2003 This sentence is unsupported"))),
     )
   }
 
@@ -117,7 +117,7 @@ class ValidationIntTest(private val mockManageOffencesClient: MockManageOffences
   fun `Run supported validation on unsupported sentence data`() {
     runSupportedValidationAndCheckMessages(
       UNSUPPORTED_SENTENCE_PRISONER_ID,
-      listOf(ValidationMessage(UNSUPPORTED_SENTENCE_TYPE, listOf("2003", "This sentence is unsupported"))),
+      listOf(ValidationMessage(UNSUPPORTED_SENTENCE_TYPE, listOf("2003 This sentence is unsupported"))),
       listOf(),
       listOf(),
     )
