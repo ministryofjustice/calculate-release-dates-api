@@ -12,6 +12,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.sentence.Se
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculator
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineHandleResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineTrackingData
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.getSentencePartIdentifiers
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 
@@ -40,15 +41,14 @@ class TimelineSentenceCalculationHandler(
         servedAdas = 0
       }
 
-      currentSentenceGroup.addAll(newlySentenced)
       futureData.sentences -= newlySentenced
 
-      val sentencesBeforeCombining = currentSentenceGroup.toList()
-      val sentencesAfterCombining = sentenceCombinationService.getSentencesToCalculate(currentSentenceGroup, offender)
+      val sentencesBeforeCombining = currentSentenceGroup.toList() + newlySentenced
+      val sentencesAfterCombining = sentenceCombinationService.getSentencesToCalculate(sentencesBeforeCombining, offender)
       val combinedSentencesWhichHaveNewParts = sentencesAfterCombining.filter { it.sentenceParts().any { part -> newlySentenced.contains(part) } }
-      val partsOfNewlyCombinedSentences = combinedSentencesWhichHaveNewParts.flatMap { it.sentenceParts() }
-      val unchangedByCombiningSentences = currentSentenceGroup.filter { it.sentenceParts().none { part -> partsOfNewlyCombinedSentences.contains(part) } }
-
+      val unchangedByCombiningSentences = currentSentenceGroup.filter { original ->
+        sentencesAfterCombining.any { after -> after.getSentencePartIdentifiers() == original.getSentencePartIdentifiers() }
+      }
       currentSentenceGroup.clear()
       currentSentenceGroup.addAll(combinedSentencesWhichHaveNewParts)
       currentSentenceGroup.addAll(unchangedByCombiningSentences)
