@@ -19,3 +19,15 @@ sds-early-release-tranches:
   tranche-two-date: 2024-10-22
   tranche-three-date: 2024-12-16
 
+early-release-configuration:
+  - release-multiplier: 0.4
+    filter: SDS_40_EXCLUSIONS
+    tranches:
+      - type: SENTENCE_LENGTH
+        unit: YEARS
+        duration: 5
+        date: 2024-09-10
+      - type: FINAL
+        date: 2024-10-22
+      - type: SDS_40_TRANCHE_THREE
+        date: 2024-12-16
