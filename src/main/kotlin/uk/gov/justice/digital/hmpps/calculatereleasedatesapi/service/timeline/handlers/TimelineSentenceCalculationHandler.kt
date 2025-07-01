@@ -40,14 +40,12 @@ class TimelineSentenceCalculationHandler(
         servedAdas = 0
       }
 
-      currentSentenceGroup.addAll(newlySentenced)
       futureData.sentences -= newlySentenced
 
-      val sentencesBeforeCombining = currentSentenceGroup.toList()
-      val sentencesAfterCombining = sentenceCombinationService.getSentencesToCalculate(currentSentenceGroup, offender)
+      val sentencesBeforeCombining = currentSentenceGroup.toList() + newlySentenced
+      val sentencesAfterCombining = sentenceCombinationService.getSentencesToCalculate(sentencesBeforeCombining, offender)
       val combinedSentencesWhichHaveNewParts = sentencesAfterCombining.filter { it.sentenceParts().any { part -> newlySentenced.contains(part) } }
-      val partsOfNewlyCombinedSentences = combinedSentencesWhichHaveNewParts.flatMap { it.sentenceParts() }
-      val unchangedByCombiningSentences = currentSentenceGroup.filter { it.sentenceParts().none { part -> partsOfNewlyCombinedSentences.contains(part) } }
+      val unchangedByCombiningSentences = currentSentenceGroup.filter { original -> sentencesAfterCombining.any { after -> after.sentenceParts().map { part -> part.identifier } == original.sentenceParts().map { part -> part.identifier }} }
 
       currentSentenceGroup.clear()
       currentSentenceGroup.addAll(combinedSentencesWhichHaveNewParts)
