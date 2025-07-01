@@ -1,0 +1,90 @@
+{
+  "offender": {
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
+  },
+  "sentences": [
+    {
+      "type": "ExtendedDeterminateSentence",
+      "offence": {
+        "committedAt": "2016-09-22",
+        "offenceCode": "OF61014"
+      },
+      "custodialDuration": {
+        "durationElements": {
+          "YEARS": 6
+        }
+      },
+      "extensionDuration": {
+        "durationElements": {
+          "YEARS": 3
+        }
+      },
+      "sentencedAt": "2017-09-29",
+      "identifier": "49edac49-781b-3265-a766-6b8e6919639c",
+      "recallType": "STANDARD_RECALL"
+    },
+    {
+      "offence": {
+        "committedAt": "2016-10-29",
+        "offenceCode": "CD71040"
+      },
+      "duration": {
+        "durationElements": {
+          "YEARS": 2
+        }
+      },
+      "sentencedAt": "2018-07-19",
+      "consecutiveSentenceUUIDs": [
+        "49edac49-781b-3265-a766-6b8e6919639c"
+      ],
+      "recallType": "STANDARD_RECALL"
+    },
+    {
+      "offence": {
+        "committedAt": "2020-03-26",
+        "offenceCode": "CJ88149"
+      },
+      "duration": {
+        "durationElements": {
+          "WEEKS": 20
+        }
+      },
+      "sentencedAt": "2021-01-08",
+      "consecutiveSentenceUUIDs": [
+        "49edac49-781b-3265-a766-6b8e6919639c"
+      ],
+      "recallType": "STANDARD_RECALL"
+    },
+    {
+      "offence": {
+        "committedAt": "2023-12-07",
+        "offenceCode": "OF61131"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 18
+        }
+      },
+      "sentencedAt": "2024-11-13"
+    }
+  ],
+  "adjustments": {
+    "RECALL_REMAND": [
+      {
+        "appliesToSentencesFrom": "2017-09-29",
+        "numberOfDays": 368,
+        "fromDate": "2016-09-26",
+        "toDate": "2017-09-28"
+      }
+    ],
+    "UNLAWFULLY_AT_LARGE": [
+      {
+        "appliesToSentencesFrom": "2021-01-08",
+        "numberOfDays": 10,
+        "fromDate": "2021-01-08",
+        "toDate": "2021-01-18"
+      }
+    ]
+  }
+}
