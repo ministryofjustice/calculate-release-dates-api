@@ -57,7 +57,6 @@ class RecallValidationService(
     val sentenceSequence: Int,
     val fromDate: LocalDate,
     val toDate: LocalDate,
-
   )
 
   internal fun validateRemandPeriodsAgainstSentenceDates(sourceData: CalculationSourceData): List<ValidationMessage> {
@@ -278,10 +277,9 @@ class RecallValidationService(
 
   internal fun validateFtrFortyOverlap(sentences: List<CalculableSentence>): List<ValidationMessage> {
     val possibleSentences = sentences.filter { it.recallType == FIXED_TERM_RECALL_28 && it.sentencedAt.isBefore(FTR_48_COMMENCEMENT_DATE) }
-    if (featureToggles.ftr48ManualJourney &&
-      possibleSentences.isNotEmpty() &&
-      possibleSentences.all { it.durationIsGreaterThanOrEqualTo(12, MONTHS) && it.durationIsLessThan(48, MONTHS) }
-    ) {
+    val allSentencesLessThan12Months = possibleSentences.all { it.durationIsLessThan(12, MONTHS) }
+    val anySentenceEqualOrOver48Months = possibleSentences.any { it.durationIsGreaterThanOrEqualTo(48, MONTHS) }
+    if (featureToggles.ftr48ManualJourney && possibleSentences.isNotEmpty() && !allSentencesLessThan12Months && !anySentenceEqualOrOver48Months) {
       return listOf(ValidationMessage(ValidationCode.FTR_TYPE_48_DAYS_OVERLAPPING_SENTENCE))
     }
     return emptyList()
