@@ -83,7 +83,9 @@ class ValidationController(
     prisonerId: String,
   ): SupportedValidationResponse {
     log.info("Request received to validate prisonerId $prisonerId")
-    return calculationTransactionalService.supportedValidation(prisonerId)
+    val result = calculationTransactionalService.supportedValidation(prisonerId)
+    log.info("Returning supported validation response for prisoner $prisonerId: {}", result)
+    return result
   }
 
   @GetMapping(value = ["/{prisonerId}/manual-entry-validation"])
