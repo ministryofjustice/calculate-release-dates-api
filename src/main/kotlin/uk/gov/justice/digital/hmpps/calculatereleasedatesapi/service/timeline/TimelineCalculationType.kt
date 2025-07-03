@@ -8,4 +8,5 @@ enum class TimelineCalculationType {
   EARLY_RELEASE_TRANCHE,
   EXTERNAL_ADMISSION,
   EXTERNAL_RELEASE,
+  SDS_40_TRANCHE_3
 }

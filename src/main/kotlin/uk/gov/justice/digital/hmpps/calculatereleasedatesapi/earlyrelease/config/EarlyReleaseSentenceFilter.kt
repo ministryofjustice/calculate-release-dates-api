@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config
 
-enum class EarlyReleaseTrancheType {
-  SENTENCE_LENGTH,
-  FINAL
+enum class EarlyReleaseSentenceFilter {
+  SDS_40_EXCLUSIONS
 }

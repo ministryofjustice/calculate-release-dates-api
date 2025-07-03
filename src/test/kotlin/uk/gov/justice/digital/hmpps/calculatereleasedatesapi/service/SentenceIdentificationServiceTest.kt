@@ -33,7 +33,7 @@ class SentenceIdentificationServiceTest {
   private val hdcedCalculator = HdcedCalculator(hdcedConfigurationForTests())
   private val trancheConfiguration = SDS40TrancheConfiguration(sdsEarlyReleaseTrancheOneDate(), sdsEarlyReleaseTrancheTwoDate(), sdsEarlyReleaseTrancheThreeDate())
   private val sentenceIdentificationService: SentenceIdentificationService =
-    SentenceIdentificationService(tusedCalculator, hdcedCalculator, trancheConfiguration)
+    SentenceIdentificationService(tusedCalculator, hdcedCalculator)
   private val jsonTransformation = JsonTransformation()
   private val offender = jsonTransformation.loadOffender("john_doe")
   private val offenderU18 = jsonTransformation.loadOffender("john_doe_under18")

@@ -26,14 +26,10 @@ class TimelinePostTrancheAdjustmentService {
   fun applyTrancheAdjustmentLogic(
     calculation: CalculationResult,
     adjustments: Adjustments,
-    trancheAndCommencement: Pair<SDSEarlyReleaseTranche, LocalDate?>,
+    tranche: LocalDate?,
   ): CalculationResult {
-    if (trancheAndCommencement.first !in listOf(
-        SDSEarlyReleaseTranche.TRANCHE_1,
-        SDSEarlyReleaseTranche.TRANCHE_2,
-      )
-    ) {
-      log.info("No adjustments to apply as tranche is ${calculation.sdsEarlyReleaseTranche}")
+    if (tranche == null) {
+      log.info("No adjustments to apply as early release tranche is not set")
       return calculation
     }
 
@@ -42,7 +38,7 @@ class TimelinePostTrancheAdjustmentService {
       return calculation
     }
 
-    return adjustReleaseDatesForTranche(calculation, adjustments, trancheAndCommencement.second!!)
+    return adjustReleaseDatesForTranche(calculation, adjustments, tranche)
   }
 
   private fun adjustReleaseDatesForTranche(

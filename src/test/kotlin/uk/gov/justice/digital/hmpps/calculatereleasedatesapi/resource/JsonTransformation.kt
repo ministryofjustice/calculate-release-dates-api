@@ -11,7 +11,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.DatesAndHints
+//import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.DatesAndHints
 import java.io.File
 import java.io.FileNotFoundException
 
@@ -53,10 +53,10 @@ class JsonTransformation {
     return mapper.readValue(json, Booking::class.java) to CalculationUserInputs(calculateErsed = calculateErsed)
   }
 
-  fun loadHintTextResults(testCase: String): List<DatesAndHints> {
-    val json = getJsonTest("$testCase.json", "hint-text/expected-results")
-    return mapper.readValue(json, object : TypeReference<List<DatesAndHints>>() {})
-  }
+//  fun loadHintTextResults(testCase: String): List<DatesAndHints> {
+//    val json = getJsonTest("$testCase.json", "hint-text/expected-results")
+//    return mapper.readValue(json, object : TypeReference<List<DatesAndHints>>() {})
+//  }
 
   fun getAllPrisonerDetails(): Map<String, PrisonerDetails> = getAllJsonFromDir("api_integration/prisoners")
     .mapValues { mapper.readValue(it.value, PrisonerDetails::class.java) }

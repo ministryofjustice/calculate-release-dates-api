@@ -5,7 +5,7 @@ import org.springframework.boot.context.properties.bind.Name
 import org.springframework.format.annotation.DateTimeFormat
 import java.time.LocalDate
 
-@ConfigurationProperties("sds-early-release-tranches")
+@ConfigurationProperties("sds-40-early-release-tranches")
 data class SDS40TrancheConfiguration(
   @Name("tranche-one-date")
   @DateTimeFormat(pattern = "yyyy-MM-dd") val trancheOneCommencementDate: LocalDate,

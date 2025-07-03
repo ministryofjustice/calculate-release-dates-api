@@ -12,22 +12,21 @@ ersed:
   max-period: P544D
   release-point: 0.5
 
-release-point-multipliers:
-  early-release-point: 0.4
-sds-early-release-tranches:
+sds-40-early-release-tranches:
   tranche-one-date: 2024-09-10
   tranche-two-date: 2024-10-22
   tranche-three-date: 2024-12-16
 
 early-release-configuration:
-  - release-multiplier: 0.4
-    filter: SDS_40_EXCLUSIONS
-    tranches:
-      - type: SENTENCE_LENGTH
-        unit: YEARS
-        duration: 5
-        date: 2024-09-10
-      - type: FINAL
-        date: 2024-10-22
-      - type: SDS_40_TRANCHE_THREE
-        date: 2024-12-16
+  configurations:
+    - release-multiplier: 0.4
+      filter: SDS_40_EXCLUSIONS
+      tranches:
+        - type: SENTENCE_LENGTH
+          unit: YEARS
+          duration: 5
+          date: ${sds-40-early-release-tranches.tranche-one-date}
+          name: TRANCHE_1
+        - type: FINAL
+          date: ${sds-40-early-release-tranches.tranche-two-date}
+          name: TRANCHE_2
