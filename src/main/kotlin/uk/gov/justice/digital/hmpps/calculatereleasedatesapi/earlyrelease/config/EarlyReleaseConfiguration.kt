@@ -8,20 +8,19 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeter
 
 @ConfigurationProperties(prefix = "early-release-configuration")
 data class EarlyReleaseConfigurations(
-  val configurations: List<EarlyReleaseConfiguration>
+  val configurations: List<EarlyReleaseConfiguration>,
 )
 
 data class EarlyReleaseConfiguration(
- val releaseMultiplier: Double,
- val filter: EarlyReleaseSentenceFilter,
-  val tranches: List<EarlyReleaseTrancheConfiguration>
+  val releaseMultiplier: Double,
+  val filter: EarlyReleaseSentenceFilter,
+  val tranches: List<EarlyReleaseTrancheConfiguration>,
 ) {
-  fun matchesFilter(part: AbstractSentence):Boolean =
-    part.identificationTrack == SentenceIdentificationTrack.SDS && part is StandardDeterminateSentence &&
-    when(filter) {
-      EarlyReleaseSentenceFilter.SDS_40_EXCLUSIONS -> part.hasAnSDSEarlyReleaseExclusion != SDSEarlyReleaseExclusionType.NO
+  fun matchesFilter(part: AbstractSentence): Boolean = part.identificationTrack == SentenceIdentificationTrack.SDS &&
+    part is StandardDeterminateSentence &&
+    when (filter) {
+      EarlyReleaseSentenceFilter.SDS_40_EXCLUSIONS -> part.hasAnSDSEarlyReleaseExclusion == SDSEarlyReleaseExclusionType.NO
     }
 
-    fun earliestTranche() = tranches.minOf { it.date }
-
+  fun earliestTranche() = tranches.minOf { it.date }
 }

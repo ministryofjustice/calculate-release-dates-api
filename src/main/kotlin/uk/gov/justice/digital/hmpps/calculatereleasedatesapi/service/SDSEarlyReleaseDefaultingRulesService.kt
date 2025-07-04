@@ -15,14 +15,14 @@ import java.time.LocalDate
 
 @Service
 class SDSEarlyReleaseDefaultingRulesService(
-  val earlyReleaseConfigurations: EarlyReleaseConfigurations
+  val earlyReleaseConfigurations: EarlyReleaseConfigurations,
 ) {
   fun applySDSEarlyReleaseRulesAndFinalizeDates(
     earlyReleaseResult: CalculationResult,
     standardReleaseResult: CalculationResult,
     trancheCommencementDate: LocalDate?,
     sentences: List<CalculableSentence>,
-    earlyReleaseConfiguration: EarlyReleaseConfiguration
+    earlyReleaseConfiguration: EarlyReleaseConfiguration,
   ): CalculationResult {
     val dates = earlyReleaseResult.dates.toMutableMap()
     val breakdownByReleaseDateType = earlyReleaseResult.breakdownByReleaseDateType.toMutableMap()
@@ -34,7 +34,7 @@ class SDSEarlyReleaseDefaultingRulesService(
       dates,
       breakdownByReleaseDateType,
       sentences,
-      earlyReleaseConfiguration
+      earlyReleaseConfiguration,
     )
 
     return createFinalCalculationResult(
@@ -67,7 +67,7 @@ class SDSEarlyReleaseDefaultingRulesService(
       standardReleaseResult,
       breakdownByReleaseDateType,
       sentences,
-      earlyReleaseConfiguration
+      earlyReleaseConfiguration,
     )
 
     adjustHdcedAndPrrdBasedOnCrdOrArd(
@@ -191,7 +191,7 @@ class SDSEarlyReleaseDefaultingRulesService(
   private fun shouldAdjustTused(
     dates: Map<ReleaseDateType, LocalDate>,
     latestReleaseDate: LocalDate,
-    earlyReleaseConfiguration: EarlyReleaseConfiguration
+    earlyReleaseConfiguration: EarlyReleaseConfiguration,
   ): Boolean = dates.containsKey(ReleaseDateType.TUSED) && latestReleaseDate.isBefore(earlyReleaseConfiguration.earliestTranche())
 
   private fun applyStandardTused(
@@ -328,11 +328,11 @@ class SDSEarlyReleaseDefaultingRulesService(
     val sdsEarlyReleaseType = SDSEarlyReleaseTranche.fromDate(context.trancheCommencementDate, earlyReleaseConfigurations)
     context.dates[context.dateType] = context.trancheCommencementDate!!
     context.breakdownByReleaseDateType[context.dateType] = ReleaseDateCalculationBreakdown(
-      if (sdsEarlyReleaseType == SDSEarlyReleaseTranche.TRANCHE_1) { //TODO How to re-do these rules.
-          setOf(CalculationRule.SDS_EARLY_RELEASE_ADJUSTED_TO_TRANCHE_1_COMMENCEMENT)
-        } else if (sdsEarlyReleaseType == SDSEarlyReleaseTranche.TRANCHE_2) {
-          setOf(CalculationRule.SDS_EARLY_RELEASE_ADJUSTED_TO_TRANCHE_2_COMMENCEMENT)
-        } else {
+      if (sdsEarlyReleaseType == SDSEarlyReleaseTranche.TRANCHE_1) { // TODO How to re-do these rules.
+        setOf(CalculationRule.SDS_EARLY_RELEASE_ADJUSTED_TO_TRANCHE_1_COMMENCEMENT)
+      } else if (sdsEarlyReleaseType == SDSEarlyReleaseTranche.TRANCHE_2) {
+        setOf(CalculationRule.SDS_EARLY_RELEASE_ADJUSTED_TO_TRANCHE_2_COMMENCEMENT)
+      } else {
         emptySet()
       },
       releaseDate = context.trancheCommencementDate,

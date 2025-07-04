@@ -14,8 +14,7 @@ import java.time.temporal.ChronoUnit
 import kotlin.collections.map
 
 @Service
-class TrancheAllocationService(
-) {
+class TrancheAllocationService {
 
   fun isIncludedInTranche(timelineTrackingData: TimelineTrackingData): Boolean {
     val earlyReleaseConfig = timelineTrackingData.currentTimelineCalculationDate.earlyReleaseConfiguration!!
@@ -27,16 +26,16 @@ class TrancheAllocationService(
       return false
     }
 
-    return when(tranche.type) {
+    return when (tranche.type) {
       EarlyReleaseTrancheType.SENTENCE_LENGTH -> matchesSentenceLength(sentencesConsideredForTrancheRules, earlyReleaseConfig, tranche)
-      EarlyReleaseTrancheType.FINAL -> true //Not matched any other tranche, so must be in this one.
+      EarlyReleaseTrancheType.FINAL -> true // Not matched any other tranche, so must be in this one.
     }
   }
 
   private fun matchesSentenceLength(
     sentencesConsideredForTrancheRules: List<CalculableSentence>,
     earlyReleaseConfiguration: EarlyReleaseConfiguration,
-    tranche: EarlyReleaseTrancheConfiguration
+    tranche: EarlyReleaseTrancheConfiguration,
   ): Boolean {
     val sentenceDurations = sentencesConsideredForTrancheRules.map { filterAndMapSentencesForNotIncludedTypesByDuration(it, earlyReleaseConfiguration, tranche.unit!!) }
     return sentenceDurations.none { it >= tranche.duration!! }
@@ -44,18 +43,14 @@ class TrancheAllocationService(
 
   private fun getSentencesForTrancheRules(
     sentences: List<CalculableSentence>,
-    earlyReleaseConfig: EarlyReleaseConfiguration
+    earlyReleaseConfig: EarlyReleaseConfiguration,
   ): List<CalculableSentence> = sentences.flatMap { it.sentenceParts() }.filter { sentence ->
     isEligibleForTrancheRules(sentence) &&
       sentence.sentencedAt.isBefore(earlyReleaseConfig.earliestTranche())
   }
 
-  private fun isEligibleForTrancheRules(sentence: CalculableSentence): Boolean =
-    sentence.identificationTrack == SentenceIdentificationTrack.SDS
-     &&
+  private fun isEligibleForTrancheRules(sentence: CalculableSentence): Boolean = sentence.identificationTrack == SentenceIdentificationTrack.SDS &&
     !sentence.isRecall()
-
-
 
   private fun filterAndMapSentencesForNotIncludedTypesByDuration(
     sentenceToFilter: CalculableSentence,
@@ -96,6 +91,4 @@ class TrancheAllocationService(
   private fun filterOnSentenceDate(sentence: CalculableSentence, earlyReleaseConfiguration: EarlyReleaseConfiguration): Boolean = sentence.sentencedAt.isBefore(earlyReleaseConfiguration.earliestTranche())
 
   private fun filterOnSentenceExpiryDates(sentence: CalculableSentence, earlyReleaseConfiguration: EarlyReleaseConfiguration): Boolean = sentence.sentenceCalculation.adjustedExpiryDate.isAfterOrEqualTo(earlyReleaseConfiguration.earliestTranche())
-
-
 }

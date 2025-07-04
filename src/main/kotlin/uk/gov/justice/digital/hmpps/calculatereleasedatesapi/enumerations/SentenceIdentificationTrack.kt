@@ -40,7 +40,6 @@ enum class SentenceIdentificationTrack(
     EDS_DISCRETIONARY_RELEASE,
     SOPC_PED_AT_TWO_THIRDS,
     SDS,
-    SDS_PLUS_RELEASE
+    SDS_PLUS_RELEASE,
   ).contains(this)
-
 }

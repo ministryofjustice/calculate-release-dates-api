@@ -368,7 +368,7 @@ class BookingExtractionService(
 
   private fun isAffectedBySds40(sentence: CalculableSentence): Boolean = !sentence.isRecall() &&
     sentence.sentenceParts().any {
-     sentence.sentenceCalculation.allocatedEarlyRelease?.matchesFilter(it) == true
+      sentence.sentenceCalculation.allocatedEarlyRelease?.matchesFilter(it) == true
     } &&
     sentence.sentenceCalculation.adjustedDeterminateReleaseDate != sentence.sentenceCalculation.adjustedHistoricDeterminateReleaseDate
 

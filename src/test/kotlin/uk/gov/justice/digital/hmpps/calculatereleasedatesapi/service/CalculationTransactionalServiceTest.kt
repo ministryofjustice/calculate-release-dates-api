@@ -29,12 +29,12 @@ import org.skyscreamer.jsonassert.JSONCompareMode
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.sdsEarlyReleaseTrancheOneDate
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.sdsEarlyReleaseTrancheTwoDate
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.sdsEarlyReleaseTrancheThreeDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.earlyReleaseConfigurationsForTests
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.ersedConfigurationForTests
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.hdcedConfigurationForTests
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.sdsEarlyReleaseTrancheOneDate
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.sdsEarlyReleaseTrancheThreeDate
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.sdsEarlyReleaseTrancheTwoDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.SDS40TrancheConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ApprovedDatesSubmission
@@ -186,6 +186,11 @@ class CalculationTransactionalServiceTest {
 
   @Captor
   lateinit var updatedOffenderDatesArgumentCaptor: ArgumentCaptor<UpdateOffenderDates>
+
+  @Test
+  fun blah() {
+    `Test Example`("hdc-365", "crs-2273-reg-2")
+  }
 
   @ParameterizedTest
   @CsvFileSource(resources = ["/test_data/calculation-service-examples.csv"], numLinesToSkip = 1)
@@ -930,7 +935,6 @@ class CalculationTransactionalServiceTest {
     )
     val sentenceIdentificationService = SentenceIdentificationService(tusedCalculator, hdcedCalculator)
 
-
     val trancheAllocationService = TrancheAllocationService()
     val sdsEarlyReleaseDefaultingRulesService = SDSEarlyReleaseDefaultingRulesService(earlyReleaseConfigurations)
     val sentenceCombinationService = SentenceCombinationService(
@@ -961,12 +965,12 @@ class CalculationTransactionalServiceTest {
     val timelineTrancheCalculationHandler = TimelineTrancheCalculationHandler(
       timelineCalculator,
       earlyReleaseConfigurations,
-      trancheAllocationService
+      trancheAllocationService,
     )
     val timelineTrancheThreeCalculationHandler = TimelineTrancheThreeCalculationHandler(
       timelineCalculator,
       earlyReleaseConfigurations,
-      trancheConfiguration
+      trancheConfiguration,
     )
     val timelineUalAdjustmentCalculationHandler = TimelineUalAdjustmentCalculationHandler(
       timelineCalculator,
@@ -996,7 +1000,7 @@ class CalculationTransactionalServiceTest {
       timelinePostTrancheAdjustmentService,
       timelineTrancheThreeCalculationHandler,
       earlyReleaseConfigurations,
-      trancheConfiguration
+      trancheConfiguration,
     )
 
     val sourceDataMapper = SourceDataMapper(TestUtil.objectMapper())

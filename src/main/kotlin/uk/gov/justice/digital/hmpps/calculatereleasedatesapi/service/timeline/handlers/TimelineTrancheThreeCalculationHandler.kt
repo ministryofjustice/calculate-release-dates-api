@@ -1,10 +1,8 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers
 
 import org.springframework.stereotype.Service
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.ReleasePointMultipliersConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.SDS40TrancheConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseConfigurations
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculator
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineHandleResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineTrackingData
@@ -14,14 +12,14 @@ import java.time.LocalDate
 class TimelineTrancheThreeCalculationHandler(
   timelineCalculator: TimelineCalculator,
   earlyReleaseConfigurations: EarlyReleaseConfigurations,
-  private val sdS40TrancheConfiguration: SDS40TrancheConfiguration
+  private val sdS40TrancheConfiguration: SDS40TrancheConfiguration,
 ) : TimelineCalculationHandler(timelineCalculator, earlyReleaseConfigurations) {
 
   override fun handle(
     timelineCalculationDate: LocalDate,
     timelineTrackingData: TimelineTrackingData,
   ): TimelineHandleResult {
-    //TODO T3
+    // TODO T3
 //    with(timelineTrackingData) {
 //      currentSentenceGroup
 //        .filter { sentence -> sentence.sentenceParts().any { it.identificationTrack == SentenceIdentificationTrack.SDS_STANDARD_RELEASE_T3_EXCLUSION } }

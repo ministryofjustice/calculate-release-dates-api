@@ -2,5 +2,5 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.confi
 
 enum class EarlyReleaseTrancheType {
   SENTENCE_LENGTH,
-  FINAL
+  FINAL,
 }

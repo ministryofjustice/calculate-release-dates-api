@@ -28,7 +28,7 @@ class TimelineSentenceCalculationHandler(
     with(timelineTrackingData) {
       inPrison = true
       allocatedTranche = null
-      allocatedEarlyRelease = earlyReleaseConfigurations.configurations.filter { timelineCalculationDate.isAfter(it.earliestTranche()) }.maxBy { it.earliestTranche() }
+      allocatedEarlyRelease = earlyReleaseConfigurations.configurations.filter { timelineCalculationDate.isAfter(it.earliestTranche()) }.maxByOrNull { it.earliestTranche() }
 
       var servedAdas = findServedAdas(timelineCalculationDate, currentSentenceGroup, latestRelease)
 

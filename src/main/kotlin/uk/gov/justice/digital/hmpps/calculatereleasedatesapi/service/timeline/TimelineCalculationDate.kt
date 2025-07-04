@@ -8,5 +8,5 @@ data class TimelineCalculationDate(
   val date: LocalDate,
   val type: TimelineCalculationType,
   val earlyReleaseConfiguration: EarlyReleaseConfiguration? = null,
-  val trancheConfiguration: EarlyReleaseTrancheConfiguration? = null
+  val trancheConfiguration: EarlyReleaseTrancheConfiguration? = null,
 )

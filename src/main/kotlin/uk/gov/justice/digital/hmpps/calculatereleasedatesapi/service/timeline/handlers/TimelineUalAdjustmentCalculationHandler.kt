@@ -13,7 +13,7 @@ import java.time.LocalDate
 @Service
 class TimelineUalAdjustmentCalculationHandler(
   timelineCalculator: TimelineCalculator,
-  earlyReleaseConfigurations: EarlyReleaseConfigurations
+  earlyReleaseConfigurations: EarlyReleaseConfigurations,
 ) : TimelineCalculationHandler(timelineCalculator, earlyReleaseConfigurations) {
   override fun handle(timelineCalculationDate: LocalDate, timelineTrackingData: TimelineTrackingData): TimelineHandleResult {
     with(timelineTrackingData) {

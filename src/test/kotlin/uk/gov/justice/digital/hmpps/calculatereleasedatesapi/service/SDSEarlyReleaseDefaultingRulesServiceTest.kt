@@ -1,42 +1,42 @@
-//package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
+// package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 //
-//import org.assertj.core.api.Assertions.assertThat
-//import org.junit.jupiter.api.Test
-//import org.junit.jupiter.api.extension.ExtendWith
-//import org.junit.jupiter.params.ParameterizedTest
-//import org.junit.jupiter.params.provider.CsvSource
-//import org.mockito.Mock
-//import org.mockito.junit.jupiter.MockitoExtension
-//import org.mockito.kotlin.mock
-//import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.SDS40TrancheConfiguration
-//import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
-//import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
-//import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SDSEarlyReleaseTranche
-//import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
-//import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustments
-//import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
-//import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
-//import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
-//import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
-//import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
-//import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType
-//import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
-//import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateTypes
-//import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
-//import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAdjustments
-//import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
-//import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
-//import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.UnadjustedReleaseDate
-//import java.time.LocalDate
-//import java.time.Period
-//import java.time.temporal.ChronoUnit.DAYS
-//import java.time.temporal.ChronoUnit.MONTHS
-//import java.time.temporal.ChronoUnit.WEEKS
-//import java.time.temporal.ChronoUnit.YEARS
-//import java.util.*
+// import org.assertj.core.api.Assertions.assertThat
+// import org.junit.jupiter.api.Test
+// import org.junit.jupiter.api.extension.ExtendWith
+// import org.junit.jupiter.params.ParameterizedTest
+// import org.junit.jupiter.params.provider.CsvSource
+// import org.mockito.Mock
+// import org.mockito.junit.jupiter.MockitoExtension
+// import org.mockito.kotlin.mock
+// import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.SDS40TrancheConfiguration
+// import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
+// import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
+// import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SDSEarlyReleaseTranche
+// import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
+// import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustments
+// import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
+// import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
+// import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
+// import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
+// import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
+// import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType
+// import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
+// import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateTypes
+// import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
+// import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAdjustments
+// import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
+// import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
+// import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.UnadjustedReleaseDate
+// import java.time.LocalDate
+// import java.time.Period
+// import java.time.temporal.ChronoUnit.DAYS
+// import java.time.temporal.ChronoUnit.MONTHS
+// import java.time.temporal.ChronoUnit.WEEKS
+// import java.time.temporal.ChronoUnit.YEARS
+// import java.util.*
 //
-//@ExtendWith(MockitoExtension::class)
-//class SDSEarlyReleaseDefaultingRulesServiceTest {
+// @ExtendWith(MockitoExtension::class)
+// class SDSEarlyReleaseDefaultingRulesServiceTest {
 //
 //  private val testCommencementDate = LocalDate.of(2024, 7, 29)
 //  private val testTrancheTwoCommencementDate = LocalDate.of(2024, 10, 22)
@@ -390,4 +390,4 @@
 //    )
 //    return booking
 //  }
-//}
+// }

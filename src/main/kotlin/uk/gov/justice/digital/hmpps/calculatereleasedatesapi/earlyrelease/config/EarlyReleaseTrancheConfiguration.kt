@@ -5,9 +5,9 @@ import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 
 data class EarlyReleaseTrancheConfiguration(
- val type: EarlyReleaseTrancheType,
+  val type: EarlyReleaseTrancheType,
   val date: LocalDate,
   val duration: Int? = null,
   val unit: ChronoUnit? = null,
-  val name: SDSEarlyReleaseTranche? = null
+  val name: SDSEarlyReleaseTranche? = null,
 )

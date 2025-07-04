@@ -1,75 +1,75 @@
-//package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
+// package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 //
-//import org.assertj.core.api.Assertions.assertThat
-//import org.junit.jupiter.api.BeforeEach
-//import org.junit.jupiter.api.Test
-//import org.junit.jupiter.api.extension.ExtendWith
-//import org.junit.jupiter.params.ParameterizedTest
-//import org.junit.jupiter.params.provider.CsvFileSource
-//import org.mockito.Mockito
-//import org.mockito.junit.jupiter.MockitoExtension
-//import org.mockito.kotlin.any
-//import org.mockito.kotlin.mock
-//import org.slf4j.Logger
-//import org.slf4j.LoggerFactory
-//import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
-//import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.ersedConfigurationForTests
-//import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.hdcedConfigurationForTests
-//import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.releasePointMultiplierConfigurationForTests
-//import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.sdsEarlyReleaseTrancheOneDate
-//import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.sdsEarlyReleaseTrancheThreeDate
-//import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.sdsEarlyReleaseTrancheTwoDate
-//import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
-//import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.SDS40TrancheConfiguration
-//import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcome
-//import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcomeHistoricOverride
-//import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationReason
-//import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.PRELIMINARY
-//import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
-//import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.TestBuildPropertiesConfiguration.Companion.TEST_BUILD_PROPERTIES
-//import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentsSourceData
-//import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
-//import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
-//import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
-//import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
-//import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
-//import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedDate
-//import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NonFridayReleaseDay
-//import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDate
-//import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BankHoliday
-//import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BankHolidays
-//import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
-//import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
-//import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.RegionBankHolidays
-//import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.BookingAndSentenceAdjustments
-//import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeHistoricOverrideRepository
-//import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeRepository
-//import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationReasonRepository
-//import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
-//import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.TrancheOutcomeRepository
-//import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource.JsonTransformation
-//import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.sentence.SentenceAdjustedCalculationService
-//import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.sentence.SentenceCombinationService
-//import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.sentence.SentenceIdentificationService
-//import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.sentence.SentencesExtractionService
-//import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.BookingTimelineService
-//import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculator
-//import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelinePostTrancheAdjustmentService
-//import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers.TimelineAwardedAdjustmentCalculationHandler
-//import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers.TimelineExternalAdmissionMovementCalculationHandler
-//import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers.TimelineExternalReleaseMovementCalculationHandler
-//import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers.TimelineSentenceCalculationHandler
-//import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers.TimelineTrancheCalculationHandler
-//import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers.TimelineTrancheThreeCalculationHandler
-//import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers.TimelineUalAdjustmentCalculationHandler
-//import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationService
-//import java.time.Clock
-//import java.time.LocalDate
-//import java.time.ZoneId
-//import java.util.UUID
+// import org.assertj.core.api.Assertions.assertThat
+// import org.junit.jupiter.api.BeforeEach
+// import org.junit.jupiter.api.Test
+// import org.junit.jupiter.api.extension.ExtendWith
+// import org.junit.jupiter.params.ParameterizedTest
+// import org.junit.jupiter.params.provider.CsvFileSource
+// import org.mockito.Mockito
+// import org.mockito.junit.jupiter.MockitoExtension
+// import org.mockito.kotlin.any
+// import org.mockito.kotlin.mock
+// import org.slf4j.Logger
+// import org.slf4j.LoggerFactory
+// import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
+// import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.ersedConfigurationForTests
+// import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.hdcedConfigurationForTests
+// import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.releasePointMultiplierConfigurationForTests
+// import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.sdsEarlyReleaseTrancheOneDate
+// import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.sdsEarlyReleaseTrancheThreeDate
+// import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.sdsEarlyReleaseTrancheTwoDate
+// import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
+// import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.SDS40TrancheConfiguration
+// import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcome
+// import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcomeHistoricOverride
+// import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationReason
+// import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.PRELIMINARY
+// import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
+// import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.TestBuildPropertiesConfiguration.Companion.TEST_BUILD_PROPERTIES
+// import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentsSourceData
+// import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
+// import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
+// import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
+// import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
+// import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
+// import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedDate
+// import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NonFridayReleaseDay
+// import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDate
+// import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BankHoliday
+// import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BankHolidays
+// import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
+// import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
+// import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.RegionBankHolidays
+// import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.BookingAndSentenceAdjustments
+// import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeHistoricOverrideRepository
+// import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeRepository
+// import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationReasonRepository
+// import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
+// import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.TrancheOutcomeRepository
+// import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource.JsonTransformation
+// import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.sentence.SentenceAdjustedCalculationService
+// import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.sentence.SentenceCombinationService
+// import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.sentence.SentenceIdentificationService
+// import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.sentence.SentencesExtractionService
+// import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.BookingTimelineService
+// import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculator
+// import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelinePostTrancheAdjustmentService
+// import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers.TimelineAwardedAdjustmentCalculationHandler
+// import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers.TimelineExternalAdmissionMovementCalculationHandler
+// import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers.TimelineExternalReleaseMovementCalculationHandler
+// import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers.TimelineSentenceCalculationHandler
+// import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers.TimelineTrancheCalculationHandler
+// import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers.TimelineTrancheThreeCalculationHandler
+// import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers.TimelineUalAdjustmentCalculationHandler
+// import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationService
+// import java.time.Clock
+// import java.time.LocalDate
+// import java.time.ZoneId
+// import java.util.UUID
 //
-//@ExtendWith(MockitoExtension::class)
-//class HintTextTest {
+// @ExtendWith(MockitoExtension::class)
+// class HintTextTest {
 //  private val jsonTransformation = JsonTransformation()
 //  private val calculationRequestRepository = mock<CalculationRequestRepository>()
 //  private val calculationOutcomeRepository = mock<CalculationOutcomeRepository>()
@@ -361,10 +361,10 @@
 //      null,
 //    )
 //  }
-//}
+// }
 //
-//data class DatesAndHints(
+// data class DatesAndHints(
 //  val type: ReleaseDateType,
 //  val date: LocalDate,
 //  val hints: List<String>,
-//)
+// )
