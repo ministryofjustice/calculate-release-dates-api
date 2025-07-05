@@ -8,8 +8,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.eligibility
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
-class EligibilityControllerTest(private val mockManageOffencesClient: MockManageOffencesClient) :
-  IntegrationTestBase() {
+class EligibilityControllerTest(private val mockManageOffencesClient: MockManageOffencesClient) : IntegrationTestBase() {
 
   @Test
   fun `Ersed Eligibility should return true`() {
