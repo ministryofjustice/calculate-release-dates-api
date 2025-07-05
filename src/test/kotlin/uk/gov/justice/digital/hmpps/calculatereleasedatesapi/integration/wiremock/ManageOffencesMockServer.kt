@@ -239,6 +239,23 @@ class ManageOffencesMockServer : WireMockServer(WIREMOCK_PORT) {
           .withTransformers("response-template"),
       ),
   )
+
+  fun stubToreraOffenceCodesByPart(part1: List<String>, part2: List<String>): StubMapping = stubFor(
+    get(urlMatching("/schedule/torera-offence-codes-by-schedule-part"))
+      .atPriority(Int.MAX_VALUE)
+      .willReturn(
+        aResponse()
+          .withHeader("Content-Type", "application/json")
+          .withBody("""{
+            "parts":{
+              "1":[${part1.joinToString(","){ "\"$it\"" }}],
+              "2":[${part2.joinToString(","){ "\"$it\"" }}]
+            }
+          }""".trimIndent())
+          .withStatus(200)
+          .withTransformers("response-template"),
+      ),
+  )
 }
 
 class MockManageOffencesClient(
@@ -263,5 +280,8 @@ class MockManageOffencesClient(
       objectMapper.writeValueAsString(defaultMarkers),
     )
     return this
+  }
+  fun stubToreraOffenceCodesByPart(part1: List<String>, part2: List<String>) {
+    manageOffencesApi.stubToreraOffenceCodesByPart(part1, part2)
   }
 }
