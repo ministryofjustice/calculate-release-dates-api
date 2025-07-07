@@ -9,6 +9,7 @@ import reactor.util.retry.Retry
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CouldNotGetMoOffenceInformation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.manageoffencesapi.OffencePcscMarkers
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.manageoffencesapi.SDSEarlyReleaseExclusionForOffenceCode
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.manageoffencesapi.ToreraSchedulePartCodes
 import java.time.Duration
 
 @Service
@@ -75,6 +76,23 @@ class ManageOffencesApiClient(@Qualifier("manageOffencesApiWebClient") private v
         },
     )
     .block() ?: throw CouldNotGetMoOffenceInformation("getToreraOffenceCodes request failed to load")
+
+  fun getToreraCodesByParts(): ToreraSchedulePartCodes = webClient.get()
+    .uri("/schedule/torera-offence-codes-by-schedule-part")
+    .retrieve()
+    .bodyToMono(typeReference<ToreraSchedulePartCodes>())
+    .retryWhen(
+      Retry
+        .backoff(5, Duration.ofMillis(100))
+        .maxBackoff(Duration.ofSeconds(5))
+        .doBeforeRetry { retrySignal ->
+          log.warn("getToreraCodesByParts: Retrying [Attempt: ${retrySignal.totalRetries() + 1}] due to ${retrySignal.failure().message}. ")
+        }
+        .onRetryExhaustedThrow { _, _ ->
+          throw MaxRetryAchievedException("getToreraCodesByParts: Max retries - lookup failed, cannot proceed to perform a sentence calculation")
+        },
+    )
+    .block() ?: throw CouldNotGetMoOffenceInformation("getToreraCodesByParts request failed to load")
 
   class MaxRetryAchievedException(message: String?) : RuntimeException(message)
 }
