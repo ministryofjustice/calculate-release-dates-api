@@ -4,6 +4,8 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.MethodSource
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.any
@@ -35,10 +37,10 @@ class ErsedEligibilityServiceTest {
     service = ErsedEligibilityService(manageOffencesService, prisonService)
   }
 
-  @Test
-  fun `should return ineligible when no sentence has valid type`() {
+  @ParameterizedTest
+  @MethodSource("ineligibleSentences")
+  fun `should return ineligible when sentence has invalid type`(sentence: SentenceAndOffenceWithReleaseArrangements) {
     val bookingId = 123L
-    val sentence = createSentence(SentenceCalculationType.AFINE.name, "OFF_PART1")
     whenever(prisonService.getSentencesAndOffences(any(), any())).thenReturn(listOf(sentence))
 
     val result = service.sentenceIsEligible(bookingId)
@@ -89,27 +91,38 @@ class ErsedEligibilityServiceTest {
     assertThat(result).isEqualTo(ErsedEligibilityService.ErsedEligibility(true))
   }
 
-  private fun createSentence(type: String, code: String): SentenceAndOffenceWithReleaseArrangements = SentenceAndOffenceWithReleaseArrangements(
-    bookingId = 1L,
-    sentenceSequence = 3,
-    lineSequence = 2,
-    caseSequence = 1,
-    sentenceDate = ImportantDates.SDS_PLUS_COMMENCEMENT_DATE,
-    terms = listOf(
-      SentenceTerms(years = 8),
-    ),
-    sentenceStatus = "IMP",
-    sentenceCategory = "CAT",
-    sentenceCalculationType = type,
-    sentenceTypeDescription = "ADMIP",
-    offence = OffenderOffence(1L, LocalDate.of(2015, 1, 1), null, code, "description", listOf("A")),
-    caseReference = null,
-    fineAmount = null,
-    courtDescription = null,
-    consecutiveToSequence = null,
-    isSDSPlus = false,
-    isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-    isSDSPlusOffenceInPeriod = false,
-    hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
-  )
+  companion object {
+    @JvmStatic
+    fun ineligibleSentences() = listOf(
+      createSentence(SentenceCalculationType.AFINE.name, "OFF_PART1"),
+      createSentence(SentenceCalculationType.DTO.name, "OFF_PART2"),
+      createSentence(SentenceCalculationType.DTO_ORA.name, "OFF_PART3"),
+      createSentence(SentenceCalculationType.DTO_ORA.name, "OFF_PART4"),
+      createSentence(SentenceCalculationType.LR.name, "OFF_PART5"), // recall sentence type
+    )
+
+    private fun createSentence(type: String, code: String): SentenceAndOffenceWithReleaseArrangements = SentenceAndOffenceWithReleaseArrangements(
+      bookingId = 1L,
+      sentenceSequence = 3,
+      lineSequence = 2,
+      caseSequence = 1,
+      sentenceDate = ImportantDates.SDS_PLUS_COMMENCEMENT_DATE,
+      terms = listOf(
+        SentenceTerms(years = 8),
+      ),
+      sentenceStatus = "IMP",
+      sentenceCategory = "CAT",
+      sentenceCalculationType = type,
+      sentenceTypeDescription = "ADMIP",
+      offence = OffenderOffence(1L, LocalDate.of(2015, 1, 1), null, code, "description", listOf("A")),
+      caseReference = null,
+      fineAmount = null,
+      courtDescription = null,
+      consecutiveToSequence = null,
+      isSDSPlus = false,
+      isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+      isSDSPlusOffenceInPeriod = false,
+      hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
+    )
+  }
 }
