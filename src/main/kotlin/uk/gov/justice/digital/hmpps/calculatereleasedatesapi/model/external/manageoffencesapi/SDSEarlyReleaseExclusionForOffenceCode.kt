@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.manageoffencesapi
 
 data class SDSEarlyReleaseExclusionForOffenceCode(val offenceCode: String, val schedulePart: SDSEarlyReleaseExclusionSchedulePart)
+data class ToreraSchedulePartCodes(val parts: Map<Int, List<String>>)
 enum class SDSEarlyReleaseExclusionSchedulePart {
   SEXUAL,
   VIOLENT,
