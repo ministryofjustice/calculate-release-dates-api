@@ -242,8 +242,13 @@ class CalculationTransactionalService(
     val sourceData = calculationSourceDataService.getCalculationSourceData(calculationRequest.prisonerId, InactiveDataOptions.default())
     val userInput = transform(calculationRequest.calculationRequestUserInput)
     val booking = bookingService.getBooking(sourceData, userInput)
+    val currentBookingJson = objectToJson(booking, objectMapper)
+    val preliminaryBookingJson = calculationRequest.inputData
 
-    if (calculationRequest.inputData.hashCode() != objectToJson(booking, objectMapper).hashCode()) {
+    if (preliminaryBookingJson.hashCode() != currentBookingJson.hashCode()) {
+      log.info("Booking data has changed since preliminary calculation")
+      log.info("Preliminary booking JSON: {}", preliminaryBookingJson)
+      log.info("Current booking JSON: {}", currentBookingJson)
       throw PreconditionFailedException("The booking data used for the preliminary calculation has changed")
     }
 
