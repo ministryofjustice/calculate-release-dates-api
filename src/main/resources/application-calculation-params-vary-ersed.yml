@@ -19,17 +19,3 @@ sds-40-early-release-tranches:
 
 release-point-multipliers:
   earlyReleasePoint: 0.4
-
-early-release-configuration:
-  configurations:
-    - release-multiplier: ${release-point-multipliers.earlyReleasePoint}
-      filter: SDS_40_EXCLUSIONS
-      tranches:
-        - type: SENTENCE_LENGTH
-          unit: YEARS
-          duration: 5
-          date: ${sds-40-early-release-tranches.tranche-one-date}
-          name: TRANCHE_1
-        - type: FINAL
-          date: ${sds-40-early-release-tranches.tranche-two-date}
-          name: TRANCHE_2

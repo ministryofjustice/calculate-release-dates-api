@@ -20,7 +20,7 @@ early-release-configuration:
           date: ${sds-40-early-release-tranches.tranche-two-date}
           name: TRANCHE_2
         - type: SDS_40_TRANCHE3
-          date: ${sds-40-early-release-tranches.tranche-two-date}
+          date: ${sds-40-early-release-tranches.tranche-three-date}
     - release-multiplier: 0.33
       filter: SDS_40_EXCLUSIONS
       tranches:
