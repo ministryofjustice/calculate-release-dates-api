@@ -2,8 +2,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.h
 
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.ReleasePointMultipliersConfiguration
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.SDS40TrancheConfiguration
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseConfigurations
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExternalMovementReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculator
@@ -14,11 +13,10 @@ import java.time.LocalDate
 
 @Service
 class TimelineExternalReleaseMovementCalculationHandler(
-  trancheConfiguration: SDS40TrancheConfiguration,
-  releasePointConfiguration: ReleasePointMultipliersConfiguration,
   timelineCalculator: TimelineCalculator,
+  earlyReleaseConfigurations: EarlyReleaseConfigurations,
   private val featureToggles: FeatureToggles,
-) : TimelineCalculationHandler(trancheConfiguration, releasePointConfiguration, timelineCalculator) {
+) : TimelineCalculationHandler(timelineCalculator, earlyReleaseConfigurations) {
   override fun handle(timelineCalculationDate: LocalDate, timelineTrackingData: TimelineTrackingData): TimelineHandleResult {
     with(timelineTrackingData) {
       val thisExternalMovement = externalMovements.find { it.movementDate == timelineCalculationDate }!!

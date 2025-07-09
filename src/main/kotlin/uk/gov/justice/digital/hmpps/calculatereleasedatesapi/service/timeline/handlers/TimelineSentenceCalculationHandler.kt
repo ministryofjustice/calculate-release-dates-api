@@ -1,8 +1,7 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers
 
 import org.springframework.stereotype.Service
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.ReleasePointMultipliersConfiguration
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.SDS40TrancheConfiguration
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseConfigurations
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AbstractSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAdjustments
@@ -17,11 +16,10 @@ import java.time.temporal.ChronoUnit
 
 @Service
 class TimelineSentenceCalculationHandler(
-  trancheConfiguration: SDS40TrancheConfiguration,
-  releasePointConfiguration: ReleasePointMultipliersConfiguration,
   timelineCalculator: TimelineCalculator,
+  earlyReleaseConfigurations: EarlyReleaseConfigurations,
   private val sentenceCombinationService: SentenceCombinationService,
-) : TimelineCalculationHandler(trancheConfiguration, releasePointConfiguration, timelineCalculator) {
+) : TimelineCalculationHandler(timelineCalculator, earlyReleaseConfigurations) {
 
   override fun handle(
     timelineCalculationDate: LocalDate,
@@ -29,6 +27,7 @@ class TimelineSentenceCalculationHandler(
   ): TimelineHandleResult {
     with(timelineTrackingData) {
       inPrison = true
+      allocatedEarlyRelease = earlyReleaseConfigurations.configurations.filter { timelineCalculationDate.isAfter(it.earliestTranche()) }.maxByOrNull { it.earliestTranche() }
 
       var servedAdas = findServedAdas(timelineCalculationDate, currentSentenceGroup, latestRelease)
 
@@ -82,13 +81,14 @@ class TimelineSentenceCalculationHandler(
         sentence.sentenceCalculation = SentenceCalculation(
           UnadjustedReleaseDate(
             sentence,
-            multiplierFnForDate(timelineCalculationDate, trancheAndCommencement.second),
+            multiplierFnForDate(timelineCalculationDate, allocatedTranche?.date),
             historicMultiplierFnForDate(),
             returnToCustodyDate,
           ),
           SentenceAdjustments(),
           calculateErsed = options.calculateErsed,
         )
+        sentence.sentenceCalculation.allocatedEarlyRelease = allocatedEarlyRelease
       }
     }
   }

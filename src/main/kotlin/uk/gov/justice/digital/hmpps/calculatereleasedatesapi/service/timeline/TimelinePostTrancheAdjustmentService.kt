@@ -14,7 +14,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Calcul
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule.SDS_EARLY_RELEASE_ADJUSTED_TO_TRANCHE_2_COMMENCEMENT
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule.SDS_STANDARD_RELEASE_APPLIES
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SDSEarlyReleaseTranche
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentDuration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
@@ -26,14 +25,10 @@ class TimelinePostTrancheAdjustmentService {
   fun applyTrancheAdjustmentLogic(
     calculation: CalculationResult,
     adjustments: Adjustments,
-    trancheAndCommencement: Pair<SDSEarlyReleaseTranche, LocalDate?>,
+    tranche: LocalDate?,
   ): CalculationResult {
-    if (trancheAndCommencement.first !in listOf(
-        SDSEarlyReleaseTranche.TRANCHE_1,
-        SDSEarlyReleaseTranche.TRANCHE_2,
-      )
-    ) {
-      log.info("No adjustments to apply as tranche is ${calculation.sdsEarlyReleaseTranche}")
+    if (tranche == null) {
+      log.info("No adjustments to apply as early release tranche is not set")
       return calculation
     }
 
@@ -42,7 +37,7 @@ class TimelinePostTrancheAdjustmentService {
       return calculation
     }
 
-    return adjustReleaseDatesForTranche(calculation, adjustments, trancheAndCommencement.second!!)
+    return adjustReleaseDatesForTranche(calculation, adjustments, tranche)
   }
 
   private fun adjustReleaseDatesForTranche(

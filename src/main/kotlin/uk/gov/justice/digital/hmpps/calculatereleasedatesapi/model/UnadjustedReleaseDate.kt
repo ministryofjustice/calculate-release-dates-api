@@ -10,8 +10,8 @@ import kotlin.properties.Delegates
 
 class UnadjustedReleaseDate(
   val sentence: CalculableSentence,
-  findMultiplierByIdentificationTrack: (identification: SentenceIdentificationTrack) -> Double,
-  historicFindMultiplierByIdentificationTrack: (identification: SentenceIdentificationTrack) -> Double,
+  findMultiplierBySentence: (sentence: CalculableSentence) -> Double,
+  historicFindMultiplierBySentence: (sentence: CalculableSentence) -> Double,
   val returnToCustodyDate: LocalDate? = null,
 ) {
 
@@ -20,16 +20,16 @@ class UnadjustedReleaseDate(
   /*
     When the multiplier is changed (At tranching for SDS40). The delegate here will re-calculate the unadjusted release dates.
    */
-  var findMultiplierByIdentificationTrack: (identification: SentenceIdentificationTrack) -> Double by Delegates.observable(findMultiplierByIdentificationTrack) { _, _, _ ->
+  var findMultiplierBySentence: (sentence: CalculableSentence) -> Double by Delegates.observable(findMultiplierBySentence) { _, _, _ ->
     calculateUnadjustedReleaseDate()
   }
 
   init {
-    this.findMultiplierByIdentificationTrack = findMultiplierByIdentificationTrack
+    this.findMultiplierBySentence = findMultiplierBySentence
     this.historicReleaseDateCalculation = if (sentence is ConsecutiveSentence) {
-      getConsecutiveRelease(historicFindMultiplierByIdentificationTrack)
+      getConsecutiveRelease(historicFindMultiplierBySentence)
     } else {
-      getSingleSentenceRelease(historicFindMultiplierByIdentificationTrack)
+      getSingleSentenceRelease(historicFindMultiplierBySentence)
     }
   }
 
@@ -70,9 +70,9 @@ class UnadjustedReleaseDate(
 
   private fun calculateUnadjustedReleaseDate() {
     this.releaseDateCalculation = if (sentence is ConsecutiveSentence) {
-      getConsecutiveRelease(findMultiplierByIdentificationTrack)
+      getConsecutiveRelease(findMultiplierBySentence)
     } else {
-      getSingleSentenceRelease(findMultiplierByIdentificationTrack)
+      getSingleSentenceRelease(findMultiplierBySentence)
     }
 
     if (sentence.isRecall()) {
@@ -99,11 +99,11 @@ class UnadjustedReleaseDate(
     }
   }
 
-  private fun getSingleSentenceRelease(findMultiplierByIdentificationTrack: (identification: SentenceIdentificationTrack) -> Double): ReleaseDateCalculation {
+  private fun getSingleSentenceRelease(findMultiplierBySentence: (sentence: CalculableSentence) -> Double): ReleaseDateCalculation {
     var numberOfDaysToParoleEligibilityDate: Long? = null
     val custodialDuration = sentence.custodialDuration()
     val numberOfDaysToReleaseDateDouble =
-      custodialDuration.getLengthInDays(sentence.sentencedAt).times(findMultiplierByIdentificationTrack(sentence.identificationTrack))
+      custodialDuration.getLengthInDays(sentence.sentencedAt).times(findMultiplierBySentence(sentence))
     val numberOfDaysToReleaseDate: Int = ceil(numberOfDaysToReleaseDateDouble).toInt()
     if (sentence.releaseDateTypes.getReleaseDateTypes().contains(PED) && (sentence is ExtendedDeterminateSentence || sentence is SopcSentence)) {
       val pedMultiplier = determinePedMultiplier(sentence.identificationTrack)
@@ -119,7 +119,7 @@ class UnadjustedReleaseDate(
     )
   }
 
-  private fun getConsecutiveRelease(findMultiplierByIdentificationTrack: (identification: SentenceIdentificationTrack) -> Double): ReleaseDateCalculation {
+  private fun getConsecutiveRelease(findMultiplierBySentence: (sentence: AbstractSentence) -> Double): ReleaseDateCalculation {
     sentence as ConsecutiveSentence
     val daysToExpiry = SentenceAggregator().getDaysInGroup(sentence.sentencedAt, sentence.orderedSentences) { it.totalDuration() }
     val (sentencesWithPed, sentencesWithoutPed) = sentence.orderedSentences
@@ -127,7 +127,7 @@ class UnadjustedReleaseDate(
         IndexedSentenceWithReleasePointMultiplier(
           sentence.orderedSentences.indexOf(it),
           it,
-          findMultiplierByIdentificationTrack(it.identificationTrack),
+          findMultiplierBySentence(it),
         )
       }
       .partition { (it.sentence is ExtendedDeterminateSentence && !it.sentence.automaticRelease) || it.sentence is SopcSentence }

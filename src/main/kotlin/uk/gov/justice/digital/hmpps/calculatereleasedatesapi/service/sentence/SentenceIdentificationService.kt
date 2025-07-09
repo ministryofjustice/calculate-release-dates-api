@@ -1,7 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.sentence
 
 import org.springframework.stereotype.Service
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.SDS40TrancheConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ARD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.CRD
@@ -23,10 +22,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Senten
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.DTO_BEFORE_PCSC
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.EDS_AUTOMATIC_RELEASE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.EDS_DISCRETIONARY_RELEASE
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.SDS_EARLY_RELEASE
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.SDS
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.SDS_PLUS_RELEASE
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.SDS_STANDARD_RELEASE
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.SDS_STANDARD_RELEASE_T3_EXCLUSION
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.SOPC_PED_AT_HALFWAY
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.SOPC_PED_AT_TWO_THIRDS
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AFineSentence
@@ -38,7 +35,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DtoSingleTerm
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateTypes
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SingleTermSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SopcSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
@@ -49,7 +45,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDa
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.LASPO_DATE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.PCSC_COMMENCEMENT_DATE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.TusedCalculator
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.offenceIsTrancheThreeAffected
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
 import java.math.BigDecimal
 import java.time.temporal.ChronoUnit
@@ -58,7 +53,6 @@ import java.time.temporal.ChronoUnit
 class SentenceIdentificationService(
   val tusedCalculator: TusedCalculator,
   val hdcedCalculator: HdcedCalculator,
-  val trancheConfiguration: SDS40TrancheConfiguration,
 ) {
 
   fun identify(sentence: CalculableSentence, offender: Offender) {
@@ -323,7 +317,7 @@ class SentenceIdentificationService(
   ) {
     sentence.identificationTrack = when {
       sentence is StandardDeterminateSentence && sentence.isSDSPlus -> SDS_PLUS_RELEASE
-      else -> sdsStandardOrEarlyRelease(sentence)
+      else -> SDS
     }
 
     val preOraLessThanTwelve = sentence.durationIsLessThan(TWELVE, ChronoUnit.MONTHS) &&
@@ -353,7 +347,7 @@ class SentenceIdentificationService(
     sentence: CalculableSentence,
     releaseDateTypes: MutableList<ReleaseDateType>,
   ) {
-    sentence.identificationTrack = sdsStandardOrEarlyRelease(sentence)
+    sentence.identificationTrack = SDS
 
     if (sentence.durationIsGreaterThanOrEqualTo(FOUR, ChronoUnit.YEARS)) {
       releaseDateTypes.addAll(
@@ -378,23 +372,6 @@ class SentenceIdentificationService(
         ),
       )
     }
-  }
-
-  /**
-   * If sentence related offence has no exclusion from the early release scheme, return SDS_EARLY_RELEASE release type.
-   *
-   * If sentence related offence has a time based tranche 3 exclusion, and the sentence date is before tranche3 commencement date,
-   * return SDS_EARLY_RELEASE release type. These offences are only excluded from the T3 commencement date.
-   * Note that the release date must also be before the T3 date. Such a check is made later within the sentence calculation
-   *
-   * Default to SDS_STANDARD_RELEASE
-   */
-  private fun sdsStandardOrEarlyRelease(
-    sentence: CalculableSentence,
-  ): SentenceIdentificationTrack = when {
-    sentence is StandardDeterminateSentence && sentence.hasAnSDSEarlyReleaseExclusion == SDSEarlyReleaseExclusionType.NO -> SDS_EARLY_RELEASE
-    sentence is StandardDeterminateSentence && offenceIsTrancheThreeAffected(sentence, trancheConfiguration) -> SDS_STANDARD_RELEASE_T3_EXCLUSION
-    else -> SDS_STANDARD_RELEASE
   }
 
   companion object {

@@ -21,6 +21,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationP
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.sdsEarlyReleaseTrancheTwoDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.SDS40TrancheConfiguration
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseConfigurations
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcome
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcomeHistoricOverride
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationReason
@@ -218,10 +219,16 @@ class HintTextTest {
   private val sentenceAdjustedCalculationService = SentenceAdjustedCalculationService(tusedCalculator, hdcedCalculator, ersedCalculator)
   private val sentencesExtractionService = SentencesExtractionService()
   private val trancheConfiguration = SDS40TrancheConfiguration(sdsEarlyReleaseTrancheOneDate(), sdsEarlyReleaseTrancheTwoDate(), sdsEarlyReleaseTrancheThreeDate())
-  private val sentenceIdentificationService = SentenceIdentificationService(tusedCalculator, hdcedCalculator, trancheConfiguration)
-  private val tranche = Tranche(trancheConfiguration)
-  private val trancheAllocationService = TrancheAllocationService(tranche, trancheConfiguration)
-  private val sdsEarlyReleaseDefaultingRulesService = SDSEarlyReleaseDefaultingRulesService(trancheConfiguration)
+  private val sentenceIdentificationService = SentenceIdentificationService(tusedCalculator, hdcedCalculator)
+  private val trancheAllocationService = TrancheAllocationService()
+  val earlyReleaseConfigurations = EarlyReleaseConfigurations(
+    listOf(
+      trancheConfiguration.getSds40EarlyReleaseConfig(
+        releasePointMultiplierConfigurationForTests(),
+      ),
+    ),
+  )
+  private val sdsEarlyReleaseDefaultingRulesService = SDSEarlyReleaseDefaultingRulesService(earlyReleaseConfigurations)
   private val sentenceCombinationService = SentenceCombinationService(sentenceIdentificationService)
   private val hdcedExtractionService = HdcedExtractionService(sentencesExtractionService)
   private val bookingExtractionService = BookingExtractionService(
@@ -236,60 +243,52 @@ class HintTextTest {
     bookingExtractionService,
   )
   private val timelineAwardedAdjustmentCalculationHandler = TimelineAwardedAdjustmentCalculationHandler(
-    trancheConfiguration,
-    releasePointMultiplierConfigurationForTests,
     timelineCalculator,
+    earlyReleaseConfigurations,
   )
   private val timelineSentenceCalculationHandler = TimelineSentenceCalculationHandler(
-    trancheConfiguration,
-    releasePointMultiplierConfigurationForTests,
     timelineCalculator,
+    earlyReleaseConfigurations,
     sentenceCombinationService,
   )
   private val timelineTrancheCalculationHandler = TimelineTrancheCalculationHandler(
-    trancheConfiguration,
-    releasePointMultiplierConfigurationForTests,
     timelineCalculator,
+    earlyReleaseConfigurations,
     trancheAllocationService,
-    sentencesExtractionService,
   )
   private val timelineTrancheThreeCalculationHandler = TimelineTrancheThreeCalculationHandler(
-    trancheConfiguration,
-    releasePointMultiplierConfigurationForTests,
     timelineCalculator,
+    earlyReleaseConfigurations,
   )
   private val timelineUalAdjustmentCalculationHandler = TimelineUalAdjustmentCalculationHandler(
-    trancheConfiguration,
-    releasePointMultiplierConfigurationForTests,
     timelineCalculator,
+    earlyReleaseConfigurations,
   )
   val timelineExternalReleaseMovementCalculationHandler = TimelineExternalReleaseMovementCalculationHandler(
-    trancheConfiguration,
-    releasePointMultiplierConfigurationForTests,
     timelineCalculator,
+    earlyReleaseConfigurations,
     featureToggles = FeatureToggles(),
   )
   val timelineExternalAdmissionMovementCalculationHandler = TimelineExternalAdmissionMovementCalculationHandler(
-    trancheConfiguration,
-    releasePointMultiplierConfigurationForTests,
     timelineCalculator,
+    earlyReleaseConfigurations,
   )
 
   private val timelinePostTrancheAdjustmentService = TimelinePostTrancheAdjustmentService()
 
   private val bookingTimelineService = BookingTimelineService(
     workingDayService,
-    trancheConfiguration,
     sdsEarlyReleaseDefaultingRulesService,
     timelineCalculator,
     timelineAwardedAdjustmentCalculationHandler,
     timelineTrancheCalculationHandler,
-    timelineTrancheThreeCalculationHandler,
     timelineSentenceCalculationHandler,
     timelineUalAdjustmentCalculationHandler,
     timelineExternalReleaseMovementCalculationHandler,
     timelineExternalAdmissionMovementCalculationHandler,
     timelinePostTrancheAdjustmentService,
+    timelineTrancheThreeCalculationHandler,
+    earlyReleaseConfigurations,
   )
   private val sourceDataMapper = SourceDataMapper(TestUtil.objectMapper())
   private val calculationService = CalculationService(
