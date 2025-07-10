@@ -50,7 +50,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.TrancheO
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessage
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationService
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationType
 import java.time.LocalDate
 import java.util.UUID
 
