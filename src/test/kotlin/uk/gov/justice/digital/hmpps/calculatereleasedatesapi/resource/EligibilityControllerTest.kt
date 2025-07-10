@@ -12,7 +12,7 @@ class EligibilityControllerTest(private val mockManageOffencesClient: MockManage
 
   @Test
   fun `Ersed Eligibility should return true`() {
-    mockManageOffencesClient.stubToreraOffenceCodesByPart(listOf("ABC"), listOf("XYZ"))
+    mockManageOffencesClient.stubToreraOffenceCodes(listOf("ABC", "XYZ"))
     val bookingID = "default".hashCode().toLong()
     val eligibility = webTestClient.get()
       .uri("/eligibility/$bookingID/ersed")
@@ -28,7 +28,7 @@ class EligibilityControllerTest(private val mockManageOffencesClient: MockManage
 
   @Test
   fun `Ersed Eligibility should return false`() {
-    mockManageOffencesClient.stubToreraOffenceCodesByPart(listOf("TH68010A"), listOf("XYZ"))
+    mockManageOffencesClient.stubToreraOffenceCodes(listOf("TH68010A", "XYZ"))
     val bookingID = "CRS-892".hashCode().toLong()
     val eligibility = webTestClient.get()
       .uri("/eligibility/$bookingID/ersed")
@@ -40,6 +40,6 @@ class EligibilityControllerTest(private val mockManageOffencesClient: MockManage
       .expectBody(ErsedEligibilityService.ErsedEligibility::class.java)
       .returnResult().responseBody!!
     assertFalse { eligibility.isValid }
-    assert(eligibility.reason == "EDS sentence with 19ZA part 1 offence")
+    assert(eligibility.reason == "EDS sentence with 19ZA offence")
   }
 }
