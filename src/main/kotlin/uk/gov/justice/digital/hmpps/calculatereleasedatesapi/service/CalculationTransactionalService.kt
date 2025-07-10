@@ -48,6 +48,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.TrancheO
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessage
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationType
 import java.time.LocalDate
 import java.util.UUID
 
@@ -252,7 +253,9 @@ class CalculationTransactionalService(
       throw PreconditionFailedException("The booking data used for the preliminary calculation has changed")
     }
 
-    if (validationService.validateBeforeCalculation(sourceData, userInput).isNotEmpty()) {
+    val validationErrors = validationService.validateBeforeCalculation(sourceData, userInput)
+
+    if (validationErrors.any { it.type !== ValidationType.CONCURRENT_CONSECUTIVE }) {
       throw PreconditionFailedException("The booking now fails validation")
     }
 

@@ -35,7 +35,7 @@ class SentenceValidationService(
     validateNoBrokenConsecutiveChains(sentences)?.let { validationMessages += it }
 
     if (bulkCalcValidation && featuresToggles.concurrentConsecutiveSentencesEnabled) {
-      validateConsecutiveChainsForBulkCalculation(sentences)?.let { validationMessages += it }
+      validateConsecutiveChainsForBulkCalculation(sentences).let { validationMessages += it }
     } else {
       validationMessages += validateConsecutiveChains(sentences)
     }
