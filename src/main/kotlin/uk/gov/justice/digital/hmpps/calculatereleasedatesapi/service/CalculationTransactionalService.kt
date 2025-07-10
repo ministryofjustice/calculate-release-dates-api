@@ -5,6 +5,7 @@ import jakarta.persistence.EntityNotFoundException
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.boot.info.BuildProperties
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.adjustmentsapi.model.AdjustmentDto
@@ -23,6 +24,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Histor
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.BreakdownChangedSinceLastCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CalculationDataHasChangedError
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CrdWebException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.PreconditionFailedException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.PrisonApiDataNotFoundException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
@@ -247,16 +249,13 @@ class CalculationTransactionalService(
     val preliminaryBookingJson = calculationRequest.inputData
 
     if (preliminaryBookingJson.hashCode() != currentBookingJson.hashCode()) {
-      log.info("Booking data has changed since preliminary calculation")
-      log.info("Preliminary booking JSON: {}", preliminaryBookingJson)
-      log.info("Current booking JSON: {}", currentBookingJson)
       throw PreconditionFailedException("The booking data used for the preliminary calculation has changed")
     }
 
     val validationErrors = validationService.validateBeforeCalculation(sourceData, userInput)
 
-    if (validationErrors.any { it.type !== ValidationType.CONCURRENT_CONSECUTIVE }) {
-      throw PreconditionFailedException("The booking now fails validation")
+    if (validationErrors.any { !it.type.excludedInSave() }) {
+      throw CrdWebException(message = "The booking now fails validation", status = HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
     return confirmCalculation(
