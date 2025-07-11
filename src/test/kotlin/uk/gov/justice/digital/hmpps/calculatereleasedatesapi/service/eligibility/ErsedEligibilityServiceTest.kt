@@ -15,7 +15,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOf
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.manageoffencesapi.ToreraSchedulePartCodes
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ManageOffencesService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.PrisonService
@@ -53,9 +52,9 @@ class ErsedEligibilityServiceTest {
     val bookingId = 123L
     val edsSentence = createSentence(SentenceCalculationType.EDS18.name, "OFF_PART2")
     val noneEdsSentence = createSentence(SentenceCalculationType.AFINE.name, "NOT_RELEVANT")
-    val partsMap = mapOf(1 to listOf("OFF_PART1"))
+    val offenceCodes = listOf("OFF_PART1")
     whenever(prisonService.getSentencesAndOffences(any(), any())).thenReturn(listOf(edsSentence, noneEdsSentence))
-    whenever(manageOffencesService.getToreraCodesByParts()).thenReturn(ToreraSchedulePartCodes(partsMap))
+    whenever(manageOffencesService.getToreraOffenceCodes()).thenReturn(offenceCodes)
 
     val result = service.sentenceIsEligible(bookingId)
 
@@ -66,14 +65,14 @@ class ErsedEligibilityServiceTest {
   fun `should return ineligible when EDS sentence has 19ZA part 1 offence`() {
     val bookingId = 456L
     val edsSentence = createSentence(SentenceCalculationType.EDS18.name, "OFF_PART1")
-    val partsMap = mapOf(1 to listOf("OFF_PART1"))
+    val offenceCodes = listOf("OFF_PART1")
 
     whenever(prisonService.getSentencesAndOffences(bookingId)).thenReturn(listOf(edsSentence))
-    whenever(manageOffencesService.getToreraCodesByParts()).thenReturn(ToreraSchedulePartCodes(partsMap))
+    whenever(manageOffencesService.getToreraOffenceCodes()).thenReturn(offenceCodes)
 
     val result = service.sentenceIsEligible(bookingId)
 
-    assertThat(result).isEqualTo(ErsedEligibilityService.ErsedEligibility(false, "EDS sentence with 19ZA part 1 offence"))
+    assertThat(result).isEqualTo(ErsedEligibilityService.ErsedEligibility(false, "EDS sentence with 19ZA offence"))
   }
 
   @Test
@@ -81,10 +80,10 @@ class ErsedEligibilityServiceTest {
     val bookingId = 789L
     val edsSentence = createSentence(SentenceCalculationType.EDS21.name, "OFF_NOT_PART1")
     val noneEdsSentence = createSentence(SentenceCalculationType.AFINE.name, "NOT_RELEVANT")
-    val partsMap = mapOf(1 to listOf("OFF_PART1"))
+    val offenceCodes = listOf("OFF_PART1")
 
     whenever(prisonService.getSentencesAndOffences(bookingId)).thenReturn(listOf(edsSentence, noneEdsSentence))
-    whenever(manageOffencesService.getToreraCodesByParts()).thenReturn(ToreraSchedulePartCodes(partsMap))
+    whenever(manageOffencesService.getToreraOffenceCodes()).thenReturn(offenceCodes)
 
     val result = service.sentenceIsEligible(bookingId)
 

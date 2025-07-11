@@ -31,12 +31,10 @@ class ErsedEligibilityService(
     }
 
     val edsOffenceCodes = getToreraEdsOffenceCodes(sentenceData)
-    val part1Codes = manageOffencesService.getToreraCodesByParts().parts[1].orEmpty()
+    val hasToreraOffenceCode = manageOffencesService.getToreraOffenceCodes().any { it in edsOffenceCodes }
 
-    val hasPart1EdsOffence = part1Codes.any { it in edsOffenceCodes }
-
-    return if (hasPart1EdsOffence) {
-      ErsedEligibility(false, "EDS sentence with 19ZA part 1 offence")
+    return if (hasToreraOffenceCode) {
+      ErsedEligibility(false, "EDS sentence with 19ZA offence")
     } else {
       ErsedEligibility(true)
     }
