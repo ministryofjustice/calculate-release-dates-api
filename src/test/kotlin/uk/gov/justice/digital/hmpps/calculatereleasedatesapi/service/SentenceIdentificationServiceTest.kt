@@ -33,7 +33,7 @@ class SentenceIdentificationServiceTest {
   private val hdcedCalculator = HdcedCalculator(hdcedConfigurationForTests())
   private val trancheConfiguration = SDS40TrancheConfiguration(sdsEarlyReleaseTrancheOneDate(), sdsEarlyReleaseTrancheTwoDate(), sdsEarlyReleaseTrancheThreeDate())
   private val sentenceIdentificationService: SentenceIdentificationService =
-    SentenceIdentificationService(tusedCalculator, hdcedCalculator, trancheConfiguration)
+    SentenceIdentificationService(tusedCalculator, hdcedCalculator)
   private val jsonTransformation = JsonTransformation()
   private val offender = jsonTransformation.loadOffender("john_doe")
   private val offenderU18 = jsonTransformation.loadOffender("john_doe_under18")
@@ -226,12 +226,12 @@ class SentenceIdentificationServiceTest {
 
   @ParameterizedTest
   @CsvSource(
-    "true,false,NO,SDS_EARLY_RELEASE",
-    "false,false,NO,SDS_EARLY_RELEASE",
-    "true,false,SEXUAL,SDS_STANDARD_RELEASE",
-    "false,false,SEXUAL,SDS_STANDARD_RELEASE",
-    "true,false,VIOLENT,SDS_STANDARD_RELEASE",
-    "false,false,VIOLENT,SDS_STANDARD_RELEASE",
+    "true,false,NO,SDS",
+    "false,false,NO,SDS",
+    "true,false,SEXUAL,SDS",
+    "false,false,SEXUAL,SDS",
+    "true,false,VIOLENT,SDS",
+    "false,false,VIOLENT,SDS",
     "false,true,NO,SDS_PLUS_RELEASE",
     "false,true,SEXUAL,SDS_PLUS_RELEASE",
     "false,true,VIOLENT,SDS_PLUS_RELEASE",

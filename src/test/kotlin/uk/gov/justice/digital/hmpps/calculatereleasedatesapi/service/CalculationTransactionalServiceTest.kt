@@ -37,6 +37,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationP
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.sdsEarlyReleaseTrancheTwoDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.SDS40TrancheConfiguration
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseConfigurations
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ApprovedDatesSubmission
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcome
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationReason
@@ -219,7 +220,7 @@ class CalculationTransactionalServiceTest {
         sdsEarlyReleaseTrancheThreeDate(defaultParams(params)),
       )
       val featureToggles = parseFeatureToggles(featureTogglesStr)
-      val myValidationService = getActiveValidationService(sentencesExtractionService, trancheConfiguration, featureToggles)
+      val myValidationService = getActiveValidationService(trancheConfiguration, sentencesExtractionService, featureToggles)
 
       returnedValidationMessages = myValidationService.validateBookingAfterCalculation(
         calculatedReleaseDates,
@@ -248,21 +249,24 @@ class CalculationTransactionalServiceTest {
       fail("Validation messages were returned: $returnedValidationMessages")
     } else {
       val bookingData = jsonTransformation.loadCalculationResult("$exampleType/$exampleNumber")
-      val result = bookingData.first
-      assertEquals(
-        result.dates.entries.sortedBy { it.key },
+      val expected = bookingData.first
+      assertThat(
         calculatedReleaseDates.calculationResult.dates.entries.sortedBy { it.key },
+      ).isEqualTo(
+        expected.dates.entries.sortedBy { it.key },
       )
-      assertEquals(result.effectiveSentenceLength, calculatedReleaseDates.calculationResult.effectiveSentenceLength)
+      assertThat(calculatedReleaseDates.calculationResult.effectiveSentenceLength).isEqualTo(expected.effectiveSentenceLength)
       if (assertSds40 == true) {
-        assertEquals(result.affectedBySds40, calculatedReleaseDates.calculationResult.affectedBySds40)
+        assertThat(calculatedReleaseDates.calculationResult.affectedBySds40).isEqualTo(expected.affectedBySds40)
       }
       if (bookingData.second.contains("sdsEarlyReleaseAllocatedTranche")) {
-        assertEquals(
-          result.sdsEarlyReleaseAllocatedTranche,
+        assertThat(
           calculatedReleaseDates.calculationResult.sdsEarlyReleaseAllocatedTranche,
+        ).isEqualTo(
+          expected.sdsEarlyReleaseAllocatedTranche,
+
         )
-        assertEquals(result.sdsEarlyReleaseTranche, calculatedReleaseDates.calculationResult.sdsEarlyReleaseTranche)
+        assertThat(calculatedReleaseDates.calculationResult.sdsEarlyReleaseTranche).isEqualTo(expected.sdsEarlyReleaseTranche)
       }
     }
   }
@@ -912,7 +916,6 @@ class CalculationTransactionalServiceTest {
       hdcedConfigurationForTests() // HDCED and ERSED params not currently overridden in alt-calculation-params
 
     val ersedConfiguration = ersedConfigurationForTests()
-    val releasePointMultipliersConfiguration = releasePointMultiplierConfigurationForTests(params)
 
     val workingDayService = WorkingDayService(bankHolidayService)
     val tusedCalculator = TusedCalculator(workingDayService)
@@ -922,18 +925,23 @@ class CalculationTransactionalServiceTest {
     val sentenceAdjustedCalculationService =
       SentenceAdjustedCalculationService(tusedCalculator, hdcedCalculator, ersedCalculator)
     val sentencesExtractionService = SentencesExtractionService()
+
     val trancheConfiguration = SDS40TrancheConfiguration(
-      sdsEarlyReleaseTrancheOneDate(params),
-      sdsEarlyReleaseTrancheTwoDate(params),
-      sdsEarlyReleaseTrancheThreeDate(params),
+      sdsEarlyReleaseTrancheOneDate(defaultParams(params)),
+      sdsEarlyReleaseTrancheTwoDate(defaultParams(params)),
+      sdsEarlyReleaseTrancheThreeDate(defaultParams(params)),
     )
+    val earlyReleaseConfigurations = EarlyReleaseConfigurations(
+      listOf(
+        trancheConfiguration.getSds40EarlyReleaseConfig(
+          releasePointMultiplierConfigurationForTests(defaultParams(params)),
+        ),
+      ),
+    )
+    val sentenceIdentificationService = SentenceIdentificationService(tusedCalculator, hdcedCalculator)
 
-    val sentenceIdentificationService = SentenceIdentificationService(tusedCalculator, hdcedCalculator, trancheConfiguration)
-
-    val tranche = Tranche(trancheConfiguration)
-
-    val trancheAllocationService = TrancheAllocationService(tranche, trancheConfiguration)
-    val sdsEarlyReleaseDefaultingRulesService = SDSEarlyReleaseDefaultingRulesService(trancheConfiguration)
+    val trancheAllocationService = TrancheAllocationService()
+    val sdsEarlyReleaseDefaultingRulesService = SDSEarlyReleaseDefaultingRulesService(earlyReleaseConfigurations)
     val sentenceCombinationService = SentenceCombinationService(
       sentenceIdentificationService,
     )
@@ -951,59 +959,51 @@ class CalculationTransactionalServiceTest {
       bookingExtractionService,
     )
     val timelineAwardedAdjustmentCalculationHandler = TimelineAwardedAdjustmentCalculationHandler(
-      trancheConfiguration,
-      releasePointMultipliersConfiguration,
       timelineCalculator,
+      earlyReleaseConfigurations,
     )
     val timelineSentenceCalculationHandler = TimelineSentenceCalculationHandler(
-      trancheConfiguration,
-      releasePointMultipliersConfiguration,
       timelineCalculator,
+      earlyReleaseConfigurations,
       sentenceCombinationService,
     )
     val timelineTrancheCalculationHandler = TimelineTrancheCalculationHandler(
-      trancheConfiguration,
-      releasePointMultipliersConfiguration,
       timelineCalculator,
+      earlyReleaseConfigurations,
       trancheAllocationService,
-      sentencesExtractionService,
     )
     val timelineTrancheThreeCalculationHandler = TimelineTrancheThreeCalculationHandler(
-      trancheConfiguration,
-      releasePointMultipliersConfiguration,
       timelineCalculator,
+      earlyReleaseConfigurations,
     )
     val timelineUalAdjustmentCalculationHandler = TimelineUalAdjustmentCalculationHandler(
-      trancheConfiguration,
-      releasePointMultipliersConfiguration,
       timelineCalculator,
+      earlyReleaseConfigurations,
     )
     val timelineExternalReleaseMovementCalculationHandler = TimelineExternalReleaseMovementCalculationHandler(
-      trancheConfiguration,
-      releasePointMultipliersConfiguration,
       timelineCalculator,
+      earlyReleaseConfigurations,
       FeatureToggles(externalMovementsSds40 = true, externalMovementsAdjustmentSharing = true),
     )
     val timelineExternalAdmissionMovementCalculationHandler = TimelineExternalAdmissionMovementCalculationHandler(
-      trancheConfiguration,
-      releasePointMultipliersConfiguration,
       timelineCalculator,
+      earlyReleaseConfigurations,
     )
     val timelinePostTrancheAdjustmentService = TimelinePostTrancheAdjustmentService()
 
     val bookingTimelineService = BookingTimelineService(
       workingDayService,
-      trancheConfiguration,
       sdsEarlyReleaseDefaultingRulesService,
       timelineCalculator,
       timelineAwardedAdjustmentCalculationHandler,
       timelineTrancheCalculationHandler,
-      timelineTrancheThreeCalculationHandler,
       timelineSentenceCalculationHandler,
       timelineUalAdjustmentCalculationHandler,
       timelineExternalReleaseMovementCalculationHandler,
       timelineExternalAdmissionMovementCalculationHandler,
       timelinePostTrancheAdjustmentService,
+      timelineTrancheThreeCalculationHandler,
+      earlyReleaseConfigurations,
     )
 
     val sourceDataMapper = SourceDataMapper(TestUtil.objectMapper())
@@ -1014,7 +1014,7 @@ class CalculationTransactionalServiceTest {
     )
 
     val validationServiceToUse = if (passedInServices.contains(ValidationService::class.java.simpleName)) {
-      getActiveValidationService(sentencesExtractionService, trancheConfiguration)
+      getActiveValidationService(trancheConfiguration, sentencesExtractionService)
     } else {
       validationService
     }
@@ -1060,8 +1060,8 @@ class CalculationTransactionalServiceTest {
   }
 
   private fun getActiveValidationService(
-    sentencesExtractionService: SentencesExtractionService,
     trancheConfiguration: SDS40TrancheConfiguration,
+    sentencesExtractionService: SentencesExtractionService,
     featureToggles: FeatureToggles = FeatureToggles(),
   ): ValidationService {
     val validationUtilities = ValidationUtilities()

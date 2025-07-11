@@ -19,6 +19,9 @@ enum class SDSEarlyReleaseExclusionType {
   TERRORISM_T3,
   MURDER_T3,
   NO,
+  ;
+
+  fun isSDS40Tranche3Exclusion(): Boolean = this.name.endsWith("_T3")
 }
 
 class SDSEarlyReleaseExclusionTypeDeserializer : StdDeserializer<SDSEarlyReleaseExclusionType>(SDSEarlyReleaseExclusionType::class.java) {

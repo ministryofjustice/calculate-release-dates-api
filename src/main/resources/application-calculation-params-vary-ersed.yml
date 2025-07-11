@@ -12,10 +12,10 @@ ersed:
   max-period: P4Y
   release-point: 0.3
 
-release-point-multipliers:
-  early-release-point: 0.4
-sds-early-release-tranches:
+sds-40-early-release-tranches:
   tranche-one-date: 2024-09-10
   tranche-two-date: 2024-10-22
   tranche-three-date: 2024-12-16
 
+release-point-multipliers:
+  earlyReleasePoint: 0.4

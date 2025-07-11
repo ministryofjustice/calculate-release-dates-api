@@ -1,17 +1,3 @@
-
-hdced:
-  minimum-custodial-period-days: 42
-  custodial-period-mid-point-days-pre-hdc-365: 360
-  custodial-period-below-midpoint-minimum-deduction-days: 28
-  custodial-period-above-midpoint-deduction-days-pre-hdc-365: 179
-  minimum-days-on-hdc: 14
-  custodial-period-mid-point-days-post-hdc-365: 730
-  custodial-period-above-midpoint-deduction-days-post-hdc-365: 364
-
-ersed:
-  max-period: P544D
-  release-point: 0.5
-
 sds-40-early-release-tranches:
   tranche-one-date: 2024-09-10
   tranche-two-date: 2024-10-22
@@ -35,4 +21,25 @@ early-release-configuration:
           name: TRANCHE_2
         - type: SDS_40_TRANCHE3
           date: ${sds-40-early-release-tranches.tranche-three-date}
+    - release-multiplier: 0.33
+      filter: SDS_40_EXCLUSIONS
+      tranches:
+        - type: SENTENCE_LENGTH
+          unit: YEARS
+          duration: 2
+          date: 2025-09-01
+        - type: SENTENCE_LENGTH
+          unit: YEARS
+          duration: 3
+          date: 2025-10-01
+        - type: SENTENCE_LENGTH
+          unit: YEARS
+          duration: 4
+          date: 2025-11-01
+        - type: SENTENCE_LENGTH
+          unit: YEARS
+          duration: 5
+          date: 2025-12-01
+        - type: FINAL
+          date: 2026-01-01
         
