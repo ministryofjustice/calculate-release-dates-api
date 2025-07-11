@@ -1,0 +1,38 @@
+{
+  "offender": {
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
+  },
+  "sentences": [
+    {
+      "offence": {
+        "committedAt": "2022-04-20",
+        "offenceCode": "TH68068"
+      },
+      "duration": {
+        "durationElements": {
+          "YEARS": 6
+        }
+      },
+      "sentencedAt": "2025-05-01",
+      "identifier": "cb304745-d781-47d3-b931-4baa31551fc5"
+    }
+  ],
+  "adjustments": {
+    "REMAND": [
+      {
+        "appliesToSentencesFrom": "2025-05-01",
+        "numberOfDays": 600,
+        "fromDate": "2023-09-09",
+        "toDate": "2025-04-30"
+      }
+    ],
+    "UNLAWFULLY_AT_LARGE": [
+      {
+        "appliesToSentencesFrom": "2025-05-01",
+        "numberOfDays": 50,
+        "fromDate": "2025-05-02"
+      }
+    ]
+  }
+}
