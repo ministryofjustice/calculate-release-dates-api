@@ -1,88 +1,90 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2018-11-03",
-        "offenceCode": "FI68059C"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 5,
-          "MONTHS": 6
-        }
-      },
-      "sentencedAt": "2021-12-02",
-      "recallType": "STANDARD_RECALL"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2023-04-29",
-        "offenceCode": "MD71230"
+    "sentences": [
+      {
+        "offence": {
+          "committedAt": "2018-11-03",
+          "offenceCode": "FI68059C"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 5,
+            "MONTHS": 6
+          }
+        },
+        "sentencedAt": "2021-12-02",
+        "recallType": "STANDARD_RECALL"
       },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 36
+      {
+        "offence": {
+          "committedAt": "2023-04-29",
+          "offenceCode": "MD71230"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 36
+          }
+        },
+        "sentencedAt": "2023-06-06",
+        "identifier": "de073f94-c485-3801-b877-742a92707ef0"
+      },
+      {
+        "offence": {
+          "committedAt": "2023-04-29",
+          "offenceCode": "RT88333"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 3
+          }
+        },
+        "sentencedAt": "2023-06-06",
+        "consecutiveSentenceUUIDs": [
+          "de073f94-c485-3801-b877-742a92707ef0"
+        ]
+      },
+      {
+        "offence": {
+          "committedAt": "2023-04-29",
+          "offenceCode": "PC02021"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 4
+          }
+        },
+        "sentencedAt": "2023-06-06"
+      }
+    ],
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2023-06-06",
+          "numberOfDays": 1,
+          "fromDate": "2023-05-01",
+          "toDate": "2023-05-01"
         }
-      },
-      "sentencedAt": "2023-06-06",
-      "identifier": "de073f94-c485-3801-b877-742a92707ef0"
-    },
-    {
-      "offence": {
-        "committedAt": "2023-04-29",
-        "offenceCode": "RT88333"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 3
+      ],
+      "RECALL_REMAND": [
+        {
+          "appliesToSentencesFrom": "2021-12-02",
+          "numberOfDays": 916
+        },
+        {
+          "appliesToSentencesFrom": "2021-12-02",
+          "numberOfDays": 13
         }
-      },
-      "sentencedAt": "2023-06-06",
-      "consecutiveSentenceUUIDs": [
-        "de073f94-c485-3801-b877-742a92707ef0"
+      ],
+      "RECALL_TAGGED_BAIL": [
+        {
+          "appliesToSentencesFrom": "2021-12-02",
+          "numberOfDays": 88
+        }
       ]
-    },
-    {
-      "offence": {
-        "committedAt": "2023-04-29",
-        "offenceCode": "PC02021"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 4
-        }
-      },
-      "sentencedAt": "2023-06-06"
     }
-  ],
-  "adjustments": {
-    "REMAND": [
-      {
-        "appliesToSentencesFrom": "2023-06-06",
-        "numberOfDays": 1,
-        "fromDate": "2023-05-01",
-        "toDate": "2023-05-01"
-      }
-    ],
-    "RECALL_REMAND": [
-      {
-        "appliesToSentencesFrom": "2021-12-02",
-        "numberOfDays": 916
-      },
-      {
-        "appliesToSentencesFrom": "2021-12-02",
-        "numberOfDays": 13
-      }
-    ],
-    "RECALL_TAGGED_BAIL": [
-      {
-        "appliesToSentencesFrom": "2021-12-02",
-        "numberOfDays": 88
-      }
-    ]
   }
 }

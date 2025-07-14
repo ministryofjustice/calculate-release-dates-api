@@ -1,79 +1,94 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
+      {
+        "type": "SopcSentence",
+        "offence": {
+          "committedAt": "1981-04-01"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "YEARS": 8
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "YEARS": 1
+          }
+        },
+        "sentencedAt": "2016-11-16",
+        "identifier": "45e109ca-a76c-4fd0-9f93-8b63758ebe2d",
+        "consecutiveSentenceUUIDs": [
+          "fd5f573d-4507-3ce7-ba8d-19a128177fad"
+        ]
+      },
+      {
+        "type": "SopcSentence",
+        "offence": {
+          "committedAt": "1981-02-26"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "YEARS": 1
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "YEARS": 1
+          }
+        },
+        "sentencedAt": "2016-11-16",
+        "identifier": "6834af67-989a-4b49-83e3-d78f83345156"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "1982-11-16"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 8
+          }
+        },
+        "sentencedAt": "2016-11-16",
+        "identifier": "fd5f573d-4507-3ce7-ba8d-19a128177fad",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "1982-11-16"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 3
+          }
+        },
+        "sentencedAt": "2016-11-16",
+        "identifier": "f65e74dd-096b-4b71-a664-60f3585feadc",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "1976-11-17"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 1
+          }
+        },
+        "sentencedAt": "2016-11-16",
+        "identifier": "d570632a-6ba4-4e76-a0d0-5a1ad2c39940",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      }
+    ],
+    "adjustments": {},
+    "bookingId": -1
   },
-  "sentences": [
-    {
-      "type": "SopcSentence",
-      "offence": {
-        "committedAt": "1981-04-01"
-      },
-      "custodialDuration": {
-        "durationElements": {
-          "YEARS": 8
-        }
-      },
-      "extensionDuration": {
-        "durationElements": {
-          "YEARS": 1
-        }
-      },
-      "sentencedAt": "2016-11-16",
-      "consecutiveSentenceUUIDs": [
-        "fd5f573d-4507-3ce7-ba8d-19a128177fad"
-      ]
-    },
-    {
-      "type": "SopcSentence",
-      "offence": {
-        "committedAt": "1981-02-26"
-      },
-      "custodialDuration": {
-        "durationElements": {
-          "YEARS": 1
-        }
-      },
-      "extensionDuration": {
-        "durationElements": {
-          "YEARS": 1
-        }
-      },
-      "sentencedAt": "2016-11-16"
-    },
-    {
-      "offence": {
-        "committedAt": "1982-11-16"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 8
-        }
-      },
-      "sentencedAt": "2016-11-16",
-      "identifier": "fd5f573d-4507-3ce7-ba8d-19a128177fad"
-    },
-    {
-      "offence": {
-        "committedAt": "1982-11-16"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 3
-        }
-      },
-      "sentencedAt": "2016-11-16"
-    },
-    {
-      "offence": {
-        "committedAt": "1976-11-17"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 1
-        }
-      },
-      "sentencedAt": "2016-11-16"
-    }
-  ]
+  "params": "sds-50"
 }

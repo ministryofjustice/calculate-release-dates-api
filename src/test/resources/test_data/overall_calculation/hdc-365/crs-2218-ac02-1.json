@@ -1,64 +1,49 @@
 {
-  "offender": {
-    "reference": "A9931EA",
-    "dateOfBirth": "2000-03-01",
-    "isActiveSexOffender": false
-  },
-  "bookingId": 1223129,
-  "sentences": [
-    {
-      "type": "StandardSentence",
-      "offence": {
-        "committedAt": "2023-06-05",
-        "offenceCode": "TH68023A"
-      },
-      "duration": {
-        "durationElements": {
-          "DAYS": 0,
-          "WEEKS": 0,
-          "YEARS": 0,
-          "MONTHS": 42
-        }
-      },
-      "isSDSPlus": false,
-      "identifier": "c1de11aa-e45f-3f76-ac92-83a08b759c72",
-      "recallType": null,
-      "sentencedAt": "2023-07-07",
-      "caseSequence": 1,
-      "lineSequence": 1,
-      "caseReference": null,
-      "consecutiveSentenceUUIDs": [],
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+  "booking": {
+    "offender": {
+      "reference": "A9931EA",
+      "dateOfBirth": "2000-03-01"
     },
-    {
-      "type": "StandardSentence",
-      "offence": {
-        "committedAt": "2023-06-05",
-        "offenceCode": "RT88147"
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2023-06-05",
+          "offenceCode": "TH68023A"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 42
+          }
+        },
+        "sentencedAt": "2023-07-07",
+        "identifier": "c1de11aa-e45f-3f76-ac92-83a08b759c72",
+        "caseSequence": 1,
+        "lineSequence": 1,
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       },
-      "duration": {
-        "durationElements": {
-          "DAYS": 0,
-          "WEEKS": 0,
-          "YEARS": 0,
-          "MONTHS": 30
-        }
-      },
-      "isSDSPlus": false,
-      "identifier": "644ecbf5-56ac-33e0-9905-591708da91da",
-      "recallType": null,
-      "sentencedAt": "2023-07-07",
-      "caseSequence": 1,
-      "lineSequence": 2,
-      "caseReference": null,
-      "consecutiveSentenceUUIDs": [
-        "c1de11aa-e45f-3f76-ac92-83a08b759c72"
-      ],
-      "hasAnSDSEarlyReleaseExclusion": "NO"
-    }
-  ],
-  "adjustments": {},
-  "historicalTusedData": null,
-  "returnToCustodyDate": null,
-  "fixedTermRecallDetails": null
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2023-06-05",
+          "offenceCode": "RT88147"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 30
+          }
+        },
+        "sentencedAt": "2023-07-07",
+        "identifier": "644ecbf5-56ac-33e0-9905-591708da91da",
+        "consecutiveSentenceUUIDs": [
+          "c1de11aa-e45f-3f76-ac92-83a08b759c72"
+        ],
+        "caseSequence": 1,
+        "lineSequence": 2,
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      }
+    ],
+    "adjustments": {},
+    "bookingId": 1223129
+  }
 }

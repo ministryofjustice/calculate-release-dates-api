@@ -1,71 +1,68 @@
 {
-  "offender": {
-    "reference": "A1234BC",
-    "dateOfBirth": "1988-09-11",
-    "isActiveSexOffender": false
-  },
-  "sentences": [
-    {
-      "type": "StandardSentence",
-      "offence": {
-        "committedAt": "2022-07-31",
-        "offenceCode": "PL96003"
-      },
-      "duration": {
-        "durationElements": {
-          "DAYS": 0,
-          "WEEKS": 0,
-          "YEARS": 0,
-          "MONTHS": 11
-        }
-      },
-      "isSDSPlus": false,
-      "identifier": "6709e448-dc88-3986-9f9d-22aa536ae5e5",
-      "recallType": "FIXED_TERM_RECALL_28",
-      "sentencedAt": "2024-09-16",
-      "caseSequence": 1,
-      "lineSequence": 1,
-      "caseReference": "C1",
-      "consecutiveSentenceUUIDs": []
+  "booking": {
+    "offender": {
+      "reference": "A1234BC",
+      "dateOfBirth": "1988-09-11"
     },
-    {
-      "type": "StandardSentence",
-      "offence": {
-        "committedAt": "2022-07-31",
-        "offenceCode": "PL96003"
-      },
-      "duration": {
-        "durationElements": {
-          "DAYS": 0,
-          "WEEKS": 0,
-          "YEARS": 0,
-          "MONTHS": 11
-        }
-      },
-      "isSDSPlus": false,
-      "identifier": "450cef06-7836-37ce-ba6d-5ca239142821",
-      "recallType": "FIXED_TERM_RECALL_28",
-      "sentencedAt": "2024-09-16",
-      "caseSequence": 1,
-      "lineSequence": 2,
-      "caseReference": "C1",
-      "consecutiveSentenceUUIDs": ["6709e448-dc88-3986-9f9d-22aa536ae5e5"]
-    }
-  ],
-  "adjustments": {
-    "UNLAWFULLY_AT_LARGE": [
+    "sentences": [
       {
-        "fromDate": "2025-07-08",
-        "toDate": "2025-07-10",
-        "numberOfDays": 2,
-        "appliesToSentencesFrom": "2024-09-16"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2022-07-31",
+          "offenceCode": "PL96003"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 11
+          }
+        },
+        "sentencedAt": "2024-09-16",
+        "identifier": "6709e448-dc88-3986-9f9d-22aa536ae5e5",
+        "caseSequence": 1,
+        "lineSequence": 1,
+        "caseReference": "C1",
+        "recallType": "FIXED_TERM_RECALL_28",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2022-07-31",
+          "offenceCode": "PL96003"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 11
+          }
+        },
+        "sentencedAt": "2024-09-16",
+        "identifier": "450cef06-7836-37ce-ba6d-5ca239142821",
+        "consecutiveSentenceUUIDs": [
+          "6709e448-dc88-3986-9f9d-22aa536ae5e5"
+        ],
+        "caseSequence": 1,
+        "lineSequence": 2,
+        "caseReference": "C1",
+        "recallType": "FIXED_TERM_RECALL_28",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
-    ]
+    ],
+    "adjustments": {
+      "UNLAWFULLY_AT_LARGE": [
+        {
+          "appliesToSentencesFrom": "2024-09-16",
+          "numberOfDays": 2,
+          "fromDate": "2025-07-08",
+          "toDate": "2025-07-10"
+        }
+      ]
+    },
+    "returnToCustodyDate": "2025-07-10",
+    "fixedTermRecallDetails": {
+      "returnToCustodyDate": "2025-07-10",
+      "recallLength": 28
+    },
+    "bookingId": -1
   },
-  "externalMovements": [],
-  "returnToCustodyDate": "2025-07-10",
-  "fixedTermRecallDetails": {
-    "recallLength": 28,
-    "returnToCustodyDate": "2025-07-10"
-  }
+  "expectedValidationException": "FTR_TYPE_48_DAYS_OVERLAPPING_SENTENCE"
 }

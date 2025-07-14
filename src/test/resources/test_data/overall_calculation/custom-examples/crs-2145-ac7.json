@@ -1,48 +1,61 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2022-12-31"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 9
+          }
+        },
+        "sentencedAt": "2024-09-10",
+        "identifier": "a31d5d02-611f-43b0-8b1a-4b1edc955e7e",
+        "recallType": "STANDARD_RECALL",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2022-12-31"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 3
+          }
+        },
+        "sentencedAt": "2024-09-10",
+        "identifier": "fb9f3bdb-178e-443e-b225-5f57977b7aaf",
+        "consecutiveSentenceUUIDs": [
+          "a31d5d02-611f-43b0-8b1a-4b1edc955e7e"
+        ],
+        "recallType": "STANDARD_RECALL",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2022-12-31"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 23
+          }
+        },
+        "sentencedAt": "2024-09-09",
+        "identifier": "3e6af61e-ad82-4e32-9a6b-b01ac94b5d84",
+        "recallType": "STANDARD_RECALL",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      }
+    ],
+    "adjustments": {},
+    "bookingId": -1
   },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2022-12-31"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 9
-        }
-      },
-      "sentencedAt": "2024-09-10",
-      "identifier": "a31d5d02-611f-43b0-8b1a-4b1edc955e7e",
-      "recallType": "STANDARD_RECALL"
-    },
-    {
-      "offence": {
-        "committedAt": "2022-12-31"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 3
-        }
-      },
-      "sentencedAt": "2024-09-10",
-      "consecutiveSentenceUUIDs": [
-        "a31d5d02-611f-43b0-8b1a-4b1edc955e7e"
-      ],
-      "recallType": "STANDARD_RECALL"
-    },
-    {
-      "offence": {
-        "committedAt": "2022-12-31"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 23
-        }
-      },
-      "sentencedAt": "2024-09-09",
-      "recallType": "STANDARD_RECALL"
-    }
-  ]
+  "expectedValidationException": "UNSUPPORTED_SDS40_RECALL_SENTENCE_TYPE"
 }

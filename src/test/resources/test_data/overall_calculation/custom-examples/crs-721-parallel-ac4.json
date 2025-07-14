@@ -1,81 +1,97 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2021-01-08"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 7
-        }
-      },
-      "sentencedAt": "2021-10-18",
-      "recallType": "STANDARD_RECALL"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2021-01-08"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 3
-        }
-      },
-      "sentencedAt": "2021-10-18",
-      "recallType": "STANDARD_RECALL"
-    },
-    {
-      "offence": {
-        "committedAt": "2021-02-22"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 9
-        }
-      },
-      "sentencedAt": "2022-01-07"
-    },
-    {
-      "offence": {
-        "committedAt": "2021-02-11"
-      },
-      "duration": {
-        "durationElements": {
-          "WEEKS": 26
-        }
-      },
-      "sentencedAt": "2022-01-17"
-    }
-  ],
-  "adjustments": {
-    "RECALL_REMAND": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2021-10-18",
-        "numberOfDays": 76
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2021-01-08"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 7
+          }
+        },
+        "sentencedAt": "2021-10-18",
+        "identifier": "94d719cb-acbe-4921-bce5-b347eacee314",
+        "recallType": "STANDARD_RECALL",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       },
       {
-        "appliesToSentencesFrom": "2021-10-18",
-        "numberOfDays": 32
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2021-01-08"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 3
+          }
+        },
+        "sentencedAt": "2021-10-18",
+        "identifier": "d09b3ddf-fbfd-47df-aae6-3b55edec3599",
+        "recallType": "STANDARD_RECALL",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2021-02-22"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 9
+          }
+        },
+        "sentencedAt": "2022-01-07",
+        "identifier": "103166ab-a409-4ea4-9c74-ee20c47c00c4",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2021-02-11"
+        },
+        "duration": {
+          "durationElements": {
+            "WEEKS": 26
+          }
+        },
+        "sentencedAt": "2022-01-17",
+        "identifier": "bec69c57-aeb2-435f-a839-5acae9bbe11a",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
     ],
-    "RECALL_TAGGED_BAIL": [
-      {
-        "appliesToSentencesFrom": "2021-10-18",
-        "numberOfDays": 30
-      }
-    ],
-    "UNLAWFULLY_AT_LARGE": [
-      {
-        "appliesToSentencesFrom": "2021-11-03",
-        "numberOfDays": 36,
-        "fromDate": "2021-11-03",
-        "toDate": "2021-12-08"
-      }
-    ]
+    "adjustments": {
+      "UNLAWFULLY_AT_LARGE": [
+        {
+          "appliesToSentencesFrom": "2021-11-03",
+          "numberOfDays": 36,
+          "fromDate": "2021-11-03",
+          "toDate": "2021-12-08"
+        }
+      ],
+      "RECALL_TAGGED_BAIL": [
+        {
+          "appliesToSentencesFrom": "2021-10-18",
+          "numberOfDays": 30
+        }
+      ],
+      "RECALL_REMAND": [
+        {
+          "appliesToSentencesFrom": "2021-10-18",
+          "numberOfDays": 76
+        },
+        {
+          "appliesToSentencesFrom": "2021-10-18",
+          "numberOfDays": 32
+        }
+      ]
+    },
+    "returnToCustodyDate": "2022-01-07",
+    "bookingId": -1
   },
-  "returnToCustodyDate": "2022-01-07"
+  "params": "sds-50"
 }

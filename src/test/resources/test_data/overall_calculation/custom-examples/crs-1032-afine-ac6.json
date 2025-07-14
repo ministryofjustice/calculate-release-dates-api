@@ -1,34 +1,41 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "type": "AFineSentence",
-      "offence": {
-        "committedAt": "2022-08-01"
-      },
-      "duration": {
-        "durationElements": {
-          "DAYS": 36
-        }
-      },
-      "sentencedAt": "2022-08-02",
-      "fineAmount": 2E+3
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "type": "AFineSentence",
-      "offence": {
-        "committedAt": "2022-08-01"
+    "sentences": [
+      {
+        "type": "AFineSentence",
+        "offence": {
+          "committedAt": "2022-08-01"
+        },
+        "duration": {
+          "durationElements": {
+            "DAYS": 36
+          }
+        },
+        "sentencedAt": "2022-08-02",
+        "identifier": "f56b29dd-c070-45dd-8242-7b4d8708d7a1",
+        "fineAmount": 2E+3
       },
-      "duration": {
-        "durationElements": {
-          "DAYS": 32
-        }
-      },
-      "sentencedAt": "2022-08-02",
-      "fineAmount": 1.5E+3
-    }
-  ]
+      {
+        "type": "AFineSentence",
+        "offence": {
+          "committedAt": "2022-08-01"
+        },
+        "duration": {
+          "durationElements": {
+            "DAYS": 32
+          }
+        },
+        "sentencedAt": "2022-08-02",
+        "identifier": "e04ad32f-db23-4fc3-8324-9b063d2329de",
+        "fineAmount": 1.5E+3
+      }
+    ],
+    "adjustments": {},
+    "bookingId": -1
+  },
+  "params": "sds-50"
 }

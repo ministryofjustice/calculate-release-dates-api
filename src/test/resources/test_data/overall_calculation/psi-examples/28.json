@@ -1,35 +1,42 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2005-01-01"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 2
-        }
-      },
-      "sentencedAt": "2009-10-09"
-    }
-  ],
-  "adjustments": {
-    "REMAND": [
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2009-10-09",
-        "numberOfDays": 20,
-        "fromDate": "2009-09-18",
-        "toDate": "2009-10-08"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2005-01-01"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 2
+          }
+        },
+        "sentencedAt": "2009-10-09",
+        "identifier": "8f2c7c1c-ba8a-4ea1-b666-a11d702fd613",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
     ],
-    "TAGGED_BAIL": [
-      {
-        "appliesToSentencesFrom": "2009-10-09",
-        "numberOfDays": 10
-      }
-    ]
-  }
+    "adjustments": {
+      "TAGGED_BAIL": [
+        {
+          "appliesToSentencesFrom": "2009-10-09",
+          "numberOfDays": 10
+        }
+      ],
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2009-10-09",
+          "numberOfDays": 20,
+          "fromDate": "2009-09-18",
+          "toDate": "2009-10-08"
+        }
+      ]
+    },
+    "bookingId": -1
+  },
+  "params": "sds-50"
 }

@@ -1,55 +1,71 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2020-12-18",
-        "offenceCode": "MD71531"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 10
-        }
-      },
-      "sentencedAt": "2022-11-16"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2020-12-18",
-        "offenceCode": "MD71230"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 7
-        }
-      },
-      "sentencedAt": "2022-11-16"
-    },
-    {
-      "offence": {
-        "committedAt": "2020-12-18",
-        "offenceCode": "MD71533"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 5
-        }
-      },
-      "sentencedAt": "2022-11-16"
-    }
-  ],
-  "adjustments": {
-    "REMAND": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2022-11-16",
-        "numberOfDays": 695,
-        "fromDate": "2020-12-21",
-        "toDate": "2022-11-15"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2020-12-18",
+          "offenceCode": "MD71531"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 10
+          }
+        },
+        "sentencedAt": "2022-11-16",
+        "identifier": "93a80143-36c3-4586-a8de-198e478b64ed",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2020-12-18",
+          "offenceCode": "MD71230"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 7
+          }
+        },
+        "sentencedAt": "2022-11-16",
+        "identifier": "54fc385b-7ea0-4555-9acf-b6d82905be34",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2020-12-18",
+          "offenceCode": "MD71533"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 5
+          }
+        },
+        "sentencedAt": "2022-11-16",
+        "identifier": "995304c4-3274-4741-94e2-c2d3d8f4b230",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
-    ]
+    ],
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2022-11-16",
+          "numberOfDays": 695,
+          "fromDate": "2020-12-21",
+          "toDate": "2022-11-15"
+        }
+      ]
+    },
+    "bookingId": -1
   },
-  "calculateErsed": true
+  "userInputs": {
+    "calculateErsed": true,
+    "useOffenceIndicators": true
+  },
+  "params": "sds-45"
 }

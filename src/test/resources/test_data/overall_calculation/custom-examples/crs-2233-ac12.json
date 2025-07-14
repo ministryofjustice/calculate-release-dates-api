@@ -1,43 +1,52 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2024-09-08",
-        "offenceCode": "OF61102"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 14
-        }
-      },
-      "sentencedAt": "2024-11-06"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2024-09-08",
-        "offenceCode": "SC15005"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 14
-        }
-      },
-      "sentencedAt": "2024-11-06",
-      "hasAnSDSEarlyReleaseExclusion": "DOMESTIC_ABUSE"
-    }
-  ],
-  "adjustments": {
-    "REMAND": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2024-11-06",
-        "numberOfDays": 56,
-        "fromDate": "2024-09-11",
-        "toDate": "2024-11-05"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2024-09-08",
+          "offenceCode": "OF61102"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 14
+          }
+        },
+        "sentencedAt": "2024-11-06",
+        "identifier": "f69436f4-5f7f-4aa4-a3bf-1bc61542546b",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2024-09-08",
+          "offenceCode": "SC15005"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 14
+          }
+        },
+        "sentencedAt": "2024-11-06",
+        "identifier": "03bf2fd4-80de-40cf-943d-29e9209792cc",
+        "hasAnSDSEarlyReleaseExclusion": "DOMESTIC_ABUSE"
       }
-    ]
-  }
+    ],
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2024-11-06",
+          "numberOfDays": 56,
+          "fromDate": "2024-09-11",
+          "toDate": "2024-11-05"
+        }
+      ]
+    },
+    "bookingId": -1
+  },
+  "assertSds40": true
 }

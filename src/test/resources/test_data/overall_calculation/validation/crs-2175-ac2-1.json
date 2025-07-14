@@ -1,38 +1,45 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2022-03-22",
-        "offenceCode": "SX03244"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 2
-        }
-      },
-      "sentencedAt": "2024-09-10",
-      "identifier": "cb304745-d781-47d3-b931-4baa31551fc5",
-      "hasAnSDSEarlyReleaseExclusion": "SEXUAL"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2022-03-22",
-        "offenceCode": "SX03244A"
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2022-03-22",
+          "offenceCode": "SX03244"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 2
+          }
+        },
+        "sentencedAt": "2024-09-10",
+        "identifier": "cb304745-d781-47d3-b931-4baa31551fc5",
+        "hasAnSDSEarlyReleaseExclusion": "SEXUAL"
       },
-      "duration": {
-        "durationElements": {
-          "YEARS": 3
-        }
-      },
-      "hasAnSDSEarlyReleaseExclusion": "SEXUAL",
-      "sentencedAt": "2024-09-10",
-      "consecutiveSentenceUUIDs": [
-        "cb304745-d781-47d3-b931-4baa31551fc5"
-      ]
-    }
-  ]
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2022-03-22",
+          "offenceCode": "SX03244A"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 3
+          }
+        },
+        "sentencedAt": "2024-09-10",
+        "identifier": "846d0801-b283-4ae2-ada3-ea49cc11343f",
+        "consecutiveSentenceUUIDs": [
+          "cb304745-d781-47d3-b931-4baa31551fc5"
+        ],
+        "hasAnSDSEarlyReleaseExclusion": "SEXUAL"
+      }
+    ],
+    "adjustments": {},
+    "bookingId": -1
+  }
 }

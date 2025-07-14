@@ -1,69 +1,82 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2022-06-04",
-        "offenceCode": "OF61102"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 12
-        }
-      },
-      "sentencedAt": "2023-05-23"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2022-06-04",
-        "offenceCode": "PC53001"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 6
-        }
-      },
-      "sentencedAt": "2023-05-23"
-    },
-    {
-      "offence": {
-        "committedAt": "2022-06-04",
-        "offenceCode": "OF61017"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 5,
-          "MONTHS": 3
-        }
-      },
-      "sentencedAt": "2023-05-23"
-    },
-    {
-      "type": "AFineSentence",
-      "offence": {
-        "committedAt": "2022-12-07",
-        "offenceCode": "RT88711"
-      },
-      "duration": {
-        "durationElements": {
-          "DAYS": 29
-        }
-      },
-      "sentencedAt": "2023-07-25",
-      "fineAmount": 1014
-    }
-  ],
-  "adjustments": {
-    "REMAND": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2023-05-23",
-        "numberOfDays": 351,
-        "fromDate": "2022-06-06",
-        "toDate": "2023-05-22"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2022-06-04",
+          "offenceCode": "OF61102"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 12
+          }
+        },
+        "sentencedAt": "2023-05-23",
+        "identifier": "69223792-506e-4c83-8489-6536173fcd98",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2022-06-04",
+          "offenceCode": "PC53001"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 6
+          }
+        },
+        "sentencedAt": "2023-05-23",
+        "identifier": "70408c93-cbd6-489e-a7e6-f729ed28f1c1",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2022-06-04",
+          "offenceCode": "OF61017"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 5,
+            "MONTHS": 3
+          }
+        },
+        "sentencedAt": "2023-05-23",
+        "identifier": "f11380c6-02a0-4f2f-903c-aaf5756f6262",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "AFineSentence",
+        "offence": {
+          "committedAt": "2022-12-07",
+          "offenceCode": "RT88711"
+        },
+        "duration": {
+          "durationElements": {
+            "DAYS": 29
+          }
+        },
+        "sentencedAt": "2023-07-25",
+        "identifier": "493019e8-36ba-442d-90d6-315ead9dcf51",
+        "fineAmount": 1014
       }
-    ]
+    ],
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2023-05-23",
+          "numberOfDays": 351,
+          "fromDate": "2022-06-06",
+          "toDate": "2023-05-22"
+        }
+      ]
+    },
+    "bookingId": -1
   }
 }

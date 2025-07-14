@@ -1,34 +1,39 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2024-04-03",
-        "offenceCode": "SE20012"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 9
-        }
-      },
-      "sentencedAt": "2024-09-12",
-      "recallType": "FIXED_TERM_RECALL_14",
-      "hasAnSDSEarlyReleaseExclusion": "SEXUAL_T3"
-    }
-  ],
-  "adjustments": {
-    "RECALL_REMAND": [
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2024-09-12",
-        "numberOfDays": 5,
-        "fromDate": "2024-09-12",
-        "toDate": "2024-09-23"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2024-04-03",
+          "offenceCode": "SE20012"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 9
+          }
+        },
+        "sentencedAt": "2024-09-12",
+        "identifier": "c480bdff-5bd1-427f-bb90-c67b2363f17f",
+        "recallType": "FIXED_TERM_RECALL_14",
+        "hasAnSDSEarlyReleaseExclusion": "SEXUAL_T3"
       }
-    ]
+    ],
+    "adjustments": {
+      "RECALL_REMAND": [
+        {
+          "appliesToSentencesFrom": "2024-09-12",
+          "numberOfDays": 5,
+          "fromDate": "2024-09-12",
+          "toDate": "2024-09-23"
+        }
+      ]
+    },
+    "returnToCustodyDate": "2025-01-06",
+    "bookingId": -1
   },
-  "returnToCustodyDate": "2025-01-06",
-  "calculateErsed": false
+  "assertSds40": true
 }

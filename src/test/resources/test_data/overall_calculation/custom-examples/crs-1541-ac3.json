@@ -1,54 +1,67 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2021-07-03"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 3,
-          "MONTHS": 10
-        }
-      },
-      "sentencedAt": "2021-09-03"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2021-07-03"
-      },
-      "duration": {
-        "durationElements": {
-          "WEEKS": 11,
-          "DAYS": 6
-        }
-      },
-      "sentencedAt": "2022-12-27"
-    },
-    {
-      "offence": {
-        "committedAt": "2021-07-03"
-      },
-      "duration": {
-        "durationElements": {
-          "WEEKS": 11,
-          "DAYS": 6
-        }
-      },
-      "sentencedAt": "2023-01-27"
-    }
-  ],
-  "adjustments": {
-    "REMAND": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2021-09-03",
-        "numberOfDays": 42,
-        "fromDate": "2021-07-23",
-        "toDate": "2021-09-02"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2021-07-03"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 3,
+            "MONTHS": 10
+          }
+        },
+        "sentencedAt": "2021-09-03",
+        "identifier": "3fbf15c9-ee47-44a0-b1ef-9829bdd26028",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2021-07-03"
+        },
+        "duration": {
+          "durationElements": {
+            "WEEKS": 11,
+            "DAYS": 6
+          }
+        },
+        "sentencedAt": "2022-12-27",
+        "identifier": "ca3bdc0b-20aa-4e9a-a2f8-c58be03e234e",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2021-07-03"
+        },
+        "duration": {
+          "durationElements": {
+            "WEEKS": 11,
+            "DAYS": 6
+          }
+        },
+        "sentencedAt": "2023-01-27",
+        "identifier": "4fa1c3e7-380f-47d4-9779-6b9915eda052",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
-    ]
-  }
+    ],
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2021-09-03",
+          "numberOfDays": 42,
+          "fromDate": "2021-07-23",
+          "toDate": "2021-09-02"
+        }
+      ]
+    },
+    "bookingId": -1
+  },
+  "params": "sds-50"
 }

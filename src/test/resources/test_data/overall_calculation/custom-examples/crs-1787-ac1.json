@@ -1,55 +1,67 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2010-06-28"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 12
-        }
-      },
-      "sentencedAt": "2017-03-17"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2010-06-28"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 12
-        }
-      },
-      "sentencedAt": "2017-03-17",
-      "identifier": "5dfde034-b7d7-4c54-a86c-67d42a1fd669"
-    },
-    {
-      "offence": {
-        "committedAt": "2010-06-28"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 2
-        }
-      },
-      "sentencedAt": "2017-03-17",
-      "consecutiveSentenceUUIDs": [
-        "5dfde034-b7d7-4c54-a86c-67d42a1fd669"
-      ]
-    }
-  ],
-  "adjustments": {
-    "REMAND": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2017-03-17",
-        "numberOfDays": 78,
-        "fromDate": "2016-12-29",
-        "toDate": "2017-03-16"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2010-06-28"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 12
+          }
+        },
+        "sentencedAt": "2017-03-17",
+        "identifier": "97a585a1-4bfa-479d-9d84-11597802f280",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2010-06-28"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 12
+          }
+        },
+        "sentencedAt": "2017-03-17",
+        "identifier": "5dfde034-b7d7-4c54-a86c-67d42a1fd669",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2010-06-28"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 2
+          }
+        },
+        "sentencedAt": "2017-03-17",
+        "identifier": "ede00125-d36a-45ed-835e-f632e747f35b",
+        "consecutiveSentenceUUIDs": [
+          "5dfde034-b7d7-4c54-a86c-67d42a1fd669"
+        ],
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
-    ]
-  }
+    ],
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2017-03-17",
+          "numberOfDays": 78,
+          "fromDate": "2016-12-29",
+          "toDate": "2017-03-16"
+        }
+      ]
+    },
+    "bookingId": -1
+  },
+  "params": "sds-50"
 }

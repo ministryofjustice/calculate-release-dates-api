@@ -1,72 +1,86 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2023-11-07",
-        "offenceCode": "OF61131"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 15
-        }
-      },
-      "sentencedAt": "2024-02-14",
-      "recallType": "STANDARD_RECALL"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2023-01-10",
-        "offenceCode": "DA05001"
-      },
-      "duration": {
-        "durationElements": {
-          "WEEKS": 2
-        }
-      },
-      "sentencedAt": "2024-02-14",
-      "recallType": "STANDARD_RECALL"
-    },
-    {
-      "offence": {
-        "committedAt": "2024-07-01",
-        "offenceCode": "CJ88160"
-      },
-      "duration": {
-        "durationElements": {
-          "WEEKS": 16
-        }
-      },
-      "sentencedAt": "2024-07-03",
-      "identifier": "e7acfe9e-4c3b-3153-a90d-ec022fb81b8e"
-    },
-    {
-      "offence": {
-        "committedAt": "2024-07-01",
-        "offenceCode": "PH97003"
-      },
-      "duration": {
-        "durationElements": {
-          "WEEKS": 12
-        }
-      },
-      "sentencedAt": "2024-07-03",
-      "consecutiveSentenceUUIDs": [
-        "e7acfe9e-4c3b-3153-a90d-ec022fb81b8e"
-      ]
-    }
-  ],
-  "adjustments": {
-    "RECALL_REMAND": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2024-02-14",
-        "numberOfDays": 98,
-        "fromDate": "2023-11-08",
-        "toDate": "2024-02-13"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2023-11-07",
+          "offenceCode": "OF61131"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 15
+          }
+        },
+        "sentencedAt": "2024-02-14",
+        "identifier": "b1ae6b1b-915e-46f8-8ee0-89ad3d9217b0",
+        "recallType": "STANDARD_RECALL",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2023-01-10",
+          "offenceCode": "DA05001"
+        },
+        "duration": {
+          "durationElements": {
+            "WEEKS": 2
+          }
+        },
+        "sentencedAt": "2024-02-14",
+        "identifier": "62f2edbd-5378-4f9b-9033-8794adc07c5d",
+        "recallType": "STANDARD_RECALL",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2024-07-01",
+          "offenceCode": "CJ88160"
+        },
+        "duration": {
+          "durationElements": {
+            "WEEKS": 16
+          }
+        },
+        "sentencedAt": "2024-07-03",
+        "identifier": "e7acfe9e-4c3b-3153-a90d-ec022fb81b8e",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2024-07-01",
+          "offenceCode": "PH97003"
+        },
+        "duration": {
+          "durationElements": {
+            "WEEKS": 12
+          }
+        },
+        "sentencedAt": "2024-07-03",
+        "identifier": "577cae42-1b28-4820-96e8-c1c3845489d2",
+        "consecutiveSentenceUUIDs": [
+          "e7acfe9e-4c3b-3153-a90d-ec022fb81b8e"
+        ],
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
-    ]
+    ],
+    "adjustments": {
+      "RECALL_REMAND": [
+        {
+          "appliesToSentencesFrom": "2024-02-14",
+          "numberOfDays": 98,
+          "fromDate": "2023-11-08",
+          "toDate": "2024-02-13"
+        }
+      ]
+    },
+    "bookingId": -1
   }
 }

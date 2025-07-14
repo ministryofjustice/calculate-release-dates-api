@@ -1,4 +1,5 @@
 {
+  "booking": {
   "offender": {
     "reference": "ABC123",
     "dateOfBirth": "1990-01-01"
@@ -37,4 +38,6 @@
       }
     ]
   }
+},
+  "expectedValidationException": "CUSTODIAL_PERIOD_EXTINGUISHED_REMAND"
 }

@@ -1,66 +1,78 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "type": "ExtendedDeterminateSentence",
-      "offence": {
-        "committedAt": "2015-01-09"
-      },
-      "custodialDuration": {
-        "durationElements": {
-          "YEARS": 1,
-          "MONTHS": 2
-        }
-      },
-      "extensionDuration": {
-        "durationElements": {
-          "YEARS": 8
-        }
-      },
-      "sentencedAt": "2014-12-08",
-      "recallType": "STANDARD_RECALL"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "type": "ExtendedDeterminateSentence",
-      "offence": {
-        "committedAt": "2015-01-09"
-      },
-      "custodialDuration": {
-        "durationElements": {
-          "YEARS": 5
-        }
-      },
-      "extensionDuration": {
-        "durationElements": {
-          "YEARS": 5
-        }
-      },
-      "sentencedAt": "2022-04-22"
-    },
-    {
-      "offence": {
-        "committedAt": "2014-02-08"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 8
-        }
-      },
-      "sentencedAt": "2022-04-22"
-    }
-  ],
-  "adjustments": {
-    "RECALL_REMAND": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2014-12-08",
-        "numberOfDays": 30,
-        "fromDate": "2014-11-08",
-        "toDate": "2014-12-07"
+        "type": "ExtendedDeterminateSentence",
+        "offence": {
+          "committedAt": "2015-01-09"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "YEARS": 1,
+            "MONTHS": 2
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "YEARS": 8
+          }
+        },
+        "sentencedAt": "2014-12-08",
+        "identifier": "533d3fd2-658d-4b06-8020-476d41b904bc",
+        "recallType": "STANDARD_RECALL"
+      },
+      {
+        "type": "ExtendedDeterminateSentence",
+        "offence": {
+          "committedAt": "2015-01-09"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "YEARS": 5
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "YEARS": 5
+          }
+        },
+        "sentencedAt": "2022-04-22",
+        "identifier": "50a2068d-e9a2-48f2-9259-88fa5e2c07c8"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2014-02-08"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 8
+          }
+        },
+        "sentencedAt": "2022-04-22",
+        "identifier": "d4165986-fca7-4561-b6b0-2650a7b27a6b",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
-    ]
+    ],
+    "adjustments": {
+      "RECALL_REMAND": [
+        {
+          "appliesToSentencesFrom": "2014-12-08",
+          "numberOfDays": 30,
+          "fromDate": "2014-11-08",
+          "toDate": "2014-12-07"
+        }
+      ]
+    },
+    "bookingId": -1
   },
-  "calculateErsed": true
+  "userInputs": {
+    "calculateErsed": true,
+    "useOffenceIndicators": true
+  },
+  "params": "sds-50"
 }

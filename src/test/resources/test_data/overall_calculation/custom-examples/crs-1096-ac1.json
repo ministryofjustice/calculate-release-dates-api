@@ -1,20 +1,26 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "2004-08-30"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "2004-08-30"
+    },
+    "sentences": [
+      {
+        "type": "DetentionAndTrainingOrderSentence",
+        "offence": {
+          "committedAt": "2022-06-21"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 18
+          }
+        },
+        "sentencedAt": "2021-05-23",
+        "identifier": "8e103934-90a8-498c-a091-33a45515a2f9"
+      }
+    ],
+    "adjustments": {},
+    "bookingId": -1
   },
-  "sentences": [
-    {
-      "type": "DetentionAndTrainingOrderSentence",
-      "offence": {
-        "committedAt": "2022-06-21"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 18
-        }
-      },
-      "sentencedAt": "2021-05-23"
-    }
-  ]
+  "params": "sds-50"
 }

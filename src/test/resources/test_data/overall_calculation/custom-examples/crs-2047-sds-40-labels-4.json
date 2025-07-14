@@ -1,83 +1,99 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2021-10-13"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 39
-        }
-      },
-      "sentencedAt": "2022-04-08",
-      "identifier": "7e630c54-5071-3914-be62-c177e622cdfc"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2020-08-31"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 39
-        }
-      },
-      "sentencedAt": "2022-04-08",
-      "identifier": "f2321d7a-07ca-3dbe-b1fe-09cdbd9728ec",
-      "consecutiveSentenceUUIDs": [
-        "7e630c54-5071-3914-be62-c177e622cdfc"
-      ]
-    },
-    {
-      "offence": {
-        "committedAt": "2018-06-29"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 6
-        }
-      },
-      "sentencedAt": "2022-04-08",
-      "consecutiveSentenceUUIDs": [
-        "f2321d7a-07ca-3dbe-b1fe-09cdbd9728ec"
-      ]
-    },
-    {
-      "offence": {
-        "committedAt": "2021-10-13"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 3
-        }
-      },
-      "sentencedAt": "2022-04-08"
-    }
-  ],
-  "adjustments": {
-    "REMAND": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2022-04-08",
-        "numberOfDays": 175,
-        "fromDate": "2021-10-15",
-        "toDate": "2022-04-07"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2021-10-13"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 39
+          }
+        },
+        "sentencedAt": "2022-04-08",
+        "identifier": "7e630c54-5071-3914-be62-c177e622cdfc",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       },
       {
-        "appliesToSentencesFrom": "2022-04-08",
-        "numberOfDays": 26,
-        "fromDate": "2021-05-29",
-        "toDate": "2021-06-23"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2020-08-31"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 39
+          }
+        },
+        "sentencedAt": "2022-04-08",
+        "identifier": "f2321d7a-07ca-3dbe-b1fe-09cdbd9728ec",
+        "consecutiveSentenceUUIDs": [
+          "7e630c54-5071-3914-be62-c177e622cdfc"
+        ],
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2018-06-29"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 6
+          }
+        },
+        "sentencedAt": "2022-04-08",
+        "identifier": "3e7bf85a-c06b-4382-96d9-45377355b258",
+        "consecutiveSentenceUUIDs": [
+          "f2321d7a-07ca-3dbe-b1fe-09cdbd9728ec"
+        ],
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2021-10-13"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 3
+          }
+        },
+        "sentencedAt": "2022-04-08",
+        "identifier": "55480fb2-d0da-46fd-a9b5-cc34d7152d3a",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
     ],
-    "TAGGED_BAIL": [
-      {
-        "appliesToSentencesFrom": "2022-04-08",
-        "numberOfDays": 205
-      }
-    ]
+    "adjustments": {
+      "TAGGED_BAIL": [
+        {
+          "appliesToSentencesFrom": "2022-04-08",
+          "numberOfDays": 205
+        }
+      ],
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2022-04-08",
+          "numberOfDays": 175,
+          "fromDate": "2021-10-15",
+          "toDate": "2022-04-07"
+        },
+        {
+          "appliesToSentencesFrom": "2022-04-08",
+          "numberOfDays": 26,
+          "fromDate": "2021-05-29",
+          "toDate": "2021-06-23"
+        }
+      ]
+    },
+    "bookingId": -1
   },
-  "calculateErsed": true
+  "userInputs": {
+    "calculateErsed": true,
+    "useOffenceIndicators": true
+  }
 }

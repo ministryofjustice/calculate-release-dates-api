@@ -1,109 +1,134 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01",
-    "isActiveSexOffender": true
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01",
+      "isActiveSexOffender": true
+    },
+    "sentences": [
+      {
+        "type": "SopcSentence",
+        "offence": {
+          "committedAt": "2012-08-22",
+          "offenceCode": "SX03015"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "YEARS": 6
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "YEARS": 1
+          }
+        },
+        "sentencedAt": "2020-11-13",
+        "identifier": "8d9fe629-5c3f-46f7-b9f9-3b2784fa75be",
+        "caseSequence": 1,
+        "lineSequence": 1,
+        "caseReference": "A1234567"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2012-08-22",
+          "offenceCode": "SX03017"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 2
+          }
+        },
+        "sentencedAt": "2020-11-13",
+        "identifier": "8c43dff4-a630-48b6-8377-2c9e4a6b6a4e",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2012-08-22",
+          "offenceCode": "SX03019"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 3
+          }
+        },
+        "sentencedAt": "2020-11-13",
+        "identifier": "80c3ac92-ccfd-43fe-a13f-e0907e38a02a",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "1993-07-30",
+          "offenceCode": "SX56087-088N"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 18
+          }
+        },
+        "sentencedAt": "2024-03-22",
+        "identifier": "2d28c28f-fb8a-4647-8355-5c7245124aab",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "1993-07-30",
+          "offenceCode": "SX56025-029N"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 42
+          }
+        },
+        "sentencedAt": "2024-03-22",
+        "identifier": "038bf156-73a2-4760-add4-f54283c88305",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "ExtendedDeterminateSentence",
+        "offence": {
+          "committedAt": "1990-12-31",
+          "offenceCode": "SX56013-122N"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "YEARS": 14
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "YEARS": 1
+          }
+        },
+        "sentencedAt": "2024-03-22",
+        "identifier": "e9b8c342-0822-453f-9e87-90de48bc59c6"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "1990-12-31",
+          "offenceCode": "SX56013-122N"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 13
+          }
+        },
+        "sentencedAt": "2024-03-22",
+        "identifier": "ba8e4ba0-70bc-419d-9736-2fe0d78557da",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      }
+    ],
+    "adjustments": {},
+    "bookingId": -1
   },
-  "sentences": [
-    {
-      "type": "SopcSentence",
-      "offence": {
-        "committedAt": "2012-08-22",
-        "offenceCode": "SX03015"
-      },
-      "custodialDuration": {
-        "durationElements": {
-          "YEARS": 6
-        }
-      },
-      "extensionDuration": {
-        "durationElements": {
-          "YEARS": 1
-        }
-      },
-      "sentencedAt": "2020-11-13",
-      "caseSequence": 1,
-      "lineSequence": 1,
-      "caseReference": "A1234567"
-    },
-    {
-      "offence": {
-        "committedAt": "2012-08-22",
-        "offenceCode": "SX03017"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 2
-        }
-      },
-      "sentencedAt": "2020-11-13"
-    },
-    {
-      "offence": {
-        "committedAt": "2012-08-22",
-        "offenceCode": "SX03019"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 3
-        }
-      },
-      "sentencedAt": "2020-11-13"
-    },
-    {
-      "offence": {
-        "committedAt": "1993-07-30",
-        "offenceCode": "SX56087-088N"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 18
-        }
-      },
-      "sentencedAt": "2024-03-22"
-    },
-    {
-      "offence": {
-        "committedAt": "1993-07-30",
-        "offenceCode": "SX56025-029N"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 42
-        }
-      },
-      "sentencedAt": "2024-03-22"
-    },
-    {
-      "type": "ExtendedDeterminateSentence",
-      "offence": {
-        "committedAt": "1990-12-31",
-        "offenceCode": "SX56013-122N"
-      },
-      "custodialDuration": {
-        "durationElements": {
-          "YEARS": 14
-        }
-      },
-      "extensionDuration": {
-        "durationElements": {
-          "YEARS": 1
-        }
-      },
-      "sentencedAt": "2024-03-22"
-    },
-    {
-      "offence": {
-        "committedAt": "1990-12-31",
-        "offenceCode": "SX56013-122N"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 13
-        }
-      },
-      "sentencedAt": "2024-03-22"
-    }
-  ],
-  "calculateErsed": true
+  "userInputs": {
+    "calculateErsed": true,
+    "useOffenceIndicators": true
+  },
+  "params": "sds-45"
 }

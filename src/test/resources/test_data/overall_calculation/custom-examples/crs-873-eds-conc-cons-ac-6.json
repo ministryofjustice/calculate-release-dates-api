@@ -1,77 +1,83 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "type": "ExtendedDeterminateSentence",
-      "offence": {
-        "committedAt": "2020-12-29"
-      },
-      "custodialDuration": {
-        "durationElements": {
-          "YEARS": 4
-        }
-      },
-      "extensionDuration": {
-        "durationElements": {
-          "YEARS": 2
-        }
-      },
-      "sentencedAt": "2020-12-30"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "type": "ExtendedDeterminateSentence",
-      "offence": {
-        "committedAt": "2015-02-11"
-      },
-      "custodialDuration": {
-        "durationElements": {
-          "YEARS": 9,
-          "MONTHS": 10
-        }
-      },
-      "extensionDuration": {
-        "durationElements": {
-          "MONTHS": 18
-        }
-      },
-      "automaticRelease": true,
-      "sentencedAt": "2015-04-12",
-      "identifier": "e40f48b6-92df-49d0-af99-507194c380fa"
-    },
-    {
-      "type": "ExtendedDeterminateSentence",
-      "offence": {
-        "committedAt": "2015-02-11"
-      },
-      "custodialDuration": {
-        "durationElements": {
-          "YEARS": 9,
-          "MONTHS": 8
-        }
-      },
-      "extensionDuration": {
-        "durationElements": {
-          "MONTHS": 24
-        }
-      },
-      "automaticRelease": true,
-      "sentencedAt": "2015-04-12",
-      "consecutiveSentenceUUIDs": [
-        "e40f48b6-92df-49d0-af99-507194c380fa"
-      ]
-    }
-  ],
-  "adjustments": {
-    "REMAND": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2015-04-12",
-        "numberOfDays": 59,
-        "fromDate": "2015-02-12",
-        "toDate": "2015-04-11"
+        "type": "ExtendedDeterminateSentence",
+        "offence": {
+          "committedAt": "2020-12-29"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "YEARS": 4
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "YEARS": 2
+          }
+        },
+        "sentencedAt": "2020-12-30",
+        "identifier": "eadd7969-b643-4b69-8f5f-d7c19a8e1246"
+      },
+      {
+        "type": "ExtendedDeterminateSentence",
+        "offence": {
+          "committedAt": "2015-02-11"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "YEARS": 9,
+            "MONTHS": 10
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "MONTHS": 18
+          }
+        },
+        "automaticRelease": true,
+        "sentencedAt": "2015-04-12",
+        "identifier": "e40f48b6-92df-49d0-af99-507194c380fa"
+      },
+      {
+        "type": "ExtendedDeterminateSentence",
+        "offence": {
+          "committedAt": "2015-02-11"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "YEARS": 9,
+            "MONTHS": 8
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "MONTHS": 24
+          }
+        },
+        "automaticRelease": true,
+        "sentencedAt": "2015-04-12",
+        "identifier": "5ea6b374-646e-449e-97be-0a53461313e4",
+        "consecutiveSentenceUUIDs": [
+          "e40f48b6-92df-49d0-af99-507194c380fa"
+        ]
       }
-    ]
-  }
+    ],
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2015-04-12",
+          "numberOfDays": 59,
+          "fromDate": "2015-02-12",
+          "toDate": "2015-04-11"
+        }
+      ]
+    },
+    "bookingId": -1
+  },
+  "params": "sds-50"
 }

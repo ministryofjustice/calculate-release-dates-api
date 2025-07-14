@@ -1,89 +1,110 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2013-06-09"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 9
+          }
+        },
+        "sentencedAt": "2020-11-16",
+        "identifier": "665db14d-162d-47ed-8a49-5e8994aa8895",
+        "recallType": "FIXED_TERM_RECALL_14",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2020-11-15"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 7
+          }
+        },
+        "sentencedAt": "2020-11-16",
+        "identifier": "a114f434-59c2-4e2d-a15b-8a1c076334aa",
+        "recallType": "FIXED_TERM_RECALL_14",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2020-11-15"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 2,
+            "WEEKS": 2
+          }
+        },
+        "sentencedAt": "2020-11-16",
+        "identifier": "6a249b6a-b8ef-41fd-8802-178707369c40",
+        "consecutiveSentenceUUIDs": [
+          "665db14d-162d-47ed-8a49-5e8994aa8895"
+        ],
+        "recallType": "FIXED_TERM_RECALL_14",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2015-01-02"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 2
+          }
+        },
+        "sentencedAt": "2021-05-12",
+        "identifier": "9af881dd-c083-44fc-ac44-bc224b14beeb",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2015-02-02"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 1,
+            "WEEKS": 2
+          }
+        },
+        "sentencedAt": "2021-05-12",
+        "identifier": "430dc7fd-1d6a-4fb3-8f26-0808731156a1",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2015-02-02"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 1,
+            "WEEKS": 2
+          }
+        },
+        "sentencedAt": "2021-05-12",
+        "identifier": "03dbb656-28fb-47b1-ac17-d258cb36154c",
+        "consecutiveSentenceUUIDs": [
+          "9af881dd-c083-44fc-ac44-bc224b14beeb"
+        ],
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      }
+    ],
+    "adjustments": {},
+    "returnToCustodyDate": "2021-05-20",
+    "bookingId": -1
   },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2013-06-09"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 9
-        }
-      },
-      "sentencedAt": "2020-11-16",
-      "identifier": "665db14d-162d-47ed-8a49-5e8994aa8895",
-      "recallType": "FIXED_TERM_RECALL_14"
-    },
-    {
-      "offence": {
-        "committedAt": "2020-11-15"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 7
-        }
-      },
-      "sentencedAt": "2020-11-16",
-      "recallType": "FIXED_TERM_RECALL_14"
-    },
-    {
-      "offence": {
-        "committedAt": "2020-11-15"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 2,
-          "WEEKS": 2
-        }
-      },
-      "sentencedAt": "2020-11-16",
-      "consecutiveSentenceUUIDs": [
-        "665db14d-162d-47ed-8a49-5e8994aa8895"
-      ],
-      "recallType": "FIXED_TERM_RECALL_14"
-    },
-    {
-      "offence": {
-        "committedAt": "2015-01-02"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 2
-        }
-      },
-      "sentencedAt": "2021-05-12",
-      "identifier": "9af881dd-c083-44fc-ac44-bc224b14beeb"
-    },
-    {
-      "offence": {
-        "committedAt": "2015-02-02"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 1,
-          "WEEKS": 2
-        }
-      },
-      "sentencedAt": "2021-05-12"
-    },
-    {
-      "offence": {
-        "committedAt": "2015-02-02"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 1,
-          "WEEKS": 2
-        }
-      },
-      "sentencedAt": "2021-05-12",
-      "consecutiveSentenceUUIDs": [
-        "9af881dd-c083-44fc-ac44-bc224b14beeb"
-      ]
-    }
-  ],
-  "returnToCustodyDate": "2021-05-20"
+  "params": "sds-50"
 }

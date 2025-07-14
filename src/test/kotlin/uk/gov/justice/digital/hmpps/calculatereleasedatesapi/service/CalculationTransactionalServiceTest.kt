@@ -12,7 +12,8 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.params.ParameterizedTest
-import org.junit.jupiter.params.provider.CsvFileSource
+import org.junit.jupiter.params.provider.Arguments
+import org.junit.jupiter.params.provider.MethodSource
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Captor
@@ -126,6 +127,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.Unsuppor
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessage
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationUtilities
+import java.io.File
 import java.time.LocalDate
 import java.time.Period
 import java.time.temporal.ChronoUnit.DAYS
@@ -134,6 +136,7 @@ import java.time.temporal.ChronoUnit.WEEKS
 import java.time.temporal.ChronoUnit.YEARS
 import java.util.Optional
 import java.util.UUID
+import java.util.stream.Stream
 
 @ExtendWith(MockitoExtension::class)
 class CalculationTransactionalServiceTest {
@@ -188,73 +191,66 @@ class CalculationTransactionalServiceTest {
   lateinit var updatedOffenderDatesArgumentCaptor: ArgumentCaptor<UpdateOffenderDates>
 
   @ParameterizedTest
-  @CsvFileSource(resources = ["/test_data/calculation-service-examples.csv"], numLinesToSkip = 1)
+  @MethodSource(value = ["testCaseSource"])
   fun `Test Example`(
-    exampleType: String,
-    exampleNumber: String,
-    error: String? = null,
-    params: String? = null,
-    assertSds40: Boolean? = false,
-    expectedValidationException: String? = null,
-    expectedValidationMessage: String? = null,
-    featureTogglesStr: String? = null,
+    example: String,
   ) {
-    log.info("Testing example $exampleType/$exampleNumber")
+    log.info("Testing example $example")
     whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST)
     whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
 
-    val (booking, calculationUserInputs) = jsonTransformation.loadBooking("$exampleType/$exampleNumber")
+    val calculationTestFile = jsonTransformation.loadCalculationTestFile("$example")
     val calculatedReleaseDates: CalculationOutput
     val returnedValidationMessages: List<ValidationMessage>
     try {
       calculatedReleaseDates = calculationService(
-        defaultParams(params),
+        defaultParams(calculationTestFile.params),
         passedInServices = listOf(ValidationService::class.java.simpleName),
       )
-        .calculateReleaseDates(booking, calculationUserInputs)
+        .calculateReleaseDates(calculationTestFile.booking, calculationTestFile.userInputs)
       val sentencesExtractionService = SentencesExtractionService()
       val trancheConfiguration = SDS40TrancheConfiguration(
-        sdsEarlyReleaseTrancheOneDate(defaultParams(params)),
-        sdsEarlyReleaseTrancheTwoDate(defaultParams(params)),
-        sdsEarlyReleaseTrancheThreeDate(defaultParams(params)),
+        sdsEarlyReleaseTrancheOneDate(defaultParams(calculationTestFile.params)),
+        sdsEarlyReleaseTrancheTwoDate(defaultParams(calculationTestFile.params)),
+        sdsEarlyReleaseTrancheThreeDate(defaultParams(calculationTestFile.params)),
       )
-      val featureToggles = parseFeatureToggles(featureTogglesStr)
+      val featureToggles = parseFeatureToggles(calculationTestFile.featureTogglesStr)
       val myValidationService = getActiveValidationService(sentencesExtractionService, trancheConfiguration, featureToggles)
 
       returnedValidationMessages = myValidationService.validateBookingAfterCalculation(
         calculatedReleaseDates,
-        booking,
+        calculationTestFile.booking,
       ).distinct()
     } catch (e: Exception) {
-      if (!error.isNullOrEmpty()) {
-        assertEquals(error, e.javaClass.simpleName)
+      if (!calculationTestFile.error.isNullOrEmpty()) {
+        assertEquals(calculationTestFile.error, e.javaClass.simpleName)
         return
       } else {
         throw e
       }
     }
     log.info(
-      "Example $exampleType/$exampleNumber outcome BookingCalculation: {}",
+      "Example $example outcome BookingCalculation: {}",
       TestUtil.objectMapper().writeValueAsString(calculatedReleaseDates),
     )
-    if (expectedValidationException != null) {
-      val expectedExceptions = expectedValidationException.split("|")
+    if (calculationTestFile.expectedValidationException != null) {
+      val expectedExceptions = calculationTestFile.expectedValidationException.split("|")
       assertThat(returnedValidationMessages).hasSize(expectedExceptions.size)
       expectedExceptions.forEachIndexed { index, exception ->
         assertThat(returnedValidationMessages[index].code.toString()).isEqualTo(exception)
-        expectedValidationMessage?.let { assertThat(returnedValidationMessages[index].message).isEqualTo(it) }
+        calculationTestFile.expectedValidationMessage?.let { assertThat(returnedValidationMessages[index].message).isEqualTo(it) }
       }
     } else if (returnedValidationMessages.isNotEmpty()) {
       fail("Validation messages were returned: $returnedValidationMessages")
     } else {
-      val bookingData = jsonTransformation.loadCalculationResult("$exampleType/$exampleNumber")
+      val bookingData = jsonTransformation.loadCalculationResult("$example")
       val result = bookingData.first
       assertEquals(
         result.dates.entries.sortedBy { it.key },
         calculatedReleaseDates.calculationResult.dates.entries.sortedBy { it.key },
       )
       assertEquals(result.effectiveSentenceLength, calculatedReleaseDates.calculationResult.effectiveSentenceLength)
-      if (assertSds40 == true) {
+      if (calculationTestFile.assertSds40 == true) {
         assertEquals(result.affectedBySds40, calculatedReleaseDates.calculationResult.affectedBySds40)
       }
       if (bookingData.second.contains("sdsEarlyReleaseAllocatedTranche")) {
@@ -268,18 +264,20 @@ class CalculationTransactionalServiceTest {
   }
 
   @ParameterizedTest
-  @CsvFileSource(resources = ["/test_data/calculation-breakdown-examples.csv"], numLinesToSkip = 1)
-  fun `Test UX Example Breakdowns`(exampleType: String, exampleNumber: String, error: String?, params: String?) {
-    log.info("Testing example $exampleType/$exampleNumber")
+  @MethodSource(value = ["breakdownTestCaseSource"])
+  fun `Test UX Example Breakdowns`(
+    example: String,
+  ) {
+    log.info("Testing example $example")
     whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
 
-    val (booking, calculationUserInputs) = jsonTransformation.loadBooking("$exampleType/$exampleNumber")
-    val calculation = jsonTransformation.loadCalculationResult("$exampleType/$exampleNumber").first
+    val calculationTestFile = jsonTransformation.loadCalculationTestFile("$example")
+    val calculation = jsonTransformation.loadCalculationResult("$example").first
 
     val calculationBreakdown: CalculationBreakdown?
     try {
-      calculationBreakdown = calculationTransactionalService(defaultParams(params)).calculateWithBreakdown(
-        booking,
+      calculationBreakdown = calculationTransactionalService(defaultParams(calculationTestFile.params)).calculateWithBreakdown(
+        calculationTestFile.booking,
         CalculatedReleaseDates(
           calculation.dates,
           -1,
@@ -290,23 +288,23 @@ class CalculationTransactionalServiceTest {
           calculationReason = CALCULATION_REASON,
           calculationDate = LocalDate.of(2024, 1, 1),
         ),
-        calculationUserInputs,
+        calculationTestFile.userInputs,
       )
     } catch (e: Exception) {
-      if (!error.isNullOrEmpty()) {
-        assertEquals(error, e.javaClass.simpleName)
+      if (!calculationTestFile.error.isNullOrEmpty()) {
+        assertEquals(calculationTestFile.error, e.javaClass.simpleName)
         return
       } else {
         throw e
       }
     }
     log.info(
-      "Example $exampleType/$exampleNumber outcome CalculationBreakdown: {}",
+      "Example $example outcome CalculationBreakdown: {}",
       TestUtil.objectMapper().writeValueAsString(calculationBreakdown),
     )
     val actualJson: String? = TestUtil.objectMapper().writeValueAsString(calculationBreakdown)
     val expectedJson: String =
-      jsonTransformation.getJsonTest("$exampleType/$exampleNumber.json", "calculation_breakdown_response")
+      jsonTransformation.getJsonTest("$example.json", "calculation_breakdown_response")
 
     JSONAssert.assertEquals(
       expectedJson,
@@ -314,7 +312,7 @@ class CalculationTransactionalServiceTest {
       JSONCompareMode.LENIENT,
     )
 
-    assertThat(calculationBreakdown).isEqualTo(jsonTransformation.loadCalculationBreakdown("$exampleType/$exampleNumber"))
+    assertThat(calculationBreakdown).isEqualTo(jsonTransformation.loadCalculationBreakdown("$example"))
   }
 
   @Test
@@ -1108,6 +1106,32 @@ class CalculationTransactionalServiceTest {
   }
 
   companion object {
+    @JvmStatic
+    fun testCaseSource(): Stream<Arguments> {
+      val excluded = listOf("custom-examples/different-calclulation-from-stored")
+      val dir = File(object {}.javaClass.getResource("/test_data/overall_calculation").file)
+      return getTestCasesFromDir(dir, excluded)
+    }
+
+    @JvmStatic
+    fun breakdownTestCaseSource(): Stream<Arguments> {
+      val dir = File(object {}.javaClass.getResource("/test_data/calculation_breakdown_response").file)
+      return getTestCasesFromDir(dir, listOf())
+    }
+
+    private fun getTestCasesFromDir(dir: File, excluded: List<String>): Stream<Arguments> {
+      val args = mutableListOf<String>()
+      JsonTransformation().doAllInDir(
+        dir,
+      ) {
+        val arg = it.path.replace(dir.path + "/", "").replace(".json", "")
+        if (!excluded.contains(arg)) {
+          args.add(arg)
+        }
+      }
+      return args.stream().map { Arguments.of(it) }
+    }
+
     private val originalSentence = PrisonApiSentenceAndOffences(
       bookingId = 1L,
       sentenceSequence = 3,

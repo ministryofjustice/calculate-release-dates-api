@@ -1,36 +1,44 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2024-09-20"
-      },
-      "duration": {
-        "durationElements": {
-          "WEEKS": 2
-        }
-      },
-      "sentencedAt": "2024-09-20",
-      "identifier": "cb304745-d781-47d3-b931-4baa31551fc5",
-      "hasAnSDSEarlyReleaseExclusion": "VIOLENT_T3"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2024-09-20"
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2024-09-20"
+        },
+        "duration": {
+          "durationElements": {
+            "WEEKS": 2
+          }
+        },
+        "sentencedAt": "2024-09-20",
+        "identifier": "cb304745-d781-47d3-b931-4baa31551fc5",
+        "hasAnSDSEarlyReleaseExclusion": "VIOLENT_T3"
       },
-      "duration": {
-        "durationElements": {
-          "WEEKS": 2
-        }
-      },
-      "sentencedAt": "2024-09-20",
-      "hasAnSDSEarlyReleaseExclusion": "VIOLENT_T3",
-      "consecutiveSentenceUUIDs": [
-        "cb304745-d781-47d3-b931-4baa31551fc5"
-      ]
-    }
-  ]
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2024-09-20"
+        },
+        "duration": {
+          "durationElements": {
+            "WEEKS": 2
+          }
+        },
+        "sentencedAt": "2024-09-20",
+        "identifier": "2d77fb57-3dcf-4220-a7b2-b53fa20a5b67",
+        "consecutiveSentenceUUIDs": [
+          "cb304745-d781-47d3-b931-4baa31551fc5"
+        ],
+        "hasAnSDSEarlyReleaseExclusion": "VIOLENT_T3"
+      }
+    ],
+    "adjustments": {},
+    "bookingId": -1
+  },
+  "assertSds40": true
 }

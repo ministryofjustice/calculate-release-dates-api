@@ -1,78 +1,91 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "type": "DetentionAndTrainingOrderSentence",
-      "offence": {
-        "committedAt": "2022-12-11",
-        "offenceCode": "OF61131"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 18
-        }
-      },
-      "sentencedAt": "2024-08-05",
-      "identifier": "022b43ab-f725-3dbf-92d9-65fb5dc3026c"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "type": "DetentionAndTrainingOrderSentence",
-      "offence": {
-        "committedAt": "2022-12-11",
-        "offenceCode": "OF61102"
+    "sentences": [
+      {
+        "type": "DetentionAndTrainingOrderSentence",
+        "offence": {
+          "committedAt": "2022-12-11",
+          "offenceCode": "OF61131"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 18
+          }
+        },
+        "sentencedAt": "2024-08-05",
+        "identifier": "022b43ab-f725-3dbf-92d9-65fb5dc3026c"
       },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 6
-        }
+      {
+        "type": "DetentionAndTrainingOrderSentence",
+        "offence": {
+          "committedAt": "2022-12-11",
+          "offenceCode": "OF61102"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 6
+          }
+        },
+        "sentencedAt": "2024-08-05",
+        "identifier": "57f97a49-6554-42ef-88d7-7466bbe009d6",
+        "consecutiveSentenceUUIDs": [
+          "022b43ab-f725-3dbf-92d9-65fb5dc3026c"
+        ]
       },
-      "sentencedAt": "2024-08-05",
-      "consecutiveSentenceUUIDs": [
-        "022b43ab-f725-3dbf-92d9-65fb5dc3026c"
-      ]
-    },
-    {
-      "offence": {
-        "committedAt": "2024-07-05",
-        "offenceCode": "OF61102"
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2024-07-05",
+          "offenceCode": "OF61102"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 6
+          }
+        },
+        "sentencedAt": "2024-12-23",
+        "identifier": "f6737598-f2c3-3cc0-88dc-2e1e889de1bc",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 6
-        }
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2024-07-05",
+          "offenceCode": "OF61102"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 9
+          }
+        },
+        "sentencedAt": "2024-12-23",
+        "identifier": "05f773d0-7531-452d-a832-0acd0fdcfbc2",
+        "consecutiveSentenceUUIDs": [
+          "f6737598-f2c3-3cc0-88dc-2e1e889de1bc"
+        ],
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       },
-      "sentencedAt": "2024-12-23",
-      "identifier": "f6737598-f2c3-3cc0-88dc-2e1e889de1bc"
-    },
-    {
-      "offence": {
-        "committedAt": "2024-07-05",
-        "offenceCode": "OF61102"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 9
-        }
-      },
-      "sentencedAt": "2024-12-23",
-      "consecutiveSentenceUUIDs": [
-        "f6737598-f2c3-3cc0-88dc-2e1e889de1bc"
-      ]
-    },
-    {
-      "offence": {
-        "committedAt": "2024-07-05",
-        "offenceCode": "OF61102"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 9
-        }
-      },
-      "sentencedAt": "2024-12-23"
-    }
-  ]
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2024-07-05",
+          "offenceCode": "OF61102"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 9
+          }
+        },
+        "sentencedAt": "2024-12-23",
+        "identifier": "31b88d52-6405-4e89-a051-7ae18e5c1f6e",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      }
+    ],
+    "adjustments": {},
+    "bookingId": -1
+  }
 }

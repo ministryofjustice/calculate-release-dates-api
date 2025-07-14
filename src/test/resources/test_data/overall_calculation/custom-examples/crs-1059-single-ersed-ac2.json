@@ -1,21 +1,32 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2022-04-28"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 4,
+            "MONTHS": 6
+          }
+        },
+        "sentencedAt": "2022-04-29",
+        "identifier": "a9b8c150-fad8-45c5-80ef-54ef2626d1da",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      }
+    ],
+    "adjustments": {},
+    "bookingId": -1
   },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2022-04-28"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 4,
-          "MONTHS": 6
-        }
-      },
-      "sentencedAt": "2022-04-29"
-    }
-  ],
-  "calculateErsed": true
+  "userInputs": {
+    "calculateErsed": true,
+    "useOffenceIndicators": true
+  },
+  "params": "sds-50"
 }

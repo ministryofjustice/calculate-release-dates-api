@@ -1,44 +1,51 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "type": "ExtendedDeterminateSentence",
-      "offence": {
-        "committedAt": "2015-01-20"
-      },
-      "custodialDuration": {
-        "durationElements": {
-          "YEARS": 6,
-          "MONTHS": 6
-        }
-      },
-      "extensionDuration": {
-        "durationElements": {
-          "YEARS": 2
-        }
-      },
-      "automaticRelease": true,
-      "sentencedAt": "2015-01-21"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "type": "ExtendedDeterminateSentence",
-      "offence": {
-        "committedAt": "2016-04-14"
+    "sentences": [
+      {
+        "type": "ExtendedDeterminateSentence",
+        "offence": {
+          "committedAt": "2015-01-20"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "YEARS": 6,
+            "MONTHS": 6
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "YEARS": 2
+          }
+        },
+        "automaticRelease": true,
+        "sentencedAt": "2015-01-21",
+        "identifier": "a4ea6cd5-353d-4a30-adea-d1ea147360fd"
       },
-      "custodialDuration": {
-        "durationElements": {
-          "YEARS": 5
-        }
-      },
-      "extensionDuration": {
-        "durationElements": {
-          "YEARS": 1
-        }
-      },
-      "sentencedAt": "2016-04-15"
-    }
-  ]
+      {
+        "type": "ExtendedDeterminateSentence",
+        "offence": {
+          "committedAt": "2016-04-14"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "YEARS": 5
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "YEARS": 1
+          }
+        },
+        "sentencedAt": "2016-04-15",
+        "identifier": "cf0247c2-c4b2-4b4a-a945-cea1a9971ef7"
+      }
+    ],
+    "adjustments": {},
+    "bookingId": -1
+  },
+  "params": "sds-50"
 }

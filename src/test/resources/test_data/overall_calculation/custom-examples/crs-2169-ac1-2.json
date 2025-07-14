@@ -1,37 +1,45 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2020-11-30",
-        "offenceCode": "SX03244"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 5
-        }
-      },
-      "sentencedAt": "2020-12-01",
-      "identifier": "0549ff5e-93b1-3f22-8095-a97ab6c60f4b",
-      "hasAnSDSEarlyReleaseExclusion": "SEXUAL"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2019-10-19",
-        "offenceCode": "COML001"
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2020-11-30",
+          "offenceCode": "SX03244"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 5
+          }
+        },
+        "sentencedAt": "2020-12-01",
+        "identifier": "0549ff5e-93b1-3f22-8095-a97ab6c60f4b",
+        "hasAnSDSEarlyReleaseExclusion": "SEXUAL"
       },
-      "duration": {
-        "durationElements": {
-          "YEARS": 4
-        }
-      },
-      "sentencedAt": "2023-05-10",
-      "consecutiveSentenceUUIDs": [
-        "0549ff5e-93b1-3f22-8095-a97ab6c60f4b"
-      ]
-    }
-  ]
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2019-10-19",
+          "offenceCode": "COML001"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 4
+          }
+        },
+        "sentencedAt": "2023-05-10",
+        "identifier": "100e81fa-0d79-44a7-b940-e0cae8fd230e",
+        "consecutiveSentenceUUIDs": [
+          "0549ff5e-93b1-3f22-8095-a97ab6c60f4b"
+        ],
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      }
+    ],
+    "adjustments": {},
+    "bookingId": -1
+  }
 }

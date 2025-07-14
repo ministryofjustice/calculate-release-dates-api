@@ -1,50 +1,62 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2022-05-05"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 2,
+            "MONTHS": 4
+          }
+        },
+        "sentencedAt": "2022-05-06",
+        "identifier": "80a460be-4d39-4edc-b392-9744d913084a",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2022-05-05"
+        },
+        "duration": {
+          "durationElements": {
+            "DAYS": 28
+          }
+        },
+        "sentencedAt": "2022-07-13",
+        "identifier": "ee0d7f12-b7a7-4041-a560-f5c358870cbc",
+        "consecutiveSentenceUUIDs": [
+          "80a460be-4d39-4edc-b392-9744d913084a"
+        ],
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2022-05-05"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 10
+          }
+        },
+        "sentencedAt": "2023-04-25",
+        "identifier": "fceeeace-27fe-49be-857e-f40ab5bd7344",
+        "consecutiveSentenceUUIDs": [
+          "ee0d7f12-b7a7-4041-a560-f5c358870cbc"
+        ],
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      }
+    ],
+    "adjustments": {},
+    "bookingId": -1
   },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2022-05-05"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 2,
-          "MONTHS": 4
-        }
-      },
-      "sentencedAt": "2022-05-06",
-      "identifier": "80a460be-4d39-4edc-b392-9744d913084a"
-    },
-    {
-      "offence": {
-        "committedAt": "2022-05-05"
-      },
-      "duration": {
-        "durationElements": {
-          "DAYS": 28
-        }
-      },
-      "sentencedAt": "2022-07-13",
-      "identifier": "ee0d7f12-b7a7-4041-a560-f5c358870cbc",
-      "consecutiveSentenceUUIDs": [
-        "80a460be-4d39-4edc-b392-9744d913084a"
-      ]
-    },
-    {
-      "offence": {
-        "committedAt": "2022-05-05"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 10
-        }
-      },
-      "sentencedAt": "2023-04-25",
-      "consecutiveSentenceUUIDs": [
-        "ee0d7f12-b7a7-4041-a560-f5c358870cbc"
-      ]
-    }
-  ]
+  "params": "sds-50"
 }

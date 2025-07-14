@@ -1,62 +1,74 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2021-09-06",
-        "offenceCode": "TH68023"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 4
-        }
-      },
-      "sentencedAt": "2022-02-21",
-      "recallType": "STANDARD_RECALL"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2021-09-06",
-        "offenceCode": "CJ88144"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 1
-        }
-      },
-      "sentencedAt": "2022-02-21",
-      "recallType": "STANDARD_RECALL"
-    },
-    {
-      "offence": {
-        "committedAt": "2024-04-05",
-        "offenceCode": "OF61102"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 32
-        }
-      },
-      "sentencedAt": "2024-10-04"
-    }
-  ],
-  "adjustments": {
-    "RECALL_REMAND": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2022-02-21",
-        "numberOfDays": 144,
-        "fromDate": "2021-09-30",
-        "toDate": "2022-02-20"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2021-09-06",
+          "offenceCode": "TH68023"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 4
+          }
+        },
+        "sentencedAt": "2022-02-21",
+        "identifier": "db6e867d-27a0-4388-9e1a-91b458c546c9",
+        "recallType": "STANDARD_RECALL",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       },
       {
-        "appliesToSentencesFrom": "2022-02-21",
-        "numberOfDays": 12,
-        "fromDate": "2021-09-11",
-        "toDate": "2021-09-22"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2021-09-06",
+          "offenceCode": "CJ88144"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 1
+          }
+        },
+        "sentencedAt": "2022-02-21",
+        "identifier": "7c92c012-f3d2-45cd-abc1-d3c5aee47b8e",
+        "recallType": "STANDARD_RECALL",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2024-04-05",
+          "offenceCode": "OF61102"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 32
+          }
+        },
+        "sentencedAt": "2024-10-04",
+        "identifier": "12c578bb-10d9-454c-b03b-615dab5b2b9b",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
-    ]
+    ],
+    "adjustments": {
+      "RECALL_REMAND": [
+        {
+          "appliesToSentencesFrom": "2022-02-21",
+          "numberOfDays": 144,
+          "fromDate": "2021-09-30",
+          "toDate": "2022-02-20"
+        },
+        {
+          "appliesToSentencesFrom": "2022-02-21",
+          "numberOfDays": 12,
+          "fromDate": "2021-09-11",
+          "toDate": "2021-09-22"
+        }
+      ]
+    },
+    "bookingId": -1
   }
 }

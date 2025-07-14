@@ -1,44 +1,53 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2005-04-03"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 2
-        }
-      },
-      "sentencedAt": "2012-05-31",
-      "identifier": "232c4722-189f-4eb2-8eb9-c8e87d3dc22f"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2013-02-13"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 18
-        }
-      },
-      "sentencedAt": "2013-02-15",
-      "consecutiveSentenceUUIDs": [
-        "232c4722-189f-4eb2-8eb9-c8e87d3dc22f"
-      ]
-    }
-  ],
-  "adjustments": {
-    "REMAND": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2012-05-31",
-        "numberOfDays": 30,
-        "fromDate": "2012-04-30",
-        "toDate": "2012-05-30"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2005-04-03"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 2
+          }
+        },
+        "sentencedAt": "2012-05-31",
+        "identifier": "232c4722-189f-4eb2-8eb9-c8e87d3dc22f",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2013-02-13"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 18
+          }
+        },
+        "sentencedAt": "2013-02-15",
+        "identifier": "6aee711d-ace4-4e47-93d5-c2d166bcf37f",
+        "consecutiveSentenceUUIDs": [
+          "232c4722-189f-4eb2-8eb9-c8e87d3dc22f"
+        ],
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
-    ]
-  }
+    ],
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2012-05-31",
+          "numberOfDays": 30,
+          "fromDate": "2012-04-30",
+          "toDate": "2012-05-30"
+        }
+      ]
+    },
+    "bookingId": -1
+  },
+  "params": "sds-50"
 }

@@ -1,48 +1,57 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "type": "ExtendedDeterminateSentence",
-      "offence": {
-        "committedAt": "2021-04-28"
-      },
-      "custodialDuration": {
-        "durationElements": {
-          "YEARS": 3
-        }
-      },
-      "extensionDuration": {
-        "durationElements": {
-          "YEARS": 2
-        }
-      },
-      "sentencedAt": "2021-10-08"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "type": "DetentionAndTrainingOrderSentence",
-      "offence": {
-        "committedAt": "2020-01-20"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 20
-        }
-      },
-      "sentencedAt": "2021-12-16"
-    }
-  ],
-  "adjustments": {
-    "REMAND": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2021-10-08",
-        "numberOfDays": 25,
-        "fromDate": "2021-09-13",
-        "toDate": "2021-10-07"
+        "type": "ExtendedDeterminateSentence",
+        "offence": {
+          "committedAt": "2021-04-28"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "YEARS": 3
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "YEARS": 2
+          }
+        },
+        "sentencedAt": "2021-10-08",
+        "identifier": "22b7f2b6-7bef-4c08-a591-57ff70c01bbb"
+      },
+      {
+        "type": "DetentionAndTrainingOrderSentence",
+        "offence": {
+          "committedAt": "2020-01-20"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 20
+          }
+        },
+        "sentencedAt": "2021-12-16",
+        "identifier": "52630272-562f-4fb5-be2f-dc1c58a8c306"
       }
-    ]
+    ],
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2021-10-08",
+          "numberOfDays": 25,
+          "fromDate": "2021-09-13",
+          "toDate": "2021-10-07"
+        }
+      ]
+    },
+    "bookingId": -1
   },
-  "calculateErsed": true
+  "userInputs": {
+    "calculateErsed": true,
+    "useOffenceIndicators": true
+  },
+  "params": "sds-50"
 }
