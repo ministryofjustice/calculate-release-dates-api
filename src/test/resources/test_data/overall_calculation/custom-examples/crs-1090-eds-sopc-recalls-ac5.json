@@ -1,48 +1,56 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "type": "ExtendedDeterminateSentence",
-      "offence": {
-        "committedAt": "2014-01-09"
-      },
-      "custodialDuration": {
-        "durationElements": {
-          "YEARS": 8
-        }
-      },
-      "extensionDuration": {
-        "durationElements": {
-          "YEARS": 2
-        }
-      },
-      "sentencedAt": "2015-01-15",
-      "recallType": "STANDARD_RECALL"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2014-02-08"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 1
-        }
-      },
-      "sentencedAt": "2015-01-15",
-      "recallType": "STANDARD_RECALL"
-    }
-  ],
-  "adjustments": {
-    "RECALL_REMAND": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2015-01-15",
-        "numberOfDays": 49,
-        "fromDate": "2014-11-27",
-        "toDate": "2015-01-14"
+        "type": "ExtendedDeterminateSentence",
+        "offence": {
+          "committedAt": "2014-01-09"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "YEARS": 8
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "YEARS": 2
+          }
+        },
+        "sentencedAt": "2015-01-15",
+        "identifier": "00b6fc66-3e34-4b51-9ff9-78f013840e37",
+        "recallType": "STANDARD_RECALL"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2014-02-08"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 1
+          }
+        },
+        "sentencedAt": "2015-01-15",
+        "identifier": "8deeaeda-8675-4213-823c-67aac1c7221b",
+        "recallType": "STANDARD_RECALL",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
-    ]
-  }
+    ],
+    "adjustments": {
+      "RECALL_REMAND": [
+        {
+          "appliesToSentencesFrom": "2015-01-15",
+          "numberOfDays": 49,
+          "fromDate": "2014-11-27",
+          "toDate": "2015-01-14"
+        }
+      ]
+    },
+    "bookingId": -1
+  },
+  "params": "sds-50"
 }

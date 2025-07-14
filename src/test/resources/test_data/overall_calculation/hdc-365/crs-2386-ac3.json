@@ -1,64 +1,74 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2022-04-20",
-        "offenceCode": "TH68068"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 3
-        }
-      },
-      "sentencedAt": "2024-09-01",
-      "identifier": "cb304745-d781-47d3-b931-4baa31551fc5"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2022-04-20",
-        "offenceCode": "TH68068"
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2022-04-20",
+          "offenceCode": "TH68068"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 3
+          }
+        },
+        "sentencedAt": "2024-09-01",
+        "identifier": "cb304745-d781-47d3-b931-4baa31551fc5",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       },
-      "duration": {
-        "durationElements": {
-          "YEARS": 1
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2022-04-20",
+          "offenceCode": "TH68068"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 1
+          }
+        },
+        "sentencedAt": "2024-09-01",
+        "identifier": "e87ca8b6-aeca-4ac9-b2dc-5720bfa22e21",
+        "consecutiveSentenceUUIDs": [
+          "cb304745-d781-47d3-b931-4baa31551fc5"
+        ],
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      }
+    ],
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2024-09-01",
+          "numberOfDays": 20,
+          "fromDate": "2024-01-01",
+          "toDate": "2024-01-20"
         }
-      },
-      "sentencedAt": "2024-09-01",
-      "consecutiveSentenceUUIDs": ["cb304745-d781-47d3-b931-4baa31551fc5"]
-    }
-  ],
-  "adjustments": {
-    "ADDITIONAL_DAYS_AWARDED": [
-      {
-        "appliesToSentencesFrom": "2024-09-01",
-        "numberOfDays": 40,
-        "fromDate": "2024-12-01"
-      }
-    ],
-    "RESTORATION_OF_ADDITIONAL_DAYS_AWARDED": [
-      {
-        "appliesToSentencesFrom": "2024-09-01",
-        "numberOfDays": 10
-      }
-    ],
-    "UNLAWFULLY_AT_LARGE": [
-      {
-        "appliesToSentencesFrom": "2024-09-01",
-        "numberOfDays": 5,
-        "fromDate": "2024-11-15"
-      }
-    ],
-    "REMAND": [
-      {
-        "appliesToSentencesFrom": "2024-09-01",
-        "numberOfDays": 20,
-        "fromDate": "2024-01-01",
-        "toDate": "2024-01-20"
-      }
-    ]
+      ],
+      "UNLAWFULLY_AT_LARGE": [
+        {
+          "appliesToSentencesFrom": "2024-09-01",
+          "numberOfDays": 5,
+          "fromDate": "2024-11-15"
+        }
+      ],
+      "RESTORATION_OF_ADDITIONAL_DAYS_AWARDED": [
+        {
+          "appliesToSentencesFrom": "2024-09-01",
+          "numberOfDays": 10
+        }
+      ],
+      "ADDITIONAL_DAYS_AWARDED": [
+        {
+          "appliesToSentencesFrom": "2024-09-01",
+          "numberOfDays": 40,
+          "fromDate": "2024-12-01"
+        }
+      ]
+    },
+    "bookingId": -1
   }
 }

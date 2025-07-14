@@ -1,42 +1,51 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2023-11-09",
-        "offenceCode": "TH68028C"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 11
-        }
-      },
-      "sentencedAt": "2024-02-06"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2023-11-09",
-        "offenceCode": "TH68013"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 12
-        }
-      },
-      "sentencedAt": "2023-12-11"
-    }
-  ],
-  "adjustments": {
-    "UNLAWFULLY_AT_LARGE": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2024-11-24",
-        "numberOfDays": 18,
-        "fromDate": "2024-11-24",
-        "toDate": "2024-12-11"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2023-11-09",
+          "offenceCode": "TH68028C"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 11
+          }
+        },
+        "sentencedAt": "2024-02-06",
+        "identifier": "a9d4115a-babd-4fac-9ebb-02ba4f298497",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2023-11-09",
+          "offenceCode": "TH68013"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 12
+          }
+        },
+        "sentencedAt": "2023-12-11",
+        "identifier": "a4aa30ec-7550-4c44-8cd1-c85df59bd9ca",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
-    ]
+    ],
+    "adjustments": {
+      "UNLAWFULLY_AT_LARGE": [
+        {
+          "appliesToSentencesFrom": "2024-11-24",
+          "numberOfDays": 18,
+          "fromDate": "2024-11-24",
+          "toDate": "2024-12-11"
+        }
+      ]
+    },
+    "bookingId": -1
   }
 }

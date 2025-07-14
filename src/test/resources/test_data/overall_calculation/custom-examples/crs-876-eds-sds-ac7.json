@@ -1,53 +1,63 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2020-04-06"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 6
+          }
+        },
+        "sentencedAt": "2022-05-13",
+        "identifier": "a21efe88-4df9-45c6-99ee-74b75df2d5e0",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "ExtendedDeterminateSentence",
+        "offence": {
+          "committedAt": "2020-04-06"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "YEARS": 3
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "YEARS": 1
+          }
+        },
+        "sentencedAt": "2022-05-13",
+        "identifier": "ce75b4d0-d8f9-4159-907e-fa6a77b75344"
+      },
+      {
+        "type": "ExtendedDeterminateSentence",
+        "offence": {
+          "committedAt": "2020-04-06"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "YEARS": 3
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "YEARS": 2
+          }
+        },
+        "sentencedAt": "2022-05-13",
+        "identifier": "67e85d08-51e1-465d-a5db-35e842e77613"
+      }
+    ],
+    "adjustments": {},
+    "bookingId": -1
   },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2020-04-06"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 6
-        }
-      },
-      "sentencedAt": "2022-05-13"
-    },
-    {
-      "type": "ExtendedDeterminateSentence",
-      "offence": {
-        "committedAt": "2020-04-06"
-      },
-      "custodialDuration": {
-        "durationElements": {
-          "YEARS": 3
-        }
-      },
-      "extensionDuration": {
-        "durationElements": {
-          "YEARS": 1
-        }
-      },
-      "sentencedAt": "2022-05-13"
-    },
-    {
-      "type": "ExtendedDeterminateSentence",
-      "offence": {
-        "committedAt": "2020-04-06"
-      },
-      "custodialDuration": {
-        "durationElements": {
-          "YEARS": 3
-        }
-      },
-      "extensionDuration": {
-        "durationElements": {
-          "YEARS": 2
-        }
-      },
-      "sentencedAt": "2022-05-13"
-    }
-  ]
+  "params": "sds-50"
 }

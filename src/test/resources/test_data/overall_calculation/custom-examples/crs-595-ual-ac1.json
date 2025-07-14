@@ -1,55 +1,67 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2015-01-02"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 4
-        }
-      },
-      "sentencedAt": "2015-02-12",
-      "identifier": "cb304745-d781-47d3-b931-4baa31551fc5"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2015-02-02"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 3
-        }
-      },
-      "sentencedAt": "2015-02-12"
-    },
-    {
-      "offence": {
-        "committedAt": "2015-02-02"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 3
-        }
-      },
-      "sentencedAt": "2015-02-12",
-      "consecutiveSentenceUUIDs": [
-        "cb304745-d781-47d3-b931-4baa31551fc5"
-      ]
-    }
-  ],
-  "adjustments": {
-    "UNLAWFULLY_AT_LARGE": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2015-02-15",
-        "numberOfDays": 30,
-        "fromDate": "2015-02-15",
-        "toDate": "2015-03-16"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2015-01-02"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 4
+          }
+        },
+        "sentencedAt": "2015-02-12",
+        "identifier": "cb304745-d781-47d3-b931-4baa31551fc5",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2015-02-02"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 3
+          }
+        },
+        "sentencedAt": "2015-02-12",
+        "identifier": "1c81a555-29bf-47d8-a226-46eeda2cc857",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2015-02-02"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 3
+          }
+        },
+        "sentencedAt": "2015-02-12",
+        "identifier": "269a5d5d-3828-4561-94d1-fa543536a298",
+        "consecutiveSentenceUUIDs": [
+          "cb304745-d781-47d3-b931-4baa31551fc5"
+        ],
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
-    ]
-  }
+    ],
+    "adjustments": {
+      "UNLAWFULLY_AT_LARGE": [
+        {
+          "appliesToSentencesFrom": "2015-02-15",
+          "numberOfDays": 30,
+          "fromDate": "2015-02-15",
+          "toDate": "2015-03-16"
+        }
+      ]
+    },
+    "bookingId": -1
+  },
+  "params": "sds-50"
 }

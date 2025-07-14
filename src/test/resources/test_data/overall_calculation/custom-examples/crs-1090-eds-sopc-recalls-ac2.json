@@ -1,36 +1,41 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "type": "SopcSentence",
-      "offence": {
-        "committedAt": "2015-01-09"
-      },
-      "custodialDuration": {
-        "durationElements": {
-          "YEARS": 5
-        }
-      },
-      "extensionDuration": {
-        "durationElements": {
-          "YEARS": 1
-        }
-      },
-      "sentencedAt": "2017-09-29",
-      "recallType": "STANDARD_RECALL"
-    }
-  ],
-  "adjustments": {
-    "RECALL_REMAND": [
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2017-09-29",
-        "numberOfDays": 71,
-        "fromDate": "2017-07-20",
-        "toDate": "2017-09-28"
+        "type": "SopcSentence",
+        "offence": {
+          "committedAt": "2015-01-09"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "YEARS": 5
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "YEARS": 1
+          }
+        },
+        "sentencedAt": "2017-09-29",
+        "identifier": "e21c5be4-8ea6-4ee6-9eb1-e248bd59a791",
+        "recallType": "STANDARD_RECALL"
       }
-    ]
-  }
+    ],
+    "adjustments": {
+      "RECALL_REMAND": [
+        {
+          "appliesToSentencesFrom": "2017-09-29",
+          "numberOfDays": 71,
+          "fromDate": "2017-07-20",
+          "toDate": "2017-09-28"
+        }
+      ]
+    },
+    "bookingId": -1
+  },
+  "params": "sds-50"
 }

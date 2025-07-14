@@ -1,78 +1,90 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2015-02-01"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 5
+          }
+        },
+        "sentencedAt": "2015-02-11",
+        "identifier": "597df4c3-96af-4932-8fd0-d8460c030fcb",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "ExtendedDeterminateSentence",
+        "offence": {
+          "committedAt": "2015-02-01"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "YEARS": 4
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "YEARS": 1
+          }
+        },
+        "automaticRelease": true,
+        "sentencedAt": "2015-03-08",
+        "identifier": "0194ce7a-288b-447f-a6ad-191226a769eb",
+        "consecutiveSentenceUUIDs": [
+          "597df4c3-96af-4932-8fd0-d8460c030fcb"
+        ]
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2015-02-01"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 8
+          }
+        },
+        "sentencedAt": "2020-04-02",
+        "identifier": "18f096c7-7e61-484b-a4df-d9846dd88609",
+        "consecutiveSentenceUUIDs": [
+          "0194ce7a-288b-447f-a6ad-191226a769eb"
+        ],
+        "isSDSPlus": true,
+        "isSDSPlusEligibleSentenceTypeLengthAndOffence": true,
+        "isSDSPlusOffenceInPeriod": true,
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "ExtendedDeterminateSentence",
+        "offence": {
+          "committedAt": "2015-02-01"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "YEARS": 3
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "YEARS": 1
+          }
+        },
+        "sentencedAt": "2020-04-02",
+        "identifier": "44ed7b08-af53-46b2-bdaf-973b9e63c8db",
+        "consecutiveSentenceUUIDs": [
+          "18f096c7-7e61-484b-a4df-d9846dd88609"
+        ]
+      }
+    ],
+    "adjustments": {},
+    "bookingId": -1
   },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2015-02-01"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 5
-        }
-      },
-      "sentencedAt": "2015-02-11",
-      "identifier": "597df4c3-96af-4932-8fd0-d8460c030fcb"
-    },
-    {
-      "type": "ExtendedDeterminateSentence",
-      "offence": {
-        "committedAt": "2015-02-01"
-      },
-      "custodialDuration": {
-        "durationElements": {
-          "YEARS": 4
-        }
-      },
-      "extensionDuration": {
-        "durationElements": {
-          "YEARS": 1
-        }
-      },
-      "automaticRelease": true,
-      "sentencedAt": "2015-03-08",
-      "identifier": "0194ce7a-288b-447f-a6ad-191226a769eb",
-      "consecutiveSentenceUUIDs": [
-        "597df4c3-96af-4932-8fd0-d8460c030fcb"
-      ]
-    },
-    {
-      "offence": {
-        "committedAt": "2015-02-01"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 8
-        }
-      },
-      "sentencedAt": "2020-04-02",
-      "identifier": "18f096c7-7e61-484b-a4df-d9846dd88609",
-      "consecutiveSentenceUUIDs": [
-        "0194ce7a-288b-447f-a6ad-191226a769eb"
-      ],
-      "isSDSPlus": true
-    },
-    {
-      "type": "ExtendedDeterminateSentence",
-      "offence": {
-        "committedAt": "2015-02-01"
-      },
-      "custodialDuration": {
-        "durationElements": {
-          "YEARS": 3
-        }
-      },
-      "extensionDuration": {
-        "durationElements": {
-          "YEARS": 1
-        }
-      },
-      "sentencedAt": "2020-04-02",
-      "consecutiveSentenceUUIDs": [
-        "18f096c7-7e61-484b-a4df-d9846dd88609"
-      ]
-    }
-  ]
+  "params": "sds-50"
 }

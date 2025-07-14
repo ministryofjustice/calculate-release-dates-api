@@ -1,45 +1,51 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2021-05-10",
-        "offenceCode": "SX03247A"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 2
-        }
-      },
-      "sentencedAt": "2024-06-06",
-      "identifier": "5c64a902-3831-396c-80ae-7b7c1f2dd244",
-      "hasAnSDSEarlyReleaseExclusion": "SEXUAL"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2024-03-03",
-        "offenceCode": "TH68013I"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 10
-        }
-      },
-      "sentencedAt": "2024-06-06",
-      "identifier": "5c64a902-3831-396c-80ae-7b7c1f2dd244"
-    }
-  ],
-  "adjustments": {
-    "REMAND": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2024-06-06",
-        "numberOfDays": 25,
-        "fromDate": "2024-05-12",
-        "toDate": "2024-06-05"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2021-05-10",
+          "offenceCode": "SX03247A"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 2
+          }
+        },
+        "sentencedAt": "2024-06-06",
+        "identifier": "5c64a902-3831-396c-80ae-7b7c1f2dd244",
+        "hasAnSDSEarlyReleaseExclusion": "SEXUAL"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2024-03-03",
+          "offenceCode": "TH68013I"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 10
+          }
+        },
+        "sentencedAt": "2024-06-06",
+        "identifier": "5c64a902-3831-396c-80ae-7b7c1f2dd244",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
-    ]
+    ],
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2024-06-06",
+          "numberOfDays": 25,
+          "fromDate": "2024-05-12",
+          "toDate": "2024-06-05"
+        }
+      ]
+    },
+    "bookingId": -1
   }
 }

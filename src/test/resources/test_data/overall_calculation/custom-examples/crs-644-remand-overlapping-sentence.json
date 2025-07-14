@@ -1,29 +1,32 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2020-10-13"
-      },
-      "duration": {
-        "durationElements": {
-          "WEEKS": 8
-        }
-      },
-      "sentencedAt": "2020-12-15"
-    }
-  ],
-  "adjustments": {
-    "REMAND": [
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2020-12-15",
-        "numberOfDays": 23,
-        "fromDate": "2020-11-22",
-        "toDate": "2020-12-15"
+        "offence": {
+          "committedAt": "2020-10-13"
+        },
+        "duration": {
+          "durationElements": {
+            "WEEKS": 8
+          }
+        },
+        "sentencedAt": "2020-12-15"
       }
-    ]
-  }
+    ],
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2020-12-15",
+          "numberOfDays": 23,
+          "fromDate": "2020-11-22",
+          "toDate": "2020-12-15"
+        }
+      ]
+    }
+  },
+  "expectedValidationException": "REMAND_OVERLAPS_WITH_SENTENCE"
 }

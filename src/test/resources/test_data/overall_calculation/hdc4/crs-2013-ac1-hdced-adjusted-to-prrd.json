@@ -1,50 +1,60 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2024-06-07"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 30
-        }
-      },
-      "sentencedAt": "2024-06-07"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2022-01-10"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 3,
-          "MONTHS": 6
-        }
-      },
-      "sentencedAt": "2022-01-10",
-      "recallType": "STANDARD_RECALL"
-    }
-  ],
-  "adjustments": {
-    "UNLAWFULLY_AT_LARGE": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2022-01-10",
-        "numberOfDays": 5,
-        "fromDate": "2023-11-25",
-        "toDate": "2023-11-29"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2024-06-07"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 30
+          }
+        },
+        "sentencedAt": "2024-06-07",
+        "identifier": "0c65dcb6-ea9b-4cf2-8b7b-a43c5074e491",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2022-01-10"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 3,
+            "MONTHS": 6
+          }
+        },
+        "sentencedAt": "2022-01-10",
+        "identifier": "ee30cdfe-44bc-443c-89ba-75f91a1f710b",
+        "recallType": "STANDARD_RECALL",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
     ],
-    "REMAND": [
-      {
-        "appliesToSentencesFrom": "2024-06-07",
-        "numberOfDays": 1,
-        "fromDate": "2024-03-07",
-        "toDate": "2024-03-07"
-      }
-    ]
-  }
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2024-06-07",
+          "numberOfDays": 1,
+          "fromDate": "2024-03-07",
+          "toDate": "2024-03-07"
+        }
+      ],
+      "UNLAWFULLY_AT_LARGE": [
+        {
+          "appliesToSentencesFrom": "2022-01-10",
+          "numberOfDays": 5,
+          "fromDate": "2023-11-25",
+          "toDate": "2023-11-29"
+        }
+      ]
+    },
+    "bookingId": -1
+  },
+  "params": "sds-50"
 }

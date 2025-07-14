@@ -1,60 +1,66 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "type": "SopcSentence",
-      "offence": {
-        "committedAt": "2020-12-17"
-      },
-      "custodialDuration": {
-        "durationElements": {
-          "YEARS": 6
-        }
-      },
-      "extensionDuration": {
-        "durationElements": {
-          "MONTHS": 12
-        }
-      },
-      "sentencedAt": "2021-01-17"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "type": "SopcSentence",
-      "offence": {
-        "committedAt": "2020-12-17"
-      },
-      "custodialDuration": {
-        "durationElements": {
-          "YEARS": 4
-        }
-      },
-      "extensionDuration": {
-        "durationElements": {
-          "MONTHS": 12
-        }
-      },
-      "sentencedAt": "2021-01-17"
-    }
-  ],
-  "adjustments": {
-    "UNLAWFULLY_AT_LARGE": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2021-01-17",
-        "numberOfDays": 3,
-        "fromDate": "2021-03-01",
-        "toDate": "2021-03-03"
+        "type": "SopcSentence",
+        "offence": {
+          "committedAt": "2020-12-17"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "YEARS": 6
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "MONTHS": 12
+          }
+        },
+        "sentencedAt": "2021-01-17",
+        "identifier": "520e48be-de9e-4bf0-a837-8f81ef29d054"
+      },
+      {
+        "type": "SopcSentence",
+        "offence": {
+          "committedAt": "2020-12-17"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "YEARS": 4
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "MONTHS": 12
+          }
+        },
+        "sentencedAt": "2021-01-17",
+        "identifier": "d888aadd-f217-47e4-9f1d-aa1c05107d5d"
       }
     ],
-    "ADDITIONAL_DAYS_AWARDED": [
-      {
-        "appliesToSentencesFrom": "2021-01-17",
-        "numberOfDays": 10,
-        "fromDate": "2021-10-01",
-        "toDate": "2021-10-10"
-      }
-    ]
-  }
+    "adjustments": {
+      "ADDITIONAL_DAYS_AWARDED": [
+        {
+          "appliesToSentencesFrom": "2021-01-17",
+          "numberOfDays": 10,
+          "fromDate": "2021-10-01",
+          "toDate": "2021-10-10"
+        }
+      ],
+      "UNLAWFULLY_AT_LARGE": [
+        {
+          "appliesToSentencesFrom": "2021-01-17",
+          "numberOfDays": 3,
+          "fromDate": "2021-03-01",
+          "toDate": "2021-03-03"
+        }
+      ]
+    },
+    "bookingId": -1
+  },
+  "params": "sds-50"
 }

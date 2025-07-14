@@ -1,97 +1,119 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2024-03-20",
+          "offenceCode": "CD71002"
+        },
+        "duration": {
+          "durationElements": {
+            "WEEKS": 2
+          }
+        },
+        "sentencedAt": "2024-03-23",
+        "identifier": "854522ef-cbe4-4fa3-a3ab-c8aedf9331f6",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2024-03-20",
+          "offenceCode": "CJ88160"
+        },
+        "duration": {
+          "durationElements": {
+            "WEEKS": 8
+          }
+        },
+        "sentencedAt": "2024-03-23",
+        "identifier": "a4a46a1d-d96c-37c9-817d-ca14e3ccbf7e",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2024-03-21",
+          "offenceCode": "CJ88160"
+        },
+        "duration": {
+          "durationElements": {
+            "WEEKS": 8
+          }
+        },
+        "sentencedAt": "2024-03-23",
+        "identifier": "4e9f77aa-82cc-307d-bd1c-eed8b55e055f",
+        "consecutiveSentenceUUIDs": [
+          "a4a46a1d-d96c-37c9-817d-ca14e3ccbf7e"
+        ],
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2024-03-20",
+          "offenceCode": "CJ88160"
+        },
+        "duration": {
+          "durationElements": {
+            "WEEKS": 8
+          }
+        },
+        "sentencedAt": "2024-03-23",
+        "identifier": "86b07e59-def1-3999-b7e2-4e710118fe7c",
+        "consecutiveSentenceUUIDs": [
+          "4e9f77aa-82cc-307d-bd1c-eed8b55e055f"
+        ],
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2024-03-21",
+          "offenceCode": "CJ88160"
+        },
+        "duration": {
+          "durationElements": {
+            "WEEKS": 8
+          }
+        },
+        "sentencedAt": "2024-03-23",
+        "identifier": "da1a9efc-f02a-37bf-849b-5fa949c0c22f",
+        "consecutiveSentenceUUIDs": [
+          "86b07e59-def1-3999-b7e2-4e710118fe7c"
+        ],
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2024-03-17",
+          "offenceCode": "CJ88159"
+        },
+        "duration": {
+          "durationElements": {
+            "WEEKS": 16
+          }
+        },
+        "sentencedAt": "2024-03-23",
+        "identifier": "e7ddf548-8e4e-4294-9b67-ced952badcb4",
+        "consecutiveSentenceUUIDs": [
+          "da1a9efc-f02a-37bf-849b-5fa949c0c22f"
+        ],
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      }
+    ],
+    "adjustments": {},
+    "bookingId": -1
   },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2024-03-20",
-        "offenceCode": "CD71002"
-      },
-      "duration": {
-        "durationElements": {
-          "WEEKS": 2
-        }
-      },
-      "sentencedAt": "2024-03-23"
-    },
-    {
-      "offence": {
-        "committedAt": "2024-03-20",
-        "offenceCode": "CJ88160"
-      },
-      "duration": {
-        "durationElements": {
-          "WEEKS": 8
-        }
-      },
-      "sentencedAt": "2024-03-23",
-      "identifier": "a4a46a1d-d96c-37c9-817d-ca14e3ccbf7e"
-    },
-    {
-      "offence": {
-        "committedAt": "2024-03-21",
-        "offenceCode": "CJ88160"
-      },
-      "duration": {
-        "durationElements": {
-          "WEEKS": 8
-        }
-      },
-      "sentencedAt": "2024-03-23",
-      "identifier": "4e9f77aa-82cc-307d-bd1c-eed8b55e055f",
-      "consecutiveSentenceUUIDs": [
-        "a4a46a1d-d96c-37c9-817d-ca14e3ccbf7e"
-      ]
-    },
-    {
-      "offence": {
-        "committedAt": "2024-03-20",
-        "offenceCode": "CJ88160"
-      },
-      "duration": {
-        "durationElements": {
-          "WEEKS": 8
-        }
-      },
-      "sentencedAt": "2024-03-23",
-      "identifier": "86b07e59-def1-3999-b7e2-4e710118fe7c",
-      "consecutiveSentenceUUIDs": [
-        "4e9f77aa-82cc-307d-bd1c-eed8b55e055f"
-      ]
-    },
-    {
-      "offence": {
-        "committedAt": "2024-03-21",
-        "offenceCode": "CJ88160"
-      },
-      "duration": {
-        "durationElements": {
-          "WEEKS": 8
-        }
-      },
-      "sentencedAt": "2024-03-23",
-      "identifier": "da1a9efc-f02a-37bf-849b-5fa949c0c22f",
-      "consecutiveSentenceUUIDs": [
-        "86b07e59-def1-3999-b7e2-4e710118fe7c"
-      ]
-    },
-    {
-      "offence": {
-        "committedAt": "2024-03-17",
-        "offenceCode": "CJ88159"
-      },
-      "duration": {
-        "durationElements": {
-          "WEEKS": 16
-        }
-      },
-      "sentencedAt": "2024-03-23",
-      "consecutiveSentenceUUIDs": [
-        "da1a9efc-f02a-37bf-849b-5fa949c0c22f"
-      ]
-    }
-  ],
-  "calculateErsed": true
+  "userInputs": {
+    "calculateErsed": true,
+    "useOffenceIndicators": true
+  },
+  "params": "sds-45"
 }

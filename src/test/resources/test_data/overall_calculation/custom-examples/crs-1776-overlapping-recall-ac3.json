@@ -1,71 +1,81 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2023-05-04",
-        "offenceCode": "CD71015"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 9
-        }
-      },
-      "sentencedAt": "2024-02-20",
-      "recallType": "FIXED_TERM_RECALL_14"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2023-10-08",
-        "offenceCode": "PU86116"
-      },
-      "duration": {
-        "durationElements": {
-          "WEEKS": 4
-        }
-      },
-      "sentencedAt": "2024-03-28",
-      "recallType": "FIXED_TERM_RECALL_14"
-    }
-  ],
-  "adjustments": {
-    "RECALL_REMAND": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2024-02-20",
-        "numberOfDays": 17,
-        "fromDate": "2024-02-03",
-        "toDate": "2024-02-19"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2023-05-04",
+          "offenceCode": "CD71015"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 9
+          }
+        },
+        "sentencedAt": "2024-02-20",
+        "identifier": "b9901ddc-0ff2-4c65-be3c-db3cfe543e14",
+        "recallType": "FIXED_TERM_RECALL_14",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       },
       {
-        "appliesToSentencesFrom": "2024-02-20",
-        "numberOfDays": 116,
-        "fromDate": "2023-05-06",
-        "toDate": "2023-08-29"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2023-10-08",
+          "offenceCode": "PU86116"
+        },
+        "duration": {
+          "durationElements": {
+            "WEEKS": 4
+          }
+        },
+        "sentencedAt": "2024-03-28",
+        "identifier": "82bfc426-adac-4968-9f63-22b4b8bae97b",
+        "recallType": "FIXED_TERM_RECALL_14",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
     ],
-    "UNLAWFULLY_AT_LARGE": [
-      {
-        "appliesToSentencesFrom": "2024-05-01",
-        "numberOfDays": 3,
-        "fromDate": "2024-05-01",
-        "toDate": "2024-05-03"
-      },
-      {
-        "appliesToSentencesFrom": "2024-04-13",
-        "numberOfDays": 4,
-        "fromDate": "2024-04-13",
-        "toDate": "2024-04-16"
-      },
-      {
-        "appliesToSentencesFrom": "2024-05-18",
-        "numberOfDays": 2,
-        "fromDate": "2024-05-18",
-        "toDate": "2024-05-19"
-      }
-    ]
+    "adjustments": {
+      "UNLAWFULLY_AT_LARGE": [
+        {
+          "appliesToSentencesFrom": "2024-05-01",
+          "numberOfDays": 3,
+          "fromDate": "2024-05-01",
+          "toDate": "2024-05-03"
+        },
+        {
+          "appliesToSentencesFrom": "2024-04-13",
+          "numberOfDays": 4,
+          "fromDate": "2024-04-13",
+          "toDate": "2024-04-16"
+        },
+        {
+          "appliesToSentencesFrom": "2024-05-18",
+          "numberOfDays": 2,
+          "fromDate": "2024-05-18",
+          "toDate": "2024-05-19"
+        }
+      ],
+      "RECALL_REMAND": [
+        {
+          "appliesToSentencesFrom": "2024-02-20",
+          "numberOfDays": 17,
+          "fromDate": "2024-02-03",
+          "toDate": "2024-02-19"
+        },
+        {
+          "appliesToSentencesFrom": "2024-02-20",
+          "numberOfDays": 116,
+          "fromDate": "2023-05-06",
+          "toDate": "2023-08-29"
+        }
+      ]
+    },
+    "returnToCustodyDate": "2024-05-20",
+    "bookingId": -1
   },
-  "returnToCustodyDate": "2024-05-20"
+  "params": "sds-50"
 }

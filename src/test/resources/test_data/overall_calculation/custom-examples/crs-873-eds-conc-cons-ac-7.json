@@ -1,98 +1,104 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "type": "ExtendedDeterminateSentence",
-      "offence": {
-        "committedAt": "2015-04-11"
-      },
-      "custodialDuration": {
-        "durationElements": {
-          "YEARS": 9
-        }
-      },
-      "extensionDuration": {
-        "durationElements": {
-          "YEARS": 6
-        }
-      },
-      "automaticRelease": true,
-      "sentencedAt": "2015-04-12"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "type": "ExtendedDeterminateSentence",
-      "offence": {
-        "committedAt": "2014-05-02"
-      },
-      "custodialDuration": {
-        "durationElements": {
-          "YEARS": 3
-        }
-      },
-      "extensionDuration": {
-        "durationElements": {
-          "YEARS": 1
-        }
-      },
-      "automaticRelease": true,
-      "sentencedAt": "2014-05-03",
-      "identifier": "e40f48b6-92df-49d0-af99-507194c380fa"
-    },
-    {
-      "type": "ExtendedDeterminateSentence",
-      "offence": {
-        "committedAt": "2014-05-02"
-      },
-      "custodialDuration": {
-        "durationElements": {
-          "YEARS": 3
-        }
-      },
-      "extensionDuration": {
-        "durationElements": {
-          "YEARS": 1
-        }
-      },
-      "automaticRelease": true,
-      "sentencedAt": "2014-05-03",
-      "identifier": "a177c6dd-2b7e-41b4-a839-05dce9bbd4f0",
-      "consecutiveSentenceUUIDs": [
-        "e40f48b6-92df-49d0-af99-507194c380fa"
-      ]
-    },
-    {
-      "type": "ExtendedDeterminateSentence",
-      "offence": {
-        "committedAt": "2014-05-02"
-      },
-      "custodialDuration": {
-        "durationElements": {
-          "YEARS": 3
-        }
-      },
-      "extensionDuration": {
-        "durationElements": {
-          "YEARS": 1
-        }
-      },
-      "automaticRelease": true,
-      "sentencedAt": "2014-05-03",
-      "consecutiveSentenceUUIDs": [
-        "a177c6dd-2b7e-41b4-a839-05dce9bbd4f0"
-      ]
-    }
-  ],
-  "adjustments": {
-    "UNLAWFULLY_AT_LARGE": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2014-05-04",
-        "numberOfDays": 30,
-        "fromDate": "2014-05-04",
-        "toDate": "2014-06-02"
+        "type": "ExtendedDeterminateSentence",
+        "offence": {
+          "committedAt": "2015-04-11"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "YEARS": 9
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "YEARS": 6
+          }
+        },
+        "automaticRelease": true,
+        "sentencedAt": "2015-04-12",
+        "identifier": "ee228061-6169-4874-b92c-c5b2cfc5b8c5"
+      },
+      {
+        "type": "ExtendedDeterminateSentence",
+        "offence": {
+          "committedAt": "2014-05-02"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "YEARS": 3
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "YEARS": 1
+          }
+        },
+        "automaticRelease": true,
+        "sentencedAt": "2014-05-03",
+        "identifier": "e40f48b6-92df-49d0-af99-507194c380fa"
+      },
+      {
+        "type": "ExtendedDeterminateSentence",
+        "offence": {
+          "committedAt": "2014-05-02"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "YEARS": 3
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "YEARS": 1
+          }
+        },
+        "automaticRelease": true,
+        "sentencedAt": "2014-05-03",
+        "identifier": "a177c6dd-2b7e-41b4-a839-05dce9bbd4f0",
+        "consecutiveSentenceUUIDs": [
+          "e40f48b6-92df-49d0-af99-507194c380fa"
+        ]
+      },
+      {
+        "type": "ExtendedDeterminateSentence",
+        "offence": {
+          "committedAt": "2014-05-02"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "YEARS": 3
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "YEARS": 1
+          }
+        },
+        "automaticRelease": true,
+        "sentencedAt": "2014-05-03",
+        "identifier": "264d149c-2461-4f67-8144-4a1219afdbe1",
+        "consecutiveSentenceUUIDs": [
+          "a177c6dd-2b7e-41b4-a839-05dce9bbd4f0"
+        ]
       }
-    ]
-  }
+    ],
+    "adjustments": {
+      "UNLAWFULLY_AT_LARGE": [
+        {
+          "appliesToSentencesFrom": "2014-05-04",
+          "numberOfDays": 30,
+          "fromDate": "2014-05-04",
+          "toDate": "2014-06-02"
+        }
+      ]
+    },
+    "bookingId": -1
+  },
+  "params": "sds-50"
 }

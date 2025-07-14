@@ -1,28 +1,34 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2024-04-02"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 2,
-          "MONTHS": 10
-        }
-      },
-      "sentencedAt": "2024-10-05"
-    }
-  ],
-  "adjustments": {
-    "ADDITIONAL_DAYS_AWARDED": [
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2024-12-01",
-        "numberOfDays": 30
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2024-04-02"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 2,
+            "MONTHS": 10
+          }
+        },
+        "sentencedAt": "2024-10-05",
+        "identifier": "8e02b0c6-faf4-4a8d-923a-791207b6a769",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
-    ]
+    ],
+    "adjustments": {
+      "ADDITIONAL_DAYS_AWARDED": [
+        {
+          "appliesToSentencesFrom": "2024-12-01",
+          "numberOfDays": 30
+        }
+      ]
+    },
+    "bookingId": -1
   }
 }

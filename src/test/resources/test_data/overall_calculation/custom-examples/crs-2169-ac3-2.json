@@ -1,48 +1,54 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2019-11-19",
-        "offenceCode": "SX03244A"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 9
-        }
-      },
-      "sentencedAt": "2024-09-10",
-      "identifier": "0549ff5e-93b1-3f22-8095-a97ab6c60f4b",
-      "hasAnSDSEarlyReleaseExclusion": "SEXUAL"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2019-11-19",
-        "offenceCode": "SE20012A"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 9
-        }
-      },
-      "sentencedAt": "2024-09-10",
-      "consecutiveSentenceUUIDs": [
-        "0549ff5e-93b1-3f22-8095-a97ab6c60f4b"
-      ],
-      "hasAnSDSEarlyReleaseExclusion": "SEXUAL"
-    }
-  ],
-  "adjustments": {
-    "ADDITIONAL_DAYS_AWARDED": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2024-09-10",
-        "numberOfDays": 10,
-        "fromDate": "2024-09-15",
-        "toDate": "2024-09-15"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2019-11-19",
+          "offenceCode": "SX03244A"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 9
+          }
+        },
+        "sentencedAt": "2024-09-10",
+        "identifier": "0549ff5e-93b1-3f22-8095-a97ab6c60f4b",
+        "hasAnSDSEarlyReleaseExclusion": "SEXUAL"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2019-11-19",
+          "offenceCode": "SE20012A"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 9
+          }
+        },
+        "sentencedAt": "2024-09-10",
+        "identifier": "2f444be9-16dc-4a6f-9f66-106d7cd366d4",
+        "consecutiveSentenceUUIDs": [
+          "0549ff5e-93b1-3f22-8095-a97ab6c60f4b"
+        ],
+        "hasAnSDSEarlyReleaseExclusion": "SEXUAL"
       }
-    ]
+    ],
+    "adjustments": {
+      "ADDITIONAL_DAYS_AWARDED": [
+        {
+          "appliesToSentencesFrom": "2024-09-10",
+          "numberOfDays": 10,
+          "fromDate": "2024-09-15",
+          "toDate": "2024-09-15"
+        }
+      ]
+    },
+    "bookingId": -1
   }
 }

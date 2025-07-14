@@ -1,44 +1,53 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2024-03-19"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 2
-        }
-      },
-      "sentencedAt": "2024-03-19",
-      "identifier": "a31d5d02-611f-43b0-8b1a-4b1edc955e7e"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2024-03-19"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 2
-        }
-      },
-      "sentencedAt": "2024-03-19",
-      "consecutiveSentenceUUIDs": [
-        "a31d5d02-611f-43b0-8b1a-4b1edc955e7e"
-      ]
-    }
-  ],
-  "adjustments": {
-    "REMAND": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2024-03-19",
-        "numberOfDays": 20,
-        "fromDate": "2024-02-28",
-        "toDate": "2024-03-18"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2024-03-19"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 2
+          }
+        },
+        "sentencedAt": "2024-03-19",
+        "identifier": "a31d5d02-611f-43b0-8b1a-4b1edc955e7e",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2024-03-19"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 2
+          }
+        },
+        "sentencedAt": "2024-03-19",
+        "identifier": "711b6b8b-c8c6-4f5e-8085-ff51f22f6d4b",
+        "consecutiveSentenceUUIDs": [
+          "a31d5d02-611f-43b0-8b1a-4b1edc955e7e"
+        ],
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
-    ]
-  }
+    ],
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2024-03-19",
+          "numberOfDays": 20,
+          "fromDate": "2024-02-28",
+          "toDate": "2024-03-18"
+        }
+      ]
+    },
+    "bookingId": -1
+  },
+  "params": "sds-50"
 }

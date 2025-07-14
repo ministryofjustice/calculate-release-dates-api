@@ -1,36 +1,42 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "2005-04-22"
-  },
-  "sentences": [
-    {
-      "type": "DetentionAndTrainingOrderSentence",
-      "offence": {
-        "committedAt": "2022-03-19"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 4
-        }
-      },
-      "sentencedAt": "2022-12-14",
-      "identifier": "ee91a161-dde2-3a7b-8611-624d255542a7"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "2005-04-22"
     },
-    {
-      "type": "DetentionAndTrainingOrderSentence",
-      "offence": {
-        "committedAt": "2022-08-02"
+    "sentences": [
+      {
+        "type": "DetentionAndTrainingOrderSentence",
+        "offence": {
+          "committedAt": "2022-03-19"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 4
+          }
+        },
+        "sentencedAt": "2022-12-14",
+        "identifier": "ee91a161-dde2-3a7b-8611-624d255542a7"
       },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 4
-        }
-      },
-      "sentencedAt": "2022-12-14",
-      "consecutiveSentenceUUIDs": [
-        "ee91a161-dde2-3a7b-8611-624d255542a7"
-      ]
-    }
-  ]
+      {
+        "type": "DetentionAndTrainingOrderSentence",
+        "offence": {
+          "committedAt": "2022-08-02"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 4
+          }
+        },
+        "sentencedAt": "2022-12-14",
+        "identifier": "3bda0e96-fa5e-4383-9d3e-cff899a95326",
+        "consecutiveSentenceUUIDs": [
+          "ee91a161-dde2-3a7b-8611-624d255542a7"
+        ]
+      }
+    ],
+    "adjustments": {},
+    "bookingId": -1
+  },
+  "params": "sds-50"
 }

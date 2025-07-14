@@ -1,41 +1,53 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2020-01-28"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 7
-        }
-      },
-      "sentencedAt": "2020-06-12",
-      "isSDSPlus": true
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2020-01-28"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 6
-        }
-      },
-      "sentencedAt": "2020-06-12"
-    }
-  ],
-  "adjustments": {
-    "REMAND": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2020-06-12",
-        "numberOfDays": 133,
-        "fromDate": "2020-01-30",
-        "toDate": "2020-06-11"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2020-01-28"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 7
+          }
+        },
+        "sentencedAt": "2020-06-12",
+        "identifier": "09bc6c20-75f9-4a77-b6ba-afd235057daf",
+        "isSDSPlus": true,
+        "isSDSPlusEligibleSentenceTypeLengthAndOffence": true,
+        "isSDSPlusOffenceInPeriod": true,
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2020-01-28"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 6
+          }
+        },
+        "sentencedAt": "2020-06-12",
+        "identifier": "69739de0-906a-48c3-8f54-4578b330e0cc",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
-    ]
-  }
+    ],
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2020-06-12",
+          "numberOfDays": 133,
+          "fromDate": "2020-01-30",
+          "toDate": "2020-06-11"
+        }
+      ]
+    },
+    "bookingId": -1
+  },
+  "params": "sds-50"
 }

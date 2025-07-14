@@ -1,55 +1,60 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "type": "SopcSentence",
-      "offence": {
-        "committedAt": "2016-09-14",
-        "offenceCode": "SX03015"
-      },
-      "custodialDuration": {
-        "durationElements": {
-          "YEARS": 6
-        }
-      },
-      "extensionDuration": {
-        "durationElements": {
-          "YEARS": 1
-        }
-      },
-      "sentencedAt": "2018-09-15"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "type": "AFineSentence",
-      "offence": {
-        "committedAt": "2023-08-17",
-        "offenceCode": "CF17002"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 30
-        }
-      },
-      "sentencedAt": "2024-05-23",
-      "fineAmount": 250000
-    }
-  ],
-  "adjustments": {
-    "TAGGED_BAIL": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2018-09-15",
-        "numberOfDays": 98
+        "type": "SopcSentence",
+        "offence": {
+          "committedAt": "2016-09-14",
+          "offenceCode": "SX03015"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "YEARS": 6
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "YEARS": 1
+          }
+        },
+        "sentencedAt": "2018-09-15",
+        "identifier": "137a026c-4393-4470-bca2-fb644731ae00"
+      },
+      {
+        "type": "AFineSentence",
+        "offence": {
+          "committedAt": "2023-08-17",
+          "offenceCode": "CF17002"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 30
+          }
+        },
+        "sentencedAt": "2024-05-23",
+        "identifier": "9953825a-71e3-4011-8118-b8a1ea0e4f74",
+        "fineAmount": 250000
+      }
+    ],
+    "adjustments": {
+      "TAGGED_BAIL": [
+        {
+          "appliesToSentencesFrom": "2018-09-15",
+          "numberOfDays": 98
+        }
+      ]
+    },
+    "bookingId": -1,
+    "externalMovements": [
+      {
+        "movementDate": "2023-08-15",
+        "movementReason": "PAROLE",
+        "direction": "OUT"
       }
     ]
-  },
-  "externalMovements": [
-    {
-      "movementDate": "2023-08-15",
-      "movementReason": "PAROLE",
-      "direction": "OUT"
-    }
-  ]
+  }
 }

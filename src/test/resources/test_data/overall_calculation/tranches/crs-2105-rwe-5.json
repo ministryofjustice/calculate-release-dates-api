@@ -1,32 +1,38 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01",
-    "isActiveSexOffender": true
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2022-10-01",
-        "offenceCode": "SX03007"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 16
-        }
-      },
-      "sentencedAt": "2024-07-05",
-      "hasAnSDSEarlyReleaseExclusion": "SEXUAL"
-    }
-  ],
-  "adjustments": {
-    "REMAND": [
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01",
+      "isActiveSexOffender": true
+    },
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2024-07-05",
-        "numberOfDays": 1,
-        "fromDate": "2024-07-04",
-        "toDate": "2024-07-04"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2022-10-01",
+          "offenceCode": "SX03007"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 16
+          }
+        },
+        "sentencedAt": "2024-07-05",
+        "identifier": "ebf84126-685d-40d0-9542-62b59c1ff205",
+        "hasAnSDSEarlyReleaseExclusion": "SEXUAL"
       }
-    ]
-  }
+    ],
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2024-07-05",
+          "numberOfDays": 1,
+          "fromDate": "2024-07-04",
+          "toDate": "2024-07-04"
+        }
+      ]
+    },
+    "bookingId": -1
+  },
+  "assertSds40": true
 }

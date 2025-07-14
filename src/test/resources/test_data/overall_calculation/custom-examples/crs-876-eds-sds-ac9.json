@@ -1,59 +1,68 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2021-07-06"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 4
+          }
+        },
+        "sentencedAt": "2021-08-26",
+        "identifier": "22e8b90c-439b-419f-8ca9-c2e22f7b495c",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "ExtendedDeterminateSentence",
+        "offence": {
+          "committedAt": "2021-07-06"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "YEARS": 4,
+            "MONTHS": 6
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "YEARS": 1
+          }
+        },
+        "sentencedAt": "2021-08-26",
+        "identifier": "e40f48b6-92df-49d0-af99-507194c380fa"
+      },
+      {
+        "type": "ExtendedDeterminateSentence",
+        "offence": {
+          "committedAt": "2021-07-06"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "YEARS": 3,
+            "MONTHS": 6
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "YEARS": 1
+          }
+        },
+        "sentencedAt": "2021-08-26",
+        "identifier": "70115310-df2d-429e-ba24-2b1b7ded57aa",
+        "consecutiveSentenceUUIDs": [
+          "e40f48b6-92df-49d0-af99-507194c380fa"
+        ]
+      }
+    ],
+    "adjustments": {},
+    "bookingId": -1
   },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2021-07-06"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 4
-        }
-      },
-      "sentencedAt": "2021-08-26"
-    },
-    {
-      "type": "ExtendedDeterminateSentence",
-      "offence": {
-        "committedAt": "2021-07-06"
-      },
-      "custodialDuration": {
-        "durationElements": {
-          "YEARS": 4,
-          "MONTHS": 6
-        }
-      },
-      "extensionDuration": {
-        "durationElements": {
-          "YEARS": 1
-        }
-      },
-      "sentencedAt": "2021-08-26",
-      "identifier": "e40f48b6-92df-49d0-af99-507194c380fa"
-    },
-    {
-      "type": "ExtendedDeterminateSentence",
-      "offence": {
-        "committedAt": "2021-07-06"
-      },
-      "custodialDuration": {
-        "durationElements": {
-          "YEARS": 3,
-          "MONTHS": 6
-        }
-      },
-      "extensionDuration": {
-        "durationElements": {
-          "YEARS": 1
-        }
-      },
-      "sentencedAt": "2021-08-26",
-      "consecutiveSentenceUUIDs": [
-        "e40f48b6-92df-49d0-af99-507194c380fa"
-      ]
-    }
-  ]
+  "params": "sds-50"
 }

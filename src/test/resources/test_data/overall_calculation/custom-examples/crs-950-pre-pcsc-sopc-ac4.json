@@ -1,46 +1,52 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "type": "SopcSentence",
-      "offence": {
-        "committedAt": "2021-01-05"
-      },
-      "custodialDuration": {
-        "durationElements": {
-          "YEARS": 7
-        }
-      },
-      "extensionDuration": {
-        "durationElements": {
-          "MONTHS": 12
-        }
-      },
-      "sentencedAt": "2021-03-12",
-      "identifier": "bf99f1c1-341e-33cb-84bb-7d67dfd03680"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "type": "SopcSentence",
-      "offence": {
-        "committedAt": "2021-01-05"
+    "sentences": [
+      {
+        "type": "SopcSentence",
+        "offence": {
+          "committedAt": "2021-01-05"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "YEARS": 7
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "MONTHS": 12
+          }
+        },
+        "sentencedAt": "2021-03-12",
+        "identifier": "bf99f1c1-341e-33cb-84bb-7d67dfd03680"
       },
-      "custodialDuration": {
-        "durationElements": {
-          "YEARS": 4
-        }
-      },
-      "extensionDuration": {
-        "durationElements": {
-          "MONTHS": 12
-        }
-      },
-      "sentencedAt": "2021-07-26",
-      "consecutiveSentenceUUIDs": [
-        "bf99f1c1-341e-33cb-84bb-7d67dfd03680"
-      ]
-    }
-  ]
+      {
+        "type": "SopcSentence",
+        "offence": {
+          "committedAt": "2021-01-05"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "YEARS": 4
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "MONTHS": 12
+          }
+        },
+        "sentencedAt": "2021-07-26",
+        "identifier": "ff6daa58-6a14-4367-b5e7-ee93fb478883",
+        "consecutiveSentenceUUIDs": [
+          "bf99f1c1-341e-33cb-84bb-7d67dfd03680"
+        ]
+      }
+    ],
+    "adjustments": {},
+    "bookingId": -1
+  },
+  "params": "sds-50"
 }

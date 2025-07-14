@@ -1,90 +1,108 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2019-09-13"
-      },
-      "duration": {
-        "durationElements": {
-          "WEEKS": 8
-        }
-      },
-      "sentencedAt": "2021-12-21",
-      "identifier": "9372e40b-8d2d-36e4-9fba-7bb9b5b16636",
-      "recallType": "FIXED_TERM_RECALL_14"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2020-10-20"
-      },
-      "duration": {
-        "durationElements": {
-          "WEEKS": 16
-        }
-      },
-      "sentencedAt": "2021-12-21",
-      "recallType": "FIXED_TERM_RECALL_14"
-    },
-    {
-      "offence": {
-        "committedAt": "2019-07-10"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 5
-        }
-      },
-      "sentencedAt": "2021-12-21",
-      "recallType": "FIXED_TERM_RECALL_14"
-    },
-    {
-      "offence": {
-        "committedAt": "2019-07-10"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 16
-        }
-      },
-      "sentencedAt": "2021-12-21",
-      "consecutiveSentenceUUIDs": [
-        "9372e40b-8d2d-36e4-9fba-7bb9b5b16636"
-      ],
-      "recallType": "FIXED_TERM_RECALL_14"
-    },
-    {
-      "offence": {
-        "committedAt": "2022-04-24"
-      },
-      "duration": {
-        "durationElements": {
-          "WEEKS": 8
-        }
-      },
-      "sentencedAt": "2022-04-25"
-    }
-  ],
-  "adjustments": {
-    "UNLAWFULLY_AT_LARGE": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2022-04-23",
-        "numberOfDays": 1,
-        "fromDate": "2022-04-23",
-        "toDate": "2022-04-23"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2019-09-13"
+        },
+        "duration": {
+          "durationElements": {
+            "WEEKS": 8
+          }
+        },
+        "sentencedAt": "2021-12-21",
+        "identifier": "9372e40b-8d2d-36e4-9fba-7bb9b5b16636",
+        "recallType": "FIXED_TERM_RECALL_14",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2020-10-20"
+        },
+        "duration": {
+          "durationElements": {
+            "WEEKS": 16
+          }
+        },
+        "sentencedAt": "2021-12-21",
+        "identifier": "909b803f-91f1-4d70-a0f4-c2678ce36752",
+        "recallType": "FIXED_TERM_RECALL_14",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2019-07-10"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 5
+          }
+        },
+        "sentencedAt": "2021-12-21",
+        "identifier": "a8adf27f-624d-4ceb-b15d-083821ed25ea",
+        "recallType": "FIXED_TERM_RECALL_14",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2019-07-10"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 16
+          }
+        },
+        "sentencedAt": "2021-12-21",
+        "identifier": "bca9918c-7e74-4f47-bf35-ea449ab29fbe",
+        "consecutiveSentenceUUIDs": [
+          "9372e40b-8d2d-36e4-9fba-7bb9b5b16636"
+        ],
+        "recallType": "FIXED_TERM_RECALL_14",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2022-04-24"
+        },
+        "duration": {
+          "durationElements": {
+            "WEEKS": 8
+          }
+        },
+        "sentencedAt": "2022-04-25",
+        "identifier": "3274a1d1-3501-40c4-b62a-665fbee52fae",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
     ],
-    "RECALL_REMAND": [
-      {
-        "appliesToSentencesFrom": "2021-12-21",
-        "numberOfDays": 155,
-        "fromDate": "2020-12-04",
-        "toDate": "2021-05-07"
-      }
-    ]
+    "adjustments": {
+      "RECALL_REMAND": [
+        {
+          "appliesToSentencesFrom": "2021-12-21",
+          "numberOfDays": 155,
+          "fromDate": "2020-12-04",
+          "toDate": "2021-05-07"
+        }
+      ],
+      "UNLAWFULLY_AT_LARGE": [
+        {
+          "appliesToSentencesFrom": "2022-04-23",
+          "numberOfDays": 1,
+          "fromDate": "2022-04-23",
+          "toDate": "2022-04-23"
+        }
+      ]
+    },
+    "returnToCustodyDate": "2022-04-24",
+    "bookingId": -1
   },
-  "returnToCustodyDate": "2022-04-24"
+  "params": "sds-50"
 }

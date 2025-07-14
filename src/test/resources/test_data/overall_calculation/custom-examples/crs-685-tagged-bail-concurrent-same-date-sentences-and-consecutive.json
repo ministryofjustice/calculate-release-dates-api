@@ -1,57 +1,69 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2021-02-02"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 6
-        }
-      },
-      "sentencedAt": "2021-03-08",
-      "identifier": "6555a75c-8c81-40f2-be30-719696d08142"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2021-02-08"
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2021-02-02"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 6
+          }
+        },
+        "sentencedAt": "2021-03-08",
+        "identifier": "6555a75c-8c81-40f2-be30-719696d08142",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 3
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2021-02-08"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 3
+          }
+        },
+        "sentencedAt": "2021-03-08",
+        "identifier": "956e4917-0b63-4001-86aa-0e57d1ab869a",
+        "consecutiveSentenceUUIDs": [
+          "6555a75c-8c81-40f2-be30-719696d08142"
+        ],
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2021-02-19"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 5
+          }
+        },
+        "sentencedAt": "2021-03-08",
+        "identifier": "f8d49b8e-e635-4d89-91a2-fa0570772f3b",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      }
+    ],
+    "adjustments": {
+      "TAGGED_BAIL": [
+        {
+          "appliesToSentencesFrom": "2021-03-08",
+          "numberOfDays": 12
+        },
+        {
+          "appliesToSentencesFrom": "2021-03-08",
+          "numberOfDays": 19
         }
-      },
-      "sentencedAt": "2021-03-08",
-      "consecutiveSentenceUUIDs": [
-        "6555a75c-8c81-40f2-be30-719696d08142"
       ]
     },
-    {
-      "offence": {
-        "committedAt": "2021-02-19"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 5
-        }
-      },
-      "sentencedAt": "2021-03-08"
-    }
-  ],
-  "adjustments": {
-    "TAGGED_BAIL": [
-      {
-        "appliesToSentencesFrom": "2021-03-08",
-        "numberOfDays": 12
-      },
-      {
-        "appliesToSentencesFrom": "2021-03-08",
-        "numberOfDays": 19
-      }
-    ]
-  }
+    "bookingId": -1
+  },
+  "params": "sds-50"
 }

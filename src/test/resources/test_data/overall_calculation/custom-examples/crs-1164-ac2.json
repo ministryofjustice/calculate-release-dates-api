@@ -1,32 +1,39 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "type": "DetentionAndTrainingOrderSentence",
-      "offence": {
-        "committedAt": "2021-04-07"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 18
-        }
-      },
-      "sentencedAt": "2021-06-14"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "type": "DetentionAndTrainingOrderSentence",
-      "offence": {
-        "committedAt": "2021-04-07"
+    "sentences": [
+      {
+        "type": "DetentionAndTrainingOrderSentence",
+        "offence": {
+          "committedAt": "2021-04-07"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 18
+          }
+        },
+        "sentencedAt": "2021-06-14",
+        "identifier": "e79826a9-712d-4e4b-927b-acee6d0813d1"
       },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 18
-        }
-      },
-      "sentencedAt": "2022-01-06"
-    }
-  ]
+      {
+        "type": "DetentionAndTrainingOrderSentence",
+        "offence": {
+          "committedAt": "2021-04-07"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 18
+          }
+        },
+        "sentencedAt": "2022-01-06",
+        "identifier": "29f66912-7a9c-4f90-9066-c6272f0a89c5"
+      }
+    ],
+    "adjustments": {},
+    "bookingId": -1
+  },
+  "params": "sds-50"
 }

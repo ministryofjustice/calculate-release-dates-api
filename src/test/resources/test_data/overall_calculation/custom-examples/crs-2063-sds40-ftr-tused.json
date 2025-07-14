@@ -1,60 +1,69 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2024-03-17",
-        "offenceCode": "SE20002"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 4
-        }
-      },
-      "sentencedAt": "2024-03-22",
-      "identifier": "38a0376c-44c9-3f5d-9f67-e83d1cd345a3",
-      "recallType": "FIXED_TERM_RECALL_14",
-      "hasAnSDSEarlyReleaseExclusion": "DOMESTIC_ABUSE"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2024-03-18",
-        "offenceCode": "SE20002"
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2024-03-17",
+          "offenceCode": "SE20002"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 4
+          }
+        },
+        "sentencedAt": "2024-03-22",
+        "identifier": "38a0376c-44c9-3f5d-9f67-e83d1cd345a3",
+        "recallType": "FIXED_TERM_RECALL_14",
+        "hasAnSDSEarlyReleaseExclusion": "DOMESTIC_ABUSE"
       },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 4
-        }
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2024-03-18",
+          "offenceCode": "SE20002"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 4
+          }
+        },
+        "sentencedAt": "2024-03-22",
+        "identifier": "e5fd2b0f-600e-440c-87b9-e77790bd590b",
+        "consecutiveSentenceUUIDs": [
+          "38a0376c-44c9-3f5d-9f67-e83d1cd345a3"
+        ],
+        "recallType": "FIXED_TERM_RECALL_14",
+        "hasAnSDSEarlyReleaseExclusion": "DOMESTIC_ABUSE"
       },
-      "sentencedAt": "2024-03-22",
-      "consecutiveSentenceUUIDs": [
-        "38a0376c-44c9-3f5d-9f67-e83d1cd345a3"
-      ],
-      "recallType": "FIXED_TERM_RECALL_14",
-      "hasAnSDSEarlyReleaseExclusion": "DOMESTIC_ABUSE"
-    },
-    {
-      "offence": {
-        "committedAt": "2024-03-18",
-        "offenceCode": "SE20002"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 4
-        }
-      },
-      "sentencedAt": "2024-03-22",
-      "recallType": "FIXED_TERM_RECALL_14",
-      "hasAnSDSEarlyReleaseExclusion": "DOMESTIC_ABUSE"
-    }
-  ],
-  "returnToCustodyDate": "2024-06-14",
-  "fixedTermRecallDetails": {
-    "bookingId": 1,
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2024-03-18",
+          "offenceCode": "SE20002"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 4
+          }
+        },
+        "sentencedAt": "2024-03-22",
+        "identifier": "f82549df-6d99-46fc-97d9-d8dc26e458d9",
+        "recallType": "FIXED_TERM_RECALL_14",
+        "hasAnSDSEarlyReleaseExclusion": "DOMESTIC_ABUSE"
+      }
+    ],
+    "adjustments": {},
     "returnToCustodyDate": "2024-06-14",
-    "recallLength": 14
+    "fixedTermRecallDetails": {
+      "bookingId": 1,
+      "returnToCustodyDate": "2024-06-14",
+      "recallLength": 14
+    },
+    "bookingId": -1
   }
 }
