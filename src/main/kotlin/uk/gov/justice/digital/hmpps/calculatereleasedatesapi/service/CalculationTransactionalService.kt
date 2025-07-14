@@ -172,7 +172,12 @@ class CalculationTransactionalService(
     val bookingValidationMessages = validationService.validateBeforeCalculation(booking)
 
     if (bookingValidationMessages.isNotEmpty()) {
-      throw IllegalStateException("Unexpected: manual entry journey should not be triggered by pre-calculation validation at this stage.")
+      log.error("Unexpected: manual entry journey should not be triggered by pre-calculation validation at this stage.")
+      log.error(
+        "Pre-calculation validation unexpectedly failed in supportedValidation for prisonerId=$prisonerId. " +
+          "Messages: ${bookingValidationMessages.joinToString("; ") { it.message }}"
+      )
+      return supportedResponse
     }
     val calculationOutput = calculationService.calculateReleaseDates(
       booking,
