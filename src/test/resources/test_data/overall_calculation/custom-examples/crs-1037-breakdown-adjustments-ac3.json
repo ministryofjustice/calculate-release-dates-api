@@ -1,38 +1,45 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "type": "ExtendedDeterminateSentence",
-      "offence": {
-        "committedAt": "2018-09-10"
-      },
-      "custodialDuration": {
-        "durationElements": {
-          "YEARS": 4
-        }
-      },
-      "extensionDuration": {
-        "durationElements": {
-          "YEARS": 1
-        }
-      },
-      "sentencedAt": "2018-09-11"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "type": "AFineSentence",
-      "offence": {
-        "committedAt": "2021-04-28"
+    "sentences": [
+      {
+        "type": "ExtendedDeterminateSentence",
+        "offence": {
+          "committedAt": "2018-09-10"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "YEARS": 4
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "YEARS": 1
+          }
+        },
+        "sentencedAt": "2018-09-11",
+        "identifier": "912eba11-9f2d-429e-8180-4bdb622c2ed0"
       },
-      "duration": {
-        "durationElements": {
-          "DAYS": 28
-        }
-      },
-      "sentencedAt": "2021-04-29",
-      "fineAmount": 4E+2
-    }
-  ]
+      {
+        "type": "AFineSentence",
+        "offence": {
+          "committedAt": "2021-04-28"
+        },
+        "duration": {
+          "durationElements": {
+            "DAYS": 28
+          }
+        },
+        "sentencedAt": "2021-04-29",
+        "identifier": "e74a823a-0950-466b-bab1-35571d486442",
+        "fineAmount": 4E+2
+      }
+    ],
+    "adjustments": {},
+    "bookingId": -1
+  },
+  "params": "sds-50"
 }

@@ -1,79 +1,89 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2021-05-31",
-        "offenceCode": "COML002"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 1
-        }
-      },
-      "sentencedAt": "2022-02-24",
-      "identifier": "f36bc182-5c02-3cc3-a4bf-df55a1a41fb4",
-      "recallType": "STANDARD_RECALL"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2021-05-31",
-        "offenceCode": "PC53001"
-      },
-      "duration": {
-        "durationElements": {
-          "DAYS": 145
-        }
-      },
-      "sentencedAt": "2022-02-24",
-      "consecutiveSentenceUUIDs": [
-        "f36bc182-5c02-3cc3-a4bf-df55a1a41fb4"
-      ],
-      "recallType": "STANDARD_RECALL"
-    },
-    {
-      "type": "AFineSentence",
-      "offence": {
-        "committedAt": "2022-04-25",
-        "offenceCode": "TH68010"
-      },
-      "duration": {
-        "durationElements": {
-          "DAYS": 25
-        }
-      },
-      "sentencedAt": "2022-04-25",
-      "caseSequence": 4,
-      "lineSequence": 3,
-      "caseReference": "ABC123L",
-      "fineAmount": 919.72
-    }
-  ],
-  "adjustments": {
-    "RECALL_REMAND": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2022-02-24",
-        "numberOfDays": 255,
-        "fromDate": "2021-06-02",
-        "toDate": "2022-02-11"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2021-05-31",
+          "offenceCode": "COML002"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 1
+          }
+        },
+        "sentencedAt": "2022-02-24",
+        "identifier": "f36bc182-5c02-3cc3-a4bf-df55a1a41fb4",
+        "recallType": "STANDARD_RECALL",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       },
       {
-        "appliesToSentencesFrom": "2022-02-24",
-        "numberOfDays": 12,
-        "fromDate": "2022-02-12",
-        "toDate": "2022-02-23"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2021-05-31",
+          "offenceCode": "PC53001"
+        },
+        "duration": {
+          "durationElements": {
+            "DAYS": 145
+          }
+        },
+        "sentencedAt": "2022-02-24",
+        "identifier": "b7c4a18d-734a-49c1-9d50-da71fa3548c9",
+        "consecutiveSentenceUUIDs": [
+          "f36bc182-5c02-3cc3-a4bf-df55a1a41fb4"
+        ],
+        "recallType": "STANDARD_RECALL",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "AFineSentence",
+        "offence": {
+          "committedAt": "2022-04-25",
+          "offenceCode": "TH68010"
+        },
+        "duration": {
+          "durationElements": {
+            "DAYS": 25
+          }
+        },
+        "sentencedAt": "2022-04-25",
+        "identifier": "0ee7aa2d-46f8-449c-b625-859e4dbba867",
+        "caseSequence": 4,
+        "lineSequence": 3,
+        "caseReference": "ABC123L",
+        "fineAmount": 919.72
       }
     ],
-    "UNLAWFULLY_AT_LARGE": [
-      {
-        "appliesToSentencesFrom": "2022-02-25",
-        "numberOfDays": 3,
-        "fromDate": "2022-02-25",
-        "toDate": "2022-02-27"
-      }
-    ]
-  }
+    "adjustments": {
+      "UNLAWFULLY_AT_LARGE": [
+        {
+          "appliesToSentencesFrom": "2022-02-25",
+          "numberOfDays": 3,
+          "fromDate": "2022-02-25",
+          "toDate": "2022-02-27"
+        }
+      ],
+      "RECALL_REMAND": [
+        {
+          "appliesToSentencesFrom": "2022-02-24",
+          "numberOfDays": 255,
+          "fromDate": "2021-06-02",
+          "toDate": "2022-02-11"
+        },
+        {
+          "appliesToSentencesFrom": "2022-02-24",
+          "numberOfDays": 12,
+          "fromDate": "2022-02-12",
+          "toDate": "2022-02-23"
+        }
+      ]
+    },
+    "bookingId": -1
+  },
+  "params": "sds-50"
 }

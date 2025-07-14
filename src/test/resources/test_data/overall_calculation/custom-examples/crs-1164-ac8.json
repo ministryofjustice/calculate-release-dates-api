@@ -1,48 +1,55 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
+      {
+        "type": "DetentionAndTrainingOrderSentence",
+        "offence": {
+          "committedAt": "2021-04-07"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 6
+          }
+        },
+        "sentencedAt": "2021-05-01",
+        "identifier": "f7ea34bb-8164-49cd-8057-a891bd7468de"
+      },
+      {
+        "type": "DetentionAndTrainingOrderSentence",
+        "offence": {
+          "committedAt": "2021-04-07"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 8
+          }
+        },
+        "sentencedAt": "2021-05-01",
+        "identifier": "5dfde034-b7d7-4c54-a86c-67d42a1fd669"
+      },
+      {
+        "type": "DetentionAndTrainingOrderSentence",
+        "offence": {
+          "committedAt": "2021-08-02"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 18
+          }
+        },
+        "sentencedAt": "2021-07-11",
+        "identifier": "7b39c441-3878-49a1-9f63-b540e7241ddf",
+        "consecutiveSentenceUUIDs": [
+          "5dfde034-b7d7-4c54-a86c-67d42a1fd669"
+        ]
+      }
+    ],
+    "adjustments": {},
+    "bookingId": -1
   },
-  "sentences": [
-    {
-      "type": "DetentionAndTrainingOrderSentence",
-      "offence": {
-        "committedAt": "2021-04-07"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 6
-        }
-      },
-      "sentencedAt": "2021-05-01"
-    },
-    {
-      "type": "DetentionAndTrainingOrderSentence",
-      "offence": {
-        "committedAt": "2021-04-07"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 8
-        }
-      },
-      "sentencedAt": "2021-05-01",
-      "identifier": "5dfde034-b7d7-4c54-a86c-67d42a1fd669"
-    },
-    {
-      "type": "DetentionAndTrainingOrderSentence",
-      "offence": {
-        "committedAt": "2021-08-02"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 18
-        }
-      },
-      "sentencedAt": "2021-07-11",
-      "consecutiveSentenceUUIDs": [
-        "5dfde034-b7d7-4c54-a86c-67d42a1fd669"
-      ]
-    }
-  ]
+  "params": "sds-50"
 }

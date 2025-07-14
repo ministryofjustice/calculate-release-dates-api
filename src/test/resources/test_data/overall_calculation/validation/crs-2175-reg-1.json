@@ -1,31 +1,36 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2020-12-01",
-        "offenceCode": "SX03220"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 13
-        }
-      },
-      "sentencedAt": "2024-03-03",
-      "hasAnSDSEarlyReleaseExclusion": "SEXUAL"
-    }
-  ],
-  "adjustments": {
-    "REMAND": [
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2024-03-03",
-        "numberOfDays": 10,
-        "fromDate": "2024-02-22",
-        "toDate": "2024-03-02"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2020-12-01",
+          "offenceCode": "SX03220"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 13
+          }
+        },
+        "sentencedAt": "2024-03-03",
+        "identifier": "c6a2549f-0f24-48b0-8226-49415de8d598",
+        "hasAnSDSEarlyReleaseExclusion": "SEXUAL"
       }
-    ]
+    ],
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2024-03-03",
+          "numberOfDays": 10,
+          "fromDate": "2024-02-22",
+          "toDate": "2024-03-02"
+        }
+      ]
+    },
+    "bookingId": -1
   }
 }

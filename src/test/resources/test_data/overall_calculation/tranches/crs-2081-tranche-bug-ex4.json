@@ -1,69 +1,82 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2019-09-05",
-        "offenceCode": "MD71231"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 6
-        }
-      },
-      "sentencedAt": "2020-08-13",
-      "recallType": "STANDARD_RECALL"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2024-05-16",
-        "offenceCode": "MD71185"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 48
-        }
-      },
-      "sentencedAt": "2024-07-16"
-    },
-    {
-      "offence": {
-        "committedAt": "2024-05-21",
-        "offenceCode": "MD71526"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 12
-        }
-      },
-      "sentencedAt": "2024-07-16"
-    }
-  ],
-  "adjustments": {
-    "REMAND": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2024-07-16",
-        "numberOfDays": 1,
-        "fromDate": "2024-05-22",
-        "toDate": "2024-05-22"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2019-09-05",
+          "offenceCode": "MD71231"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 6
+          }
+        },
+        "sentencedAt": "2020-08-13",
+        "identifier": "7254eb64-af11-43d0-98f9-c75981c6b6db",
+        "recallType": "STANDARD_RECALL",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2024-05-16",
+          "offenceCode": "MD71185"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 48
+          }
+        },
+        "sentencedAt": "2024-07-16",
+        "identifier": "247d743c-9d06-4ce1-a53f-dc666aee3967",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2024-05-21",
+          "offenceCode": "MD71526"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 12
+          }
+        },
+        "sentencedAt": "2024-07-16",
+        "identifier": "bc3e3405-1980-4006-82a6-20677eaa0e78",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
     ],
-    "RECALL_REMAND": [
-      {
-        "appliesToSentencesFrom": "2020-08-13",
-        "numberOfDays": 236,
-        "fromDate": "2019-12-21",
-        "toDate": "2020-08-12"
-      },
-      {
-        "appliesToSentencesFrom": "2020-08-13",
-        "numberOfDays": 43,
-        "fromDate": "2019-10-02",
-        "toDate": "2019-11-13"
-      }
-    ]
-  }
+    "adjustments": {
+      "RECALL_REMAND": [
+        {
+          "appliesToSentencesFrom": "2020-08-13",
+          "numberOfDays": 236,
+          "fromDate": "2019-12-21",
+          "toDate": "2020-08-12"
+        },
+        {
+          "appliesToSentencesFrom": "2020-08-13",
+          "numberOfDays": 43,
+          "fromDate": "2019-10-02",
+          "toDate": "2019-11-13"
+        }
+      ],
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2024-07-16",
+          "numberOfDays": 1,
+          "fromDate": "2024-05-22",
+          "toDate": "2024-05-22"
+        }
+      ]
+    },
+    "bookingId": -1
+  },
+  "assertSds40": true
 }

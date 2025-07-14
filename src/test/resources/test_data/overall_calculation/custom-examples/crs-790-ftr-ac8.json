@@ -1,21 +1,30 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2020-07-18"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 13
+          }
+        },
+        "sentencedAt": "2021-01-24",
+        "identifier": "a00ba243-a9ef-4ee8-95c3-287149146b89",
+        "recallType": "FIXED_TERM_RECALL_28",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      }
+    ],
+    "adjustments": {},
+    "returnToCustodyDate": "2022-01-29",
+    "bookingId": -1
   },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2020-07-18"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 13
-        }
-      },
-      "sentencedAt": "2021-01-24",
-      "recallType": "FIXED_TERM_RECALL_28"
-    }
-  ],
-  "returnToCustodyDate": "2022-01-29"
+  "params": "sds-50",
+  "featureTogglesStr": "ftr48ManualJourney=false"
 }

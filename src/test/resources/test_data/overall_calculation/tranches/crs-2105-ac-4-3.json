@@ -1,42 +1,50 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2018-02-01",
-        "offenceCode": "TH68134"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 1,
-          "MONTHS": 9
-        }
-      },
-      "sentencedAt": "2018-08-09",
-      "identifier": "b71e09b6-3728-3b80-8e86-b1c40d52c812"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "type": "ExtendedDeterminateSentence",
-      "offence": {
-        "committedAt": "2018-01-07"
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2018-02-01",
+          "offenceCode": "TH68134"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 1,
+            "MONTHS": 9
+          }
+        },
+        "sentencedAt": "2018-08-09",
+        "identifier": "b71e09b6-3728-3b80-8e86-b1c40d52c812",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       },
-      "custodialDuration": {
-        "durationElements": {
-          "YEARS": 5
-        }
-      },
-      "extensionDuration": {
-        "durationElements": {
-          "YEARS": 2
-        }
-      },
-      "sentencedAt": "2018-08-09",
-      "consecutiveSentenceUUIDs": [
-        "b71e09b6-3728-3b80-8e86-b1c40d52c812"
-      ]
-    }
-  ]
+      {
+        "type": "ExtendedDeterminateSentence",
+        "offence": {
+          "committedAt": "2018-01-07"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "YEARS": 5
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "YEARS": 2
+          }
+        },
+        "sentencedAt": "2018-08-09",
+        "identifier": "4467327f-2deb-4704-8303-b77e166a553e",
+        "consecutiveSentenceUUIDs": [
+          "b71e09b6-3728-3b80-8e86-b1c40d52c812"
+        ]
+      }
+    ],
+    "adjustments": {},
+    "bookingId": -1
+  },
+  "assertSds40": true
 }

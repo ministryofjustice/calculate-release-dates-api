@@ -1,24 +1,29 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "type": "BotusSentence",
-      "offence": {
-        "committedAt": "2024-04-04"
-      },
-      "duration": {
-        "durationElements": {
-          "DAYS": 14
-        }
-      },
-      "sentencedAt": "2024-10-12",
-      "caseSequence": 1,
-      "lineSequence": 1,
-      "latestTusedDate": "2025-05-14",
-      "latestTusedSource": "NOMIS_OVERRIDDEN"
-    }
-  ]
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
+      {
+        "type": "BotusSentence",
+        "offence": {
+          "committedAt": "2024-04-04"
+        },
+        "duration": {
+          "durationElements": {
+            "DAYS": 14
+          }
+        },
+        "sentencedAt": "2024-10-12",
+        "identifier": "1623b7c1-4cea-4ea4-b16d-50a9cd0b63dd",
+        "caseSequence": 1,
+        "lineSequence": 1,
+        "latestTusedDate": "2025-05-14",
+        "latestTusedSource": "NOMIS_OVERRIDDEN"
+      }
+    ],
+    "adjustments": {},
+    "bookingId": -1
+  }
 }

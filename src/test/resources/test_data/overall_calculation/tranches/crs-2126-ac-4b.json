@@ -1,38 +1,47 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "type": "ExtendedDeterminateSentence",
-      "offence": {
-        "committedAt": "2019-09-10",
-        "offenceCode": "SX03002"
-      },
-      "custodialDuration": {
-        "durationElements": {
-          "YEARS": 6
-        }
-      },
-      "extensionDuration": {
-        "durationElements": {
-          "YEARS": 2
-        }
-      },
-      "sentencedAt": "2020-09-28"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2020-09-10",
-        "offenceCode": "PU86003"
+    "sentences": [
+      {
+        "type": "ExtendedDeterminateSentence",
+        "offence": {
+          "committedAt": "2019-09-10",
+          "offenceCode": "SX03002"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "YEARS": 6
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "YEARS": 2
+          }
+        },
+        "sentencedAt": "2020-09-28",
+        "identifier": "1cfe75b7-7a57-4f02-9b03-7cc12fe93224"
       },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 2
-        }
-      },
-      "sentencedAt": "2024-09-12"
-    }
-  ]
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2020-09-10",
+          "offenceCode": "PU86003"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 2
+          }
+        },
+        "sentencedAt": "2024-09-12",
+        "identifier": "afe3ad7c-48b2-49de-9197-f6557ceea9ae",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      }
+    ],
+    "adjustments": {},
+    "bookingId": -1
+  },
+  "assertSds40": true
 }

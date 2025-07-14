@@ -1,25 +1,31 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
+      {
+        "type": "SopcSentence",
+        "offence": {
+          "committedAt": "2020-09-02"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "YEARS": 6
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "MONTHS": 12
+          }
+        },
+        "sentencedAt": "2020-10-02",
+        "identifier": "3f2fb9e9-6f18-4b19-a18a-752dc58cbc7a"
+      }
+    ],
+    "adjustments": {},
+    "bookingId": -1
   },
-  "sentences": [
-    {
-      "type": "SopcSentence",
-      "offence": {
-        "committedAt": "2020-09-02"
-      },
-      "custodialDuration": {
-        "durationElements": {
-          "YEARS": 6
-        }
-      },
-      "extensionDuration": {
-        "durationElements": {
-          "MONTHS": 12
-        }
-      },
-      "sentencedAt": "2020-10-02"
-    }
-  ]
+  "params": "sds-50"
 }

@@ -1,40 +1,50 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2005-01-01"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 18
-        }
-      },
-      "sentencedAt": "2012-09-10"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2005-01-01"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 10
-        }
-      },
-      "sentencedAt": "2013-02-15"
-    }
-  ],
-  "adjustments": {
-    "REMAND": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2012-09-10",
-        "numberOfDays": 15,
-        "fromDate": "2012-08-25",
-        "toDate": "2012-09-09"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2005-01-01"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 18
+          }
+        },
+        "sentencedAt": "2012-09-10",
+        "identifier": "e39be394-3c73-4b47-a2fe-e88adeb353cd",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2005-01-01"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 10
+          }
+        },
+        "sentencedAt": "2013-02-15",
+        "identifier": "9f7c5c33-ca22-49a5-a6c9-9efd5b0411b1",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
-    ]
-  }
+    ],
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2012-09-10",
+          "numberOfDays": 15,
+          "fromDate": "2012-08-25",
+          "toDate": "2012-09-09"
+        }
+      ]
+    },
+    "bookingId": -1
+  },
+  "params": "sds-50"
 }

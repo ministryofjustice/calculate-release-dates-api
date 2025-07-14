@@ -1,23 +1,27 @@
 {
-  "offender": {
-    "reference": "A1234BC",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "type": "StandardSentence",
-      "offence": {
-        "committedAt": "2019-12-01"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 10
-        }
-      },
-      "sentencedAt": "2020-03-09",
-      "isSDSPlusEligibleSentenceTypeLengthAndOffence": "true",
-      "hasAnSDSEarlyReleaseExclusion": "VIOLENT"
-    }
-  ],
-  "adjustments": {}
+  "booking": {
+    "offender": {
+      "reference": "A1234BC",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2019-12-01"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 10
+          }
+        },
+        "sentencedAt": "2020-03-09",
+        "identifier": "339a2094-7f60-4bd6-b082-cb85c930fa2c",
+        "isSDSPlusEligibleSentenceTypeLengthAndOffence": true,
+        "hasAnSDSEarlyReleaseExclusion": "VIOLENT"
+      }
+    ],
+    "adjustments": {},
+    "bookingId": -1
+  }
 }

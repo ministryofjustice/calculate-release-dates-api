@@ -1,31 +1,37 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2024-06-16",
-        "offenceCode": "SE20002"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 12
-        }
-      },
-      "sentencedAt": "2024-08-15",
-      "hasAnSDSEarlyReleaseExclusion": "DOMESTIC_ABUSE"
-    }
-  ],
-  "adjustments": {
-    "REMAND": [
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2024-08-15",
-        "numberOfDays": 59,
-        "fromDate": "2024-06-17",
-        "toDate": "2024-08-14"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2024-06-16",
+          "offenceCode": "SE20002"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 12
+          }
+        },
+        "sentencedAt": "2024-08-15",
+        "identifier": "5990264a-616f-40c9-b9c6-cc61723aa352",
+        "hasAnSDSEarlyReleaseExclusion": "DOMESTIC_ABUSE"
       }
-    ]
-  }
+    ],
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2024-08-15",
+          "numberOfDays": 59,
+          "fromDate": "2024-06-17",
+          "toDate": "2024-08-14"
+        }
+      ]
+    },
+    "bookingId": -1
+  },
+  "assertSds40": true
 }

@@ -1,87 +1,108 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2016-01-27",
-        "offenceCode": "TH68026"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 40
-        }
-      },
-      "sentencedAt": "2016-04-12",
-      "identifier": "8d36aa01-5b4f-3c21-9a94-1653b2f0f6fb",
-      "recallType": "STANDARD_RECALL"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2016-02-07",
-        "offenceCode": "TH68026"
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2016-01-27",
+          "offenceCode": "TH68026"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 40
+          }
+        },
+        "sentencedAt": "2016-04-12",
+        "identifier": "8d36aa01-5b4f-3c21-9a94-1653b2f0f6fb",
+        "recallType": "STANDARD_RECALL",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 30
-        }
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2016-02-07",
+          "offenceCode": "TH68026"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 30
+          }
+        },
+        "sentencedAt": "2016-04-12",
+        "identifier": "f4d107c7-1b4c-4e25-9787-e513621e276b",
+        "recallType": "STANDARD_RECALL",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       },
-      "sentencedAt": "2016-04-12",
-      "recallType": "STANDARD_RECALL"
-    },
-    {
-      "offence": {
-        "committedAt": "2016-03-10",
-        "offenceCode": "TH68023"
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2016-03-10",
+          "offenceCode": "TH68023"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 4
+          }
+        },
+        "sentencedAt": "2016-10-07",
+        "identifier": "8bad15e0-b82b-4416-b16e-65767586ace0",
+        "consecutiveSentenceUUIDs": [
+          "8d36aa01-5b4f-3c21-9a94-1653b2f0f6fb"
+        ],
+        "recallType": "STANDARD_RECALL",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       },
-      "duration": {
-        "durationElements": {
-          "YEARS": 4
-        }
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2022-10-03",
+          "offenceCode": "TH68026"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 4
+          }
+        },
+        "sentencedAt": "2023-01-26",
+        "identifier": "affeb429-4ea4-4271-88b7-0d148c16276d",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       },
-      "sentencedAt": "2016-10-07",
-      "consecutiveSentenceUUIDs": [
-        "8d36aa01-5b4f-3c21-9a94-1653b2f0f6fb"
-      ],
-      "recallType": "STANDARD_RECALL"
-    },
-    {
-      "offence": {
-        "committedAt": "2022-10-03",
-        "offenceCode": "TH68026"
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2022-06-01",
+          "offenceCode": "CJ88144"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 5
+          }
+        },
+        "sentencedAt": "2023-01-26",
+        "identifier": "5d42bf07-8ef3-48bc-a23b-89b3eacbcde8",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       },
-      "duration": {
-        "durationElements": {
-          "YEARS": 4
-        }
-      },
-      "sentencedAt": "2023-01-26"
-    },
-    {
-      "offence": {
-        "committedAt": "2022-06-01",
-        "offenceCode": "CJ88144"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 5
-        }
-      },
-      "sentencedAt": "2023-01-26"
-    },
-    {
-      "offence": {
-        "committedAt": "2022-06-17",
-        "offenceCode": "BA76001"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 1
-        }
-      },
-      "sentencedAt": "2023-01-26"
-    }
-  ]
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2022-06-17",
+          "offenceCode": "BA76001"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 1
+          }
+        },
+        "sentencedAt": "2023-01-26",
+        "identifier": "bba3fc03-6c8d-448a-82fd-168b8fe9094c",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      }
+    ],
+    "adjustments": {},
+    "bookingId": -1
+  }
 }

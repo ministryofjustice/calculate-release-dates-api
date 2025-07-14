@@ -1,42 +1,52 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "recallType": "FIXED_TERM_RECALL_28",
-      "offence": {
-        "committedAt": "2024-12-11",
-        "offenceCode": "SX03220"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 12
-        }
-      },
-      "sentencedAt": "2024-12-11",
-      "identifier": "9824a90b-ab4b-360d-8003-a7c8f53b81b3"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "recallType": "FIXED_TERM_RECALL_28",
-      "offence": {
-        "committedAt": "2025-02-06",
-        "offenceCode": "SX03220"
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2024-12-11",
+          "offenceCode": "SX03220"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 12
+          }
+        },
+        "sentencedAt": "2024-12-11",
+        "identifier": "9824a90b-ab4b-360d-8003-a7c8f53b81b3",
+        "recallType": "FIXED_TERM_RECALL_28",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 11
-        }
-      },
-      "sentencedAt": "2025-02-06",
-      "identifier": "9824a90b-ab4b-360d-8003-a7c8f53b81b4"
-    }
-  ],
-  "returnToCustodyDate": "2025-11-28",
-  "fixedTermRecallDetails": {
-    "bookingId": 1234567,
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2025-02-06",
+          "offenceCode": "SX03220"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 11
+          }
+        },
+        "sentencedAt": "2025-02-06",
+        "identifier": "9824a90b-ab4b-360d-8003-a7c8f53b81b4",
+        "recallType": "FIXED_TERM_RECALL_28",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      }
+    ],
+    "adjustments": {},
     "returnToCustodyDate": "2025-11-28",
-    "recallLength": 28
-  }
+    "fixedTermRecallDetails": {
+      "bookingId": 1234567,
+      "returnToCustodyDate": "2025-11-28",
+      "recallLength": 28
+    },
+    "bookingId": -1
+  },
+  "expectedValidationException": "FTR_TYPE_28_DAYS_SENTENCE_GAP_LT_14_DAYS",
+  "featureTogglesStr": "ftr48ManualJourney=false"
 }

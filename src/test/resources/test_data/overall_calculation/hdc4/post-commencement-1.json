@@ -1,81 +1,100 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2021-09-11"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 2
-        }
-      },
-      "sentencedAt": "2022-03-08"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2022-03-07"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 4
-        }
-      },
-      "sentencedAt": "2022-03-08"
-    },
-    {
-      "offence": {
-        "committedAt": "2021-08-12"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 1
-        }
-      },
-      "sentencedAt": "2022-03-08"
-    },
-    {
-      "offence": {
-        "committedAt": "2022-08-08"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 14
-        }
-      },
-      "sentencedAt": "2023-06-05"
-    },
-    {
-      "offence": {
-        "committedAt": "2022-10-19"
-      },
-      "duration": {
-        "durationElements": {
-          "WEEKS": 8
-        }
-      },
-      "sentencedAt": "2023-06-28"
-    }
-  ],
-  "adjustments": {
-    "UNLAWFULLY_AT_LARGE": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2015-01-10",
-        "numberOfDays": 39,
-        "fromDate": "2022-12-03",
-        "toDate": "2023-01-10"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2021-09-11"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 2
+          }
+        },
+        "sentencedAt": "2022-03-08",
+        "identifier": "cce64fdc-5821-443a-8e9d-e8027c866439",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2022-03-07"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 4
+          }
+        },
+        "sentencedAt": "2022-03-08",
+        "identifier": "899213ee-4a6e-41d3-b696-1aad40e7f974",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2021-08-12"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 1
+          }
+        },
+        "sentencedAt": "2022-03-08",
+        "identifier": "b1e5a441-ba7f-41a3-ba40-24e7b9458753",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2022-08-08"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 14
+          }
+        },
+        "sentencedAt": "2023-06-05",
+        "identifier": "631998ba-d761-42ab-8422-c36754f8efc0",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2022-10-19"
+        },
+        "duration": {
+          "durationElements": {
+            "WEEKS": 8
+          }
+        },
+        "sentencedAt": "2023-06-28",
+        "identifier": "6621446e-c222-4488-ac22-56ddee8a97d4",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
     ],
-    "REMAND": [
-      {
-        "appliesToSentencesFrom": "2023-06-05",
-        "numberOfDays": 140,
-        "fromDate": "2023-01-16",
-        "toDate": "2023-06-04"
-      }
-    ]
-  }
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2023-06-05",
+          "numberOfDays": 140,
+          "fromDate": "2023-01-16",
+          "toDate": "2023-06-04"
+        }
+      ],
+      "UNLAWFULLY_AT_LARGE": [
+        {
+          "appliesToSentencesFrom": "2015-01-10",
+          "numberOfDays": 39,
+          "fromDate": "2022-12-03",
+          "toDate": "2023-01-10"
+        }
+      ]
+    },
+    "bookingId": -1
+  },
+  "params": "sds-50"
 }

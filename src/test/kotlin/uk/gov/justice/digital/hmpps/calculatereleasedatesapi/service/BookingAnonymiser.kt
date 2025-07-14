@@ -40,8 +40,8 @@ class BookingAnonymiser {
   }
 
   private fun anonymiseTestCase(example: String) {
-    var (booking, calculationUserInputs) = jsonTransformation.loadBooking(example)
-    var sentences = booking.sentences.map {
+    val calculationFile = jsonTransformation.loadCalculationTestFile(example)
+    var sentences = calculationFile.booking.sentences.map {
       if (it is StandardDeterminateSentence) {
         return@map it.copy(
           lineSequence = null,
@@ -83,7 +83,7 @@ class BookingAnonymiser {
     }
 
     sentences = sentences.distinctBy {
-      if (booking.sentences.any { consec ->
+      if (calculationFile.booking.sentences.any { consec ->
           consec.consecutiveSentenceUUIDs.contains(it.identifier)
         }
       ) {
@@ -97,20 +97,18 @@ class BookingAnonymiser {
       }
     }
 
-    booking = booking.copy(
+    val booking = calculationFile.booking.copy(
       bookingId = 0,
-      offender = booking.offender.copy(reference = "ABC123", dateOfBirth = LocalDate.of(1990, 1, 1)),
+      offender = calculationFile.booking.offender.copy(reference = "ABC123", dateOfBirth = LocalDate.of(1990, 1, 1)),
       sentences = sentences,
     )
 
     val mapper = TestUtil.minimalTestCaseMapper()
 
-    val jsonTree: ObjectNode = mapper.valueToTree(booking)
-    if (calculationUserInputs.calculateErsed) {
-      jsonTree.put("calculateErsed", true)
-    }
+    val jsonTree: ObjectNode = mapper.valueToTree(calculationFile.copy(booking))
 
-    val sentencesArray = jsonTree.get("sentences")
+    val bookingTree = jsonTree.get("booking")
+    val sentencesArray = bookingTree.get("sentences")
     val sentencesString = sentencesArray.toString()
     sentencesArray.forEach {
       val obj = it as ObjectNode
@@ -129,7 +127,7 @@ class BookingAnonymiser {
       }
     }
 
-    val adjustmentsObject = jsonTree.get("adjustments")
+    val adjustmentsObject = bookingTree.get("adjustments")
     if (adjustmentsObject.isEmpty) {
       jsonTree.remove("adjustments")
     }

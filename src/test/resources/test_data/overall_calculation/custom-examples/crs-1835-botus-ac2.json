@@ -1,32 +1,37 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "type": "BotusSentence",
-      "offence": {
-        "committedAt": "2020-02-27"
-      },
-      "duration": {
-        "durationElements": {
-          "DAYS": 12
-        }
-      },
-      "sentencedAt": "2020-03-30",
-      "caseSequence": 1,
-      "lineSequence": 1
-    }
-  ],
-  "adjustments": {
-    "UNLAWFULLY_AT_LARGE": [
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2020-03-31",
-        "numberOfDays": 4,
-        "fromDate": "2020-04-01",
-        "toDate": "2020-04-04"
+        "type": "BotusSentence",
+        "offence": {
+          "committedAt": "2020-02-27"
+        },
+        "duration": {
+          "durationElements": {
+            "DAYS": 12
+          }
+        },
+        "sentencedAt": "2020-03-30",
+        "identifier": "420f2cc5-ccaf-4725-8e57-4ec16bb033f7",
+        "caseSequence": 1,
+        "lineSequence": 1
       }
-    ]
-  }
+    ],
+    "adjustments": {
+      "UNLAWFULLY_AT_LARGE": [
+        {
+          "appliesToSentencesFrom": "2020-03-31",
+          "numberOfDays": 4,
+          "fromDate": "2020-04-01",
+          "toDate": "2020-04-04"
+        }
+      ]
+    },
+    "bookingId": -1
+  },
+  "params": "sds-50"
 }

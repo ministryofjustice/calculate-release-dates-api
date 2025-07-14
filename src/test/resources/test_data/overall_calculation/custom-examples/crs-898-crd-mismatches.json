@@ -1,96 +1,118 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "1960-09-15"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 8
+          }
+        },
+        "sentencedAt": "2020-12-11",
+        "identifier": "a026b4b9-773d-362e-9e03-8fa6a8d9f5a7",
+        "isSDSPlus": true,
+        "isSDSPlusEligibleSentenceTypeLengthAndOffence": true,
+        "isSDSPlusOffenceInPeriod": true,
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "1969-09-15"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 9
+          }
+        },
+        "sentencedAt": "2020-12-11",
+        "identifier": "8b3c6741-3a23-3d79-b5f9-564a5f7a723c",
+        "consecutiveSentenceUUIDs": [
+          "a026b4b9-773d-362e-9e03-8fa6a8d9f5a7"
+        ],
+        "isSDSPlus": true,
+        "isSDSPlusEligibleSentenceTypeLengthAndOffence": true,
+        "isSDSPlusOffenceInPeriod": true,
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "1973-10-29"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 2
+          }
+        },
+        "sentencedAt": "2020-12-11",
+        "identifier": "a993e659-3276-35bc-a77b-5587259182e8",
+        "consecutiveSentenceUUIDs": [
+          "8b3c6741-3a23-3d79-b5f9-564a5f7a723c"
+        ],
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "1973-10-29"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 2
+          }
+        },
+        "sentencedAt": "2020-12-11",
+        "identifier": "40f3ba9d-b2b4-395a-b335-52244de62bbc",
+        "consecutiveSentenceUUIDs": [
+          "a993e659-3276-35bc-a77b-5587259182e8"
+        ],
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "1973-10-29"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 2
+          }
+        },
+        "sentencedAt": "2020-12-11",
+        "identifier": "47d2ad67-7676-378e-ac2c-92eadc6bf4d1",
+        "consecutiveSentenceUUIDs": [
+          "40f3ba9d-b2b4-395a-b335-52244de62bbc"
+        ],
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "1973-10-29"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 2
+          }
+        },
+        "sentencedAt": "2020-12-11",
+        "identifier": "12c4547b-89e3-49fb-af95-6c4eeb364c90",
+        "consecutiveSentenceUUIDs": [
+          "47d2ad67-7676-378e-ac2c-92eadc6bf4d1"
+        ],
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      }
+    ],
+    "adjustments": {},
+    "bookingId": -1
   },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "1960-09-15"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 8
-        }
-      },
-      "sentencedAt": "2020-12-11",
-      "identifier": "a026b4b9-773d-362e-9e03-8fa6a8d9f5a7",
-      "isSDSPlus": true
-    },
-    {
-      "offence": {
-        "committedAt": "1969-09-15"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 9
-        }
-      },
-      "sentencedAt": "2020-12-11",
-      "identifier": "8b3c6741-3a23-3d79-b5f9-564a5f7a723c",
-      "consecutiveSentenceUUIDs": [
-        "a026b4b9-773d-362e-9e03-8fa6a8d9f5a7"
-      ],
-      "isSDSPlus": true
-    },
-    {
-      "offence": {
-        "committedAt": "1973-10-29"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 2
-        }
-      },
-      "sentencedAt": "2020-12-11",
-      "identifier": "a993e659-3276-35bc-a77b-5587259182e8",
-      "consecutiveSentenceUUIDs": [
-        "8b3c6741-3a23-3d79-b5f9-564a5f7a723c"
-      ]
-    },
-    {
-      "offence": {
-        "committedAt": "1973-10-29"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 2
-        }
-      },
-      "sentencedAt": "2020-12-11",
-      "identifier": "40f3ba9d-b2b4-395a-b335-52244de62bbc",
-      "consecutiveSentenceUUIDs": [
-        "a993e659-3276-35bc-a77b-5587259182e8"
-      ]
-    },
-    {
-      "offence": {
-        "committedAt": "1973-10-29"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 2
-        }
-      },
-      "sentencedAt": "2020-12-11",
-      "identifier": "47d2ad67-7676-378e-ac2c-92eadc6bf4d1",
-      "consecutiveSentenceUUIDs": [
-        "40f3ba9d-b2b4-395a-b335-52244de62bbc"
-      ]
-    },
-    {
-      "offence": {
-        "committedAt": "1973-10-29"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 2
-        }
-      },
-      "sentencedAt": "2020-12-11",
-      "consecutiveSentenceUUIDs": [
-        "47d2ad67-7676-378e-ac2c-92eadc6bf4d1"
-      ]
-    }
-  ]
+  "params": "sds-50"
 }

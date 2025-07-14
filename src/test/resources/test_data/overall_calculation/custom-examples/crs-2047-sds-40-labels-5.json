@@ -1,77 +1,68 @@
 {
-  "offender": {
-    "reference": "A6153EA",
-    "dateOfBirth": "1990-04-15",
-    "isActiveSexOffender": false
-  },
-  "bookingId": 1219288,
-  "sentences": [
-    {
-      "type": "StandardSentence",
-      "offence": {
-        "committedAt": "2022-11-18",
-        "offenceCode": "TH68023"
-      },
-      "duration": {
-        "durationElements": {
-          "DAYS": 0,
-          "WEEKS": 0,
-          "YEARS": 4,
-          "MONTHS": 4
-        }
-      },
-      "isSDSPlus": false,
-      "identifier": "56e7326e-1c7e-3079-a29b-3fd40175fa3b",
-      "recallType": null,
-      "sentencedAt": "2022-12-23",
-      "caseSequence": 1,
-      "lineSequence": 1,
-      "caseReference": null,
-      "consecutiveSentenceUUIDs": [],
-      "hasAnSDSEarlyReleaseExclusion": "VIOLENT"
+  "booking": {
+    "offender": {
+      "reference": "A6153EA",
+      "dateOfBirth": "1990-04-15"
     },
-    {
-      "type": "StandardSentence",
-      "offence": {
-        "committedAt": "2023-12-06",
-        "offenceCode": "COML016"
-      },
-      "duration": {
-        "durationElements": {
-          "DAYS": 0,
-          "WEEKS": 0,
-          "YEARS": 0,
-          "MONTHS": 2
-        }
-      },
-      "isSDSPlus": false,
-      "identifier": "20e90caa-e0f0-3804-a39b-392c43ed9c33",
-      "recallType": null,
-      "sentencedAt": "2024-04-23",
-      "caseSequence": 2,
-      "lineSequence": 2,
-      "caseReference": null,
-      "consecutiveSentenceUUIDs": [],
-      "hasAnSDSEarlyReleaseExclusion": "NO"
-    }
-  ],
-  "adjustments": {
-    "REMAND": [
+    "sentences": [
       {
-        "toDate": "2022-12-22",
-        "fromDate": "2022-11-19",
-        "numberOfDays": 34,
-        "appliesToSentencesFrom": "2022-12-23"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2022-11-18",
+          "offenceCode": "TH68023"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 4,
+            "MONTHS": 4
+          }
+        },
+        "sentencedAt": "2022-12-23",
+        "identifier": "56e7326e-1c7e-3079-a29b-3fd40175fa3b",
+        "caseSequence": 1,
+        "lineSequence": 1,
+        "hasAnSDSEarlyReleaseExclusion": "VIOLENT"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2023-12-06",
+          "offenceCode": "COML016"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 2
+          }
+        },
+        "sentencedAt": "2024-04-23",
+        "identifier": "20e90caa-e0f0-3804-a39b-392c43ed9c33",
+        "caseSequence": 2,
+        "lineSequence": 2,
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
     ],
-    "UNLAWFULLY_AT_LARGE": [
-      {
-        "toDate": "2023-12-11",
-        "fromDate": "2023-12-06",
-        "numberOfDays": 6,
-        "appliesToSentencesFrom": "2023-12-06"
-      }
-    ]
+    "adjustments": {
+      "UNLAWFULLY_AT_LARGE": [
+        {
+          "appliesToSentencesFrom": "2023-12-06",
+          "numberOfDays": 6,
+          "fromDate": "2023-12-06",
+          "toDate": "2023-12-11"
+        }
+      ],
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2022-12-23",
+          "numberOfDays": 34,
+          "fromDate": "2022-11-19",
+          "toDate": "2022-12-22"
+        }
+      ]
+    },
+    "bookingId": 1219288
   },
-  "calculateErsed": true
+  "userInputs": {
+    "calculateErsed": true,
+    "useOffenceIndicators": true
+  }
 }

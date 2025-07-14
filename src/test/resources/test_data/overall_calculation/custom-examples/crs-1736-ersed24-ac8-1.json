@@ -1,36 +1,44 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "type": "ExtendedDeterminateSentence",
-      "offence": {
-        "committedAt": "2022-02-10"
-      },
-      "custodialDuration": {
-        "durationElements": {
-          "MONTHS": 45
-        }
-      },
-      "extensionDuration": {
-        "durationElements": {
-          "MONTHS": 18
-        }
-      },
-      "sentencedAt": "2022-02-11"
-    }
-  ],
-  "adjustments": {
-    "REMAND": [
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2022-02-11",
-        "numberOfDays": 118,
-        "fromDate": "2021-10-10",
-        "toDate": "2022-02-10"
+        "type": "ExtendedDeterminateSentence",
+        "offence": {
+          "committedAt": "2022-02-10"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "MONTHS": 45
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "MONTHS": 18
+          }
+        },
+        "sentencedAt": "2022-02-11",
+        "identifier": "30887c6f-f78f-4c7e-9f86-3718b6813d36"
       }
-    ]
+    ],
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2022-02-11",
+          "numberOfDays": 118,
+          "fromDate": "2021-10-10",
+          "toDate": "2022-02-10"
+        }
+      ]
+    },
+    "bookingId": -1
   },
-  "calculateErsed": true
+  "userInputs": {
+    "calculateErsed": true,
+    "useOffenceIndicators": true
+  },
+  "params": "sds-50"
 }

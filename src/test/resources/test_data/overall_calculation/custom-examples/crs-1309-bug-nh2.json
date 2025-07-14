@@ -1,39 +1,46 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2022-01-04"
-      },
-      "duration": {
-        "durationElements": {
-          "DAYS": 28
-        }
-      },
-      "sentencedAt": "2023-02-20",
-      "recallType": "FIXED_TERM_RECALL_14"
-    }
-  ],
-  "adjustments": {
-    "RECALL_REMAND": [
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2023-02-20",
-        "numberOfDays": 10,
-        "fromDate": "2023-02-10",
-        "toDate": "2023-02-19"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2022-01-04"
+        },
+        "duration": {
+          "durationElements": {
+            "DAYS": 28
+          }
+        },
+        "sentencedAt": "2023-02-20",
+        "identifier": "4707eebf-ed01-46e9-b994-5decd8513526",
+        "recallType": "FIXED_TERM_RECALL_14",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
     ],
-    "UNLAWFULLY_AT_LARGE": [
-      {
-        "appliesToSentencesFrom": "2023-03-04",
-        "numberOfDays": 6,
-        "fromDate": "2023-03-04",
-        "toDate": "2023-03-09"
-      }
-    ]
+    "adjustments": {
+      "UNLAWFULLY_AT_LARGE": [
+        {
+          "appliesToSentencesFrom": "2023-03-04",
+          "numberOfDays": 6,
+          "fromDate": "2023-03-04",
+          "toDate": "2023-03-09"
+        }
+      ],
+      "RECALL_REMAND": [
+        {
+          "appliesToSentencesFrom": "2023-02-20",
+          "numberOfDays": 10,
+          "fromDate": "2023-02-10",
+          "toDate": "2023-02-19"
+        }
+      ]
+    },
+    "returnToCustodyDate": "2023-03-10",
+    "bookingId": -1
   },
-  "returnToCustodyDate": "2023-03-10"
+  "params": "sds-50"
 }

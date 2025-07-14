@@ -1,54 +1,61 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "type": "ExtendedDeterminateSentence",
-      "offence": {
-        "committedAt": "2014-01-09"
-      },
-      "custodialDuration": {
-        "durationElements": {
-          "YEARS": 4,
-          "MONTHS": 9
-        }
-      },
-      "extensionDuration": {
-        "durationElements": {
-          "YEARS": 3,
-          "MONTHS": 3
-        }
-      },
-      "sentencedAt": "2015-10-16",
-      "identifier": "70b10e6a-a5b2-43e7-a5db-3694d75bedec",
-      "recallType": "STANDARD_RECALL"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2014-02-08"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 16
-        }
-      },
-      "sentencedAt": "2019-03-11",
-      "consecutiveSentenceUUIDs": [
-        "70b10e6a-a5b2-43e7-a5db-3694d75bedec"
-      ],
-      "recallType": "STANDARD_RECALL"
-    }
-  ],
-  "adjustments": {
-    "RECALL_REMAND": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2015-10-16",
-        "numberOfDays": 1,
-        "fromDate": "2015-05-20",
-        "toDate": "2015-05-20"
+        "type": "ExtendedDeterminateSentence",
+        "offence": {
+          "committedAt": "2014-01-09"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "YEARS": 4,
+            "MONTHS": 9
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "YEARS": 3,
+            "MONTHS": 3
+          }
+        },
+        "sentencedAt": "2015-10-16",
+        "identifier": "70b10e6a-a5b2-43e7-a5db-3694d75bedec",
+        "recallType": "STANDARD_RECALL"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2014-02-08"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 16
+          }
+        },
+        "sentencedAt": "2019-03-11",
+        "identifier": "a92d024e-d026-43a7-9955-f53f23ca6a14",
+        "consecutiveSentenceUUIDs": [
+          "70b10e6a-a5b2-43e7-a5db-3694d75bedec"
+        ],
+        "recallType": "STANDARD_RECALL",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
-    ]
-  }
+    ],
+    "adjustments": {
+      "RECALL_REMAND": [
+        {
+          "appliesToSentencesFrom": "2015-10-16",
+          "numberOfDays": 1,
+          "fromDate": "2015-05-20",
+          "toDate": "2015-05-20"
+        }
+      ]
+    },
+    "bookingId": -1
+  },
+  "params": "sds-50"
 }

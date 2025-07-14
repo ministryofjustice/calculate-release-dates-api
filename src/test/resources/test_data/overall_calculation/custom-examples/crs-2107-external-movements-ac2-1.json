@@ -1,52 +1,59 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2023-08-01",
-        "offenceCode": "TH68013"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 2,
-          "MONTHS": 3
-        }
-      },
-      "sentencedAt": "2023-09-24",
-      "identifier": "f3f33a7f-9d6f-3382-8bd4-7e1abefce2cf"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2024-01-02",
-        "offenceCode": "FA06003"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 6
-        }
-      },
-      "sentencedAt": "2024-06-18",
-      "identifier": "a76a4b3d-1c07-3684-b839-a2616c87ae34"
-    }
-  ],
-  "adjustments": {
-    "REMAND": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2023-09-24",
-        "numberOfDays": 100,
-        "fromDate": "2023-06-16",
-        "toDate": "2023-09-23"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2023-08-01",
+          "offenceCode": "TH68013"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 2,
+            "MONTHS": 3
+          }
+        },
+        "sentencedAt": "2023-09-24",
+        "identifier": "f3f33a7f-9d6f-3382-8bd4-7e1abefce2cf",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2024-01-02",
+          "offenceCode": "FA06003"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 6
+          }
+        },
+        "sentencedAt": "2024-06-18",
+        "identifier": "a76a4b3d-1c07-3684-b839-a2616c87ae34",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      }
+    ],
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2023-09-24",
+          "numberOfDays": 100,
+          "fromDate": "2023-06-16",
+          "toDate": "2023-09-23"
+        }
+      ]
+    },
+    "bookingId": -1,
+    "externalMovements": [
+      {
+        "movementDate": "2024-06-02",
+        "movementReason": "ECSL",
+        "direction": "OUT"
       }
     ]
-  },
-  "externalMovements": [
-    {
-      "movementDate": "2024-06-02",
-      "movementReason": "ECSL",
-      "direction": "OUT"
-    }
-  ]
+  }
 }

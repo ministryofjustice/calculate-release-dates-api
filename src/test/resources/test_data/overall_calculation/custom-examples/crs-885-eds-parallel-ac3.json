@@ -1,85 +1,97 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2017-08-28"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 18
-        }
-      },
-      "sentencedAt": "2021-02-11",
-      "recallType": "STANDARD_RECALL"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2017-08-28"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 12
-        }
-      },
-      "sentencedAt": "2021-02-11",
-      "recallType": "STANDARD_RECALL"
-    },
-    {
-      "type": "ExtendedDeterminateSentence",
-      "offence": {
-        "committedAt": "2021-10-02"
-      },
-      "custodialDuration": {
-        "durationElements": {
-          "YEARS": 2
-        }
-      },
-      "extensionDuration": {
-        "durationElements": {
-          "YEARS": 1
-        }
-      },
-      "sentencedAt": "2022-01-28"
-    },
-    {
-      "type": "ExtendedDeterminateSentence",
-      "offence": {
-        "committedAt": "2021-10-02"
-      },
-      "custodialDuration": {
-        "durationElements": {
-          "YEARS": 1,
-          "MONTHS": 6
-        }
-      },
-      "extensionDuration": {
-        "durationElements": {
-          "YEARS": 1
-        }
-      },
-      "sentencedAt": "2022-01-28"
-    }
-  ],
-  "adjustments": {
-    "RECALL_REMAND": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2021-02-11",
-        "numberOfDays": 24,
-        "fromDate": "2021-01-10",
-        "toDate": "2021-02-10"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2017-08-28"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 18
+          }
+        },
+        "sentencedAt": "2021-02-11",
+        "identifier": "0b5d4c86-ce16-4897-9a6d-85f3db9a5357",
+        "recallType": "STANDARD_RECALL",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2017-08-28"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 12
+          }
+        },
+        "sentencedAt": "2021-02-11",
+        "identifier": "7a0b8779-4b54-4c49-b407-4a9efd6d0aad",
+        "recallType": "STANDARD_RECALL",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "ExtendedDeterminateSentence",
+        "offence": {
+          "committedAt": "2021-10-02"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "YEARS": 2
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "YEARS": 1
+          }
+        },
+        "sentencedAt": "2022-01-28",
+        "identifier": "4d31e344-2b68-4780-9caf-f0591183b6a8"
+      },
+      {
+        "type": "ExtendedDeterminateSentence",
+        "offence": {
+          "committedAt": "2021-10-02"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "YEARS": 1,
+            "MONTHS": 6
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "YEARS": 1
+          }
+        },
+        "sentencedAt": "2022-01-28",
+        "identifier": "5566c7c3-3c4c-460b-accf-137f569c20b4"
       }
     ],
-    "REMAND": [
-      {
-        "appliesToSentencesFrom": "2022-01-28",
-        "numberOfDays": 6,
-        "fromDate": "2022-01-21",
-        "toDate": "2022-01-27"
-      }
-    ]
-  }
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2022-01-28",
+          "numberOfDays": 6,
+          "fromDate": "2022-01-21",
+          "toDate": "2022-01-27"
+        }
+      ],
+      "RECALL_REMAND": [
+        {
+          "appliesToSentencesFrom": "2021-02-11",
+          "numberOfDays": 24,
+          "fromDate": "2021-01-10",
+          "toDate": "2021-02-10"
+        }
+      ]
+    },
+    "bookingId": -1
+  },
+  "params": "sds-50"
 }

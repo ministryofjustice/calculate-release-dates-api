@@ -1,50 +1,60 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2022-01-04"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 8
-        }
-      },
-      "sentencedAt": "2022-10-21",
-      "recallType": "STANDARD_RECALL"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2022-01-04"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 1
-        }
-      },
-      "sentencedAt": "2023-02-16",
-      "recallType": "STANDARD_RECALL"
-    }
-  ],
-  "adjustments": {
-    "RECALL_REMAND": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2023-02-16",
-        "numberOfDays": 15,
-        "fromDate": "2022-10-06",
-        "toDate": "2022-10-20"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2022-01-04"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 8
+          }
+        },
+        "sentencedAt": "2022-10-21",
+        "identifier": "28e40aa5-9ea8-480a-9449-ca1a5628b7bb",
+        "recallType": "STANDARD_RECALL",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2022-01-04"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 1
+          }
+        },
+        "sentencedAt": "2023-02-16",
+        "identifier": "1541fb7f-df9a-44ec-a895-102539f3b7f6",
+        "recallType": "STANDARD_RECALL",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
     ],
-    "UNLAWFULLY_AT_LARGE": [
-      {
-        "appliesToSentencesFrom": "2023-02-23",
-        "numberOfDays": 16,
-        "fromDate": "2023-02-23",
-        "toDate": "2023-03-10"
-      }
-    ]
-  }
+    "adjustments": {
+      "UNLAWFULLY_AT_LARGE": [
+        {
+          "appliesToSentencesFrom": "2023-02-23",
+          "numberOfDays": 16,
+          "fromDate": "2023-02-23",
+          "toDate": "2023-03-10"
+        }
+      ],
+      "RECALL_REMAND": [
+        {
+          "appliesToSentencesFrom": "2023-02-16",
+          "numberOfDays": 15,
+          "fromDate": "2022-10-06",
+          "toDate": "2022-10-20"
+        }
+      ]
+    },
+    "bookingId": -1
+  },
+  "params": "sds-50"
 }

@@ -1,107 +1,117 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01",
-    "isActiveSexOffender": true
-  },
-  "sentences": [
-    {
-      "type": "ExtendedDeterminateSentence",
-      "offence": {
-        "committedAt": "2013-03-23"
-      },
-      "custodialDuration": {
-        "durationElements": {
-          "YEARS": 5
-        }
-      },
-      "extensionDuration": {
-        "durationElements": {
-          "YEARS": 5
-        }
-      },
-      "sentencedAt": "2013-09-09",
-      "identifier": "7981d7d1-aeea-33db-877a-59ea36eb6a48"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01",
+      "isActiveSexOffender": true
     },
-    {
-      "type": "ExtendedDeterminateSentence",
-      "offence": {
-        "committedAt": "2011-03-01"
-      },
-      "custodialDuration": {
-        "durationElements": {
-          "YEARS": 7
-        }
-      },
-      "extensionDuration": {
-        "durationElements": {
-          "YEARS": 6
-        }
-      },
-      "sentencedAt": "2013-09-09",
-      "identifier": "7d5e417b-ae8c-3765-923d-658b1d220eca",
-      "consecutiveSentenceUUIDs": [
-        "7981d7d1-aeea-33db-877a-59ea36eb6a48"
-      ]
-    },
-    {
-      "type": "ExtendedDeterminateSentence",
-      "offence": {
-        "committedAt": "2012-10-13"
-      },
-      "custodialDuration": {
-        "durationElements": {
-          "YEARS": 8
-        }
-      },
-      "extensionDuration": {
-        "durationElements": {
-          "YEARS": 6
-        }
-      },
-      "sentencedAt": "2013-09-09",
-      "consecutiveSentenceUUIDs": [
-        "7d5e417b-ae8c-3765-923d-658b1d220eca"
-      ]
-    },
-    {
-      "offence": {
-        "committedAt": "2012-10-13"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 12
-        }
-      },
-      "sentencedAt": "2013-09-09",
-      "hasAnSDSEarlyReleaseExclusion": "SEXUAL"
-    },
-    {
-      "offence": {
-        "committedAt": "2012-10-13"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 12
-        }
-      },
-      "sentencedAt": "2013-09-09"
-    }
-  ],
-  "adjustments": {
-    "REMAND": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2013-09-09",
-        "numberOfDays": 168,
-        "fromDate": "2013-03-25",
-        "toDate": "2013-09-08"
+        "type": "ExtendedDeterminateSentence",
+        "offence": {
+          "committedAt": "2013-03-23"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "YEARS": 5
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "YEARS": 5
+          }
+        },
+        "sentencedAt": "2013-09-09",
+        "identifier": "7981d7d1-aeea-33db-877a-59ea36eb6a48"
+      },
+      {
+        "type": "ExtendedDeterminateSentence",
+        "offence": {
+          "committedAt": "2011-03-01"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "YEARS": 7
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "YEARS": 6
+          }
+        },
+        "sentencedAt": "2013-09-09",
+        "identifier": "7d5e417b-ae8c-3765-923d-658b1d220eca",
+        "consecutiveSentenceUUIDs": [
+          "7981d7d1-aeea-33db-877a-59ea36eb6a48"
+        ]
+      },
+      {
+        "type": "ExtendedDeterminateSentence",
+        "offence": {
+          "committedAt": "2012-10-13"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "YEARS": 8
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "YEARS": 6
+          }
+        },
+        "sentencedAt": "2013-09-09",
+        "identifier": "eed4e6be-3356-4803-aa92-3c10d7e602ed",
+        "consecutiveSentenceUUIDs": [
+          "7d5e417b-ae8c-3765-923d-658b1d220eca"
+        ]
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2012-10-13"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 12
+          }
+        },
+        "sentencedAt": "2013-09-09",
+        "identifier": "38c3577e-72ae-47fc-8f65-5c505db9ead7",
+        "hasAnSDSEarlyReleaseExclusion": "SEXUAL"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2012-10-13"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 12
+          }
+        },
+        "sentencedAt": "2013-09-09",
+        "identifier": "dfe6b099-c5c9-4ee2-934e-ca19cb2cefce",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
     ],
-    "TAGGED_BAIL": [
-      {
-        "appliesToSentencesFrom": "2013-09-09",
-        "numberOfDays": 47
-      }
-    ]
-  }
+    "adjustments": {
+      "TAGGED_BAIL": [
+        {
+          "appliesToSentencesFrom": "2013-09-09",
+          "numberOfDays": 47
+        }
+      ],
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2013-09-09",
+          "numberOfDays": 168,
+          "fromDate": "2013-03-25",
+          "toDate": "2013-09-08"
+        }
+      ]
+    },
+    "bookingId": -1
+  },
+  "assertSds40": true
 }

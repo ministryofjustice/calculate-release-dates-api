@@ -12,6 +12,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.DatesAndHints
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.CalculationTestFile
 import java.io.File
 import java.io.FileNotFoundException
 
@@ -34,6 +35,11 @@ class JsonTransformation {
     val jsonTree = mapper.readTree(json)
     val calculateErsed = if (jsonTree.has("calculateErsed")) jsonTree.get("calculateErsed").booleanValue() else false
     return mapper.readValue(json, Booking::class.java) to CalculationUserInputs(calculateErsed = calculateErsed)
+  }
+
+  fun loadCalculationTestFile(testData: String): CalculationTestFile {
+    val json = getJsonTest("$testData.json", "overall_calculation")
+    return mapper.readValue(json, CalculationTestFile::class.java)
   }
 
   fun loadCalculationResult(testData: String): Pair<CalculationResult, String> {
@@ -99,16 +105,20 @@ class JsonTransformation {
     return files
   }
 
-  fun doAllInDir(fileName: String, comsumer: (File) -> Unit) {
+  fun doAllInDir(fileName: String, consumer: (File) -> Unit) {
     val dir = File(object {}.javaClass.getResource("/test_data/$fileName").file)
+    doAllInDir(dir, consumer)
+  }
+
+  fun doAllInDir(dir: File, consumer: (File) -> Unit) {
     if (dir.isDirectory) {
       dir.walk().forEach {
         if (it.extension == "json") {
-          comsumer(it)
+          consumer(it)
         }
       }
     } else {
-      throw FileNotFoundException("File $fileName was not a directory")
+      throw FileNotFoundException("File ${dir.name} was not a directory")
     }
   }
 

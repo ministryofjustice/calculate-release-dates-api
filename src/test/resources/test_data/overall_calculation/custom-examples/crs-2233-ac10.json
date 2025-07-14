@@ -1,70 +1,85 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2024-04-28",
-        "offenceCode": "CJ88144"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2024-04-28",
+          "offenceCode": "CJ88144"
+        },
+        "duration": {
+          "durationElements": {
+            "WEEKS": 21
+          }
+        },
+        "sentencedAt": "2024-10-29",
+        "identifier": "b4397227-ee59-4318-ae66-6cf216cede20",
+        "consecutiveSentenceUUIDs": [
+          "7728bb3d-cade-3d2b-bec6-5a502ab325a4"
+        ],
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       },
-      "duration": {
-        "durationElements": {
-          "WEEKS": 21
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2024-10-05",
+          "offenceCode": "TH68010"
+        },
+        "duration": {
+          "durationElements": {
+            "WEEKS": 4
+          }
+        },
+        "sentencedAt": "2024-10-29",
+        "identifier": "84cc516d-0453-4937-a268-3eb9cca3cbb6",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2024-03-01",
+          "offenceCode": "TH68010"
+        },
+        "duration": {
+          "durationElements": {
+            "WEEKS": 6
+          }
+        },
+        "sentencedAt": "2024-10-29",
+        "identifier": "7728bb3d-cade-3d2b-bec6-5a502ab325a4",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2024-03-01",
+          "offenceCode": "TH68010"
+        },
+        "duration": {
+          "durationElements": {
+            "WEEKS": 6
+          }
+        },
+        "sentencedAt": "2024-10-29",
+        "identifier": "070c9bd2-18e5-4888-b69d-82e46f82dba9",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      }
+    ],
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2024-10-29",
+          "numberOfDays": 16,
+          "fromDate": "2024-05-29",
+          "toDate": "2024-06-13"
         }
-      },
-      "sentencedAt": "2024-10-29",
-      "consecutiveSentenceUUIDs": [
-        "7728bb3d-cade-3d2b-bec6-5a502ab325a4"
       ]
     },
-    {
-      "offence": {
-        "committedAt": "2024-10-05",
-        "offenceCode": "TH68010"
-      },
-      "duration": {
-        "durationElements": {
-          "WEEKS": 4
-        }
-      },
-      "sentencedAt": "2024-10-29"
-    },
-    {
-      "offence": {
-        "committedAt": "2024-03-01",
-        "offenceCode": "TH68010"
-      },
-      "duration": {
-        "durationElements": {
-          "WEEKS": 6
-        }
-      },
-      "sentencedAt": "2024-10-29",
-      "identifier": "7728bb3d-cade-3d2b-bec6-5a502ab325a4"
-    },
-    {
-      "offence": {
-        "committedAt": "2024-03-01",
-        "offenceCode": "TH68010"
-      },
-      "duration": {
-        "durationElements": {
-          "WEEKS": 6
-        }
-      },
-      "sentencedAt": "2024-10-29"
-    }
-  ],
-  "adjustments": {
-    "REMAND": [
-      {
-        "appliesToSentencesFrom": "2024-10-29",
-        "numberOfDays": 16,
-        "fromDate": "2024-05-29",
-        "toDate": "2024-06-13"
-      }
-    ]
-  }
+    "bookingId": -1
+  },
+  "assertSds40": true
 }

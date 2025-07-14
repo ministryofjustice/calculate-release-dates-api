@@ -1,73 +1,83 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2014-04-06"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 5
-        }
-      },
-      "sentencedAt": "2014-07-13"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "type": "ExtendedDeterminateSentence",
-      "offence": {
-        "committedAt": "2014-04-06"
-      },
-      "custodialDuration": {
-        "durationElements": {
-          "YEARS": 3
-        }
-      },
-      "extensionDuration": {
-        "durationElements": {
-          "YEARS": 1
-        }
-      },
-      "sentencedAt": "2014-07-13"
-    },
-    {
-      "type": "ExtendedDeterminateSentence",
-      "offence": {
-        "committedAt": "2014-04-06"
-      },
-      "custodialDuration": {
-        "durationElements": {
-          "YEARS": 3
-        }
-      },
-      "extensionDuration": {
-        "durationElements": {
-          "YEARS": 2
-        }
-      },
-      "sentencedAt": "2014-07-13"
-    },
-    {
-      "type": "BotusSentence",
-      "offence": {
-        "committedAt": "2014-02-02"
-      },
-      "duration": {
-        "durationElements": {
-          "DAYS": 12
-        }
-      },
-      "sentencedAt": "2016-12-20"
-    }
-  ],
-  "adjustments": {
-    "TAGGED_BAIL": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2014-07-13",
-        "numberOfDays": 16
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2014-04-06"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 5
+          }
+        },
+        "sentencedAt": "2014-07-13",
+        "identifier": "cab72700-87c0-4dd8-95fb-9bcd0cef7f37",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "ExtendedDeterminateSentence",
+        "offence": {
+          "committedAt": "2014-04-06"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "YEARS": 3
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "YEARS": 1
+          }
+        },
+        "sentencedAt": "2014-07-13",
+        "identifier": "e7463d34-d82a-4cdc-92ae-10dbfe8060c6"
+      },
+      {
+        "type": "ExtendedDeterminateSentence",
+        "offence": {
+          "committedAt": "2014-04-06"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "YEARS": 3
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "YEARS": 2
+          }
+        },
+        "sentencedAt": "2014-07-13",
+        "identifier": "aef25aed-a562-4cb2-bd93-4f547adf2801"
+      },
+      {
+        "type": "BotusSentence",
+        "offence": {
+          "committedAt": "2014-02-02"
+        },
+        "duration": {
+          "durationElements": {
+            "DAYS": 12
+          }
+        },
+        "sentencedAt": "2016-12-20",
+        "identifier": "b8c9468b-22e3-496a-98f3-4714fe9239ad"
       }
-    ]
-  }
+    ],
+    "adjustments": {
+      "TAGGED_BAIL": [
+        {
+          "appliesToSentencesFrom": "2014-07-13",
+          "numberOfDays": 16
+        }
+      ]
+    },
+    "bookingId": -1
+  },
+  "params": "sds-50"
 }

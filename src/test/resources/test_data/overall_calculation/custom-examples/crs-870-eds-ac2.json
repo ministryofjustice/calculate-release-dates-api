@@ -1,33 +1,38 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "type": "ExtendedDeterminateSentence",
-      "offence": {
-        "committedAt": "2013-01-20"
-      },
-      "custodialDuration": {
-        "durationElements": {
-          "YEARS": 5
-        }
-      },
-      "extensionDuration": {
-        "durationElements": {
-          "YEARS": 5
-        }
-      },
-      "sentencedAt": "2013-01-21"
-    }
-  ],
-  "adjustments": {
-    "TAGGED_BAIL": [
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2013-01-21",
-        "numberOfDays": 30
+        "type": "ExtendedDeterminateSentence",
+        "offence": {
+          "committedAt": "2013-01-20"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "YEARS": 5
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "YEARS": 5
+          }
+        },
+        "sentencedAt": "2013-01-21",
+        "identifier": "621b6768-6de8-4f5c-94fe-3aa409e7a56e"
       }
-    ]
-  }
+    ],
+    "adjustments": {
+      "TAGGED_BAIL": [
+        {
+          "appliesToSentencesFrom": "2013-01-21",
+          "numberOfDays": 30
+        }
+      ]
+    },
+    "bookingId": -1
+  },
+  "params": "sds-50"
 }

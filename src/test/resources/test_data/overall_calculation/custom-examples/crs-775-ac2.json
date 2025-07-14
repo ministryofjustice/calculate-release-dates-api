@@ -1,31 +1,42 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2020-05-13"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 5
-        }
-      },
-      "sentencedAt": "2020-05-14"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2013-03-03"
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2020-05-13"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 5
+          }
+        },
+        "sentencedAt": "2020-05-14",
+        "identifier": "17108373-7b02-4185-b975-81b1d4692b0d",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 11,
-          "WEEKS": 2
-        }
-      },
-      "sentencedAt": "2020-06-14"
-    }
-  ]
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2013-03-03"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 11,
+            "WEEKS": 2
+          }
+        },
+        "sentencedAt": "2020-06-14",
+        "identifier": "fa53137d-01a1-4427-a18e-91135a2b6ae3",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      }
+    ],
+    "adjustments": {},
+    "bookingId": -1
+  },
+  "params": "sds-50"
 }

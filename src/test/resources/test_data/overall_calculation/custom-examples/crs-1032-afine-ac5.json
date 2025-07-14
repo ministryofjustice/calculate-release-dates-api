@@ -1,43 +1,51 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2022-01-18"
-      },
-      "duration": {
-        "durationElements": {
-          "DAYS": 60
-        }
-      },
-      "sentencedAt": "2022-01-19"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "type": "AFineSentence",
-      "offence": {
-        "committedAt": "2022-01-18",
-        "offenceCode": "ZZ01002"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 2
-        }
-      },
-      "sentencedAt": "2022-01-19",
-      "fineAmount": 4E+3
-    }
-  ],
-  "adjustments": {
-    "REMAND": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2022-01-19",
-        "numberOfDays": 10,
-        "fromDate": "2022-01-09",
-        "toDate": "2022-01-18"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2022-01-18"
+        },
+        "duration": {
+          "durationElements": {
+            "DAYS": 60
+          }
+        },
+        "sentencedAt": "2022-01-19",
+        "identifier": "40a3732d-9e26-49c3-8603-6fd4e8b65edc",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "AFineSentence",
+        "offence": {
+          "committedAt": "2022-01-18",
+          "offenceCode": "ZZ01002"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 2
+          }
+        },
+        "sentencedAt": "2022-01-19",
+        "identifier": "75a1f7e9-8b6d-421a-957f-c49a208ae602",
+        "fineAmount": 4E+3
       }
-    ]
-  }
+    ],
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2022-01-19",
+          "numberOfDays": 10,
+          "fromDate": "2022-01-09",
+          "toDate": "2022-01-18"
+        }
+      ]
+    },
+    "bookingId": -1
+  },
+  "params": "sds-50"
 }

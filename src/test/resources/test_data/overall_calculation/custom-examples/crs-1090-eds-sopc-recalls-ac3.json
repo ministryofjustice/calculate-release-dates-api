@@ -1,62 +1,68 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "type": "ExtendedDeterminateSentence",
-      "offence": {
-        "committedAt": "2015-01-09"
-      },
-      "custodialDuration": {
-        "durationElements": {
-          "YEARS": 5
-        }
-      },
-      "extensionDuration": {
-        "durationElements": {
-          "YEARS": 3
-        }
-      },
-      "sentencedAt": "2017-08-04",
-      "recallType": "STANDARD_RECALL"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "type": "ExtendedDeterminateSentence",
-      "offence": {
-        "committedAt": "2015-01-09"
-      },
-      "custodialDuration": {
-        "durationElements": {
-          "YEARS": 4
-        }
-      },
-      "extensionDuration": {
-        "durationElements": {
-          "YEARS": 2
-        }
-      },
-      "sentencedAt": "2017-08-04",
-      "recallType": "STANDARD_RECALL"
-    }
-  ],
-  "adjustments": {
-    "RECALL_REMAND": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2017-08-04",
-        "numberOfDays": 52,
-        "fromDate": "2017-06-13",
-        "toDate": "2017-08-03"
+        "type": "ExtendedDeterminateSentence",
+        "offence": {
+          "committedAt": "2015-01-09"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "YEARS": 5
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "YEARS": 3
+          }
+        },
+        "sentencedAt": "2017-08-04",
+        "identifier": "13189678-fbd7-4f72-aa31-f1c8e9c038e5",
+        "recallType": "STANDARD_RECALL"
+      },
+      {
+        "type": "ExtendedDeterminateSentence",
+        "offence": {
+          "committedAt": "2015-01-09"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "YEARS": 4
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "YEARS": 2
+          }
+        },
+        "sentencedAt": "2017-08-04",
+        "identifier": "1b8c3175-e359-47cd-84f2-e429358d62c4",
+        "recallType": "STANDARD_RECALL"
       }
     ],
-    "UNLAWFULLY_AT_LARGE": [
-      {
-        "appliesToSentencesFrom": "2020-11-21",
-        "numberOfDays": 23,
-        "fromDate": "2020-11-21",
-        "toDate": "2020-12-13"
-      }
-    ]
-  }
+    "adjustments": {
+      "UNLAWFULLY_AT_LARGE": [
+        {
+          "appliesToSentencesFrom": "2020-11-21",
+          "numberOfDays": 23,
+          "fromDate": "2020-11-21",
+          "toDate": "2020-12-13"
+        }
+      ],
+      "RECALL_REMAND": [
+        {
+          "appliesToSentencesFrom": "2017-08-04",
+          "numberOfDays": 52,
+          "fromDate": "2017-06-13",
+          "toDate": "2017-08-03"
+        }
+      ]
+    },
+    "bookingId": -1
+  },
+  "params": "sds-50"
 }

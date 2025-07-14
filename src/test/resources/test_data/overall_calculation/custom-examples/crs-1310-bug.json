@@ -1,145 +1,159 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "type": "ExtendedDeterminateSentence",
-      "offence": {
-        "committedAt": "2018-05-16"
-      },
-      "custodialDuration": {
-        "durationElements": {
-          "YEARS": 8,
-          "MONTHS": 4
-        }
-      },
-      "extensionDuration": {
-        "durationElements": {
-          "YEARS": 3
-        }
-      },
-      "sentencedAt": "2018-05-16",
-      "identifier": "ee91a161-dde2-3a7b-8611-624d255542a7"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2018-05-16"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 3
-        }
-      },
-      "sentencedAt": "2018-05-16"
-    },
-    {
-      "type": "DetentionAndTrainingOrderSentence",
-      "offence": {
-        "committedAt": "2018-05-16"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 4
-        }
-      },
-      "sentencedAt": "2018-05-21"
-    },
-    {
-      "offence": {
-        "committedAt": "2022-05-11"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 4
-        }
-      },
-      "sentencedAt": "2022-07-07",
-      "identifier": "ee91a161-dde2-3a7b-8611-624d255542a9",
-      "consecutiveSentenceUUIDs": [
-        "ee91a161-dde2-3a7b-8611-624d255542a7"
-      ]
-    },
-    {
-      "offence": {
-        "committedAt": "2022-05-11"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 4
-        }
-      },
-      "sentencedAt": "2022-09-09",
-      "consecutiveSentenceUUIDs": [
-        "ee91a161-dde2-3a7b-8611-624d255542a9"
-      ]
-    },
-    {
-      "type": "DetentionAndTrainingOrderSentence",
-      "offence": {
-        "committedAt": "2018-05-16"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 12
-        }
-      },
-      "sentencedAt": "2018-08-20"
-    }
-  ],
-  "adjustments": {
-    "REMAND": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2018-05-16",
-        "numberOfDays": 310,
-        "fromDate": "2017-07-10",
-        "toDate": "2018-05-15"
+        "type": "ExtendedDeterminateSentence",
+        "offence": {
+          "committedAt": "2018-05-16"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "YEARS": 8,
+            "MONTHS": 4
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "YEARS": 3
+          }
+        },
+        "sentencedAt": "2018-05-16",
+        "identifier": "ee91a161-dde2-3a7b-8611-624d255542a7"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2018-05-16"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 3
+          }
+        },
+        "sentencedAt": "2018-05-16",
+        "identifier": "43ab983a-ad1b-4f00-9287-2fa877cd08af",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "DetentionAndTrainingOrderSentence",
+        "offence": {
+          "committedAt": "2018-05-16"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 4
+          }
+        },
+        "sentencedAt": "2018-05-21",
+        "identifier": "691c45d5-c116-48f5-adc2-ee3b2f29f182"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2022-05-11"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 4
+          }
+        },
+        "sentencedAt": "2022-07-07",
+        "identifier": "ee91a161-dde2-3a7b-8611-624d255542a9",
+        "consecutiveSentenceUUIDs": [
+          "ee91a161-dde2-3a7b-8611-624d255542a7"
+        ],
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2022-05-11"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 4
+          }
+        },
+        "sentencedAt": "2022-09-09",
+        "identifier": "da4f2fb0-ff4e-4821-a50a-144f35a18819",
+        "consecutiveSentenceUUIDs": [
+          "ee91a161-dde2-3a7b-8611-624d255542a9"
+        ],
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "DetentionAndTrainingOrderSentence",
+        "offence": {
+          "committedAt": "2018-05-16"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 12
+          }
+        },
+        "sentencedAt": "2018-08-20",
+        "identifier": "630c513a-27df-41b2-98d6-ceb67b9748ac"
       }
     ],
-    "ADDITIONAL_DAYS_AWARDED": [
-      {
-        "appliesToSentencesFrom": "2018-05-16",
-        "numberOfDays": 14,
-        "fromDate": "2018-11-09",
-        "toDate": "2018-11-22"
-      },
-      {
-        "appliesToSentencesFrom": "2018-05-16",
-        "numberOfDays": 16,
-        "fromDate": "2019-08-01",
-        "toDate": "2019-08-06"
-      },
-      {
-        "appliesToSentencesFrom": "2018-05-16",
-        "numberOfDays": 6,
-        "fromDate": "2019-08-01",
-        "toDate": "2019-08-06"
-      },
-      {
-        "appliesToSentencesFrom": "2018-05-16",
-        "numberOfDays": 8,
-        "fromDate": "2019-08-01",
-        "toDate": "2019-08-08"
-      },
-      {
-        "appliesToSentencesFrom": "2018-05-16",
-        "numberOfDays": 18,
-        "fromDate": "2018-06-22",
-        "toDate": "2018-07-09"
-      },
-      {
-        "appliesToSentencesFrom": "2018-05-16",
-        "numberOfDays": 14,
-        "fromDate": "2018-06-22",
-        "toDate": "2018-07-05"
-      },
-      {
-        "appliesToSentencesFrom": "2018-05-16",
-        "numberOfDays": 22,
-        "fromDate": "2018-07-12",
-        "toDate": "2018-08-02"
-      }
-    ]
-  }
+    "adjustments": {
+      "ADDITIONAL_DAYS_AWARDED": [
+        {
+          "appliesToSentencesFrom": "2018-05-16",
+          "numberOfDays": 14,
+          "fromDate": "2018-11-09",
+          "toDate": "2018-11-22"
+        },
+        {
+          "appliesToSentencesFrom": "2018-05-16",
+          "numberOfDays": 16,
+          "fromDate": "2019-08-01",
+          "toDate": "2019-08-06"
+        },
+        {
+          "appliesToSentencesFrom": "2018-05-16",
+          "numberOfDays": 6,
+          "fromDate": "2019-08-01",
+          "toDate": "2019-08-06"
+        },
+        {
+          "appliesToSentencesFrom": "2018-05-16",
+          "numberOfDays": 8,
+          "fromDate": "2019-08-01",
+          "toDate": "2019-08-08"
+        },
+        {
+          "appliesToSentencesFrom": "2018-05-16",
+          "numberOfDays": 18,
+          "fromDate": "2018-06-22",
+          "toDate": "2018-07-09"
+        },
+        {
+          "appliesToSentencesFrom": "2018-05-16",
+          "numberOfDays": 14,
+          "fromDate": "2018-06-22",
+          "toDate": "2018-07-05"
+        },
+        {
+          "appliesToSentencesFrom": "2018-05-16",
+          "numberOfDays": 22,
+          "fromDate": "2018-07-12",
+          "toDate": "2018-08-02"
+        }
+      ],
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2018-05-16",
+          "numberOfDays": 310,
+          "fromDate": "2017-07-10",
+          "toDate": "2018-05-15"
+        }
+      ]
+    },
+    "bookingId": -1
+  },
+  "params": "sds-50"
 }

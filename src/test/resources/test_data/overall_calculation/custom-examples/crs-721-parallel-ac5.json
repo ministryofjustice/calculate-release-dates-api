@@ -1,49 +1,59 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2021-04-23"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 12
-        }
-      },
-      "sentencedAt": "2021-08-17",
-      "recallType": "STANDARD_RECALL"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2021-12-01"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 11,
-          "DAYS": 4
-        }
-      },
-      "sentencedAt": "2021-12-02"
-    }
-  ],
-  "adjustments": {
-    "RECALL_REMAND": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2021-08-17",
-        "numberOfDays": 113
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2021-04-23"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 12
+          }
+        },
+        "sentencedAt": "2021-08-17",
+        "identifier": "005cac6e-8e96-42d1-977e-7d281495516c",
+        "recallType": "STANDARD_RECALL",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2021-12-01"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 11,
+            "DAYS": 4
+          }
+        },
+        "sentencedAt": "2021-12-02",
+        "identifier": "d1f5b571-1931-440e-b058-2dc16db363d8",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
     ],
-    "UNLAWFULLY_AT_LARGE": [
-      {
-        "appliesToSentencesFrom": "2021-11-06",
-        "numberOfDays": 25,
-        "fromDate": "2021-11-06",
-        "toDate": "2021-11-30"
-      }
-    ]
+    "adjustments": {
+      "UNLAWFULLY_AT_LARGE": [
+        {
+          "appliesToSentencesFrom": "2021-11-06",
+          "numberOfDays": 25,
+          "fromDate": "2021-11-06",
+          "toDate": "2021-11-30"
+        }
+      ],
+      "RECALL_REMAND": [
+        {
+          "appliesToSentencesFrom": "2021-08-17",
+          "numberOfDays": 113
+        }
+      ]
+    },
+    "returnToCustodyDate": "2022-01-07",
+    "bookingId": -1
   },
-  "returnToCustodyDate": "2022-01-07"
+  "params": "sds-50"
 }

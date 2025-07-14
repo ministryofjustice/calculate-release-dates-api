@@ -1,55 +1,71 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2023-08-24",
-        "offenceCode": "CY33054"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 28
-        }
-      },
-      "sentencedAt": "2024-03-04"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2023-08-24",
-        "offenceCode": "RT88026"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 14
-        }
-      },
-      "sentencedAt": "2024-03-04"
-    },
-    {
-      "offence": {
-        "committedAt": "2023-08-24",
-        "offenceCode": "RT88333"
-      },
-      "duration": {
-        "durationElements": {
-          "WEEKS": 10
-        }
-      },
-      "sentencedAt": "2024-03-04"
-    }
-  ],
-  "adjustments": {
-    "REMAND": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2024-03-04",
-        "numberOfDays": 192,
-        "fromDate": "2023-08-25",
-        "toDate": "2024-03-03"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2023-08-24",
+          "offenceCode": "CY33054"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 28
+          }
+        },
+        "sentencedAt": "2024-03-04",
+        "identifier": "ac5f94ee-6459-4bdd-9187-a137d629c85f",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2023-08-24",
+          "offenceCode": "RT88026"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 14
+          }
+        },
+        "sentencedAt": "2024-03-04",
+        "identifier": "831f4ab1-2988-4c3f-8d9a-b490de1fc736",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2023-08-24",
+          "offenceCode": "RT88333"
+        },
+        "duration": {
+          "durationElements": {
+            "WEEKS": 10
+          }
+        },
+        "sentencedAt": "2024-03-04",
+        "identifier": "89fbf211-4d7a-41e2-a3d2-9b3c0e2d57c2",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
-    ]
+    ],
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2024-03-04",
+          "numberOfDays": 192,
+          "fromDate": "2023-08-25",
+          "toDate": "2024-03-03"
+        }
+      ]
+    },
+    "bookingId": -1
   },
-  "calculateErsed": true
+  "userInputs": {
+    "calculateErsed": true,
+    "useOffenceIndicators": true
+  },
+  "params": "sds-45"
 }

@@ -1,83 +1,98 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2022-12-31"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 17
-        }
-      },
-      "sentencedAt": "2024-05-03",
-      "identifier": "a31d5d02-611f-43b0-8b1a-4b1edc955e7e",
-      "recallType": "FIXED_TERM_RECALL_28"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2022-12-31"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 3
-        }
-      },
-      "sentencedAt": "2024-09-10",
-      "consecutiveSentenceUUIDs": [
-        "a31d5d02-611f-43b0-8b1a-4b1edc955e7e"
-      ],
-      "recallType": "FIXED_TERM_RECALL_28"
-    },
-    {
-      "offence": {
-        "committedAt": "2022-12-31"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 3
-        }
-      },
-      "sentencedAt": "2024-09-02",
-      "identifier": "a31d5d02-611f-43b0-8b1a-4b1edc955e8a",
-      "recallType": "FIXED_TERM_RECALL_28"
-    },
-    {
-      "offence": {
-        "committedAt": "2022-12-31"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 2
-        }
-      },
-      "sentencedAt": "2024-09-02",
-      "consecutiveSentenceUUIDs": [
-        "a31d5d02-611f-43b0-8b1a-4b1edc955e8a"
-      ],
-      "recallType": "FIXED_TERM_RECALL_28"
-    }
-  ],
-  "adjustments": {
-    "RECALL_REMAND": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2024-04-18",
-        "numberOfDays": 15,
-        "fromDate": "2024-04-18",
-        "toDate": "2024-05-02"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2022-12-31"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 17
+          }
+        },
+        "sentencedAt": "2024-05-03",
+        "identifier": "a31d5d02-611f-43b0-8b1a-4b1edc955e7e",
+        "recallType": "FIXED_TERM_RECALL_28",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2022-12-31"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 3
+          }
+        },
+        "sentencedAt": "2024-09-10",
+        "identifier": "cba768d1-aa99-4657-b896-c393adc68c60",
+        "consecutiveSentenceUUIDs": [
+          "a31d5d02-611f-43b0-8b1a-4b1edc955e7e"
+        ],
+        "recallType": "FIXED_TERM_RECALL_28",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2022-12-31"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 3
+          }
+        },
+        "sentencedAt": "2024-09-02",
+        "identifier": "a31d5d02-611f-43b0-8b1a-4b1edc955e8a",
+        "recallType": "FIXED_TERM_RECALL_28",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2022-12-31"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 2
+          }
+        },
+        "sentencedAt": "2024-09-02",
+        "identifier": "8c57082d-7a6c-4804-90c4-549029b5cef2",
+        "consecutiveSentenceUUIDs": [
+          "a31d5d02-611f-43b0-8b1a-4b1edc955e8a"
+        ],
+        "recallType": "FIXED_TERM_RECALL_28",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
     ],
-    "UNLAWFULLY_AT_LARGE": [
-      {
-        "appliesToSentencesFrom": "2024-12-02",
-        "numberOfDays": 5,
-        "fromDate": "2024-12-02",
-        "toDate": "2024-12-06"
-      }
-    ]
+    "adjustments": {
+      "UNLAWFULLY_AT_LARGE": [
+        {
+          "appliesToSentencesFrom": "2024-12-02",
+          "numberOfDays": 5,
+          "fromDate": "2024-12-02",
+          "toDate": "2024-12-06"
+        }
+      ],
+      "RECALL_REMAND": [
+        {
+          "appliesToSentencesFrom": "2024-04-18",
+          "numberOfDays": 15,
+          "fromDate": "2024-04-18",
+          "toDate": "2024-05-02"
+        }
+      ]
+    },
+    "returnToCustodyDate": "2024-12-07",
+    "bookingId": -1
   },
-  "returnToCustodyDate": "2024-12-07"
+  "expectedValidationException": "UNSUPPORTED_SDS40_RECALL_SENTENCE_TYPE",
+  "featureTogglesStr": "ftr48ManualJourney=false"
 }

@@ -1,36 +1,45 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2023-10-22"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 15
-        }
-      },
-      "sentencedAt": "2024-02-19"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "type": "ExtendedDeterminateSentence",
-      "offence": {
-        "committedAt": "2015-02-18"
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2023-10-22"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 15
+          }
+        },
+        "sentencedAt": "2024-02-19",
+        "identifier": "dbb26654-e268-4189-a109-48548287c4d9",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       },
-      "custodialDuration": {
-        "durationElements": {
-          "YEARS": 8
-        }
-      },
-      "extensionDuration": {
-        "durationElements": {
-          "YEARS": 5
-        }
-      },
-      "sentencedAt": "2024-02-19"
-    }
-  ]
+      {
+        "type": "ExtendedDeterminateSentence",
+        "offence": {
+          "committedAt": "2015-02-18"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "YEARS": 8
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "YEARS": 5
+          }
+        },
+        "sentencedAt": "2024-02-19",
+        "identifier": "c8b5435a-e83d-479e-aaa0-b11b2cc91b4c"
+      }
+    ],
+    "adjustments": {},
+    "bookingId": -1
+  },
+  "params": "sds-50"
 }

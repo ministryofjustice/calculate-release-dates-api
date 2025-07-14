@@ -1,29 +1,36 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "2005-05-09"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2022-06-21"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 8
-        }
-      },
-      "sentencedAt": "2022-10-27"
-    }
-  ],
-  "adjustments": {
-    "REMAND": [
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "2005-05-09"
+    },
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2022-10-27",
-        "numberOfDays": 62,
-        "fromDate": "2022-08-26",
-        "toDate": "2022-10-26"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2022-06-21"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 8
+          }
+        },
+        "sentencedAt": "2022-10-27",
+        "identifier": "e810d563-327c-4f53-89b9-955dfc128834",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
-    ]
-  }
+    ],
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2022-10-27",
+          "numberOfDays": 62,
+          "fromDate": "2022-08-26",
+          "toDate": "2022-10-26"
+        }
+      ]
+    },
+    "bookingId": -1
+  },
+  "params": "sds-50"
 }

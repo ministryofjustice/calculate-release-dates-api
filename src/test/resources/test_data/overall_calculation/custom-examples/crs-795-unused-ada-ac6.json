@@ -1,66 +1,81 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2020-10-04"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 5
-        }
-      },
-      "sentencedAt": "2020-10-05"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2020-11-06"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 8
-        }
-      },
-      "sentencedAt": "2020-11-07",
-      "identifier": "0b10fc4b-1920-4b74-96e0-d95369adb5e1"
-    },
-    {
-      "offence": {
-        "committedAt": "2020-12-08"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 6
-        }
-      },
-      "sentencedAt": "2020-12-09"
-    },
-    {
-      "offence": {
-        "committedAt": "2014-04-01"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 3
-        }
-      },
-      "sentencedAt": "2020-11-07",
-      "consecutiveSentenceUUIDs": [
-        "0b10fc4b-1920-4b74-96e0-d95369adb5e1"
-      ]
-    }
-  ],
-  "adjustments": {
-    "ADDITIONAL_DAYS_AWARDED": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2020-10-06",
-        "numberOfDays": 185,
-        "fromDate": "2020-10-06",
-        "toDate": "2021-04-07"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2020-10-04"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 5
+          }
+        },
+        "sentencedAt": "2020-10-05",
+        "identifier": "a8ca3639-b1d5-41fa-8b4b-55ed28fb333c",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2020-11-06"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 8
+          }
+        },
+        "sentencedAt": "2020-11-07",
+        "identifier": "0b10fc4b-1920-4b74-96e0-d95369adb5e1",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2020-12-08"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 6
+          }
+        },
+        "sentencedAt": "2020-12-09",
+        "identifier": "696609bd-12a1-4c57-a613-f9203e47ce18",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2014-04-01"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 3
+          }
+        },
+        "sentencedAt": "2020-11-07",
+        "identifier": "455c3d5a-4437-40fb-8ec0-88f39efc6e4b",
+        "consecutiveSentenceUUIDs": [
+          "0b10fc4b-1920-4b74-96e0-d95369adb5e1"
+        ],
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
-    ]
-  }
+    ],
+    "adjustments": {
+      "ADDITIONAL_DAYS_AWARDED": [
+        {
+          "appliesToSentencesFrom": "2020-10-06",
+          "numberOfDays": 185,
+          "fromDate": "2020-10-06",
+          "toDate": "2021-04-07"
+        }
+      ]
+    },
+    "bookingId": -1
+  },
+  "params": "sds-50"
 }

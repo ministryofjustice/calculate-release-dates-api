@@ -1,48 +1,59 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2019-09-19"
-      },
-      "duration": {
-        "durationElements": {
-          "DAYS": 876
-        }
-      },
-      "sentencedAt": "2020-01-03",
-      "recallType": "FIXED_TERM_RECALL_28"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2021-11-29"
-      },
-      "duration": {
-        "durationElements": {
-          "DAYS": 876
-        }
-      },
-      "sentencedAt": "2022-02-03"
-    }
-  ],
-  "adjustments": {
-    "RECALL_REMAND": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2020-01-03",
-        "numberOfDays": 3
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2019-09-19"
+        },
+        "duration": {
+          "durationElements": {
+            "DAYS": 876
+          }
+        },
+        "sentencedAt": "2020-01-03",
+        "identifier": "b08d6a64-3151-4b6e-b127-657f9b7e2696",
+        "recallType": "FIXED_TERM_RECALL_28",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2021-11-29"
+        },
+        "duration": {
+          "durationElements": {
+            "DAYS": 876
+          }
+        },
+        "sentencedAt": "2022-02-03",
+        "identifier": "b621fc24-487a-48bb-ba80-6fae595e76e8",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
     ],
-    "REMAND": [
-      {
-        "appliesToSentencesFrom": "2022-02-03",
-        "numberOfDays": 1,
-        "fromDate": "2022-01-06",
-        "toDate": "2022-01-06"
-      }
-    ]
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2022-02-03",
+          "numberOfDays": 1,
+          "fromDate": "2022-01-06",
+          "toDate": "2022-01-06"
+        }
+      ],
+      "RECALL_REMAND": [
+        {
+          "appliesToSentencesFrom": "2020-01-03",
+          "numberOfDays": 3
+        }
+      ]
+    },
+    "returnToCustodyDate": "2022-01-07",
+    "bookingId": -1
   },
-  "returnToCustodyDate": "2022-01-07"
+  "params": "sds-50",
+  "featureTogglesStr": "ftr48ManualJourney=false"
 }

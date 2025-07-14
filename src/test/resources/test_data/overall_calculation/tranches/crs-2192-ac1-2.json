@@ -1,36 +1,43 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2023-04-01",
-        "offenceCode": "ST19001"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 5
-        }
-      },
-      "sentencedAt": "2023-05-23",
-      "hasAnSDSEarlyReleaseExclusion": "DOMESTIC_ABUSE_T3"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2023-04-01",
-        "offenceCode": "TH68023"
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2023-04-01",
+          "offenceCode": "ST19001"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 5
+          }
+        },
+        "sentencedAt": "2023-05-23",
+        "identifier": "e3b65bdd-6bf3-444e-913a-61bfad29238a",
+        "hasAnSDSEarlyReleaseExclusion": "DOMESTIC_ABUSE_T3"
       },
-      "duration": {
-        "durationElements": {
-          "YEARS": 4,
-          "MONTHS": 6
-        }
-      },
-      "sentencedAt": "2023-05-23",
-      "hasAnSDSEarlyReleaseExclusion": "NO"
-    }
-  ],
-  "calculateErsed": false
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2023-04-01",
+          "offenceCode": "TH68023"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 4,
+            "MONTHS": 6
+          }
+        },
+        "sentencedAt": "2023-05-23",
+        "identifier": "bd867352-4405-45fb-a1ce-a554e04f3f7d",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      }
+    ],
+    "adjustments": {},
+    "bookingId": -1
+  }
 }

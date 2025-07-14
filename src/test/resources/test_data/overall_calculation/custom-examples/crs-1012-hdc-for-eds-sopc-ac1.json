@@ -1,46 +1,54 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "type": "SopcSentence",
-      "offence": {
-        "committedAt": "2022-04-28"
-      },
-      "custodialDuration": {
-        "durationElements": {
-          "YEARS": 1
-        }
-      },
-      "extensionDuration": {
-        "durationElements": {
-          "YEARS": 1
-        }
-      },
-      "sentencedAt": "2022-06-29"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2022-05-27"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 18
-        }
-      },
-      "sentencedAt": "2023-05-28"
-    }
-  ],
-  "adjustments": {
-    "REMAND": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2022-06-29",
-        "numberOfDays": 30,
-        "fromDate": "2022-05-30",
-        "toDate": "2022-06-28"
+        "type": "SopcSentence",
+        "offence": {
+          "committedAt": "2022-04-28"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "YEARS": 1
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "YEARS": 1
+          }
+        },
+        "sentencedAt": "2022-06-29",
+        "identifier": "ef5e0c93-f35a-453b-9eba-5f1f74dc8eff"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2022-05-27"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 18
+          }
+        },
+        "sentencedAt": "2023-05-28",
+        "identifier": "f7761593-90f0-4bf4-880f-a204c06e8480",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
-    ]
-  }
+    ],
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2022-06-29",
+          "numberOfDays": 30,
+          "fromDate": "2022-05-30",
+          "toDate": "2022-06-28"
+        }
+      ]
+    },
+    "bookingId": -1
+  },
+  "params": "sds-50"
 }

@@ -1,51 +1,64 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2021-12-23",
-        "offenceCode": "OF61014"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 18
-        }
-      },
-      "sentencedAt": "2022-03-14"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2021-12-23",
-        "offenceCode": "IC01003B"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 50
-        }
-      },
-      "sentencedAt": "2022-09-20"
-    }
-  ],
-  "adjustments": {
-    "REMAND": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2022-09-20",
-        "numberOfDays": 80,
-        "fromDate": "2021-12-24",
-        "toDate": "2022-03-13"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2021-12-23",
+          "offenceCode": "OF61014"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 18
+          }
+        },
+        "sentencedAt": "2022-03-14",
+        "identifier": "224805bf-404a-4eba-a08e-66b07141f04d",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2021-12-23",
+          "offenceCode": "IC01003B"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 50
+          }
+        },
+        "sentencedAt": "2022-09-20",
+        "identifier": "3a6bb80f-1fa0-488a-b9be-9955c8590f19",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
     ],
-    "ADDITIONAL_DAYS_AWARDED": [
-      {
-        "appliesToSentencesFrom": "2022-09-26",
-        "numberOfDays": 2,
-        "fromDate": "2022-09-26",
-        "toDate": "2022-09-27"
-      }
-    ]
+    "adjustments": {
+      "ADDITIONAL_DAYS_AWARDED": [
+        {
+          "appliesToSentencesFrom": "2022-09-26",
+          "numberOfDays": 2,
+          "fromDate": "2022-09-26",
+          "toDate": "2022-09-27"
+        }
+      ],
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2022-09-20",
+          "numberOfDays": 80,
+          "fromDate": "2021-12-24",
+          "toDate": "2022-03-13"
+        }
+      ]
+    },
+    "bookingId": -1
   },
-  "calculateErsed": true
+  "userInputs": {
+    "calculateErsed": true,
+    "useOffenceIndicators": true
+  },
+  "params": "sds-45"
 }

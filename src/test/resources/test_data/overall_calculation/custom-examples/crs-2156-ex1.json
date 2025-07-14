@@ -1,85 +1,100 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2022-08-08",
-        "offenceCode": "TH68037"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 30
-        }
-      },
-      "sentencedAt": "2023-07-27",
-      "recallType": "STANDARD_RECALL"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2022-12-10",
-        "offenceCode": "CD71040"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 1
-        }
-      },
-      "sentencedAt": "2023-07-27",
-      "recallType": "STANDARD_RECALL"
-    },
-    {
-      "offence": {
-        "committedAt": "2022-12-10",
-        "offenceCode": "TH68081"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 3
-        }
-      },
-      "sentencedAt": "2023-07-27",
-      "recallType": "STANDARD_RECALL"
-    },
-    {
-      "offence": {
-        "committedAt": "2024-05-30",
-        "offenceCode": "TH68037"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 6
-        }
-      },
-      "sentencedAt": "2024-10-07"
-    }
-  ],
-  "adjustments": {
-    "REMAND": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2024-10-07",
-        "numberOfDays": 6,
-        "fromDate": "2024-06-01",
-        "toDate": "2024-06-06"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2022-08-08",
+          "offenceCode": "TH68037"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 30
+          }
+        },
+        "sentencedAt": "2023-07-27",
+        "identifier": "54663f0e-388f-415d-989f-2d57b7f6c4fb",
+        "recallType": "STANDARD_RECALL",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2022-12-10",
+          "offenceCode": "CD71040"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 1
+          }
+        },
+        "sentencedAt": "2023-07-27",
+        "identifier": "c3b00569-b4eb-4bb4-8d68-a25e6c5ddd92",
+        "recallType": "STANDARD_RECALL",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2022-12-10",
+          "offenceCode": "TH68081"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 3
+          }
+        },
+        "sentencedAt": "2023-07-27",
+        "identifier": "ab2ba240-0be1-4ace-8a7d-4159f9cb18ba",
+        "recallType": "STANDARD_RECALL",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2024-05-30",
+          "offenceCode": "TH68037"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 6
+          }
+        },
+        "sentencedAt": "2024-10-07",
+        "identifier": "8043967e-2168-4d96-a284-689ece029a89",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
     ],
-    "RECALL_REMAND": [
-      {
-        "appliesToSentencesFrom": "2023-07-27",
-        "numberOfDays": 220,
-        "fromDate": "2022-12-19",
-        "toDate": "2023-07-26"
-      }
-    ],
-    "UNLAWFULLY_AT_LARGE": [
-      {
-        "appliesToSentencesFrom": "2024-04-13",
-        "numberOfDays": 3,
-        "fromDate": "2024-04-13",
-        "toDate": "2024-04-15"
-      }
-    ]
+    "adjustments": {
+      "UNLAWFULLY_AT_LARGE": [
+        {
+          "appliesToSentencesFrom": "2024-04-13",
+          "numberOfDays": 3,
+          "fromDate": "2024-04-13",
+          "toDate": "2024-04-15"
+        }
+      ],
+      "RECALL_REMAND": [
+        {
+          "appliesToSentencesFrom": "2023-07-27",
+          "numberOfDays": 220,
+          "fromDate": "2022-12-19",
+          "toDate": "2023-07-26"
+        }
+      ],
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2024-10-07",
+          "numberOfDays": 6,
+          "fromDate": "2024-06-01",
+          "toDate": "2024-06-06"
+        }
+      ]
+    },
+    "bookingId": -1
   }
 }

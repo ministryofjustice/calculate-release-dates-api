@@ -1,35 +1,47 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2020-03-28"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 8
-        }
-      },
-      "sentencedAt": "2020-04-01",
-      "identifier": "a31d5d02-611f-43b0-8b1a-4b1edc955e7e",
-      "isSDSPlus": true
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2020-03-28"
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2020-03-28"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 8
+          }
+        },
+        "sentencedAt": "2020-04-01",
+        "identifier": "a31d5d02-611f-43b0-8b1a-4b1edc955e7e",
+        "isSDSPlus": true,
+        "isSDSPlusEligibleSentenceTypeLengthAndOffence": true,
+        "isSDSPlusOffenceInPeriod": true,
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       },
-      "duration": {
-        "durationElements": {
-          "YEARS": 1
-        }
-      },
-      "sentencedAt": "2020-04-01",
-      "consecutiveSentenceUUIDs": [
-        "a31d5d02-611f-43b0-8b1a-4b1edc955e7e"
-      ]
-    }
-  ]
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2020-03-28"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 1
+          }
+        },
+        "sentencedAt": "2020-04-01",
+        "identifier": "331a0fd7-1804-438b-b867-f51b6554b2e7",
+        "consecutiveSentenceUUIDs": [
+          "a31d5d02-611f-43b0-8b1a-4b1edc955e7e"
+        ],
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      }
+    ],
+    "adjustments": {},
+    "bookingId": -1
+  },
+  "params": "sds-50"
 }

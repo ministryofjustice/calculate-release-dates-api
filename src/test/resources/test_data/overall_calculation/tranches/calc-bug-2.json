@@ -1,84 +1,86 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2019-01-22",
-        "offenceCode": "COML017"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 4
-        }
-      },
-      "sentencedAt": "2019-04-16",
-      "identifier": "d7449876-d80b-3769-916e-4a165431c6c3",
-      "recallType": "STANDARD_RECALL"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2019-01-22",
-        "offenceCode": "MD71231"
+    "sentences": [
+      {
+        "offence": {
+          "committedAt": "2019-01-22",
+          "offenceCode": "COML017"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 4
+          }
+        },
+        "sentencedAt": "2019-04-16",
+        "identifier": "d7449876-d80b-3769-916e-4a165431c6c3",
+        "recallType": "STANDARD_RECALL"
       },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 12
+      {
+        "offence": {
+          "committedAt": "2019-01-22",
+          "offenceCode": "MD71231"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 12
+          }
+        },
+        "sentencedAt": "2019-04-16",
+        "consecutiveSentenceUUIDs": [
+          "d7449876-d80b-3769-916e-4a165431c6c3"
+        ],
+        "recallType": "STANDARD_RECALL"
+      },
+      {
+        "offence": {
+          "committedAt": "2022-09-01",
+          "offenceCode": "CJ88144"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 8
+          }
+        },
+        "sentencedAt": "2023-04-27"
+      },
+      {
+        "offence": {
+          "committedAt": "2022-09-01",
+          "offenceCode": "MD71234"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 3
+          }
+        },
+        "sentencedAt": "2023-04-27"
+      }
+    ],
+    "adjustments": {
+      "RECALL_REMAND": [
+        {
+          "appliesToSentencesFrom": "2019-04-16",
+          "numberOfDays": 64
         }
-      },
-      "sentencedAt": "2019-04-16",
-      "consecutiveSentenceUUIDs": [
-        "d7449876-d80b-3769-916e-4a165431c6c3"
       ],
-      "recallType": "STANDARD_RECALL"
-    },
-    {
-      "offence": {
-        "committedAt": "2022-09-01",
-        "offenceCode": "CJ88144"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 8
+      "RECALL_TAGGED_BAIL": [
+        {
+          "appliesToSentencesFrom": "2019-04-16",
+          "numberOfDays": 110
         }
-      },
-      "sentencedAt": "2023-04-27"
-    },
-    {
-      "offence": {
-        "committedAt": "2022-09-01",
-        "offenceCode": "MD71234"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 3
+      ],
+      "UNLAWFULLY_AT_LARGE": [
+        {
+          "appliesToSentencesFrom": "2022-08-26",
+          "numberOfDays": 6,
+          "fromDate": "2022-08-26",
+          "toDate": "2022-08-31"
         }
-      },
-      "sentencedAt": "2023-04-27"
+      ]
     }
-  ],
-  "adjustments": {
-    "RECALL_REMAND": [
-      {
-        "appliesToSentencesFrom": "2019-04-16",
-        "numberOfDays": 64
-      }
-    ],
-    "RECALL_TAGGED_BAIL": [
-      {
-        "appliesToSentencesFrom": "2019-04-16",
-        "numberOfDays": 110
-      }
-    ],
-    "UNLAWFULLY_AT_LARGE": [
-      {
-        "appliesToSentencesFrom": "2022-08-26",
-        "numberOfDays": 6,
-        "fromDate": "2022-08-26",
-        "toDate": "2022-08-31"
-      }
-    ]
   }
 }

@@ -1,26 +1,32 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
+      {
+        "type": "ExtendedDeterminateSentence",
+        "offence": {
+          "committedAt": "2015-02-18"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "YEARS": 9
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "YEARS": 5
+          }
+        },
+        "automaticRelease": true,
+        "sentencedAt": "2015-03-06",
+        "identifier": "5d11c13e-06aa-4ff5-98b1-456eb446bcf3"
+      }
+    ],
+    "adjustments": {},
+    "bookingId": -1
   },
-  "sentences": [
-    {
-      "type": "ExtendedDeterminateSentence",
-      "offence": {
-        "committedAt": "2015-02-18"
-      },
-      "custodialDuration": {
-        "durationElements": {
-          "YEARS": 9
-        }
-      },
-      "extensionDuration": {
-        "durationElements": {
-          "YEARS": 5
-        }
-      },
-      "automaticRelease": true,
-      "sentencedAt": "2015-03-06"
-    }
-  ]
+  "params": "sds-50"
 }

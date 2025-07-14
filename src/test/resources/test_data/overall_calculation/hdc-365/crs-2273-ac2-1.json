@@ -1,59 +1,69 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2022-04-20",
-        "offenceCode": "TH68068"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 2,
-          "MONTHS": 6
-        }
-      },
-      "sentencedAt": "2025-04-15",
-      "identifier": "cb304745-d781-47d3-b931-4baa31551fc5"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2022-04-20",
-        "offenceCode": "TH68068"
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2022-04-20",
+          "offenceCode": "TH68068"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 2,
+            "MONTHS": 6
+          }
+        },
+        "sentencedAt": "2025-04-15",
+        "identifier": "cb304745-d781-47d3-b931-4baa31551fc5",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 9
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2022-04-20",
+          "offenceCode": "TH68068"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 9
+          }
+        },
+        "sentencedAt": "2025-07-17",
+        "identifier": "41533276-5785-408f-a007-3a6e307be10a",
+        "consecutiveSentenceUUIDs": [
+          "cb304745-d781-47d3-b931-4baa31551fc5"
+        ],
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      }
+    ],
+    "adjustments": {
+      "TAGGED_BAIL": [
+        {
+          "appliesToSentencesFrom": "2025-04-15",
+          "numberOfDays": 30
         }
-      },
-      "sentencedAt": "2025-07-17",
-      "consecutiveSentenceUUIDs": ["cb304745-d781-47d3-b931-4baa31551fc5"]
-    }
-  ],
-  "adjustments": {
-    "ADDITIONAL_DAYS_AWARDED": [
-      {
-        "appliesToSentencesFrom": "2025-06-05",
-        "numberOfDays": 20,
-        "fromDate": "2025-06-05",
-        "toDate": "2025-06-24"
-      }
-    ],
-    "RESTORATION_OF_ADDITIONAL_DAYS_AWARDED": [
-      {
-        "appliesToSentencesFrom": "2025-07-03",
-        "numberOfDays": 3,
-        "fromDate": "2025-07-03",
-        "toDate": "2025-07-05"
-      }
-    ],
-    "TAGGED_BAIL": [
-      {
-        "appliesToSentencesFrom": "2025-04-15",
-        "numberOfDays": 30
-      }
-    ]
+      ],
+      "RESTORATION_OF_ADDITIONAL_DAYS_AWARDED": [
+        {
+          "appliesToSentencesFrom": "2025-07-03",
+          "numberOfDays": 3,
+          "fromDate": "2025-07-03",
+          "toDate": "2025-07-05"
+        }
+      ],
+      "ADDITIONAL_DAYS_AWARDED": [
+        {
+          "appliesToSentencesFrom": "2025-06-05",
+          "numberOfDays": 20,
+          "fromDate": "2025-06-05",
+          "toDate": "2025-06-24"
+        }
+      ]
+    },
+    "bookingId": -1
   }
 }

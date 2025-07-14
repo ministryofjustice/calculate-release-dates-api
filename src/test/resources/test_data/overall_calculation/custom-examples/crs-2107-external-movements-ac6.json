@@ -1,96 +1,106 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2020-08-29",
-        "offenceCode": "MD71210"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 3
-        }
-      },
-      "sentencedAt": "2022-02-17",
-      "recallType": "FIXED_TERM_RECALL_28"
-    },{
-      "offence": {
-        "committedAt": "2020-08-29",
-        "offenceCode": "TH68030"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 14
-        }
-      },
-      "sentencedAt": "2023-08-02",
-      "recallType": "FIXED_TERM_RECALL_28"
-    }
-  ],
-  "adjustments": {
-    "RECALL_REMAND": [
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2022-02-17",
-        "numberOfDays": 8,
-        "fromDate": "2022-02-09",
-        "toDate": "2022-02-16"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2020-08-29",
+          "offenceCode": "MD71210"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 3
+          }
+        },
+        "sentencedAt": "2022-02-17",
+        "identifier": "51a0570d-3e87-4e80-bc15-40f82463075d",
+        "recallType": "FIXED_TERM_RECALL_28",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2020-08-29",
+          "offenceCode": "TH68030"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 14
+          }
+        },
+        "sentencedAt": "2023-08-02",
+        "identifier": "7d93a7f5-23f2-4bcd-a728-f24bb4e9d577",
+        "recallType": "FIXED_TERM_RECALL_28",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
     ],
-    "UNLAWFULLY_AT_LARGE": [
+    "adjustments": {
+      "UNLAWFULLY_AT_LARGE": [
+        {
+          "appliesToSentencesFrom": "2023-06-12",
+          "numberOfDays": 3,
+          "fromDate": "2023-06-12",
+          "toDate": "2023-06-14"
+        },
+        {
+          "appliesToSentencesFrom": "2024-08-07",
+          "numberOfDays": 8,
+          "fromDate": "2024-08-07",
+          "toDate": "2024-08-14"
+        }
+      ],
+      "RECALL_REMAND": [
+        {
+          "appliesToSentencesFrom": "2022-02-17",
+          "numberOfDays": 8,
+          "fromDate": "2022-02-09",
+          "toDate": "2022-02-16"
+        }
+      ]
+    },
+    "returnToCustodyDate": "2024-08-15",
+    "fixedTermRecallDetails": {
+      "bookingId": 1255289,
+      "returnToCustodyDate": "2024-08-15",
+      "recallLength": 28
+    },
+    "bookingId": -1,
+    "externalMovements": [
       {
-        "appliesToSentencesFrom": "2023-06-12",
-        "numberOfDays": 3,
-        "fromDate": "2023-06-12",
-        "toDate": "2023-06-14"
+        "movementDate": "2023-06-10",
+        "movementReason": "ECSL",
+        "direction": "OUT"
       },
       {
-        "appliesToSentencesFrom": "2024-08-07",
-        "numberOfDays": 8,
-        "fromDate": "2024-08-07",
-        "toDate": "2024-08-14"
+        "movementDate": "2023-06-15",
+        "movementReason": "ADMISSION",
+        "direction": "IN"
+      },
+      {
+        "movementDate": "2023-07-12",
+        "movementReason": "ECSL",
+        "direction": "OUT"
+      },
+      {
+        "movementDate": "2023-08-02",
+        "movementReason": "ADMISSION",
+        "direction": "IN"
+      },
+      {
+        "movementDate": "2024-03-02",
+        "movementReason": "CRD",
+        "direction": "OUT"
+      },
+      {
+        "movementDate": "2024-08-15",
+        "movementReason": "ADMISSION",
+        "direction": "IN"
       }
     ]
-
   },
-  "returnToCustodyDate": "2024-08-15",
-  "fixedTermRecallDetails": {
-    "bookingId": 1255289,
-    "returnToCustodyDate": "2024-08-15",
-    "recallLength": 28
-  },
-  "externalMovements": [
-    {
-      "movementDate": "2023-06-10",
-      "movementReason": "ECSL",
-      "direction": "OUT"
-    },
-    {
-      "movementDate": "2023-06-15",
-      "movementReason": "ADMISSION",
-      "direction": "IN"
-    },
-    {
-      "movementDate": "2023-07-12",
-      "movementReason": "ECSL",
-      "direction": "OUT"
-    },
-    {
-      "movementDate": "2023-08-02",
-      "movementReason": "ADMISSION",
-      "direction": "IN"
-    },
-    {
-      "movementDate": "2024-03-02",
-      "movementReason": "CRD",
-      "direction": "OUT"
-    },
-    {
-      "movementDate": "2024-08-15",
-      "movementReason": "ADMISSION",
-      "direction": "IN"
-    }
-  ]
+  "featureTogglesStr": "ftr48ManualJourney=false"
 }

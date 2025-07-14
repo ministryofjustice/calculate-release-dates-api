@@ -1,49 +1,58 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2021-09-12",
-        "offenceCode": "MD71230"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 2,
-          "MONTHS": 6
-        }
-      },
-      "sentencedAt": "2023-02-16",
-      "identifier": "b26081b5-2d29-3d5e-b49e-d9a773f4a04e"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2022-05-18",
-        "offenceCode": "MD71230"
-      },
-      "duration": {
-        "durationElements": {
-          "DAYS": 30,
-          "YEARS": 2,
-          "MONTHS": 5
-        }
-      },
-      "sentencedAt": "2023-02-16",
-      "consecutiveSentenceUUIDs": [
-        "b26081b5-2d29-3d5e-b49e-d9a773f4a04e"
-      ]
-    }
-  ],
-  "adjustments": {
-    "REMAND": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2023-02-16",
-        "numberOfDays": 273,
-        "fromDate": "2022-05-19",
-        "toDate": "2023-02-15"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2021-09-12",
+          "offenceCode": "MD71230"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 2,
+            "MONTHS": 6
+          }
+        },
+        "sentencedAt": "2023-02-16",
+        "identifier": "b26081b5-2d29-3d5e-b49e-d9a773f4a04e",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2022-05-18",
+          "offenceCode": "MD71230"
+        },
+        "duration": {
+          "durationElements": {
+            "DAYS": 30,
+            "YEARS": 2,
+            "MONTHS": 5
+          }
+        },
+        "sentencedAt": "2023-02-16",
+        "identifier": "f834dc74-3ad2-44a2-97f9-8c638e0e0958",
+        "consecutiveSentenceUUIDs": [
+          "b26081b5-2d29-3d5e-b49e-d9a773f4a04e"
+        ],
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
-    ]
-  }
+    ],
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2023-02-16",
+          "numberOfDays": 273,
+          "fromDate": "2022-05-19",
+          "toDate": "2023-02-15"
+        }
+      ]
+    },
+    "bookingId": -1
+  },
+  "assertSds40": true
 }

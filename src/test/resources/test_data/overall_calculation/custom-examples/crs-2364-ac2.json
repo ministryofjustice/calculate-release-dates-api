@@ -1,46 +1,51 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2021-09-15",
-        "offenceCode": "PL96003"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 3
-        }
-      },
-      "sentencedAt": "2023-11-10",
-      "identifier": "450cef06-7836-37ce-ba6d-5ca239142821",
-      "recallType": "STANDARD_RECALL"
-    }
-  ],
-  "adjustments": {
-    "UNLAWFULLY_AT_LARGE": [
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2024-11-12",
-        "numberOfDays": 5,
-        "fromDate": "2024-10-12",
-        "toDate": "2024-10-16"
-      },
-      {
-        "appliesToSentencesFrom": "2024-12-23",
-        "numberOfDays": 152,
-        "fromDate": "2024-12-23",
-        "toDate": "2025-05-23"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2021-09-15",
+          "offenceCode": "PL96003"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 3
+          }
+        },
+        "sentencedAt": "2023-11-10",
+        "identifier": "450cef06-7836-37ce-ba6d-5ca239142821",
+        "recallType": "STANDARD_RECALL",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
     ],
-    "RECALL_REMAND": [
-      {
-        "appliesToSentencesFrom": "2023-11-10",
-        "numberOfDays": 692,
-        "fromDate": "2021-12-18",
-        "toDate": "2023-11-09"
-      }
-    ]
+    "adjustments": {
+      "RECALL_REMAND": [
+        {
+          "appliesToSentencesFrom": "2023-11-10",
+          "numberOfDays": 692,
+          "fromDate": "2021-12-18",
+          "toDate": "2023-11-09"
+        }
+      ],
+      "UNLAWFULLY_AT_LARGE": [
+        {
+          "appliesToSentencesFrom": "2024-11-12",
+          "numberOfDays": 5,
+          "fromDate": "2024-10-12",
+          "toDate": "2024-10-16"
+        },
+        {
+          "appliesToSentencesFrom": "2024-12-23",
+          "numberOfDays": 152,
+          "fromDate": "2024-12-23",
+          "toDate": "2025-05-23"
+        }
+      ]
+    },
+    "bookingId": -1
   }
 }

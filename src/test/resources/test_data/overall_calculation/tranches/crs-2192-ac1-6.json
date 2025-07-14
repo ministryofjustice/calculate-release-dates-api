@@ -1,34 +1,40 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2023-04-01",
-        "offenceCode": "SE20005"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 3
-        }
-      },
-      "sentencedAt": "2023-07-03",
-      "hasAnSDSEarlyReleaseExclusion": "SEXUAL_T3",
-      "identifier": "4cf64448-e0bd-3d64-8863-305b91c56f9a",
-      "consecutiveSentenceUUIDs": []
-    }
-  ],
-  "adjustments": {
-    "UNLAWFULLY_AT_LARGE": [
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2024-04-03",
-        "numberOfDays": 100,
-        "fromDate": "2024-04-03",
-        "toDate": "2024-07-12"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2023-04-01",
+          "offenceCode": "SE20005"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 3
+          }
+        },
+        "sentencedAt": "2023-07-03",
+        "identifier": "4cf64448-e0bd-3d64-8863-305b91c56f9a",
+        "hasAnSDSEarlyReleaseExclusion": "SEXUAL_T3"
       }
-    ]
+    ],
+    "adjustments": {
+      "UNLAWFULLY_AT_LARGE": [
+        {
+          "appliesToSentencesFrom": "2024-04-03",
+          "numberOfDays": 100,
+          "fromDate": "2024-04-03",
+          "toDate": "2024-07-12"
+        }
+      ]
+    },
+    "bookingId": -1
   },
-  "calculateErsed": true
+  "userInputs": {
+    "calculateErsed": true,
+    "useOffenceIndicators": true
+  }
 }

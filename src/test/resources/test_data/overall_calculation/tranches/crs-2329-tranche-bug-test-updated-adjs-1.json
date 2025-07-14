@@ -1,126 +1,142 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "type": "ExtendedDeterminateSentence",
-      "offence": {
-        "committedAt": "2021-04-12",
-        "offenceCode": "FI68321"
-      },
-      "custodialDuration": {
-        "durationElements": {
-          "YEARS": 4
-        }
-      },
-      "extensionDuration": {
-        "durationElements": {
-          "YEARS": 3
-        }
-      },
-      "sentencedAt": "2021-10-20",
-      "identifier": "8fd83cfb-ee0e-3421-8bc7-ef154cb83045"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2021-02-28",
-        "offenceCode": "CJ88149"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 6
-        }
-      },
-      "sentencedAt": "2021-10-20"
-    },
-    {
-      "offence": {
-        "committedAt": "2022-04-16",
-        "offenceCode": "PU86003"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 16
-        }
-      },
-      "sentencedAt": "2024-11-27",
-      "consecutiveSentenceUUIDs": [
-        "8fd83cfb-ee0e-3421-8bc7-ef154cb83045"
-      ]
-    },
-    {
-      "offence": {
-        "committedAt": "2022-04-16",
-        "offenceCode": "CD71038"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 16
-        }
-      },
-      "sentencedAt": "2024-11-27"
-    },
-    {
-      "offence": {
-        "committedAt": "2022-08-21",
-        "offenceCode": "CD71015"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 8
-        }
-      },
-      "sentencedAt": "2024-11-27"
-    }
-  ],
-  "adjustments": {
-    "REMAND": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2021-10-20",
-        "numberOfDays": 189,
-        "fromDate": "2021-04-14",
-        "toDate": "2021-10-19"
+        "type": "ExtendedDeterminateSentence",
+        "offence": {
+          "committedAt": "2021-04-12",
+          "offenceCode": "FI68321"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "YEARS": 4
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "YEARS": 3
+          }
+        },
+        "sentencedAt": "2021-10-20",
+        "identifier": "8fd83cfb-ee0e-3421-8bc7-ef154cb83045"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2021-02-28",
+          "offenceCode": "CJ88149"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 6
+          }
+        },
+        "sentencedAt": "2021-10-20",
+        "identifier": "5cf7c640-5f28-4650-9f83-307d4e4d1bfe",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2022-04-16",
+          "offenceCode": "PU86003"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 16
+          }
+        },
+        "sentencedAt": "2024-11-27",
+        "identifier": "a834a3f5-73b2-461f-860a-8e3311e5815b",
+        "consecutiveSentenceUUIDs": [
+          "8fd83cfb-ee0e-3421-8bc7-ef154cb83045"
+        ],
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2022-04-16",
+          "offenceCode": "CD71038"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 16
+          }
+        },
+        "sentencedAt": "2024-11-27",
+        "identifier": "ec77c367-8fc0-4218-92e0-5f317b5b1bd4",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2022-08-21",
+          "offenceCode": "CD71015"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 8
+          }
+        },
+        "sentencedAt": "2024-11-27",
+        "identifier": "f987c831-7b3f-4ade-a8b6-b747e33a2819",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
     ],
-    "ADDITIONAL_DAYS_AWARDED": [
-      {
-        "appliesToSentencesFrom": "2023-03-07",
-        "numberOfDays": 24,
-        "fromDate": "2023-03-07",
-        "toDate": "2023-03-30"
-      },
-      {
-        "appliesToSentencesFrom": "2021-09-16",
-        "numberOfDays": 20,
-        "fromDate": "2021-09-16",
-        "toDate": "2021-10-05"
-      },
-      {
-        "appliesToSentencesFrom": "2021-07-26",
-        "numberOfDays": 14,
-        "fromDate": "2021-07-26",
-        "toDate": "2021-08-08"
-      },
-      {
-        "appliesToSentencesFrom": "2021-07-26",
-        "numberOfDays": 28,
-        "fromDate": "2021-07-26",
-        "toDate": "2021-08-22"
-      },
-      {
-        "appliesToSentencesFrom": "2021-09-16",
-        "numberOfDays": 20,
-        "fromDate": "2021-09-16",
-        "toDate": "2021-10-05"
-      },
-      {
-        "appliesToSentencesFrom": "2023-03-28",
-        "numberOfDays": 28,
-        "fromDate": "2023-03-28",
-        "toDate": "2023-04-24"
-      }
-    ]
-  }
+    "adjustments": {
+      "ADDITIONAL_DAYS_AWARDED": [
+        {
+          "appliesToSentencesFrom": "2023-03-07",
+          "numberOfDays": 24,
+          "fromDate": "2023-03-07",
+          "toDate": "2023-03-30"
+        },
+        {
+          "appliesToSentencesFrom": "2021-09-16",
+          "numberOfDays": 20,
+          "fromDate": "2021-09-16",
+          "toDate": "2021-10-05"
+        },
+        {
+          "appliesToSentencesFrom": "2021-07-26",
+          "numberOfDays": 14,
+          "fromDate": "2021-07-26",
+          "toDate": "2021-08-08"
+        },
+        {
+          "appliesToSentencesFrom": "2021-07-26",
+          "numberOfDays": 28,
+          "fromDate": "2021-07-26",
+          "toDate": "2021-08-22"
+        },
+        {
+          "appliesToSentencesFrom": "2021-09-16",
+          "numberOfDays": 20,
+          "fromDate": "2021-09-16",
+          "toDate": "2021-10-05"
+        },
+        {
+          "appliesToSentencesFrom": "2023-03-28",
+          "numberOfDays": 28,
+          "fromDate": "2023-03-28",
+          "toDate": "2023-04-24"
+        }
+      ],
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2021-10-20",
+          "numberOfDays": 189,
+          "fromDate": "2021-04-14",
+          "toDate": "2021-10-19"
+        }
+      ]
+    },
+    "bookingId": -1
+  },
+  "expectedValidationMessage": "TRUE"
 }

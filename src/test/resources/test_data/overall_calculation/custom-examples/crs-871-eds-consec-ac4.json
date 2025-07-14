@@ -1,58 +1,63 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "type": "ExtendedDeterminateSentence",
-      "offence": {
-        "committedAt": "2013-01-03"
-      },
-      "custodialDuration": {
-        "durationElements": {
-          "YEARS": 5
-        }
-      },
-      "extensionDuration": {
-        "durationElements": {
-          "YEARS": 2
-        }
-      },
-      "automaticRelease": true,
-      "sentencedAt": "2013-01-04",
-      "identifier": "e40f48b6-92df-49d0-af99-507194c380fa"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "type": "ExtendedDeterminateSentence",
-      "offence": {
-        "committedAt": "2013-01-03"
-      },
-      "custodialDuration": {
-        "durationElements": {
-          "YEARS": 6
-        }
-      },
-      "extensionDuration": {
-        "durationElements": {
-          "YEARS": 4
-        }
-      },
-      "automaticRelease": true,
-      "sentencedAt": "2013-01-04",
-      "consecutiveSentenceUUIDs": [
-        "e40f48b6-92df-49d0-af99-507194c380fa"
-      ]
-    }
-  ],
-  "adjustments": {
-    "REMAND": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2013-01-04",
-        "numberOfDays": 50,
-        "fromDate": "2012-12-10",
-        "toDate": "2013-01-03"
+        "type": "ExtendedDeterminateSentence",
+        "offence": {
+          "committedAt": "2013-01-03"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "YEARS": 5
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "YEARS": 2
+          }
+        },
+        "automaticRelease": true,
+        "sentencedAt": "2013-01-04",
+        "identifier": "e40f48b6-92df-49d0-af99-507194c380fa"
+      },
+      {
+        "type": "ExtendedDeterminateSentence",
+        "offence": {
+          "committedAt": "2013-01-03"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "YEARS": 6
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "YEARS": 4
+          }
+        },
+        "automaticRelease": true,
+        "sentencedAt": "2013-01-04",
+        "identifier": "04e12765-5040-484c-ae53-3b183e5a688f",
+        "consecutiveSentenceUUIDs": [
+          "e40f48b6-92df-49d0-af99-507194c380fa"
+        ]
       }
-    ]
-  }
+    ],
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2013-01-04",
+          "numberOfDays": 50,
+          "fromDate": "2012-12-10",
+          "toDate": "2013-01-03"
+        }
+      ]
+    },
+    "bookingId": -1
+  },
+  "params": "sds-50"
 }

@@ -1,31 +1,35 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "type": "DetentionAndTrainingOrderSentence",
-      "offence": {
-        "committedAt": "2023-06-29",
-        "offenceCode": "FA06001"
-      },
-      "duration": {
-        "durationElements": {
-          "WEEKS": 16
-        }
-      },
-      "sentencedAt": "2023-11-17"
-    }
-  ],
-  "adjustments": {
-    "ADDITIONAL_DAYS_AWARDED": [
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2024-10-09",
-        "numberOfDays": 20,
-        "fromDate": "2024-10-09",
-        "toDate": "2024-10-29"
+        "type": "DetentionAndTrainingOrderSentence",
+        "offence": {
+          "committedAt": "2023-06-29",
+          "offenceCode": "FA06001"
+        },
+        "duration": {
+          "durationElements": {
+            "WEEKS": 16
+          }
+        },
+        "sentencedAt": "2023-11-17",
+        "identifier": "2088146c-93f8-426a-bb44-bf748ad945a3"
       }
-    ]
+    ],
+    "adjustments": {
+      "ADDITIONAL_DAYS_AWARDED": [
+        {
+          "appliesToSentencesFrom": "2024-10-09",
+          "numberOfDays": 20,
+          "fromDate": "2024-10-09",
+          "toDate": "2024-10-29"
+        }
+      ]
+    },
+    "bookingId": -1
   }
 }

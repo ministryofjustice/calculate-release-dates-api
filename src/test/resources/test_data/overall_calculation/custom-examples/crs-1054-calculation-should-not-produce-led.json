@@ -1,54 +1,65 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2022-02-10"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 6
-        }
-      },
-      "sentencedAt": "2022-02-11"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2022-02-10"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 6
-        }
-      },
-      "sentencedAt": "2022-02-11",
-      "recallType": "STANDARD_RECALL"
-    },
-    {
-      "type": "AFineSentence",
-      "offence": {
-        "committedAt": "2021-06-25",
-        "offenceCode": "PR52044"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 6
-        }
-      },
-      "sentencedAt": "2022-07-19"
-    }
-  ],
-  "adjustments": {
-    "UNLAWFULLY_AT_LARGE": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2022-05-19",
-        "numberOfDays": 11,
-        "fromDate": "2022-05-19",
-        "toDate": "2022-05-29"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2022-02-10"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 6
+          }
+        },
+        "sentencedAt": "2022-02-11",
+        "identifier": "2ec016d2-8b25-4122-80cd-13feb6c280e6",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2022-02-10"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 6
+          }
+        },
+        "sentencedAt": "2022-02-11",
+        "identifier": "e6576b88-184b-49ee-9102-3033de9c3a3a",
+        "recallType": "STANDARD_RECALL",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "AFineSentence",
+        "offence": {
+          "committedAt": "2021-06-25",
+          "offenceCode": "PR52044"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 6
+          }
+        },
+        "sentencedAt": "2022-07-19",
+        "identifier": "b753d058-983a-413d-93d2-322e3a9162b1"
       }
-    ]
-  }
+    ],
+    "adjustments": {
+      "UNLAWFULLY_AT_LARGE": [
+        {
+          "appliesToSentencesFrom": "2022-05-19",
+          "numberOfDays": 11,
+          "fromDate": "2022-05-19",
+          "toDate": "2022-05-29"
+        }
+      ]
+    },
+    "bookingId": -1
+  },
+  "params": "sds-50"
 }

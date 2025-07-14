@@ -1,31 +1,41 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2024-02-20",
-        "offenceCode": "MD71531"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 20
-        }
-      },
-      "sentencedAt": "2024-04-04"
-    }
-  ],
-  "adjustments": {
-    "REMAND": [
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2024-04-04",
-        "numberOfDays": 43,
-        "fromDate": "2024-02-21",
-        "toDate": "2024-04-03"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2024-02-20",
+          "offenceCode": "MD71531"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 20
+          }
+        },
+        "sentencedAt": "2024-04-04",
+        "identifier": "9714a072-f5ae-48cd-a1aa-1904976dbcc9",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
-    ]
+    ],
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2024-04-04",
+          "numberOfDays": 43,
+          "fromDate": "2024-02-21",
+          "toDate": "2024-04-03"
+        }
+      ]
+    },
+    "bookingId": -1
   },
-  "calculateErsed": true
+  "userInputs": {
+    "calculateErsed": true,
+    "useOffenceIndicators": true
+  },
+  "params": "sds-45"
 }

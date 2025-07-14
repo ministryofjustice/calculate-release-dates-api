@@ -1,61 +1,71 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2021-12-12"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 2,
-          "MONTHS": 6
-        }
-      },
-      "sentencedAt": "2021-12-14"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2021-10-09"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 23
-        }
-      },
-      "sentencedAt": "2021-12-14"
-    }
-  ],
-  "adjustments": {
-    "ADDITIONAL_DAYS_AWARDED": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2021-12-21",
-        "numberOfDays": 16,
-        "fromDate": "2021-12-21",
-        "toDate": "2022-01-05"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2021-12-12"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 2,
+            "MONTHS": 6
+          }
+        },
+        "sentencedAt": "2021-12-14",
+        "identifier": "fac156c1-0a47-4d8b-9daa-cd4b64230291",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       },
       {
-        "appliesToSentencesFrom": "2022-02-04",
-        "numberOfDays": 18,
-        "fromDate": "2022-02-04",
-        "toDate": "2022-02-21"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2021-10-09"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 23
+          }
+        },
+        "sentencedAt": "2021-12-14",
+        "identifier": "b16441dd-b21e-4d6d-b271-76905721e6d2",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
     ],
-    "RESTORATION_OF_ADDITIONAL_DAYS_AWARDED": [
-      {
-        "appliesToSentencesFrom": "2022-01-08",
-        "numberOfDays": 3,
-        "fromDate": "2022-01-08",
-        "toDate": "2022-01-10"
-      },
-      {
-        "appliesToSentencesFrom": "2022-03-16",
-        "numberOfDays": 14,
-        "fromDate": "2022-03-16",
-        "toDate": "2022-03-29"
-      }
-    ]
-  }
+    "adjustments": {
+      "RESTORATION_OF_ADDITIONAL_DAYS_AWARDED": [
+        {
+          "appliesToSentencesFrom": "2022-01-08",
+          "numberOfDays": 3,
+          "fromDate": "2022-01-08",
+          "toDate": "2022-01-10"
+        },
+        {
+          "appliesToSentencesFrom": "2022-03-16",
+          "numberOfDays": 14,
+          "fromDate": "2022-03-16",
+          "toDate": "2022-03-29"
+        }
+      ],
+      "ADDITIONAL_DAYS_AWARDED": [
+        {
+          "appliesToSentencesFrom": "2021-12-21",
+          "numberOfDays": 16,
+          "fromDate": "2021-12-21",
+          "toDate": "2022-01-05"
+        },
+        {
+          "appliesToSentencesFrom": "2022-02-04",
+          "numberOfDays": 18,
+          "fromDate": "2022-02-04",
+          "toDate": "2022-02-21"
+        }
+      ]
+    },
+    "bookingId": -1
+  },
+  "params": "sds-50"
 }

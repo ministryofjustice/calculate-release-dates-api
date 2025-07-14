@@ -1,61 +1,80 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2022-08-10",
+          "offenceCode": "RT88076"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 21
+          }
+        },
+        "sentencedAt": "2024-02-21",
+        "identifier": "b5a4ffee-ca4b-37ac-99b0-55bf08e15a60",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2022-08-10",
+          "offenceCode": "TH68010"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 1
+          }
+        },
+        "sentencedAt": "2024-02-21",
+        "identifier": "60180481-3947-4035-92ba-1e0ef0ef2eb9",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2023-12-17",
+          "offenceCode": "TH68010"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 1
+          }
+        },
+        "sentencedAt": "2024-03-21",
+        "identifier": "de4039ad-5237-4af8-a225-78a2118afc35",
+        "consecutiveSentenceUUIDs": [
+          "b5a4ffee-ca4b-37ac-99b0-55bf08e15a60"
+        ],
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2024-01-23",
+          "offenceCode": "TH68010"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 1
+          }
+        },
+        "sentencedAt": "2024-03-21",
+        "identifier": "c7ec76a0-86d3-48b3-938c-b8c0a9c38df4",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      }
+    ],
+    "adjustments": {},
+    "bookingId": -1
   },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2022-08-10",
-        "offenceCode": "RT88076"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 21
-        }
-      },
-      "sentencedAt": "2024-02-21",
-      "identifier": "b5a4ffee-ca4b-37ac-99b0-55bf08e15a60"
-    },
-    {
-      "offence": {
-        "committedAt": "2022-08-10",
-        "offenceCode": "TH68010"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 1
-        }
-      },
-      "sentencedAt": "2024-02-21"
-    },
-    {
-      "offence": {
-        "committedAt": "2023-12-17",
-        "offenceCode": "TH68010"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 1
-        }
-      },
-      "sentencedAt": "2024-03-21",
-      "consecutiveSentenceUUIDs": [
-        "b5a4ffee-ca4b-37ac-99b0-55bf08e15a60"
-      ]
-    },
-    {
-      "offence": {
-        "committedAt": "2024-01-23",
-        "offenceCode": "TH68010"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 1
-        }
-      },
-      "sentencedAt": "2024-03-21"
-    }
-  ],
-  "calculateErsed": true
+  "userInputs": {
+    "calculateErsed": true,
+    "useOffenceIndicators": true
+  },
+  "params": "sds-45"
 }

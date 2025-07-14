@@ -1,46 +1,56 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2021-11-01"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 90
-        }
-      },
-      "sentencedAt": "2020-07-29"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2021-11-01"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 6
-        }
-      },
-      "sentencedAt": "2024-02-16"
-    }
-  ],
-  "adjustments": {
-    "REMAND": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2024-02-16",
-        "numberOfDays": 9,
-        "fromDate": "2024-02-06",
-        "toDate": "2024-02-15"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2021-11-01"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 90
+          }
+        },
+        "sentencedAt": "2020-07-29",
+        "identifier": "91498dae-7b63-48ee-ad6f-5569f5a281ad",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       },
       {
-        "appliesToSentencesFrom": "2020-07-29",
-        "numberOfDays": 83,
-        "fromDate": "2020-05-07",
-        "toDate": "2020-07-28"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2021-11-01"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 6
+          }
+        },
+        "sentencedAt": "2024-02-16",
+        "identifier": "3dde8923-d812-4ad8-b06f-faf2e5cf8a31",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
-    ]
-  }
+    ],
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2024-02-16",
+          "numberOfDays": 9,
+          "fromDate": "2024-02-06",
+          "toDate": "2024-02-15"
+        },
+        {
+          "appliesToSentencesFrom": "2020-07-29",
+          "numberOfDays": 83,
+          "fromDate": "2020-05-07",
+          "toDate": "2020-07-28"
+        }
+      ]
+    },
+    "bookingId": -1
+  },
+  "params": "sds-50"
 }

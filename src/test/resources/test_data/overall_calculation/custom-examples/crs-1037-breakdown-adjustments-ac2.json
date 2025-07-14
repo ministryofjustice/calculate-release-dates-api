@@ -1,50 +1,60 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
+      {
+        "type": "ExtendedDeterminateSentence",
+        "offence": {
+          "committedAt": "2020-09-10"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "YEARS": 2
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "YEARS": 1
+          }
+        },
+        "sentencedAt": "2020-09-11",
+        "identifier": "2b9ec65b-17ef-4329-b5c7-00f9f8cf8847"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2021-05-14"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 3,
+            "MONTHS": 3
+          }
+        },
+        "sentencedAt": "2021-05-15",
+        "identifier": "c0060d4a-96e7-4d31-be78-d00fe35a86ee",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "AFineSentence",
+        "offence": {
+          "committedAt": "2022-09-01"
+        },
+        "duration": {
+          "durationElements": {
+            "DAYS": 14
+          }
+        },
+        "sentencedAt": "2022-09-02",
+        "identifier": "76fc6300-3581-4d69-b886-314525ca7cf1",
+        "fineAmount": 4E+2
+      }
+    ],
+    "adjustments": {},
+    "bookingId": -1
   },
-  "sentences": [
-    {
-      "type": "ExtendedDeterminateSentence",
-      "offence": {
-        "committedAt": "2020-09-10"
-      },
-      "custodialDuration": {
-        "durationElements": {
-          "YEARS": 2
-        }
-      },
-      "extensionDuration": {
-        "durationElements": {
-          "YEARS": 1
-        }
-      },
-      "sentencedAt": "2020-09-11"
-    },
-    {
-      "offence": {
-        "committedAt": "2021-05-14"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 3,
-          "MONTHS": 3
-        }
-      },
-      "sentencedAt": "2021-05-15"
-    },
-    {
-      "type": "AFineSentence",
-      "offence": {
-        "committedAt": "2022-09-01"
-      },
-      "duration": {
-        "durationElements": {
-          "DAYS": 14
-        }
-      },
-      "sentencedAt": "2022-09-02",
-      "fineAmount": 4E+2
-    }
-  ]
+  "params": "sds-50"
 }

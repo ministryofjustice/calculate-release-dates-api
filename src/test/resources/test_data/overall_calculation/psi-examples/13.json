@@ -1,41 +1,48 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2015-03-17"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 20
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2015-03-17"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 20
+          }
+        },
+        "sentencedAt": "2015-03-17",
+        "identifier": "9b6a8914-1067-4f49-a5f3-5f2cc81398a5",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      }
+    ],
+    "adjustments": {
+      "UNLAWFULLY_AT_LARGE": [
+        {
+          "appliesToSentencesFrom": "2015-03-17",
+          "numberOfDays": 29
         }
-      },
-      "sentencedAt": "2015-03-17"
-    }
-  ],
-  "adjustments": {
-    "REMAND": [
-      {
-        "appliesToSentencesFrom": "2015-03-17",
-        "numberOfDays": 28,
-        "fromDate": "2015-02-16",
-        "toDate": "2015-03-16"
-      }
-    ],
-    "TAGGED_BAIL": [
-      {
-        "appliesToSentencesFrom": "2015-03-17",
-        "numberOfDays": 11
-      }
-    ],
-    "UNLAWFULLY_AT_LARGE": [
-      {
-        "appliesToSentencesFrom": "2015-03-17",
-        "numberOfDays": 29
-      }
-    ]
-  }
+      ],
+      "TAGGED_BAIL": [
+        {
+          "appliesToSentencesFrom": "2015-03-17",
+          "numberOfDays": 11
+        }
+      ],
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2015-03-17",
+          "numberOfDays": 28,
+          "fromDate": "2015-02-16",
+          "toDate": "2015-03-16"
+        }
+      ]
+    },
+    "bookingId": -1
+  },
+  "params": "sds-50"
 }

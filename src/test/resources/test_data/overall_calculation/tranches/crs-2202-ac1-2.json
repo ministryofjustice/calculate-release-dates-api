@@ -1,43 +1,48 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2024-04-03",
-        "offenceCode": "SE20006"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 2
-        }
-      },
-      "sentencedAt": "2023-04-03",
-      "identifier": "f3837ea1-7b3b-3d7a-8392-a5dc18354abf",
-      "consecutiveSentenceUUIDs": [],
-      "recallType": "STANDARD_RECALL",
-      "hasAnSDSEarlyReleaseExclusion": "SEXUAL_T3"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2024-04-03",
-        "offenceCode": "MD71446"
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2024-04-03",
+          "offenceCode": "SE20006"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 2
+          }
+        },
+        "sentencedAt": "2023-04-03",
+        "identifier": "f3837ea1-7b3b-3d7a-8392-a5dc18354abf",
+        "recallType": "STANDARD_RECALL",
+        "hasAnSDSEarlyReleaseExclusion": "SEXUAL_T3"
       },
-      "duration": {
-        "durationElements": {
-          "YEARS": 2
-        }
-      },
-      "sentencedAt": "2023-04-03",
-      "identifier": "6a35e7fd-13d3-324f-ab3b-37fa226d091b",
-      "consecutiveSentenceUUIDs": [
-        "f3837ea1-7b3b-3d7a-8392-a5dc18354abf"
-      ],
-      "recallType": "STANDARD_RECALL",
-      "hasAnSDSEarlyReleaseExclusion": "NO"
-    }
-  ],
-  "calculateErsed": false
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2024-04-03",
+          "offenceCode": "MD71446"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 2
+          }
+        },
+        "sentencedAt": "2023-04-03",
+        "identifier": "6a35e7fd-13d3-324f-ab3b-37fa226d091b",
+        "consecutiveSentenceUUIDs": [
+          "f3837ea1-7b3b-3d7a-8392-a5dc18354abf"
+        ],
+        "recallType": "STANDARD_RECALL",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      }
+    ],
+    "adjustments": {},
+    "bookingId": -1
+  },
+  "assertSds40": true
 }

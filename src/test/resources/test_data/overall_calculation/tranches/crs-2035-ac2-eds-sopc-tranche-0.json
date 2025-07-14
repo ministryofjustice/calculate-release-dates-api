@@ -1,43 +1,49 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "type": "ExtendedDeterminateSentence",
-      "offence": {
-        "committedAt": "2022-08-31"
-      },
-      "custodialDuration": {
-        "durationElements": {
-          "MONTHS": 48
-        }
-      },
-      "extensionDuration": {
-        "durationElements": {
-          "MONTHS": 24
-        }
-      },
-      "automaticRelease": true,
-      "sentencedAt": "2023-12-12"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "type": "SopcSentence",
-      "offence": {
-        "committedAt": "2023-08-02"
+    "sentences": [
+      {
+        "type": "ExtendedDeterminateSentence",
+        "offence": {
+          "committedAt": "2022-08-31"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "MONTHS": 48
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "MONTHS": 24
+          }
+        },
+        "automaticRelease": true,
+        "sentencedAt": "2023-12-12",
+        "identifier": "b8806d58-fad6-46ce-a848-03a79e93929a"
       },
-      "custodialDuration": {
-        "durationElements": {
-          "MONTHS": 36
-        }
-      },
-      "extensionDuration": {
-        "durationElements": {
-          "MONTHS": 12
-        }
-      },
-      "sentencedAt": "2023-12-12"
-    }
-  ]
+      {
+        "type": "SopcSentence",
+        "offence": {
+          "committedAt": "2023-08-02"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "MONTHS": 36
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "MONTHS": 12
+          }
+        },
+        "sentencedAt": "2023-12-12",
+        "identifier": "307d9e04-e33e-4827-a55c-cfb69c9bbe4c"
+      }
+    ],
+    "adjustments": {},
+    "bookingId": -1
+  }
 }

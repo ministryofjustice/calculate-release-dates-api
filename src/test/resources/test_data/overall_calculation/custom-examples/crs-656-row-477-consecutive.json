@@ -1,64 +1,73 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2018-10-01"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 1
-        }
-      },
-      "sentencedAt": "2021-03-01",
-      "identifier": "1a009aca-e295-310f-8508-8e918792064a"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2018-10-01"
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2018-10-01"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 1
+          }
+        },
+        "sentencedAt": "2021-03-01",
+        "identifier": "1a009aca-e295-310f-8508-8e918792064a",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       },
-      "duration": {
-        "durationElements": {
-          "YEARS": 2
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2018-10-01"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 2
+          }
+        },
+        "sentencedAt": "2021-03-01",
+        "identifier": "6878a036-97b0-4e58-ad34-a16dbe216751",
+        "consecutiveSentenceUUIDs": [
+          "1a009aca-e295-310f-8508-8e918792064a"
+        ],
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      }
+    ],
+    "adjustments": {
+      "RESTORATION_OF_ADDITIONAL_DAYS_AWARDED": [
+        {
+          "appliesToSentencesFrom": "2021-03-01"
         }
-      },
-      "sentencedAt": "2021-03-01",
-      "consecutiveSentenceUUIDs": [
-        "1a009aca-e295-310f-8508-8e918792064a"
+      ],
+      "ADDITIONAL_DAYS_AWARDED": [
+        {
+          "appliesToSentencesFrom": "2021-03-01"
+        }
+      ],
+      "UNLAWFULLY_AT_LARGE": [
+        {
+          "appliesToSentencesFrom": "2021-03-01"
+        }
+      ],
+      "TAGGED_BAIL": [
+        {
+          "appliesToSentencesFrom": "2021-03-01"
+        }
+      ],
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2021-03-01",
+          "numberOfDays": 174,
+          "fromDate": "2020-09-07",
+          "toDate": "2021-02-28"
+        }
       ]
-    }
-  ],
-  "adjustments": {
-    "REMAND": [
-      {
-        "appliesToSentencesFrom": "2021-03-01",
-        "numberOfDays": 174,
-        "fromDate": "2020-09-07",
-        "toDate": "2021-02-28"
-      }
-    ],
-    "TAGGED_BAIL": [
-      {
-        "appliesToSentencesFrom": "2021-03-01"
-      }
-    ],
-    "UNLAWFULLY_AT_LARGE": [
-      {
-        "appliesToSentencesFrom": "2021-03-01"
-      }
-    ],
-    "ADDITIONAL_DAYS_AWARDED": [
-      {
-        "appliesToSentencesFrom": "2021-03-01"
-      }
-    ],
-    "RESTORATION_OF_ADDITIONAL_DAYS_AWARDED": [
-      {
-        "appliesToSentencesFrom": "2021-03-01"
-      }
-    ]
-  }
+    },
+    "bookingId": -1
+  },
+  "params": "sds-50"
 }

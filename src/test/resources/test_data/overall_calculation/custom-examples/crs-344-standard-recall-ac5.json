@@ -1,62 +1,73 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2020-10-18"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 14
-        }
-      },
-      "sentencedAt": "2021-01-25",
-      "identifier": "1ad25047-585a-4750-ac44-9cd2cc7640a6",
-      "recallType": "STANDARD_RECALL"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2020-10-18"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 10
-        }
-      },
-      "sentencedAt": "2021-01-25",
-      "identifier": "c090d292-ddc3-4f8f-af56-ea61b6d725f7",
-      "consecutiveSentenceUUIDs": [
-        "1ad25047-585a-4750-ac44-9cd2cc7640a6"
-      ],
-      "recallType": "STANDARD_RECALL"
-    },
-    {
-      "offence": {
-        "committedAt": "2020-10-18"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 7
-        }
-      },
-      "sentencedAt": "2021-01-25",
-      "consecutiveSentenceUUIDs": [
-        "c090d292-ddc3-4f8f-af56-ea61b6d725f7"
-      ],
-      "recallType": "STANDARD_RECALL"
-    }
-  ],
-  "adjustments": {
-    "RECALL_REMAND": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2021-01-25",
-        "numberOfDays": 10,
-        "fromDate": "2021-01-24",
-        "toDate": "2021-01-15"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2020-10-18"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 14
+          }
+        },
+        "sentencedAt": "2021-01-25",
+        "identifier": "1ad25047-585a-4750-ac44-9cd2cc7640a6",
+        "recallType": "STANDARD_RECALL",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2020-10-18"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 10
+          }
+        },
+        "sentencedAt": "2021-01-25",
+        "identifier": "c090d292-ddc3-4f8f-af56-ea61b6d725f7",
+        "consecutiveSentenceUUIDs": [
+          "1ad25047-585a-4750-ac44-9cd2cc7640a6"
+        ],
+        "recallType": "STANDARD_RECALL",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2020-10-18"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 7
+          }
+        },
+        "sentencedAt": "2021-01-25",
+        "identifier": "14dcbffe-a71c-4f7b-84de-dce6d8832735",
+        "consecutiveSentenceUUIDs": [
+          "c090d292-ddc3-4f8f-af56-ea61b6d725f7"
+        ],
+        "recallType": "STANDARD_RECALL",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
-    ]
-  }
+    ],
+    "adjustments": {
+      "RECALL_REMAND": [
+        {
+          "appliesToSentencesFrom": "2021-01-25",
+          "numberOfDays": 10,
+          "fromDate": "2021-01-24",
+          "toDate": "2021-01-15"
+        }
+      ]
+    },
+    "bookingId": -1
+  },
+  "params": "sds-50"
 }

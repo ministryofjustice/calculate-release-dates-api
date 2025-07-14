@@ -1,47 +1,56 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "type": "ExtendedDeterminateSentence",
-      "offence": {
-        "committedAt": "2017-05-03"
-      },
-      "custodialDuration": {
-        "durationElements": {
-          "MONTHS": 10
-        }
-      },
-      "extensionDuration": {
-        "durationElements": {
-          "MONTHS": 12
-        }
-      },
-      "sentencedAt": "2023-08-11",
-      "identifier": "5dfde034-b7d7-4c54-a86c-67d42a1fd669"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "type": "ExtendedDeterminateSentence",
-      "offence": {
-        "committedAt": "2017-05-03"
+    "sentences": [
+      {
+        "type": "ExtendedDeterminateSentence",
+        "offence": {
+          "committedAt": "2017-05-03"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "MONTHS": 10
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "MONTHS": 12
+          }
+        },
+        "sentencedAt": "2023-08-11",
+        "identifier": "5dfde034-b7d7-4c54-a86c-67d42a1fd669"
       },
-      "custodialDuration": {
-        "durationElements": {
-          "MONTHS": 10
-        }
-      },
-      "extensionDuration": {
-        "durationElements": {
-          "MONTHS": 12
-        }
-      },
-      "sentencedAt": "2023-08-11",
-      "consecutiveSentenceUUIDs": [
-        "5dfde034-b7d7-4c54-a86c-67d42a1fd669"
-      ]
-    }
-  ],
-  "calculateErsed": true
+      {
+        "type": "ExtendedDeterminateSentence",
+        "offence": {
+          "committedAt": "2017-05-03"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "MONTHS": 10
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "MONTHS": 12
+          }
+        },
+        "sentencedAt": "2023-08-11",
+        "identifier": "980a8964-a5c4-45a4-9745-575611296d35",
+        "consecutiveSentenceUUIDs": [
+          "5dfde034-b7d7-4c54-a86c-67d42a1fd669"
+        ]
+      }
+    ],
+    "adjustments": {},
+    "bookingId": -1
+  },
+  "userInputs": {
+    "calculateErsed": true,
+    "useOffenceIndicators": true
+  },
+  "params": "sds-50"
 }

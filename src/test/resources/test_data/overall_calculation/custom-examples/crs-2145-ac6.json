@@ -1,33 +1,44 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2022-12-31"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 3
-        }
-      },
-      "sentencedAt": "2024-08-10",
-      "recallType": "FIXED_TERM_RECALL_14"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2022-12-31"
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2022-12-31"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 3
+          }
+        },
+        "sentencedAt": "2024-08-10",
+        "identifier": "66e6ca6e-6f94-488b-b7d0-4cb0b7bb2b4c",
+        "recallType": "FIXED_TERM_RECALL_14",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 7
-        }
-      },
-      "sentencedAt": "2024-09-24",
-      "recallType": "FIXED_TERM_RECALL_14"
-    }
-  ],
-  "returnToCustodyDate": "2024-12-14"
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2022-12-31"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 7
+          }
+        },
+        "sentencedAt": "2024-09-24",
+        "identifier": "44aa6c1d-eb3d-41bb-8f61-737c9a2a5866",
+        "recallType": "FIXED_TERM_RECALL_14",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      }
+    ],
+    "adjustments": {},
+    "returnToCustodyDate": "2024-12-14",
+    "bookingId": -1
+  },
+  "expectedValidationException": "UNSUPPORTED_SDS40_RECALL_SENTENCE_TYPE"
 }
