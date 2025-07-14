@@ -10,6 +10,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Calc
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffence
 import kotlin.collections.plusAssign
 
+
 @Service
 class ValidationService(
   private val preCalculationValidationService: PreCalculationValidationService,
@@ -23,52 +24,47 @@ class ValidationService(
 
   fun validateBeforeCalculation(
     sourceData: CalculationSourceData,
-    calculationUserInputs: CalculationUserInputs,
-    bulkCalcValidation: Boolean = false,
+    excludedValidationTypes: List<ValidationType>
   ): List<ValidationMessage> {
     log.info("Pre-calculation validation of source data")
+    val validationMessages = ValidationMessages(excludedValidationTypes = excludedValidationTypes)
     val sentencesAndOffences = sourceData.sentenceAndOffences
     val adjustments = sourceData.bookingAndSentenceAdjustments
 
     val sortedSentences = sentencesAndOffences.sortedWith(validationUtilities::sortByCaseNumberAndLineSequence)
 
-    val validateOffender = preCalculationValidationService.validateOffenderSupported(sourceData.prisonerDetails)
-    if (validateOffender.isNotEmpty()) {
-      return validateOffender
+    validationMessages.addAll(preCalculationValidationService.validateOffenderSupported(sourceData.prisonerDetails))
+    if (validationMessages.isNotEmpty()) {
+      return validationMessages.messages
     }
 
-    val hasSentencesValidationMessage = preCalculationValidationService.hasSentences(sortedSentences)
-    if (hasSentencesValidationMessage.isNotEmpty()) {
-      return hasSentencesValidationMessage
-    }
+    validationMessages.addAll(preCalculationValidationService.hasSentences(sortedSentences))
+    if (validationMessages.isNotEmpty()) {
+      return validationMessages.messages    }
 
-    val unsupportedValidationMessages = preCalculationValidationService.validateSupportedSentences(sortedSentences)
-    if (unsupportedValidationMessages.isNotEmpty()) {
-      return unsupportedValidationMessages
-    }
+      validationMessages.addAll(preCalculationValidationService.validateSupportedSentences(sortedSentences))
+    if (validationMessages.isNotEmpty()) {
+      return validationMessages.messages    }
 
-    val unsupportedCalculationMessages = preCalculationValidationService.validateUnsupportedCalculation(sourceData)
-    if (unsupportedCalculationMessages.isNotEmpty()) {
-      return unsupportedCalculationMessages
-    }
+      validationMessages.addAll(preCalculationValidationService.validateUnsupportedCalculation(sourceData))
+    if (validationMessages.isNotEmpty()) {
+      return validationMessages.messages    }
 
-    val unsupportedOffenceMessages = preCalculationValidationService.validateUnsupportedOffences(sentencesAndOffences)
-    if (unsupportedOffenceMessages.isNotEmpty()) {
-      return unsupportedOffenceMessages
-    }
+      validationMessages.addAll(preCalculationValidationService.validateUnsupportedOffences(sentencesAndOffences))
+    if (validationMessages.isNotEmpty()) {
+      return validationMessages.messages    }
 
-    val se20offenceViolations = preCalculationValidationService.validateSe20Offences(sourceData)
-    if (se20offenceViolations.isNotEmpty()) {
-      return se20offenceViolations
-    }
+      validationMessages.addAll(preCalculationValidationService.validateSe20Offences(sourceData))
+    if (validationMessages.isNotEmpty()) {
+      return validationMessages.messages    }
 
-    val validationMessages = sentenceValidationService.validateSentences(sortedSentences, bulkCalcValidation)
-    validationMessages += adjustmentValidationService.validateAdjustmentsBeforeCalculation(adjustments)
-    validationMessages += recallValidationService.validateFixedTermRecall(sourceData)
-    validationMessages += recallValidationService.validateRemandPeriodsAgainstSentenceDates(sourceData)
-    validationMessages += preCalculationValidationService.validatePrePcscDtoDoesNotHaveRemandOrTaggedBail(sourceData)
+      validationMessages.addAll(sentenceValidationService.validateSentences(sortedSentences))
+  validationMessages.addAll(adjustmentValidationService.validateAdjustmentsBeforeCalculation(adjustments))
+      validationMessages.addAll(recallValidationService.validateFixedTermRecall(sourceData))
+      validationMessages.addAll(recallValidationService.validateRemandPeriodsAgainstSentenceDates(sourceData))
+      validationMessages.addAll(preCalculationValidationService.validatePrePcscDtoDoesNotHaveRemandOrTaggedBail(sourceData))
 
-    return validationMessages
+    return validationMessages.messages
   }
 
   /*
@@ -77,30 +73,30 @@ class ValidationService(
   fun validateBookingAfterCalculation(
     calculationOutput: CalculationOutput,
     booking: Booking,
+    excludedValidationTypes: List<ValidationType>
   ): List<ValidationMessage> {
     log.info("Validating booking after calculation")
+    val validationMessages = ValidationMessages(excludedValidationTypes = excludedValidationTypes)
 
-    val messages = mutableListOf<ValidationMessage>()
+    calculationOutput.sentenceGroup.forEach { validationMessages.addAll(sentenceValidationService.validateSentenceHasNotBeenExtinguished(it)) }
+    validationMessages.addAll(adjustmentValidationService.validateRemandOverlappingSentences(calculationOutput, booking))
+    validationMessages.addAll(adjustmentValidationService.validateAdditionAdjustmentsInsideLatestReleaseDate(calculationOutput, booking))
+    validationMessages.addAll(recallValidationService.validateFixedTermRecallAfterCalc(calculationOutput, booking))
+    validationMessages.addAll(validateManualEntryJourneyRequirements(booking, calculationOutput))
 
-    calculationOutput.sentenceGroup.forEach { messages += sentenceValidationService.validateSentenceHasNotBeenExtinguished(it) }
-    messages += adjustmentValidationService.validateRemandOverlappingSentences(calculationOutput, booking)
-    messages += adjustmentValidationService.validateAdditionAdjustmentsInsideLatestReleaseDate(calculationOutput, booking)
-    messages += recallValidationService.validateFixedTermRecallAfterCalc(calculationOutput, booking)
-    messages += validateManualEntryJourneyRequirements(booking, calculationOutput)
-
-    return messages
+    return validationMessages.messages
   }
 
   fun validateManualEntryJourneyRequirements(
     booking: Booking,
     calculationOutput: CalculationOutput,
   ): List<ValidationMessage> {
-    val messages = mutableListOf<ValidationMessage>()
-    messages += recallValidationService.validateFtrFortyOverlap(calculationOutput.sentences)
-    messages += recallValidationService.validateUnsupportedRecallTypes(calculationOutput, booking)
-    messages += postCalculationValidationService.validateSDSImposedConsecBetweenTrancheDatesForTrancheTwoPrisoner(booking, calculationOutput)
-    messages += postCalculationValidationService.validateSHPOContainingSX03Offences(booking, calculationOutput)
-    return messages
+    val validationMessages = ValidationMessages(excludedValidationTypes = ValidationType.entries.filterNot { it.isUnsupported() })
+    validationMessages.addAll(recallValidationService.validateFtrFortyOverlap(calculationOutput.sentences))
+   validationMessages.addAll( recallValidationService.validateUnsupportedRecallTypes(calculationOutput, booking))
+    validationMessages.addAll(postCalculationValidationService.validateSDSImposedConsecBetweenTrancheDatesForTrancheTwoPrisoner(booking, calculationOutput))
+    validationMessages.addAll(postCalculationValidationService.validateSHPOContainingSX03Offences(booking, calculationOutput))
+    return validationMessages.messages
   }
 
   internal fun validateSupportedSentencesAndCalculations(sourceData: CalculationSourceData): SupportedValidationResponse {
@@ -113,10 +109,11 @@ class ValidationService(
     )
   }
 
-  fun validateBeforeCalculation(booking: Booking): List<ValidationMessage> {
-    val messages = mutableListOf<ValidationMessage>()
-    messages += recallValidationService.validateFixedTermRecall(booking)
-    return messages
+  fun validateBeforeCalculation(booking: Booking,
+                                excludedValidationTypes: List<ValidationType>): List<ValidationMessage> {
+    val validationMessages = ValidationMessages(excludedValidationTypes = excludedValidationTypes)
+    validationMessages.addAll(recallValidationService.validateFixedTermRecall(booking))
+    return validationMessages.messages
   }
 
   fun validateSentenceForManualEntry(sentences: List<SentenceAndOffence>): MutableList<ValidationMessage> = sentences.map { sentenceValidationService.validateSentenceForManualEntry(it) }.flatten().toMutableList()

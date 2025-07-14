@@ -50,6 +50,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.TrancheO
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessage
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationType
 import java.time.LocalDate
 import java.util.UUID
 
@@ -109,7 +110,7 @@ class CalculationTransactionalService(
 
   @Transactional(readOnly = true)
   fun fullValidationFromBookingData(booking: Booking, calculationUserInputs: CalculationUserInputs): List<ValidationMessage> {
-    val bookingValidationMessages = validationService.validateBeforeCalculation(booking)
+    val bookingValidationMessages = validationService.validateBeforeCalculation(booking, emptyList())
 
     if (bookingValidationMessages.isNotEmpty()) {
       return bookingValidationMessages
@@ -132,16 +133,17 @@ class CalculationTransactionalService(
     calculationType: CalculationStatus = PRELIMINARY,
     usernameOverride: String? = null,
   ): ValidationResult {
+    val excludedValidationTypes = listOf(ValidationType.CONCURRENT_CONSECUTIVE)
     var messages =
-      validationService.validateBeforeCalculation(providedSourceData, calculationUserInputs, bulkCalcValidation = true) // Validation stage 1 of 3
+      validationService.validateBeforeCalculation(providedSourceData, excludedValidationTypes) // Validation stage 1 of 3
     if (messages.isNotEmpty()) return ValidationResult(messages, null, null, null)
     // getBooking relies on the previous validation stage to have succeeded
     val booking = bookingService.getBooking(providedSourceData, calculationUserInputs)
-    messages = validationService.validateBeforeCalculation(booking) // Validation stage 2 of 4
+    messages = validationService.validateBeforeCalculation(booking, excludedValidationTypes) // Validation stage 2 of 4
     if (messages.isNotEmpty()) return ValidationResult(messages, null, null, null)
     val calculationOutput = calculationService.calculateReleaseDates(booking, calculationUserInputs) // Validation stage 3 of 4
     val calculationResult = calculationOutput.calculationResult
-    messages = validationService.validateBookingAfterCalculation(calculationOutput, booking) // Validation stage 4 of 4
+    messages = validationService.validateBookingAfterCalculation(calculationOutput, booking, excludedValidationTypes) // Validation stage 4 of 4
     if (messages.isNotEmpty()) return ValidationResult(messages, null, null, null)
 
     val calculatedReleaseDates = calculate(
@@ -256,9 +258,8 @@ class CalculationTransactionalService(
       throw PreconditionFailedException("The booking data used for the preliminary calculation has changed")
     }
 
-    val validationErrors = validationService.validateBeforeCalculation(sourceData, userInput)
-
-    if (validationErrors.any { !it.type.excludedInSave() }) {
+    val validationErrors = validationService.validateBeforeCalculation(sourceData, listOf(ValidationType.CONCURRENT_CONSECUTIVE))
+    if (validationErrors.isNotEmpty()) {
       throw CrdWebException(message = "The booking now fails validation", status = HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
