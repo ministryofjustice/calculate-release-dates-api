@@ -33,8 +33,7 @@
           "toDate": "2022-02-10"
         }
       ]
-    },
-    "bookingId": -1
+    }
   },
   "userInputs": {
     "calculateErsed": true,

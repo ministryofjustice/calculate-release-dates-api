@@ -61,8 +61,7 @@
     "fixedTermRecallDetails": {
       "returnToCustodyDate": "2025-07-10",
       "recallLength": 28
-    },
-    "bookingId": -1
+    }
   },
   "expectedValidationException": "FTR_TYPE_48_DAYS_OVERLAPPING_SENTENCE"
 }

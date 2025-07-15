@@ -29,8 +29,7 @@
           "toDate": "2015-02-15"
         }
       ]
-    },
-    "bookingId": -1
+    }
   },
   "error": "BreakdownChangedSinceLastCalculation",
   "params": "sds-50"

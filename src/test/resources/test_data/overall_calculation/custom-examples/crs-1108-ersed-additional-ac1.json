@@ -29,8 +29,7 @@
           "toDate": "2022-08-25"
         }
       ]
-    },
-    "bookingId": -1
+    }
   },
   "userInputs": {
     "calculateErsed": true,

@@ -34,8 +34,7 @@
         "fineAmount": 1.5E+3
       }
     ],
-    "adjustments": {},
-    "bookingId": -1
+    "adjustments": {}
   },
   "params": "sds-50"
 }

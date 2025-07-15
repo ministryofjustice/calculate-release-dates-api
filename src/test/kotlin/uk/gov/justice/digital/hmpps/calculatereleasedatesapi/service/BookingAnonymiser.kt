@@ -40,7 +40,7 @@ class BookingAnonymiser {
   }
 
   private fun anonymiseTestCase(example: String) {
-    val calculationFile = jsonTransformation.loadCalculationTestFile(example)
+    val calculationFile = jsonTransformation.loadCalculationTestFile("overall_calculation/$example")
     var sentences = calculationFile.booking.sentences.map {
       if (it is StandardDeterminateSentence) {
         return@map it.copy(

@@ -30,6 +30,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualEntrySe
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecordARecallResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmitCalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSentenceAndOffences
+import java.sql.Connection
 import java.sql.DriverManager
 
 /*
@@ -60,25 +61,33 @@ open class IntegrationTestBase internal constructor() {
   @Value("\${spring.datasource.password}")
   lateinit var dbPassword: String
 
+  open fun shouldResetDatabase() = true
+
+  var db: Connection? = null
+
   @BeforeEach
   fun clearDown() {
-    val db = if (pgContainer == null) {
-      DriverManager.getConnection(dbConnectionString, dbUsername, dbPassword)
-    } else {
-      DriverManager.getConnection(
-        pgContainer.jdbcUrl,
-        pgContainer.username,
-        pgContainer.password,
-      )
+    if (shouldResetDatabase()) {
+      if (db == null || db!!.isClosed) {
+        db = if (pgContainer == null) {
+          DriverManager.getConnection(dbConnectionString, dbUsername, dbPassword)
+        } else {
+          DriverManager.getConnection(
+            pgContainer.jdbcUrl,
+            pgContainer.username,
+            pgContainer.password,
+          )
+        }
+      }
+
+      val resetSql = javaClass.getResource("/test_data/reset-base-data.sql")
+        ?.readText() ?: error("Could not load reset-base-data.sql")
+
+      val baseDataSql = javaClass.getResource("/test_data/load-base-data.sql")
+        ?.readText() ?: error("Could not load load-base-data.sql")
+
+      db!!.use { conn -> conn.createStatement().use { stmt -> stmt.execute(resetSql + baseDataSql) } }
     }
-
-    val resetSql = javaClass.getResource("/test_data/reset-base-data.sql")
-      ?.readText() ?: error("Could not load reset-base-data.sql")
-
-    val baseDataSql = javaClass.getResource("/test_data/load-base-data.sql")
-      ?.readText() ?: error("Could not load load-base-data.sql")
-
-    db.use { conn -> conn.createStatement().use { stmt -> stmt.execute(resetSql + baseDataSql) } }
   }
 
   @Suppress("SpringJavaInjectionPointsAutowiringInspection")

@@ -71,8 +71,7 @@
         "hasAnSDSEarlyReleaseExclusion": "NO"
       }
     ],
-    "adjustments": {},
-    "bookingId": -1
+    "adjustments": {}
   },
   "assertSds40": true
 }

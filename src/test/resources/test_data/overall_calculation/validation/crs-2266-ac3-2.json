@@ -32,9 +32,10 @@
         }
       ]
     },
-    "returnToCustodyDate": "2025-01-15",
-    "bookingId": -1
+    "returnToCustodyDate": "2025-01-15"
   },
   "expectedValidationException": "UNABLE_TO_DETERMINE_SHPO_RELEASE_PROVISIONS",
-  "featureTogglesStr": "ftr48ManualJourney=false"
+  "featureToggles": {
+    "ftr48ManualJourney": false
+  }
 }

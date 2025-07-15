@@ -45,8 +45,7 @@
           "toDate": "2024-03-13"
         }
       ]
-    },
-    "bookingId": -1
+    }
   },
   "userInputs": {
     "calculateErsed": true,

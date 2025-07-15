@@ -72,7 +72,6 @@
       "bookingId": 1234567,
       "returnToCustodyDate": "2025-10-03",
       "recallLength": 14
-    },
-    "bookingId": -1
+    }
   }
 }

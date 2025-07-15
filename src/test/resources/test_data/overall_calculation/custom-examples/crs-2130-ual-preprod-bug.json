@@ -63,7 +63,6 @@
       "bookingId": 1,
       "returnToCustodyDate": "2024-09-01",
       "recallLength": 14
-    },
-    "bookingId": -1
+    }
   }
 }

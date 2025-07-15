@@ -1,43 +1,43 @@
 {
   "booking": {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2019-01-01"
-      },
-      "duration": {
-        "durationElements": {
-          "DAYS": 10
-        }
-      },
-      "sentencedAt": "2020-10-01"
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2019-01-01"
-      },
-      "duration": {
-        "durationElements": {
-          "DAYS": 10
-        }
-      },
-      "sentencedAt": "2020-10-02"
-    }
-  ],
-  "adjustments": {
-    "REMAND": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2020-10-01",
-        "numberOfDays": 20,
-        "fromDate": "2020-09-10",
-        "toDate": "2020-09-30"
+        "offence": {
+          "committedAt": "2019-01-01"
+        },
+        "duration": {
+          "durationElements": {
+            "DAYS": 10
+          }
+        },
+        "sentencedAt": "2020-10-01"
+      },
+      {
+        "offence": {
+          "committedAt": "2019-01-01"
+        },
+        "duration": {
+          "durationElements": {
+            "DAYS": 10
+          }
+        },
+        "sentencedAt": "2020-10-02"
       }
-    ]
-  }
-},
+    ],
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2020-10-01",
+          "numberOfDays": 20,
+          "fromDate": "2020-09-10",
+          "toDate": "2020-09-30"
+        }
+      ]
+    }
+  },
   "expectedValidationException": "CUSTODIAL_PERIOD_EXTINGUISHED_REMAND"
 }

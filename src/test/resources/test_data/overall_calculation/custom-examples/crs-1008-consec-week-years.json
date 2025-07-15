@@ -54,8 +54,7 @@
         "hasAnSDSEarlyReleaseExclusion": "NO"
       }
     ],
-    "adjustments": {},
-    "bookingId": -1
+    "adjustments": {}
   },
   "params": "sds-50"
 }

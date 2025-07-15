@@ -38,7 +38,7 @@ class JsonTransformation {
   }
 
   fun loadCalculationTestFile(testData: String): CalculationTestFile {
-    val json = getJsonTest("$testData.json", "overall_calculation")
+    val json = getJsonTest("$testData.json", "")
     return mapper.readValue(json, CalculationTestFile::class.java)
   }
 

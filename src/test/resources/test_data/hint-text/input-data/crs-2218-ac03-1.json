@@ -1,38 +1,29 @@
 {
-  "offender": {
-    "reference": "A9933EA",
-    "dateOfBirth": "2002-05-01",
-    "isActiveSexOffender": false
-  },
-  "bookingId": 1223131,
-  "sentences": [
-    {
-      "type": "StandardSentence",
-      "offence": {
-        "committedAt": "2024-04-01",
-        "offenceCode": "RP83187"
-      },
-      "duration": {
-        "durationElements": {
-          "DAYS": 0,
-          "WEEKS": 0,
-          "YEARS": 4,
-          "MONTHS": 0
-        }
-      },
-      "isSDSPlus": false,
-      "identifier": "16b87f09-f124-3e5e-b1ea-a065319683d0",
-      "recallType": null,
-      "sentencedAt": "2024-04-25",
-      "caseSequence": 1,
-      "lineSequence": 1,
-      "caseReference": null,
-      "consecutiveSentenceUUIDs": [],
-      "hasAnSDSEarlyReleaseExclusion": "NO"
-    }
-  ],
-  "adjustments": {},
-  "historicalTusedData": null,
-  "returnToCustodyDate": null,
-  "fixedTermRecallDetails": null
+  "booking": {
+    "offender": {
+      "reference": "A9933EA",
+      "dateOfBirth": "2002-05-01"
+    },
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2024-04-01",
+          "offenceCode": "RP83187"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 4
+          }
+        },
+        "sentencedAt": "2024-04-25",
+        "identifier": "16b87f09-f124-3e5e-b1ea-a065319683d0",
+        "caseSequence": 1,
+        "lineSequence": 1,
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      }
+    ],
+    "adjustments": {},
+    "bookingId": 1223131
+  }
 }

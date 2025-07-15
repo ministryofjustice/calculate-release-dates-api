@@ -30,8 +30,7 @@
           "toDate": "2000-04-30"
         }
       ]
-    },
-    "bookingId": -1
+    }
   },
   "expectedValidationException": "REMAND_OVERLAPS_WITH_SENTENCE"
 }

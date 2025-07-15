@@ -22,9 +22,10 @@
       }
     ],
     "adjustments": {},
-    "returnToCustodyDate": "2022-01-29",
-    "bookingId": -1
+    "returnToCustodyDate": "2022-01-29"
   },
   "params": "sds-50",
-  "featureTogglesStr": "ftr48ManualJourney=false"
+  "featureToggles": {
+    "ftr48ManualJourney": false
+  }
 }

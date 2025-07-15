@@ -60,8 +60,7 @@
         }
       ]
     },
-    "returnToCustodyDate": "2021-12-15",
-    "bookingId": -1
+    "returnToCustodyDate": "2021-12-15"
   },
   "params": "sds-50"
 }

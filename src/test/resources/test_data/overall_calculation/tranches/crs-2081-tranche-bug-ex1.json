@@ -125,8 +125,7 @@
       "bookingId": 1234567,
       "returnToCustodyDate": "2024-07-08",
       "recallLength": 28
-    },
-    "bookingId": -1
+    }
   },
   "assertSds40": true
 }
