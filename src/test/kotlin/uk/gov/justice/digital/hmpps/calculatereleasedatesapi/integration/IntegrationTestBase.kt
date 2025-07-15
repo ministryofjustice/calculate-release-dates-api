@@ -68,15 +68,13 @@ open class IntegrationTestBase internal constructor() {
   @BeforeEach
   fun clearDown() {
     if (shouldResetDatabase()) {
-      if (db == null || db!!.isClosed) {
-        db = if (pgContainer == null) {
-          DriverManager.getConnection(dbConnectionString, dbUsername, dbPassword)
-        } else {
-          DriverManager.getConnection(
-            pgContainer.jdbcUrl,
-            pgContainer.username,
-            pgContainer.password,
-          )
+      var tries = 0
+      while ((db == null || db!!.isClosed) && tries < 10) {
+        try {
+          setupDbConnection()
+        } catch (e: Exception) {
+          tries += 1
+          Thread.sleep(100)
         }
       }
 
@@ -87,6 +85,18 @@ open class IntegrationTestBase internal constructor() {
         ?.readText() ?: error("Could not load load-base-data.sql")
 
       db!!.use { conn -> conn.createStatement().use { stmt -> stmt.execute(resetSql + baseDataSql) } }
+    }
+  }
+
+  private fun setupDbConnection() {
+    db = if (pgContainer == null) {
+      DriverManager.getConnection(dbConnectionString, dbUsername, dbPassword)
+    } else {
+      DriverManager.getConnection(
+        pgContainer.jdbcUrl,
+        pgContainer.username,
+        pgContainer.password,
+      )
     }
   }
 
