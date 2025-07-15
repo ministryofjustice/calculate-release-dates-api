@@ -33,8 +33,7 @@
           "toDate": "2015-04-07"
         }
       ]
-    },
-    "bookingId": -1
+    }
   },
   "userInputs": {
     "calculateErsed": true,

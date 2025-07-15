@@ -1,66 +1,46 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01",
-    "isActiveSexOffender": false
-  },
-  "bookingId": 1224154,
-  "sentences": [
-    {
-      "type": "StandardSentence",
-      "offence": {
-        "committedAt": "2024-11-04",
-        "offenceCode": null
-      },
-      "duration": {
-        "durationElements": {
-          "DAYS": 0,
-          "WEEKS": 0,
-          "YEARS": 2,
-          "MONTHS": 9
-        }
-      },
-      "isSDSPlus": false,
-      "identifier": "5fc43459-1048-38c5-af91-4b37ed3bd56d",
-      "recallType": null,
-      "sentencedAt": "2024-11-05",
-      "caseSequence": 1,
-      "lineSequence": 1,
-      "caseReference": null,
-      "consecutiveSentenceUUIDs": [],
-      "isSDSPlusOffenceInPeriod": false,
-      "hasAnSDSEarlyReleaseExclusion": "NO",
-      "isSDSPlusEligibleSentenceTypeLengthAndOffence": false
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "type": "AFineSentence",
-      "offence": {
-        "committedAt": "2024-11-04",
-        "offenceCode": null
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2024-11-04"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 2,
+            "MONTHS": 9
+          }
+        },
+        "sentencedAt": "2024-11-05",
+        "identifier": "5fc43459-1048-38c5-af91-4b37ed3bd56d",
+        "caseSequence": 1,
+        "lineSequence": 1,
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       },
-      "duration": {
-        "durationElements": {
-          "DAYS": 0,
-          "WEEKS": 0,
-          "YEARS": 1,
-          "MONTHS": 2
-        }
-      },
-      "isSDSPlus": false,
-      "fineAmount": 500,
-      "identifier": "31365e4f-501b-3009-86ce-886ecee98bcf",
-      "recallType": null,
-      "sentencedAt": "2024-11-05",
-      "caseSequence": 1,
-      "lineSequence": 2,
-      "caseReference": null,
-      "consecutiveSentenceUUIDs": [],
-      "isSDSPlusOffenceInPeriod": false,
-      "isSDSPlusEligibleSentenceTypeLengthAndOffence": false
-    }
-  ],
-  "adjustments": {},
-  "historicalTusedData": null,
-  "returnToCustodyDate": null,
-  "fixedTermRecallDetails": null
+      {
+        "type": "AFineSentence",
+        "offence": {
+          "committedAt": "2024-11-04"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 1,
+            "MONTHS": 2
+          }
+        },
+        "sentencedAt": "2024-11-05",
+        "identifier": "31365e4f-501b-3009-86ce-886ecee98bcf",
+        "caseSequence": 1,
+        "lineSequence": 2,
+        "fineAmount": 500
+      }
+    ],
+    "adjustments": {},
+    "bookingId": 1224154
+  }
 }

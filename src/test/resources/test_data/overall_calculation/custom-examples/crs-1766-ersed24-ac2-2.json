@@ -46,8 +46,7 @@
           "toDate": "2017-05-02"
         }
       ]
-    },
-    "bookingId": -1
+    }
   },
   "userInputs": {
     "calculateErsed": true,

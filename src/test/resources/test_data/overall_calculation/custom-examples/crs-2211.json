@@ -62,8 +62,7 @@
           "toDate": "2024-09-05"
         }
       ]
-    },
-    "bookingId": -1
+    }
   },
   "expectedValidationException": "ADJUSTMENT_AFTER_RELEASE_ADA"
 }

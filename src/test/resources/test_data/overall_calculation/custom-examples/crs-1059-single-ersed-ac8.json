@@ -32,8 +32,7 @@
           "toDate": "2021-02-24"
         }
       ]
-    },
-    "bookingId": -1
+    }
   },
   "userInputs": {
     "calculateErsed": true,

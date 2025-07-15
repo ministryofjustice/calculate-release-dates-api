@@ -11,9 +11,6 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
-import org.junit.jupiter.params.ParameterizedTest
-import org.junit.jupiter.params.provider.Arguments
-import org.junit.jupiter.params.provider.MethodSource
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Captor
@@ -25,19 +22,10 @@ import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import org.skyscreamer.jsonassert.JSONAssert
-import org.skyscreamer.jsonassert.JSONCompareMode
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.ersedConfigurationForTests
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.hdcedConfigurationForTests
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.releasePointMultiplierConfigurationForTests
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.sdsEarlyReleaseTrancheOneDate
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.sdsEarlyReleaseTrancheThreeDate
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.sdsEarlyReleaseTrancheTwoDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.SDS40TrancheConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ApprovedDatesSubmission
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcome
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationReason
@@ -61,9 +49,9 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentsSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationFragments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOutput
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExternalSentenceId
@@ -95,39 +83,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.Calculat
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationReasonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.TrancheOutcomeRepository
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource.JsonTransformation
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.sentence.SentenceAdjustedCalculationService
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.sentence.SentenceCombinationService
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.sentence.SentenceIdentificationService
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.sentence.SentencesExtractionService
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.BookingTimelineService
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculator
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelinePostTrancheAdjustmentService
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers.TimelineAwardedAdjustmentCalculationHandler
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers.TimelineExternalAdmissionMovementCalculationHandler
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers.TimelineExternalReleaseMovementCalculationHandler
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers.TimelineSentenceCalculationHandler
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers.TimelineTrancheCalculationHandler
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers.TimelineTrancheThreeCalculationHandler
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers.TimelineUalAdjustmentCalculationHandler
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.AdjustmentValidationService
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.BotusValidationService
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.DateValidationService
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.DtoValidationService
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.EDSValidationService
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.FineValidationService
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.PostCalculationValidationService
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.PreCalculationValidationService
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.RecallValidationService
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.SOPCValidationService
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.Section91ValidationService
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.SentenceValidationService
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ToreraValidationService
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.UnsupportedValidationService
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessage
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationService
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationUtilities
-import java.io.File
 import java.time.LocalDate
 import java.time.Period
 import java.time.temporal.ChronoUnit.DAYS
@@ -136,17 +92,14 @@ import java.time.temporal.ChronoUnit.WEEKS
 import java.time.temporal.ChronoUnit.YEARS
 import java.util.Optional
 import java.util.UUID
-import java.util.stream.Stream
 
 @ExtendWith(MockitoExtension::class)
 class CalculationTransactionalServiceTest {
-  private val jsonTransformation = JsonTransformation()
   private val calculationRequestRepository = mock<CalculationRequestRepository>()
   private val calculationOutcomeRepository = mock<CalculationOutcomeRepository>()
   private val calculationReasonRepository = mock<CalculationReasonRepository>()
   private val calculationOutcomeHistoricOverrideRepository = mock<CalculationOutcomeHistoricOverrideRepository>()
   private val dominantHistoricDateService = DominantHistoricDateService()
-  private val manageOffencesService = mock<ManageOffencesService>()
   private val prisonService = mock<PrisonService>()
   private val calculationSourceDataService = mock<CalculationSourceDataService>()
   private val eventService = mock<EventService>()
@@ -157,7 +110,6 @@ class CalculationTransactionalServiceTest {
   private val nomisCommentService = mock<NomisCommentService>()
   private val bankHolidayService = mock<BankHolidayService>()
   private val trancheOutcomeRepository = mock<TrancheOutcomeRepository>()
-  private val fixedTermRecallsService = FixedTermRecallsService()
   private val calculationConfirmationService = CalculationConfirmationService(
     calculationRequestRepository,
     serviceUserService,
@@ -165,6 +117,26 @@ class CalculationTransactionalServiceTest {
     prisonService,
     eventService,
     approvedDatesSubmissionRepository,
+  )
+  private val sourceDataMapper = mock<SourceDataMapper>()
+  private val calculationService = mock<CalculationService>()
+  private val calculationTransactionalService = CalculationTransactionalService(
+    calculationRequestRepository,
+    calculationOutcomeRepository,
+    calculationReasonRepository,
+    calculationOutcomeHistoricOverrideRepository,
+    TestUtil.objectMapper(),
+    calculationSourceDataService,
+    sourceDataMapper,
+    calculationService,
+    bookingService,
+    validationService,
+    serviceUserService,
+    calculationConfirmationService,
+    dominantHistoricDateService,
+    TEST_BUILD_PROPERTIES,
+    trancheOutcomeRepository,
+    FeatureToggles(historicSled = true),
   )
 
   private val fakeSourceData = CalculationSourceData(
@@ -180,140 +152,8 @@ class CalculationTransactionalServiceTest {
     null,
   )
 
-  private fun defaultParams(params: String?): String {
-    if (params == null) {
-      return "calculation-params"
-    }
-    return params
-  }
-
   @Captor
   lateinit var updatedOffenderDatesArgumentCaptor: ArgumentCaptor<UpdateOffenderDates>
-
-  @ParameterizedTest
-  @MethodSource(value = ["testCaseSource"])
-  fun `Test Example`(
-    example: String,
-  ) {
-    log.info("Testing example $example")
-    whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST)
-    whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
-
-    val calculationTestFile = jsonTransformation.loadCalculationTestFile("$example")
-    val calculatedReleaseDates: CalculationOutput
-    val returnedValidationMessages: List<ValidationMessage>
-    try {
-      calculatedReleaseDates = calculationService(
-        defaultParams(calculationTestFile.params),
-        passedInServices = listOf(ValidationService::class.java.simpleName),
-      )
-        .calculateReleaseDates(calculationTestFile.booking, calculationTestFile.userInputs)
-      val sentencesExtractionService = SentencesExtractionService()
-      val trancheConfiguration = SDS40TrancheConfiguration(
-        sdsEarlyReleaseTrancheOneDate(defaultParams(calculationTestFile.params)),
-        sdsEarlyReleaseTrancheTwoDate(defaultParams(calculationTestFile.params)),
-        sdsEarlyReleaseTrancheThreeDate(defaultParams(calculationTestFile.params)),
-      )
-      val featureToggles = parseFeatureToggles(calculationTestFile.featureTogglesStr)
-      val myValidationService = getActiveValidationService(sentencesExtractionService, trancheConfiguration, featureToggles)
-
-      returnedValidationMessages = myValidationService.validateBookingAfterCalculation(
-        calculatedReleaseDates,
-        calculationTestFile.booking,
-      ).distinct()
-    } catch (e: Exception) {
-      if (!calculationTestFile.error.isNullOrEmpty()) {
-        assertEquals(calculationTestFile.error, e.javaClass.simpleName)
-        return
-      } else {
-        throw e
-      }
-    }
-    log.info(
-      "Example $example outcome BookingCalculation: {}",
-      TestUtil.objectMapper().writeValueAsString(calculatedReleaseDates),
-    )
-    if (calculationTestFile.expectedValidationException != null) {
-      val expectedExceptions = calculationTestFile.expectedValidationException.split("|")
-      assertThat(returnedValidationMessages).hasSize(expectedExceptions.size)
-      expectedExceptions.forEachIndexed { index, exception ->
-        assertThat(returnedValidationMessages[index].code.toString()).isEqualTo(exception)
-        calculationTestFile.expectedValidationMessage?.let { assertThat(returnedValidationMessages[index].message).isEqualTo(it) }
-      }
-    } else if (returnedValidationMessages.isNotEmpty()) {
-      fail("Validation messages were returned: $returnedValidationMessages")
-    } else {
-      val bookingData = jsonTransformation.loadCalculationResult("$example")
-      val result = bookingData.first
-      assertEquals(
-        result.dates.entries.sortedBy { it.key },
-        calculatedReleaseDates.calculationResult.dates.entries.sortedBy { it.key },
-      )
-      assertEquals(result.effectiveSentenceLength, calculatedReleaseDates.calculationResult.effectiveSentenceLength)
-      if (calculationTestFile.assertSds40 == true) {
-        assertEquals(result.affectedBySds40, calculatedReleaseDates.calculationResult.affectedBySds40)
-      }
-      if (bookingData.second.contains("sdsEarlyReleaseAllocatedTranche")) {
-        assertEquals(
-          result.sdsEarlyReleaseAllocatedTranche,
-          calculatedReleaseDates.calculationResult.sdsEarlyReleaseAllocatedTranche,
-        )
-        assertEquals(result.sdsEarlyReleaseTranche, calculatedReleaseDates.calculationResult.sdsEarlyReleaseTranche)
-      }
-    }
-  }
-
-  @ParameterizedTest
-  @MethodSource(value = ["breakdownTestCaseSource"])
-  fun `Test UX Example Breakdowns`(
-    example: String,
-  ) {
-    log.info("Testing example $example")
-    whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
-
-    val calculationTestFile = jsonTransformation.loadCalculationTestFile("$example")
-    val calculation = jsonTransformation.loadCalculationResult("$example").first
-
-    val calculationBreakdown: CalculationBreakdown?
-    try {
-      calculationBreakdown = calculationTransactionalService(defaultParams(calculationTestFile.params)).calculateWithBreakdown(
-        calculationTestFile.booking,
-        CalculatedReleaseDates(
-          calculation.dates,
-          -1,
-          -1,
-          "",
-          PRELIMINARY,
-          calculationReference = UUID.randomUUID(),
-          calculationReason = CALCULATION_REASON,
-          calculationDate = LocalDate.of(2024, 1, 1),
-        ),
-        calculationTestFile.userInputs,
-      )
-    } catch (e: Exception) {
-      if (!calculationTestFile.error.isNullOrEmpty()) {
-        assertEquals(calculationTestFile.error, e.javaClass.simpleName)
-        return
-      } else {
-        throw e
-      }
-    }
-    log.info(
-      "Example $example outcome CalculationBreakdown: {}",
-      TestUtil.objectMapper().writeValueAsString(calculationBreakdown),
-    )
-    val actualJson: String? = TestUtil.objectMapper().writeValueAsString(calculationBreakdown)
-    val expectedJson: String =
-      jsonTransformation.getJsonTest("$example.json", "calculation_breakdown_response")
-
-    JSONAssert.assertEquals(
-      expectedJson,
-      actualJson,
-      JSONCompareMode.LENIENT,
-    )
-
-    assertThat(calculationBreakdown).isEqualTo(jsonTransformation.loadCalculationBreakdown("$example"))
-  }
 
   @Test
   fun `Test fetching calculation results by requestId`() {
@@ -323,7 +163,7 @@ class CalculationTransactionalServiceTest {
       ),
     )
 
-    val bookingCalculation = calculationTransactionalService().findCalculationResults(CALCULATION_REQUEST_ID)
+    val bookingCalculation = calculationTransactionalService.findCalculationResults(CALCULATION_REQUEST_ID)
 
     assertEquals(
       bookingCalculation,
@@ -354,7 +194,7 @@ class CalculationTransactionalServiceTest {
     whenever(bookingService.getBooking(fakeSourceData, CalculationUserInputs())).thenReturn(BOOKING)
 
     val exception = assertThrows<PreconditionFailedException> {
-      calculationTransactionalService().validateAndConfirmCalculation(
+      calculationTransactionalService.validateAndConfirmCalculation(
         CALCULATION_REQUEST_ID,
         SubmitCalculationRequest(calculationFragments = CalculationFragments(""), approvedDates = null),
       )
@@ -383,7 +223,7 @@ class CalculationTransactionalServiceTest {
     whenever(bookingService.getBooking(fakeSourceData, CalculationUserInputs())).thenReturn(BOOKING)
 
     val exception = assertThrows<EntityNotFoundException> {
-      calculationTransactionalService().validateAndConfirmCalculation(
+      calculationTransactionalService.validateAndConfirmCalculation(
         CALCULATION_REQUEST_ID,
         SubmitCalculationRequest(calculationFragments = CalculationFragments(""), approvedDates = null),
       )
@@ -413,9 +253,10 @@ class CalculationTransactionalServiceTest {
         CALCULATION_REQUEST_WITH_OUTCOMES,
       ),
     )
+    whenever(calculationService.calculateReleaseDates(any(), any())).thenReturn(CALCULATION_OUTPUT)
 
     assertDoesNotThrow {
-      calculationTransactionalService().validateAndConfirmCalculation(
+      calculationTransactionalService.validateAndConfirmCalculation(
         CALCULATION_REQUEST_ID,
         SubmitCalculationRequest(calculationFragments = CalculationFragments(""), approvedDates = null),
       )
@@ -537,7 +378,7 @@ class CalculationTransactionalServiceTest {
         CALCULATION_OUTCOME_SLED,
       ),
     )
-    val calculationTransactionalService = calculationTransactionalService()
+    val calculationTransactionalService = calculationTransactionalService
     val expectedSled = LocalDate.of(2026, 2, 2)
     whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
     whenever(calculationRequestRepository.findByIdAndCalculationStatus(any(), any()))
@@ -607,6 +448,7 @@ class CalculationTransactionalServiceTest {
       submittedByUsername = USERNAME,
     )
     whenever(approvedDatesSubmissionRepository.save(any())).thenReturn(submission)
+    whenever(calculationService.calculateReleaseDates(any(), any())).thenReturn(CALCULATION_OUTPUT)
     val calculation = calculationTransactionalService.validateAndConfirmCalculation(
       CALCULATION_REQUEST_ID,
       SubmitCalculationRequest(
@@ -636,7 +478,7 @@ class CalculationTransactionalServiceTest {
         CALCULATION_OUTCOME_SLED,
       ),
     )
-    val calculationTransactionalService = calculationTransactionalService()
+    val calculationTransactionalService = calculationTransactionalService
     val expectedSled = LocalDate.of(2026, 2, 2)
     whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
     whenever(calculationRequestRepository.findByIdAndCalculationStatus(any(), any()))
@@ -713,6 +555,7 @@ class CalculationTransactionalServiceTest {
       submittedByUsername = USERNAME,
     )
     whenever(approvedDatesSubmissionRepository.save(any())).thenReturn(submission)
+    whenever(calculationService.calculateReleaseDates(any(), any())).thenReturn(CALCULATION_OUTPUT)
     val calculation = calculationTransactionalService.validateAndConfirmCalculation(
       CALCULATION_REQUEST_ID,
       SubmitCalculationRequest(
@@ -759,7 +602,8 @@ class CalculationTransactionalServiceTest {
       submittedByUsername = USERNAME,
     )
     whenever(approvedDatesSubmissionRepository.save(any())).thenReturn(submission)
-    calculationTransactionalService().validateAndConfirmCalculation(
+    whenever(calculationService.calculateReleaseDates(any(), any())).thenReturn(CALCULATION_OUTPUT)
+    calculationTransactionalService.validateAndConfirmCalculation(
       CALCULATION_REQUEST_ID,
       SubmitCalculationRequest(
         calculationFragments = CalculationFragments(""),
@@ -878,7 +722,7 @@ class CalculationTransactionalServiceTest {
     whenever(calculationSourceDataService.getCalculationSourceData(anyString(), eq(InactiveDataOptions.default()), eq(emptyList()))).thenReturn(SOURCE_DATA)
     whenever(bookingService.getBooking(eq(SOURCE_DATA), any())).thenReturn(BOOKING)
     assertThrows<CalculationDataHasChangedError> {
-      calculationTransactionalService().findCalculationResultsByCalculationReference(
+      calculationTransactionalService.findCalculationResultsByCalculationReference(
         UUID.randomUUID().toString(),
         true,
       )
@@ -892,246 +736,7 @@ class CalculationTransactionalServiceTest {
     Mockito.`when`(bankHolidayService.getBankHolidays()).thenReturn(cachedBankHolidays)
   }
 
-  private fun calculationTransactionalService(
-    params: String = "calculation-params",
-    passedInServices: List<String> = emptyList(),
-  ): CalculationTransactionalService = setupServices(params, passedInServices).first
-
-  private fun calculationService(
-    params: String = "calculation-params",
-    passedInServices: List<String> = emptyList(),
-  ): CalculationService = setupServices(params, passedInServices).second
-
-  private fun setupServices(
-    params: String = "calculation-params",
-    passedInServices: List<String> = emptyList(),
-  ): Pair<CalculationTransactionalService, CalculationService> {
-    val hdcedConfiguration =
-      hdcedConfigurationForTests() // HDCED and ERSED params not currently overridden in alt-calculation-params
-
-    val ersedConfiguration = ersedConfigurationForTests()
-    val releasePointMultipliersConfiguration = releasePointMultiplierConfigurationForTests(params)
-
-    val workingDayService = WorkingDayService(bankHolidayService)
-    val tusedCalculator = TusedCalculator(workingDayService)
-
-    val hdcedCalculator = HdcedCalculator(hdcedConfiguration)
-    val ersedCalculator = ErsedCalculator(ersedConfiguration)
-    val sentenceAdjustedCalculationService =
-      SentenceAdjustedCalculationService(tusedCalculator, hdcedCalculator, ersedCalculator)
-    val sentencesExtractionService = SentencesExtractionService()
-    val trancheConfiguration = SDS40TrancheConfiguration(
-      sdsEarlyReleaseTrancheOneDate(params),
-      sdsEarlyReleaseTrancheTwoDate(params),
-      sdsEarlyReleaseTrancheThreeDate(params),
-    )
-
-    val sentenceIdentificationService = SentenceIdentificationService(tusedCalculator, hdcedCalculator, trancheConfiguration)
-
-    val tranche = Tranche(trancheConfiguration)
-
-    val trancheAllocationService = TrancheAllocationService(tranche, trancheConfiguration)
-    val sdsEarlyReleaseDefaultingRulesService = SDSEarlyReleaseDefaultingRulesService(trancheConfiguration)
-    val sentenceCombinationService = SentenceCombinationService(
-      sentenceIdentificationService,
-    )
-
-    val hdcedExtractionService = HdcedExtractionService(
-      sentencesExtractionService,
-    )
-    val bookingExtractionService = BookingExtractionService(
-      hdcedExtractionService,
-      sentencesExtractionService,
-      fixedTermRecallsService,
-    )
-    val timelineCalculator = TimelineCalculator(
-      sentenceAdjustedCalculationService,
-      bookingExtractionService,
-    )
-    val timelineAwardedAdjustmentCalculationHandler = TimelineAwardedAdjustmentCalculationHandler(
-      trancheConfiguration,
-      releasePointMultipliersConfiguration,
-      timelineCalculator,
-    )
-    val timelineSentenceCalculationHandler = TimelineSentenceCalculationHandler(
-      trancheConfiguration,
-      releasePointMultipliersConfiguration,
-      timelineCalculator,
-      sentenceCombinationService,
-    )
-    val timelineTrancheCalculationHandler = TimelineTrancheCalculationHandler(
-      trancheConfiguration,
-      releasePointMultipliersConfiguration,
-      timelineCalculator,
-      trancheAllocationService,
-      sentencesExtractionService,
-    )
-    val timelineTrancheThreeCalculationHandler = TimelineTrancheThreeCalculationHandler(
-      trancheConfiguration,
-      releasePointMultipliersConfiguration,
-      timelineCalculator,
-    )
-    val timelineUalAdjustmentCalculationHandler = TimelineUalAdjustmentCalculationHandler(
-      trancheConfiguration,
-      releasePointMultipliersConfiguration,
-      timelineCalculator,
-    )
-    val timelineExternalReleaseMovementCalculationHandler = TimelineExternalReleaseMovementCalculationHandler(
-      trancheConfiguration,
-      releasePointMultipliersConfiguration,
-      timelineCalculator,
-      FeatureToggles(externalMovementsSds40 = true, externalMovementsAdjustmentSharing = true),
-    )
-    val timelineExternalAdmissionMovementCalculationHandler = TimelineExternalAdmissionMovementCalculationHandler(
-      trancheConfiguration,
-      releasePointMultipliersConfiguration,
-      timelineCalculator,
-    )
-    val timelinePostTrancheAdjustmentService = TimelinePostTrancheAdjustmentService()
-
-    val bookingTimelineService = BookingTimelineService(
-      workingDayService,
-      trancheConfiguration,
-      sdsEarlyReleaseDefaultingRulesService,
-      timelineCalculator,
-      timelineAwardedAdjustmentCalculationHandler,
-      timelineTrancheCalculationHandler,
-      timelineTrancheThreeCalculationHandler,
-      timelineSentenceCalculationHandler,
-      timelineUalAdjustmentCalculationHandler,
-      timelineExternalReleaseMovementCalculationHandler,
-      timelineExternalAdmissionMovementCalculationHandler,
-      timelinePostTrancheAdjustmentService,
-    )
-
-    val sourceDataMapper = SourceDataMapper(TestUtil.objectMapper())
-
-    val calculationService = CalculationService(
-      sentenceIdentificationService,
-      bookingTimelineService,
-    )
-
-    val validationServiceToUse = if (passedInServices.contains(ValidationService::class.java.simpleName)) {
-      getActiveValidationService(sentencesExtractionService, trancheConfiguration)
-    } else {
-      validationService
-    }
-
-    return CalculationTransactionalService(
-      calculationRequestRepository,
-      calculationOutcomeRepository,
-      calculationReasonRepository,
-      calculationOutcomeHistoricOverrideRepository,
-      TestUtil.objectMapper(),
-      calculationSourceDataService,
-      sourceDataMapper,
-      calculationService,
-      bookingService,
-      validationServiceToUse,
-      serviceUserService,
-      calculationConfirmationService,
-      dominantHistoricDateService,
-      TEST_BUILD_PROPERTIES,
-      trancheOutcomeRepository,
-      FeatureToggles(historicSled = true),
-    ) to calculationService
-  }
-
-  fun parseFeatureToggles(toggleStr: String?): FeatureToggles {
-    val defaults = FeatureToggles(ftr48ManualJourney = true)
-    if (toggleStr.isNullOrBlank()) return defaults
-
-    val toggleMap = toggleStr.split(';').associate {
-      val (key, value) = it.split('=').map(String::trim)
-      key to value.toBooleanStrict()
-    }
-
-    return FeatureToggles(
-      supportInactiveSentencesAndAdjustments = toggleMap[FeatureToggles::supportInactiveSentencesAndAdjustments.name] ?: defaults.supportInactiveSentencesAndAdjustments,
-      useAdjustmentsApi = toggleMap[FeatureToggles::useAdjustmentsApi.name] ?: defaults.useAdjustmentsApi,
-      concurrentConsecutiveSentencesEnabled = toggleMap[FeatureToggles::concurrentConsecutiveSentencesEnabled.name] ?: defaults.concurrentConsecutiveSentencesEnabled,
-      externalMovementsSds40 = toggleMap[FeatureToggles::externalMovementsSds40.name] ?: defaults.externalMovementsSds40,
-      externalMovementsAdjustmentSharing = toggleMap[FeatureToggles::externalMovementsAdjustmentSharing.name] ?: defaults.externalMovementsAdjustmentSharing,
-      historicSled = toggleMap[FeatureToggles::historicSled.name] ?: defaults.historicSled,
-      ftr48ManualJourney = toggleMap[FeatureToggles::ftr48ManualJourney.name] ?: defaults.ftr48ManualJourney,
-    )
-  }
-
-  private fun getActiveValidationService(
-    sentencesExtractionService: SentencesExtractionService,
-    trancheConfiguration: SDS40TrancheConfiguration,
-    featureToggles: FeatureToggles = FeatureToggles(),
-  ): ValidationService {
-    val validationUtilities = ValidationUtilities()
-    val fineValidationService = FineValidationService(validationUtilities)
-    val adjustmentValidationService = AdjustmentValidationService()
-    val dtoValidationService = DtoValidationService()
-    val botusValidationService = BotusValidationService(featureToggles)
-    val recallValidationService = RecallValidationService(trancheConfiguration, validationUtilities, featureToggles)
-    val unsupportedValidationService = UnsupportedValidationService()
-    val postCalculationValidationService = PostCalculationValidationService(trancheConfiguration)
-    val section91ValidationService = Section91ValidationService(validationUtilities)
-    val sopcValidationService = SOPCValidationService(validationUtilities)
-    val edsValidationService = EDSValidationService(validationUtilities)
-    val toreraValidationService = ToreraValidationService(manageOffencesService)
-    val dateValidationService = DateValidationService()
-    val sentenceValidationService = SentenceValidationService(
-      validationUtilities,
-      sentencesExtractionService,
-      section91ValidationService = section91ValidationService,
-      sopcValidationService = sopcValidationService,
-      fineValidationService,
-      edsValidationService = edsValidationService,
-      featuresToggles = featureToggles,
-    )
-    val preCalculationValidationService = PreCalculationValidationService(
-      featureToggles = featureToggles,
-      fineValidationService = fineValidationService,
-      adjustmentValidationService = adjustmentValidationService,
-      dtoValidationService = dtoValidationService,
-      botusValidationService = botusValidationService,
-      unsupportedValidationService = unsupportedValidationService,
-      toreraValidationService = toreraValidationService,
-    )
-
-    return ValidationService(
-      preCalculationValidationService = preCalculationValidationService,
-      adjustmentValidationService = adjustmentValidationService,
-      recallValidationService = recallValidationService,
-      sentenceValidationService = sentenceValidationService,
-      validationUtilities = validationUtilities,
-      postCalculationValidationService = postCalculationValidationService,
-      dateValidationService = dateValidationService,
-    )
-  }
-
   companion object {
-    @JvmStatic
-    fun testCaseSource(): Stream<Arguments> {
-      val excluded = listOf("custom-examples/different-calclulation-from-stored")
-      val dir = File(object {}.javaClass.getResource("/test_data/overall_calculation").file)
-      return getTestCasesFromDir(dir, excluded)
-    }
-
-    @JvmStatic
-    fun breakdownTestCaseSource(): Stream<Arguments> {
-      val dir = File(object {}.javaClass.getResource("/test_data/calculation_breakdown_response").file)
-      return getTestCasesFromDir(dir, listOf())
-    }
-
-    private fun getTestCasesFromDir(dir: File, excluded: List<String>): Stream<Arguments> {
-      val args = mutableListOf<String>()
-      JsonTransformation().doAllInDir(
-        dir,
-      ) {
-        val arg = it.path.replace(dir.path + "/", "").replace(".json", "")
-        if (!excluded.contains(arg)) {
-          args.add(arg)
-        }
-      }
-      return args.stream().map { Arguments.of(it) }
-    }
-
     private val originalSentence = PrisonApiSentenceAndOffences(
       bookingId = 1L,
       sentenceSequence = 3,
@@ -1281,6 +886,20 @@ class CalculationTransactionalServiceTest {
         sentenceLength = "11/00/00",
       ),
       noDates = false,
+    )
+
+    val CALCULATION_OUTPUT = CalculationOutput(
+      emptyList(),
+      emptyList(),
+      CalculationResult(
+        effectiveSentenceLength = Period.of(1, 0, 0),
+        dates = mapOf(
+          SLED to LocalDate.of(2026, 2, 2),
+          CRD to LocalDate.of(2023, 8, 4),
+          HDCED to LocalDate.of(2023, 2, 6),
+          ESED to LocalDate.of(2026, 2, 2),
+        ),
+      ),
     )
 
     private val OFFENDER = Offender(PRISONER_ID, LocalDate.of(1980, 1, 1))

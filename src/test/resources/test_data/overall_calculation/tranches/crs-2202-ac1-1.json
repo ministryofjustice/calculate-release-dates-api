@@ -31,8 +31,7 @@
           "toDate": "2024-06-22"
         }
       ]
-    },
-    "bookingId": -1
+    }
   },
   "expectedValidationException": "UNSUPPORTED_SDS40_RECALL_SENTENCE_TYPE"
 }

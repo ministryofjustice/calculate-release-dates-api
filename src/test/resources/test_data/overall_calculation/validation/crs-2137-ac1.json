@@ -44,8 +44,7 @@
       "bookingId": 1,
       "returnToCustodyDate": "2024-06-11",
       "recallLength": 14
-    },
-    "bookingId": -1
+    }
   },
   "expectedValidationException": "FTR_TYPE_14_DAYS_SENTENCE_GT_12_MONTHS"
 }

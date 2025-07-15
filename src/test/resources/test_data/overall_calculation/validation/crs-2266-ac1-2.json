@@ -38,8 +38,7 @@
         "hasAnSDSEarlyReleaseExclusion": "SEXUAL"
       }
     ],
-    "adjustments": {},
-    "bookingId": -1
+    "adjustments": {}
   },
   "expectedValidationException": "UNABLE_TO_DETERMINE_SHPO_RELEASE_PROVISIONS"
 }

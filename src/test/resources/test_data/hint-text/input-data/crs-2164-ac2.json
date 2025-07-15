@@ -1,37 +1,40 @@
 {
-  "offender": {
-    "reference": "ABC123D",
-    "dateOfBirth": "1970-03-03"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2024-06-01"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 12
-        }
-      },
-      "sentencedAt": "2024-06-28",
-      "isSDSPlus": false,
-      "hasAnSDSEarlyReleaseExclusion": "TERRORISM"
-    }
-  ],
-  "adjustments": {
-    "REMAND": [
+  "booking": {
+    "offender": {
+      "reference": "ABC123D",
+      "dateOfBirth": "1970-03-03"
+    },
+    "sentences": [
       {
-        "numberOfDays": 100,
-        "appliesToSentencesFrom": "2024-06-28",
-        "fromDate": "2024-03-20"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2024-06-01"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 12
+          }
+        },
+        "sentencedAt": "2024-06-28",
+        "identifier": "c683f357-0652-4f0c-a3f0-353fad6b3aff",
+        "hasAnSDSEarlyReleaseExclusion": "TERRORISM"
       }
     ],
-    "ADDITIONAL_DAYS_AWARDED": [
-      {
-        "numberOfDays": 3,
-        "appliesToSentencesFrom": "2024-06-28",
-        "fromDate": "2024-10-18"
-      }
-    ]
+    "adjustments": {
+      "ADDITIONAL_DAYS_AWARDED": [
+        {
+          "appliesToSentencesFrom": "2024-06-28",
+          "numberOfDays": 3,
+          "fromDate": "2024-10-18"
+        }
+      ],
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2024-06-28",
+          "numberOfDays": 100,
+          "fromDate": "2024-03-20"
+        }
+      ]
+    }
   }
 }

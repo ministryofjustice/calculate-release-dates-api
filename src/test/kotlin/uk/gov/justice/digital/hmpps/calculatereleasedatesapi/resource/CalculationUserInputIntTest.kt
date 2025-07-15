@@ -23,7 +23,7 @@ class CalculationUserInputIntTest : IntegrationTestBase() {
   lateinit var calculationRequestRepository: CalculationRequestRepository
 
   @Test
-  @Transactional(readOnly = true)
+  @Transactional
   fun `User input is kept for view journey even though calculation questions have been deprecated`() {
     val userInput = CalculationUserInputs(
       calculateErsed = true,
@@ -89,7 +89,7 @@ class CalculationUserInputIntTest : IntegrationTestBase() {
   }
 
   @Test
-  @Transactional(readOnly = true)
+  @Transactional
   fun `Use a user input that is the same as NOMIS`() {
     val userInput = CalculationUserInputs(
       calculateErsed = false,
@@ -130,7 +130,7 @@ class CalculationUserInputIntTest : IntegrationTestBase() {
   }
 
   @Test
-  @Transactional(readOnly = true)
+  @Transactional
   fun `Use NOMIS markers rather than user input`() {
     val userInput = CalculationUserInputs(
       calculateErsed = false,

@@ -1,42 +1,32 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "2000-01-26",
-    "isActiveSexOffender": false
-  },
-  "bookingId": 1234567,
-  "sentences": [
-    {
-      "type": "BotusSentence",
-      "offence": {
-        "committedAt": "2025-02-03",
-        "offenceCode": "CJ03524"
-      },
-      "duration": {
-        "durationElements": {
-          "DAYS": 14,
-          "WEEKS": 0,
-          "YEARS": 0,
-          "MONTHS": 0
-        }
-      },
-      "isSDSPlus": false,
-      "identifier": "287f14dd-d522-30ac-8e23-1cf9f857b36c",
-      "recallType": null,
-      "sentencedAt": "2025-03-04",
-      "latestTusedDate": "2025-10-02",
-      "latestTusedSource": "NOMIS",
-      "consecutiveSentenceUUIDs": [],
-      "isSDSPlusOffenceInPeriod": false,
-      "isSDSPlusEligibleSentenceTypeLengthAndOffence": false
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "2000-01-26"
+    },
+    "sentences": [
+      {
+        "type": "BotusSentence",
+        "offence": {
+          "committedAt": "2025-02-03",
+          "offenceCode": "CJ03524"
+        },
+        "duration": {
+          "durationElements": {
+            "DAYS": 14
+          }
+        },
+        "sentencedAt": "2025-03-04",
+        "identifier": "287f14dd-d522-30ac-8e23-1cf9f857b36c",
+        "latestTusedDate": "2025-10-02",
+        "latestTusedSource": "NOMIS"
+      }
+    ],
+    "adjustments": {},
+    "bookingId": 1234567,
+    "historicalTusedData": {
+      "tused": "2025-10-02",
+      "historicalTusedSource": "NOMIS"
     }
-  ],
-  "adjustments": {},
-  "externalMovements": [],
-  "historicalTusedData": {
-    "tused": "2025-10-02",
-    "historicalTusedSource": "NOMIS"
-  },
-  "returnToCustodyDate": null,
-  "fixedTermRecallDetails": null
+  }
 }

@@ -37,8 +37,7 @@
       }
     ],
     "adjustments": {},
-    "returnToCustodyDate": "2022-02-03",
-    "bookingId": -1
+    "returnToCustodyDate": "2022-02-03"
   },
   "userInputs": {
     "calculateErsed": true,

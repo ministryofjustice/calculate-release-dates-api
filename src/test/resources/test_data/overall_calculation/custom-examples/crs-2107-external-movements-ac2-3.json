@@ -48,7 +48,6 @@
         }
       ]
     },
-    "bookingId": -1,
     "externalMovements": [
       {
         "movementDate": "2023-08-15",
@@ -56,5 +55,9 @@
         "direction": "OUT"
       }
     ]
+  },
+  "featureToggles": {
+    "externalMovementsSds40": true,
+    "externalMovementsAdjustmentSharing": true
   }
 }

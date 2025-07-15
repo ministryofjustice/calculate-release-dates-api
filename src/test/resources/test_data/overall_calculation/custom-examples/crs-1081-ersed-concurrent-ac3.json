@@ -48,8 +48,7 @@
         "fineAmount": 9E+2
       }
     ],
-    "adjustments": {},
-    "bookingId": -1
+    "adjustments": {}
   },
   "userInputs": {
     "calculateErsed": true,

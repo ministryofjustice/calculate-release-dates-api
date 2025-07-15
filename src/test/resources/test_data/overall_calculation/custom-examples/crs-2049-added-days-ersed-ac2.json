@@ -35,8 +35,7 @@
           "numberOfDays": 16
         }
       ]
-    },
-    "bookingId": -1
+    }
   },
   "userInputs": {
     "calculateErsed": true,

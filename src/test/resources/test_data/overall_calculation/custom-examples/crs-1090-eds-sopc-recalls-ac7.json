@@ -44,8 +44,7 @@
         "recallType": "STANDARD_RECALL"
       }
     ],
-    "adjustments": {},
-    "bookingId": -1
+    "adjustments": {}
   },
   "params": "sds-50"
 }

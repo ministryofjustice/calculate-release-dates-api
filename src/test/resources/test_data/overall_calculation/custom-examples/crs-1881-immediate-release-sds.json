@@ -161,8 +161,7 @@
           "toDate": "2020-12-15"
         }
       ]
-    },
-    "bookingId": -1
+    }
   },
   "userInputs": {
     "calculateErsed": true,

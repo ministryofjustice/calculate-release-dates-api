@@ -31,8 +31,7 @@
         }
       ]
     },
-    "returnToCustodyDate": "2024-12-18",
-    "bookingId": -1
+    "returnToCustodyDate": "2024-12-18"
   },
   "expectedValidationException": "UNABLE_TO_DETERMINE_SHPO_RELEASE_PROVISIONS"
 }

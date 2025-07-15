@@ -35,8 +35,7 @@
           "toDate": "2024-11-06"
         }
       ]
-    },
-    "bookingId": -1
+    }
   },
   "userInputs": {
     "calculateErsed": true,

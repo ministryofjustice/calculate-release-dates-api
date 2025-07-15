@@ -1,70 +1,51 @@
 {
-  "offender": {
-    "reference": "A9962EA",
-    "dateOfBirth": "1979-07-01",
-    "isActiveSexOffender": false
-  },
-  "bookingId": 1223164,
-  "sentences": [
-    {
-      "type": "ExtendedDeterminateSentence",
-      "offence": {
-        "committedAt": "2022-10-01",
-        "offenceCode": "OF61102"
-      },
-      "isSDSPlus": false,
-      "identifier": "7eee9010-1a84-36ee-b28e-978d9b8fc3fd",
-      "recallType": null,
-      "sentencedAt": "2022-11-01",
-      "caseSequence": 1,
-      "lineSequence": 1,
-      "caseReference": null,
-      "automaticRelease": false,
-      "custodialDuration": {
-        "durationElements": {
-          "DAYS": 0,
-          "WEEKS": 0,
-          "YEARS": 3,
-          "MONTHS": 0
-        }
-      },
-      "extensionDuration": {
-        "durationElements": {
-          "DAYS": 0,
-          "WEEKS": 0,
-          "YEARS": 1,
-          "MONTHS": 0
-        }
-      },
-      "consecutiveSentenceUUIDs": []
+  "booking": {
+    "offender": {
+      "reference": "A9962EA",
+      "dateOfBirth": "1979-07-01"
     },
-    {
-      "type": "StandardSentence",
-      "offence": {
-        "committedAt": "2022-10-01",
-        "offenceCode": "TH68023"
+    "sentences": [
+      {
+        "type": "ExtendedDeterminateSentence",
+        "offence": {
+          "committedAt": "2022-10-01",
+          "offenceCode": "OF61102"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "YEARS": 3
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "YEARS": 1
+          }
+        },
+        "sentencedAt": "2022-11-01",
+        "identifier": "7eee9010-1a84-36ee-b28e-978d9b8fc3fd",
+        "caseSequence": 1,
+        "lineSequence": 1
       },
-      "duration": {
-        "durationElements": {
-          "DAYS": 0,
-          "WEEKS": 0,
-          "YEARS": 6,
-          "MONTHS": 11
-        }
-      },
-      "isSDSPlus": false,
-      "identifier": "22386d4e-cdab-3aab-9b10-73160ec9655a",
-      "recallType": null,
-      "sentencedAt": "2022-11-01",
-      "caseSequence": 1,
-      "lineSequence": 2,
-      "caseReference": null,
-      "consecutiveSentenceUUIDs": [],
-      "hasAnSDSEarlyReleaseExclusion": "VIOLENT"
-    }
-  ],
-  "adjustments": {},
-  "historicalTusedData": null,
-  "returnToCustodyDate": null,
-  "fixedTermRecallDetails": null
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2022-10-01",
+          "offenceCode": "TH68023"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 6,
+            "MONTHS": 11
+          }
+        },
+        "sentencedAt": "2022-11-01",
+        "identifier": "22386d4e-cdab-3aab-9b10-73160ec9655a",
+        "caseSequence": 1,
+        "lineSequence": 2,
+        "hasAnSDSEarlyReleaseExclusion": "VIOLENT"
+      }
+    ],
+    "adjustments": {},
+    "bookingId": 1223164
+  }
 }

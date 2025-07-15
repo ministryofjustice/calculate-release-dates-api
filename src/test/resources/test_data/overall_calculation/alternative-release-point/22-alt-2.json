@@ -102,8 +102,7 @@
           "toDate": "2023-07-27"
         }
       ]
-    },
-    "bookingId": -1
+    }
   },
   "userInputs": {
     "calculateErsed": true,

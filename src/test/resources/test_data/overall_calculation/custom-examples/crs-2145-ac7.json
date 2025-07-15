@@ -54,8 +54,7 @@
         "hasAnSDSEarlyReleaseExclusion": "NO"
       }
     ],
-    "adjustments": {},
-    "bookingId": -1
+    "adjustments": {}
   },
   "expectedValidationException": "UNSUPPORTED_SDS40_RECALL_SENTENCE_TYPE"
 }

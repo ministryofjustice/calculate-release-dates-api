@@ -53,8 +53,9 @@
       "bookingId": 1234567,
       "returnToCustodyDate": "2024-11-10",
       "recallLength": 28
-    },
-    "bookingId": -1
+    }
   },
-  "featureTogglesStr": "ftr48ManualJourney=false"
+  "featureToggles": {
+    "ftr48ManualJourney": false
+  }
 }

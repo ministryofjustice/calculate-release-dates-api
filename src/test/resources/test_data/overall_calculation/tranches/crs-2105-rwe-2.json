@@ -53,8 +53,7 @@
       "bookingId": 12345678,
       "returnToCustodyDate": "2024-09-16",
       "recallLength": 14
-    },
-    "bookingId": -1
+    }
   },
   "assertSds40": true,
   "expectedValidationException": "UNSUPPORTED_SDS40_RECALL_SENTENCE_TYPE"

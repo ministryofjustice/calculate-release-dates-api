@@ -47,8 +47,9 @@
         }
       ]
     },
-    "returnToCustodyDate": "2024-12-12",
-    "bookingId": -1
+    "returnToCustodyDate": "2024-12-12"
   },
-  "featureTogglesStr": "ftr48ManualJourney=false"
+  "featureToggles": {
+    "ftr48ManualJourney": false
+  }
 }

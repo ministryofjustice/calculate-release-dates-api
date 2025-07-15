@@ -45,8 +45,7 @@
           "toDate": "2024-04-15"
         }
       ]
-    },
-    "bookingId": -1
+    }
   },
   "expectedValidationException": "REMAND_OVERLAPS_WITH_SENTENCE"
 }

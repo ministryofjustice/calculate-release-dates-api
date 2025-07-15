@@ -135,8 +135,7 @@
           "toDate": "2021-10-19"
         }
       ]
-    },
-    "bookingId": -1
+    }
   },
   "expectedValidationMessage": "TRUE"
 }

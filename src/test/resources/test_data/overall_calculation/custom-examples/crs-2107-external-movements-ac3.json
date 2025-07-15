@@ -93,7 +93,6 @@
         }
       ]
     },
-    "bookingId": -1,
     "externalMovements": [
       {
         "movementDate": "2022-03-19",
@@ -110,5 +109,9 @@
   "userInputs": {
     "calculateErsed": true,
     "useOffenceIndicators": true
+  },
+  "featureToggles": {
+    "externalMovementsSds40": true,
+    "externalMovementsAdjustmentSharing": true
   }
 }

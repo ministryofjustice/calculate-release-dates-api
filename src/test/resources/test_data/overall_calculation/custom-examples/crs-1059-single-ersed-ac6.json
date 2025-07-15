@@ -33,8 +33,7 @@
           "toDate": "2021-12-19"
         }
       ]
-    },
-    "bookingId": -1
+    }
   },
   "userInputs": {
     "calculateErsed": true,

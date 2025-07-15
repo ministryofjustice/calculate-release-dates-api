@@ -67,8 +67,7 @@
       "bookingId": 1,
       "returnToCustodyDate": "2024-04-02",
       "recallLength": 14
-    },
-    "bookingId": -1
+    }
   },
   "params": "sds-50"
 }

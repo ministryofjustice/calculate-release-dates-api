@@ -82,8 +82,7 @@
       "bookingId": 1234567,
       "returnToCustodyDate": "2024-11-11",
       "recallLength": 14
-    },
-    "bookingId": -1
+    }
   },
   "expectedValidationException": "FTR_14_DAYS_AGGREGATE_GE_12_MONTHS|FTR_TYPE_14_DAYS_AGGREGATE_GE_12_MONTHS"
 }

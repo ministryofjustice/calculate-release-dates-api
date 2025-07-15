@@ -30,8 +30,7 @@
           "toDate": "2012-12-19"
         }
       ]
-    },
-    "bookingId": -1
+    }
   },
   "userInputs": {
     "calculateErsed": true,

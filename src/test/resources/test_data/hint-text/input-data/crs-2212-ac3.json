@@ -1,81 +1,61 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01",
-    "isActiveSexOffender": false
-  },
-  "bookingId": 3959075,
-  "sentences": [
-    {
-      "type": "ExtendedDeterminateSentence",
-      "offence": {
-        "committedAt": "2021-01-19",
-        "offenceCode": null
-      },
-      "isSDSPlus": false,
-      "identifier": "7eee9010-1a84-36ee-b28e-978d9b8fc3fd",
-      "recallType": null,
-      "sentencedAt": "2021-04-19",
-      "caseSequence": 1,
-      "lineSequence": 1,
-      "caseReference": null,
-      "automaticRelease": false,
-      "custodialDuration": {
-        "durationElements": {
-          "DAYS": 0,
-          "WEEKS": 0,
-          "YEARS": 4,
-          "MONTHS": 0
-        }
-      },
-      "extensionDuration": {
-        "durationElements": {
-          "DAYS": 0,
-          "WEEKS": 0,
-          "YEARS": 2,
-          "MONTHS": 0
-        }
-      },
-      "consecutiveSentenceUUIDs": []
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "type": "StandardSentence",
-      "offence": {
-        "committedAt": "2023-06-10",
-        "offenceCode": null
-      },
-      "duration": {
-        "durationElements": {
-          "DAYS": 0,
-          "WEEKS": 0,
-          "YEARS": 2,
-          "MONTHS": 0
-        }
-      },
-      "isSDSPlus": false,
-      "identifier": "e27fd5a3-0236-39fd-87ee-c6924c548b81",
-      "recallType": null,
-      "sentencedAt": "2023-09-10",
-      "caseSequence": 1,
-      "lineSequence": 2,
-      "caseReference": "T20230622",
-      "consecutiveSentenceUUIDs": [
-        "7eee9010-1a84-36ee-b28e-978d9b8fc3fd"
-      ],
-      "hasAnSDSEarlyReleaseExclusion": "NO"
-    }
-  ],
-  "adjustments": {
-    "UNLAWFULLY_AT_LARGE": [
+    "sentences": [
       {
-        "toDate": "2024-11-05",
-        "fromDate": "2024-10-22",
-        "numberOfDays": 15,
-        "appliesToSentencesFrom": "2024-10-22"
+        "type": "ExtendedDeterminateSentence",
+        "offence": {
+          "committedAt": "2021-01-19"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "YEARS": 4
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "YEARS": 2
+          }
+        },
+        "sentencedAt": "2021-04-19",
+        "identifier": "7eee9010-1a84-36ee-b28e-978d9b8fc3fd",
+        "caseSequence": 1,
+        "lineSequence": 1
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2023-06-10"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 2
+          }
+        },
+        "sentencedAt": "2023-09-10",
+        "identifier": "e27fd5a3-0236-39fd-87ee-c6924c548b81",
+        "consecutiveSentenceUUIDs": [
+          "7eee9010-1a84-36ee-b28e-978d9b8fc3fd"
+        ],
+        "caseSequence": 1,
+        "lineSequence": 2,
+        "caseReference": "T20230622",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
-    ]
-  },
-  "historicalTusedData": null,
-  "returnToCustodyDate": null,
-  "fixedTermRecallDetails": null
+    ],
+    "adjustments": {
+      "UNLAWFULLY_AT_LARGE": [
+        {
+          "appliesToSentencesFrom": "2024-10-22",
+          "numberOfDays": 15,
+          "fromDate": "2024-10-22",
+          "toDate": "2024-11-05"
+        }
+      ]
+    },
+    "bookingId": 3959075
+  }
 }

@@ -33,8 +33,7 @@
           "toDate": "2020-10-05"
         }
       ]
-    },
-    "bookingId": -1
+    }
   },
   "userInputs": {
     "calculateErsed": true,

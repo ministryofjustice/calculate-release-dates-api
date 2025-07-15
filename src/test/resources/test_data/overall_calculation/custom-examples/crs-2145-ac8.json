@@ -90,9 +90,10 @@
         }
       ]
     },
-    "returnToCustodyDate": "2024-12-07",
-    "bookingId": -1
+    "returnToCustodyDate": "2024-12-07"
   },
   "expectedValidationException": "UNSUPPORTED_SDS40_RECALL_SENTENCE_TYPE",
-  "featureTogglesStr": "ftr48ManualJourney=false"
+  "featureToggles": {
+    "ftr48ManualJourney": false
+  }
 }

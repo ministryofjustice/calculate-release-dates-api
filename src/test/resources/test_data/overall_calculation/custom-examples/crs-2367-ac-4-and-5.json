@@ -39,7 +39,6 @@
     "fixedTermRecallDetails": {
       "returnToCustodyDate": "2025-08-22",
       "recallLength": 28
-    },
-    "bookingId": -1
+    }
   }
 }

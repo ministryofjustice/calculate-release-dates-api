@@ -52,8 +52,7 @@
           "toDate": "2018-09-25"
         }
       ]
-    },
-    "bookingId": -1
+    }
   },
   "userInputs": {
     "calculateErsed": true,

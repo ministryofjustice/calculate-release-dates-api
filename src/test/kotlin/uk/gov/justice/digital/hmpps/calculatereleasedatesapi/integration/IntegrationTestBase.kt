@@ -1,7 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -14,6 +13,7 @@ import org.springframework.http.MediaType
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.DynamicPropertyRegistry
 import org.springframework.test.context.DynamicPropertySource
+import org.springframework.test.context.jdbc.Sql
 import org.springframework.test.web.reactive.server.WebTestClient
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.helpers.JwtAuthHelper
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.container.PostgresContainer
@@ -30,7 +30,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualEntrySe
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecordARecallResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmitCalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSentenceAndOffences
-import java.sql.DriverManager
 
 /*
 ** The abstract parent class for integration tests.
@@ -49,6 +48,8 @@ import java.sql.DriverManager
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @Import(TestBuildPropertiesConfiguration::class)
 @ActiveProfiles("test")
+@Sql("classpath:/test_data/load-base-data.sql")
+@Sql(scripts = ["classpath:/test_data/reset-base-data.sql"], executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 open class IntegrationTestBase internal constructor() {
 
   @Value("\${spring.datasource.url}")
@@ -59,27 +60,6 @@ open class IntegrationTestBase internal constructor() {
 
   @Value("\${spring.datasource.password}")
   lateinit var dbPassword: String
-
-  @BeforeEach
-  fun clearDown() {
-    val db = if (pgContainer == null) {
-      DriverManager.getConnection(dbConnectionString, dbUsername, dbPassword)
-    } else {
-      DriverManager.getConnection(
-        pgContainer.jdbcUrl,
-        pgContainer.username,
-        pgContainer.password,
-      )
-    }
-
-    val resetSql = javaClass.getResource("/test_data/reset-base-data.sql")
-      ?.readText() ?: error("Could not load reset-base-data.sql")
-
-    val baseDataSql = javaClass.getResource("/test_data/load-base-data.sql")
-      ?.readText() ?: error("Could not load load-base-data.sql")
-
-    db.use { conn -> conn.createStatement().use { stmt -> stmt.execute(resetSql + baseDataSql) } }
-  }
 
   @Suppress("SpringJavaInjectionPointsAutowiringInspection")
   @Autowired
