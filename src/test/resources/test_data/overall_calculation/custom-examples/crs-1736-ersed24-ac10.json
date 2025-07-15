@@ -34,8 +34,7 @@
           "toDate": "2014-03-17"
         }
       ]
-    },
-    "bookingId": -1
+    }
   },
   "userInputs": {
     "calculateErsed": true,

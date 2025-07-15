@@ -103,8 +103,7 @@
       }
     ],
     "adjustments": {},
-    "returnToCustodyDate": "2021-05-20",
-    "bookingId": -1
+    "returnToCustodyDate": "2021-05-20"
   },
   "params": "sds-50"
 }

@@ -47,8 +47,7 @@
         }
       ]
     },
-    "returnToCustodyDate": "2022-05-11",
-    "bookingId": -1
+    "returnToCustodyDate": "2022-05-11"
   },
   "assertSds40": true
 }

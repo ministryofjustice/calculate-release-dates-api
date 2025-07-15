@@ -47,8 +47,7 @@
           "toDate": "2020-03-31"
         }
       ]
-    },
-    "bookingId": -1
+    }
   },
   "assertSds40": true
 }

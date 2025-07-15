@@ -50,8 +50,7 @@
           "toDate": "2020-12-22"
         }
       ]
-    },
-    "bookingId": -1
+    }
   },
   "userInputs": {
     "calculateErsed": true,

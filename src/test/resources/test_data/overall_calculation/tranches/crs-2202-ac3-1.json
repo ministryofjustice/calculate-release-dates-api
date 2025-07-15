@@ -23,8 +23,7 @@
         "hasAnSDSEarlyReleaseExclusion": "DOMESTIC_ABUSE_T3"
       }
     ],
-    "adjustments": {},
-    "bookingId": -1
+    "adjustments": {}
   },
   "assertSds40": true
 }

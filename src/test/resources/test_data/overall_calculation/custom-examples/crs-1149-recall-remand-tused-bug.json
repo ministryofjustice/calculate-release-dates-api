@@ -41,8 +41,7 @@
         }
       ]
     },
-    "returnToCustodyDate": "2023-01-03",
-    "bookingId": -1
+    "returnToCustodyDate": "2023-01-03"
   },
   "params": "sds-50"
 }

@@ -62,7 +62,6 @@
         }
       ]
     },
-    "bookingId": -1,
     "externalMovements": [
       {
         "movementDate": "2024-05-14",
@@ -75,5 +74,9 @@
         "direction": "IN"
       }
     ]
+  },
+  "featureToggles": {
+    "externalMovementsSds40": true,
+    "externalMovementsAdjustmentSharing": true
   }
 }

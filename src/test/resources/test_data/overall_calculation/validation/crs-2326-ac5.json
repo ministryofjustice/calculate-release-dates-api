@@ -44,9 +44,10 @@
       "bookingId": 1234567,
       "returnToCustodyDate": "2025-11-28",
       "recallLength": 28
-    },
-    "bookingId": -1
+    }
   },
   "expectedValidationException": "FTR_TYPE_28_DAYS_SENTENCE_GAP_LT_14_DAYS",
-  "featureTogglesStr": "ftr48ManualJourney=false"
+  "featureToggles": {
+    "ftr48ManualJourney": false
+  }
 }

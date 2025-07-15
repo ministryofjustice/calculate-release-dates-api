@@ -53,8 +53,7 @@
           "toDate": "2024-03-07"
         }
       ]
-    },
-    "bookingId": -1
+    }
   },
   "userInputs": {
     "calculateErsed": true,

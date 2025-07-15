@@ -43,8 +43,7 @@
           "numberOfDays": 20
         }
       ]
-    },
-    "bookingId": -1
+    }
   },
   "expectedValidationException": "UNABLE_TO_DETERMINE_SHPO_RELEASE_PROVISIONS"
 }

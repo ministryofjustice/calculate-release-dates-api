@@ -68,7 +68,6 @@
       "returnToCustodyDate": "2024-08-15",
       "recallLength": 28
     },
-    "bookingId": -1,
     "externalMovements": [
       {
         "movementDate": "2023-06-10",
@@ -102,5 +101,9 @@
       }
     ]
   },
-  "featureTogglesStr": "ftr48ManualJourney=false"
+  "featureToggles": {
+    "ftr48ManualJourney": false,
+    "externalMovementsSds40": true,
+    "externalMovementsAdjustmentSharing": true
+  }
 }

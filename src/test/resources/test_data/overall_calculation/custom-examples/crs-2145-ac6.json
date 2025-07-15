@@ -37,8 +37,7 @@
       }
     ],
     "adjustments": {},
-    "returnToCustodyDate": "2024-12-14",
-    "bookingId": -1
+    "returnToCustodyDate": "2024-12-14"
   },
   "expectedValidationException": "UNSUPPORTED_SDS40_RECALL_SENTENCE_TYPE"
 }

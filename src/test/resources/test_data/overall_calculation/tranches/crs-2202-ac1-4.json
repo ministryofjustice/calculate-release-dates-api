@@ -30,8 +30,7 @@
         }
       ]
     },
-    "returnToCustodyDate": "2024-12-20",
-    "bookingId": -1
+    "returnToCustodyDate": "2024-12-20"
   },
   "assertSds40": true
 }

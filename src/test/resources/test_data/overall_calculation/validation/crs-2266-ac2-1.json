@@ -50,8 +50,7 @@
           "toDate": "2024-09-09"
         }
       ]
-    },
-    "bookingId": -1
+    }
   },
   "expectedValidationException": "UNABLE_TO_DETERMINE_SHPO_RELEASE_PROVISIONS"
 }

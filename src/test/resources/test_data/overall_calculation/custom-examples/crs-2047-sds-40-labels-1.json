@@ -52,8 +52,7 @@
           "toDate": "2019-07-18"
         }
       ]
-    },
-    "bookingId": -1
+    }
   },
   "userInputs": {
     "calculateErsed": true,

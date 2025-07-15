@@ -23,8 +23,7 @@
       }
     ],
     "adjustments": {},
-    "returnToCustodyDate": "2027-06-01",
-    "bookingId": -1
+    "returnToCustodyDate": "2027-06-01"
   },
   "assertSds40": true
 }
