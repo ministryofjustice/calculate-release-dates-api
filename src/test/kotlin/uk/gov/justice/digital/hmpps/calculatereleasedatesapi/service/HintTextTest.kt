@@ -11,6 +11,7 @@ import org.mockito.kotlin.mock
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.calculation.CalculationExampleTests
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcome
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcomeHistoricOverride
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationReason
@@ -30,6 +31,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Calc
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource.JsonTransformation
+import java.io.File
 import java.time.Clock
 import java.time.LocalDate
 import java.time.ZoneId
@@ -48,8 +50,6 @@ class HintTextTest : IntegrationTestBase() {
 
   @Autowired
   private lateinit var workingDayService: WorkingDayService
-
-  override fun shouldResetDatabase() = false
 
   @Test
   fun `Historic SLED date`() {
@@ -181,10 +181,9 @@ class HintTextTest : IntegrationTestBase() {
 
     @JvmStatic
     fun testCases(): Stream<Arguments> {
-      return emptyList<Arguments>().stream()
-//      val excluded = listOf("crs-2348-sled")
-//      val dir = File(object {}.javaClass.getResource("/test_data/hint-text/expected-results").file)
-//      return getTestCasesFromDir(dir, excluded, null)
+      val excluded = listOf("crs-2348-sled")
+      val dir = File(object {}.javaClass.getResource("/test_data/hint-text/expected-results").file)
+      return CalculationExampleTests.Companion.getTestCasesFromDir(dir, excluded, null)
     }
 
     val CALCULATION_REASON =

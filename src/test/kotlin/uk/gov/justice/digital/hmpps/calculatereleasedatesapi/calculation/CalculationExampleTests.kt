@@ -66,8 +66,6 @@ abstract class CalculationExampleTests : IntegrationTestBase() {
     overwriteProperties(featureToggles, testConfig)
   }
 
-  override fun shouldResetDatabase() = false
-
   protected fun `Test Example`(
     example: String,
   ) {
