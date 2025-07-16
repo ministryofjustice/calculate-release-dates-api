@@ -17,7 +17,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationO
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.PRELIMINARY
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.IntegrationTestBaseNoDbNoApi
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.SpringTestBase
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentsSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
@@ -38,7 +38,7 @@ import java.time.ZoneId
 import java.util.UUID
 import java.util.stream.Stream
 
-class HintTextTest : IntegrationTestBaseNoDbNoApi() {
+class HintTextTest : SpringTestBase() {
 
   private val jsonTransformation = JsonTransformation()
 

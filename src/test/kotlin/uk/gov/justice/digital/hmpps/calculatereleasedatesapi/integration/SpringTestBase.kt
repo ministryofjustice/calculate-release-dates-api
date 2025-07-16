@@ -10,9 +10,12 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.BankHolidayService
 import kotlin.test.BeforeTest
 
-@SpringBootTest()
+/*
+ * Test base for any spring tests that don't test integration with  databases or mock APIs.
+ */
+@SpringBootTest
 @ActiveProfiles("test-no-db")
-open class IntegrationTestBaseNoDbNoApi internal constructor() {
+open class SpringTestBase internal constructor() {
 
   @MockitoBean
   private lateinit var bankHolidayService: BankHolidayService
