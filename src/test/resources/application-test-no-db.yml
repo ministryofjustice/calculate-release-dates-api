@@ -1,0 +1,31 @@
+spring:
+  flyway:
+    enabled: false
+
+
+# Not required APIs to load app context
+hmpps:
+  auth:
+    url: http://localhost:8090/auth
+
+prison:
+  api:
+    url: http://localhost:8332
+
+bank-holiday:
+  api:
+    url: http://localhost:8333
+
+adjustments:
+  api:
+    url: http://localhost:8334
+
+manage-offences:
+  api:
+    url: http://localhost:8335
+
+domain-events-sns:
+  provider: localstack
+
+
+bulk.calculation.process: notsqs

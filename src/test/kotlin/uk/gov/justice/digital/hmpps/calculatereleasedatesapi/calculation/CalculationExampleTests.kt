@@ -1,19 +1,18 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.calculation
 
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.params.provider.Arguments
 import org.skyscreamer.jsonassert.JSONAssert
 import org.skyscreamer.jsonassert.JSONCompareMode
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.test.context.ActiveProfiles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.PRELIMINARY
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.IntegrationTestBase
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.SpringTestBase
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOutput
@@ -34,7 +33,8 @@ import kotlin.reflect.full.memberProperties
 import kotlin.test.assertEquals
 import kotlin.test.fail
 
-abstract class CalculationExampleTests : IntegrationTestBase() {
+@ActiveProfiles("calculation-params")
+abstract class CalculationExampleTests : SpringTestBase() {
   protected val jsonTransformation = JsonTransformation()
 
   @Autowired
@@ -48,23 +48,6 @@ abstract class CalculationExampleTests : IntegrationTestBase() {
 
   @Autowired
   private lateinit var featureToggles: FeatureToggles
-  private val defaultFeatureToggles: FeatureToggles = FeatureToggles(ftr48ManualJourney = true)
-
-  // Keep hold of feature toggle config required for the rest of the tests.
-  private lateinit var testConfig: FeatureToggles
-
-  @BeforeEach
-  fun setup() {
-    if (!this::testConfig.isInitialized) {
-      testConfig = featureToggles.copy()
-    }
-    overwriteProperties(featureToggles, defaultFeatureToggles)
-  }
-
-  @AfterEach
-  fun resetFeatureToggles() {
-    overwriteProperties(featureToggles, testConfig)
-  }
 
   protected fun `Test Example`(
     example: String,
@@ -185,6 +168,8 @@ abstract class CalculationExampleTests : IntegrationTestBase() {
   protected fun overrideFeatureTogglesForTest(calculationTestFile: CalculationTestFile) {
     if (calculationTestFile.featureToggles != null) {
       overwriteProperties(featureToggles, calculationTestFile.featureToggles)
+    } else {
+      overwriteProperties(featureToggles, FeatureToggles(ftr48ManualJourney = true))
     }
   }
 

@@ -63,14 +63,11 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOf
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmitCalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmittedDate
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BankHoliday
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BankHolidays
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderKeyDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.RegionBankHolidays
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
@@ -790,18 +787,7 @@ class CalculationTransactionalServiceTest {
         null,
         null,
       )
-    val cachedBankHolidays =
-      BankHolidays(
-        RegionBankHolidays(
-          "England and Wales",
-          listOf(
-            BankHoliday("Christmas Day Bank Holiday", LocalDate.of(2021, 12, 27)),
-            BankHoliday("Boxing Day Bank Holiday", LocalDate.of(2021, 12, 28)),
-          ),
-        ),
-        RegionBankHolidays("Scotland", emptyList()),
-        RegionBankHolidays("Northern Ireland", emptyList()),
-      )
+    val cachedBankHolidays = TestUtil.defaultBankHolidays()
     val log: Logger = LoggerFactory.getLogger(this::class.java)
     const val USERNAME = "user1"
     private const val PRISONER_ID = "A1234AJ"
