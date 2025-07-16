@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.test.context.jdbc.Sql
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.BankHolidayCache
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BankHoliday
@@ -12,6 +13,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.BankHoli
 import java.time.LocalDate
 import java.time.LocalDateTime
 
+@Sql(scripts = ["classpath:/test_data/reset-base-data.sql", "classpath:/test_data/load-base-data.sql"])
 class BankHolidayServiceTest : IntegrationTestBase() {
 
   @Autowired
