@@ -67,19 +67,19 @@ class HdcedCalculator(
     val custodialPeriod: Int,
     val dateHdcAppliesFrom: LocalDate,
     val deductedDays: Long,
-    val additionalDaysToIncludeInUnadjustedCalculation: Long,
-    val additionalDaysToIncludeAfterCalculation: Long,
+    val ualToAdd: Long,
+    val otherAdditions: Long,
     val custodialPeriodMidPointDays: Long,
     val custodialPeriodAboveMidpointDeductionDays: Long,
     val sentence: CalculableSentence,
     val additionalRulesForBreakdown: Set<CalculationRule>,
   ) {
-    fun totalAdjustmentForBreakdown() = additionalDaysToIncludeInUnadjustedCalculation.plus(additionalDaysToIncludeAfterCalculation).minus(deductedDays)
+    fun totalAdjustmentForBreakdown() = ualToAdd.plus(otherAdditions).minus(deductedDays)
   }
 
   private data class HdcedCalculationResult(
     val input: HdcedCalculationInput,
-    val unadjustHdeced: LocalDate,
+    val hdcedWithOnlyUalAdded: LocalDate,
     val adjustedHdced: LocalDate,
     val numberOfDaysToAdjustedHdced: Long,
     val breakdown: ReleaseDateCalculationBreakdown,
@@ -109,9 +109,8 @@ class HdcedCalculator(
         custodialPeriod = custodialPeriod,
         dateHdcAppliesFrom = dateHdcAppliesFrom,
         deductedDays = sentenceCalculation.adjustments.deductions,
-        additionalDaysToIncludeInUnadjustedCalculation = 0,
-        additionalDaysToIncludeAfterCalculation = sentenceCalculation.adjustments.ualDuringCustody +
-          sentenceCalculation.adjustments.awardedDuringCustody -
+        ualToAdd = sentenceCalculation.adjustments.ualDuringCustody,
+        otherAdditions = sentenceCalculation.adjustments.awardedDuringCustody -
           sentenceCalculation.adjustments.unusedAdaDays -
           sentenceCalculation.adjustments.servedAdaDays,
         custodialPeriodMidPointDays = hdcedConfiguration.custodialPeriodMidPointDaysPreHdc365,
@@ -126,9 +125,8 @@ class HdcedCalculator(
         custodialPeriod = custodialPeriod,
         dateHdcAppliesFrom = dateHdcAppliesFrom,
         deductedDays = sentenceCalculation.adjustments.deductions,
-        additionalDaysToIncludeInUnadjustedCalculation = 0,
-        additionalDaysToIncludeAfterCalculation = sentenceCalculation.adjustments.ualDuringCustody +
-          sentenceCalculation.adjustments.awardedDuringCustody -
+        ualToAdd = sentenceCalculation.adjustments.ualDuringCustody,
+        otherAdditions = sentenceCalculation.adjustments.awardedDuringCustody -
           sentenceCalculation.adjustments.unusedAdaDays -
           sentenceCalculation.adjustments.servedAdaDays,
         custodialPeriodMidPointDays = hdcedConfiguration.custodialPeriodMidPointDaysPostHdc365,
@@ -137,39 +135,14 @@ class HdcedCalculator(
         additionalRulesForBreakdown = emptySet(),
       ),
     )
-    val hdc365ResultWithUALIncludedInUnadjustedDate = if (sentenceCalculation.adjustments.ualDuringCustody == 0L) {
-      // if there is no UAL we don't need to bother recalculating it with UAL in the unadjusted date.
-      hdc365Result
-    } else {
-      calculateHdced(
-        HdcedCalculationInput(
-          custodialPeriodDouble = custodialPeriodDouble,
-          custodialPeriod = custodialPeriod,
-          dateHdcAppliesFrom = dateHdcAppliesFrom,
-          deductedDays = sentenceCalculation.adjustments.deductions,
-          additionalDaysToIncludeInUnadjustedCalculation = sentenceCalculation.adjustments.ualDuringCustody,
-          additionalDaysToIncludeAfterCalculation = sentenceCalculation.adjustments.awardedDuringCustody -
-            sentenceCalculation.adjustments.unusedAdaDays -
-            sentenceCalculation.adjustments.servedAdaDays,
-          custodialPeriodMidPointDays = hdcedConfiguration.custodialPeriodMidPointDaysPostHdc365,
-          custodialPeriodAboveMidpointDeductionDays = hdcedConfiguration.custodialPeriodAboveMidpointDeductionDaysPostHdc365,
-          sentence = sentence,
-          additionalRulesForBreakdown = emptySet(),
-        ),
-      )
-    }
 
-    if (defaultTo365CommencementDateIfConsecSentenceSpansIt(hdc180Result.unadjustHdeced, sentence).isBefore(HDC_365_COMMENCEMENT_DATE)) {
+    if (defaultTo365CommencementDateIfConsecSentenceSpansIt(hdc180Result.hdcedWithOnlyUalAdded, sentence).isBefore(HDC_365_COMMENCEMENT_DATE)) {
       setUsingCalculationResult(sentenceCalculation, hdc180Result)
-    } else if (hdc365Result.unadjustHdeced.isAfterOrEqualTo(HDC_365_COMMENCEMENT_DATE)) {
+    } else if (hdc365Result.hdcedWithOnlyUalAdded.isAfterOrEqualTo(HDC_365_COMMENCEMENT_DATE)) {
       setUsingCalculationResult(sentenceCalculation, hdc365Result)
     } else {
-      if (hdc365ResultWithUALIncludedInUnadjustedDate.unadjustHdeced.isBefore(HDC_365_COMMENCEMENT_DATE)) {
-        val defaultedResult = hdc365ResultWithUALIncludedInUnadjustedDate.copy(adjustedHdced = HDC_365_COMMENCEMENT_DATE.plusDays(hdc365ResultWithUALIncludedInUnadjustedDate.input.additionalDaysToIncludeAfterCalculation))
-        setUsingCalculationResult(sentenceCalculation, defaultedResult, HDCED_ADJUSTED_TO_365_COMMENCEMENT)
-      } else {
-        setUsingCalculationResult(sentenceCalculation, hdc365ResultWithUALIncludedInUnadjustedDate)
-      }
+      val defaultedResult = hdc365Result.copy(adjustedHdced = HDC_365_COMMENCEMENT_DATE.plusDays(hdc365Result.input.otherAdditions))
+      setUsingCalculationResult(sentenceCalculation, defaultedResult, HDCED_ADJUSTED_TO_365_COMMENCEMENT)
     }
   }
 
@@ -185,17 +158,18 @@ class HdcedCalculator(
       ceil(input.custodialPeriodDouble.div(HALF)).toLong(),
     )
 
-    val unadjustedDays = halfTheCustodialPeriodButAtLeastTheMinimumHDCEDPeriod.minus(input.deductedDays).plus(input.additionalDaysToIncludeInUnadjustedCalculation)
-    val unadjustedDate = input.dateHdcAppliesFrom.plusDays(unadjustedDays)
+    val daysWithOnlyUalAdded = halfTheCustodialPeriodButAtLeastTheMinimumHDCEDPeriod.minus(input.deductedDays).plus(input.ualToAdd)
+    val dateWithOnlyUalAdded = input.dateHdcAppliesFrom.plusDays(daysWithOnlyUalAdded)
+    val dateWithOnlyDeductions = dateWithOnlyUalAdded.minusDays(input.ualToAdd)
 
-    return if (isUnadjustedHdcLessThanTheMinimumHDCPeriod(input.sentence, unadjustedDate)) {
+    return if (isUnadjustedHdcLessThanTheMinimumHDCPeriod(input.sentence, dateWithOnlyDeductions)) {
       calculateHdcedMinimumCustodialPeriod(input, CalculationRule.HDCED_GE_MIN_PERIOD_LT_MIDPOINT)
     } else {
-      val adjustedDate = unadjustedDate.plusDays(input.additionalDaysToIncludeAfterCalculation)
-      val numberOfDaysToAdjustedDate = unadjustedDays.plus(input.additionalDaysToIncludeAfterCalculation)
+      val adjustedDate = dateWithOnlyUalAdded.plusDays(input.otherAdditions)
+      val numberOfDaysToAdjustedDate = daysWithOnlyUalAdded.plus(input.otherAdditions)
       HdcedCalculationResult(
         input = input,
-        unadjustHdeced = unadjustedDate,
+        hdcedWithOnlyUalAdded = dateWithOnlyUalAdded,
         adjustedHdced = adjustedDate,
         numberOfDaysToAdjustedHdced = numberOfDaysToAdjustedDate,
         breakdown = ReleaseDateCalculationBreakdown(
@@ -215,20 +189,21 @@ class HdcedCalculator(
   }
 
   private fun calculateHdcedOverMidpoint(input: HdcedCalculationInput): HdcedCalculationResult {
-    val unadjustedDays = input.custodialPeriod
+    val daysWithOnlyUalAdded = input.custodialPeriod
       .minus(input.custodialPeriodAboveMidpointDeductionDays + 1) // Extra plus one because we use the numberOfDaysToDeterminateReleaseDate param and not the sentencedAt param
       .minus(input.deductedDays)
-      .plus(input.additionalDaysToIncludeInUnadjustedCalculation)
-    val unadjustedDate = input.sentence.sentencedAt.plusDays(unadjustedDays)
+      .plus(input.ualToAdd)
+    val dateWithOnlyUalAdded = input.sentence.sentencedAt.plusDays(daysWithOnlyUalAdded)
+    val dateWithOnlyDeductions = dateWithOnlyUalAdded.minusDays(input.ualToAdd)
 
-    return if (isUnadjustedHdcLessThanTheMinimumHDCPeriod(input.sentence, unadjustedDate)) {
+    return if (isUnadjustedHdcLessThanTheMinimumHDCPeriod(input.sentence, dateWithOnlyDeductions)) {
       calculateHdcedMinimumCustodialPeriod(input, CalculationRule.HDCED_GE_MIDPOINT_LT_MAX_PERIOD)
     } else {
-      val adjustedDate = unadjustedDate.plusDays(input.additionalDaysToIncludeAfterCalculation)
-      val numberOfDaysToAdjustedDate = unadjustedDays.plus(input.additionalDaysToIncludeAfterCalculation)
+      val adjustedDate = dateWithOnlyUalAdded.plusDays(input.otherAdditions)
+      val numberOfDaysToAdjustedDate = daysWithOnlyUalAdded.plus(input.otherAdditions)
       HdcedCalculationResult(
         input = input,
-        unadjustHdeced = unadjustedDate,
+        hdcedWithOnlyUalAdded = dateWithOnlyUalAdded,
         adjustedHdced = adjustedDate,
         numberOfDaysToAdjustedHdced = numberOfDaysToAdjustedDate,
         breakdown = ReleaseDateCalculationBreakdown(
@@ -247,13 +222,13 @@ class HdcedCalculator(
     input: HdcedCalculationInput,
     parentRule: CalculationRule,
   ): HdcedCalculationResult {
-    val unadjustedDate = input.sentence.sentencedAt.plusDays(hdcedConfiguration.minimumDaysOnHdc).plusDays(input.additionalDaysToIncludeInUnadjustedCalculation)
-    val adjustedDate = unadjustedDate.plusDays(input.additionalDaysToIncludeAfterCalculation)
+    val dateWithOnlyUalAdded = input.sentence.sentencedAt.plusDays(hdcedConfiguration.minimumDaysOnHdc).plusDays(input.ualToAdd)
+    val adjustedDate = dateWithOnlyUalAdded.plusDays(input.otherAdditions)
     return HdcedCalculationResult(
       input = input,
-      unadjustHdeced = unadjustedDate,
+      hdcedWithOnlyUalAdded = dateWithOnlyUalAdded,
       adjustedHdced = adjustedDate,
-      numberOfDaysToAdjustedHdced = hdcedConfiguration.minimumDaysOnHdc.plus(input.additionalDaysToIncludeInUnadjustedCalculation).plus(input.additionalDaysToIncludeAfterCalculation),
+      numberOfDaysToAdjustedHdced = hdcedConfiguration.minimumDaysOnHdc.plus(input.ualToAdd).plus(input.otherAdditions),
       breakdown = ReleaseDateCalculationBreakdown(
         rules = setOf(CalculationRule.HDCED_MINIMUM_CUSTODIAL_PERIOD, parentRule) + input.additionalRulesForBreakdown,
         rulesWithExtraAdjustments = mapOf(
@@ -261,7 +236,7 @@ class HdcedCalculator(
             hdcedConfiguration.minimumDaysOnHdc,
           ),
         ),
-        adjustedDays = input.additionalDaysToIncludeInUnadjustedCalculation.plus(input.additionalDaysToIncludeAfterCalculation),
+        adjustedDays = input.ualToAdd.plus(input.otherAdditions),
         releaseDate = adjustedDate,
         unadjustedDate = input.sentence.sentencedAt,
       ),

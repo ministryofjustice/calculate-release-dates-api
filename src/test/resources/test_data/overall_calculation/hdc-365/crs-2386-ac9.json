@@ -1,0 +1,33 @@
+{
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
+      {
+        "offence": {
+          "committedAt": "2022-04-20",
+          "offenceCode": "TH68068"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 5,
+            "MONTHS": 4
+          }
+        },
+        "sentencedAt": "2023-08-25",
+        "identifier": "cb304745-d781-47d3-b931-4baa31551fc5"
+      }
+    ],
+    "adjustments": {
+      "UNLAWFULLY_AT_LARGE": [
+        {
+          "appliesToSentencesFrom": "2023-08-25",
+          "numberOfDays": 225,
+          "fromDate": "2023-08-26"
+        }
+      ]
+    }
+  }
+}
