@@ -12,7 +12,7 @@ import org.springframework.test.context.ActiveProfiles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.PRELIMINARY
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.IntegrationTestBase
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.IntegrationTestBaseNoDbNoApi
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOutput
@@ -34,7 +34,7 @@ import kotlin.test.assertEquals
 import kotlin.test.fail
 
 @ActiveProfiles("calculation-params")
-abstract class CalculationExampleTests : IntegrationTestBase() {
+abstract class CalculationExampleTests : IntegrationTestBaseNoDbNoApi() {
   protected val jsonTransformation = JsonTransformation()
 
   @Autowired

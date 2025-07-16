@@ -464,7 +464,6 @@ class CalculationTransactionalService(
     }
   }
 
-  @Transactional(readOnly = true)
   fun calculateWithBreakdown(
     booking: Booking,
     previousCalculationResults: CalculatedReleaseDates,
