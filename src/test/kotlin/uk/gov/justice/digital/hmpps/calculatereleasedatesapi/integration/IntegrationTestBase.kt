@@ -13,7 +13,6 @@ import org.springframework.http.MediaType
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.DynamicPropertyRegistry
 import org.springframework.test.context.DynamicPropertySource
-import org.springframework.test.context.jdbc.Sql
 import org.springframework.test.web.reactive.server.WebTestClient
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.helpers.JwtAuthHelper
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.container.PostgresContainer
@@ -48,8 +47,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Pris
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @Import(TestBuildPropertiesConfiguration::class)
 @ActiveProfiles("test")
-@Sql("classpath:/test_data/load-base-data.sql")
-@Sql(scripts = ["classpath:/test_data/reset-base-data.sql"], executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 open class IntegrationTestBase internal constructor() {
 
   @Value("\${spring.datasource.url}")
