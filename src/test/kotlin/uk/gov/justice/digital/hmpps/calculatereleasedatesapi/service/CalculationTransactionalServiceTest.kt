@@ -761,10 +761,25 @@ class CalculationTransactionalServiceTest {
   }
 
   @Test
+  fun `supported validation check loads booking and runs pre-calculation checks returning immediately without loading the booking if there are errros`() {
+    val expectedResponse = SupportedValidationResponse()
+    whenever(calculationSourceDataService.getCalculationSourceData(prisonerDetails.offenderNo, InactiveDataOptions.default())).thenReturn(SOURCE_DATA)
+    whenever(validationService.validateSupportedSentencesAndCalculations(SOURCE_DATA)).thenReturn(expectedResponse)
+    whenever(validationService.validateBeforeCalculation(SOURCE_DATA, CalculationUserInputs())).thenReturn(listOf(ValidationMessage(ValidationCode.SENTENCE_HAS_NO_IMPRISONMENT_TERM)))
+
+    val response = calculationTransactionalService.supportedValidation(prisonerDetails.offenderNo)
+
+    assertThat(response).isEqualTo(expectedResponse)
+    verify(bookingService, never()).getBooking(any(), any())
+    verify(calculationService, never()).calculateReleaseDates(any(), any())
+  }
+
+  @Test
   fun `supported validation check loads booking and validates the booking then returns immediately without calc if there are booking validation errors`() {
     val expectedResponse = SupportedValidationResponse()
     whenever(calculationSourceDataService.getCalculationSourceData(prisonerDetails.offenderNo, InactiveDataOptions.default())).thenReturn(SOURCE_DATA)
     whenever(validationService.validateSupportedSentencesAndCalculations(SOURCE_DATA)).thenReturn(expectedResponse)
+    whenever(validationService.validateBeforeCalculation(SOURCE_DATA, CalculationUserInputs())).thenReturn(emptyList())
     whenever(bookingService.getBooking(SOURCE_DATA, CalculationUserInputs())).thenReturn(BOOKING)
     whenever(validationService.validateBeforeCalculation(BOOKING)).thenReturn(listOf(ValidationMessage(ValidationCode.FTR_14_DAYS_SENTENCE_GE_12_MONTHS)))
 
@@ -780,7 +795,8 @@ class CalculationTransactionalServiceTest {
       unsupportedManualMessages = listOf(ValidationMessage(ValidationCode.FTR_TYPE_48_DAYS_OVERLAPPING_SENTENCE)),
     )
     whenever(calculationSourceDataService.getCalculationSourceData(prisonerDetails.offenderNo, InactiveDataOptions.default())).thenReturn(SOURCE_DATA)
-    whenever(validationService.validateSupportedSentencesAndCalculations(SOURCE_DATA)).thenReturn(expectedResponse)
+    whenever(validationService.validateSupportedSentencesAndCalculations(SOURCE_DATA)).thenReturn(SupportedValidationResponse())
+    whenever(validationService.validateBeforeCalculation(SOURCE_DATA, CalculationUserInputs())).thenReturn(emptyList())
     whenever(bookingService.getBooking(SOURCE_DATA, CalculationUserInputs())).thenReturn(BOOKING)
     whenever(validationService.validateBeforeCalculation(BOOKING)).thenReturn(emptyList())
     whenever(calculationService.calculateReleaseDates(BOOKING, CalculationUserInputs())).thenReturn(CALCULATION_OUTPUT)
