@@ -159,16 +159,18 @@ class CalculationTransactionalService(
   @Transactional(readOnly = true)
   fun supportedValidation(prisonerId: String, inactiveDataOptions: InactiveDataOptions = InactiveDataOptions.default()): SupportedValidationResponse {
     val sourceData = calculationSourceDataService.getCalculationSourceData(prisonerId, inactiveDataOptions)
-    val noInputs = CalculationUserInputs()
-    val booking = bookingService.getBooking(sourceData, noInputs)
-
     val supportedResponse = validationService.validateSupportedSentencesAndCalculations(sourceData)
+
     if (
       supportedResponse.unsupportedSentenceMessages.isNotEmpty() ||
       supportedResponse.unsupportedCalculationMessages.isNotEmpty()
     ) {
+      // loading the booking will blow up unless the sentences and calculation are supported so return early if not.
       return supportedResponse
     }
+
+    val noInputs = CalculationUserInputs()
+    val booking = bookingService.getBooking(sourceData, noInputs)
     val bookingValidationMessages = validationService.validateBeforeCalculation(booking)
 
     if (bookingValidationMessages.isNotEmpty()) {
