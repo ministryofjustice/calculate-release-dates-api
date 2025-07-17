@@ -170,17 +170,20 @@ class CalculationTransactionalService(
     }
 
     val noInputs = CalculationUserInputs()
+    val preCalculationValidationMessages = validationService.validateBeforeCalculation(sourceData, noInputs)
+    if (preCalculationValidationMessages.isNotEmpty()) {
+      // this booking will not be able to calculate later anyway so skip the manual entry check
+      return SupportedValidationResponse()
+    }
+
     val booking = bookingService.getBooking(sourceData, noInputs)
     val bookingValidationMessages = validationService.validateBeforeCalculation(booking)
 
     if (bookingValidationMessages.isNotEmpty()) {
-      log.error("Unexpected: manual entry journey should not be triggered by pre-calculation validation at this stage.")
-      log.error(
-        "Pre-calculation validation unexpectedly failed in supportedValidation for prisonerId=$prisonerId. " +
-          "Messages: ${bookingValidationMessages.joinToString("; ") { it.message }}",
-      )
-      return supportedResponse
+      // this booking will not be able to calculate later anyway so skip the manual entry check
+      return SupportedValidationResponse()
     }
+
     val calculationOutput = calculationService.calculateReleaseDates(
       booking,
       noInputs,
