@@ -5,7 +5,7 @@ generic-service:
   replicaCount: 4
 
   image:
-    repository: quay.io/hmpps/calculate-release-dates-api
+    repository: ghcr.io/ministryofjustice/calculate-release-dates-api
     tag: app_version # override at deployment time
     port: 8080
 
@@ -25,7 +25,6 @@ generic-service:
   env:
     SERVER_PORT: "8080"
     SPRING_PROFILES_ACTIVE: "logstash"
-    APPLICATIONINSIGHTS_CONNECTION_STRING: "InstrumentationKey=$(APPINSIGHTS_INSTRUMENTATIONKEY);IngestionEndpoint=https://northeurope-0.in.applicationinsights.azure.com/;LiveEndpoint=https://northeurope.livediagnostics.monitor.azure.com/"
     APPLICATIONINSIGHTS_CONFIGURATION_FILE: applicationinsights.json
     DB_SSL_ENABLED: "true"
     HMPPS_SQS_USE_WEB_TOKEN: "true"
@@ -39,10 +38,6 @@ generic-service:
   #     [name of environment variable as seen by app]: [key of kubernetes secret to load]
 
   namespace_secrets:
-    calculate-release-dates-api:
-      APPINSIGHTS_INSTRUMENTATIONKEY: "APPINSIGHTS_INSTRUMENTATIONKEY"
-      SYSTEM_CLIENT_ID: "SYSTEM_CLIENT_ID"
-      SYSTEM_CLIENT_SECRET: "SYSTEM_CLIENT_SECRET"
     rds-instance-output:
       DB_SERVER: "rds_instance_address"
       DB_NAME: "database_name"
@@ -53,7 +48,11 @@ generic-service:
     digital-prison-reporting:
       DPR_USER: "DPR_USER"
       DPR_PASSWORD: "DPR_PASSWORD"
-
+    calculate-release-dates-api-application-insights:
+      APPLICATIONINSIGHTS_CONNECTION_STRING: "APPLICATIONINSIGHTS_CONNECTION_STRING"
+    calculate-release-dates-api-client-creds:
+      CLIENT_CREDS_CLIENT_ID: 'CLIENT_CREDS_CLIENT_ID'
+      CLIENT_CREDS_CLIENT_SECRET: 'CLIENT_CREDS_CLIENT_SECRET'
   allowlist:
     cymulate-1: 54.217.50.18/32
     cymulate-2: 52.208.202.111/32
