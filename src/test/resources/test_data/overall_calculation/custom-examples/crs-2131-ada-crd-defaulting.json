@@ -1,94 +1,108 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2016-06-04"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 18
-        }
-      },
-      "sentencedAt": "2018-10-19",
-      "identifier": "d60dff19-e9ef-3464-b189-32206a63bc63"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2016-07-11"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 18
-        }
-      },
-      "sentencedAt": "2018-10-19",
-      "identifier": "1fc94abc-cf8f-31e3-91ec-a6033e5ae59c",
-      "consecutiveSentenceUUIDs": [
-        "d60dff19-e9ef-3464-b189-32206a63bc63"
-      ]
-    },
-    {
-      "offence": {
-        "committedAt": "2017-12-10"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 18
-        }
-      },
-      "sentencedAt": "2018-10-19",
-      "identifier": "75e13d7c-21a6-3d0c-955e-066b514b8995",
-      "consecutiveSentenceUUIDs": [
-        "1fc94abc-cf8f-31e3-91ec-a6033e5ae59c"
-      ]
-    },
-    {
-      "offence": {
-        "committedAt": "2019-06-25"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 2,
-          "MONTHS": 6
-        }
-      },
-      "sentencedAt": "2021-03-05",
-      "consecutiveSentenceUUIDs": [
-        "75e13d7c-21a6-3d0c-955e-066b514b8995"
-      ]
-    },
-    {
-      "offence": {
-        "committedAt": "2019-06-02"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 2
-        }
-      },
-      "sentencedAt": "2021-03-05"
-    }
-  ],
-  "adjustments": {
-    "REMAND": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2018-10-19",
-        "numberOfDays": 217,
-        "fromDate": "2018-03-16",
-        "toDate": "2018-10-18"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2016-06-04"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 18
+          }
+        },
+        "sentencedAt": "2018-10-19",
+        "identifier": "d60dff19-e9ef-3464-b189-32206a63bc63",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2016-07-11"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 18
+          }
+        },
+        "sentencedAt": "2018-10-19",
+        "identifier": "1fc94abc-cf8f-31e3-91ec-a6033e5ae59c",
+        "consecutiveSentenceUUIDs": [
+          "d60dff19-e9ef-3464-b189-32206a63bc63"
+        ],
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2017-12-10"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 18
+          }
+        },
+        "sentencedAt": "2018-10-19",
+        "identifier": "75e13d7c-21a6-3d0c-955e-066b514b8995",
+        "consecutiveSentenceUUIDs": [
+          "1fc94abc-cf8f-31e3-91ec-a6033e5ae59c"
+        ],
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2019-06-25"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 2,
+            "MONTHS": 6
+          }
+        },
+        "sentencedAt": "2021-03-05",
+        "identifier": "4e3c30ab-ed8b-4dbb-bdab-94275a1db6b5",
+        "consecutiveSentenceUUIDs": [
+          "75e13d7c-21a6-3d0c-955e-066b514b8995"
+        ],
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2019-06-02"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 2
+          }
+        },
+        "sentencedAt": "2021-03-05",
+        "identifier": "44963067-3d05-43b0-8882-1fc6291cc585",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
     ],
-    "ADDITIONAL_DAYS_AWARDED": [
-      {
-        "appliesToSentencesFrom": "2019-05-25",
-        "numberOfDays": 1487,
-        "fromDate": "2019-05-25",
-        "toDate": "2023-06-19"
-      }
-    ]
+    "adjustments": {
+      "ADDITIONAL_DAYS_AWARDED": [
+        {
+          "appliesToSentencesFrom": "2019-05-25",
+          "numberOfDays": 1487,
+          "fromDate": "2019-05-25",
+          "toDate": "2023-06-19"
+        }
+      ],
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2018-10-19",
+          "numberOfDays": 217,
+          "fromDate": "2018-03-16",
+          "toDate": "2018-10-18"
+        }
+      ]
+    }
   }
 }

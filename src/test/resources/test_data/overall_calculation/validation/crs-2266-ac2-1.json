@@ -1,50 +1,56 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2024-08-15",
-        "offenceCode": "TH68001"
-      },
-      "duration": {
-        "durationElements": {
-          "WEEKS": 3,
-          "MONTHS": 4
-        }
-      },
-      "sentencedAt": "2024-09-10",
-      "identifier": "9824a90b-ab4b-360d-8003-a7c8f53b8114"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2024-08-15",
-        "offenceCode": "SX03220A"
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2024-08-15",
+          "offenceCode": "TH68001"
+        },
+        "duration": {
+          "durationElements": {
+            "WEEKS": 3,
+            "MONTHS": 4
+          }
+        },
+        "sentencedAt": "2024-09-10",
+        "identifier": "9824a90b-ab4b-360d-8003-a7c8f53b8114",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       },
-      "duration": {
-        "durationElements": {
-          "WEEKS": 2,
-          "MONTHS": 1
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2024-08-15",
+          "offenceCode": "SX03220A"
+        },
+        "duration": {
+          "durationElements": {
+            "WEEKS": 2,
+            "MONTHS": 1
+          }
+        },
+        "sentencedAt": "2024-10-23",
+        "identifier": "9824a90b-ab4b-360d-8003-a7c8f53b8115",
+        "consecutiveSentenceUUIDs": [
+          "9824a90b-ab4b-360d-8003-a7c8f53b8114"
+        ],
+        "hasAnSDSEarlyReleaseExclusion": "SEXUAL"
+      }
+    ],
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2024-09-03",
+          "numberOfDays": 7,
+          "fromDate": "2024-09-03",
+          "toDate": "2024-09-09"
         }
-      },
-      "sentencedAt": "2024-10-23",
-      "identifier": "9824a90b-ab4b-360d-8003-a7c8f53b8115",
-      "hasAnSDSEarlyReleaseExclusion": "SEXUAL",
-      "consecutiveSentenceUUIDs": [
-        "9824a90b-ab4b-360d-8003-a7c8f53b8114"
       ]
     }
-  ],
-  "adjustments": {
-    "REMAND": [
-      {
-        "appliesToSentencesFrom": "2024-09-03",
-        "numberOfDays": 7,
-        "fromDate": "2024-09-03",
-        "toDate": "2024-09-09"
-      }
-    ]
-  }
+  },
+  "expectedValidationException": "UNABLE_TO_DETERMINE_SHPO_RELEASE_PROVISIONS"
 }

@@ -222,19 +222,13 @@ class ManageOffencesMockServer : WireMockServer(WIREMOCK_PORT) {
       ),
   )
 
-  fun stubToreraOffenceCodes(): StubMapping = stubFor(
+  fun stubToreraOffenceCodes(offenceCodes: List<String> = emptyList()): StubMapping = stubFor(
     get(urlMatching("/schedule/torera-offence-codes"))
       .atPriority(Int.MAX_VALUE)
       .willReturn(
         aResponse()
           .withHeader("Content-Type", "application/json")
-          .withBody(
-            (
-              """
-              []
-              """.trimIndent()
-              ),
-          )
+          .withBody("[${offenceCodes.joinToString(",") { "\"$it\"" }}]".trimIndent())
           .withStatus(200)
           .withTransformers("response-template"),
       ),
@@ -263,5 +257,8 @@ class MockManageOffencesClient(
       objectMapper.writeValueAsString(defaultMarkers),
     )
     return this
+  }
+  fun stubToreraOffenceCodes(offenceCodes: List<String>) {
+    manageOffencesApi.stubToreraOffenceCodes(offenceCodes)
   }
 }

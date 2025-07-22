@@ -1,31 +1,34 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "type": "BotusSentence",
-      "offence": {
-        "committedAt": "2023-06-29",
-        "offenceCode": "FA06001"
-      },
-      "duration": {
-        "durationElements": {
-          "DAYS": 14
-        }
-      },
-      "sentencedAt": "2023-11-17"
-    }
-  ],
-  "adjustments": {
-    "ADDITIONAL_DAYS_AWARDED": [
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2023-04-17",
-        "numberOfDays": 10,
-        "fromDate": "2023-11-17",
-        "toDate": "2023-11-27"
+        "type": "BotusSentence",
+        "offence": {
+          "committedAt": "2023-06-29",
+          "offenceCode": "FA06001"
+        },
+        "duration": {
+          "durationElements": {
+            "DAYS": 14
+          }
+        },
+        "sentencedAt": "2023-11-17",
+        "identifier": "4ec53d77-3821-437c-ae21-5bb1abdac84d"
       }
-    ]
+    ],
+    "adjustments": {
+      "ADDITIONAL_DAYS_AWARDED": [
+        {
+          "appliesToSentencesFrom": "2023-04-17",
+          "numberOfDays": 10,
+          "fromDate": "2023-11-17",
+          "toDate": "2023-11-27"
+        }
+      ]
+    }
   }
 }

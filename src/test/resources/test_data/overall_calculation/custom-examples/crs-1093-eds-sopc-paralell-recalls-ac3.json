@@ -1,54 +1,62 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "type": "SopcSentence",
-      "offence": {
-        "committedAt": "2015-01-09"
-      },
-      "custodialDuration": {
-        "durationElements": {
-          "YEARS": 5
-        }
-      },
-      "extensionDuration": {
-        "durationElements": {
-          "YEARS": 1
-        }
-      },
-      "sentencedAt": "2018-09-26",
-      "recallType": "STANDARD_RECALL"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "type": "SopcSentence",
-      "offence": {
-        "committedAt": "2015-01-09"
-      },
-      "custodialDuration": {
-        "durationElements": {
-          "YEARS": 1
-        }
-      },
-      "extensionDuration": {
-        "durationElements": {
-          "YEARS": 1
-        }
-      },
-      "sentencedAt": "2023-07-04"
-    }
-  ],
-  "adjustments": {
-    "RECALL_REMAND": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2018-09-26",
-        "numberOfDays": 84,
-        "fromDate": "2018-07-04",
-        "toDate": "2018-09-25"
+        "type": "SopcSentence",
+        "offence": {
+          "committedAt": "2015-01-09"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "YEARS": 5
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "YEARS": 1
+          }
+        },
+        "sentencedAt": "2018-09-26",
+        "identifier": "c0ea3cb1-9ec4-406b-852a-6f7ef9dfe228",
+        "recallType": "STANDARD_RECALL"
+      },
+      {
+        "type": "SopcSentence",
+        "offence": {
+          "committedAt": "2015-01-09"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "YEARS": 1
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "YEARS": 1
+          }
+        },
+        "sentencedAt": "2023-07-04",
+        "identifier": "420939a0-d67f-4826-a6d0-e7be59080155"
       }
-    ]
+    ],
+    "adjustments": {
+      "RECALL_REMAND": [
+        {
+          "appliesToSentencesFrom": "2018-09-26",
+          "numberOfDays": 84,
+          "fromDate": "2018-07-04",
+          "toDate": "2018-09-25"
+        }
+      ]
+    }
   },
-  "calculateErsed": true
+  "userInputs": {
+    "calculateErsed": true,
+    "useOffenceIndicators": true
+  },
+  "params": "sds-50"
 }

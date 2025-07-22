@@ -1,50 +1,59 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2022-12-31"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 11
-        }
-      },
-      "sentencedAt": "2024-07-13",
-      "recallType": "STANDARD_RECALL"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2022-12-31"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 4
-        }
-      },
-      "sentencedAt": "2024-09-11",
-      "recallType": "STANDARD_RECALL"
-    }
-  ],
-  "adjustments": {
-    "RECALL_REMAND": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2024-06-23",
-        "numberOfDays": 20,
-        "fromDate": "2024-06-23",
-        "toDate": "2024-07-12"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2022-12-31"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 11
+          }
+        },
+        "sentencedAt": "2024-07-13",
+        "identifier": "43c8ea8f-b42b-43b8-8aed-b1133172367e",
+        "recallType": "STANDARD_RECALL",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2022-12-31"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 4
+          }
+        },
+        "sentencedAt": "2024-09-11",
+        "identifier": "78385341-fd11-4cfe-8cd0-d18642c3d037",
+        "recallType": "STANDARD_RECALL",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
     ],
-    "ADDITIONAL_DAYS_AWARDED": [
-      {
-        "appliesToSentencesFrom": "2024-09-20",
-        "numberOfDays": 5,
-        "fromDate": "2024-09-20",
-        "toDate": "2024-09-24"
-      }
-    ]
-  }
+    "adjustments": {
+      "ADDITIONAL_DAYS_AWARDED": [
+        {
+          "appliesToSentencesFrom": "2024-09-20",
+          "numberOfDays": 5,
+          "fromDate": "2024-09-20",
+          "toDate": "2024-09-24"
+        }
+      ],
+      "RECALL_REMAND": [
+        {
+          "appliesToSentencesFrom": "2024-06-23",
+          "numberOfDays": 20,
+          "fromDate": "2024-06-23",
+          "toDate": "2024-07-12"
+        }
+      ]
+    }
+  },
+  "expectedValidationException": "UNSUPPORTED_SDS40_RECALL_SENTENCE_TYPE"
 }

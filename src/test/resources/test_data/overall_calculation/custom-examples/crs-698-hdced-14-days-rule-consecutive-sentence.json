@@ -1,44 +1,52 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2021-06-10"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 2
-        }
-      },
-      "sentencedAt": "2021-07-01",
-      "identifier": "c56b9be8-b123-4a44-a03d-829e2c5040e9"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2021-06-10"
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2021-06-10"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 2
+          }
+        },
+        "sentencedAt": "2021-07-01",
+        "identifier": "c56b9be8-b123-4a44-a03d-829e2c5040e9",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 3
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2021-06-10"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 3
+          }
+        },
+        "sentencedAt": "2021-07-01",
+        "identifier": "4602155c-1c06-45a4-8011-da8255b0c77c",
+        "consecutiveSentenceUUIDs": [
+          "c56b9be8-b123-4a44-a03d-829e2c5040e9"
+        ],
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      }
+    ],
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2021-07-01",
+          "numberOfDays": 65,
+          "fromDate": "2021-04-26",
+          "toDate": "2021-06-30"
         }
-      },
-      "sentencedAt": "2021-07-01",
-      "consecutiveSentenceUUIDs": [
-        "c56b9be8-b123-4a44-a03d-829e2c5040e9"
       ]
     }
-  ],
-  "adjustments": {
-    "REMAND": [
-      {
-        "appliesToSentencesFrom": "2021-07-01",
-        "numberOfDays": 65,
-        "fromDate": "2021-04-26",
-        "toDate": "2021-06-30"
-      }
-    ]
-  }
+  },
+  "params": "sds-50"
 }

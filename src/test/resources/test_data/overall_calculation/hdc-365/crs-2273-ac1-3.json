@@ -1,52 +1,61 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2022-04-20",
-        "offenceCode": "TH68068"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 8
-        }
-      },
-      "sentencedAt": "2025-03-24",
-      "identifier": "cb304745-d781-47d3-b931-4baa31551fc5"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2022-04-20",
-        "offenceCode": "TH68068"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 1
-        }
-      },
-      "sentencedAt": "2025-06-04",
-      "consecutiveSentenceUUIDs": ["cb304745-d781-47d3-b931-4baa31551fc5"]
-    }
-  ],
-  "adjustments": {
-    "REMAND": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2025-03-24",
-        "numberOfDays": 15,
-        "fromDate": "2025-03-09",
-        "toDate": "2025-03-23"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2022-04-20",
+          "offenceCode": "TH68068"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 8
+          }
+        },
+        "sentencedAt": "2025-03-24",
+        "identifier": "cb304745-d781-47d3-b931-4baa31551fc5",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2022-04-20",
+          "offenceCode": "TH68068"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 1
+          }
+        },
+        "sentencedAt": "2025-06-04",
+        "identifier": "9e35ab2a-1a23-497e-8f68-7c7fc827a3d5",
+        "consecutiveSentenceUUIDs": [
+          "cb304745-d781-47d3-b931-4baa31551fc5"
+        ],
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
     ],
-    "ADDITIONAL_DAYS_AWARDED": [
-      {
-        "appliesToSentencesFrom": "2025-06-06",
-        "numberOfDays": 8,
-        "fromDate": "2025-06-06",
-        "toDate": "2025-06-13"
-      }
-    ]
+    "adjustments": {
+      "ADDITIONAL_DAYS_AWARDED": [
+        {
+          "appliesToSentencesFrom": "2025-06-06",
+          "numberOfDays": 8,
+          "fromDate": "2025-06-06",
+          "toDate": "2025-06-13"
+        }
+      ],
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2025-03-24",
+          "numberOfDays": 15,
+          "fromDate": "2025-03-09",
+          "toDate": "2025-03-23"
+        }
+      ]
+    }
   }
 }

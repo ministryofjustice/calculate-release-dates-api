@@ -1,47 +1,42 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01",
-    "isActiveSexOffender": false
-  },
-  "bookingId": 3959075,
-  "sentences": [
-    {
-      "type": "StandardSentence",
-      "offence": {
-        "committedAt": "2024-07-12",
-        "offenceCode": null
-      },
-      "duration": {
-        "durationElements": {
-          "DAYS": 0,
-          "WEEKS": 0,
-          "YEARS": 4,
-          "MONTHS": 0
-        }
-      },
-      "isSDSPlus": false,
-      "identifier": "e27fd5a3-0236-39fd-87ee-c6924c548b81",
-      "recallType": null,
-      "sentencedAt": "2024-07-12",
-      "caseSequence": 1,
-      "lineSequence": 1,
-      "caseReference": "T20230622",
-      "consecutiveSentenceUUIDs": [],
-      "hasAnSDSEarlyReleaseExclusion": "NO"
-    }
-  ],
-  "adjustments": {
-    "ADDITIONAL_DAYS_AWARDED": [
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
       {
-        "fromDate": "2024-09-19",
-        "numberOfDays": 10,
-        "appliesToSentencesFrom": "2024-09-19"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2024-07-12"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 4
+          }
+        },
+        "sentencedAt": "2024-07-12",
+        "identifier": "e27fd5a3-0236-39fd-87ee-c6924c548b81",
+        "caseSequence": 1,
+        "lineSequence": 1,
+        "caseReference": "T20230622",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
-    ]
+    ],
+    "adjustments": {
+      "ADDITIONAL_DAYS_AWARDED": [
+        {
+          "appliesToSentencesFrom": "2024-09-19",
+          "numberOfDays": 10,
+          "fromDate": "2024-09-19"
+        }
+      ]
+    },
+    "bookingId": 3959075
   },
-  "historicalTusedData": null,
-  "returnToCustodyDate": null,
-  "fixedTermRecallDetails": null,
-  "calculateErsed": true
+  "userInputs": {
+    "calculateErsed": true,
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params"
 }

@@ -1,80 +1,90 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2020-05-16",
-        "offenceCode": "TH68023"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 6
-        }
-      },
-      "sentencedAt": "2020-12-01",
-      "recallType": "STANDARD_RECALL",
-      "hasAnSDSEarlyReleaseExclusion": "VIOLENT"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2018-05-16",
-        "offenceCode": "SX03070"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 4
-        }
-      },
-      "sentencedAt": "2023-01-09",
-      "recallType": "STANDARD_RECALL",
-      "hasAnSDSEarlyReleaseExclusion": "SEXUAL"
-    }
-  ],
-  "adjustments": {
-    "RECALL_TAGGED_BAIL": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2020-12-01",
-        "numberOfDays": 197
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2020-05-16",
+          "offenceCode": "TH68023"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 6
+          }
+        },
+        "sentencedAt": "2020-12-01",
+        "identifier": "3790cf7f-81c3-40d6-9408-b6583306511e",
+        "recallType": "STANDARD_RECALL",
+        "hasAnSDSEarlyReleaseExclusion": "VIOLENT"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2018-05-16",
+          "offenceCode": "SX03070"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 4
+          }
+        },
+        "sentencedAt": "2023-01-09",
+        "identifier": "2d642e57-759b-49fc-87d2-45c6c5691224",
+        "recallType": "STANDARD_RECALL",
+        "hasAnSDSEarlyReleaseExclusion": "SEXUAL"
       }
     ],
-    "UNLAWFULLY_AT_LARGE": [
+    "adjustments": {
+      "UNLAWFULLY_AT_LARGE": [
+        {
+          "appliesToSentencesFrom": "2022-08-31",
+          "numberOfDays": 12,
+          "fromDate": "2022-08-31",
+          "toDate": "2022-09-11"
+        },
+        {
+          "appliesToSentencesFrom": "2024-08-09",
+          "numberOfDays": 1,
+          "fromDate": "2024-08-09",
+          "toDate": "2024-08-09"
+        }
+      ],
+      "RECALL_TAGGED_BAIL": [
+        {
+          "appliesToSentencesFrom": "2020-12-01",
+          "numberOfDays": 197
+        }
+      ]
+    },
+    "externalMovements": [
       {
-        "appliesToSentencesFrom": "2022-08-31",
-        "numberOfDays": 12,
-        "fromDate": "2022-08-31",
-        "toDate": "2022-09-11"
+        "movementDate": "2022-08-30",
+        "movementReason": "ERS",
+        "direction": "OUT"
       },
       {
-        "appliesToSentencesFrom": "2024-08-09",
-        "numberOfDays": 1,
-        "fromDate": "2024-08-09",
-        "toDate": "2024-08-09"
+        "movementDate": "2022-09-12",
+        "movementReason": "ERS_RETURN",
+        "direction": "IN"
+      },
+      {
+        "movementDate": "2024-06-25",
+        "movementReason": "CRD",
+        "direction": "OUT"
+      },
+      {
+        "movementDate": "2024-08-10",
+        "movementReason": "ADMISSION",
+        "direction": "IN"
       }
     ]
   },
-  "externalMovements": [
-    {
-      "movementDate": "2022-08-30",
-      "movementReason": "ERS",
-      "direction": "OUT"
-    },
-    {
-      "movementDate": "2022-09-12",
-      "movementReason": "ERS_RETURN",
-      "direction": "IN"
-    },
-    {
-      "movementDate": "2024-06-25",
-      "movementReason": "CRD",
-      "direction": "OUT"
-    },
-    {
-      "movementDate": "2024-08-10",
-      "movementReason": "ADMISSION",
-      "direction": "IN"
-    }
-  ]
+  "featureToggles": {
+    "externalMovementsSds40": true,
+    "externalMovementsAdjustmentSharing": true
+  }
 }

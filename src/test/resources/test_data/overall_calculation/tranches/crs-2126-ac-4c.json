@@ -1,28 +1,34 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2020-09-10",
-        "offenceCode": "CE79172"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 5
-        }
-      },
-      "sentencedAt": "2024-09-12"
-    }
-  ],
-  "adjustments": {
-    "TAGGED_BAIL": [
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2024-09-12",
-        "numberOfDays": 520
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2020-09-10",
+          "offenceCode": "CE79172"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 5
+          }
+        },
+        "sentencedAt": "2024-09-12",
+        "identifier": "d8bae860-1664-42bd-a665-f9a1b9b9c602",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
-    ]
-  }
+    ],
+    "adjustments": {
+      "TAGGED_BAIL": [
+        {
+          "appliesToSentencesFrom": "2024-09-12",
+          "numberOfDays": 520
+        }
+      ]
+    }
+  },
+  "assertSds40": true
 }

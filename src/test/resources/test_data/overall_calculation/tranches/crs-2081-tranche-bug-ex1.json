@@ -1,110 +1,131 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2020-06-13",
-        "offenceCode": "TH68036"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 5
-        }
-      },
-      "sentencedAt": "2021-05-27",
-      "recallType": "FIXED_TERM_RECALL_28"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2020-06-06",
-        "offenceCode": "TH68036"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 4,
-          "MONTHS": 6
-        }
-      },
-      "sentencedAt": "2021-05-27",
-      "recallType": "FIXED_TERM_RECALL_28"
-    },
-    {
-      "offence": {
-        "committedAt": "2020-06-02",
-        "offenceCode": "FA06001"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 1
-        }
-      },
-      "sentencedAt": "2021-05-27",
-      "recallType": "FIXED_TERM_RECALL_28"
-    },
-    {
-      "offence": {
-        "committedAt": "2020-06-06",
-        "offenceCode": "FA06001"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 18
-        }
-      },
-      "sentencedAt": "2021-05-27",
-      "recallType": "FIXED_TERM_RECALL_28"
-    },
-    {
-      "offence": {
-        "committedAt": "2020-06-13",
-        "offenceCode": "FA06001"
-      },
-      "duration": {
-        "durationElements": {
-          "DAYS": 1
-        }
-      },
-      "sentencedAt": "2021-05-27",
-      "recallType": "FIXED_TERM_RECALL_28"
-    },
-    {
-      "offence": {
-        "committedAt": "2024-02-20",
-        "offenceCode": "FA06001"
-      },
-      "duration": {
-        "durationElements": {
-          "WEEKS": 18
-        }
-      },
-      "sentencedAt": "2024-07-11"
-    }
-  ],
-  "adjustments": {
-    "RECALL_REMAND": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2021-05-27",
-        "numberOfDays": 5,
-        "fromDate": "2020-07-04",
-        "toDate": "2020-07-08"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2020-06-13",
+          "offenceCode": "TH68036"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 5
+          }
+        },
+        "sentencedAt": "2021-05-27",
+        "identifier": "c1d94eeb-8f7c-4791-915b-c32e11b4fa11",
+        "recallType": "FIXED_TERM_RECALL_28",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2020-06-06",
+          "offenceCode": "TH68036"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 4,
+            "MONTHS": 6
+          }
+        },
+        "sentencedAt": "2021-05-27",
+        "identifier": "bc780ee0-d2cf-4eb2-b795-fbf0d2eeb926",
+        "recallType": "FIXED_TERM_RECALL_28",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2020-06-02",
+          "offenceCode": "FA06001"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 1
+          }
+        },
+        "sentencedAt": "2021-05-27",
+        "identifier": "90fc3274-ddef-445c-841b-5ff8c0c2a8df",
+        "recallType": "FIXED_TERM_RECALL_28",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2020-06-06",
+          "offenceCode": "FA06001"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 18
+          }
+        },
+        "sentencedAt": "2021-05-27",
+        "identifier": "f281d6a5-7712-4502-984c-6c72dc7676c1",
+        "recallType": "FIXED_TERM_RECALL_28",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2020-06-13",
+          "offenceCode": "FA06001"
+        },
+        "duration": {
+          "durationElements": {
+            "DAYS": 1
+          }
+        },
+        "sentencedAt": "2021-05-27",
+        "identifier": "f41b8418-8bda-48a4-b629-e2108a1e5ba1",
+        "recallType": "FIXED_TERM_RECALL_28",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2024-02-20",
+          "offenceCode": "FA06001"
+        },
+        "duration": {
+          "durationElements": {
+            "WEEKS": 18
+          }
+        },
+        "sentencedAt": "2024-07-11",
+        "identifier": "ef45746b-5bf2-4d12-a72f-222b426dfd7a",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
     ],
-    "UNLAWFULLY_AT_LARGE": [
-      {
-        "appliesToSentencesFrom": "2024-05-22",
-        "numberOfDays": 47,
-        "fromDate": "2024-05-22",
-        "toDate": "2024-07-07"
-      }
-    ]
-  },
-  "returnToCustodyDate": "2024-07-08",
-  "fixedTermRecallDetails": {
-    "bookingId": 1234567,
+    "adjustments": {
+      "UNLAWFULLY_AT_LARGE": [
+        {
+          "appliesToSentencesFrom": "2024-05-22",
+          "numberOfDays": 47,
+          "fromDate": "2024-05-22",
+          "toDate": "2024-07-07"
+        }
+      ],
+      "RECALL_REMAND": [
+        {
+          "appliesToSentencesFrom": "2021-05-27",
+          "numberOfDays": 5,
+          "fromDate": "2020-07-04",
+          "toDate": "2020-07-08"
+        }
+      ]
+    },
     "returnToCustodyDate": "2024-07-08",
-    "recallLength": 28
-  }
+    "fixedTermRecallDetails": {
+      "bookingId": 1234567,
+      "returnToCustodyDate": "2024-07-08",
+      "recallLength": 28
+    }
+  },
+  "assertSds40": true
 }

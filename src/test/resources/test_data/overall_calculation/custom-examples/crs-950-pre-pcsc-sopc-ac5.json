@@ -1,41 +1,50 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "type": "SopcSentence",
-      "offence": {
-        "committedAt": "2021-01-05"
-      },
-      "custodialDuration": {
-        "durationElements": {
-          "YEARS": 5
-        }
-      },
-      "extensionDuration": {
-        "durationElements": {
-          "MONTHS": 12
-        }
-      },
-      "sentencedAt": "2021-11-03",
-      "identifier": "bf99f1c1-341e-33cb-84bb-7d67dfd03680"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2021-01-05"
+    "sentences": [
+      {
+        "type": "SopcSentence",
+        "offence": {
+          "committedAt": "2021-01-05"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "YEARS": 5
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "MONTHS": 12
+          }
+        },
+        "sentencedAt": "2021-11-03",
+        "identifier": "bf99f1c1-341e-33cb-84bb-7d67dfd03680"
       },
-      "duration": {
-        "durationElements": {
-          "YEARS": 9
-        }
-      },
-      "sentencedAt": "2021-11-03",
-      "consecutiveSentenceUUIDs": [
-        "bf99f1c1-341e-33cb-84bb-7d67dfd03680"
-      ],
-      "isSDSPlus": true
-    }
-  ]
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2021-01-05"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 9
+          }
+        },
+        "sentencedAt": "2021-11-03",
+        "identifier": "40a9ac38-02cf-43f9-82a9-e7f86484f9d9",
+        "consecutiveSentenceUUIDs": [
+          "bf99f1c1-341e-33cb-84bb-7d67dfd03680"
+        ],
+        "isSDSPlus": true,
+        "isSDSPlusEligibleSentenceTypeLengthAndOffence": true,
+        "isSDSPlusOffenceInPeriod": true,
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      }
+    ],
+    "adjustments": {}
+  },
+  "params": "sds-50"
 }

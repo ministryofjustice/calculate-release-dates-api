@@ -1,48 +1,57 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
+      {
+        "type": "ExtendedDeterminateSentence",
+        "offence": {
+          "committedAt": "2015-04-02"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "YEARS": 5
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "YEARS": 1
+          }
+        },
+        "sentencedAt": "2015-05-20",
+        "identifier": "7e1fcbbd-287c-459f-8ddb-3e9edae6693d"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2015-04-02"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 11
+          }
+        },
+        "sentencedAt": "2020-03-23",
+        "identifier": "6fdf42c0-a6ab-4bf5-a278-9536433c85dd",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "BotusSentence",
+        "offence": {
+          "committedAt": "2015-01-03"
+        },
+        "duration": {
+          "durationElements": {
+            "DAYS": 7
+          }
+        },
+        "sentencedAt": "2020-09-03",
+        "identifier": "85322722-5788-4a69-b5a3-ced6cd1195a0"
+      }
+    ],
+    "adjustments": {}
   },
-  "sentences": [
-    {
-      "type": "ExtendedDeterminateSentence",
-      "offence": {
-        "committedAt": "2015-04-02"
-      },
-      "custodialDuration": {
-        "durationElements": {
-          "YEARS": 5
-        }
-      },
-      "extensionDuration": {
-        "durationElements": {
-          "YEARS": 1
-        }
-      },
-      "sentencedAt": "2015-05-20"
-    },
-    {
-      "offence": {
-        "committedAt": "2015-04-02"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 11
-        }
-      },
-      "sentencedAt": "2020-03-23"
-    },
-    {
-      "type": "BotusSentence",
-      "offence": {
-        "committedAt": "2015-01-03"
-      },
-      "duration": {
-        "durationElements": {
-          "DAYS": 7
-        }
-      },
-      "sentencedAt": "2020-09-03"
-    }
-  ]
+  "params": "sds-50"
 }

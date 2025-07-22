@@ -1,94 +1,111 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2023-02-26",
-        "offenceCode": "OF61014"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 12
-        }
-      },
-      "sentencedAt": "2023-06-13",
-      "identifier": "027f5df0-6e73-3088-8c1b-47f24df3607d",
-      "recallType": "STANDARD_RECALL"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2023-03-01",
-        "offenceCode": "CJ88144"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 4
-        }
-      },
-      "sentencedAt": "2023-06-13",
-      "recallType": "STANDARD_RECALL"
-    },
-    {
-      "offence": {
-        "committedAt": "2023-03-01",
-        "offenceCode": "OF61014"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 6
-        }
-      },
-      "sentencedAt": "2023-06-13",
-      "consecutiveSentenceUUIDs": [
-        "027f5df0-6e73-3088-8c1b-47f24df3607d"
-      ],
-      "recallType": "STANDARD_RECALL"
-    },
-    {
-      "offence": {
-        "committedAt": "2023-03-01",
-        "offenceCode": "OF61014"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 6
-        }
-      },
-      "sentencedAt": "2023-06-13",
-      "recallType": "STANDARD_RECALL"
-    },
-    {
-      "offence": {
-        "committedAt": "2023-12-30",
-        "offenceCode": "CJ88144"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 10
-        }
-      },
-      "sentencedAt": "2024-04-29"
-    }
-  ],
-  "adjustments": {
-    "REMAND": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2024-04-29",
-        "numberOfDays": 3,
-        "fromDate": "2024-01-01",
-        "toDate": "2024-01-03"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2023-02-26",
+          "offenceCode": "OF61014"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 12
+          }
+        },
+        "sentencedAt": "2023-06-13",
+        "identifier": "027f5df0-6e73-3088-8c1b-47f24df3607d",
+        "recallType": "STANDARD_RECALL",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2023-03-01",
+          "offenceCode": "CJ88144"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 4
+          }
+        },
+        "sentencedAt": "2023-06-13",
+        "identifier": "f395d232-9fc8-4bb0-b26e-f9622671fd23",
+        "recallType": "STANDARD_RECALL",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2023-03-01",
+          "offenceCode": "OF61014"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 6
+          }
+        },
+        "sentencedAt": "2023-06-13",
+        "identifier": "763e48dd-ac6f-4993-b491-68a2e98247c4",
+        "consecutiveSentenceUUIDs": [
+          "027f5df0-6e73-3088-8c1b-47f24df3607d"
+        ],
+        "recallType": "STANDARD_RECALL",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2023-03-01",
+          "offenceCode": "OF61014"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 6
+          }
+        },
+        "sentencedAt": "2023-06-13",
+        "identifier": "255fddaa-aec0-4415-ab73-c42aa4c12af3",
+        "recallType": "STANDARD_RECALL",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2023-12-30",
+          "offenceCode": "CJ88144"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 10
+          }
+        },
+        "sentencedAt": "2024-04-29",
+        "identifier": "b08fd547-e750-41c7-84d3-a19b34ad23c0",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
     ],
-    "RECALL_REMAND": [
-      {
-        "appliesToSentencesFrom": "2023-06-13",
-        "numberOfDays": 103,
-        "fromDate": "2023-03-02",
-        "toDate": "2023-06-12"
-      }
-    ]
-  }
+    "adjustments": {
+      "RECALL_REMAND": [
+        {
+          "appliesToSentencesFrom": "2023-06-13",
+          "numberOfDays": 103,
+          "fromDate": "2023-03-02",
+          "toDate": "2023-06-12"
+        }
+      ],
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2024-04-29",
+          "numberOfDays": 3,
+          "fromDate": "2024-01-01",
+          "toDate": "2024-01-03"
+        }
+      ]
+    }
+  },
+  "assertSds40": true
 }

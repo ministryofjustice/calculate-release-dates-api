@@ -1,46 +1,55 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2020-04-03"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 12
-        }
-      },
-      "sentencedAt": "2020-04-05"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2020-09-03"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 4
-        }
-      },
-      "sentencedAt": "2020-09-04"
-    }
-  ],
-  "adjustments": {
-    "UNLAWFULLY_AT_LARGE": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2020-04-20",
-        "numberOfDays": 10,
-        "fromDate": "2020-04-20",
-        "toDate": "2020-04-29"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2020-04-03"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 12
+          }
+        },
+        "sentencedAt": "2020-04-05",
+        "identifier": "2b7ad542-d1a8-47ea-982d-dc8ba192b971",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       },
       {
-        "appliesToSentencesFrom": "2020-09-10",
-        "numberOfDays": 20,
-        "fromDate": "2020-09-10",
-        "toDate": "2020-09-29"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2020-09-03"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 4
+          }
+        },
+        "sentencedAt": "2020-09-04",
+        "identifier": "a88f782e-7b9a-47e7-9fa2-c6516ce33b43",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
-    ]
-  }
+    ],
+    "adjustments": {
+      "UNLAWFULLY_AT_LARGE": [
+        {
+          "appliesToSentencesFrom": "2020-04-20",
+          "numberOfDays": 10,
+          "fromDate": "2020-04-20",
+          "toDate": "2020-04-29"
+        },
+        {
+          "appliesToSentencesFrom": "2020-09-10",
+          "numberOfDays": 20,
+          "fromDate": "2020-09-10",
+          "toDate": "2020-09-29"
+        }
+      ]
+    }
+  },
+  "params": "sds-50"
 }

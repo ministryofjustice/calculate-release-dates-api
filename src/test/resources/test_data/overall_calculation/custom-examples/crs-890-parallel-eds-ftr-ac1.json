@@ -1,39 +1,47 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2019-10-08"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 5
-        }
-      },
-      "sentencedAt": "2015-11-08",
-      "recallType": "FIXED_TERM_RECALL_28"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "type": "ExtendedDeterminateSentence",
-      "offence": {
-        "committedAt": "2021-10-02"
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2019-10-08"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 5
+          }
+        },
+        "sentencedAt": "2015-11-08",
+        "identifier": "9aa01690-20d9-495a-844e-b80ffb44bf88",
+        "recallType": "FIXED_TERM_RECALL_28",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       },
-      "custodialDuration": {
-        "durationElements": {
-          "YEARS": 1,
-          "MONTHS": 6
-        }
-      },
-      "extensionDuration": {
-        "durationElements": {
-          "YEARS": 2
-        }
-      },
-      "sentencedAt": "2019-03-20"
-    }
-  ],
-  "returnToCustodyDate": "2019-03-10"
+      {
+        "type": "ExtendedDeterminateSentence",
+        "offence": {
+          "committedAt": "2021-10-02"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "YEARS": 1,
+            "MONTHS": 6
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "YEARS": 2
+          }
+        },
+        "sentencedAt": "2019-03-20",
+        "identifier": "fb2870e7-7b4d-49cb-9456-40031853e0ad"
+      }
+    ],
+    "adjustments": {},
+    "returnToCustodyDate": "2019-03-10"
+  },
+  "params": "sds-50"
 }

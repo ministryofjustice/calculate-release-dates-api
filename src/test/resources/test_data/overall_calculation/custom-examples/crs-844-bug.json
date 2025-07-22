@@ -1,79 +1,94 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2017-01-09"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 6,
-          "YEARS": 4
-        }
-      },
-      "sentencedAt": "2018-04-19",
-      "recallType": "STANDARD_RECALL"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2019-12-13"
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2017-01-09"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 6,
+            "YEARS": 4
+          }
+        },
+        "sentencedAt": "2018-04-19",
+        "identifier": "b7fd4844-63a3-42c1-a360-4b0fd9372c66",
+        "recallType": "STANDARD_RECALL",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 8
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2019-12-13"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 8
+          }
+        },
+        "sentencedAt": "2020-01-06",
+        "identifier": "532d0e31-d33f-4895-a5b7-d9619c1dd2f1",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2019-12-13"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 7,
+            "YEARS": 6
+          }
+        },
+        "sentencedAt": "2021-03-12",
+        "identifier": "11122319-d3a3-4d48-88fb-df2688fc52e0",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2019-12-13"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 45
+          }
+        },
+        "sentencedAt": "2021-03-12",
+        "identifier": "676d5f25-1bcc-4fa2-9e9d-dcb69144c8cd",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      }
+    ],
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2020-01-06",
+          "numberOfDays": 1,
+          "fromDate": "2019-12-16",
+          "toDate": "2019-12-16"
         }
-      },
-      "sentencedAt": "2020-01-06"
-    },
-    {
-      "offence": {
-        "committedAt": "2019-12-13"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 7,
-          "YEARS": 6
+      ],
+      "RECALL_TAGGED_BAIL": [
+        {
+          "appliesToSentencesFrom": "2018-04-19",
+          "numberOfDays": 40
         }
-      },
-      "sentencedAt": "2021-03-12"
-    },
-    {
-      "offence": {
-        "committedAt": "2019-12-13"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 45
+      ],
+      "RECALL_REMAND": [
+        {
+          "appliesToSentencesFrom": "2018-04-19",
+          "numberOfDays": 229,
+          "fromDate": "2017-09-02",
+          "toDate": "2018-04-18"
         }
-      },
-      "sentencedAt": "2021-03-12"
+      ]
     }
-  ],
-  "adjustments": {
-    "RECALL_REMAND": [
-      {
-        "appliesToSentencesFrom": "2018-04-19",
-        "numberOfDays": 229,
-        "fromDate": "2017-09-02",
-        "toDate": "2018-04-18"
-      }
-    ],
-    "RECALL_TAGGED_BAIL": [
-      {
-        "appliesToSentencesFrom": "2018-04-19",
-        "numberOfDays": 40
-      }
-    ],
-    "REMAND": [
-      {
-        "appliesToSentencesFrom": "2020-01-06",
-        "numberOfDays": 1,
-        "fromDate": "2019-12-16",
-        "toDate": "2019-12-16"
-      }
-    ]
-  }
+  },
+  "params": "sds-50"
 }

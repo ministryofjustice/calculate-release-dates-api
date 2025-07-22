@@ -1,67 +1,82 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2023-05-11",
-        "offenceCode": "MD71239"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 3
-        }
-      },
-      "sentencedAt": "2023-07-07"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2023-05-11",
-        "offenceCode": "MD71442"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 12
-        }
-      },
-      "sentencedAt": "2023-07-07"
-    },
-    {
-      "offence": {
-        "committedAt": "2024-07-16",
-        "offenceCode": "MD71230"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 54
-        }
-      },
-      "sentencedAt": "2024-08-15",
-      "isSDSPlusOffenceInPeriod": true
-    }
-  ],
-  "adjustments": {
-    "REMAND": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2023-07-07",
-        "numberOfDays": 56,
-        "fromDate": "2023-05-12",
-        "toDate": "2023-07-06"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2023-05-11",
+          "offenceCode": "MD71239"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 3
+          }
+        },
+        "sentencedAt": "2023-07-07",
+        "identifier": "ffd5e707-abd7-40a8-ab7c-dc540d708294",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2023-05-11",
+          "offenceCode": "MD71442"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 12
+          }
+        },
+        "sentencedAt": "2023-07-07",
+        "identifier": "67acd1a7-1f00-434a-8cd8-1f60338f915d",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2024-07-16",
+          "offenceCode": "MD71230"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 54
+          }
+        },
+        "sentencedAt": "2024-08-15",
+        "identifier": "beaa32ff-d7db-4d03-a3b9-c1af16108d1c",
+        "isSDSPlusOffenceInPeriod": true,
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      }
+    ],
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2023-07-07",
+          "numberOfDays": 56,
+          "fromDate": "2023-05-12",
+          "toDate": "2023-07-06"
+        }
+      ]
+    },
+    "externalMovements": [
+      {
+        "movementDate": "2024-05-14",
+        "movementReason": "HDC",
+        "direction": "OUT"
+      },
+      {
+        "movementDate": "2024-07-18",
+        "movementReason": "ADMISSION",
+        "direction": "IN"
       }
     ]
   },
-  "externalMovements": [
-    {
-      "movementDate": "2024-05-14",
-      "movementReason": "HDC",
-      "direction": "OUT"
-    },
-    {
-      "movementDate": "2024-07-18",
-      "movementReason": "ADMISSION",
-      "direction": "IN"
-    }
-  ]
+  "featureToggles": {
+    "externalMovementsSds40": true,
+    "externalMovementsAdjustmentSharing": true
+  }
 }

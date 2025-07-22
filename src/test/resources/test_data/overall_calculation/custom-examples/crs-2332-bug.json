@@ -1,183 +1,202 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2016-06-14",
-        "offenceCode": "OF61017"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 5,
-          "MONTHS": 6
-        }
-      },
-      "sentencedAt": "2017-12-18",
-      "identifier": "1be23489-5d8a-3603-a02c-6718ece03b1b",
-      "isSDSPlusEligibleSentenceTypeLengthAndOffence": true,
-      "hasAnSDSEarlyReleaseExclusion": "VIOLENT"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2016-06-14",
-        "offenceCode": "OF61102"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 1,
-          "MONTHS": 6
-        }
-      },
-      "sentencedAt": "2017-12-18",
-      "identifier": "a9c0130c-d12b-3f52-926b-701de17c68e6",
-      "consecutiveSentenceUUIDs": [
-        "1be23489-5d8a-3603-a02c-6718ece03b1b"
-      ]
-    },
-    {
-      "offence": {
-        "committedAt": "2017-12-15",
-        "offenceCode": "BA76001"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 5
-        }
-      },
-      "sentencedAt": "2017-12-18",
-      "identifier": "82bea930-0281-37e7-ba63-4808a34c59eb",
-      "consecutiveSentenceUUIDs": [
-        "a9c0130c-d12b-3f52-926b-701de17c68e6"
-      ]
-    },
-    {
-      "offence": {
-        "committedAt": "2014-05-19",
-        "offenceCode": "CD71015"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 7
-        }
-      },
-      "sentencedAt": "2017-12-18",
-      "consecutiveSentenceUUIDs": [
-        "82bea930-0281-37e7-ba63-4808a34c59eb"
-      ]
-    },
-    {
-      "offence": {
-        "committedAt": "2016-06-14",
-        "offenceCode": "OF61017"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 5,
-          "MONTHS": 6
-        }
-      },
-      "sentencedAt": "2017-12-18",
-      "identifier": "d725438b-e686-38f8-84ad-bdbf09d5717d",
-      "recallType": "STANDARD_RECALL",
-      "hasAnSDSEarlyReleaseExclusion": "VIOLENT"
-    },
-    {
-      "offence": {
-        "committedAt": "2016-06-14",
-        "offenceCode": "OF61102"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 1,
-          "MONTHS": 6
-        }
-      },
-      "sentencedAt": "2017-12-18",
-      "identifier": "18f370a8-e3bc-3792-9578-53919dca0648",
-      "consecutiveSentenceUUIDs": [
-        "d725438b-e686-38f8-84ad-bdbf09d5717d"
-      ],
-      "recallType": "STANDARD_RECALL"
-    },
-    {
-      "offence": {
-        "committedAt": "2017-12-15",
-        "offenceCode": "BA76001"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 5
-        }
-      },
-      "sentencedAt": "2017-12-18",
-      "identifier": "a5af2e50-e679-3ed5-b92e-c5b5c70f347a",
-      "consecutiveSentenceUUIDs": [
-        "18f370a8-e3bc-3792-9578-53919dca0648"
-      ],
-      "recallType": "STANDARD_RECALL"
-    },
-    {
-      "offence": {
-        "committedAt": "2014-05-19",
-        "offenceCode": "CD71015"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 7
-        }
-      },
-      "sentencedAt": "2017-12-18",
-      "consecutiveSentenceUUIDs": [
-        "a5af2e50-e679-3ed5-b92e-c5b5c70f347a"
-      ],
-      "recallType": "STANDARD_RECALL"
-    },
-    {
-      "type": "AFineSentence",
-      "offence": {
-        "committedAt": "2005-07-27",
-        "offenceCode": "PU86004"
-      },
-      "duration": {
-        "durationElements": {
-          "DAYS": 86
-        }
-      },
-      "sentencedAt": "2023-12-20",
-      "fineAmount": 4772.36
-    }
-  ],
-  "adjustments": {
-    "REMAND": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2017-12-18",
-        "numberOfDays": 22,
-        "fromDate": "2017-02-01",
-        "toDate": "2017-02-22"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2016-06-14",
+          "offenceCode": "OF61017"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 5,
+            "MONTHS": 6
+          }
+        },
+        "sentencedAt": "2017-12-18",
+        "identifier": "1be23489-5d8a-3603-a02c-6718ece03b1b",
+        "isSDSPlusEligibleSentenceTypeLengthAndOffence": true,
+        "hasAnSDSEarlyReleaseExclusion": "VIOLENT"
       },
       {
-        "appliesToSentencesFrom": "2017-12-18",
-        "numberOfDays": 3,
-        "fromDate": "2017-12-15",
-        "toDate": "2017-12-17"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2016-06-14",
+          "offenceCode": "OF61102"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 1,
+            "MONTHS": 6
+          }
+        },
+        "sentencedAt": "2017-12-18",
+        "identifier": "a9c0130c-d12b-3f52-926b-701de17c68e6",
+        "consecutiveSentenceUUIDs": [
+          "1be23489-5d8a-3603-a02c-6718ece03b1b"
+        ],
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2017-12-15",
+          "offenceCode": "BA76001"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 5
+          }
+        },
+        "sentencedAt": "2017-12-18",
+        "identifier": "82bea930-0281-37e7-ba63-4808a34c59eb",
+        "consecutiveSentenceUUIDs": [
+          "a9c0130c-d12b-3f52-926b-701de17c68e6"
+        ],
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2014-05-19",
+          "offenceCode": "CD71015"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 7
+          }
+        },
+        "sentencedAt": "2017-12-18",
+        "identifier": "e581326f-c5eb-4f42-9912-c984b225fb12",
+        "consecutiveSentenceUUIDs": [
+          "82bea930-0281-37e7-ba63-4808a34c59eb"
+        ],
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2016-06-14",
+          "offenceCode": "OF61017"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 5,
+            "MONTHS": 6
+          }
+        },
+        "sentencedAt": "2017-12-18",
+        "identifier": "d725438b-e686-38f8-84ad-bdbf09d5717d",
+        "recallType": "STANDARD_RECALL",
+        "hasAnSDSEarlyReleaseExclusion": "VIOLENT"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2016-06-14",
+          "offenceCode": "OF61102"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 1,
+            "MONTHS": 6
+          }
+        },
+        "sentencedAt": "2017-12-18",
+        "identifier": "18f370a8-e3bc-3792-9578-53919dca0648",
+        "consecutiveSentenceUUIDs": [
+          "d725438b-e686-38f8-84ad-bdbf09d5717d"
+        ],
+        "recallType": "STANDARD_RECALL",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2017-12-15",
+          "offenceCode": "BA76001"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 5
+          }
+        },
+        "sentencedAt": "2017-12-18",
+        "identifier": "a5af2e50-e679-3ed5-b92e-c5b5c70f347a",
+        "consecutiveSentenceUUIDs": [
+          "18f370a8-e3bc-3792-9578-53919dca0648"
+        ],
+        "recallType": "STANDARD_RECALL",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2014-05-19",
+          "offenceCode": "CD71015"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 7
+          }
+        },
+        "sentencedAt": "2017-12-18",
+        "identifier": "b83750e2-d51e-4dc1-beb8-4e2d467cc91b",
+        "consecutiveSentenceUUIDs": [
+          "a5af2e50-e679-3ed5-b92e-c5b5c70f347a"
+        ],
+        "recallType": "STANDARD_RECALL",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "AFineSentence",
+        "offence": {
+          "committedAt": "2005-07-27",
+          "offenceCode": "PU86004"
+        },
+        "duration": {
+          "durationElements": {
+            "DAYS": 86
+          }
+        },
+        "sentencedAt": "2023-12-20",
+        "identifier": "02f77df0-a753-40b3-8dc4-d62876aa03e7",
+        "fineAmount": 4772.36
       }
     ],
-    "RECALL_REMAND": [
-      {
-        "appliesToSentencesFrom": "2017-12-18",
-        "numberOfDays": 22,
-        "fromDate": "2017-02-01",
-        "toDate": "2017-02-22"
-      },
-      {
-        "appliesToSentencesFrom": "2017-12-18",
-        "numberOfDays": 3,
-        "fromDate": "2017-12-15",
-        "toDate": "2017-12-17"
-      }
-    ]
+    "adjustments": {
+      "RECALL_REMAND": [
+        {
+          "appliesToSentencesFrom": "2017-12-18",
+          "numberOfDays": 22,
+          "fromDate": "2017-02-01",
+          "toDate": "2017-02-22"
+        },
+        {
+          "appliesToSentencesFrom": "2017-12-18",
+          "numberOfDays": 3,
+          "fromDate": "2017-12-15",
+          "toDate": "2017-12-17"
+        }
+      ],
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2017-12-18",
+          "numberOfDays": 22,
+          "fromDate": "2017-02-01",
+          "toDate": "2017-02-22"
+        },
+        {
+          "appliesToSentencesFrom": "2017-12-18",
+          "numberOfDays": 3,
+          "fromDate": "2017-12-15",
+          "toDate": "2017-12-17"
+        }
+      ]
+    }
   }
 }

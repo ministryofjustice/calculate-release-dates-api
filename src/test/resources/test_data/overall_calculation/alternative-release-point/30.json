@@ -1,39 +1,48 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2019-07-01",
-        "offenceCode": "A123BC"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 6
-        }
-      },
-      "sentencedAt": "2021-08-02"
-    }
-  ],
-  "adjustments": {
-    "UNLAWFULLY_AT_LARGE": [
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2021-08-02",
-        "numberOfDays": 2,
-        "fromDate": "2024-04-19",
-        "toDate": "2024-04-20"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2019-07-01",
+          "offenceCode": "A123BC"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 6
+          }
+        },
+        "sentencedAt": "2021-08-02",
+        "identifier": "4a3e8e8c-6b7c-432f-be93-6147b95712ce",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
     ],
-    "ADDITIONAL_DAYS_AWARDED": [
-      {
-        "appliesToSentencesFrom": "2021-08-02",
-        "numberOfDays": 2,
-        "fromDate": "2024-04-23",
-        "toDate": "2024-04-24"
-      }
-    ]
+    "adjustments": {
+      "ADDITIONAL_DAYS_AWARDED": [
+        {
+          "appliesToSentencesFrom": "2021-08-02",
+          "numberOfDays": 2,
+          "fromDate": "2024-04-23",
+          "toDate": "2024-04-24"
+        }
+      ],
+      "UNLAWFULLY_AT_LARGE": [
+        {
+          "appliesToSentencesFrom": "2021-08-02",
+          "numberOfDays": 2,
+          "fromDate": "2024-04-19",
+          "toDate": "2024-04-20"
+        }
+      ]
+    }
   },
-  "calculateErsed": true
+  "userInputs": {
+    "calculateErsed": true,
+    "useOffenceIndicators": true
+  },
+  "params": "sds-45"
 }

@@ -1,44 +1,52 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2012-12-16"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 3
-        }
-      },
-      "sentencedAt": "2021-12-17",
-      "identifier": "0b10fc4b-1920-4b74-96e0-d95369adb5e1"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2012-12-16"
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2012-12-16"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 3
+          }
+        },
+        "sentencedAt": "2021-12-17",
+        "identifier": "0b10fc4b-1920-4b74-96e0-d95369adb5e1",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 3
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2012-12-16"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 3
+          }
+        },
+        "sentencedAt": "2022-01-18",
+        "identifier": "c3bde614-c190-410d-b4c2-f1a7387eef0b",
+        "consecutiveSentenceUUIDs": [
+          "0b10fc4b-1920-4b74-96e0-d95369adb5e1"
+        ],
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      }
+    ],
+    "adjustments": {
+      "ADDITIONAL_DAYS_AWARDED": [
+        {
+          "appliesToSentencesFrom": "2021-12-18",
+          "numberOfDays": 122,
+          "fromDate": "2021-12-18",
+          "toDate": "2022-04-18"
         }
-      },
-      "sentencedAt": "2022-01-18",
-      "consecutiveSentenceUUIDs": [
-        "0b10fc4b-1920-4b74-96e0-d95369adb5e1"
       ]
     }
-  ],
-  "adjustments": {
-    "ADDITIONAL_DAYS_AWARDED": [
-      {
-        "appliesToSentencesFrom": "2021-12-18",
-        "numberOfDays": 122,
-        "fromDate": "2021-12-18",
-        "toDate": "2022-04-18"
-      }
-    ]
-  }
+  },
+  "params": "sds-50"
 }

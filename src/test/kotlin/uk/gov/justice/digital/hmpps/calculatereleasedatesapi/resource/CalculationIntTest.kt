@@ -98,6 +98,19 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
   }
 
   @Test
+  fun `Confirm calculation for a prisoner where CONCURRENT_CONSECUTIVE validation is ignored`() {
+    mockManageOffencesClient.noneInPCSC(listOf("SX03001,TH68007A,TR68132"))
+    val prelim = createPreliminaryCalculation("CRS-2370")
+    val confirmed = createConfirmCalculationForPrisoner(prelim.calculationRequestId)
+    val calculationRequest: CalculationRequest =
+      calculationRequestRepository.findById(confirmed.calculationRequestId)
+        .orElseThrow { EntityNotFoundException("No calculation request exists for id ${confirmed.calculationRequestId}") }
+
+    assertThat(calculationRequest.calculationStatus).isEqualTo("CONFIRMED")
+    assertThat(calculationRequest.inputData["offender"]["reference"].asText()).isEqualTo("CRS-2370")
+  }
+
+  @Test
   fun `Get the results for a confirmed calculation`() {
     val resultCalculation = createPreliminaryCalculation(PRISONER_ID)
     createConfirmCalculationForPrisoner(resultCalculation.calculationRequestId)

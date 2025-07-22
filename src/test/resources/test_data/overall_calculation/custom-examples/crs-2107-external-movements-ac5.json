@@ -1,71 +1,84 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2022-05-12",
-        "offenceCode": "TH68023"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 6
-        }
-      },
-      "sentencedAt": "2022-09-27",
-      "hasAnSDSEarlyReleaseExclusion": "VIOLENT"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2024-09-19",
-        "offenceCode": "CJ88117"
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2022-05-12",
+          "offenceCode": "TH68023"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 6
+          }
+        },
+        "sentencedAt": "2022-09-27",
+        "identifier": "b95ac672-8d69-4db8-aa9e-78e1bec3e339",
+        "hasAnSDSEarlyReleaseExclusion": "VIOLENT"
       },
-      "duration": {
-        "durationElements": {
-          "YEARS": 4
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2024-09-19",
+          "offenceCode": "CJ88117"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 4
+          }
+        },
+        "sentencedAt": "2024-09-23",
+        "identifier": "dbbde9bf-7b45-48bb-8ffb-0c3842f5cd65",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      }
+    ],
+    "adjustments": {
+      "ADDITIONAL_DAYS_AWARDED": [
+        {
+          "appliesToSentencesFrom": "2023-04-27",
+          "numberOfDays": 10,
+          "fromDate": "2023-04-27",
+          "toDate": "2023-05-06"
         }
+      ],
+      "UNLAWFULLY_AT_LARGE": [
+        {
+          "appliesToSentencesFrom": "2024-05-13",
+          "numberOfDays": 133,
+          "fromDate": "2024-05-13",
+          "toDate": "2024-09-22"
+        }
+      ],
+      "TAGGED_BAIL": [
+        {
+          "appliesToSentencesFrom": "2022-09-27",
+          "numberOfDays": 101
+        }
+      ]
+    },
+    "externalMovements": [
+      {
+        "movementDate": "2024-05-12",
+        "movementReason": "ERS",
+        "direction": "OUT"
       },
-      "sentencedAt": "2024-09-23",
-      "hasAnSDSEarlyReleaseExclusion": "NO"
-    }
-  ],
-  "adjustments": {
-    "TAGGED_BAIL": [
       {
-        "appliesToSentencesFrom": "2022-09-27",
-        "numberOfDays": 101
-      }
-    ],
-    "UNLAWFULLY_AT_LARGE": [
-      {
-        "appliesToSentencesFrom": "2024-05-13",
-        "numberOfDays": 133,
-        "fromDate": "2024-05-13",
-        "toDate": "2024-09-22"
-      }
-    ],
-    "ADDITIONAL_DAYS_AWARDED": [
-      {
-        "appliesToSentencesFrom": "2023-04-27",
-        "numberOfDays": 10,
-        "fromDate": "2023-04-27",
-        "toDate": "2023-05-06"
+        "movementDate": "2024-09-23",
+        "movementReason": "ADMISSION",
+        "direction": "IN"
       }
     ]
   },
-  "externalMovements": [
-    {
-      "direction": "OUT",
-      "movementDate": "2024-05-12",
-      "movementReason": "ERS"
-    },
-    {
-      "direction": "IN",
-      "movementDate": "2024-09-23",
-      "movementReason": "ADMISSION"
-    }
-  ],
-  "calculateErsed": true
+  "userInputs": {
+    "calculateErsed": true,
+    "useOffenceIndicators": true
+  },
+  "featureToggles": {
+    "externalMovementsSds40": true,
+    "externalMovementsAdjustmentSharing": true
+  }
 }

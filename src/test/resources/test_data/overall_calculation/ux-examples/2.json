@@ -1,57 +1,69 @@
 {
-  "offender": {
-    "reference": "ABC123D",
-    "dateOfBirth": "1970-03-03"
-  },
-  "sentences": [
-    {
-      "caseSequence": 1,
-      "lineSequence": 1,
-      "offence": {
-        "committedAt": "2019-11-15"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 2
-        }
-      },
-      "sentencedAt": "2020-05-17"
+  "booking": {
+    "offender": {
+      "reference": "ABC123D",
+      "dateOfBirth": "1970-03-03"
     },
-    {
-      "caseSequence": 2,
-      "lineSequence": 2,
-      "offence": {
-        "committedAt": "2020-11-15"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 18
-        }
-      },
-      "sentencedAt": "2021-03-27"
-    },
-    {
-      "caseSequence": 3,
-      "lineSequence": 3,
-      "offence": {
-        "committedAt": "2020-11-15"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 2
-        }
-      },
-      "sentencedAt": "2021-08-05"
-    }
-  ],
-  "adjustments": {
-    "REMAND": [
+    "sentences": [
       {
-        "numberOfDays": 20,
-        "appliesToSentencesFrom": "2020-05-17",
-        "toDate": "2020-05-16",
-        "fromDate": "2020-04-26"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2019-11-15"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 2
+          }
+        },
+        "sentencedAt": "2020-05-17",
+        "identifier": "fba317ac-0aa0-4e12-a1c1-b0c188636728",
+        "caseSequence": 1,
+        "lineSequence": 1,
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2020-11-15"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 18
+          }
+        },
+        "sentencedAt": "2021-03-27",
+        "identifier": "d2f66c4a-450c-42a6-afff-8e6ef0351a02",
+        "caseSequence": 2,
+        "lineSequence": 2,
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2020-11-15"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 2
+          }
+        },
+        "sentencedAt": "2021-08-05",
+        "identifier": "1e9b6977-0946-4004-a4c3-7aa09a3696a9",
+        "caseSequence": 3,
+        "lineSequence": 3,
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
-    ]
-  }
+    ],
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2020-05-17",
+          "numberOfDays": 20,
+          "fromDate": "2020-04-26",
+          "toDate": "2020-05-16"
+        }
+      ]
+    }
+  },
+  "params": "sds-50"
 }

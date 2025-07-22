@@ -1,58 +1,67 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01",
-    "isActiveSexOffender": true
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2023-08-29",
-        "offenceCode": "SX03019A"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 32
-        }
-      },
-      "sentencedAt": "2023-09-26",
-      "hasAnSDSEarlyReleaseExclusion": "SEXUAL"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01",
+      "isActiveSexOffender": true
     },
-    {
-      "offence": {
-        "committedAt": "2023-08-30",
-        "offenceCode": "SX03224A"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 12
-        }
-      },
-      "sentencedAt": "2023-09-26",
-      "hasAnSDSEarlyReleaseExclusion": "SEXUAL"
-    },
-    {
-      "offence": {
-        "committedAt": "2023-09-03",
-        "offenceCode": "SX03244"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 24
-        }
-      },
-      "sentencedAt": "2023-09-26",
-      "hasAnSDSEarlyReleaseExclusion": "SEXUAL"
-    }
-  ],
-  "adjustments": {
-    "REMAND": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2023-09-26",
-        "numberOfDays": 15,
-        "fromDate": "2023-09-05",
-        "toDate": "2023-09-25"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2023-08-29",
+          "offenceCode": "SX03019A"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 32
+          }
+        },
+        "sentencedAt": "2023-09-26",
+        "identifier": "87c505b4-a4fe-4940-86e2-5bcba3183523",
+        "hasAnSDSEarlyReleaseExclusion": "SEXUAL"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2023-08-30",
+          "offenceCode": "SX03224A"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 12
+          }
+        },
+        "sentencedAt": "2023-09-26",
+        "identifier": "64069774-4198-4782-87dc-81c2c80ba0c9",
+        "hasAnSDSEarlyReleaseExclusion": "SEXUAL"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2023-09-03",
+          "offenceCode": "SX03244"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 24
+          }
+        },
+        "sentencedAt": "2023-09-26",
+        "identifier": "2477ac2c-2740-47f4-9217-4ce3bfced992",
+        "hasAnSDSEarlyReleaseExclusion": "SEXUAL"
       }
-    ]
-  }
+    ],
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2023-09-26",
+          "numberOfDays": 15,
+          "fromDate": "2023-09-05",
+          "toDate": "2023-09-25"
+        }
+      ]
+    }
+  },
+  "expectedValidationException": "UNABLE_TO_DETERMINE_SHPO_RELEASE_PROVISIONS"
 }

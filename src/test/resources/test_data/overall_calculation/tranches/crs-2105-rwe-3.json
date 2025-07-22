@@ -1,79 +1,88 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01",
-    "isActiveSexOffender": true
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "1994-06-12",
-        "offenceCode": "SX56025-029N"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 8
-        }
-      },
-      "sentencedAt": "2024-06-28",
-      "identifier": "f3837ea1-7b3b-3d7a-8392-a5dc18354abf",
-      "hasAnSDSEarlyReleaseExclusion": "SEXUAL"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01",
+      "isActiveSexOffender": true
     },
-    {
-      "offence": {
-        "committedAt": "1992-12-31",
-        "offenceCode": "SX56087-088N"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 4
-        }
-      },
-      "sentencedAt": "2024-06-28",
-      "hasAnSDSEarlyReleaseExclusion": "SEXUAL"
-    },
-    {
-      "offence": {
-        "committedAt": "1992-12-31",
-        "offenceCode": "SX56025-029N"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 4
-        }
-      },
-      "sentencedAt": "2024-06-28",
-      "identifier": "6a35e7fd-13d3-324f-ab3b-37fa226d091b",
-      "consecutiveSentenceUUIDs": [
-        "f3837ea1-7b3b-3d7a-8392-a5dc18354abf"
-      ],
-      "hasAnSDSEarlyReleaseExclusion": "SEXUAL"
-    },
-    {
-      "offence": {
-        "committedAt": "1992-12-31",
-        "offenceCode": "SX56025-029N"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 4
-        }
-      },
-      "sentencedAt": "2024-06-28",
-      "consecutiveSentenceUUIDs": [
-        "6a35e7fd-13d3-324f-ab3b-37fa226d091b"
-      ],
-      "hasAnSDSEarlyReleaseExclusion": "SEXUAL"
-    }
-  ],
-  "adjustments": {
-    "REMAND": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2024-06-28",
-        "numberOfDays": 42,
-        "fromDate": "2024-05-17",
-        "toDate": "2024-06-27"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "1994-06-12",
+          "offenceCode": "SX56025-029N"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 8
+          }
+        },
+        "sentencedAt": "2024-06-28",
+        "identifier": "f3837ea1-7b3b-3d7a-8392-a5dc18354abf",
+        "hasAnSDSEarlyReleaseExclusion": "SEXUAL"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "1992-12-31",
+          "offenceCode": "SX56087-088N"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 4
+          }
+        },
+        "sentencedAt": "2024-06-28",
+        "identifier": "47dac7ed-5d05-4480-a689-c9c4d8ac70ed",
+        "hasAnSDSEarlyReleaseExclusion": "SEXUAL"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "1992-12-31",
+          "offenceCode": "SX56025-029N"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 4
+          }
+        },
+        "sentencedAt": "2024-06-28",
+        "identifier": "6a35e7fd-13d3-324f-ab3b-37fa226d091b",
+        "consecutiveSentenceUUIDs": [
+          "f3837ea1-7b3b-3d7a-8392-a5dc18354abf"
+        ],
+        "hasAnSDSEarlyReleaseExclusion": "SEXUAL"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "1992-12-31",
+          "offenceCode": "SX56025-029N"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 4
+          }
+        },
+        "sentencedAt": "2024-06-28",
+        "identifier": "9039412f-9b0f-4141-9df4-6566704cadd7",
+        "consecutiveSentenceUUIDs": [
+          "6a35e7fd-13d3-324f-ab3b-37fa226d091b"
+        ],
+        "hasAnSDSEarlyReleaseExclusion": "SEXUAL"
       }
-    ]
-  }
+    ],
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2024-06-28",
+          "numberOfDays": 42,
+          "fromDate": "2024-05-17",
+          "toDate": "2024-06-27"
+        }
+      ]
+    }
+  },
+  "assertSds40": true
 }

@@ -1,42 +1,49 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "type": "SopcSentence",
-      "offence": {
-        "committedAt": "2022-04-11"
-      },
-      "custodialDuration": {
-        "durationElements": {
-          "YEARS": 3
-        }
-      },
-      "extensionDuration": {
-        "durationElements": {
-          "YEARS": 1
-        }
-      },
-      "sentencedAt": "2022-04-11"
-    }
-  ],
-  "adjustments": {
-    "REMAND": [
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2022-04-11",
-        "numberOfDays": 204,
-        "fromDate": "2021-05-18",
-        "toDate": "2021-12-07"
+        "type": "SopcSentence",
+        "offence": {
+          "committedAt": "2022-04-11"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "YEARS": 3
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "YEARS": 1
+          }
+        },
+        "sentencedAt": "2022-04-11",
+        "identifier": "5e1de931-5799-4fa7-9679-81bba68e7ece"
       }
     ],
-    "TAGGED_BAIL": [
-      {
-        "appliesToSentencesFrom": "2022-04-11",
-        "numberOfDays": 23
-      }
-    ]
+    "adjustments": {
+      "TAGGED_BAIL": [
+        {
+          "appliesToSentencesFrom": "2022-04-11",
+          "numberOfDays": 23
+        }
+      ],
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2022-04-11",
+          "numberOfDays": 204,
+          "fromDate": "2021-05-18",
+          "toDate": "2021-12-07"
+        }
+      ]
+    }
   },
-  "calculateErsed": true
+  "userInputs": {
+    "calculateErsed": true,
+    "useOffenceIndicators": true
+  },
+  "params": "sds-50"
 }

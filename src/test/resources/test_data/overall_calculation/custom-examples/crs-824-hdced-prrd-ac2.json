@@ -1,67 +1,78 @@
 {
-  "offender": {
-    "reference": "ABC123D",
-    "dateOfBirth": "1970-03-03"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2019-04-03"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 45
-        }
-      },
-      "sentencedAt": "2019-05-03",
-      "caseSequence": 2,
-      "lineSequence": 3,
-      "caseReference": null,
-      "recallType": "STANDARD_RECALL"
+  "booking": {
+    "offender": {
+      "reference": "ABC123D",
+      "dateOfBirth": "1970-03-03"
     },
-    {
-      "offence": {
-        "committedAt": "2021-04-07"
-      },
-      "duration": {
-        "durationElements": {
-          "WEEKS": 16
-        }
-      },
-      "sentencedAt": "2021-04-09",
-      "caseSequence": 1,
-      "lineSequence": 4,
-      "caseReference": "012100588062"
-    },
-    {
-      "offence": {
-        "committedAt": "2021-04-07"
-      },
-      "duration": {
-        "durationElements": {
-          "WEEKS": 16
-        }
-      },
-      "sentencedAt": "2021-04-09",
-      "caseSequence": 1,
-      "lineSequence": 4,
-      "caseReference": "012100588062"
-    }
-  ],
-  "adjustments": {
-    "UNLAWFULLY_AT_LARGE": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2021-03-17",
-        "numberOfDays": 1,
-        "fromDate": "2021-03-17",
-        "toDate": "2021-03-17"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2019-04-03"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 45
+          }
+        },
+        "sentencedAt": "2019-05-03",
+        "identifier": "6284af77-8b93-4f40-b5f0-cde255f4dab6",
+        "caseSequence": 2,
+        "lineSequence": 3,
+        "recallType": "STANDARD_RECALL",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2021-04-07"
+        },
+        "duration": {
+          "durationElements": {
+            "WEEKS": 16
+          }
+        },
+        "sentencedAt": "2021-04-09",
+        "identifier": "387dff04-542d-48c7-81de-84ac3b892b85",
+        "caseSequence": 1,
+        "lineSequence": 4,
+        "caseReference": "012100588062",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2021-04-07"
+        },
+        "duration": {
+          "durationElements": {
+            "WEEKS": 16
+          }
+        },
+        "sentencedAt": "2021-04-09",
+        "identifier": "8692391f-dfe6-4d4c-8a68-d2170f1b3f68",
+        "caseSequence": 1,
+        "lineSequence": 4,
+        "caseReference": "012100588062",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
     ],
-    "RECALL_REMAND": [
-      {
-        "appliesToSentencesFrom": "2019-05-03",
-        "numberOfDays": 1
-      }
-    ]
-  }
+    "adjustments": {
+      "RECALL_REMAND": [
+        {
+          "appliesToSentencesFrom": "2019-05-03",
+          "numberOfDays": 1
+        }
+      ],
+      "UNLAWFULLY_AT_LARGE": [
+        {
+          "appliesToSentencesFrom": "2021-03-17",
+          "numberOfDays": 1,
+          "fromDate": "2021-03-17",
+          "toDate": "2021-03-17"
+        }
+      ]
+    }
+  },
+  "params": "sds-50"
 }

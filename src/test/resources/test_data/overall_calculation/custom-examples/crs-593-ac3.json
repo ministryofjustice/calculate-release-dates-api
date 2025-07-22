@@ -1,50 +1,56 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2020-07-03"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 2,
-          "MONTHS": 2
-        }
-      },
-      "sentencedAt": "2020-07-04"
-    }
-  ],
-  "adjustments": {
-    "ADDITIONAL_DAYS_AWARDED": [
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2020-07-08",
-        "numberOfDays": 8,
-        "fromDate": "2020-07-08",
-        "toDate": "2020-07-15"
-      },
-      {
-        "appliesToSentencesFrom": "2020-08-23",
-        "numberOfDays": 5,
-        "fromDate": "2020-08-23",
-        "toDate": "2020-08-27"
-      },
-      {
-        "appliesToSentencesFrom": "2020-11-02",
-        "numberOfDays": 17,
-        "fromDate": "2020-11-02",
-        "toDate": "2020-11-18"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2020-07-03"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 2,
+            "MONTHS": 2
+          }
+        },
+        "sentencedAt": "2020-07-04",
+        "identifier": "379601d3-1b15-41b9-ac6a-2b5c950a7552",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
     ],
-    "RESTORATION_OF_ADDITIONAL_DAYS_AWARDED": [
-      {
-        "appliesToSentencesFrom": "2021-02-03",
-        "numberOfDays": 15,
-        "fromDate": "2021-02-03",
-        "toDate": "2021-02-17"
-      }
-    ]
-  }
+    "adjustments": {
+      "RESTORATION_OF_ADDITIONAL_DAYS_AWARDED": [
+        {
+          "appliesToSentencesFrom": "2021-02-03",
+          "numberOfDays": 15,
+          "fromDate": "2021-02-03",
+          "toDate": "2021-02-17"
+        }
+      ],
+      "ADDITIONAL_DAYS_AWARDED": [
+        {
+          "appliesToSentencesFrom": "2020-07-08",
+          "numberOfDays": 8,
+          "fromDate": "2020-07-08",
+          "toDate": "2020-07-15"
+        },
+        {
+          "appliesToSentencesFrom": "2020-08-23",
+          "numberOfDays": 5,
+          "fromDate": "2020-08-23",
+          "toDate": "2020-08-27"
+        },
+        {
+          "appliesToSentencesFrom": "2020-11-02",
+          "numberOfDays": 17,
+          "fromDate": "2020-11-02",
+          "toDate": "2020-11-18"
+        }
+      ]
+    }
+  },
+  "params": "sds-50"
 }

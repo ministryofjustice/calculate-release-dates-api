@@ -1,30 +1,36 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2000-03-17",
-        "offenceCode": "TH68010"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 20
-        }
-      },
-      "sentencedAt": "2000-04-29"
-    }
-  ],
-  "adjustments": {
-    "REMAND": [
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2000-04-28",
-        "numberOfDays": 2,
-        "fromDate": "2000-04-28",
-        "toDate": "2000-04-30"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2000-03-17",
+          "offenceCode": "TH68010"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 20
+          }
+        },
+        "sentencedAt": "2000-04-29",
+        "identifier": "4dcfc78a-fcbd-4b04-b1d2-c6c3c9f89bd0",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
-    ]
-  }
+    ],
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2000-04-28",
+          "numberOfDays": 2,
+          "fromDate": "2000-04-28",
+          "toDate": "2000-04-30"
+        }
+      ]
+    }
+  },
+  "expectedValidationException": "REMAND_OVERLAPS_WITH_SENTENCE"
 }

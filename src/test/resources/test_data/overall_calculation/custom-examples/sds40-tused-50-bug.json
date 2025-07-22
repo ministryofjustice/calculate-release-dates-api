@@ -1,51 +1,63 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2024-04-30",
-        "offenceCode": "TH68010"
-      },
-      "duration": {
-        "durationElements": {
-          "WEEKS": 16
-        }
-      },
-      "sentencedAt": "2024-05-08",
-      "recallType": "FIXED_TERM_RECALL_14"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2024-07-25",
-        "offenceCode": "TH68010"
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2024-04-30",
+          "offenceCode": "TH68010"
+        },
+        "duration": {
+          "durationElements": {
+            "WEEKS": 16
+          }
+        },
+        "sentencedAt": "2024-05-08",
+        "identifier": "b6f6a371-acb0-4fd7-8b3f-df65868b4cc9",
+        "recallType": "FIXED_TERM_RECALL_14",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       },
-      "duration": {
-        "durationElements": {
-          "WEEKS": 4
-        }
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2024-07-25",
+          "offenceCode": "TH68010"
+        },
+        "duration": {
+          "durationElements": {
+            "WEEKS": 4
+          }
+        },
+        "sentencedAt": "2024-07-29",
+        "identifier": "3e88445b-d9d1-42be-8645-09a73515add6",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       },
-      "sentencedAt": "2024-07-29"
-    },
-    {
-      "offence": {
-        "committedAt": "2024-07-22",
-        "offenceCode": "TH68010"
-      },
-      "duration": {
-        "durationElements": {
-          "WEEKS": 26
-        }
-      },
-      "sentencedAt": "2024-07-29"
-    }
-  ],
-  "returnToCustodyDate": "2024-07-27",
-  "fixedTermRecallDetails": {
-    "bookingId": 1,
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2024-07-22",
+          "offenceCode": "TH68010"
+        },
+        "duration": {
+          "durationElements": {
+            "WEEKS": 26
+          }
+        },
+        "sentencedAt": "2024-07-29",
+        "identifier": "ab0a30db-c688-434d-b3c0-a0cdf6758f6c",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      }
+    ],
+    "adjustments": {},
     "returnToCustodyDate": "2024-07-27",
-    "recallLength": 14
+    "fixedTermRecallDetails": {
+      "bookingId": 1,
+      "returnToCustodyDate": "2024-07-27",
+      "recallLength": 14
+    }
   }
 }

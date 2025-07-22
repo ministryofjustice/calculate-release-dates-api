@@ -1,41 +1,52 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2020-01-28"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 7
-        }
-      },
-      "sentencedAt": "2022-06-28",
-      "isSDSPlus": true
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2020-01-28"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 6
-        }
-      },
-      "sentencedAt": "2022-06-28"
-    }
-  ],
-  "adjustments": {
-    "REMAND": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2022-06-28",
-        "numberOfDays": 133,
-        "fromDate": "2020-01-30",
-        "toDate": "2020-06-11"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2020-01-28"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 7
+          }
+        },
+        "sentencedAt": "2022-06-28",
+        "identifier": "a4ef329c-18aa-489e-915d-2f1ae0d85ecd",
+        "isSDSPlus": true,
+        "isSDSPlusEligibleSentenceTypeLengthAndOffence": true,
+        "isSDSPlusOffenceInPeriod": true,
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2020-01-28"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 6
+          }
+        },
+        "sentencedAt": "2022-06-28",
+        "identifier": "5f11a647-3117-46a1-bf04-71306a8ce3fe",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
-    ]
-  }
+    ],
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2022-06-28",
+          "numberOfDays": 133,
+          "fromDate": "2020-01-30",
+          "toDate": "2020-06-11"
+        }
+      ]
+    }
+  },
+  "params": "sds-50"
 }

@@ -1,38 +1,44 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2017-01-31"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 43
-        }
-      },
-      "sentencedAt": "2019-10-16",
-      "recallType": "STANDARD_RECALL"
-    }
-  ],
-  "adjustments": {
-    "UNLAWFULLY_AT_LARGE": [
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2020-03-24",
-        "numberOfDays": 515,
-        "fromDate": "2020-03-24",
-        "toDate": "2021-08-20"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2017-01-31"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 43
+          }
+        },
+        "sentencedAt": "2019-10-16",
+        "identifier": "52e29dfc-1fbb-4c59-8007-94d3106da5ad",
+        "recallType": "STANDARD_RECALL",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
     ],
-    "RECALL_REMAND": [
-      {
-        "appliesToSentencesFrom": "2019-10-16",
-        "numberOfDays": 830,
-        "fromDate": "2017-07-08",
-        "toDate": "2019-10-15"
-      }
-    ]
-  }
+    "adjustments": {
+      "RECALL_REMAND": [
+        {
+          "appliesToSentencesFrom": "2019-10-16",
+          "numberOfDays": 830,
+          "fromDate": "2017-07-08",
+          "toDate": "2019-10-15"
+        }
+      ],
+      "UNLAWFULLY_AT_LARGE": [
+        {
+          "appliesToSentencesFrom": "2020-03-24",
+          "numberOfDays": 515,
+          "fromDate": "2020-03-24",
+          "toDate": "2021-08-20"
+        }
+      ]
+    }
+  },
+  "params": "sds-50"
 }

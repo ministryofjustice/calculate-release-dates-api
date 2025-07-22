@@ -1,21 +1,25 @@
 {
-  "offender": {
-    "reference": "A1234BC",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "type": "StandardSentence",
-      "offence": {
-        "committedAt": "2019-05-05"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 7
-        }
-      },
-      "sentencedAt": "2020-03-16"
-    }
-  ],
-  "adjustments": {}
+  "booking": {
+    "offender": {
+      "reference": "A1234BC",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2019-05-05"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 7
+          }
+        },
+        "sentencedAt": "2020-03-16",
+        "identifier": "93fb9a14-6a0d-4c79-8467-2c91660191d2",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      }
+    ],
+    "adjustments": {}
+  }
 }

@@ -5,6 +5,7 @@ import jakarta.persistence.EntityNotFoundException
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.boot.info.BuildProperties
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.adjustmentsapi.model.AdjustmentDto
@@ -23,6 +24,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Histor
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.BreakdownChangedSinceLastCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CalculationDataHasChangedError
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CrdWebException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.PreconditionFailedException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.PrisonApiDataNotFoundException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
@@ -157,21 +159,31 @@ class CalculationTransactionalService(
   @Transactional(readOnly = true)
   fun supportedValidation(prisonerId: String, inactiveDataOptions: InactiveDataOptions = InactiveDataOptions.default()): SupportedValidationResponse {
     val sourceData = calculationSourceDataService.getCalculationSourceData(prisonerId, inactiveDataOptions)
-    val noInputs = CalculationUserInputs()
-    val booking = bookingService.getBooking(sourceData, noInputs)
-
     val supportedResponse = validationService.validateSupportedSentencesAndCalculations(sourceData)
+
     if (
       supportedResponse.unsupportedSentenceMessages.isNotEmpty() ||
       supportedResponse.unsupportedCalculationMessages.isNotEmpty()
     ) {
+      // loading the booking will blow up unless the sentences and calculation are supported so return early if not.
       return supportedResponse
     }
+
+    val noInputs = CalculationUserInputs()
+    val preCalculationValidationMessages = validationService.validateBeforeCalculation(sourceData, noInputs)
+    if (preCalculationValidationMessages.isNotEmpty()) {
+      // this booking will not be able to calculate later anyway so skip the manual entry check
+      return SupportedValidationResponse()
+    }
+
+    val booking = bookingService.getBooking(sourceData, noInputs)
     val bookingValidationMessages = validationService.validateBeforeCalculation(booking)
 
     if (bookingValidationMessages.isNotEmpty()) {
-      throw IllegalStateException("Unexpected: manual entry journey should not be triggered by pre-calculation validation at this stage.")
+      // this booking will not be able to calculate later anyway so skip the manual entry check
+      return SupportedValidationResponse()
     }
+
     val calculationOutput = calculationService.calculateReleaseDates(
       booking,
       noInputs,
@@ -242,13 +254,17 @@ class CalculationTransactionalService(
     val sourceData = calculationSourceDataService.getCalculationSourceData(calculationRequest.prisonerId, InactiveDataOptions.default())
     val userInput = transform(calculationRequest.calculationRequestUserInput)
     val booking = bookingService.getBooking(sourceData, userInput)
+    val currentBookingJson = objectToJson(booking, objectMapper)
+    val preliminaryBookingJson = calculationRequest.inputData
 
-    if (calculationRequest.inputData.hashCode() != objectToJson(booking, objectMapper).hashCode()) {
+    if (preliminaryBookingJson.hashCode() != currentBookingJson.hashCode()) {
       throw PreconditionFailedException("The booking data used for the preliminary calculation has changed")
     }
 
-    if (validationService.validateBeforeCalculation(sourceData, userInput).isNotEmpty()) {
-      throw PreconditionFailedException("The booking now fails validation")
+    val validationErrors = validationService.validateBeforeCalculation(sourceData, userInput)
+
+    if (validationErrors.any { !it.type.excludedInSave() }) {
+      throw CrdWebException(message = "The booking now fails validation", status = HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
     return confirmCalculation(
@@ -453,7 +469,6 @@ class CalculationTransactionalService(
     }
   }
 
-  @Transactional(readOnly = true)
   fun calculateWithBreakdown(
     booking: Booking,
     previousCalculationResults: CalculatedReleaseDates,

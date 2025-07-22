@@ -1,51 +1,60 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "type": "SopcSentence",
-      "offence": {
-        "committedAt": "2018-07-19"
-      },
-      "custodialDuration": {
-        "durationElements": {
-          "YEARS": 7
-        }
-      },
-      "extensionDuration": {
-        "durationElements": {
-          "YEARS": 1
-        }
-      },
-      "sentencedAt": "2018-07-20",
-      "identifier": "5dfde034-b7d7-4c54-a86c-67d42a1fd669"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2018-07-19"
+    "sentences": [
+      {
+        "type": "SopcSentence",
+        "offence": {
+          "committedAt": "2018-07-19"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "YEARS": 7
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "YEARS": 1
+          }
+        },
+        "sentencedAt": "2018-07-20",
+        "identifier": "5dfde034-b7d7-4c54-a86c-67d42a1fd669"
       },
-      "duration": {
-        "durationElements": {
-          "YEARS": 3
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2018-07-19"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 3
+          }
+        },
+        "sentencedAt": "2018-07-20",
+        "identifier": "f111e7db-58a1-445c-a535-cc7749d2def3",
+        "consecutiveSentenceUUIDs": [
+          "5dfde034-b7d7-4c54-a86c-67d42a1fd669"
+        ],
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      }
+    ],
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2018-07-20",
+          "numberOfDays": 4,
+          "fromDate": "2018-07-15",
+          "toDate": "2018-07-19"
         }
-      },
-      "sentencedAt": "2018-07-20",
-      "consecutiveSentenceUUIDs": [
-        "5dfde034-b7d7-4c54-a86c-67d42a1fd669"
       ]
     }
-  ],
-  "adjustments": {
-    "REMAND": [
-      {
-        "appliesToSentencesFrom": "2018-07-20",
-        "numberOfDays": 4,
-        "fromDate": "2018-07-15",
-        "toDate": "2018-07-19"
-      }
-    ]
   },
-  "calculateErsed": true
+  "userInputs": {
+    "calculateErsed": true,
+    "useOffenceIndicators": true
+  },
+  "params": "sds-50"
 }

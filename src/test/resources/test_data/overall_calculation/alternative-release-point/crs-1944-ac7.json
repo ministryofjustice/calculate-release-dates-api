@@ -1,41 +1,49 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2024-03-22"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 5
-        }
-      },
-      "sentencedAt": "2024-03-22"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2024-03-22"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 5
-        }
-      },
-      "sentencedAt": "2024-03-22",
-      "hasAnSDSEarlyReleaseExclusion": "SEXUAL"
-    }
-  ],
-  "adjustments": {
-    "REMAND": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2024-03-22",
-        "numberOfDays": 15,
-        "fromDate": "2024-03-07",
-        "toDate": "2024-03-21"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2024-03-22"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 5
+          }
+        },
+        "sentencedAt": "2024-03-22",
+        "identifier": "1933a836-7b04-4904-8e9f-0ad1f70a4e2c",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2024-03-22"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 5
+          }
+        },
+        "sentencedAt": "2024-03-22",
+        "identifier": "cee38020-6d51-4cd2-8804-60aa678ec889",
+        "hasAnSDSEarlyReleaseExclusion": "SEXUAL"
       }
-    ]
-  }
+    ],
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2024-03-22",
+          "numberOfDays": 15,
+          "fromDate": "2024-03-07",
+          "toDate": "2024-03-21"
+        }
+      ]
+    }
+  },
+  "params": "sds-45"
 }

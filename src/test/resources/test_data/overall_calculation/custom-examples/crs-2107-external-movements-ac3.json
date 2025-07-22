@@ -1,98 +1,117 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2019-08-01",
-        "offenceCode": "SX03001"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 7
-        }
-      },
-      "sentencedAt": "2020-04-02",
-      "hasAnSDSEarlyReleaseExclusion": "NO",
-      "isSDSPlus": true
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2019-08-01",
-        "offenceCode": "TH68013"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 3
-        }
-      },
-      "sentencedAt": "2020-04-02",
-      "hasAnSDSEarlyReleaseExclusion": "NO"
-    },
-    {
-      "offence": {
-        "committedAt": "2019-08-01",
-        "offenceCode": "TH68013"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 15
-        }
-      },
-      "sentencedAt": "2020-04-02",
-      "hasAnSDSEarlyReleaseExclusion": "NO"
-    },
-    {
-      "offence": {
-        "committedAt": "2019-08-01",
-        "offenceCode": "TH68013"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 6
-        }
-      },
-      "sentencedAt": "2022-03-29",
-      "hasAnSDSEarlyReleaseExclusion": "NO"
-    }
-  ],
-  "adjustments": {
-    "REMAND": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2020-04-02",
-        "numberOfDays": 455,
-        "fromDate": "2019-01-03",
-        "toDate": "2020-04-01"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2019-08-01",
+          "offenceCode": "SX03001"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 7
+          }
+        },
+        "sentencedAt": "2020-04-02",
+        "identifier": "384f93bd-db2c-4072-b117-ce6454444c4a",
+        "isSDSPlus": true,
+        "isSDSPlusEligibleSentenceTypeLengthAndOffence": true,
+        "isSDSPlusOffenceInPeriod": true,
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2019-08-01",
+          "offenceCode": "TH68013"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 3
+          }
+        },
+        "sentencedAt": "2020-04-02",
+        "identifier": "014fb1f8-45d1-492a-8efa-58e87fec1950",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2019-08-01",
+          "offenceCode": "TH68013"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 15
+          }
+        },
+        "sentencedAt": "2020-04-02",
+        "identifier": "5aaba585-d97b-4bb9-83a5-57bda88ecc58",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2019-08-01",
+          "offenceCode": "TH68013"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 6
+          }
+        },
+        "sentencedAt": "2022-03-29",
+        "identifier": "6cd05d15-b580-4caf-abe5-79f7e012ceb3",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
     ],
-    "ADDITIONAL_DAYS_AWARDED": [
+    "adjustments": {
+      "UNLAWFULLY_AT_LARGE": [
+        {
+          "appliesToSentencesFrom": "2022-03-20",
+          "numberOfDays": 3,
+          "fromDate": "2022-02-20"
+        }
+      ],
+      "ADDITIONAL_DAYS_AWARDED": [
+        {
+          "appliesToSentencesFrom": "2021-12-14",
+          "numberOfDays": 10,
+          "fromDate": "2021-12-14"
+        }
+      ],
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2020-04-02",
+          "numberOfDays": 455,
+          "fromDate": "2019-01-03",
+          "toDate": "2020-04-01"
+        }
+      ]
+    },
+    "externalMovements": [
       {
-        "appliesToSentencesFrom": "2021-12-14",
-        "numberOfDays": 10,
-        "fromDate": "2021-12-14"
-      }
-    ],
-    "UNLAWFULLY_AT_LARGE": [
+        "movementDate": "2022-03-19",
+        "movementReason": "ERS",
+        "direction": "OUT"
+      },
       {
-        "appliesToSentencesFrom": "2022-03-20",
-        "numberOfDays": 3,
-        "fromDate": "2022-02-20"
+        "movementDate": "2022-03-23",
+        "movementReason": "ERS_RETURN",
+        "direction": "IN"
       }
     ]
   },
-  "externalMovements": [
-    {
-      "movementDate": "2022-03-19",
-      "movementReason": "ERS",
-      "direction": "OUT"
-    },
-    {
-      "movementDate": "2022-03-23",
-      "movementReason": "ERS_RETURN",
-      "direction": "IN"
-    }
-  ],
-  "calculateErsed": true
+  "userInputs": {
+    "calculateErsed": true,
+    "useOffenceIndicators": true
+  },
+  "featureToggles": {
+    "externalMovementsSds40": true,
+    "externalMovementsAdjustmentSharing": true
+  }
 }

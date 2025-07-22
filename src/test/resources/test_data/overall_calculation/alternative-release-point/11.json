@@ -1,59 +1,73 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2023-12-01",
-        "offenceCode": "SC15006"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 15
-        }
-      },
-      "sentencedAt": "2024-02-13",
-      "identifier": "672bd90c-25ba-345e-8d66-26bd4eb970c9"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2023-12-01",
-        "offenceCode": "SC15005"
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2023-12-01",
+          "offenceCode": "SC15006"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 15
+          }
+        },
+        "sentencedAt": "2024-02-13",
+        "identifier": "672bd90c-25ba-345e-8d66-26bd4eb970c9",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 2
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2023-12-01",
+          "offenceCode": "SC15005"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 2
+          }
+        },
+        "sentencedAt": "2024-02-13",
+        "identifier": "02d832c1-dcfd-43e6-a136-4de3a04b8c21",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2022-02-16",
+          "offenceCode": "CJ88160"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 2
+          }
+        },
+        "sentencedAt": "2024-02-13",
+        "identifier": "b91d60b6-2d31-4566-89cc-0c2ba9e3789b",
+        "consecutiveSentenceUUIDs": [
+          "672bd90c-25ba-345e-8d66-26bd4eb970c9"
+        ],
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      }
+    ],
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2024-02-13",
+          "numberOfDays": 71,
+          "fromDate": "2023-12-04",
+          "toDate": "2024-02-12"
         }
-      },
-      "sentencedAt": "2024-02-13"
-    },
-    {
-      "offence": {
-        "committedAt": "2022-02-16",
-        "offenceCode": "CJ88160"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 2
-        }
-      },
-      "sentencedAt": "2024-02-13",
-      "consecutiveSentenceUUIDs": [
-        "672bd90c-25ba-345e-8d66-26bd4eb970c9"
       ]
     }
-  ],
-  "adjustments": {
-    "REMAND": [
-      {
-        "appliesToSentencesFrom": "2024-02-13",
-        "numberOfDays": 71,
-        "fromDate": "2023-12-04",
-        "toDate": "2024-02-12"
-      }
-    ]
   },
-  "calculateErsed": true
+  "userInputs": {
+    "calculateErsed": true,
+    "useOffenceIndicators": true
+  },
+  "params": "sds-45"
 }

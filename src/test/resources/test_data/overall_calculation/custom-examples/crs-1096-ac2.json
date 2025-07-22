@@ -1,30 +1,34 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "type": "DetentionAndTrainingOrderSentence",
-      "offence": {
-        "committedAt": "2022-08-01"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 23
-        }
-      },
-      "sentencedAt": "2022-08-14"
-    }
-  ],
-  "adjustments": {
-    "REMAND": [
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2022-08-14",
-        "numberOfDays": 4,
-        "fromDate": "2022-08-10",
-        "toDate": "2022-08-13"
+        "type": "DetentionAndTrainingOrderSentence",
+        "offence": {
+          "committedAt": "2022-08-01"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 23
+          }
+        },
+        "sentencedAt": "2022-08-14",
+        "identifier": "6e2f3738-b77e-4ded-8d86-32585cd1b121"
       }
-    ]
-  }
+    ],
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2022-08-14",
+          "numberOfDays": 4,
+          "fromDate": "2022-08-10",
+          "toDate": "2022-08-13"
+        }
+      ]
+    }
+  },
+  "params": "sds-50"
 }

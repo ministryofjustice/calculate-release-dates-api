@@ -1,68 +1,77 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2020-09-08"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 8
-        }
-      },
-      "sentencedAt": "2021-03-17"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2021-02-01"
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2020-09-08"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 8
+          }
+        },
+        "sentencedAt": "2021-03-17",
+        "identifier": "b51ea0f8-acd5-482f-b843-153bbc23877b",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 3
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2021-02-01"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 3
+          }
+        },
+        "sentencedAt": "2021-03-17",
+        "identifier": "d4cbac2c-5297-4b45-95ed-41f652d4d5f3",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      }
+    ],
+    "adjustments": {
+      "RESTORATION_OF_ADDITIONAL_DAYS_AWARDED": [
+        {
+          "appliesToSentencesFrom": "2021-02-26",
+          "numberOfDays": 3,
+          "fromDate": "2021-02-26",
+          "toDate": "2021-02-28"
+        },
+        {
+          "appliesToSentencesFrom": "2021-05-17",
+          "numberOfDays": 10,
+          "fromDate": "2021-05-17",
+          "toDate": "2021-05-26"
         }
-      },
-      "sentencedAt": "2021-03-17"
+      ],
+      "ADDITIONAL_DAYS_AWARDED": [
+        {
+          "appliesToSentencesFrom": "2021-02-05",
+          "numberOfDays": 8,
+          "fromDate": "2021-02-05",
+          "toDate": "2021-02-12"
+        },
+        {
+          "appliesToSentencesFrom": "2021-03-16",
+          "numberOfDays": 8,
+          "fromDate": "2021-03-16",
+          "toDate": "2021-03-23"
+        }
+      ],
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2021-03-17",
+          "numberOfDays": 44,
+          "fromDate": "2021-02-01",
+          "toDate": "2021-03-16"
+        }
+      ]
     }
-  ],
-  "adjustments": {
-    "REMAND": [
-      {
-        "appliesToSentencesFrom": "2021-03-17",
-        "numberOfDays": 44,
-        "fromDate": "2021-02-01",
-        "toDate": "2021-03-16"
-      }
-    ],
-    "ADDITIONAL_DAYS_AWARDED": [
-      {
-        "appliesToSentencesFrom": "2021-02-05",
-        "numberOfDays": 8,
-        "fromDate": "2021-02-05",
-        "toDate": "2021-02-12"
-      },
-      {
-        "appliesToSentencesFrom": "2021-03-16",
-        "numberOfDays": 8,
-        "fromDate": "2021-03-16",
-        "toDate": "2021-03-23"
-      }
-    ],
-    "RESTORATION_OF_ADDITIONAL_DAYS_AWARDED": [
-      {
-        "appliesToSentencesFrom": "2021-02-26",
-        "numberOfDays": 3,
-        "fromDate": "2021-02-26",
-        "toDate": "2021-02-28"
-      },
-      {
-        "appliesToSentencesFrom": "2021-05-17",
-        "numberOfDays": 10,
-        "fromDate": "2021-05-17",
-        "toDate": "2021-05-26"
-      }
-    ]
-  }
+  },
+  "params": "sds-50"
 }

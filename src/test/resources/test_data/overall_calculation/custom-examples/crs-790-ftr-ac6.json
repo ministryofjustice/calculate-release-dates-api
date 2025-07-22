@@ -1,49 +1,64 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2020-10-08"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 14
+          }
+        },
+        "sentencedAt": "2021-03-10",
+        "identifier": "4728b8d2-0ae9-4323-9869-5aa29223d51a",
+        "recallType": "FIXED_TERM_RECALL_28",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2021-01-28"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 11
+          }
+        },
+        "sentencedAt": "2021-03-10",
+        "identifier": "723af494-944c-4cff-9a53-e09b6321f39e",
+        "recallType": "FIXED_TERM_RECALL_28",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2020-10-08"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 11
+          }
+        },
+        "sentencedAt": "2021-03-10",
+        "identifier": "0d5a4c80-923b-4bd7-8668-3bf87a555205",
+        "consecutiveSentenceUUIDs": [
+          "4728b8d2-0ae9-4323-9869-5aa29223d51a"
+        ],
+        "recallType": "FIXED_TERM_RECALL_28",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      }
+    ],
+    "adjustments": {},
+    "returnToCustodyDate": "2021-12-20"
   },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2020-10-08"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 14
-        }
-      },
-      "sentencedAt": "2021-03-10",
-      "identifier": "4728b8d2-0ae9-4323-9869-5aa29223d51a",
-      "recallType": "FIXED_TERM_RECALL_28"
-    },
-    {
-      "offence": {
-        "committedAt": "2021-01-28"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 11
-        }
-      },
-      "sentencedAt": "2021-03-10",
-      "recallType": "FIXED_TERM_RECALL_28"
-    },
-    {
-      "offence": {
-        "committedAt": "2020-10-08"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 11
-        }
-      },
-      "sentencedAt": "2021-03-10",
-      "consecutiveSentenceUUIDs": [
-        "4728b8d2-0ae9-4323-9869-5aa29223d51a"
-      ],
-      "recallType": "FIXED_TERM_RECALL_28"
-    }
-  ],
-  "returnToCustodyDate": "2021-12-20"
+  "params": "sds-50",
+  "featureToggles": {
+    "ftr48ManualJourney": false
+  }
 }

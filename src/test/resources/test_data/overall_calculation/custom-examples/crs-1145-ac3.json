@@ -1,48 +1,57 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "type": "DetentionAndTrainingOrderSentence",
-      "offence": {
-        "committedAt": "2020-01-20"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 12
-        }
-      },
-      "sentencedAt": "2021-05-07"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2020-01-20"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 90
-        }
-      },
-      "sentencedAt": "2021-10-14",
-      "isSDSPlus": true
-    }
-  ],
-  "adjustments": {
-    "REMAND": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2021-10-14",
-        "numberOfDays": 373,
-        "fromDate": "2020-01-22",
-        "toDate": "2021-01-28"
+        "type": "DetentionAndTrainingOrderSentence",
+        "offence": {
+          "committedAt": "2020-01-20"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 12
+          }
+        },
+        "sentencedAt": "2021-05-07",
+        "identifier": "5a7b803d-9853-48f5-bc7f-8b55df1525a9"
       },
       {
-        "appliesToSentencesFrom": "2021-10-14",
-        "numberOfDays": 38,
-        "fromDate": "2021-03-30",
-        "toDate": "2021-05-06"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2020-01-20"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 90
+          }
+        },
+        "sentencedAt": "2021-10-14",
+        "identifier": "bba64b0e-641a-4ae4-9451-44faac251c32",
+        "isSDSPlus": true,
+        "isSDSPlusEligibleSentenceTypeLengthAndOffence": true,
+        "isSDSPlusOffenceInPeriod": true,
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
-    ]
-  }
+    ],
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2021-10-14",
+          "numberOfDays": 373,
+          "fromDate": "2020-01-22",
+          "toDate": "2021-01-28"
+        },
+        {
+          "appliesToSentencesFrom": "2021-10-14",
+          "numberOfDays": 38,
+          "fromDate": "2021-03-30",
+          "toDate": "2021-05-06"
+        }
+      ]
+    }
+  },
+  "params": "sds-50"
 }

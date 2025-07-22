@@ -1,49 +1,58 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2021-01-30"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 16
-        }
-      },
-      "sentencedAt": "2021-06-14",
-      "recallType": "STANDARD_RECALL"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2021-10-02"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 6
-        }
-      },
-      "sentencedAt": "2021-12-13"
-    }
-  ],
-  "adjustments": {
-    "RECALL_REMAND": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2021-06-14",
-        "numberOfDays": 133,
-        "fromDate": "2021-03-01",
-        "toDate": "2021-06-13"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2021-01-30"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 16
+          }
+        },
+        "sentencedAt": "2021-06-14",
+        "identifier": "83803231-b1b4-4e42-9f62-5cdfde596e2c",
+        "recallType": "STANDARD_RECALL",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2021-10-02"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 6
+          }
+        },
+        "sentencedAt": "2021-12-13",
+        "identifier": "f8cb0573-491a-41de-81fd-9c0b192788dc",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
     ],
-    "REMAND": [
-      {
-        "appliesToSentencesFrom": "2021-12-13",
-        "numberOfDays": 2,
-        "fromDate": "2021-10-04",
-        "toDate": "2021-10-05"
-      }
-    ]
-  }
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2021-12-13",
+          "numberOfDays": 2,
+          "fromDate": "2021-10-04",
+          "toDate": "2021-10-05"
+        }
+      ],
+      "RECALL_REMAND": [
+        {
+          "appliesToSentencesFrom": "2021-06-14",
+          "numberOfDays": 133,
+          "fromDate": "2021-03-01",
+          "toDate": "2021-06-13"
+        }
+      ]
+    }
+  },
+  "params": "sds-50"
 }

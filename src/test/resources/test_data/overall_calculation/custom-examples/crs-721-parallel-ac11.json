@@ -1,32 +1,45 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2020-10-08"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 20
-        }
-      },
-      "sentencedAt": "2020-11-13",
-      "recallType": "FIXED_TERM_RECALL_28"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2020-11-17"
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2020-10-08"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 20
+          }
+        },
+        "sentencedAt": "2020-11-13",
+        "identifier": "ef7fadd6-9993-4703-b9cd-8f52288a9d93",
+        "recallType": "FIXED_TERM_RECALL_28",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 24
-        }
-      },
-      "sentencedAt": "2021-02-16"
-    }
-  ],
-  "returnToCustodyDate": "2021-11-19"
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2020-11-17"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 24
+          }
+        },
+        "sentencedAt": "2021-02-16",
+        "identifier": "9824f47f-bc47-4377-bb58-22d7bc0997fa",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      }
+    ],
+    "adjustments": {},
+    "returnToCustodyDate": "2021-11-19"
+  },
+  "params": "sds-50",
+  "featureToggles": {
+    "ftr48ManualJourney": false
+  }
 }

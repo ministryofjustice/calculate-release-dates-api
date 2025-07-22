@@ -1,46 +1,55 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2016-10-06"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 56
-        }
-      },
-      "sentencedAt": "2017-02-17"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2019-02-08"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 52
-        }
-      },
-      "sentencedAt": "2019-05-23"
-    }
-  ],
-  "adjustments": {
-    "REMAND": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2017-02-17",
-        "numberOfDays": 85,
-        "fromDate": "2016-11-23",
-        "toDate": "2017-02-16"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2016-10-06"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 56
+          }
+        },
+        "sentencedAt": "2017-02-17",
+        "identifier": "3e0cf400-a8a7-4584-a5cf-792cbdd31c88",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2019-02-08"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 52
+          }
+        },
+        "sentencedAt": "2019-05-23",
+        "identifier": "ed5881f4-ae66-4068-9cef-d6e32e485606",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
     ],
-    "ADDITIONAL_DAYS_AWARDED": [
-      {
-        "appliesToSentencesFrom": "2017-02-17",
-        "numberOfDays": 131
-      }
-    ]
-  }
+    "adjustments": {
+      "ADDITIONAL_DAYS_AWARDED": [
+        {
+          "appliesToSentencesFrom": "2017-02-17",
+          "numberOfDays": 131
+        }
+      ],
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2017-02-17",
+          "numberOfDays": 85,
+          "fromDate": "2016-11-23",
+          "toDate": "2017-02-16"
+        }
+      ]
+    }
+  },
+  "params": "sds-50"
 }

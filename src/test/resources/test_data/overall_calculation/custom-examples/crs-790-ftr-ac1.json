@@ -1,31 +1,40 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2020-10-28"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 20
-        }
-      },
-      "sentencedAt": "2021-01-22",
-      "recallType": "FIXED_TERM_RECALL_28"
-    }
-  ],
-  "adjustments": {
-    "RECALL_REMAND": [
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2021-01-22",
-        "numberOfDays": 1,
-        "fromDate": "2022-02-02",
-        "toDate": "2022-02-02"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2020-10-28"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 20
+          }
+        },
+        "sentencedAt": "2021-01-22",
+        "identifier": "0dbd392e-4223-4347-85cc-63334dd7fef4",
+        "recallType": "FIXED_TERM_RECALL_28",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
-    ]
+    ],
+    "adjustments": {
+      "RECALL_REMAND": [
+        {
+          "appliesToSentencesFrom": "2021-01-22",
+          "numberOfDays": 1,
+          "fromDate": "2022-02-02",
+          "toDate": "2022-02-02"
+        }
+      ]
+    },
+    "returnToCustodyDate": "2022-02-03"
   },
-  "returnToCustodyDate": "2022-02-03"
+  "params": "sds-50",
+  "featureToggles": {
+    "ftr48ManualJourney": false
+  }
 }

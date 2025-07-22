@@ -1,56 +1,60 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "type": "ExtendedDeterminateSentence",
-      "offence": {
-        "committedAt": "2022-02-09"
-      },
-      "custodialDuration": {
-        "durationElements": {
-          "MONTHS": 42
-        }
-      },
-      "extensionDuration": {
-        "durationElements": {
-          "MONTHS": 36
-        }
-      },
-      "sentencedAt": "2022-02-10",
-      "identifier": "e40f48b6-92df-49d0-af99-507194c380fa"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "type": "ExtendedDeterminateSentence",
-      "offence": {
-        "committedAt": "2022-02-09"
+    "sentences": [
+      {
+        "type": "ExtendedDeterminateSentence",
+        "offence": {
+          "committedAt": "2022-02-09"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "MONTHS": 42
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "MONTHS": 36
+          }
+        },
+        "sentencedAt": "2022-02-10",
+        "identifier": "e40f48b6-92df-49d0-af99-507194c380fa"
       },
-      "custodialDuration": {
-        "durationElements": {
-          "MONTHS": 66
+      {
+        "type": "ExtendedDeterminateSentence",
+        "offence": {
+          "committedAt": "2022-02-09"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "MONTHS": 66
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "MONTHS": 24
+          }
+        },
+        "sentencedAt": "2022-02-10",
+        "identifier": "5224a022-671b-481a-b2f6-219f4b57c015",
+        "consecutiveSentenceUUIDs": [
+          "e40f48b6-92df-49d0-af99-507194c380fa"
+        ]
+      }
+    ],
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2022-02-10",
+          "numberOfDays": 265,
+          "fromDate": "2021-05-21",
+          "toDate": "2022-02-09"
         }
-      },
-      "extensionDuration": {
-        "durationElements": {
-          "MONTHS": 24
-        }
-      },
-      "sentencedAt": "2022-02-10",
-      "consecutiveSentenceUUIDs": [
-        "e40f48b6-92df-49d0-af99-507194c380fa"
       ]
     }
-  ],
-  "adjustments": {
-    "REMAND": [
-      {
-        "appliesToSentencesFrom": "2022-02-10",
-        "numberOfDays": 265,
-        "fromDate": "2021-05-21",
-        "toDate": "2022-02-09"
-      }
-    ]
-  }
+  },
+  "params": "sds-50"
 }

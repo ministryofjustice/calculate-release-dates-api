@@ -1,55 +1,69 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01",
-    "isActiveSexOffender": true
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01",
+      "isActiveSexOffender": true
+    },
+    "sentences": [
+      {
+        "type": "SopcSentence",
+        "offence": {
+          "committedAt": "1999-09-13",
+          "offenceCode": "SX56028"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "YEARS": 6
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "YEARS": 1
+          }
+        },
+        "sentencedAt": "2018-09-26",
+        "identifier": "e257b7b7-5081-4b56-94c4-09cacb7273b8",
+        "caseSequence": 1,
+        "lineSequence": 1,
+        "caseReference": "A1234567"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2002-09-13",
+          "offenceCode": "SX56029"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 6
+          }
+        },
+        "sentencedAt": "2018-09-26",
+        "identifier": "c5096eb0-e165-46aa-952d-ecbcf31dfaa6",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2002-09-13",
+          "offenceCode": "SX56014"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 14
+          }
+        },
+        "sentencedAt": "2018-09-26",
+        "identifier": "a72b4bd5-e51f-4458-9897-8c6d71ea3eec",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      }
+    ],
+    "adjustments": {}
   },
-  "sentences": [
-    {
-      "type": "SopcSentence",
-      "offence": {
-        "committedAt": "1999-09-13",
-        "offenceCode": "SX56028"
-      },
-      "custodialDuration": {
-        "durationElements": {
-          "YEARS": 6
-        }
-      },
-      "extensionDuration": {
-        "durationElements": {
-          "YEARS": 1
-        }
-      },
-      "sentencedAt": "2018-09-26",
-      "caseSequence": 1,
-      "lineSequence": 1,
-      "caseReference": "A1234567"
-    },
-    {
-      "offence": {
-        "committedAt": "2002-09-13",
-        "offenceCode": "SX56029"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 6
-        }
-      },
-      "sentencedAt": "2018-09-26"
-    },
-    {
-      "offence": {
-        "committedAt": "2002-09-13",
-        "offenceCode": "SX56014"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 14
-        }
-      },
-      "sentencedAt": "2018-09-26"
-    }
-  ],
-  "calculateErsed": true
+  "userInputs": {
+    "calculateErsed": true,
+    "useOffenceIndicators": true
+  },
+  "params": "sds-45"
 }

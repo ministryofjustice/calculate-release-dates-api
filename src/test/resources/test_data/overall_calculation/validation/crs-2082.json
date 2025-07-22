@@ -1,42 +1,51 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2022-07-25",
-        "offenceCode": "TH68027"
-      },
-      "duration": {
-        "durationElements": {
-          "WEEKS": 20
-        }
-      },
-      "sentencedAt": "2024-02-16"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2022-07-23",
-        "offenceCode": "TH68026A"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 12
-        }
-      },
-      "sentencedAt": "2024-04-16"
-    }
-  ],
-  "adjustments": {
-    "REMAND": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2024-04-16",
-        "numberOfDays": 18,
-        "fromDate": "2024-03-29",
-        "toDate": "2024-04-15"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2022-07-25",
+          "offenceCode": "TH68027"
+        },
+        "duration": {
+          "durationElements": {
+            "WEEKS": 20
+          }
+        },
+        "sentencedAt": "2024-02-16",
+        "identifier": "df7fc70d-6a21-4fb1-a248-80a595e824ee",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2022-07-23",
+          "offenceCode": "TH68026A"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 12
+          }
+        },
+        "sentencedAt": "2024-04-16",
+        "identifier": "726b8487-6e78-4b80-b953-36c7d77a11ab",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
-    ]
-  }
+    ],
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2024-04-16",
+          "numberOfDays": 18,
+          "fromDate": "2024-03-29",
+          "toDate": "2024-04-15"
+        }
+      ]
+    }
+  },
+  "expectedValidationException": "REMAND_OVERLAPS_WITH_SENTENCE"
 }

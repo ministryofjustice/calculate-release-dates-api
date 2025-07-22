@@ -1,28 +1,34 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2019-06-30"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 30
-        }
-      },
-      "sentencedAt": "2021-04-15",
-      "recallType": "STANDARD_RECALL"
-    }
-  ],
-  "adjustments": {
-    "RECALL_TAGGED_BAIL": [
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2021-04-15",
-        "numberOfDays": 500
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2019-06-30"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 30
+          }
+        },
+        "sentencedAt": "2021-04-15",
+        "identifier": "2d7deda2-6008-4104-bc59-78f9c864b8c7",
+        "recallType": "STANDARD_RECALL",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
-    ]
-  }
+    ],
+    "adjustments": {
+      "RECALL_TAGGED_BAIL": [
+        {
+          "appliesToSentencesFrom": "2021-04-15",
+          "numberOfDays": 500
+        }
+      ]
+    }
+  },
+  "params": "sds-50"
 }

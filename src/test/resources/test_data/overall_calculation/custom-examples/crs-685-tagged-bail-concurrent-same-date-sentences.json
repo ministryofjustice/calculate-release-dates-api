@@ -1,42 +1,51 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2021-01-08"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 6
-        }
-      },
-      "sentencedAt": "2021-02-23"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2021-01-13"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 9
-        }
-      },
-      "sentencedAt": "2021-02-23"
-    }
-  ],
-  "adjustments": {
-    "TAGGED_BAIL": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2021-02-23",
-        "numberOfDays": 10
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2021-01-08"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 6
+          }
+        },
+        "sentencedAt": "2021-02-23",
+        "identifier": "2db5f88c-99bc-4763-bfa5-af127ef5900e",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       },
       {
-        "appliesToSentencesFrom": "2021-02-23",
-        "numberOfDays": 5
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2021-01-13"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 9
+          }
+        },
+        "sentencedAt": "2021-02-23",
+        "identifier": "05986e04-8797-43dc-b524-83afe3b2cd2d",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
-    ]
-  }
+    ],
+    "adjustments": {
+      "TAGGED_BAIL": [
+        {
+          "appliesToSentencesFrom": "2021-02-23",
+          "numberOfDays": 10
+        },
+        {
+          "appliesToSentencesFrom": "2021-02-23",
+          "numberOfDays": 5
+        }
+      ]
+    }
+  },
+  "params": "sds-50"
 }

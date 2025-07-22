@@ -1,46 +1,54 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2021-11-01"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 3
-        }
-      },
-      "sentencedAt": "2022-01-10",
-      "identifier": "af02b91a-fd89-4aeb-b0fe-9d70a704b470"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2021-12-05"
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2021-11-01"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 3
+          }
+        },
+        "sentencedAt": "2022-01-10",
+        "identifier": "af02b91a-fd89-4aeb-b0fe-9d70a704b470",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       },
-      "duration": {
-        "durationElements": {
-          "YEARS": 2
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2021-12-05"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 2
+          }
+        },
+        "sentencedAt": "2022-01-10",
+        "identifier": "f68d3a3a-4a00-4e8e-8866-6f8293571361",
+        "consecutiveSentenceUUIDs": [
+          "af02b91a-fd89-4aeb-b0fe-9d70a704b470"
+        ],
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      }
+    ],
+    "adjustments": {
+      "TAGGED_BAIL": [
+        {
+          "appliesToSentencesFrom": "2022-01-10",
+          "numberOfDays": 20
+        },
+        {
+          "appliesToSentencesFrom": "2022-01-10",
+          "numberOfDays": 35
         }
-      },
-      "sentencedAt": "2022-01-10",
-      "consecutiveSentenceUUIDs": [
-        "af02b91a-fd89-4aeb-b0fe-9d70a704b470"
       ]
     }
-  ],
-  "adjustments": {
-    "TAGGED_BAIL": [
-      {
-        "appliesToSentencesFrom": "2022-01-10",
-        "numberOfDays": 20
-      },
-      {
-        "appliesToSentencesFrom": "2022-01-10",
-        "numberOfDays": 35
-      }
-    ]
-  }
+  },
+  "params": "sds-50"
 }

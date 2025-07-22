@@ -1,43 +1,55 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2019-10-15"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 14
-        }
-      },
-      "sentencedAt": "2021-02-12",
-      "recallType": "FIXED_TERM_RECALL_28"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2019-10-15"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 3
-        }
-      },
-      "sentencedAt": "2021-02-12",
-      "recallType": "FIXED_TERM_RECALL_28"
-    }
-  ],
-  "adjustments": {
-    "UNLAWFULLY_AT_LARGE": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2022-02-10",
-        "numberOfDays": 3,
-        "fromDate": "2022-02-10",
-        "toDate": "2022-02-12"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2019-10-15"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 14
+          }
+        },
+        "sentencedAt": "2021-02-12",
+        "identifier": "57207ad0-5d25-46f7-97e1-fca41cd5f302",
+        "recallType": "FIXED_TERM_RECALL_28",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2019-10-15"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 3
+          }
+        },
+        "sentencedAt": "2021-02-12",
+        "identifier": "09cdb05f-269b-4e36-8bb5-dc7cb7bf373e",
+        "recallType": "FIXED_TERM_RECALL_28",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
-    ]
+    ],
+    "adjustments": {
+      "UNLAWFULLY_AT_LARGE": [
+        {
+          "appliesToSentencesFrom": "2022-02-10",
+          "numberOfDays": 3,
+          "fromDate": "2022-02-10",
+          "toDate": "2022-02-12"
+        }
+      ]
+    },
+    "returnToCustodyDate": "2022-02-03"
   },
-  "returnToCustodyDate": "2022-02-03"
+  "params": "sds-50",
+  "featureToggles": {
+    "ftr48ManualJourney": false
+  }
 }

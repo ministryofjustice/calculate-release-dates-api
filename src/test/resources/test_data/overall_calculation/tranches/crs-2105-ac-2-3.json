@@ -1,32 +1,42 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2014-01-07"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 10
-        }
-      },
-      "sentencedAt": "2014-02-22",
-      "recallType": "STANDARD_RECALL"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2024-04-10",
-        "offenceCode": "PU86003"
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2014-01-07"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 10
+          }
+        },
+        "sentencedAt": "2014-02-22",
+        "identifier": "3122affd-f116-4718-8848-618ba70ab750",
+        "recallType": "STANDARD_RECALL",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       },
-      "duration": {
-        "durationElements": {
-          "YEARS": 3
-        }
-      },
-      "sentencedAt": "2023-10-17"
-    }
-  ]
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2024-04-10",
+          "offenceCode": "PU86003"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 3
+          }
+        },
+        "sentencedAt": "2023-10-17",
+        "identifier": "e46c3f7b-2e3c-42a5-991b-6c145e24d092",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      }
+    ],
+    "adjustments": {}
+  },
+  "assertSds40": true
 }

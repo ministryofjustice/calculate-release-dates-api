@@ -1,50 +1,58 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "recallType": "FIXED_TERM_RECALL_14",
-      "offence": {
-        "committedAt": "2023-12-11",
-        "offenceCode": "SX03220"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 12
-        }
-      },
-      "sentencedAt": "2023-12-11"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "recallType": "FIXED_TERM_RECALL_14",
-      "offence": {
-        "committedAt": "2024-02-06",
-        "offenceCode": "SX03220"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 11
-        }
-      },
-      "sentencedAt": "2024-02-06"
-    }
-  ],
-  "returnToCustodyDate": "2024-12-18",
-  "fixedTermRecallDetails": {
-    "bookingId": 1234567,
-    "returnToCustodyDate": "2025-12-18",
-    "recallLength": 14
-  },
-  "adjustments": {
-    "UNLAWFULLY_AT_LARGE": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2024-12-17",
-        "numberOfDays": 1,
-        "fromDate": "2024-12-17",
-        "toDate": "2024-12-17"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2023-12-11",
+          "offenceCode": "SX03220"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 12
+          }
+        },
+        "sentencedAt": "2023-12-11",
+        "identifier": "6ec50d0e-e238-4792-b965-f105d0833974",
+        "recallType": "FIXED_TERM_RECALL_14",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2024-02-06",
+          "offenceCode": "SX03220"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 11
+          }
+        },
+        "sentencedAt": "2024-02-06",
+        "identifier": "69c0d144-fbce-4eb1-b9d1-b1a5b2fdfcfb",
+        "recallType": "FIXED_TERM_RECALL_14",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
-    ]
+    ],
+    "adjustments": {
+      "UNLAWFULLY_AT_LARGE": [
+        {
+          "appliesToSentencesFrom": "2024-12-17",
+          "numberOfDays": 1,
+          "fromDate": "2024-12-17",
+          "toDate": "2024-12-17"
+        }
+      ]
+    },
+    "returnToCustodyDate": "2024-12-18",
+    "fixedTermRecallDetails": {
+      "bookingId": 1234567,
+      "returnToCustodyDate": "2025-12-18",
+      "recallLength": 14
+    }
   }
 }

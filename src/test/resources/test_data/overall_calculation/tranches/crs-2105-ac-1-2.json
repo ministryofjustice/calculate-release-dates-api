@@ -1,33 +1,41 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "type": "AFineSentence",
-      "offence": {
-        "committedAt": "2020-12-07"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 6
-        }
-      },
-      "sentencedAt": "2024-01-20",
-      "lineSequence": 1
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2024-02-10",
-        "offenceCode": "PU86003"
+    "sentences": [
+      {
+        "type": "AFineSentence",
+        "offence": {
+          "committedAt": "2020-12-07"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 6
+          }
+        },
+        "sentencedAt": "2024-01-20",
+        "identifier": "31664bf3-5a76-4d2b-bcfe-f81981ff245c",
+        "lineSequence": 1
       },
-      "duration": {
-        "durationElements": {
-          "YEARS": 2
-        }
-      },
-      "sentencedAt": "2023-11-19"
-    }
-  ]
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2024-02-10",
+          "offenceCode": "PU86003"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 2
+          }
+        },
+        "sentencedAt": "2023-11-19",
+        "identifier": "f0e9df24-2af5-4bc3-b5a3-4e70346f137f",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      }
+    ],
+    "adjustments": {}
+  },
+  "assertSds40": true
 }

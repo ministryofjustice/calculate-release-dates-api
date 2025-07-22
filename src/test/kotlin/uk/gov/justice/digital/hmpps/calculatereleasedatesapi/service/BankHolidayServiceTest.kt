@@ -3,15 +3,15 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.test.context.jdbc.Sql
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.BankHolidayCache
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.IntegrationTestBase
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BankHoliday
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BankHolidays
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.RegionBankHolidays
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.BankHolidayCacheRepository
 import java.time.LocalDate
 import java.time.LocalDateTime
 
+@Sql(scripts = ["classpath:/test_data/reset-base-data.sql", "classpath:/test_data/load-base-data.sql"])
 class BankHolidayServiceTest : IntegrationTestBase() {
 
   @Autowired
@@ -63,17 +63,6 @@ class BankHolidayServiceTest : IntegrationTestBase() {
   }
 
   companion object {
-    val cachedBankHolidays =
-      BankHolidays(
-        RegionBankHolidays(
-          "England and Wales",
-          listOf(
-            BankHoliday("Christmas Day Bank Holiday", LocalDate.of(2021, 12, 27)),
-            BankHoliday("Boxing Day Bank Holiday", LocalDate.of(2021, 12, 28)),
-          ),
-        ),
-        RegionBankHolidays("Scotland", emptyList()),
-        RegionBankHolidays("Northern Ireland", emptyList()),
-      )
+    val cachedBankHolidays = TestUtil.defaultBankHolidays()
   }
 }

@@ -1,50 +1,57 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2020-03-19"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 2
-        }
-      },
-      "sentencedAt": "2022-03-20"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "type": "AFineSentence",
-      "offence": {
-        "committedAt": "2020-03-19"
-      },
-      "duration": {
-        "durationElements": {
-          "DAYS": 90
-        }
-      },
-      "sentencedAt": "2022-10-01",
-      "fineAmount": 3E+3
-    }
-  ],
-  "adjustments": {
-    "REMAND": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2022-03-20",
-        "numberOfDays": 30,
-        "fromDate": "2022-02-18",
-        "toDate": "2022-03-19"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2020-03-19"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 2
+          }
+        },
+        "sentencedAt": "2022-03-20",
+        "identifier": "9099d84c-e513-46e8-a212-fd43cc5b7c35",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "AFineSentence",
+        "offence": {
+          "committedAt": "2020-03-19"
+        },
+        "duration": {
+          "durationElements": {
+            "DAYS": 90
+          }
+        },
+        "sentencedAt": "2022-10-01",
+        "identifier": "89e6e4e5-6e3c-4971-8e67-0f4c268a03a2",
+        "fineAmount": 3E+3
       }
     ],
-    "ADDITIONAL_DAYS_AWARDED": [
-      {
-        "appliesToSentencesFrom": "2022-05-18",
-        "numberOfDays": 5,
-        "fromDate": "2022-05-18",
-        "toDate": "2022-05-22"
-      }
-    ]
-  }
+    "adjustments": {
+      "ADDITIONAL_DAYS_AWARDED": [
+        {
+          "appliesToSentencesFrom": "2022-05-18",
+          "numberOfDays": 5,
+          "fromDate": "2022-05-18",
+          "toDate": "2022-05-22"
+        }
+      ],
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2022-03-20",
+          "numberOfDays": 30,
+          "fromDate": "2022-02-18",
+          "toDate": "2022-03-19"
+        }
+      ]
+    }
+  },
+  "params": "sds-50"
 }

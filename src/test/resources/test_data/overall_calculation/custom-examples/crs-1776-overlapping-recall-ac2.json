@@ -1,182 +1,207 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2023-05-25",
-        "offenceCode": "TH68010"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 1
-        }
-      },
-      "sentencedAt": "2023-09-12",
-      "identifier": "99be35b8-f891-3e43-9958-dca2b9a92cb6",
-      "recallType": "FIXED_TERM_RECALL_14"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2023-05-22",
-        "offenceCode": "CJ88160"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 3
-        }
-      },
-      "sentencedAt": "2023-09-12",
-      "identifier": "08794c40-1447-39a0-91ae-6a90e0437073",
-      "consecutiveSentenceUUIDs": [
-        "99be35b8-f891-3e43-9958-dca2b9a92cb6"
-      ],
-      "recallType": "FIXED_TERM_RECALL_14"
-    },
-    {
-      "offence": {
-        "committedAt": "2023-05-22",
-        "offenceCode": "CJ88001"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 1
-        }
-      },
-      "sentencedAt": "2023-09-12",
-      "identifier": "7ae68ebf-4d46-3752-bfec-0d6472b8eac6",
-      "consecutiveSentenceUUIDs": [
-        "08794c40-1447-39a0-91ae-6a90e0437073"
-      ],
-      "recallType": "FIXED_TERM_RECALL_14"
-    },
-    {
-      "offence": {
-        "committedAt": "2023-05-22",
-        "offenceCode": "CD98070"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 1
-        }
-      },
-      "sentencedAt": "2023-09-12",
-      "identifier": "fc82300b-040f-3b45-a075-0e18ef83fb15",
-      "consecutiveSentenceUUIDs": [
-        "7ae68ebf-4d46-3752-bfec-0d6472b8eac6"
-      ],
-      "recallType": "FIXED_TERM_RECALL_14"
-    },
-    {
-      "offence": {
-        "committedAt": "2022-10-10",
-        "offenceCode": "TH68001"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 2
-        }
-      },
-      "sentencedAt": "2023-09-12",
-      "identifier": "e18a6919-5313-33ba-814a-48620c96850e",
-      "consecutiveSentenceUUIDs": [
-        "fc82300b-040f-3b45-a075-0e18ef83fb15"
-      ],
-      "recallType": "FIXED_TERM_RECALL_14"
-    },
-    {
-      "offence": {
-        "committedAt": "2023-08-21",
-        "offenceCode": "TH68001"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 2
-        }
-      },
-      "sentencedAt": "2023-09-12",
-      "consecutiveSentenceUUIDs": [
-        "e18a6919-5313-33ba-814a-48620c96850e"
-      ],
-      "recallType": "FIXED_TERM_RECALL_14"
-    },
-    {
-      "offence": {
-        "committedAt": "2023-08-22",
-        "offenceCode": "CJ88001"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 1
-        }
-      },
-      "sentencedAt": "2023-09-12",
-      "recallType": "FIXED_TERM_RECALL_14"
-    },
-    {
-      "offence": {
-        "committedAt": "2023-05-22",
-        "offenceCode": "CJ88159"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 3
-        }
-      },
-      "sentencedAt": "2023-09-12",
-      "recallType": "FIXED_TERM_RECALL_14"
-    },
-    {
-      "offence": {
-        "committedAt": "2024-05-15",
-        "offenceCode": "TH68010"
-      },
-      "duration": {
-        "durationElements": {
-          "WEEKS": 4
-        }
-      },
-      "sentencedAt": "2024-05-27",
-      "recallType": "FIXED_TERM_RECALL_14"
-    }
-  ],
-  "adjustments": {
-    "RECALL_REMAND": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2023-09-12",
-        "numberOfDays": 19,
-        "fromDate": "2023-08-24",
-        "toDate": "2023-09-11"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2023-05-25",
+          "offenceCode": "TH68010"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 1
+          }
+        },
+        "sentencedAt": "2023-09-12",
+        "identifier": "99be35b8-f891-3e43-9958-dca2b9a92cb6",
+        "recallType": "FIXED_TERM_RECALL_14",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2023-05-22",
+          "offenceCode": "CJ88160"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 3
+          }
+        },
+        "sentencedAt": "2023-09-12",
+        "identifier": "08794c40-1447-39a0-91ae-6a90e0437073",
+        "consecutiveSentenceUUIDs": [
+          "99be35b8-f891-3e43-9958-dca2b9a92cb6"
+        ],
+        "recallType": "FIXED_TERM_RECALL_14",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2023-05-22",
+          "offenceCode": "CJ88001"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 1
+          }
+        },
+        "sentencedAt": "2023-09-12",
+        "identifier": "7ae68ebf-4d46-3752-bfec-0d6472b8eac6",
+        "consecutiveSentenceUUIDs": [
+          "08794c40-1447-39a0-91ae-6a90e0437073"
+        ],
+        "recallType": "FIXED_TERM_RECALL_14",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2023-05-22",
+          "offenceCode": "CD98070"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 1
+          }
+        },
+        "sentencedAt": "2023-09-12",
+        "identifier": "fc82300b-040f-3b45-a075-0e18ef83fb15",
+        "consecutiveSentenceUUIDs": [
+          "7ae68ebf-4d46-3752-bfec-0d6472b8eac6"
+        ],
+        "recallType": "FIXED_TERM_RECALL_14",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2022-10-10",
+          "offenceCode": "TH68001"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 2
+          }
+        },
+        "sentencedAt": "2023-09-12",
+        "identifier": "e18a6919-5313-33ba-814a-48620c96850e",
+        "consecutiveSentenceUUIDs": [
+          "fc82300b-040f-3b45-a075-0e18ef83fb15"
+        ],
+        "recallType": "FIXED_TERM_RECALL_14",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2023-08-21",
+          "offenceCode": "TH68001"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 2
+          }
+        },
+        "sentencedAt": "2023-09-12",
+        "identifier": "36ea084d-60b7-46a6-ac08-2aba13d23fed",
+        "consecutiveSentenceUUIDs": [
+          "e18a6919-5313-33ba-814a-48620c96850e"
+        ],
+        "recallType": "FIXED_TERM_RECALL_14",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2023-08-22",
+          "offenceCode": "CJ88001"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 1
+          }
+        },
+        "sentencedAt": "2023-09-12",
+        "identifier": "b2d33cc3-1648-4587-914c-32faa93c5f6f",
+        "recallType": "FIXED_TERM_RECALL_14",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2023-05-22",
+          "offenceCode": "CJ88159"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 3
+          }
+        },
+        "sentencedAt": "2023-09-12",
+        "identifier": "5dfaaa8b-5928-4162-8337-ae0011171b2a",
+        "recallType": "FIXED_TERM_RECALL_14",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2024-05-15",
+          "offenceCode": "TH68010"
+        },
+        "duration": {
+          "durationElements": {
+            "WEEKS": 4
+          }
+        },
+        "sentencedAt": "2024-05-27",
+        "identifier": "c8e51b13-1ed8-45bf-adf7-5780140b38e0",
+        "recallType": "FIXED_TERM_RECALL_14",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
     ],
-    "UNLAWFULLY_AT_LARGE": [
-      {
-        "appliesToSentencesFrom": "2024-04-04",
-        "numberOfDays": 4,
-        "fromDate": "2024-04-04",
-        "toDate": "2024-04-07"
-      },
-      {
-        "appliesToSentencesFrom": "2024-05-23",
-        "numberOfDays": 2,
-        "fromDate": "2024-05-23",
-        "toDate": "2024-05-24"
-      },
-      {
-        "appliesToSentencesFrom": "2024-03-01",
-        "numberOfDays": 8,
-        "fromDate": "2024-03-01",
-        "toDate": "2024-03-08"
-      },
-      {
-        "appliesToSentencesFrom": "2024-04-27",
-        "numberOfDays": 4,
-        "fromDate": "2024-04-27",
-        "toDate": "2024-04-30"
-      }
-    ]
+    "adjustments": {
+      "UNLAWFULLY_AT_LARGE": [
+        {
+          "appliesToSentencesFrom": "2024-04-04",
+          "numberOfDays": 4,
+          "fromDate": "2024-04-04",
+          "toDate": "2024-04-07"
+        },
+        {
+          "appliesToSentencesFrom": "2024-05-23",
+          "numberOfDays": 2,
+          "fromDate": "2024-05-23",
+          "toDate": "2024-05-24"
+        },
+        {
+          "appliesToSentencesFrom": "2024-03-01",
+          "numberOfDays": 8,
+          "fromDate": "2024-03-01",
+          "toDate": "2024-03-08"
+        },
+        {
+          "appliesToSentencesFrom": "2024-04-27",
+          "numberOfDays": 4,
+          "fromDate": "2024-04-27",
+          "toDate": "2024-04-30"
+        }
+      ],
+      "RECALL_REMAND": [
+        {
+          "appliesToSentencesFrom": "2023-09-12",
+          "numberOfDays": 19,
+          "fromDate": "2023-08-24",
+          "toDate": "2023-09-11"
+        }
+      ]
+    },
+    "returnToCustodyDate": "2024-06-14"
   },
-  "returnToCustodyDate": "2024-06-14"
+  "params": "sds-50"
 }

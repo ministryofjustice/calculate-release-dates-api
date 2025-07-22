@@ -1,45 +1,56 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2017-05-03"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 9
-        }
-      },
-      "sentencedAt": "2017-05-03",
-      "identifier": "5dfde034-b7d7-4c54-a86c-67d42a1fd669"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2017-05-03"
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2017-05-03"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 9
+          }
+        },
+        "sentencedAt": "2017-05-03",
+        "identifier": "5dfde034-b7d7-4c54-a86c-67d42a1fd669",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       },
-      "duration": {
-        "durationElements": {
-          "YEARS": 7
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2017-05-03"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 7
+          }
+        },
+        "sentencedAt": "2017-05-03",
+        "identifier": "ad353d2f-fb54-4d66-a326-095ee8048a97",
+        "consecutiveSentenceUUIDs": [
+          "5dfde034-b7d7-4c54-a86c-67d42a1fd669"
+        ],
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      }
+    ],
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2017-05-03",
+          "numberOfDays": 173,
+          "fromDate": "2016-11-11",
+          "toDate": "2017-05-02"
         }
-      },
-      "sentencedAt": "2017-05-03",
-      "consecutiveSentenceUUIDs": [
-        "5dfde034-b7d7-4c54-a86c-67d42a1fd669"
       ]
     }
-  ],
-  "adjustments": {
-    "REMAND": [
-      {
-        "appliesToSentencesFrom": "2017-05-03",
-        "numberOfDays": 173,
-        "fromDate": "2016-11-11",
-        "toDate": "2017-05-02"
-      }
-    ]
   },
-  "calculateErsed": true
+  "userInputs": {
+    "calculateErsed": true,
+    "useOffenceIndicators": true
+  },
+  "params": "sds-50"
 }

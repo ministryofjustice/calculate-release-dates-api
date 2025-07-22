@@ -1,47 +1,58 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2023-06-23",
-        "offenceCode": "PH97010"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 2
-        }
-      },
-      "sentencedAt": "2024-03-21",
-      "identifier": "9824a90b-ab4b-360d-8003-a7c8f53b81b3"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2023-09-25",
-        "offenceCode": "COML002"
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2023-06-23",
+          "offenceCode": "PH97010"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 2
+          }
+        },
+        "sentencedAt": "2024-03-21",
+        "identifier": "9824a90b-ab4b-360d-8003-a7c8f53b81b3",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       },
-      "duration": {
-        "durationElements": {
-          "YEARS": 1
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2023-09-25",
+          "offenceCode": "COML002"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 1
+          }
+        },
+        "sentencedAt": "2024-03-21",
+        "identifier": "6e44b055-ff38-4f3e-9b6c-c5011bf880bd",
+        "consecutiveSentenceUUIDs": [
+          "9824a90b-ab4b-360d-8003-a7c8f53b81b3"
+        ],
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      }
+    ],
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2024-03-21",
+          "numberOfDays": 175,
+          "fromDate": "2023-09-28",
+          "toDate": "2024-03-20"
         }
-      },
-      "sentencedAt": "2024-03-21",
-      "consecutiveSentenceUUIDs": [
-        "9824a90b-ab4b-360d-8003-a7c8f53b81b3"
       ]
     }
-  ],
-  "adjustments": {
-    "REMAND": [
-      {
-        "appliesToSentencesFrom": "2024-03-21",
-        "numberOfDays": 175,
-        "fromDate": "2023-09-28",
-        "toDate": "2024-03-20"
-      }
-    ]
   },
-  "calculateErsed": true
+  "userInputs": {
+    "calculateErsed": true,
+    "useOffenceIndicators": true
+  },
+  "params": "sds-43"
 }

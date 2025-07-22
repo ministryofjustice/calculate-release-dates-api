@@ -1,49 +1,55 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2018-10-01"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 3
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2018-10-01"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 3
+          }
+        },
+        "sentencedAt": "2021-03-01",
+        "identifier": "29064d48-38b5-4611-8637-0c78542c3a38",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      }
+    ],
+    "adjustments": {
+      "RESTORATION_OF_ADDITIONAL_DAYS_AWARDED": [
+        {
+          "appliesToSentencesFrom": "2021-03-01"
         }
-      },
-      "sentencedAt": "2021-03-01"
+      ],
+      "ADDITIONAL_DAYS_AWARDED": [
+        {
+          "appliesToSentencesFrom": "2021-03-01"
+        }
+      ],
+      "UNLAWFULLY_AT_LARGE": [
+        {
+          "appliesToSentencesFrom": "2021-03-01"
+        }
+      ],
+      "TAGGED_BAIL": [
+        {
+          "appliesToSentencesFrom": "2021-03-01"
+        }
+      ],
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2021-03-01",
+          "numberOfDays": 174,
+          "fromDate": "2020-09-07",
+          "toDate": "2021-02-28"
+        }
+      ]
     }
-  ],
-  "adjustments": {
-    "REMAND": [
-      {
-        "appliesToSentencesFrom": "2021-03-01",
-        "numberOfDays": 174,
-        "fromDate": "2020-09-07",
-        "toDate": "2021-02-28"
-      }
-    ],
-    "TAGGED_BAIL": [
-      {
-        "appliesToSentencesFrom": "2021-03-01"
-      }
-    ],
-    "UNLAWFULLY_AT_LARGE": [
-      {
-        "appliesToSentencesFrom": "2021-03-01"
-      }
-    ],
-    "ADDITIONAL_DAYS_AWARDED": [
-      {
-        "appliesToSentencesFrom": "2021-03-01"
-      }
-    ],
-    "RESTORATION_OF_ADDITIONAL_DAYS_AWARDED": [
-      {
-        "appliesToSentencesFrom": "2021-03-01"
-      }
-    ]
-  }
+  },
+  "params": "sds-50"
 }

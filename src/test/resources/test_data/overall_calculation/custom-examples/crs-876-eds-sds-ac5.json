@@ -1,51 +1,57 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2012-12-10"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 3
-        }
-      },
-      "sentencedAt": "2012-12-17",
-      "identifier": "e40f48b6-92df-49d0-af99-507194c380fa"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "type": "ExtendedDeterminateSentence",
-      "offence": {
-        "committedAt": "2012-12-10"
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2012-12-10"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 3
+          }
+        },
+        "sentencedAt": "2012-12-17",
+        "identifier": "e40f48b6-92df-49d0-af99-507194c380fa",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       },
-      "custodialDuration": {
-        "durationElements": {
-          "YEARS": 4
+      {
+        "type": "ExtendedDeterminateSentence",
+        "offence": {
+          "committedAt": "2012-12-10"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "YEARS": 4
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "YEARS": 4
+          }
+        },
+        "automaticRelease": true,
+        "sentencedAt": "2012-12-17",
+        "identifier": "c8f8c9c0-cb00-4fdd-92a2-3260e3393843",
+        "consecutiveSentenceUUIDs": [
+          "e40f48b6-92df-49d0-af99-507194c380fa"
+        ]
+      }
+    ],
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2012-12-17",
+          "numberOfDays": 45,
+          "fromDate": "2012-11-02",
+          "toDate": "2012-12-16"
         }
-      },
-      "extensionDuration": {
-        "durationElements": {
-          "YEARS": 4
-        }
-      },
-      "automaticRelease": true,
-      "sentencedAt": "2012-12-17",
-      "consecutiveSentenceUUIDs": [
-        "e40f48b6-92df-49d0-af99-507194c380fa"
       ]
     }
-  ],
-  "adjustments": {
-    "REMAND": [
-      {
-        "appliesToSentencesFrom": "2012-12-17",
-        "numberOfDays": 45,
-        "fromDate": "2012-11-02",
-        "toDate": "2012-12-16"
-      }
-    ]
-  }
+  },
+  "params": "sds-50"
 }

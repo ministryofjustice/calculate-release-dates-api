@@ -1,43 +1,49 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2021-07-21"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 9
-        }
-      },
-      "sentencedAt": "2021-09-20"
-    }
-  ],
-  "adjustments": {
-    "ADDITIONAL_DAYS_AWARDED": [
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2021-09-21",
-        "numberOfDays": 17,
-        "fromDate": "2021-09-21",
-        "toDate": "2021-10-07"
-      },
-      {
-        "appliesToSentencesFrom": "2021-12-01",
-        "numberOfDays": 13,
-        "fromDate": "2021-12-01",
-        "toDate": "2022-01-11"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2021-07-21"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 9
+          }
+        },
+        "sentencedAt": "2021-09-20",
+        "identifier": "a211afe4-5d46-4340-9972-23da1e9e0927",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
     ],
-    "RESTORATION_OF_ADDITIONAL_DAYS_AWARDED": [
-      {
-        "appliesToSentencesFrom": "2022-01-04",
-        "numberOfDays": 8,
-        "fromDate": "2022-01-04",
-        "toDate": "2022-01-11"
-      }
-    ]
-  }
+    "adjustments": {
+      "RESTORATION_OF_ADDITIONAL_DAYS_AWARDED": [
+        {
+          "appliesToSentencesFrom": "2022-01-04",
+          "numberOfDays": 8,
+          "fromDate": "2022-01-04",
+          "toDate": "2022-01-11"
+        }
+      ],
+      "ADDITIONAL_DAYS_AWARDED": [
+        {
+          "appliesToSentencesFrom": "2021-09-21",
+          "numberOfDays": 17,
+          "fromDate": "2021-09-21",
+          "toDate": "2021-10-07"
+        },
+        {
+          "appliesToSentencesFrom": "2021-12-01",
+          "numberOfDays": 13,
+          "fromDate": "2021-12-01",
+          "toDate": "2022-01-11"
+        }
+      ]
+    }
+  },
+  "params": "sds-50"
 }

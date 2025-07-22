@@ -4,6 +4,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSen
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 import java.time.temporal.ChronoUnit.MONTHS
+import java.util.UUID
 
 fun List<CalculableSentence>.findClosest12MonthOrGreaterSentence(
   sentence: CalculableSentence,
@@ -26,3 +27,5 @@ fun List<CalculableSentence>.findClosestUnder12MonthSentence(
 }.minByOrNull {
   kotlin.math.abs(ChronoUnit.DAYS.between(it.sentenceCalculation.unadjustedExpiryDate, returnToCustodyDate))
 }
+
+fun CalculableSentence.getSentencePartIdentifiers(): List<UUID> = this.sentenceParts().map { it.identifier }

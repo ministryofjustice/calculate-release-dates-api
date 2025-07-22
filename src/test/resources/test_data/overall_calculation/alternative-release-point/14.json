@@ -1,60 +1,74 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01",
-    "isActiveSexOffender": true
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2023-05-31",
-        "offenceCode": "SX03007"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 12
-        }
-      },
-      "sentencedAt": "2024-01-30",
-      "identifier": "95a1cc6c-37a4-3048-b95b-03e79ebe3ea3"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01",
+      "isActiveSexOffender": true
     },
-    {
-      "offence": {
-        "committedAt": "2023-07-16",
-        "offenceCode": "CJ94005"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 8
-        }
-      },
-      "sentencedAt": "2024-01-30",
-      "consecutiveSentenceUUIDs": [
-        "95a1cc6c-37a4-3048-b95b-03e79ebe3ea3"
-      ]
-    },
-    {
-      "offence": {
-        "committedAt": "2023-05-31",
-        "offenceCode": "SX03128"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 4
-        }
-      },
-      "sentencedAt": "2024-01-30"
-    }
-  ],
-  "adjustments": {
-    "REMAND": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2024-01-30",
-        "numberOfDays": 28,
-        "fromDate": "2024-01-02",
-        "toDate": "2024-01-29"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2023-05-31",
+          "offenceCode": "SX03007"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 12
+          }
+        },
+        "sentencedAt": "2024-01-30",
+        "identifier": "95a1cc6c-37a4-3048-b95b-03e79ebe3ea3",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2023-07-16",
+          "offenceCode": "CJ94005"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 8
+          }
+        },
+        "sentencedAt": "2024-01-30",
+        "identifier": "f4c21301-78ce-4a6f-a56a-77e3d1718e86",
+        "consecutiveSentenceUUIDs": [
+          "95a1cc6c-37a4-3048-b95b-03e79ebe3ea3"
+        ],
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2023-05-31",
+          "offenceCode": "SX03128"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 4
+          }
+        },
+        "sentencedAt": "2024-01-30",
+        "identifier": "0e3d73e6-c936-4334-bece-6afd1bce8f55",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
-    ]
+    ],
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2024-01-30",
+          "numberOfDays": 28,
+          "fromDate": "2024-01-02",
+          "toDate": "2024-01-29"
+        }
+      ]
+    }
   },
-  "calculateErsed": true
+  "userInputs": {
+    "calculateErsed": true,
+    "useOffenceIndicators": true
+  },
+  "params": "sds-45"
 }

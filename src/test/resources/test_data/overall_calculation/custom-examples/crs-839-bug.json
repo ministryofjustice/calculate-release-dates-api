@@ -1,54 +1,66 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2019-05-14"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 4
-        }
-      },
-      "sentencedAt": "2019-05-23"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2006-08-31"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 14
-        }
-      },
-      "sentencedAt": "2007-07-12",
-      "recallType": "FIXED_TERM_RECALL_28"
-    },
-    {
-      "offence": {
-        "committedAt": "2006-08-30"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 5
-        }
-      },
-      "sentencedAt": "2007-07-12",
-      "recallType": "FIXED_TERM_RECALL_28"
-    }
-  ],
-  "adjustments": {
-    "UNLAWFULLY_AT_LARGE": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2018-03-24",
-        "numberOfDays": 1362,
-        "fromDate": "2018-03-24",
-        "toDate": "2021-12-14"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2019-05-14"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 4
+          }
+        },
+        "sentencedAt": "2019-05-23",
+        "identifier": "525db289-11a2-4f79-9274-06081882fb71",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2006-08-31"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 14
+          }
+        },
+        "sentencedAt": "2007-07-12",
+        "identifier": "e8b44c24-b463-4d68-b1bc-053d712a7392",
+        "recallType": "FIXED_TERM_RECALL_28",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2006-08-30"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 5
+          }
+        },
+        "sentencedAt": "2007-07-12",
+        "identifier": "8683ec75-5153-43f2-9300-9749931cc57a",
+        "recallType": "FIXED_TERM_RECALL_28",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
-    ]
+    ],
+    "adjustments": {
+      "UNLAWFULLY_AT_LARGE": [
+        {
+          "appliesToSentencesFrom": "2018-03-24",
+          "numberOfDays": 1362,
+          "fromDate": "2018-03-24",
+          "toDate": "2021-12-14"
+        }
+      ]
+    },
+    "returnToCustodyDate": "2021-12-15"
   },
-  "returnToCustodyDate": "2021-12-15"
+  "params": "sds-50"
 }

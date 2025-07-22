@@ -1,39 +1,48 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2024-03-22"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 2
-        }
-      },
-      "sentencedAt": "2023-09-05",
-      "identifier": "cb304745-d781-47d3-b931-4baa31551fc5"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "type": "AFineSentence",
-      "offence": {
-        "committedAt": "2022-01-18"
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2024-03-22"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 2
+          }
+        },
+        "sentencedAt": "2023-09-05",
+        "identifier": "cb304745-d781-47d3-b931-4baa31551fc5",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       },
-      "duration": {
-        "durationElements": {
-          "DAYS": 15
-        }
-      },
-      "sentencedAt": "2023-09-05",
-      "consecutiveSentenceUUIDs": [
-        "cb304745-d781-47d3-b931-4baa31551fc5"
-      ],
-      "caseSequence": 2,
-      "lineSequence": 2,
-      "fineAmount": 4E+3
-    }
-  ],
-  "calculateErsed": true
+      {
+        "type": "AFineSentence",
+        "offence": {
+          "committedAt": "2022-01-18"
+        },
+        "duration": {
+          "durationElements": {
+            "DAYS": 15
+          }
+        },
+        "sentencedAt": "2023-09-05",
+        "identifier": "20eff70f-f54a-4dfa-800e-7645fc9cf95c",
+        "consecutiveSentenceUUIDs": [
+          "cb304745-d781-47d3-b931-4baa31551fc5"
+        ],
+        "caseSequence": 2,
+        "lineSequence": 2,
+        "fineAmount": 4E+3
+      }
+    ],
+    "adjustments": {}
+  },
+  "userInputs": {
+    "calculateErsed": true,
+    "useOffenceIndicators": true
+  }
 }

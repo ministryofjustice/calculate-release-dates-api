@@ -1,51 +1,61 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
+      {
+        "type": "SopcSentence",
+        "offence": {
+          "committedAt": "2022-02-24"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "YEARS": 4
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "YEARS": 1
+          }
+        },
+        "sentencedAt": "2023-01-25",
+        "identifier": "83fd11aa-a579-3b93-aaba-937e138aec88"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2022-11-25"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 2
+          }
+        },
+        "sentencedAt": "2023-01-25",
+        "identifier": "6d07862f-a4a0-40a8-bb60-ffda6a089049",
+        "consecutiveSentenceUUIDs": [
+          "83fd11aa-a579-3b93-aaba-937e138aec88"
+        ],
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2022-11-25"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 10
+          }
+        },
+        "sentencedAt": "2023-08-02",
+        "identifier": "40b358a4-f530-4470-ae9a-7b66538f71fb",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      }
+    ],
+    "adjustments": {}
   },
-  "sentences": [
-    {
-      "type": "SopcSentence",
-      "offence": {
-        "committedAt": "2022-02-24"
-      },
-      "custodialDuration": {
-        "durationElements": {
-          "YEARS": 4
-        }
-      },
-      "extensionDuration": {
-        "durationElements": {
-          "YEARS": 1
-        }
-      },
-      "sentencedAt": "2023-01-25",
-      "identifier": "83fd11aa-a579-3b93-aaba-937e138aec88"
-    },
-    {
-      "offence": {
-        "committedAt": "2022-11-25"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 2
-        }
-      },
-      "sentencedAt": "2023-01-25",
-      "consecutiveSentenceUUIDs": [
-        "83fd11aa-a579-3b93-aaba-937e138aec88"
-      ]
-    },
-    {
-      "offence": {
-        "committedAt": "2022-11-25"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 10
-        }
-      },
-      "sentencedAt": "2023-08-02"
-    }
-  ]
+  "params": "sds-50"
 }

@@ -1,46 +1,55 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2021-08-05"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 8
-        }
-      },
-      "sentencedAt": "2021-09-20"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2021-08-27"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 3
-        }
-      },
-      "sentencedAt": "2021-10-10"
-    }
-  ],
-  "adjustments": {
-    "REMAND": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2021-09-20",
-        "numberOfDays": 15,
-        "fromDate": "2021-08-07",
-        "toDate": "2021-08-21"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2021-08-05"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 8
+          }
+        },
+        "sentencedAt": "2021-09-20",
+        "identifier": "fe5c3ff1-7bbd-4d5c-b0e2-b52de5f3d131",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       },
       {
-        "appliesToSentencesFrom": "2021-10-10",
-        "numberOfDays": 23,
-        "fromDate": "2021-08-28",
-        "toDate": "2021-09-19"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2021-08-27"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 3
+          }
+        },
+        "sentencedAt": "2021-10-10",
+        "identifier": "655a45ca-3f13-4ccc-91b9-878adcb5095c",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
-    ]
-  }
+    ],
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2021-09-20",
+          "numberOfDays": 15,
+          "fromDate": "2021-08-07",
+          "toDate": "2021-08-21"
+        },
+        {
+          "appliesToSentencesFrom": "2021-10-10",
+          "numberOfDays": 23,
+          "fromDate": "2021-08-28",
+          "toDate": "2021-09-19"
+        }
+      ]
+    }
+  },
+  "params": "sds-50"
 }

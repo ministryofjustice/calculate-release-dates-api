@@ -1,29 +1,36 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2015-02-16"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 8
-        }
-      },
-      "sentencedAt": "2015-02-16"
-    }
-  ],
-  "adjustments": {
-    "REMAND": [
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2015-02-16",
-        "numberOfDays": 21,
-        "fromDate": "2015-01-25",
-        "toDate": "2015-02-15"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2015-02-16"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 8
+          }
+        },
+        "sentencedAt": "2015-02-16",
+        "identifier": "fe219237-8aaf-4496-8b76-73d0fc70bcfb",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
-    ]
-  }
+    ],
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2015-02-16",
+          "numberOfDays": 21,
+          "fromDate": "2015-01-25",
+          "toDate": "2015-02-15"
+        }
+      ]
+    }
+  },
+  "error": "BreakdownChangedSinceLastCalculation",
+  "params": "sds-50"
 }

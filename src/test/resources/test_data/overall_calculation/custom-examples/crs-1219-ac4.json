@@ -1,41 +1,48 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "type": "DetentionAndTrainingOrderSentence",
-      "offence": {
-        "committedAt": "2020-01-20"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 20
-        }
-      },
-      "sentencedAt": "2021-10-15"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2020-08-20"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 6
-        }
-      },
-      "sentencedAt": "2022-02-20"
-    }
-  ],
-  "adjustments": {
-    "REMAND": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2022-02-20",
-        "numberOfDays": 18,
-        "fromDate": "2021-09-27",
-        "toDate": "2021-10-14"
+        "type": "DetentionAndTrainingOrderSentence",
+        "offence": {
+          "committedAt": "2020-01-20"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 20
+          }
+        },
+        "sentencedAt": "2021-10-15",
+        "identifier": "52f2a1bb-4b0a-4ec2-acc7-8005478d0b81"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2020-08-20"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 6
+          }
+        },
+        "sentencedAt": "2022-02-20",
+        "identifier": "f806b36b-42d1-485e-bd98-ae0784704eb0",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
-    ]
-  }
+    ],
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2022-02-20",
+          "numberOfDays": 18,
+          "fromDate": "2021-09-27",
+          "toDate": "2021-10-14"
+        }
+      ]
+    }
+  },
+  "params": "sds-50"
 }

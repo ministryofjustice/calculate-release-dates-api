@@ -1,41 +1,52 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2019-07-01"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 18
-        }
-      },
-      "sentencedAt": "2022-03-14"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2021-12-23"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 50
-        }
-      },
-      "sentencedAt": "2022-11-29"
-    }
-  ],
-  "adjustments": {
-    "REMAND": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2022-03-14",
-        "numberOfDays": 10,
-        "fromDate": "2022-03-04",
-        "toDate": "2022-03-13"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2019-07-01"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 18
+          }
+        },
+        "sentencedAt": "2022-03-14",
+        "identifier": "9bb10be5-62bb-4d6d-967b-e565f422784f",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2021-12-23"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 50
+          }
+        },
+        "sentencedAt": "2022-11-29",
+        "identifier": "dc8ad2c1-70c6-4a55-b5e5-be6159daa035",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
-    ]
+    ],
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2022-03-14",
+          "numberOfDays": 10,
+          "fromDate": "2022-03-04",
+          "toDate": "2022-03-13"
+        }
+      ]
+    }
   },
-  "calculateErsed": true
+  "userInputs": {
+    "calculateErsed": true,
+    "useOffenceIndicators": true
+  }
 }

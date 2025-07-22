@@ -1,58 +1,71 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2018-07-19"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 7
-        }
-      },
-      "sentencedAt": "2022-05-06",
-      "identifier": "5dfde034-b7d7-4c54-a86c-67d42a1fd669",
-      "isSDSPlus": true
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2018-07-19"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 6
-        }
-      },
-      "sentencedAt": "2022-05-06",
-      "consecutiveSentenceUUIDs": [
-        "5dfde034-b7d7-4c54-a86c-67d42a1fd669"
-      ]
-    }
-  ],
-  "adjustments": {
-    "REMAND": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2022-05-06",
-        "numberOfDays": 14,
-        "fromDate": "2020-08-19",
-        "toDate": "2020-09-01"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2018-07-19"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 7
+          }
+        },
+        "sentencedAt": "2022-05-06",
+        "identifier": "5dfde034-b7d7-4c54-a86c-67d42a1fd669",
+        "isSDSPlus": true,
+        "isSDSPlusEligibleSentenceTypeLengthAndOffence": true,
+        "isSDSPlusOffenceInPeriod": true,
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       },
       {
-        "appliesToSentencesFrom": "2022-05-06",
-        "numberOfDays": 330,
-        "fromDate": "2021-06-10",
-        "toDate": "2022-05-05"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2018-07-19"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 6
+          }
+        },
+        "sentencedAt": "2022-05-06",
+        "identifier": "c49dec49-b30f-4881-9b84-8e996d279902",
+        "consecutiveSentenceUUIDs": [
+          "5dfde034-b7d7-4c54-a86c-67d42a1fd669"
+        ],
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
     ],
-    "TAGGED_BAIL": [
-      {
-        "appliesToSentencesFrom": "2022-05-06",
-        "numberOfDays": 143
-      }
-    ]
+    "adjustments": {
+      "TAGGED_BAIL": [
+        {
+          "appliesToSentencesFrom": "2022-05-06",
+          "numberOfDays": 143
+        }
+      ],
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2022-05-06",
+          "numberOfDays": 14,
+          "fromDate": "2020-08-19",
+          "toDate": "2020-09-01"
+        },
+        {
+          "appliesToSentencesFrom": "2022-05-06",
+          "numberOfDays": 330,
+          "fromDate": "2021-06-10",
+          "toDate": "2022-05-05"
+        }
+      ]
+    }
   },
-  "calculateErsed": true
+  "userInputs": {
+    "calculateErsed": true,
+    "useOffenceIndicators": true
+  },
+  "params": "sds-50"
 }

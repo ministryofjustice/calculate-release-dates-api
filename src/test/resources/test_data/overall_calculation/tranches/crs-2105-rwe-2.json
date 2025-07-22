@@ -1,51 +1,60 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01",
-    "isActiveSexOffender": true
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2024-06-13",
-        "offenceCode": "SX03204"
-      },
-      "duration": {
-        "durationElements": {
-          "WEEKS": 26
-        }
-      },
-      "sentencedAt": "2024-06-17",
-      "recallType": "FIXED_TERM_RECALL_14"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01",
+      "isActiveSexOffender": true
     },
-    {
-      "offence": {
-        "committedAt": "2024-09-16",
-        "offenceCode": "SX03204"
-      },
-      "duration": {
-        "durationElements": {
-          "DAYS": 7
-        }
-      },
-      "sentencedAt": "2024-09-17",
-      "hasAnSDSEarlyReleaseExclusion": "SEXUAL"
-    }
-  ],
-  "adjustments": {
-    "UNLAWFULLY_AT_LARGE": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2024-09-14",
-        "numberOfDays": 2,
-        "fromDate": "2024-09-14",
-        "toDate": "2024-09-15"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2024-06-13",
+          "offenceCode": "SX03204"
+        },
+        "duration": {
+          "durationElements": {
+            "WEEKS": 26
+          }
+        },
+        "sentencedAt": "2024-06-17",
+        "identifier": "55836324-3c33-4a21-9b5a-8e6238d24724",
+        "recallType": "FIXED_TERM_RECALL_14",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2024-09-16",
+          "offenceCode": "SX03204"
+        },
+        "duration": {
+          "durationElements": {
+            "DAYS": 7
+          }
+        },
+        "sentencedAt": "2024-09-17",
+        "identifier": "5495a098-a8fc-4426-932e-01484ed52538",
+        "hasAnSDSEarlyReleaseExclusion": "SEXUAL"
       }
-    ]
-  },
-  "returnToCustodyDate": "2024-09-16",
-  "fixedTermRecallDetails": {
-    "bookingId": 12345678,
+    ],
+    "adjustments": {
+      "UNLAWFULLY_AT_LARGE": [
+        {
+          "appliesToSentencesFrom": "2024-09-14",
+          "numberOfDays": 2,
+          "fromDate": "2024-09-14",
+          "toDate": "2024-09-15"
+        }
+      ]
+    },
     "returnToCustodyDate": "2024-09-16",
-    "recallLength": 14
-  }
+    "fixedTermRecallDetails": {
+      "bookingId": 12345678,
+      "returnToCustodyDate": "2024-09-16",
+      "recallLength": 14
+    }
+  },
+  "assertSds40": true,
+  "expectedValidationException": "UNSUPPORTED_SDS40_RECALL_SENTENCE_TYPE"
 }

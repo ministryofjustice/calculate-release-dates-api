@@ -1,31 +1,39 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2024-03-30"
-      },
-      "duration": {
-        "durationElements": {
-          "DAYS": 7
-        }
-      },
-      "sentencedAt": "2024-04-26"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "type": "BotusSentence",
-      "offence": {
-        "committedAt": "2024-03-30"
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2024-03-30"
+        },
+        "duration": {
+          "durationElements": {
+            "DAYS": 7
+          }
+        },
+        "sentencedAt": "2024-04-26",
+        "identifier": "9fd7aa2b-ab3f-43e9-ace4-0cf68193c796",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       },
-      "duration": {
-        "durationElements": {
-          "DAYS": 14
-        }
-      },
-      "sentencedAt": "2024-04-26"
-    }
-  ]
+      {
+        "type": "BotusSentence",
+        "offence": {
+          "committedAt": "2024-03-30"
+        },
+        "duration": {
+          "durationElements": {
+            "DAYS": 14
+          }
+        },
+        "sentencedAt": "2024-04-26",
+        "identifier": "adccecad-31f2-4d53-ad2a-329b2ad89288"
+      }
+    ],
+    "adjustments": {}
+  },
+  "params": "sds-50"
 }

@@ -1,62 +1,69 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2024-04-02"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 3
-        }
-      },
-      "sentencedAt": "2024-09-01",
-      "identifier":  "cb304745-d781-47d3-b931-4baa31551fc5"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2024-04-02"
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2024-04-02"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 3
+          }
+        },
+        "sentencedAt": "2024-09-01",
+        "identifier": "cb304745-d781-47d3-b931-4baa31551fc5",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       },
-      "duration": {
-        "durationElements": {
-          "YEARS": 1
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2024-04-02"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 1
+          }
+        },
+        "sentencedAt": "2024-09-01",
+        "identifier": "26110b89-f284-4731-8819-ad9da833948a",
+        "consecutiveSentenceUUIDs": [
+          "cb304745-d781-47d3-b931-4baa31551fc5"
+        ],
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      }
+    ],
+    "adjustments": {
+      "UNLAWFULLY_AT_LARGE": [
+        {
+          "appliesToSentencesFrom": "2024-11-15",
+          "numberOfDays": 5
         }
-      },
-      "sentencedAt": "2024-09-01",
-      "consecutiveSentenceUUIDs": [
-        "cb304745-d781-47d3-b931-4baa31551fc5"
+      ],
+      "RESTORATION_OF_ADDITIONAL_DAYS_AWARDED": [
+        {
+          "appliesToSentencesFrom": "2024-12-01",
+          "numberOfDays": 10
+        }
+      ],
+      "ADDITIONAL_DAYS_AWARDED": [
+        {
+          "appliesToSentencesFrom": "2024-12-01",
+          "numberOfDays": 40
+        }
+      ],
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2024-09-01",
+          "numberOfDays": 20,
+          "fromDate": "2024-08-11",
+          "toDate": "2024-08-31"
+        }
       ]
     }
-  ],
-  "adjustments": {
-    "REMAND": [
-      {
-        "appliesToSentencesFrom": "2024-09-01",
-        "numberOfDays": 20,
-        "fromDate": "2024-08-11",
-        "toDate": "2024-08-31"
-      }
-    ],
-    "ADDITIONAL_DAYS_AWARDED": [
-      {
-        "appliesToSentencesFrom": "2024-12-01",
-        "numberOfDays": 40
-      }
-    ],
-    "RESTORATION_OF_ADDITIONAL_DAYS_AWARDED": [
-      {
-        "appliesToSentencesFrom": "2024-12-01",
-        "numberOfDays": 10
-      }
-    ],
-    "UNLAWFULLY_AT_LARGE": [
-      {
-        "numberOfDays": 5,
-        "appliesToSentencesFrom": "2024-11-15"
-      }
-    ]
   }
 }

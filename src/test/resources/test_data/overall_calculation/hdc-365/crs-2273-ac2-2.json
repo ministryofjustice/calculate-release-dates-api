@@ -1,65 +1,77 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2022-04-20",
-        "offenceCode": "TH68068"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 25
-        }
-      },
-      "recallType": "STANDARD_RECALL",
-      "sentencedAt": "2024-05-08"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2022-04-20",
-        "offenceCode": "TH68068"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 6
-        }
-      },
-      "sentencedAt": "2025-04-26",
-      "identifier": "cb304745-d781-47d3-b931-4baa31551fc5"
-    },
-    {
-      "offence": {
-        "committedAt": "2022-04-20",
-        "offenceCode": "TH68068"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 30
-        }
-      },
-      "sentencedAt": "2025-06-13",
-      "consecutiveSentenceUUIDs": ["cb304745-d781-47d3-b931-4baa31551fc5"]
-    }
-  ],
-  "adjustments": {
-    "REMAND": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2025-04-26",
-        "numberOfDays": 8,
-        "fromDate": "2024-03-05",
-        "toDate": "2024-03-12"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2022-04-20",
+          "offenceCode": "TH68068"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 25
+          }
+        },
+        "sentencedAt": "2024-05-08",
+        "identifier": "b2f5fc34-4871-4c69-8f7a-bb07c9a437e8",
+        "recallType": "STANDARD_RECALL",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2022-04-20",
+          "offenceCode": "TH68068"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 6
+          }
+        },
+        "sentencedAt": "2025-04-26",
+        "identifier": "cb304745-d781-47d3-b931-4baa31551fc5",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2022-04-20",
+          "offenceCode": "TH68068"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 30
+          }
+        },
+        "sentencedAt": "2025-06-13",
+        "identifier": "ef9b37c5-913e-424a-9100-eb8c50a9a184",
+        "consecutiveSentenceUUIDs": [
+          "cb304745-d781-47d3-b931-4baa31551fc5"
+        ],
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
     ],
-    "UNLAWFULLY_AT_LARGE": [
-      {
-        "appliesToSentencesFrom": "2025-06-07",
-        "numberOfDays": 5,
-        "fromDate": "2025-06-07",
-        "toDate": "2025-06-11"
-      }
-    ]
+    "adjustments": {
+      "UNLAWFULLY_AT_LARGE": [
+        {
+          "appliesToSentencesFrom": "2025-06-07",
+          "numberOfDays": 5,
+          "fromDate": "2025-06-07",
+          "toDate": "2025-06-11"
+        }
+      ],
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2025-04-26",
+          "numberOfDays": 8,
+          "fromDate": "2024-03-05",
+          "toDate": "2024-03-12"
+        }
+      ]
+    }
   }
 }

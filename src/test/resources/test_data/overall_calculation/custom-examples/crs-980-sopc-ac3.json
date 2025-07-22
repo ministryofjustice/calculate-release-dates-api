@@ -1,34 +1,38 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "type": "SopcSentence",
-      "offence": {
-        "committedAt": "2022-05-15"
-      },
-      "custodialDuration": {
-        "durationElements": {
-          "YEARS": 6
-        }
-      },
-      "extensionDuration": {
-        "durationElements": {
-          "MONTHS": 12
-        }
-      },
-      "sdopcu18": true,
-      "sentencedAt": "2022-07-15"
-    }
-  ],
-  "adjustments": {
-    "TAGGED_BAIL": [
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2022-07-15",
-        "numberOfDays": 10
+        "type": "SopcSentence",
+        "offence": {
+          "committedAt": "2022-05-15"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "YEARS": 6
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "MONTHS": 12
+          }
+        },
+        "sdopcu18": true,
+        "sentencedAt": "2022-07-15",
+        "identifier": "89408f49-eec4-47f9-abbb-5fe2886f923d"
       }
-    ]
-  }
+    ],
+    "adjustments": {
+      "TAGGED_BAIL": [
+        {
+          "appliesToSentencesFrom": "2022-07-15",
+          "numberOfDays": 10
+        }
+      ]
+    }
+  },
+  "params": "sds-50"
 }

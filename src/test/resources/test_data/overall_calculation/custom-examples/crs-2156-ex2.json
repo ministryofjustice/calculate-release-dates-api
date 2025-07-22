@@ -1,49 +1,57 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2024-01-02",
-        "offenceCode": "TH68010"
-      },
-      "duration": {
-        "durationElements": {
-          "WEEKS": 14
-        }
-      },
-      "sentencedAt": "2024-06-17",
-      "recallType": "FIXED_TERM_RECALL_14"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2024-09-20",
-        "offenceCode": "TH68010"
-      },
-      "duration": {
-        "durationElements": {
-          "WEEKS": 10
-        }
-      },
-      "sentencedAt": "2024-09-21"
-    }
-  ],
-  "adjustments": {
-    "UNLAWFULLY_AT_LARGE": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2024-08-23",
-        "numberOfDays": 28,
-        "fromDate": "2024-08-23",
-        "toDate": "2024-09-19"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2024-01-02",
+          "offenceCode": "TH68010"
+        },
+        "duration": {
+          "durationElements": {
+            "WEEKS": 14
+          }
+        },
+        "sentencedAt": "2024-06-17",
+        "identifier": "b1aa05f9-87c6-4092-b7d4-2a59b6c82564",
+        "recallType": "FIXED_TERM_RECALL_14",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2024-09-20",
+          "offenceCode": "TH68010"
+        },
+        "duration": {
+          "durationElements": {
+            "WEEKS": 10
+          }
+        },
+        "sentencedAt": "2024-09-21",
+        "identifier": "bae25260-6c33-4867-99af-d079069c8cd9",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
-    ]
-  },
-  "returnToCustodyDate": "2024-09-20",
-  "fixedTermRecallDetails": {
-    "bookingId": 2957704,
+    ],
+    "adjustments": {
+      "UNLAWFULLY_AT_LARGE": [
+        {
+          "appliesToSentencesFrom": "2024-08-23",
+          "numberOfDays": 28,
+          "fromDate": "2024-08-23",
+          "toDate": "2024-09-19"
+        }
+      ]
+    },
     "returnToCustodyDate": "2024-09-20",
-    "recallLength": 14
+    "fixedTermRecallDetails": {
+      "bookingId": 2957704,
+      "returnToCustodyDate": "2024-09-20",
+      "recallLength": 14
+    }
   }
 }

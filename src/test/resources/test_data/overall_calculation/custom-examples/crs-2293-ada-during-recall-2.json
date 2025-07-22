@@ -1,120 +1,124 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "type": "ExtendedDeterminateSentence",
-      "offence": {
-        "committedAt": "2014-02-28",
-        "offenceCode": "FI68076"
-      },
-      "custodialDuration": {
-        "durationElements": {
-          "YEARS": 10
-        }
-      },
-      "extensionDuration": {
-        "durationElements": {
-          "YEARS": 3
-        }
-      },
-      "sentencedAt": "2014-08-29",
-      "recallType": "STANDARD_RECALL"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "type": "ExtendedDeterminateSentence",
-      "offence": {
-        "committedAt": "2024-06-21",
-        "offenceCode": "FI68321"
+    "sentences": [
+      {
+        "type": "ExtendedDeterminateSentence",
+        "offence": {
+          "committedAt": "2014-02-28",
+          "offenceCode": "FI68076"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "YEARS": 10
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "YEARS": 3
+          }
+        },
+        "sentencedAt": "2014-08-29",
+        "identifier": "6f5670f7-07b0-48d3-b461-da2c3f955e9c",
+        "recallType": "STANDARD_RECALL"
       },
-      "custodialDuration": {
-        "durationElements": {
-          "YEARS": 3,
-          "MONTHS": 4
+      {
+        "type": "ExtendedDeterminateSentence",
+        "offence": {
+          "committedAt": "2024-06-21",
+          "offenceCode": "FI68321"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "YEARS": 3,
+            "MONTHS": 4
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "YEARS": 4
+          }
+        },
+        "sentencedAt": "2024-11-14",
+        "identifier": "899925bf-d12d-436f-ad1a-b1787995bcec"
+      }
+    ],
+    "adjustments": {
+      "RESTORATION_OF_ADDITIONAL_DAYS_AWARDED": [
+        {
+          "appliesToSentencesFrom": "2024-09-06",
+          "numberOfDays": 58,
+          "fromDate": "2024-09-06",
+          "toDate": "2024-11-02"
         }
-      },
-      "extensionDuration": {
-        "durationElements": {
-          "YEARS": 4
+      ],
+      "ADDITIONAL_DAYS_AWARDED": [
+        {
+          "appliesToSentencesFrom": "2024-10-24",
+          "numberOfDays": 7,
+          "fromDate": "2024-10-24",
+          "toDate": "2024-10-30"
+        },
+        {
+          "appliesToSentencesFrom": "2024-10-20",
+          "numberOfDays": 24,
+          "fromDate": "2024-10-20",
+          "toDate": "2024-11-12"
+        },
+        {
+          "appliesToSentencesFrom": "2024-09-30",
+          "numberOfDays": 20,
+          "fromDate": "2024-09-30",
+          "toDate": "2024-10-19"
+        },
+        {
+          "appliesToSentencesFrom": "2024-09-03",
+          "numberOfDays": 12,
+          "fromDate": "2024-09-03",
+          "toDate": "2024-09-14"
+        },
+        {
+          "appliesToSentencesFrom": "2024-10-16",
+          "numberOfDays": 24,
+          "fromDate": "2024-10-16",
+          "toDate": "2024-11-08"
+        },
+        {
+          "appliesToSentencesFrom": "2024-09-04",
+          "numberOfDays": 22,
+          "fromDate": "2024-09-04",
+          "toDate": "2024-09-25"
+        },
+        {
+          "appliesToSentencesFrom": "2024-09-05",
+          "numberOfDays": 7,
+          "fromDate": "2024-09-05",
+          "toDate": "2024-09-11"
+        },
+        {
+          "appliesToSentencesFrom": "2024-09-08",
+          "numberOfDays": 32,
+          "fromDate": "2024-09-08",
+          "toDate": "2024-10-09"
         }
-      },
-      "sentencedAt": "2024-11-14"
+      ],
+      "RECALL_REMAND": [
+        {
+          "appliesToSentencesFrom": "2014-08-29",
+          "numberOfDays": 26,
+          "fromDate": "2014-08-03",
+          "toDate": "2014-08-28"
+        },
+        {
+          "appliesToSentencesFrom": "2014-08-29",
+          "numberOfDays": 27,
+          "fromDate": "2014-03-07",
+          "toDate": "2014-04-02"
+        }
+      ]
     }
-  ],
-  "adjustments": {
-    "RECALL_REMAND": [
-      {
-        "appliesToSentencesFrom": "2014-08-29",
-        "numberOfDays": 26,
-        "fromDate": "2014-08-03",
-        "toDate": "2014-08-28"
-      },
-      {
-        "appliesToSentencesFrom": "2014-08-29",
-        "numberOfDays": 27,
-        "fromDate": "2014-03-07",
-        "toDate": "2014-04-02"
-      }
-    ],
-    "ADDITIONAL_DAYS_AWARDED": [
-      {
-        "appliesToSentencesFrom": "2024-10-24",
-        "numberOfDays": 7,
-        "fromDate": "2024-10-24",
-        "toDate": "2024-10-30"
-      },
-      {
-        "appliesToSentencesFrom": "2024-10-20",
-        "numberOfDays": 24,
-        "fromDate": "2024-10-20",
-        "toDate": "2024-11-12"
-      },
-      {
-        "appliesToSentencesFrom": "2024-09-30",
-        "numberOfDays": 20,
-        "fromDate": "2024-09-30",
-        "toDate": "2024-10-19"
-      },
-      {
-        "appliesToSentencesFrom": "2024-09-03",
-        "numberOfDays": 12,
-        "fromDate": "2024-09-03",
-        "toDate": "2024-09-14"
-      },
-      {
-        "appliesToSentencesFrom": "2024-10-16",
-        "numberOfDays": 24,
-        "fromDate": "2024-10-16",
-        "toDate": "2024-11-08"
-      },
-      {
-        "appliesToSentencesFrom": "2024-09-04",
-        "numberOfDays": 22,
-        "fromDate": "2024-09-04",
-        "toDate": "2024-09-25"
-      },
-      {
-        "appliesToSentencesFrom": "2024-09-05",
-        "numberOfDays": 7,
-        "fromDate": "2024-09-05",
-        "toDate": "2024-09-11"
-      },
-      {
-        "appliesToSentencesFrom": "2024-09-08",
-        "numberOfDays": 32,
-        "fromDate": "2024-09-08",
-        "toDate": "2024-10-09"
-      }
-    ],
-    "RESTORATION_OF_ADDITIONAL_DAYS_AWARDED": [
-      {
-        "appliesToSentencesFrom": "2024-09-06",
-        "numberOfDays": 58,
-        "fromDate": "2024-09-06",
-        "toDate": "2024-11-02"
-      }
-    ]
   }
 }

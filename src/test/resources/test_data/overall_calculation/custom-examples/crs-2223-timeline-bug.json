@@ -1,84 +1,102 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2019-03-06",
-        "offenceCode": "COML025C"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 20
-        }
-      },
-      "sentencedAt": "2022-12-13",
-      "identifier": "d227e8f2-2273-3943-a06d-9300539b8ba1",
-      "isSDSPlus": true
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2022-08-03",
-        "offenceCode": "MD71597"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 2
-        }
-      },
-      "sentencedAt": "2024-11-28"
-    },
-    {
-      "offence": {
-        "committedAt": "2022-08-03",
-        "offenceCode": "MD71230"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 3,
-          "MONTHS": 2
-        }
-      },
-      "sentencedAt": "2024-11-28",
-      "consecutiveSentenceUUIDs": [
-        "d227e8f2-2273-3943-a06d-9300539b8ba1"
-      ]
-    },
-    {
-      "offence": {
-        "committedAt": "2022-08-03",
-        "offenceCode": "FC81026"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 1
-        }
-      },
-      "sentencedAt": "2024-11-28"
-    },
-    {
-      "offence": {
-        "committedAt": "2022-08-03",
-        "offenceCode": "PC02021"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 4
-        }
-      },
-      "sentencedAt": "2024-11-28"
-    }
-  ],
-  "adjustments": {
-    "REMAND": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2022-12-13",
-        "numberOfDays": 131,
-        "fromDate": "2022-08-04",
-        "toDate": "2022-12-12"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2019-03-06",
+          "offenceCode": "COML025C"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 20
+          }
+        },
+        "sentencedAt": "2022-12-13",
+        "identifier": "d227e8f2-2273-3943-a06d-9300539b8ba1",
+        "isSDSPlus": true,
+        "isSDSPlusEligibleSentenceTypeLengthAndOffence": true,
+        "isSDSPlusOffenceInPeriod": true,
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2022-08-03",
+          "offenceCode": "MD71597"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 2
+          }
+        },
+        "sentencedAt": "2024-11-28",
+        "identifier": "94959f6d-9f90-4f7f-bd13-3aaf4a13ef28",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2022-08-03",
+          "offenceCode": "MD71230"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 3,
+            "MONTHS": 2
+          }
+        },
+        "sentencedAt": "2024-11-28",
+        "identifier": "1e437bd9-9f7a-48f9-a250-1ec2ea4dad76",
+        "consecutiveSentenceUUIDs": [
+          "d227e8f2-2273-3943-a06d-9300539b8ba1"
+        ],
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2022-08-03",
+          "offenceCode": "FC81026"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 1
+          }
+        },
+        "sentencedAt": "2024-11-28",
+        "identifier": "20f18bd1-d9bd-4868-bc6e-f66712a9ff9c",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2022-08-03",
+          "offenceCode": "PC02021"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 4
+          }
+        },
+        "sentencedAt": "2024-11-28",
+        "identifier": "1b28b760-b938-41a8-a9a4-7bf3a00cec1c",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
-    ]
+    ],
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2022-12-13",
+          "numberOfDays": 131,
+          "fromDate": "2022-08-04",
+          "toDate": "2022-12-12"
+        }
+      ]
+    }
   }
 }

@@ -1,59 +1,64 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "type": "ExtendedDeterminateSentence",
-      "offence": {
-        "committedAt": "2021-04-27"
-      },
-      "custodialDuration": {
-        "durationElements": {
-          "YEARS": 6
-        }
-      },
-      "extensionDuration": {
-        "durationElements": {
-          "YEARS": 1,
-          "MONTHS": 6
-        }
-      },
-      "sentencedAt": "2021-04-28"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "type": "ExtendedDeterminateSentence",
-      "offence": {
-        "committedAt": "2021-06-02"
-      },
-      "custodialDuration": {
-        "durationElements": {
-          "YEARS": 5
-        }
-      },
-      "extensionDuration": {
-        "durationElements": {
-          "YEARS": 2
-        }
-      },
-      "sentencedAt": "2021-06-03"
-    }
-  ],
-  "adjustments": {
-    "REMAND": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2021-04-28",
-        "numberOfDays": 34,
-        "fromDate": "2021-03-27",
-        "toDate": "2021-04-27"
+        "type": "ExtendedDeterminateSentence",
+        "offence": {
+          "committedAt": "2021-04-27"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "YEARS": 6
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "YEARS": 1,
+            "MONTHS": 6
+          }
+        },
+        "sentencedAt": "2021-04-28",
+        "identifier": "0e6ce60c-c2ec-4430-a413-61a5d219f290"
+      },
+      {
+        "type": "ExtendedDeterminateSentence",
+        "offence": {
+          "committedAt": "2021-06-02"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "YEARS": 5
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "YEARS": 2
+          }
+        },
+        "sentencedAt": "2021-06-03",
+        "identifier": "55b46375-f1e5-4e0f-ad5a-d59a73234fa7"
       }
     ],
-    "ADDITIONAL_DAYS_AWARDED": [
-      {
-        "appliesToSentencesFrom": "2021-04-28",
-        "numberOfDays": 4
-      }
-    ]
-  }
+    "adjustments": {
+      "ADDITIONAL_DAYS_AWARDED": [
+        {
+          "appliesToSentencesFrom": "2021-04-28",
+          "numberOfDays": 4
+        }
+      ],
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2021-04-28",
+          "numberOfDays": 34,
+          "fromDate": "2021-03-27",
+          "toDate": "2021-04-27"
+        }
+      ]
+    }
+  },
+  "params": "sds-50"
 }

@@ -1,45 +1,51 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2022-01-04"
-      },
-      "duration": {
-        "durationElements": {
-          "WEEKS": 12
-        }
-      },
-      "sentencedAt": "2023-02-22",
-      "recallType": "FIXED_TERM_RECALL_14"
-    }
-  ],
-  "adjustments": {
-    "RECALL_REMAND": [
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2023-02-22",
-        "numberOfDays": 9,
-        "fromDate": "2022-01-06",
-        "toDate": "2022-01-14"
-      },
-      {
-        "appliesToSentencesFrom": "2023-02-22",
-        "numberOfDays": 28,
-        "fromDate": "2022-04-19",
-        "toDate": "2022-05-16"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2022-01-04"
+        },
+        "duration": {
+          "durationElements": {
+            "WEEKS": 12
+          }
+        },
+        "sentencedAt": "2023-02-22",
+        "identifier": "b7a03b41-dc12-4c3d-8fce-5c3a874de044",
+        "recallType": "FIXED_TERM_RECALL_14",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
     ],
-    "UNLAWFULLY_AT_LARGE": [
-      {
-        "appliesToSentencesFrom": "2023-03-02",
-        "numberOfDays": 18,
-        "fromDate": "2023-03-02",
-        "toDate": "2023-03-19"
-      }
-    ]
+    "adjustments": {
+      "UNLAWFULLY_AT_LARGE": [
+        {
+          "appliesToSentencesFrom": "2023-03-02",
+          "numberOfDays": 18,
+          "fromDate": "2023-03-02",
+          "toDate": "2023-03-19"
+        }
+      ],
+      "RECALL_REMAND": [
+        {
+          "appliesToSentencesFrom": "2023-02-22",
+          "numberOfDays": 9,
+          "fromDate": "2022-01-06",
+          "toDate": "2022-01-14"
+        },
+        {
+          "appliesToSentencesFrom": "2023-02-22",
+          "numberOfDays": 28,
+          "fromDate": "2022-04-19",
+          "toDate": "2022-05-16"
+        }
+      ]
+    },
+    "returnToCustodyDate": "2023-03-20"
   },
-  "returnToCustodyDate": "2023-03-20"
+  "params": "sds-50"
 }

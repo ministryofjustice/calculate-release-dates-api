@@ -1,74 +1,85 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "type": "ExtendedDeterminateSentence",
-      "offence": {
-        "committedAt": "2013-08-31"
-      },
-      "custodialDuration": {
-        "durationElements": {
-          "YEARS": 8
-        }
-      },
-      "extensionDuration": {
-        "durationElements": {
-          "YEARS": 8
-        }
-      },
-      "sentencedAt": "2013-12-12"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2013-10-05"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 3
-        }
-      },
-      "sentencedAt": "2013-12-12"
-    },
-    {
-      "type": "SopcSentence",
-      "offence": {
-        "committedAt": "2001-08-02"
-      },
-      "custodialDuration": {
-        "durationElements": {
-          "YEARS": 8
-        }
-      },
-      "extensionDuration": {
-        "durationElements": {
-          "YEARS": 1
-        }
-      },
-      "sentencedAt": "2016-07-28"
-    },
-    {
-      "offence": {
-        "committedAt": "1981-03-07"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 112
-        }
-      },
-      "sentencedAt": "2017-12-21"
-    }
-  ],
-  "adjustments": {
-    "REMAND": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2013-12-12",
-        "numberOfDays": 33,
-        "fromDate": "2013-11-09",
-        "toDate": "2013-12-11"
+        "type": "ExtendedDeterminateSentence",
+        "offence": {
+          "committedAt": "2013-08-31"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "YEARS": 8
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "YEARS": 8
+          }
+        },
+        "sentencedAt": "2013-12-12",
+        "identifier": "0a681fe1-bc03-4b5b-9065-50cf70eda37e"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2013-10-05"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 3
+          }
+        },
+        "sentencedAt": "2013-12-12",
+        "identifier": "1fc19969-b5d4-4e75-9992-f8897d663330",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "SopcSentence",
+        "offence": {
+          "committedAt": "2001-08-02"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "YEARS": 8
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "YEARS": 1
+          }
+        },
+        "sentencedAt": "2016-07-28",
+        "identifier": "aeb91e2e-c2d1-4e01-a6eb-b72f924e7d08"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "1981-03-07"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 112
+          }
+        },
+        "sentencedAt": "2017-12-21",
+        "identifier": "c4ba1535-d325-467a-8159-597b68cee07b",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
-    ]
-  }
+    ],
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2013-12-12",
+          "numberOfDays": 33,
+          "fromDate": "2013-11-09",
+          "toDate": "2013-12-11"
+        }
+      ]
+    }
+  },
+  "params": "sds-50"
 }

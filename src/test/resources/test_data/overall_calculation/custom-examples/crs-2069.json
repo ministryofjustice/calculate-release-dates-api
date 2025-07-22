@@ -1,46 +1,53 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2018-10-25",
-        "offenceCode": "CE79097C"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 13
-        }
-      },
-      "sentencedAt": "2019-07-19",
-      "identifier": "92588a2b-c94d-33bc-87bb-239712986aa8"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2017-05-30",
-        "offenceCode": "PC02021"
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2018-10-25",
+          "offenceCode": "CE79097C"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 13
+          }
+        },
+        "sentencedAt": "2019-07-19",
+        "identifier": "92588a2b-c94d-33bc-87bb-239712986aa8",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 14
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2017-05-30",
+          "offenceCode": "PC02021"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 14
+          }
+        },
+        "sentencedAt": "2019-07-19",
+        "identifier": "9b105600-3d16-4b5c-8cef-e3c15d6a2d35",
+        "consecutiveSentenceUUIDs": [
+          "92588a2b-c94d-33bc-87bb-239712986aa8"
+        ],
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      }
+    ],
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2019-07-19",
+          "numberOfDays": 190,
+          "fromDate": "2019-01-10",
+          "toDate": "2019-07-18"
         }
-      },
-      "sentencedAt": "2019-07-19",
-      "consecutiveSentenceUUIDs": [
-        "92588a2b-c94d-33bc-87bb-239712986aa8"
       ]
     }
-  ],
-  "adjustments": {
-    "REMAND": [
-      {
-        "appliesToSentencesFrom": "2019-07-19",
-        "numberOfDays": 190,
-        "fromDate": "2019-01-10",
-        "toDate": "2019-07-18"
-      }
-    ]
   }
 }

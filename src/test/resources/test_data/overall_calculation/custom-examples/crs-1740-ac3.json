@@ -1,33 +1,45 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2021-12-07"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 3,
-          "MONTHS": 6
-        }
-      },
-      "sentencedAt": "2023-01-25"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2021-12-07"
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2021-12-07"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 3,
+            "MONTHS": 6
+          }
+        },
+        "sentencedAt": "2023-01-25",
+        "identifier": "ba57dad9-1e1d-4e7e-a25a-8896ddb81f75",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       },
-      "duration": {
-        "durationElements": {
-          "YEARS": 8,
-          "MONTHS": 4
-        }
-      },
-      "sentencedAt": "2023-01-25",
-      "isSDSPlus": true
-    }
-  ]
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2021-12-07"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 8,
+            "MONTHS": 4
+          }
+        },
+        "sentencedAt": "2023-01-25",
+        "identifier": "8df7c876-f284-4cf3-b3dc-d1ed17a3314c",
+        "isSDSPlus": true,
+        "isSDSPlusEligibleSentenceTypeLengthAndOffence": true,
+        "isSDSPlusOffenceInPeriod": true,
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      }
+    ],
+    "adjustments": {}
+  },
+  "params": "sds-50"
 }

@@ -1,42 +1,51 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2024-04-10",
-        "offenceCode": "PU86003"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 6
-        }
-      },
-      "sentencedAt": "2018-09-09"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2024-04-10",
-        "offenceCode": "PU86003"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 12
-        }
-      },
-      "sentencedAt": "2024-07-30"
-    }
-  ],
-  "adjustments": {
-    "REMAND": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2018-09-09",
-        "numberOfDays": 2,
-        "fromDate": "2018-09-07",
-        "toDate": "2018-09-08"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2024-04-10",
+          "offenceCode": "PU86003"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 6
+          }
+        },
+        "sentencedAt": "2018-09-09",
+        "identifier": "5e8fa599-e8db-481d-a6db-786da31b5d87",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2024-04-10",
+          "offenceCode": "PU86003"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 12
+          }
+        },
+        "sentencedAt": "2024-07-30",
+        "identifier": "241593bd-3a1a-4b3c-b1e7-2acbb3c36f0f",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
-    ]
-  }
+    ],
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2018-09-09",
+          "numberOfDays": 2,
+          "fromDate": "2018-09-07",
+          "toDate": "2018-09-08"
+        }
+      ]
+    }
+  },
+  "assertSds40": true
 }

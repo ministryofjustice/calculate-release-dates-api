@@ -1,63 +1,75 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2021-02-02"
-      },
-      "duration": {
-        "durationElements": {
-          "WEEKS": 4
-        }
-      },
-      "sentencedAt": "2021-04-03"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2021-02-23"
-      },
-      "duration": {
-        "durationElements": {
-          "WEEKS": 6
-        }
-      },
-      "sentencedAt": "2021-04-03"
-    },
-    {
-      "offence": {
-        "committedAt": "2021-03-13"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 6
-        }
-      },
-      "sentencedAt": "2021-04-03"
-    }
-  ],
-  "adjustments": {
-    "REMAND": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2021-04-03",
-        "numberOfDays": 20,
-        "fromDate": "2021-02-03",
-        "toDate": "2021-02-22"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2021-02-02"
+        },
+        "duration": {
+          "durationElements": {
+            "WEEKS": 4
+          }
+        },
+        "sentencedAt": "2021-04-03",
+        "identifier": "3dcb190b-9967-43b1-b24b-9137b19352ca",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       },
       {
-        "appliesToSentencesFrom": "2021-04-03",
-        "numberOfDays": 17,
-        "fromDate": "2021-02-23",
-        "toDate": "2021-03-12"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2021-02-23"
+        },
+        "duration": {
+          "durationElements": {
+            "WEEKS": 6
+          }
+        },
+        "sentencedAt": "2021-04-03",
+        "identifier": "fc039cea-3a5e-4c04-a0cc-86e4a525380e",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       },
       {
-        "appliesToSentencesFrom": "2021-04-03",
-        "numberOfDays": 21,
-        "fromDate": "2021-03-13",
-        "toDate": "2021-04-02"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2021-03-13"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 6
+          }
+        },
+        "sentencedAt": "2021-04-03",
+        "identifier": "fa1101a8-ce56-4534-9684-09158f20a74e",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
-    ]
-  }
+    ],
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2021-04-03",
+          "numberOfDays": 20,
+          "fromDate": "2021-02-03",
+          "toDate": "2021-02-22"
+        },
+        {
+          "appliesToSentencesFrom": "2021-04-03",
+          "numberOfDays": 17,
+          "fromDate": "2021-02-23",
+          "toDate": "2021-03-12"
+        },
+        {
+          "appliesToSentencesFrom": "2021-04-03",
+          "numberOfDays": 21,
+          "fromDate": "2021-03-13",
+          "toDate": "2021-04-02"
+        }
+      ]
+    }
+  },
+  "params": "sds-50"
 }

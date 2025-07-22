@@ -1,47 +1,58 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2021-11-15"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 14
-        }
-      },
-      "sentencedAt": "2021-01-25",
-      "identifier": "56a92750-dc7c-4301-9ebd-ca9dbd3de015",
-      "recallType": "FIXED_TERM_RECALL_28"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2021-11-15"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 10
-        }
-      },
-      "sentencedAt": "2021-01-25",
-      "consecutiveSentenceUUIDs": [
-        "56a92750-dc7c-4301-9ebd-ca9dbd3de015"
-      ],
-      "recallType": "FIXED_TERM_RECALL_28"
-    }
-  ],
-  "adjustments": {
-    "UNLAWFULLY_AT_LARGE": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2022-01-06",
-        "numberOfDays": 3,
-        "fromDate": "2022-01-06",
-        "toDate": "2022-01-08"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2021-11-15"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 14
+          }
+        },
+        "sentencedAt": "2021-01-25",
+        "identifier": "56a92750-dc7c-4301-9ebd-ca9dbd3de015",
+        "recallType": "FIXED_TERM_RECALL_28",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2021-11-15"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 10
+          }
+        },
+        "sentencedAt": "2021-01-25",
+        "identifier": "0ccb4b50-46e9-42c3-b78c-11ef2ead8056",
+        "consecutiveSentenceUUIDs": [
+          "56a92750-dc7c-4301-9ebd-ca9dbd3de015"
+        ],
+        "recallType": "FIXED_TERM_RECALL_28",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
-    ]
+    ],
+    "adjustments": {
+      "UNLAWFULLY_AT_LARGE": [
+        {
+          "appliesToSentencesFrom": "2022-01-06",
+          "numberOfDays": 3,
+          "fromDate": "2022-01-06",
+          "toDate": "2022-01-08"
+        }
+      ]
+    },
+    "returnToCustodyDate": "2022-01-09"
   },
-  "returnToCustodyDate": "2022-01-09"
+  "params": "sds-50",
+  "featureToggles": {
+    "ftr48ManualJourney": false
+  }
 }

@@ -1,48 +1,44 @@
 {
-  "offender": {
-    "reference": "A1234BC",
-    "dateOfBirth": "1988-09-11",
-    "isActiveSexOffender": false
-  },
-  "sentences": [
-    {
-      "type": "StandardSentence",
-      "offence": {
-        "committedAt": "2022-07-31",
-        "offenceCode": "PL96003"
-      },
-      "duration": {
-        "durationElements": {
-          "DAYS": 0,
-          "WEEKS": 0,
-          "YEARS": 4,
-          "MONTHS": 0
-        }
-      },
-      "isSDSPlus": false,
-      "identifier": "6709e448-dc88-3986-9f9d-22aa536ae5e5",
-      "recallType": "FIXED_TERM_RECALL_28",
-      "sentencedAt": "2023-11-16",
-      "caseSequence": 1,
-      "lineSequence": 1,
-      "caseReference": "C1",
-      "consecutiveSentenceUUIDs": []
-    }
-  ],
-  "adjustments": {
-    "RECALL_REMAND": [
+  "booking": {
+    "offender": {
+      "reference": "A1234BC",
+      "dateOfBirth": "1988-09-11"
+    },
+    "sentences": [
       {
-        "fromDate": "2023-09-27",
-        "toDate": "2023-11-15",
-        "numberOfDays": 50,
-        "appliesToSentencesFrom": "2023-11-16"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2022-07-31",
+          "offenceCode": "PL96003"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 4
+          }
+        },
+        "sentencedAt": "2023-11-16",
+        "identifier": "6709e448-dc88-3986-9f9d-22aa536ae5e5",
+        "caseSequence": 1,
+        "lineSequence": 1,
+        "caseReference": "C1",
+        "recallType": "FIXED_TERM_RECALL_28",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
-    ]
-  },
-  "externalMovements": [],
-  "returnToCustodyDate": "2025-08-22",
-  "fixedTermRecallDetails": {
-    "recallLength": 28,
-    "returnToCustodyDate": "2025-08-22"
+    ],
+    "adjustments": {
+      "RECALL_REMAND": [
+        {
+          "appliesToSentencesFrom": "2023-11-16",
+          "numberOfDays": 50,
+          "fromDate": "2023-09-27",
+          "toDate": "2023-11-15"
+        }
+      ]
+    },
+    "returnToCustodyDate": "2025-08-22",
+    "fixedTermRecallDetails": {
+      "returnToCustodyDate": "2025-08-22",
+      "recallLength": 28
+    }
   }
 }

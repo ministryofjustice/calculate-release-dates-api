@@ -1,66 +1,70 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "type": "SopcSentence",
-      "offence": {
-        "committedAt": "2015-01-09"
-      },
-      "custodialDuration": {
-        "durationElements": {
-          "YEARS": 4
-        }
-      },
-      "extensionDuration": {
-        "durationElements": {
-          "YEARS": 1
-        }
-      },
-      "sentencedAt": "2015-09-21",
-      "identifier": "70b10e6a-a5b2-43e7-a5db-3694d75bedec",
-      "recallType": "STANDARD_RECALL"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "type": "SopcSentence",
-      "offence": {
-        "committedAt": "2015-01-09"
-      },
-      "custodialDuration": {
-        "durationElements": {
-          "YEARS": 4
-        }
-      },
-      "extensionDuration": {
-        "durationElements": {
-          "YEARS": 1
-        }
-      },
-      "sentencedAt": "2015-09-21",
-      "consecutiveSentenceUUIDs": [
-        "70b10e6a-a5b2-43e7-a5db-3694d75bedec"
-      ],
-      "recallType": "STANDARD_RECALL"
-    }
-  ],
-  "adjustments": {
-    "RECALL_REMAND": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2015-09-21",
-        "numberOfDays": 126,
-        "fromDate": "2015-05-18",
-        "toDate": "2015-09-20"
+        "type": "SopcSentence",
+        "offence": {
+          "committedAt": "2015-01-09"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "YEARS": 4
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "YEARS": 1
+          }
+        },
+        "sentencedAt": "2015-09-21",
+        "identifier": "70b10e6a-a5b2-43e7-a5db-3694d75bedec",
+        "recallType": "STANDARD_RECALL"
+      },
+      {
+        "type": "SopcSentence",
+        "offence": {
+          "committedAt": "2015-01-09"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "YEARS": 4
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "YEARS": 1
+          }
+        },
+        "sentencedAt": "2015-09-21",
+        "identifier": "81295725-9e80-497a-a836-e870a8e52b29",
+        "consecutiveSentenceUUIDs": [
+          "70b10e6a-a5b2-43e7-a5db-3694d75bedec"
+        ],
+        "recallType": "STANDARD_RECALL"
       }
     ],
-    "UNLAWFULLY_AT_LARGE": [
-      {
-        "appliesToSentencesFrom": "2019-06-15",
-        "numberOfDays": 23,
-        "fromDate": "2019-06-15",
-        "toDate": "2019-07-07"
-      }
-    ]
-  }
+    "adjustments": {
+      "UNLAWFULLY_AT_LARGE": [
+        {
+          "appliesToSentencesFrom": "2019-06-15",
+          "numberOfDays": 23,
+          "fromDate": "2019-06-15",
+          "toDate": "2019-07-07"
+        }
+      ],
+      "RECALL_REMAND": [
+        {
+          "appliesToSentencesFrom": "2015-09-21",
+          "numberOfDays": 126,
+          "fromDate": "2015-05-18",
+          "toDate": "2015-09-20"
+        }
+      ]
+    }
+  },
+  "params": "sds-50"
 }

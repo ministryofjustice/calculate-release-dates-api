@@ -1,28 +1,32 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "type": "BotusSentence",
-      "offence": {
-        "committedAt": "2014-02-02"
-      },
-      "duration": {
-        "durationElements": {
-          "DAYS": 12
-        }
-      },
-      "sentencedAt": "2016-12-20"
-    }
-  ],
-  "adjustments": {
-    "TAGGED_BAIL": [
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2014-06-27",
-        "numberOfDays": 16
+        "type": "BotusSentence",
+        "offence": {
+          "committedAt": "2014-02-02"
+        },
+        "duration": {
+          "durationElements": {
+            "DAYS": 12
+          }
+        },
+        "sentencedAt": "2016-12-20",
+        "identifier": "86344458-40fd-439f-ab13-31e1d35b119f"
       }
-    ]
-  }
+    ],
+    "adjustments": {
+      "TAGGED_BAIL": [
+        {
+          "appliesToSentencesFrom": "2014-06-27",
+          "numberOfDays": 16
+        }
+      ]
+    }
+  },
+  "params": "sds-50"
 }

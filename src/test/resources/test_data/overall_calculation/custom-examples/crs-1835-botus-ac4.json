@@ -1,40 +1,45 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "type": "BotusSentence",
-      "offence": {
-        "committedAt": "2024-02-25"
-      },
-      "duration": {
-        "durationElements": {
-          "DAYS": 7
-        }
-      },
-      "sentencedAt": "2024-03-01",
-      "identifier": "8c4ba56a-0eac-4641-b7e8-ae4c1498069d",
-      "caseSequence": 1,
-      "lineSequence": 1
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "type": "BotusSentence",
-      "offence": {
-        "committedAt": "2024-02-25"
+    "sentences": [
+      {
+        "type": "BotusSentence",
+        "offence": {
+          "committedAt": "2024-02-25"
+        },
+        "duration": {
+          "durationElements": {
+            "DAYS": 7
+          }
+        },
+        "sentencedAt": "2024-03-01",
+        "identifier": "8c4ba56a-0eac-4641-b7e8-ae4c1498069d",
+        "caseSequence": 1,
+        "lineSequence": 1
       },
-      "duration": {
-        "durationElements": {
-          "DAYS": 7
-        }
-      },
-      "sentencedAt": "2024-03-05",
-      "consecutiveSentenceUUIDs": [
-        "8c4ba56a-0eac-4641-b7e8-ae4c1498069d"
-      ],
-      "caseSequence": 1,
-      "lineSequence": 2
-    }
-  ]
+      {
+        "type": "BotusSentence",
+        "offence": {
+          "committedAt": "2024-02-25"
+        },
+        "duration": {
+          "durationElements": {
+            "DAYS": 7
+          }
+        },
+        "sentencedAt": "2024-03-05",
+        "identifier": "1a2ad76e-5d52-446e-904d-cb2ad3b1cf3d",
+        "consecutiveSentenceUUIDs": [
+          "8c4ba56a-0eac-4641-b7e8-ae4c1498069d"
+        ],
+        "caseSequence": 1,
+        "lineSequence": 2
+      }
+    ],
+    "adjustments": {}
+  },
+  "params": "sds-50"
 }

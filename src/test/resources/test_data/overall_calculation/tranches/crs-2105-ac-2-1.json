@@ -1,50 +1,62 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2020-12-07"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 2,
+            "MONTHS": 6
+          }
+        },
+        "sentencedAt": "2019-09-01",
+        "identifier": "b71e09b6-3728-3b80-8e86-b1c40d52c812",
+        "recallType": "STANDARD_RECALL",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2020-12-07"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 2,
+            "MONTHS": 6
+          }
+        },
+        "sentencedAt": "2019-09-01",
+        "identifier": "01e8760c-3035-4001-a8a3-3344c369d5c2",
+        "consecutiveSentenceUUIDs": [
+          "b71e09b6-3728-3b80-8e86-b1c40d52c812"
+        ],
+        "recallType": "STANDARD_RECALL",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2024-04-10",
+          "offenceCode": "PU86003"
+        },
+        "duration": {
+          "durationElements": {
+            "WEEKS": 12
+          }
+        },
+        "sentencedAt": "2024-08-06",
+        "identifier": "de0bdc74-6598-470b-a0de-85079636146f",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      }
+    ],
+    "adjustments": {}
   },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2020-12-07"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 2,
-          "MONTHS": 6
-        }
-      },
-      "sentencedAt": "2019-09-01",
-      "identifier": "b71e09b6-3728-3b80-8e86-b1c40d52c812",
-      "recallType": "STANDARD_RECALL"
-    },
-    {
-      "offence": {
-        "committedAt": "2020-12-07"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 2,
-          "MONTHS": 6
-        }
-      },
-      "sentencedAt": "2019-09-01",
-      "consecutiveSentenceUUIDs": [
-        "b71e09b6-3728-3b80-8e86-b1c40d52c812"
-      ],
-      "recallType": "STANDARD_RECALL"
-    },
-    {
-      "offence": {
-        "committedAt": "2024-04-10",
-        "offenceCode": "PU86003"
-      },
-      "duration": {
-        "durationElements": {
-          "WEEKS": 12
-        }
-      },
-      "sentencedAt": "2024-08-06"
-    }
-  ]
+  "assertSds40": true
 }

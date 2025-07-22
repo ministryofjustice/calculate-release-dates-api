@@ -1,60 +1,69 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2021-08-17"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 7
-        }
-      },
-      "sentencedAt": "2021-08-18"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2013-07-19"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 7
-        }
-      },
-      "sentencedAt": "2021-09-21"
-    }
-  ],
-  "adjustments": {
-    "ADDITIONAL_DAYS_AWARDED": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2021-08-24",
-        "numberOfDays": 7,
-        "fromDate": "2021-08-24",
-        "toDate": "2021-08-30"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2021-08-17"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 7
+          }
+        },
+        "sentencedAt": "2021-08-18",
+        "identifier": "f2c69361-ff7f-431f-9050-413198c6408e",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       },
       {
-        "appliesToSentencesFrom": "2021-12-03",
-        "numberOfDays": 14,
-        "fromDate": "2021-12-03",
-        "toDate": "2021-12-16"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2013-07-19"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 7
+          }
+        },
+        "sentencedAt": "2021-09-21",
+        "identifier": "df41aa26-feae-4217-9480-5fdf6ae04db2",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
     ],
-    "RESTORATION_OF_ADDITIONAL_DAYS_AWARDED": [
-      {
-        "appliesToSentencesFrom": "2021-10-18",
-        "numberOfDays": 2,
-        "fromDate": "2021-10-18",
-        "toDate": "2021-10-19"
-      },
-      {
-        "appliesToSentencesFrom": "2021-11-03",
-        "numberOfDays": 9,
-        "fromDate": "2021-11-03",
-        "toDate": "2021-11-11"
-      }
-    ]
-  }
+    "adjustments": {
+      "RESTORATION_OF_ADDITIONAL_DAYS_AWARDED": [
+        {
+          "appliesToSentencesFrom": "2021-10-18",
+          "numberOfDays": 2,
+          "fromDate": "2021-10-18",
+          "toDate": "2021-10-19"
+        },
+        {
+          "appliesToSentencesFrom": "2021-11-03",
+          "numberOfDays": 9,
+          "fromDate": "2021-11-03",
+          "toDate": "2021-11-11"
+        }
+      ],
+      "ADDITIONAL_DAYS_AWARDED": [
+        {
+          "appliesToSentencesFrom": "2021-08-24",
+          "numberOfDays": 7,
+          "fromDate": "2021-08-24",
+          "toDate": "2021-08-30"
+        },
+        {
+          "appliesToSentencesFrom": "2021-12-03",
+          "numberOfDays": 14,
+          "fromDate": "2021-12-03",
+          "toDate": "2021-12-16"
+        }
+      ]
+    }
+  },
+  "params": "sds-50"
 }

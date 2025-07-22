@@ -1,110 +1,131 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2022-11-18",
-        "offenceCode": "PR52044"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 20
-        }
-      },
-      "sentencedAt": "2024-03-15"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2024-01-16",
-        "offenceCode": "PR52044"
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2022-11-18",
+          "offenceCode": "PR52044"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 20
+          }
+        },
+        "sentencedAt": "2024-03-15",
+        "identifier": "ed9ed397-2986-40fc-8429-18804ed8c1d5",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 13
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2024-01-16",
+          "offenceCode": "PR52044"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 13
+          }
+        },
+        "sentencedAt": "2024-10-08",
+        "identifier": "5cf90dc1-ae80-4828-b761-bfc69c5ee08e",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2023-04-18",
+          "offenceCode": "PR52044"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 7
+          }
+        },
+        "sentencedAt": "2024-10-08",
+        "identifier": "4027f303-8048-4f81-b944-b5d0be839cdb",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2023-04-18",
+          "offenceCode": "OF61017"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 3
+          }
+        },
+        "sentencedAt": "2024-10-08",
+        "identifier": "0c47c9a9-e039-3d9b-a33f-b2f7d92d9de5",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2022-09-12",
+          "offenceCode": "OF61102"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 10
+          }
+        },
+        "sentencedAt": "2025-01-29",
+        "identifier": "8e4e9a4c-8082-4a52-9cb6-e078fd7d678b",
+        "consecutiveSentenceUUIDs": [
+          "0c47c9a9-e039-3d9b-a33f-b2f7d92d9de5"
+        ],
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2024-07-02",
+          "offenceCode": "PR52043"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 6
+          }
+        },
+        "sentencedAt": "2025-04-11",
+        "identifier": "b4414094-b28d-3365-b30c-010a57164321",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2024-07-02",
+          "offenceCode": "MD71530"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 6
+          }
+        },
+        "sentencedAt": "2025-04-11",
+        "identifier": "4457fb1c-6a8c-4ce6-8956-ad56b6979450",
+        "consecutiveSentenceUUIDs": [
+          "b4414094-b28d-3365-b30c-010a57164321"
+        ],
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      }
+    ],
+    "adjustments": {
+      "ADDITIONAL_DAYS_AWARDED": [
+        {
+          "appliesToSentencesFrom": "2025-04-28",
+          "numberOfDays": 28,
+          "fromDate": "2025-04-28",
+          "toDate": "2025-05-25"
         }
-      },
-      "sentencedAt": "2024-10-08"
-    },
-    {
-      "offence": {
-        "committedAt": "2023-04-18",
-        "offenceCode": "PR52044"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 7
-        }
-      },
-      "sentencedAt": "2024-10-08"
-    },
-    {
-      "offence": {
-        "committedAt": "2023-04-18",
-        "offenceCode": "OF61017"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 3
-        }
-      },
-      "sentencedAt": "2024-10-08",
-      "identifier": "0c47c9a9-e039-3d9b-a33f-b2f7d92d9de5"
-    },
-    {
-      "offence": {
-        "committedAt": "2022-09-12",
-        "offenceCode": "OF61102"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 10
-        }
-      },
-      "sentencedAt": "2025-01-29",
-      "consecutiveSentenceUUIDs": [
-        "0c47c9a9-e039-3d9b-a33f-b2f7d92d9de5"
-      ]
-    },
-    {
-      "offence": {
-        "committedAt": "2024-07-02",
-        "offenceCode": "PR52043"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 6
-        }
-      },
-      "sentencedAt": "2025-04-11",
-      "identifier": "b4414094-b28d-3365-b30c-010a57164321"
-    },
-    {
-      "offence": {
-        "committedAt": "2024-07-02",
-        "offenceCode": "MD71530"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 6
-        }
-      },
-      "sentencedAt": "2025-04-11",
-      "consecutiveSentenceUUIDs": [
-        "b4414094-b28d-3365-b30c-010a57164321"
       ]
     }
-  ],
-  "adjustments": {
-    "ADDITIONAL_DAYS_AWARDED": [
-      {
-        "appliesToSentencesFrom": "2025-04-28",
-        "numberOfDays": 28,
-        "fromDate": "2025-04-28",
-        "toDate": "2025-05-25"
-      }
-    ]
   }
 }

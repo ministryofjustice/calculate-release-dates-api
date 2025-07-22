@@ -1,108 +1,130 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2022-07-24"
-      },
-      "duration": {
-        "durationElements": {
-          "WEEKS": 10
-        }
-      },
-      "sentencedAt": "2022-07-25"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2022-07-24"
-      },
-      "duration": {
-        "durationElements": {
-          "WEEKS": 16
-        }
-      },
-      "sentencedAt": "2022-07-25"
-    },
-    {
-      "offence": {
-        "committedAt": "2018-09-02"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 30
-        }
-      },
-      "sentencedAt": "2019-01-30",
-      "recallType": "STANDARD_RECALL"
-    },
-    {
-      "offence": {
-        "committedAt": "2018-09-02"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 42
-        }
-      },
-      "sentencedAt": "2019-01-30",
-      "identifier": "ca85f6c8-1de4-39ed-9cf3-1094b84c58ce",
-      "recallType": "STANDARD_RECALL"
-    },
-    {
-      "offence": {
-        "committedAt": "2018-09-02"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 4
-        }
-      },
-      "sentencedAt": "2019-01-30",
-      "recallType": "STANDARD_RECALL"
-    },
-    {
-      "offence": {
-        "committedAt": "2018-09-02"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 7
-        }
-      },
-      "sentencedAt": "2019-01-30",
-      "identifier": "83fd11aa-a579-3b93-aaba-937e138aec88",
-      "consecutiveSentenceUUIDs": [
-        "ca85f6c8-1de4-39ed-9cf3-1094b84c58ce"
-      ],
-      "recallType": "STANDARD_RECALL"
-    },
-    {
-      "offence": {
-        "committedAt": "2018-09-02"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 3
-        }
-      },
-      "sentencedAt": "2019-01-30",
-      "consecutiveSentenceUUIDs": [
-        "83fd11aa-a579-3b93-aaba-937e138aec88"
-      ],
-      "recallType": "STANDARD_RECALL"
-    }
-  ],
-  "adjustments": {
-    "RECALL_REMAND": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2019-01-30",
-        "numberOfDays": 149,
-        "fromDate": "2018-09-03",
-        "toDate": "2019-01-29"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2022-07-24"
+        },
+        "duration": {
+          "durationElements": {
+            "WEEKS": 10
+          }
+        },
+        "sentencedAt": "2022-07-25",
+        "identifier": "0cce4079-a7c9-4f17-bfb0-3e7675cf92c0",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2022-07-24"
+        },
+        "duration": {
+          "durationElements": {
+            "WEEKS": 16
+          }
+        },
+        "sentencedAt": "2022-07-25",
+        "identifier": "6950c127-ab73-42f5-ba87-0eecce339105",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2018-09-02"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 30
+          }
+        },
+        "sentencedAt": "2019-01-30",
+        "identifier": "ad4b4095-ebd8-4cd1-ac82-6f0dd4dc8c71",
+        "recallType": "STANDARD_RECALL",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2018-09-02"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 42
+          }
+        },
+        "sentencedAt": "2019-01-30",
+        "identifier": "ca85f6c8-1de4-39ed-9cf3-1094b84c58ce",
+        "recallType": "STANDARD_RECALL",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2018-09-02"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 4
+          }
+        },
+        "sentencedAt": "2019-01-30",
+        "identifier": "1dc64292-4d38-478f-b197-31cc77936a0f",
+        "recallType": "STANDARD_RECALL",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2018-09-02"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 7
+          }
+        },
+        "sentencedAt": "2019-01-30",
+        "identifier": "83fd11aa-a579-3b93-aaba-937e138aec88",
+        "consecutiveSentenceUUIDs": [
+          "ca85f6c8-1de4-39ed-9cf3-1094b84c58ce"
+        ],
+        "recallType": "STANDARD_RECALL",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2018-09-02"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 3
+          }
+        },
+        "sentencedAt": "2019-01-30",
+        "identifier": "9b080c13-8f4f-45aa-b9d6-886af2e1b09c",
+        "consecutiveSentenceUUIDs": [
+          "83fd11aa-a579-3b93-aaba-937e138aec88"
+        ],
+        "recallType": "STANDARD_RECALL",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
-    ]
-  }
+    ],
+    "adjustments": {
+      "RECALL_REMAND": [
+        {
+          "appliesToSentencesFrom": "2019-01-30",
+          "numberOfDays": 149,
+          "fromDate": "2018-09-03",
+          "toDate": "2019-01-29"
+        }
+      ]
+    }
+  },
+  "params": "sds-50"
 }

@@ -1,47 +1,38 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01",
-    "isActiveSexOffender": false
-  },
-  "bookingId": 2579055,
-  "sentences": [
-    {
-      "type": "StandardSentence",
-      "offence": {
-        "committedAt": "2019-08-25",
-        "offenceCode": null
-      },
-      "duration": {
-        "durationElements": {
-          "DAYS": 0,
-          "WEEKS": 0,
-          "YEARS": 11,
-          "MONTHS": 0
-        }
-      },
-      "isSDSPlus": false,
-      "identifier": "3d0480b8-5fc5-3db2-8285-cb8942a4b30d",
-      "recallType": null,
-      "sentencedAt": "2019-12-19",
-      "caseSequence": 1,
-      "lineSequence": 1,
-      "caseReference": "T20197284",
-      "consecutiveSentenceUUIDs": [],
-      "hasAnSDSEarlyReleaseExclusion": "VIOLENT"
-    }
-  ],
-  "adjustments": {
-    "REMAND": [
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
       {
-        "toDate": "2019-12-18",
-        "fromDate": "2019-08-27",
-        "numberOfDays": 114,
-        "appliesToSentencesFrom": "2019-12-19"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2019-08-25"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 11
+          }
+        },
+        "sentencedAt": "2019-12-19",
+        "identifier": "3d0480b8-5fc5-3db2-8285-cb8942a4b30d",
+        "caseSequence": 1,
+        "lineSequence": 1,
+        "caseReference": "T20197284",
+        "hasAnSDSEarlyReleaseExclusion": "VIOLENT"
       }
-    ]
-  },
-  "historicalTusedData": null,
-  "returnToCustodyDate": null,
-  "fixedTermRecallDetails": null
+    ],
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2019-12-19",
+          "numberOfDays": 114,
+          "fromDate": "2019-08-27",
+          "toDate": "2019-12-18"
+        }
+      ]
+    },
+    "bookingId": 2579055
+  }
 }

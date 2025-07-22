@@ -1,42 +1,54 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2020-10-08"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 36
-        }
-      },
-      "sentencedAt": "2020-11-08",
-      "recallType": "FIXED_TERM_RECALL_28"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2022-02-25"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 6
-        }
-      },
-      "sentencedAt": "2022-03-16"
-    }
-  ],
-  "adjustments": {
-    "ADDITIONAL_DAYS_AWARDED": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2022-03-18",
-        "numberOfDays": 4,
-        "fromDate": "2022-03-18",
-        "toDate": "2022-03-21"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2020-10-08"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 36
+          }
+        },
+        "sentencedAt": "2020-11-08",
+        "identifier": "aaeb1f36-f18a-4518-b0c8-da64de8a2f60",
+        "recallType": "FIXED_TERM_RECALL_28",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2022-02-25"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 6
+          }
+        },
+        "sentencedAt": "2022-03-16",
+        "identifier": "baceb97d-ab64-4255-b38b-2f9dec928c63",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
-    ]
+    ],
+    "adjustments": {
+      "ADDITIONAL_DAYS_AWARDED": [
+        {
+          "appliesToSentencesFrom": "2022-03-18",
+          "numberOfDays": 4,
+          "fromDate": "2022-03-18",
+          "toDate": "2022-03-21"
+        }
+      ]
+    },
+    "returnToCustodyDate": "2022-02-27"
   },
-  "returnToCustodyDate": "2022-02-27"
+  "params": "sds-50",
+  "featureToggles": {
+    "ftr48ManualJourney": false
+  }
 }

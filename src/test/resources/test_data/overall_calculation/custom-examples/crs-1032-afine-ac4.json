@@ -1,48 +1,53 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "type": "ExtendedDeterminateSentence",
-      "offence": {
-        "committedAt": "2018-10-14"
-      },
-      "custodialDuration": {
-        "durationElements": {
-          "YEARS": 6
-        }
-      },
-      "extensionDuration": {
-        "durationElements": {
-          "YEARS": 2
-        }
-      },
-      "sentencedAt": "2018-10-15"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "type": "AFineSentence",
-      "offence": {
-        "committedAt": "2022-09-01"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 6
-        }
-      },
-      "sentencedAt": "2022-09-02",
-      "fineAmount": 3E+3
-    }
-  ],
-  "adjustments": {
-    "REMAND": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2018-10-15",
-        "numberOfDays": 30,
-        "fromDate": "2018-09-15",
-        "toDate": "2018-10-14"
+        "type": "ExtendedDeterminateSentence",
+        "offence": {
+          "committedAt": "2018-10-14"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "YEARS": 6
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "YEARS": 2
+          }
+        },
+        "sentencedAt": "2018-10-15",
+        "identifier": "cc171b9f-58f1-475b-9ab7-1db3cdc3288d"
+      },
+      {
+        "type": "AFineSentence",
+        "offence": {
+          "committedAt": "2022-09-01"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 6
+          }
+        },
+        "sentencedAt": "2022-09-02",
+        "identifier": "0d298bad-e254-4910-8064-9b18fccd2538",
+        "fineAmount": 3E+3
       }
-    ]
-  }
+    ],
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2018-10-15",
+          "numberOfDays": 30,
+          "fromDate": "2018-09-15",
+          "toDate": "2018-10-14"
+        }
+      ]
+    }
+  },
+  "params": "sds-50"
 }

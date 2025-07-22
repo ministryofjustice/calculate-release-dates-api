@@ -1,60 +1,68 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2024-06-14"
-      },
-      "duration": {
-        "durationElements": {
-          "WEEKS": 6
-        }
-      },
-      "sentencedAt": "2024-06-15",
-      "recallType": "FIXED_TERM_RECALL_14"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2024-06-14"
-      },
-      "duration": {
-        "durationElements": {
-          "WEEKS": 9
-        }
-      },
-      "sentencedAt": "2024-06-15",
-      "recallType": "FIXED_TERM_RECALL_14"
-    }
-  ],
-  "adjustments": {
-    "UNLAWFULLY_AT_LARGE": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2024-08-03",
-        "numberOfDays": 9,
-        "fromDate": "2024-08-03",
-        "toDate": "2024-08-11"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2024-06-14"
+        },
+        "duration": {
+          "durationElements": {
+            "WEEKS": 6
+          }
+        },
+        "sentencedAt": "2024-06-15",
+        "identifier": "c3b2c973-6802-4786-a33f-0aa4c5612f3c",
+        "recallType": "FIXED_TERM_RECALL_14",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       },
       {
-        "appliesToSentencesFrom": "2024-07-19",
-        "numberOfDays": 3,
-        "fromDate": "2024-07-19",
-        "toDate": "2024-07-21"
-      },
-      {
-        "appliesToSentencesFrom": "2024-08-24",
-        "numberOfDays": 8,
-        "fromDate": "2024-08-24",
-        "toDate": "2024-08-31"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2024-06-14"
+        },
+        "duration": {
+          "durationElements": {
+            "WEEKS": 9
+          }
+        },
+        "sentencedAt": "2024-06-15",
+        "identifier": "2759124f-a94e-4a0c-997d-6d21fd830baa",
+        "recallType": "FIXED_TERM_RECALL_14",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
-    ]
-  },
-  "returnToCustodyDate": "2024-09-01",
-  "fixedTermRecallDetails": {
-    "bookingId": 1,
+    ],
+    "adjustments": {
+      "UNLAWFULLY_AT_LARGE": [
+        {
+          "appliesToSentencesFrom": "2024-08-03",
+          "numberOfDays": 9,
+          "fromDate": "2024-08-03",
+          "toDate": "2024-08-11"
+        },
+        {
+          "appliesToSentencesFrom": "2024-07-19",
+          "numberOfDays": 3,
+          "fromDate": "2024-07-19",
+          "toDate": "2024-07-21"
+        },
+        {
+          "appliesToSentencesFrom": "2024-08-24",
+          "numberOfDays": 8,
+          "fromDate": "2024-08-24",
+          "toDate": "2024-08-31"
+        }
+      ]
+    },
     "returnToCustodyDate": "2024-09-01",
-    "recallLength": 14
+    "fixedTermRecallDetails": {
+      "bookingId": 1,
+      "returnToCustodyDate": "2024-09-01",
+      "recallLength": 14
+    }
   }
 }

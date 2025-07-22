@@ -1,54 +1,63 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01",
-    "isActiveSexOffender": true
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2019-12-31",
-        "offenceCode": "SX03025"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 66
-        }
-      },
-      "sentencedAt": "2020-12-01",
-      "identifier": "ca1bb9d1-88ce-3a64-bd32-26839082c2c5"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01",
+      "isActiveSexOffender": true
     },
-    {
-      "type": "ExtendedDeterminateSentence",
-      "offence": {
-        "committedAt": "2020-01-24",
-        "offenceCode": "SX03013A"
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2019-12-31",
+          "offenceCode": "SX03025"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 66
+          }
+        },
+        "sentencedAt": "2020-12-01",
+        "identifier": "ca1bb9d1-88ce-3a64-bd32-26839082c2c5",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       },
-      "custodialDuration": {
-        "durationElements": {
-          "MONTHS": 21
+      {
+        "type": "ExtendedDeterminateSentence",
+        "offence": {
+          "committedAt": "2020-01-24",
+          "offenceCode": "SX03013A"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "MONTHS": 21
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "MONTHS": 33
+          }
+        },
+        "sentencedAt": "2020-12-01",
+        "identifier": "25a2dca1-7fa7-41fa-9aec-8d322965a5c0",
+        "consecutiveSentenceUUIDs": [
+          "ca1bb9d1-88ce-3a64-bd32-26839082c2c5"
+        ]
+      }
+    ],
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2020-12-01",
+          "numberOfDays": 300,
+          "fromDate": "2020-02-05",
+          "toDate": "2020-11-30"
         }
-      },
-      "extensionDuration": {
-        "durationElements": {
-          "MONTHS": 33
-        }
-      },
-      "sentencedAt": "2020-12-01",
-      "consecutiveSentenceUUIDs": [
-        "ca1bb9d1-88ce-3a64-bd32-26839082c2c5"
       ]
     }
-  ],
-  "adjustments": {
-    "REMAND": [
-      {
-        "appliesToSentencesFrom": "2020-12-01",
-        "numberOfDays": 300,
-        "fromDate": "2020-02-05",
-        "toDate": "2020-11-30"
-      }
-    ]
   },
-  "calculateErsed": true
+  "userInputs": {
+    "calculateErsed": true,
+    "useOffenceIndicators": true
+  },
+  "params": "sds-45"
 }

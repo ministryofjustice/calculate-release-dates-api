@@ -1,61 +1,77 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
+      {
+        "type": "DetentionAndTrainingOrderSentence",
+        "offence": {
+          "committedAt": "2017-12-21",
+          "offenceCode": "TH68036"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 16
+          }
+        },
+        "sentencedAt": "2017-12-29",
+        "identifier": "cbc08f8f-c615-4311-ba25-cac88811f370",
+        "caseSequence": 1,
+        "lineSequence": 4,
+        "caseReference": "367858"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2020-02-24",
+          "offenceCode": "OF61016"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 8
+          }
+        },
+        "sentencedAt": "2020-12-04",
+        "identifier": "bd200e12-3b83-4349-b5f0-f4bfdc0f12ce",
+        "isSDSPlus": true,
+        "isSDSPlusEligibleSentenceTypeLengthAndOffence": true,
+        "isSDSPlusOffenceInPeriod": true,
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2020-02-24",
+          "offenceCode": "TH68023"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 3
+          }
+        },
+        "sentencedAt": "2020-12-04",
+        "identifier": "4aaaaa29-973c-4960-920f-442bd543ddf9",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2022-11-01",
+          "offenceCode": "PR52043"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 4
+          }
+        },
+        "sentencedAt": "2023-09-19",
+        "identifier": "b7d67c99-f89b-459c-b1f5-d96136c59659",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      }
+    ],
+    "adjustments": {}
   },
-  "sentences": [
-    {
-      "type": "DetentionAndTrainingOrderSentence",
-      "offence": {
-        "committedAt": "2017-12-21",
-        "offenceCode": "TH68036"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 16
-        }
-      },
-      "sentencedAt": "2017-12-29",
-      "caseSequence": 1,
-      "lineSequence": 4,
-      "caseReference": "367858"
-    },
-    {
-      "offence": {
-        "committedAt": "2020-02-24",
-        "offenceCode": "OF61016"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 8
-        }
-      },
-      "sentencedAt": "2020-12-04",
-      "isSDSPlus": true
-    },
-    {
-      "offence": {
-        "committedAt": "2020-02-24",
-        "offenceCode": "TH68023"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 3
-        }
-      },
-      "sentencedAt": "2020-12-04"
-    },
-    {
-      "offence": {
-        "committedAt": "2022-11-01",
-        "offenceCode": "PR52043"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 4
-        }
-      },
-      "sentencedAt": "2023-09-19"
-    }
-  ]
+  "assertSds40": true
 }

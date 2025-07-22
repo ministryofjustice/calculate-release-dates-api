@@ -1,62 +1,72 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "type": "ExtendedDeterminateSentence",
-      "offence": {
-        "committedAt": "2015-01-09"
-      },
-      "custodialDuration": {
-        "durationElements": {
-          "YEARS": 12
-        }
-      },
-      "extensionDuration": {
-        "durationElements": {
-          "YEARS": 5
-        }
-      },
-      "sentencedAt": "2012-12-03",
-      "recallType": "STANDARD_RECALL"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2014-02-08"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 18
-        }
-      },
-      "sentencedAt": "2021-11-02"
-    }
-  ],
-  "adjustments": {
-    "RECALL_REMAND": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2012-12-03",
-        "numberOfDays": 14,
-        "fromDate": "2012-03-08",
-        "toDate": "2012-03-21"
+        "type": "ExtendedDeterminateSentence",
+        "offence": {
+          "committedAt": "2015-01-09"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "YEARS": 12
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "YEARS": 5
+          }
+        },
+        "sentencedAt": "2012-12-03",
+        "identifier": "5f6d7178-29a3-436d-affd-707e9ee940e4",
+        "recallType": "STANDARD_RECALL"
       },
       {
-        "appliesToSentencesFrom": "2012-12-03",
-        "numberOfDays": 195,
-        "fromDate": "2012-05-22",
-        "toDate": "2012-12-02"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2014-02-08"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 18
+          }
+        },
+        "sentencedAt": "2021-11-02",
+        "identifier": "4d775e75-dc5c-4d4a-ae20-746b79e93667",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
     ],
-    "REMAND": [
-      {
-        "appliesToSentencesFrom": "2021-11-02",
-        "numberOfDays": 3,
-        "fromDate": "2021-05-11",
-        "toDate": "2021-05-13"
-      }
-    ]
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2021-11-02",
+          "numberOfDays": 3,
+          "fromDate": "2021-05-11",
+          "toDate": "2021-05-13"
+        }
+      ],
+      "RECALL_REMAND": [
+        {
+          "appliesToSentencesFrom": "2012-12-03",
+          "numberOfDays": 14,
+          "fromDate": "2012-03-08",
+          "toDate": "2012-03-21"
+        },
+        {
+          "appliesToSentencesFrom": "2012-12-03",
+          "numberOfDays": 195,
+          "fromDate": "2012-05-22",
+          "toDate": "2012-12-02"
+        }
+      ]
+    }
   },
-  "calculateErsed": true
+  "userInputs": {
+    "calculateErsed": true,
+    "useOffenceIndicators": true
+  },
+  "params": "sds-50"
 }

@@ -1,51 +1,61 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2018-10-25",
-        "offenceCode": "CE79097C"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 13
-        }
-      },
-      "caseSequence": 1,
-      "lineSequence": 1,
-      "sentencedAt": "2019-07-19",
-      "identifier": "0549ff5e-93b1-3f22-8095-a97ab6c60f4b"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2017-05-30",
-        "offenceCode": "PC02021"
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2018-10-25",
+          "offenceCode": "CE79097C"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 13
+          }
+        },
+        "sentencedAt": "2019-07-19",
+        "identifier": "0549ff5e-93b1-3f22-8095-a97ab6c60f4b",
+        "caseSequence": 1,
+        "lineSequence": 1,
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 14
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2017-05-30",
+          "offenceCode": "PC02021"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 14
+          }
+        },
+        "sentencedAt": "2019-07-19",
+        "identifier": "c020a81a-e50a-490a-9452-d1001c9a7fc5",
+        "consecutiveSentenceUUIDs": [
+          "0549ff5e-93b1-3f22-8095-a97ab6c60f4b"
+        ],
+        "caseSequence": 1,
+        "lineSequence": 2,
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      }
+    ],
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2019-07-19",
+          "numberOfDays": 190,
+          "fromDate": "2019-01-10",
+          "toDate": "2019-07-18"
         }
-      },
-      "caseSequence": 1,
-      "lineSequence": 2,
-      "sentencedAt": "2019-07-19",
-      "consecutiveSentenceUUIDs": [
-        "0549ff5e-93b1-3f22-8095-a97ab6c60f4b"
       ]
     }
-  ],
-  "adjustments": {
-    "REMAND": [
-      {
-        "appliesToSentencesFrom": "2019-07-19",
-        "numberOfDays": 190,
-        "fromDate": "2019-01-10",
-        "toDate": "2019-07-18"
-      }
-    ]
   },
-  "calculateErsed": true
+  "userInputs": {
+    "calculateErsed": true,
+    "useOffenceIndicators": true
+  }
 }

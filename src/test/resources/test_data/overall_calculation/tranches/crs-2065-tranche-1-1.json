@@ -1,52 +1,63 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2022-12-11",
+          "offenceCode": "OF61131"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 30
+          }
+        },
+        "sentencedAt": "2024-05-31",
+        "identifier": "f5b4cffe-d534-3ecd-b1d8-1aa368e09387",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2022-12-11",
+          "offenceCode": "OF61102"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 10
+          }
+        },
+        "sentencedAt": "2024-05-31",
+        "identifier": "154ea780-0c7a-3d77-a2d0-679eb8aafc8c",
+        "consecutiveSentenceUUIDs": [
+          "f5b4cffe-d534-3ecd-b1d8-1aa368e09387"
+        ],
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2022-12-11",
+          "offenceCode": "OF61102"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 2
+          }
+        },
+        "sentencedAt": "2024-05-31",
+        "identifier": "218bf384-29f4-4aba-93b8-b7f76dc6ca75",
+        "consecutiveSentenceUUIDs": [
+          "154ea780-0c7a-3d77-a2d0-679eb8aafc8c"
+        ],
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      }
+    ],
+    "adjustments": {}
   },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2022-12-11",
-        "offenceCode": "OF61131"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 30
-        }
-      },
-      "sentencedAt": "2024-05-31",
-      "identifier": "f5b4cffe-d534-3ecd-b1d8-1aa368e09387"
-    },
-    {
-      "offence": {
-        "committedAt": "2022-12-11",
-        "offenceCode": "OF61102"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 10
-        }
-      },
-      "sentencedAt": "2024-05-31",
-      "identifier": "154ea780-0c7a-3d77-a2d0-679eb8aafc8c",
-      "consecutiveSentenceUUIDs": [
-        "f5b4cffe-d534-3ecd-b1d8-1aa368e09387"
-      ]
-    },
-    {
-      "offence": {
-        "committedAt": "2022-12-11",
-        "offenceCode": "OF61102"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 2
-        }
-      },
-      "sentencedAt": "2024-05-31",
-      "consecutiveSentenceUUIDs": [
-        "154ea780-0c7a-3d77-a2d0-679eb8aafc8c"
-      ]
-    }
-  ]
+  "assertSds40": true
 }

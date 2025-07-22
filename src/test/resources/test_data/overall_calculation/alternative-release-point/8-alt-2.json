@@ -1,43 +1,55 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "offence": {
-        "committedAt": "2023-08-18",
-        "offenceCode": "COML002"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 2
-        }
-      },
-      "sentencedAt": "2024-02-01"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "offence": {
-        "committedAt": "2023-08-19",
-        "offenceCode": "PH97004"
-      },
-      "duration": {
-        "durationElements": {
-          "WEEKS": 8
-        }
-      },
-      "sentencedAt": "2024-03-05"
-    }
-  ],
-  "adjustments": {
-    "REMAND": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2024-02-01",
-        "numberOfDays": 166,
-        "fromDate": "2023-08-19",
-        "toDate": "2024-01-31"
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2023-08-18",
+          "offenceCode": "COML002"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 2
+          }
+        },
+        "sentencedAt": "2024-02-01",
+        "identifier": "37ea7875-0517-46ef-8d1b-d71f87c45538",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2023-08-19",
+          "offenceCode": "PH97004"
+        },
+        "duration": {
+          "durationElements": {
+            "WEEKS": 8
+          }
+        },
+        "sentencedAt": "2024-03-05",
+        "identifier": "b7dee4f4-e367-41d1-ac59-e061b4cfcac6",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
-    ]
+    ],
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2024-02-01",
+          "numberOfDays": 166,
+          "fromDate": "2023-08-19",
+          "toDate": "2024-01-31"
+        }
+      ]
+    }
   },
-  "calculateErsed": true
+  "userInputs": {
+    "calculateErsed": true,
+    "useOffenceIndicators": true
+  },
+  "params": "sds-43"
 }

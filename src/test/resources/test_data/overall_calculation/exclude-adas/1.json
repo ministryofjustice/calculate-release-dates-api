@@ -1,121 +1,128 @@
 {
-  "offender": {
-    "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
-  },
-  "sentences": [
-    {
-      "type": "DetentionAndTrainingOrderSentence",
-      "offence": {
-        "committedAt": "2023-06-29",
-        "offenceCode": "FA06001"
-      },
-      "duration": {
-        "durationElements": {
-          "WEEKS": 16
-        }
-      },
-      "sentencedAt": "2023-11-17"
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
     },
-    {
-      "type": "DetentionAndTrainingOrderSentence",
-      "offence": {
-        "committedAt": "2023-06-29",
-        "offenceCode": "TH68036"
-      },
-      "duration": {
-        "durationElements": {
-          "WEEKS": 16
-        }
-      },
-      "sentencedAt": "2023-11-17",
-      "identifier": "8e1236dc-5197-3488-bc15-40723667acfd",
-      "consecutiveSentenceUUIDs": [
-        "f1293fbb-6563-34bd-9c5b-d7cf9535ea68"
-      ]
-    },
-    {
-      "type": "DetentionAndTrainingOrderSentence",
-      "offence": {
-        "committedAt": "2022-04-24",
-        "offenceCode": "PU86149"
-      },
-      "duration": {
-        "durationElements": {
-          "WEEKS": 16
-        }
-      },
-      "sentencedAt": "2023-11-17",
-      "identifier": "3d7f58e0-2352-34d6-8b18-a2e7eec98aac",
-      "consecutiveSentenceUUIDs": [
-        "8e1236dc-5197-3488-bc15-40723667acfd"
-      ]
-    },
-    {
-      "type": "DetentionAndTrainingOrderSentence",
-      "offence": {
-        "committedAt": "2022-04-24",
-        "offenceCode": "PC53001"
-      },
-      "duration": {
-        "durationElements": {
-          "WEEKS": 16
-        }
-      },
-      "sentencedAt": "2023-11-17",
-      "consecutiveSentenceUUIDs": [
-        "3d7f58e0-2352-34d6-8b18-a2e7eec98aac"
-      ]
-    },
-    {
-      "type": "DetentionAndTrainingOrderSentence",
-      "offence": {
-        "committedAt": "2022-06-18",
-        "offenceCode": "TH68036"
-      },
-      "duration": {
-        "durationElements": {
-          "WEEKS": 26
-        }
-      },
-      "sentencedAt": "2023-11-17",
-      "identifier": "f1293fbb-6563-34bd-9c5b-d7cf9535ea68"
-    },
-    {
-      "offence": {
-        "committedAt": "2023-10-11",
-        "offenceCode": "TH68036"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 3
-        }
-      },
-      "sentencedAt": "2024-06-21"
-    }
-  ],
-  "adjustments": {
-    "REMAND": [
+    "sentences": [
       {
-        "appliesToSentencesFrom": "2023-11-17",
-        "numberOfDays": 4,
-        "fromDate": "2023-07-08",
-        "toDate": "2023-07-11"
+        "type": "DetentionAndTrainingOrderSentence",
+        "offence": {
+          "committedAt": "2023-06-29",
+          "offenceCode": "FA06001"
+        },
+        "duration": {
+          "durationElements": {
+            "WEEKS": 16
+          }
+        },
+        "sentencedAt": "2023-11-17",
+        "identifier": "b48769ab-0581-4cf0-a53e-db6558866532"
       },
       {
-        "appliesToSentencesFrom": "2024-06-21",
-        "numberOfDays": 14,
-        "fromDate": "2023-11-03",
-        "toDate": "2023-11-16"
+        "type": "DetentionAndTrainingOrderSentence",
+        "offence": {
+          "committedAt": "2023-06-29",
+          "offenceCode": "TH68036"
+        },
+        "duration": {
+          "durationElements": {
+            "WEEKS": 16
+          }
+        },
+        "sentencedAt": "2023-11-17",
+        "identifier": "8e1236dc-5197-3488-bc15-40723667acfd",
+        "consecutiveSentenceUUIDs": [
+          "f1293fbb-6563-34bd-9c5b-d7cf9535ea68"
+        ]
+      },
+      {
+        "type": "DetentionAndTrainingOrderSentence",
+        "offence": {
+          "committedAt": "2022-04-24",
+          "offenceCode": "PU86149"
+        },
+        "duration": {
+          "durationElements": {
+            "WEEKS": 16
+          }
+        },
+        "sentencedAt": "2023-11-17",
+        "identifier": "3d7f58e0-2352-34d6-8b18-a2e7eec98aac",
+        "consecutiveSentenceUUIDs": [
+          "8e1236dc-5197-3488-bc15-40723667acfd"
+        ]
+      },
+      {
+        "type": "DetentionAndTrainingOrderSentence",
+        "offence": {
+          "committedAt": "2022-04-24",
+          "offenceCode": "PC53001"
+        },
+        "duration": {
+          "durationElements": {
+            "WEEKS": 16
+          }
+        },
+        "sentencedAt": "2023-11-17",
+        "identifier": "4b46343f-ada3-4e31-864b-4006e513d20e",
+        "consecutiveSentenceUUIDs": [
+          "3d7f58e0-2352-34d6-8b18-a2e7eec98aac"
+        ]
+      },
+      {
+        "type": "DetentionAndTrainingOrderSentence",
+        "offence": {
+          "committedAt": "2022-06-18",
+          "offenceCode": "TH68036"
+        },
+        "duration": {
+          "durationElements": {
+            "WEEKS": 26
+          }
+        },
+        "sentencedAt": "2023-11-17",
+        "identifier": "f1293fbb-6563-34bd-9c5b-d7cf9535ea68"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2023-10-11",
+          "offenceCode": "TH68036"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 3
+          }
+        },
+        "sentencedAt": "2024-06-21",
+        "identifier": "98393aa2-82a6-46d9-8ac4-cddbe3ad231e",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
     ],
-    "ADDITIONAL_DAYS_AWARDED": [
-      {
-        "appliesToSentencesFrom": "2024-10-09",
-        "numberOfDays": 25,
-        "fromDate": "2024-10-09",
-        "toDate": "2024-11-02"
-      }
-    ]
+    "adjustments": {
+      "ADDITIONAL_DAYS_AWARDED": [
+        {
+          "appliesToSentencesFrom": "2024-10-09",
+          "numberOfDays": 25,
+          "fromDate": "2024-10-09",
+          "toDate": "2024-11-02"
+        }
+      ],
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2023-11-17",
+          "numberOfDays": 4,
+          "fromDate": "2023-07-08",
+          "toDate": "2023-07-11"
+        },
+        {
+          "appliesToSentencesFrom": "2024-06-21",
+          "numberOfDays": 14,
+          "fromDate": "2023-11-03",
+          "toDate": "2023-11-16"
+        }
+      ]
+    }
   }
 }
