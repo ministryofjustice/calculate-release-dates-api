@@ -10,7 +10,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.publisher.Mono
-import reactor.netty.http.client.HttpClientRequest
+import reactor.util.retry.Retry
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Agency
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CaseLoad
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NomisCalculationReason
@@ -28,6 +28,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.pris
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.SentenceDetail
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.prisonapi.model.CalculablePrisoner
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.prisonapi.model.PrisonerInPrisonSummary
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ManageOffencesApiClient.MaxRetryAchievedException
 import java.time.Duration
 import java.time.LocalDate
 
@@ -115,14 +116,18 @@ class PrisonApiClient(
     log.info("Requesting calculable prisoners at establishment $establishmentId and page $pageNumber")
     return systemAuthWebClient.get()
       .uri("/api/prison/$establishmentId/booking/latest/paged/calculable-prisoner?page=$pageNumber")
-      .httpRequest { httpRequest ->
-        run {
-          val reactorRequest = httpRequest.getNativeRequest<HttpClientRequest>()
-          reactorRequest.responseTimeout(Duration.ofMinutes(10))
-        }
-      }
       .retrieve()
       .bodyToMono(typeReference<RestResponsePage<CalculablePrisoner>>())
+      .retryWhen(
+        Retry.backoff(5, Duration.ofSeconds(2))
+          .maxBackoff(Duration.ofSeconds(10))
+          .doBeforeRetry { retrySignal ->
+            log.warn("getCalculablePrisonerByPrison: Retrying [Attempt: ${retrySignal.totalRetries() + 1}] due to ${retrySignal.failure().message}. ")
+          }
+          .onRetryExhaustedThrow { _, _ ->
+            throw MaxRetryAchievedException("getCalculablePrisonerByPrison: Max retries - lookup failed for $establishmentId")
+          },
+      )
       .block()!!
   }
 
