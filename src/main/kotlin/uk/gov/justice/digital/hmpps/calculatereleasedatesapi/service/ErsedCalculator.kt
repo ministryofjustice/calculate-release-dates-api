@@ -4,6 +4,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.ErsedConfiguration
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentDuration
@@ -15,12 +16,30 @@ import java.time.temporal.ChronoUnit
 import kotlin.math.ceil
 
 @Service
-class ErsedCalculator(private val ersedConfiguration: ErsedConfiguration) {
+class ErsedCalculator(
+  private val ersedConfiguration: ErsedConfiguration,
+  private val featureToggles: FeatureToggles,
+) {
 
   fun generateEarlyReleaseSchemeEligibilityDateBreakdown(
     sentence: CalculableSentence,
     sentenceCalculation: SentenceCalculation,
   ) {
+    if (featureToggles.useERS30Calculation) {
+      log.info("Using ERS30 ERSED algorithm")
+      calculateERSEDUsingERS30Algorithm(sentence, sentenceCalculation)
+    } else {
+      log.info("Using legacy ERSED algorithm")
+      calculateERSEDUsingLegacyAlgorithm(sentence, sentenceCalculation)
+    }
+  }
+
+  private fun calculateERSEDUsingERS30Algorithm(sentence: CalculableSentence, sentenceCalculation: SentenceCalculation) {
+    // TODO ERS30 implementation
+    calculateERSEDUsingLegacyAlgorithm(sentence, sentenceCalculation)
+  }
+
+  private fun calculateERSEDUsingLegacyAlgorithm(sentence: CalculableSentence, sentenceCalculation: SentenceCalculation) {
     val ersed = calculateErsed(sentence, sentenceCalculation) ?: return
 
     val addedDays = sentenceCalculation.adjustments.ualDuringCustody + sentenceCalculation.adjustments.awardedDuringCustody

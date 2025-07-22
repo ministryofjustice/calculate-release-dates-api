@@ -22,6 +22,7 @@ generic-service:
     MANAGE-OFFENCES_API_URL: https://manage-offences-api-preprod.hmpps.service.justice.gov.uk
     USE_ADJUSTMENTS_API: "false"
     EXTERNAL_MOVEMENTS_ADJUSTMENTS_FEATURE_TOGGLE: "false"
+    USE_ERS30_CALCULATION: "true"
 
   serviceAccountName: calculate-release-dates-api-preprod
 

@@ -24,6 +24,7 @@ generic-service:
     USE_ADJUSTMENTS_API: "true"
     EXTERNAL_MOVEMENTS_SDS_40_FEATURE_TOGGLE: "true"
     EXTERNAL_MOVEMENTS_ADJUSTMENTS_FEATURE_TOGGLE: "true"
+    USE_ERS30_CALCULATION: "true"
     
   # Switches off the allow list in the DEV env only.
   allowlist: null

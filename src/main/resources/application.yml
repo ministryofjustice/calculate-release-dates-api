@@ -161,3 +161,4 @@ feature-toggles:
   concurrentConsecutiveSentencesEnabled: ${CONCURRENT_CONSECUTIVE_SENTENCES_ENABLED:false}
   historicSled: ${HISTORIC_SLED_ENABLED:false}
   ftr48ManualJourney: ${FTR_48_MANUAL_JOURNEY:false}
+  useERS30Calculation: ${USE_ERS30_CALCULATION:false}
