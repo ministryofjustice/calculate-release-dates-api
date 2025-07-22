@@ -114,17 +114,44 @@ workflows:
             branches:
               only:
                 - main
-      - request-preprod-approval:
-          type: approval
+      - hmpps/deploy_env:
+          name: deploy_dev
+          env: "dev"
+          jira_update: true
+          pipeline_id: <<pipeline.id>>
+          pipeline_number: <<pipeline.number>>
+          context: hmpps-common-vars
+          filters:
+            branches:
+              only:
+                - main
           requires:
             - validate
             - build_docker
             - helm_lint
             - lint-api-docs
+      - hmpps/deploy_env:
+          name: deploy_alt_dev
+          env: "alt-dev"
+          release_name: "alt-calculate-release-dates-api"
+          jira_update: true
+          pipeline_id: <<pipeline.id>>
+          pipeline_number: <<pipeline.number>>
+          context: hmpps-common-vars
           filters:
             branches:
               only:
                 - main
+          requires:
+            - validate
+            - build_docker
+            - helm_lint
+            - lint-api-docs
+      - request-preprod-approval:
+          type: approval
+          requires:
+            - deploy_dev
+            - deploy_alt_dev
       - hmpps/deploy_env:
           name: deploy_preprod
           env: "preprod"
