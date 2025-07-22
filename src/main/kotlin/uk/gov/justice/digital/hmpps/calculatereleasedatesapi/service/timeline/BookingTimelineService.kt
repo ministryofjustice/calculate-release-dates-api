@@ -131,7 +131,7 @@ class BookingTimelineService(
         latestCalculation = sdsEarlyReleaseDefaultingRulesService.applySDSEarlyReleaseRulesAndFinalizeDates(
           latestCalculation,
           beforeTrancheCalculation!!,
-          allocatedTranche?.date,
+          allocatedTranche,
           allSentences,
           allocatedEarlyRelease!!,
         )

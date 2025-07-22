@@ -19,7 +19,7 @@ data class EarlyReleaseConfiguration(
   fun matchesFilter(part: AbstractSentence): Boolean = part.identificationTrack == SentenceIdentificationTrack.SDS &&
     part is StandardDeterminateSentence &&
     when (filter) {
-      EarlyReleaseSentenceFilter.SDS_40_EXCLUSIONS -> part.hasAnSDSEarlyReleaseExclusion == SDSEarlyReleaseExclusionType.NO || part.hasAnSDSEarlyReleaseExclusion.isSDS40Tranche3Exclusion()
+      EarlyReleaseSentenceFilter.SDS_40_EXCLUSIONS -> part.hasAnSDSEarlyReleaseExclusion == SDSEarlyReleaseExclusionType.NO || part.hasAnSDSEarlyReleaseExclusion.trancheThreeExclusion
     }
 
   fun earliestTranche() = tranches.minOf { it.date }

@@ -6,22 +6,21 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer
 
 @JsonDeserialize(using = SDSEarlyReleaseExclusionTypeDeserializer::class)
-enum class SDSEarlyReleaseExclusionType {
+enum class SDSEarlyReleaseExclusionType(
+  val trancheThreeExclusion: Boolean = false,
+) {
   SEXUAL,
   VIOLENT,
   DOMESTIC_ABUSE,
   NATIONAL_SECURITY,
   TERRORISM,
-  SEXUAL_T3,
-  VIOLENT_T3,
-  DOMESTIC_ABUSE_T3,
-  NATIONAL_SECURITY_T3,
-  TERRORISM_T3,
-  MURDER_T3,
+  SEXUAL_T3(true),
+  VIOLENT_T3(true),
+  DOMESTIC_ABUSE_T3(true),
+  NATIONAL_SECURITY_T3(true),
+  TERRORISM_T3(true),
+  MURDER_T3(true),
   NO,
-  ;
-
-  fun isSDS40Tranche3Exclusion(): Boolean = this.name.endsWith("_T3")
 }
 
 class SDSEarlyReleaseExclusionTypeDeserializer : StdDeserializer<SDSEarlyReleaseExclusionType>(SDSEarlyReleaseExclusionType::class.java) {

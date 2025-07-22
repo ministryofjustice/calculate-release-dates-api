@@ -85,7 +85,7 @@ abstract class TimelineCalculationHandler(
     sentence: StandardDeterminateSentence,
   ): Double {
     val sds40Tranche3 = earlyReleaseConfig.tranches.find { it.type == EarlyReleaseTrancheType.SDS_40_TRANCHE_3 }
-    if (sds40Tranche3 != null && timelineCalculationDate.isAfterOrEqualTo(sds40Tranche3.date) && sentence.hasAnSDSEarlyReleaseExclusion.isSDS40Tranche3Exclusion()) {
+    if (sds40Tranche3 != null && timelineCalculationDate.isAfterOrEqualTo(sds40Tranche3.date) && sentence.hasAnSDSEarlyReleaseExclusion.trancheThreeExclusion) {
       return 0.5
     }
     return earlyReleaseConfig.releaseMultiplier

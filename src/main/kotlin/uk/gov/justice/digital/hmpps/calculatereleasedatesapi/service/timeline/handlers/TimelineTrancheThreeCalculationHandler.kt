@@ -21,7 +21,7 @@ class TimelineTrancheThreeCalculationHandler(
   ): TimelineHandleResult {
     with(timelineTrackingData) {
       val sentencesWithT3Exclusion = currentSentenceGroup
-        .filter { sentence -> sentence.sentenceParts().any { sentence -> sentence.identificationTrack == SentenceIdentificationTrack.SDS && sentence is StandardDeterminateSentence && sentence.hasAnSDSEarlyReleaseExclusion.isSDS40Tranche3Exclusion() } }
+        .filter { sentence -> sentence.sentenceParts().any { sentence -> sentence.identificationTrack == SentenceIdentificationTrack.SDS && sentence is StandardDeterminateSentence && sentence.hasAnSDSEarlyReleaseExclusion.trancheThreeExclusion } }
       sentencesWithT3Exclusion.forEach {
         it.sentenceCalculation.unadjustedReleaseDate.findMultiplierBySentence =
           multiplierFnForDate(timelineCalculationDate, allocatedTranche?.date)

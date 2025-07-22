@@ -9,6 +9,8 @@ import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.mock
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.SDS40TrancheConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseConfigurations
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseTrancheConfiguration
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseTrancheType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SDSEarlyReleaseTranche
@@ -41,6 +43,14 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
   private val testCommencementDate = LocalDate.of(2024, 7, 29)
   private val testTrancheTwoCommencementDate = LocalDate.of(2024, 10, 22)
   private val testTrancheThreeCommencementDate = LocalDate.of(2024, 12, 16)
+
+  private val earlyReleaseTrancheOne = EarlyReleaseTrancheConfiguration(
+    date = testCommencementDate,
+    type = EarlyReleaseTrancheType.SENTENCE_LENGTH,
+    unit = YEARS,
+    duration = 5,
+    name = SDSEarlyReleaseTranche.TRANCHE_1,
+  )
 
   private val trancheConfiguration = SDS40TrancheConfiguration(
     testCommencementDate,
@@ -86,7 +96,7 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
       service.applySDSEarlyReleaseRulesAndFinalizeDates(
         early,
         standard,
-        testCommencementDate,
+        earlyReleaseTrancheOne,
         createBookingWithSDSSentenceOfType(SentenceIdentificationTrack.SDS).sentences,
         earlyReleaseConfiguration,
       ),
@@ -269,7 +279,7 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
       service.applySDSEarlyReleaseRulesAndFinalizeDates(
         early,
         standard,
-        testCommencementDate,
+        earlyReleaseTrancheOne,
         createBookingWithSDSSentenceOfType(SentenceIdentificationTrack.SDS).sentences,
         earlyReleaseConfiguration,
       ),
@@ -327,7 +337,7 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
       service.applySDSEarlyReleaseRulesAndFinalizeDates(
         early,
         standard,
-        testCommencementDate,
+        earlyReleaseTrancheOne,
         createBookingWithSDSSentenceOfType(SentenceIdentificationTrack.SDS).sentences,
         earlyReleaseConfiguration,
       ),

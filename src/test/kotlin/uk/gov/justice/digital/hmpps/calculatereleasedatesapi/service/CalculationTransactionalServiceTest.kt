@@ -156,7 +156,6 @@ class CalculationTransactionalServiceTest {
   @Captor
   lateinit var updatedOffenderDatesArgumentCaptor: ArgumentCaptor<UpdateOffenderDates>
 
-
   @Test
   fun `Test fetching calculation results by requestId`() {
     whenever(calculationRequestRepository.findById(CALCULATION_REQUEST_ID)).thenReturn(
@@ -769,7 +768,6 @@ class CalculationTransactionalServiceTest {
 
     val response = calculationTransactionalService.supportedValidation(prisonerDetails.offenderNo)
 
-
     assertThat(response).isEqualTo(expectedResponse)
     verify(bookingService, never()).getBooking(any(), any())
     verify(calculationService, never()).calculateReleaseDates(any(), any())
@@ -809,7 +807,6 @@ class CalculationTransactionalServiceTest {
   }
 
   private fun <T> capture(argumentCaptor: ArgumentCaptor<T>): T = argumentCaptor.capture()
-
 
   @BeforeEach
   fun beforeAll() {
