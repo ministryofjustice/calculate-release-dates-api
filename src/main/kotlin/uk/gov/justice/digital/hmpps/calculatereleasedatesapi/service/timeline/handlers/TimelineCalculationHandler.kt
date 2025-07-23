@@ -1,9 +1,10 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers
 
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.ReleasePointMultipliersConfiguration
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.SDS40TrancheConfiguration
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.Constants
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseConfiguration
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseConfigurations
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseTrancheType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculator
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineHandleResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineTrackingData
@@ -11,40 +12,82 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqual
 import java.time.LocalDate
 
 abstract class TimelineCalculationHandler(
-  protected val trancheConfiguration: SDS40TrancheConfiguration,
-  private val releasePointConfiguration: ReleasePointMultipliersConfiguration,
   protected val timelineCalculator: TimelineCalculator,
+  protected val earlyReleaseConfigurations: EarlyReleaseConfigurations,
 ) {
-  abstract fun handle(timelineCalculationDate: LocalDate, timelineTrackingData: TimelineTrackingData): TimelineHandleResult
+  abstract fun handle(
+    timelineCalculationDate: LocalDate,
+    timelineTrackingData: TimelineTrackingData,
+  ): TimelineHandleResult
 
   fun multiplierFnForDate(
     timelineCalculationDate: LocalDate,
-    earlyReleaseCommencementDate: LocalDate?,
-  ): (identification: SentenceIdentificationTrack) -> Double = { identification -> multiplierForIdentification(timelineCalculationDate, earlyReleaseCommencementDate, identification) }
-
-  /**
-   Historic release point is before SDS40 tranching started.
-   */
-  fun historicMultiplierFnForDate(): (identification: SentenceIdentificationTrack) -> Double = { identification -> multiplierForIdentification(trancheConfiguration.trancheOneCommencementDate.minusDays(1), null, identification) }
-
-  private fun multiplierForIdentification(
-    timelineCalculationDate: LocalDate,
-    earlyReleaseCommencementDate: LocalDate?,
-    identification: SentenceIdentificationTrack,
-  ): Double = if (identification.isMultiplierFixed()) {
-    identification.fixedMultiplier()
-  } else {
-    earlyReleaseMultiplier(timelineCalculationDate, earlyReleaseCommencementDate, identification)
+    allocatedTrancheDate: LocalDate?,
+  ): (sentence: CalculableSentence) -> Double = { sentence ->
+    multiplerForSentence(
+      timelineCalculationDate,
+      allocatedTrancheDate,
+      sentence,
+    )
   }
 
-  private fun earlyReleaseMultiplier(timelineCalculationDate: LocalDate, earlyReleaseCommencementDate: LocalDate?, identification: SentenceIdentificationTrack): Double = if (timelineCalculationDate.isAfterOrEqualTo(trancheConfiguration.trancheThreeCommencementDate) && identification == SentenceIdentificationTrack.SDS_STANDARD_RELEASE_T3_EXCLUSION) {
-    Constants.HALF
-  } else if (timelineCalculationDate.isAfterOrEqualTo(
-      earlyReleaseCommencementDate ?: trancheConfiguration.trancheOneCommencementDate,
+  /**
+   Historic release point is before SDS40 tranching started
+   */
+  fun historicMultiplierFnForDate(): (sentence: CalculableSentence) -> Double = { sentence ->
+    multiplerForSentence(
+      earlyReleaseConfigurations.configurations.minOf { it.earliestTranche() }.minusDays(1),
+      null,
+      sentence,
     )
-  ) {
-    releasePointConfiguration.earlyReleasePoint
+  }
+
+  private fun multiplerForSentence(
+    timelineCalculationDate: LocalDate,
+    allocatedTrancheDate: LocalDate?,
+    sentence: CalculableSentence,
+  ): Double = if (sentence.identificationTrack.isMultiplierFixed()) {
+    sentence.identificationTrack.fixedMultiplier()
   } else {
-    Constants.HALF
+    sdsReleaseMultiplier(sentence, timelineCalculationDate, allocatedTrancheDate)
+  }
+
+  private fun sdsReleaseMultiplier(
+    sentence: CalculableSentence,
+    timelineCalculationDate: LocalDate,
+    allocatedTrancheDate: LocalDate?,
+  ): Double {
+    if (sentence is StandardDeterminateSentence) {
+      if (allocatedTrancheDate != null) {
+        // They are tranched.
+        val earlyReleaseConfig =
+          earlyReleaseConfigurations.configurations.find { it.tranches.any { tranche -> tranche.date == allocatedTrancheDate } }
+        if (earlyReleaseConfig!!.matchesFilter(sentence)) {
+          return getMultiplerForConfiguration(earlyReleaseConfig, timelineCalculationDate, sentence)
+        }
+      } else {
+        val sentencedAfterEarlyReleaseConfig =
+          earlyReleaseConfigurations.configurations.filter { config -> timelineCalculationDate.isAfterOrEqualTo(config.earliestTranche()) }
+            .maxByOrNull { it.earliestTranche() }
+        if (sentencedAfterEarlyReleaseConfig != null) {
+          if (sentencedAfterEarlyReleaseConfig.matchesFilter(sentence)) {
+            return getMultiplerForConfiguration(sentencedAfterEarlyReleaseConfig, timelineCalculationDate, sentence)
+          }
+        }
+      }
+    }
+    return 0.5
+  }
+
+  private fun getMultiplerForConfiguration(
+    earlyReleaseConfig: EarlyReleaseConfiguration,
+    timelineCalculationDate: LocalDate,
+    sentence: StandardDeterminateSentence,
+  ): Double {
+    val sds40Tranche3 = earlyReleaseConfig.tranches.find { it.type == EarlyReleaseTrancheType.SDS_40_TRANCHE_3 }
+    if (sds40Tranche3 != null && timelineCalculationDate.isAfterOrEqualTo(sds40Tranche3.date) && sentence.hasAnSDSEarlyReleaseExclusion.trancheThreeExclusion) {
+      return 0.5
+    }
+    return earlyReleaseConfig.releaseMultiplier
   }
 }

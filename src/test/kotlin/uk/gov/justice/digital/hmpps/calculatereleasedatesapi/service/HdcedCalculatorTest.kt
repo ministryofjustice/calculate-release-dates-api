@@ -532,8 +532,8 @@ class HdcedCalculatorTest {
       thirdSentence.getLengthInDays(),
       numberOfDaysToDeterminateReleaseDateThird,
     )
-    firstSentence.identificationTrack = SentenceIdentificationTrack.SDS_STANDARD_RELEASE
-    secondSentence.identificationTrack = SentenceIdentificationTrack.SDS_STANDARD_RELEASE
+    firstSentence.identificationTrack = SentenceIdentificationTrack.SDS
+    secondSentence.identificationTrack = SentenceIdentificationTrack.SDS
     thirdSentence.identificationTrack = SentenceIdentificationTrack.SDS_PLUS_RELEASE
     consecSentence.sentenceCalculation =
       sentenceCalculation(
@@ -565,7 +565,7 @@ class HdcedCalculatorTest {
     numberOfDaysToDeterminateReleaseDate: Int,
     adjustments: SentenceAdjustments = SentenceAdjustments(),
   ): SentenceCalculation {
-    sentence.identificationTrack = SentenceIdentificationTrack.SDS_EARLY_RELEASE
+    sentence.identificationTrack = SentenceIdentificationTrack.SDS
     sentence.releaseDateTypes = ReleaseDateTypes(listOf(ReleaseDateType.CRD, ReleaseDateType.SLED), sentence, mock())
     val releaseDateCalculation = ReleaseDateCalculation(
       numberOfDaysToSED,

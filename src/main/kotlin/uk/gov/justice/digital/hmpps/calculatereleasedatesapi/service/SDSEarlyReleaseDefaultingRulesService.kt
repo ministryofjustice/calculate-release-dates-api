@@ -1,7 +1,9 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import org.springframework.stereotype.Service
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.SDS40TrancheConfiguration
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseConfiguration
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseConfigurations
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseTrancheConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SDSEarlyReleaseTranche
@@ -14,14 +16,14 @@ import java.time.LocalDate
 
 @Service
 class SDSEarlyReleaseDefaultingRulesService(
-  val trancheConfiguration: SDS40TrancheConfiguration,
+  val earlyReleaseConfigurations: EarlyReleaseConfigurations,
 ) {
   fun applySDSEarlyReleaseRulesAndFinalizeDates(
     earlyReleaseResult: CalculationResult,
     standardReleaseResult: CalculationResult,
-    trancheCommencementDate: LocalDate?,
-    tranche: SDSEarlyReleaseTranche,
+    allocatedTranche: EarlyReleaseTrancheConfiguration?,
     sentences: List<CalculableSentence>,
+    earlyReleaseConfiguration: EarlyReleaseConfiguration,
   ): CalculationResult {
     val dates = earlyReleaseResult.dates.toMutableMap()
     val breakdownByReleaseDateType = earlyReleaseResult.breakdownByReleaseDateType.toMutableMap()
@@ -29,11 +31,11 @@ class SDSEarlyReleaseDefaultingRulesService(
     adjustDates(
       earlyReleaseResult,
       standardReleaseResult,
-      trancheCommencementDate,
-      tranche,
+      allocatedTranche,
       dates,
       breakdownByReleaseDateType,
       sentences,
+      earlyReleaseConfiguration,
     )
 
     return createFinalCalculationResult(
@@ -41,23 +43,22 @@ class SDSEarlyReleaseDefaultingRulesService(
       breakdownByReleaseDateType,
       earlyReleaseResult,
       standardReleaseResult,
-      tranche,
+      allocatedTranche,
     )
   }
 
   private fun adjustDates(
     earlyReleaseResult: CalculationResult,
     standardReleaseResult: CalculationResult,
-    trancheCommencementDate: LocalDate?,
-    allocatedTranche: SDSEarlyReleaseTranche,
+    allocatedTranche: EarlyReleaseTrancheConfiguration?,
     dates: MutableMap<ReleaseDateType, LocalDate>,
     breakdownByReleaseDateType: MutableMap<ReleaseDateType, ReleaseDateCalculationBreakdown>,
     sentences: List<CalculableSentence>,
+    earlyReleaseConfiguration: EarlyReleaseConfiguration,
   ) {
     adjustDatesForEarlyOrStandardRelease(
       earlyReleaseResult,
       standardReleaseResult,
-      trancheCommencementDate,
       allocatedTranche,
       dates,
       breakdownByReleaseDateType,
@@ -68,6 +69,7 @@ class SDSEarlyReleaseDefaultingRulesService(
       standardReleaseResult,
       breakdownByReleaseDateType,
       sentences,
+      earlyReleaseConfiguration,
     )
 
     adjustHdcedAndPrrdBasedOnCrdOrArd(
@@ -85,15 +87,15 @@ class SDSEarlyReleaseDefaultingRulesService(
     breakdownByReleaseDateType: Map<ReleaseDateType, ReleaseDateCalculationBreakdown>,
     earlyReleaseResult: CalculationResult,
     standardReleaseResult: CalculationResult,
-    allocatedTranche: SDSEarlyReleaseTranche,
+    allocatedTranche: EarlyReleaseTrancheConfiguration?,
   ): CalculationResult = CalculationResult(
     dates = dates,
     breakdownByReleaseDateType = breakdownByReleaseDateType,
     otherDates = earlyReleaseResult.otherDates,
     effectiveSentenceLength = earlyReleaseResult.effectiveSentenceLength,
-    sdsEarlyReleaseAllocatedTranche = allocatedTranche,
-    sdsEarlyReleaseTranche = allocatedTranche,
     affectedBySds40 = (dates != standardReleaseResult.dates) || standardReleaseResult.affectedBySds40,
+    sdsEarlyReleaseAllocatedTranche = allocatedTranche?.name ?: SDSEarlyReleaseTranche.TRANCHE_0,
+    sdsEarlyReleaseTranche = allocatedTranche?.name ?: SDSEarlyReleaseTranche.TRANCHE_0,
   )
 
   private fun getArdOrCrd(
@@ -167,11 +169,7 @@ class SDSEarlyReleaseDefaultingRulesService(
     val crdOrdArd = dates[ReleaseDateType.CRD] ?: dates[ReleaseDateType.ARD] ?: return
 
     val hdcedAndErsedDateTypes = listOf(ReleaseDateType.HDCED, ReleaseDateType.ERSED)
-    val trancheCommencementDates = listOf(
-      trancheConfiguration.trancheOneCommencementDate,
-      trancheConfiguration.trancheTwoCommencementDate,
-    )
-
+    val trancheCommencementDates = earlyReleaseConfigurations.configurations.flatMap { it.tranches.map { tranche -> tranche.date } }
     hdcedAndErsedDateTypes.forEach { dateType ->
       dates[dateType]?.let { hdcedOrErsedDate ->
         if (hdcedOrErsedDate == crdOrdArd && hdcedOrErsedDate in trancheCommencementDates) {
@@ -186,15 +184,20 @@ class SDSEarlyReleaseDefaultingRulesService(
     standardReleaseResult: CalculationResult,
     breakdownByReleaseDateType: MutableMap<ReleaseDateType, ReleaseDateCalculationBreakdown>,
     sentences: List<CalculableSentence>,
+    earlyReleaseConfiguration: EarlyReleaseConfiguration,
   ) {
     val originalCrd = standardReleaseResult.dates[ReleaseDateType.CRD]
 
-    if (originalCrd != null && shouldAdjustTused(dates, originalCrd) && hasEligibleRecallTusedSentence(sentences)) {
+    if (originalCrd != null && shouldAdjustTused(dates, originalCrd, earlyReleaseConfiguration) && hasEligibleRecallTusedSentence(sentences)) {
       applyStandardTused(dates, standardReleaseResult, breakdownByReleaseDateType)
     }
   }
 
-  private fun shouldAdjustTused(dates: Map<ReleaseDateType, LocalDate>, latestReleaseDate: LocalDate): Boolean = dates.containsKey(ReleaseDateType.TUSED) && latestReleaseDate.isBefore(trancheConfiguration.trancheOneCommencementDate)
+  private fun shouldAdjustTused(
+    dates: Map<ReleaseDateType, LocalDate>,
+    latestReleaseDate: LocalDate,
+    earlyReleaseConfiguration: EarlyReleaseConfiguration,
+  ): Boolean = dates.containsKey(ReleaseDateType.TUSED) && latestReleaseDate.isBefore(earlyReleaseConfiguration.earliestTranche())
 
   private fun applyStandardTused(
     dates: MutableMap<ReleaseDateType, LocalDate>,
@@ -224,39 +227,37 @@ class SDSEarlyReleaseDefaultingRulesService(
   fun hasAnyReleaseBeforeTrancheCommencement(
     early: CalculationResult,
     late: CalculationResult,
-    trancheCommencementDate: LocalDate?,
+    allocatedTranche: EarlyReleaseTrancheConfiguration?,
   ): Boolean {
-    if (trancheCommencementDate == null) {
+    if (allocatedTranche == null) {
       return false
     }
 
     return DATE_TYPES_TO_ADJUST_TO_COMMENCEMENT_DATE.mapNotNull { dateType ->
       early.dates[dateType] ?: late.dates[dateType]
-    }.any { it < trancheCommencementDate }
+    }.any { it < allocatedTranche.date }
   }
 
   private fun adjustDatesForEarlyOrStandardRelease(
     earlyReleaseResult: CalculationResult,
     standardReleaseResult: CalculationResult,
-    trancheCommencementDate: LocalDate?,
-    allocatedTranche: SDSEarlyReleaseTranche,
+    allocatedTranche: EarlyReleaseTrancheConfiguration?,
     dates: MutableMap<ReleaseDateType, LocalDate>,
     breakdownByReleaseDateType: MutableMap<ReleaseDateType, ReleaseDateCalculationBreakdown>,
   ) {
-    if (hasAnyReleaseBeforeTrancheCommencement(earlyReleaseResult, standardReleaseResult, trancheCommencementDate)) {
+    if (hasAnyReleaseBeforeTrancheCommencement(earlyReleaseResult, standardReleaseResult, allocatedTranche)) {
       adjustDatesForEarlyRelease(
         earlyReleaseResult,
         standardReleaseResult,
-        allocatedTranche,
-        trancheCommencementDate,
+        allocatedTranche!!,
         dates,
         breakdownByReleaseDateType,
       )
-    } else if (allocatedTranche != SDSEarlyReleaseTranche.TRANCHE_0) {
+    } else if (allocatedTranche != null) {
       adjustDatesForNonEarlyRelease(
         earlyReleaseResult,
         standardReleaseResult,
-        trancheCommencementDate,
+        allocatedTranche,
         breakdownByReleaseDateType,
       )
     }
@@ -265,8 +266,7 @@ class SDSEarlyReleaseDefaultingRulesService(
   private fun adjustDatesForEarlyRelease(
     earlyReleaseResult: CalculationResult,
     standardReleaseResult: CalculationResult,
-    allocatedTranche: SDSEarlyReleaseTranche,
-    trancheCommencementDate: LocalDate?,
+    allocatedTranche: EarlyReleaseTrancheConfiguration,
     dates: MutableMap<ReleaseDateType, LocalDate>,
     breakdownByReleaseDateType: MutableMap<ReleaseDateType, ReleaseDateCalculationBreakdown>,
   ) {
@@ -277,7 +277,6 @@ class SDSEarlyReleaseDefaultingRulesService(
           earlyReleaseResult,
           standardReleaseResult,
           allocatedTranche,
-          trancheCommencementDate,
           dates,
           breakdownByReleaseDateType,
         ),
@@ -288,7 +287,7 @@ class SDSEarlyReleaseDefaultingRulesService(
   private fun adjustDatesForNonEarlyRelease(
     earlyReleaseResult: CalculationResult,
     standardReleaseResult: CalculationResult,
-    trancheCommencementDate: LocalDate?,
+    allocatedTranche: EarlyReleaseTrancheConfiguration?,
     breakdownByReleaseDateType: MutableMap<ReleaseDateType, ReleaseDateCalculationBreakdown>,
   ) {
     DATE_TYPES_TO_ADJUST_TO_COMMENCEMENT_DATE.forEach { releaseDateType ->
@@ -296,7 +295,7 @@ class SDSEarlyReleaseDefaultingRulesService(
         releaseDateType,
         earlyReleaseResult,
         standardReleaseResult,
-        trancheCommencementDate,
+        allocatedTranche,
         breakdownByReleaseDateType,
       )
     }
@@ -307,10 +306,10 @@ class SDSEarlyReleaseDefaultingRulesService(
     val standard = context.standardReleaseResult.dates[context.dateType]
 
     when {
-      shouldUseTrancheCommencementDate(early, standard, context.trancheCommencementDate) ->
+      shouldUseTrancheCommencementDate(early, standard, context.allocatedTranche.date) ->
         applyTrancheCommencementDate(context, early!!)
 
-      shouldUseStandardDate(standard, early, context.trancheCommencementDate) ->
+      shouldUseStandardDate(standard, early, context.allocatedTranche.date) ->
         applyStandardDate(context, standard!!)
 
       else ->
@@ -331,16 +330,17 @@ class SDSEarlyReleaseDefaultingRulesService(
   ): Boolean = standard != null && (trancheCommencementDate == null || standard.isBefore(trancheCommencementDate) || standard == early)
 
   private fun applyTrancheCommencementDate(context: ReleaseDateContext, early: LocalDate) {
-    context.dates[context.dateType] = context.trancheCommencementDate!!
+    val sdsEarlyReleaseType = context.allocatedTranche.name
+    context.dates[context.dateType] = context.allocatedTranche.date
     context.breakdownByReleaseDateType[context.dateType] = ReleaseDateCalculationBreakdown(
-      setOf(
-        if (context.allocatedTranche == SDSEarlyReleaseTranche.TRANCHE_1) {
-          CalculationRule.SDS_EARLY_RELEASE_ADJUSTED_TO_TRANCHE_1_COMMENCEMENT
-        } else {
-          CalculationRule.SDS_EARLY_RELEASE_ADJUSTED_TO_TRANCHE_2_COMMENCEMENT
-        },
-      ),
-      releaseDate = context.trancheCommencementDate,
+      if (sdsEarlyReleaseType == SDSEarlyReleaseTranche.TRANCHE_1) {
+        setOf(CalculationRule.SDS_EARLY_RELEASE_ADJUSTED_TO_TRANCHE_1_COMMENCEMENT)
+      } else if (sdsEarlyReleaseType == SDSEarlyReleaseTranche.TRANCHE_2) {
+        setOf(CalculationRule.SDS_EARLY_RELEASE_ADJUSTED_TO_TRANCHE_2_COMMENCEMENT)
+      } else {
+        emptySet()
+      },
+      releaseDate = context.allocatedTranche.date,
       unadjustedDate = early,
     )
   }
@@ -379,7 +379,7 @@ class SDSEarlyReleaseDefaultingRulesService(
     dateType: ReleaseDateType,
     earlyReleaseResult: CalculationResult,
     standardReleaseResult: CalculationResult,
-    trancheCommencementDate: LocalDate?,
+    allocatedTranche: EarlyReleaseTrancheConfiguration?,
     breakdownByReleaseDateType: MutableMap<ReleaseDateType, ReleaseDateCalculationBreakdown>,
   ) {
     val early = earlyReleaseResult.dates[dateType]
@@ -389,7 +389,7 @@ class SDSEarlyReleaseDefaultingRulesService(
       shouldApplyStandardRelease(
         standard,
         early,
-        trancheCommencementDate,
+        allocatedTranche,
       ) -> CalculationRule.SDS_STANDARD_RELEASE_APPLIES
 
       else -> CalculationRule.SDS_EARLY_RELEASE_APPLIES
@@ -401,8 +401,8 @@ class SDSEarlyReleaseDefaultingRulesService(
   private fun shouldApplyStandardRelease(
     standard: LocalDate?,
     early: LocalDate?,
-    trancheCommencementDate: LocalDate?,
-  ): Boolean = standard != null && (trancheCommencementDate == null || standard.isBefore(trancheCommencementDate) || standard == early)
+    allocatedTranche: EarlyReleaseTrancheConfiguration?,
+  ): Boolean = standard != null && (allocatedTranche == null || standard.isBefore(allocatedTranche.date) || standard == early)
 
   private fun updateBreakdown(
     dateType: ReleaseDateType,
@@ -434,8 +434,7 @@ class SDSEarlyReleaseDefaultingRulesService(
     val dateType: ReleaseDateType,
     val earlyReleaseResult: CalculationResult,
     val standardReleaseResult: CalculationResult,
-    val allocatedTranche: SDSEarlyReleaseTranche,
-    val trancheCommencementDate: LocalDate?,
+    val allocatedTranche: EarlyReleaseTrancheConfiguration,
     val dates: MutableMap<ReleaseDateType, LocalDate>,
     val breakdownByReleaseDateType: MutableMap<ReleaseDateType, ReleaseDateCalculationBreakdown>,
   )

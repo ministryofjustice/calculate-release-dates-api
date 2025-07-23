@@ -3,7 +3,8 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.SDS40TrancheConfiguration
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseConfigurations
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseTrancheType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.ADDITIONAL_DAYS_AWARDED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.RECALL_REMAND
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.RECALL_TAGGED_BAIL
@@ -11,6 +12,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Adjust
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.RESTORATION_OF_ADDITIONAL_DAYS_AWARDED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.TAGGED_BAIL
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.UNLAWFULLY_AT_LARGE
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SDSEarlyReleaseTranche
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AbstractSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
@@ -35,17 +37,17 @@ import java.time.LocalDate
 @Service
 class BookingTimelineService(
   private val workingDayService: WorkingDayService,
-  private val trancheConfiguration: SDS40TrancheConfiguration,
   private val sdsEarlyReleaseDefaultingRulesService: SDSEarlyReleaseDefaultingRulesService,
   private val timelineCalculator: TimelineCalculator,
   private val timelineAwardedAdjustmentCalculationHandler: TimelineAwardedAdjustmentCalculationHandler,
   private val timelineTrancheCalculationHandler: TimelineTrancheCalculationHandler,
-  private val trancheThreeCalculationHandler: TimelineTrancheThreeCalculationHandler,
   private val timelineSentenceCalculationHandler: TimelineSentenceCalculationHandler,
   private val timelineUalAdjustmentCalculationHandler: TimelineUalAdjustmentCalculationHandler,
   private val timelineExternalReleaseMovementCalculationHandler: TimelineExternalReleaseMovementCalculationHandler,
   private val timelineExternalAdmissionMovementCalculationHandler: TimelineExternalAdmissionMovementCalculationHandler,
   private val timelinePostTrancheAdjustmentService: TimelinePostTrancheAdjustmentService,
+  private val timelineTrancheThreeCalculationHandler: TimelineTrancheThreeCalculationHandler,
+  private val earlyReleaseConfigurations: EarlyReleaseConfigurations,
 ) {
 
   fun calculate(
@@ -85,6 +87,7 @@ class BookingTimelineService(
       checkForReleasesAndLicenceExpiry(timelineCalculationDate, timelineTrackingData)
 
       val results = calculations.sortedBy { it.type.ordinal }.map {
+        timelineTrackingData.currentTimelineCalculationDate = it
         handlerFor(it.type).handle(timelineCalculationDate, timelineTrackingData)
       }
       val anyCalculationRequired = results.any { it.requiresCalculation }
@@ -119,8 +122,8 @@ class BookingTimelineService(
           offender,
           returnToCustodyDate,
         ).copy(
-          sdsEarlyReleaseAllocatedTranche = trancheAndCommencement.first,
-          sdsEarlyReleaseTranche = trancheAndCommencement.first,
+          sdsEarlyReleaseAllocatedTranche = allocatedTranche?.let { SDSEarlyReleaseTranche.fromDate(it.date, earlyReleaseConfigurations) } ?: SDSEarlyReleaseTranche.TRANCHE_0,
+          sdsEarlyReleaseTranche = allocatedTranche?.let { SDSEarlyReleaseTranche.fromDate(it.date, earlyReleaseConfigurations) } ?: SDSEarlyReleaseTranche.TRANCHE_0,
         )
 
       if (beforeTrancheCalculation != null) {
@@ -128,15 +131,15 @@ class BookingTimelineService(
         latestCalculation = sdsEarlyReleaseDefaultingRulesService.applySDSEarlyReleaseRulesAndFinalizeDates(
           latestCalculation,
           beforeTrancheCalculation!!,
-          trancheAndCommencement.second!!,
-          trancheAndCommencement.first,
+          allocatedTranche,
           allSentences,
+          allocatedEarlyRelease!!,
         )
-        if (allSentences.none { it.sentencedAt.isAfter(trancheAndCommencement.second!!) }) {
+        if (allocatedTranche != null && allSentences.none { it.sentencedAt.isAfter(allocatedTranche!!.date) }) {
           latestCalculation = timelinePostTrancheAdjustmentService.applyTrancheAdjustmentLogic(
             latestCalculation,
             adjustments,
-            trancheAndCommencement,
+            allocatedTranche!!.date,
           )
         }
       }
@@ -153,12 +156,10 @@ class BookingTimelineService(
     TimelineCalculationType.SENTENCED -> timelineSentenceCalculationHandler
     TimelineCalculationType.ADDITIONAL_DAYS, TimelineCalculationType.RESTORATION_DAYS -> timelineAwardedAdjustmentCalculationHandler
     TimelineCalculationType.UAL -> timelineUalAdjustmentCalculationHandler
-    TimelineCalculationType.TRANCHE_1,
-    TimelineCalculationType.TRANCHE_2,
-    -> timelineTrancheCalculationHandler
-    TimelineCalculationType.TRANCHE_3 -> trancheThreeCalculationHandler
+    TimelineCalculationType.EARLY_RELEASE_TRANCHE -> timelineTrancheCalculationHandler
     TimelineCalculationType.EXTERNAL_ADMISSION -> timelineExternalAdmissionMovementCalculationHandler
     TimelineCalculationType.EXTERNAL_RELEASE -> timelineExternalReleaseMovementCalculationHandler
+    TimelineCalculationType.SDS_40_TRANCHE_3 -> timelineTrancheThreeCalculationHandler
   }
 
   private fun calculateLatestCustodialRelease(timelineTrackingData: TimelineTrackingData) {
@@ -167,11 +168,12 @@ class BookingTimelineService(
         val latestReleaseSentence = currentSentenceGroup.maxBy { it.sentenceCalculation.adjustedDeterminateReleaseDate }
         val releaseDate =
           if (beforeTrancheCalculation != null &&
+            allocatedTranche != null &&
             latestReleaseSentence.sentenceCalculation.adjustedDeterminateReleaseDate.isBefore(
-              trancheAndCommencement.second!!,
+              allocatedTranche!!.date,
             )
           ) {
-            trancheAndCommencement.second!!
+            allocatedTranche!!.date
           } else {
             latestReleaseSentence.sentenceCalculation.adjustedDeterminateReleaseDate
           }
@@ -214,11 +216,15 @@ class BookingTimelineService(
       futureData.additional.map { TimelineCalculationDate(it.appliesToSentencesFrom, TimelineCalculationType.ADDITIONAL_DAYS) } +
       futureData.restored.map { TimelineCalculationDate(it.appliesToSentencesFrom, TimelineCalculationType.RESTORATION_DAYS) } +
       futureData.ual.map { TimelineCalculationDate(it.appliesToSentencesFrom, TimelineCalculationType.UAL) } +
-      listOf(
-        TimelineCalculationDate(trancheConfiguration.trancheOneCommencementDate, TimelineCalculationType.TRANCHE_1),
-        TimelineCalculationDate(trancheConfiguration.trancheTwoCommencementDate, TimelineCalculationType.TRANCHE_2),
-        TimelineCalculationDate(trancheConfiguration.trancheThreeCommencementDate, TimelineCalculationType.TRANCHE_3),
-      ) +
+      earlyReleaseConfigurations.configurations.map { configuration ->
+        configuration.tranches.map {
+          if (it.type == EarlyReleaseTrancheType.SDS_40_TRANCHE_3) {
+            TimelineCalculationDate(it.date, TimelineCalculationType.SDS_40_TRANCHE_3)
+          } else {
+            TimelineCalculationDate(it.date, TimelineCalculationType.EARLY_RELEASE_TRANCHE, configuration, it)
+          }
+        }
+      }.flatten() +
       externalMovements.map { TimelineCalculationDate(it.movementDate, if (it.direction == ExternalMovementDirection.OUT) TimelineCalculationType.EXTERNAL_RELEASE else TimelineCalculationType.EXTERNAL_ADMISSION) }
     )
     .sortedBy { it.date }

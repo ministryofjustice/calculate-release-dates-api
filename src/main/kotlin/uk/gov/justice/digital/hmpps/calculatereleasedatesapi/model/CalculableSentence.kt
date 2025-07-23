@@ -177,4 +177,10 @@ interface CalculableSentence {
 
   @JsonIgnore
   fun sentenceParts(): List<AbstractSentence>
+
+  @JsonIgnore
+  fun isAffectedBySds40EarlyRelease(): Boolean = this.sentenceParts().any {
+    it.identificationTrack == SentenceIdentificationTrack.SDS &&
+      this.sentenceCalculation.unadjustedReleaseDate.findMultiplierBySentence(it) == 0.4
+  }
 }
