@@ -1,5 +1,7 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseConfiguration
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseTrancheConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -9,7 +11,8 @@ data class SentenceCalculation(
   val unadjustedReleaseDate: UnadjustedReleaseDate,
   var adjustments: SentenceAdjustments,
   val calculateErsed: Boolean,
-  var trancheCommencement: LocalDate? = null,
+  var allocatedEarlyRelease: EarlyReleaseConfiguration? = null,
+  var allocatedTranche: EarlyReleaseTrancheConfiguration? = null,
   val sentence: CalculableSentence = unadjustedReleaseDate.sentence,
   var lastDayOfUal: LocalDate? = null,
 ) {
@@ -195,7 +198,7 @@ data class SentenceCalculation(
   val releaseDateDefaultedByCommencement: LocalDate
     get() {
       return if (isDateDefaultedToCommencement(adjustedDeterminateReleaseDate)) {
-        trancheCommencement!!
+        allocatedTranche!!.date
       } else {
         releaseDate
       }
@@ -213,7 +216,7 @@ data class SentenceCalculation(
   var topUpSupervisionDate: LocalDate? = null
   var isReleaseDateConditional: Boolean = false
 
-  private fun isDateDefaultedToCommencement(releaseDate: LocalDate): Boolean = !sentence.isRecall() && trancheCommencement != null && sentence.sentenceParts().any { it.identificationTrack.isEarlyReleaseTrancheOneTwo() } && releaseDate.isBefore(trancheCommencement)
+  private fun isDateDefaultedToCommencement(releaseDate: LocalDate): Boolean = !sentence.isRecall() && allocatedTranche != null && allocatedEarlyRelease != null && sentence.sentenceParts().any { allocatedEarlyRelease!!.matchesFilter(it) } && releaseDate.isBefore(allocatedTranche!!.date)
 
   fun buildString(releaseDateTypes: List<ReleaseDateType>): String {
     val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")

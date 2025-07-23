@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline
 
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SDSEarlyReleaseTranche
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseConfiguration
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseTrancheConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOptions
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
@@ -23,10 +24,13 @@ data class TimelineTrackingData(
   val licenceSentences: MutableList<CalculableSentence> = emptyList<CalculableSentence>().toMutableList(),
 
   var inPrison: Boolean = true,
-  var trancheAndCommencement: Pair<SDSEarlyReleaseTranche, LocalDate?> = SDSEarlyReleaseTranche.TRANCHE_0 to null,
   var padas: Long = 0,
   var beforeTrancheCalculation: CalculationResult? = null,
+
+  var allocatedEarlyRelease: EarlyReleaseConfiguration? = null,
+  var allocatedTranche: EarlyReleaseTrancheConfiguration? = null,
 ) {
 
   lateinit var latestCalculation: CalculationResult
+  lateinit var currentTimelineCalculationDate: TimelineCalculationDate
 }

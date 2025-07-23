@@ -1,7 +1,7 @@
 release-point-multipliers:
   earlyReleasePoint: 0.5
 
-sds-early-release-tranches:
+sds-40-early-release-tranches:
   tranche-one-date: 2054-09-10
   tranche-two-date: 2054-10-22
   tranche-three-date: 2054-12-16

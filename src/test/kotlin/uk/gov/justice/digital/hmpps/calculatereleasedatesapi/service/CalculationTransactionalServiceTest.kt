@@ -752,7 +752,6 @@ class CalculationTransactionalServiceTest {
       unsupportedCalculationMessages = listOf(ValidationMessage(ValidationCode.UNSUPPORTED_CALCULATION_DTO_WITH_RECALL)),
     )
     whenever(validationService.validateSupportedSentencesAndCalculations(SOURCE_DATA)).thenReturn(expectedResponse)
-
     val response = calculationTransactionalService.supportedValidation(prisonerDetails.offenderNo)
 
     assertThat(response).isEqualTo(expectedResponse)

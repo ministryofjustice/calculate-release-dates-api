@@ -367,11 +367,7 @@ class BookingExtractionService(
   }
 
   private fun isAffectedBySds40(sentence: CalculableSentence): Boolean = !sentence.isRecall() &&
-    sentence.sentenceParts().any {
-      it.identificationTrack == SentenceIdentificationTrack.SDS_EARLY_RELEASE ||
-        it.identificationTrack == SentenceIdentificationTrack.SDS_STANDARD_RELEASE_T3_EXCLUSION
-    } &&
-    sentence.sentenceCalculation.adjustedDeterminateReleaseDate != sentence.sentenceCalculation.adjustedHistoricDeterminateReleaseDate
+    sentence.isAffectedBySds40EarlyRelease()
 
   fun extractCrdOrArd(
     mostRecentSentencesByReleaseDate: List<CalculableSentence>,
