@@ -1,0 +1,47 @@
+{
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2022-06-04",
+          "offenceCode": "OF61102"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 3
+          }
+        },
+        "sentencedAt": "2025-10-08",
+        "identifier": "69223792-506e-4c83-8489-6536173fcd98",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "DetentionAndTrainingOrderSentence",
+        "offence": {
+          "committedAt": "2017-12-21",
+          "offenceCode": "TH68036"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 20
+          }
+        },
+        "sentencedAt": "2026-01-16",
+        "identifier": "cbc08f8f-c615-4311-ba25-cac88811f370"
+      }
+    ],
+    "adjustments": {
+    }
+  },
+  "userInputs": {
+    "calculateErsed": true
+  },
+  "featureToggles": {
+    "useERS30Calculation": true
+  }
+}

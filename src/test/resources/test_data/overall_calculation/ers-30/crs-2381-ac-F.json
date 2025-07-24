@@ -1,0 +1,55 @@
+{
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2022-04-20",
+          "offenceCode": "TH68068"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 6
+          }
+        },
+        "sentencedAt": "2025-05-09",
+        "identifier": "cb304745-d781-47d3-b931-4baa31551fc5",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      }
+    ],
+    "adjustments": {
+      "UNLAWFULLY_AT_LARGE": [
+        {
+          "appliesToSentencesFrom": "2025-05-09",
+          "numberOfDays": 25,
+          "fromDate": "2025-05-10"
+        }
+      ],
+      "ADDITIONAL_DAYS_AWARDED": [
+        {
+          "appliesToSentencesFrom": "2025-05-09",
+          "numberOfDays": 10,
+          "fromDate": "2025-05-09"
+        }
+      ],
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2025-05-09",
+          "numberOfDays": 90,
+          "fromDate": "2025-02-07",
+          "toDate": "2025-05-08"
+        }
+      ]
+    }
+  },
+  "userInputs": {
+    "calculateErsed": true
+  },
+  "featureToggles": {
+    "useERS30Calculation": true
+  }
+}

@@ -9,8 +9,12 @@ hdced:
   custodial-period-above-midpoint-deduction-days-post-hdc-365: 364
 
 ersed:
-  max-period: P544D
-  release-point: 0.5
+  ers-50-max-period-amount: 544
+  ers-50-max-period-unit: DAYS
+  ers-50-release-point: 0.5
+  ers-30-max-period-amount: 4
+  ers-30-max-period-unit: YEARS
+  ers-30-release-point: 0.3
 
 sds-40-early-release-tranches:
   tranche-one-date: 2024-09-10

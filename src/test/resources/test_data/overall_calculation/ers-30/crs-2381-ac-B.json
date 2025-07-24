@@ -1,0 +1,52 @@
+{
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
+      {
+        "type": "ExtendedDeterminateSentence",
+        "offence": {
+          "committedAt": "2016-09-22",
+          "offenceCode": "OF61014"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "YEARS": 11
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "YEARS": 8
+          }
+        },
+        "sentencedAt": "2021-06-25",
+        "identifier": "49edac49-781b-3265-a766-6b8e6919639c"
+      }
+    ],
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2021-06-25",
+          "numberOfDays": 611,
+          "fromDate": "2019-10-22",
+          "toDate": "2021-06-24"
+        }
+      ],
+      "ADDITIONAL_DAYS_AWARDED": [
+        {
+          "appliesToSentencesFrom": "2021-06-25",
+          "numberOfDays": 20,
+          "fromDate": "2021-06-25"
+        }
+      ]
+    }
+  },
+  "userInputs": {
+    "calculateErsed": true
+  },
+  "featureToggles": {
+    "useERS30Calculation": true
+  }
+}
