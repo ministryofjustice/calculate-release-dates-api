@@ -1,0 +1,45 @@
+{
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2022-04-20",
+          "offenceCode": "TH68068"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 8,
+            "MONTHS": 8
+          }
+        },
+        "sentencedAt": "2021-09-16",
+        "identifier": "cb304745-d781-47d3-b931-4baa31551fc5",
+        "isSDSPlus": true,
+        "isSDSPlusEligibleSentenceTypeLengthAndOffence": true,
+        "isSDSPlusOffenceInPeriod": true,
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      }
+    ],
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2021-09-16",
+          "numberOfDays": 59,
+          "fromDate": "2021-07-18",
+          "toDate": "2021-09-15"
+        }
+      ]
+    }
+  },
+  "userInputs": {
+    "calculateErsed": true
+  },
+  "featureToggles": {
+    "useERS30Calculation": true
+  }
+}

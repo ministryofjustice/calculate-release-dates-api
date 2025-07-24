@@ -1,0 +1,48 @@
+{
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2022-06-04",
+          "offenceCode": "OF61102"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 3
+          }
+        },
+        "sentencedAt": "2025-03-26",
+        "identifier": "69223792-506e-4c83-8489-6536173fcd98",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "AFineSentence",
+        "offence": {
+          "committedAt": "2022-12-07",
+          "offenceCode": "RT88711"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 5
+          }
+        },
+        "sentencedAt": "2025-07-10",
+        "identifier": "493019e8-36ba-442d-90d6-315ead9dcf51",
+        "fineAmount": 1014
+      }
+    ],
+    "adjustments": {
+    }
+  },
+  "userInputs": {
+    "calculateErsed": true
+  },
+  "featureToggles": {
+    "useERS30Calculation": true
+  }
+}
