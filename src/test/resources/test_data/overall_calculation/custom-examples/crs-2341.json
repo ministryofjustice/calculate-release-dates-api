@@ -1,0 +1,96 @@
+{
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
+      {
+        "offence": {
+          "committedAt": "2019-10-31",
+          "offenceCode": "OF61016"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 12,
+            "MONTHS": 4
+          }
+        },
+        "sentencedAt": "2020-11-13",
+        "identifier": "28f7a391-5b92-307a-8caa-f2a4a10ff268",
+        "isSDSPlus": true,
+        "isSDSPlusEligibleSentenceTypeLengthAndOffence": true,
+        "isSDSPlusOffenceInPeriod": true
+      },
+      {
+        "offence": {
+          "committedAt": "2019-11-04",
+          "offenceCode": "COML020C"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 5
+          }
+        },
+        "sentencedAt": "2024-09-23",
+        "identifier": "c266e68f-0e04-39b8-a26c-129ea5b5b081",
+        "consecutiveSentenceUUIDs": [
+          "28f7a391-5b92-307a-8caa-f2a4a10ff268"
+        ],
+        "isSDSPlusOffenceInPeriod": true
+      },
+      {
+        "offence": {
+          "committedAt": "2019-10-03",
+          "offenceCode": "OF61131"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 4
+          }
+        },
+        "sentencedAt": "2024-09-23",
+        "isSDSPlusOffenceInPeriod": true,
+        "hasAnSDSEarlyReleaseExclusion": "VIOLENT"
+      },
+      {
+        "offence": {
+          "committedAt": "2018-12-04",
+          "offenceCode": "MD71533"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 6
+          }
+        },
+        "sentencedAt": "2021-03-03",
+        "consecutiveSentenceUUIDs": [
+          "c266e68f-0e04-39b8-a26c-129ea5b5b081"
+        ]
+      },
+      {
+        "offence": {
+          "committedAt": "2018-12-04",
+          "offenceCode": "MD71533"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 6
+          }
+        },
+        "sentencedAt": "2021-03-03"
+      }
+    ],
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2020-11-13",
+          "numberOfDays": 375,
+          "fromDate": "2019-11-04",
+          "toDate": "2020-11-12"
+        }
+      ]
+    }
+  },
+  "expectedValidationException": "UNSUPPORTED_SDS40_CONSECUTIVE_SDS_BETWEEN_TRANCHE_COMMENCEMENTS"
+}

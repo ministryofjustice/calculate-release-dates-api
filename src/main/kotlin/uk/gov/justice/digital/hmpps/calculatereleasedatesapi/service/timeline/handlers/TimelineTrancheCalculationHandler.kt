@@ -36,8 +36,8 @@ class TimelineTrancheCalculationHandler(
         return TimelineHandleResult(false)
       }
 
-      val isFirstTrancheInEarlyRelease = earlyReleaseConfiguration.earliestTranche() == tranche.date
-      if (isFirstTrancheInEarlyRelease) {
+      val requiresTrancheAllocation = earlyReleaseConfiguration.earliestTranche() == tranche.date || allocatedTranche == null
+      if (requiresTrancheAllocation) {
         val allocated = trancheAllocationService.allocateTranche(timelineTrackingData, earlyReleaseConfiguration)
         if (allocated != null) {
           allocatedTranche = allocated
