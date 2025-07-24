@@ -26,7 +26,7 @@ class BookingAnonymiser {
   @Test
   fun anonymiseSingleTestCases() {
     val exampleType = "custom-examples"
-    val exampleNumber = "crs-2331-bug"
+    val exampleNumber = "crs-2341"
 
     anonymiseTestCase("$exampleType/$exampleNumber")
   }
@@ -124,6 +124,10 @@ class BookingAnonymiser {
       val identifier = obj.get("identifier").asText()
       if (sentencesString.split(identifier).size == 2) { // Identifier only appears once. Not needed for a consecutive sentence.
         obj.remove("identifier")
+      }
+
+      if (obj.has("externalSentenceId")) {
+        obj.remove("externalSentenceId")
       }
     }
 
