@@ -76,25 +76,40 @@ jobs:
       environment: 'alt-dev'
       k8s_deployment_name: 'alt-calculate-release-dates-api'
       app_version: '${{ needs.build.outputs.app_version }}'
-#  deploy_preprod:
-#    name: Deploy to the preprod environment
-#    needs:
-#      - build
-#      - helm_lint
-#      - deploy_dev
-#    uses: ministryofjustice/hmpps-github-actions/.github/workflows/deploy_env.yml@v2 # WORKFLOW_VERSION
-#    secrets: inherit
-#    with:
-#      environment: 'preprod'
-#      app_version: '${{ needs.build.outputs.app_version }}'
-#  deploy_prod:
-#    name: Deploy to the prod environment
-#    needs:
-#      - build
-#      - helm_lint
-#      - deploy_preprod
-#    uses: ministryofjustice/hmpps-github-actions/.github/workflows/deploy_env.yml@v2 # WORKFLOW_VERSION
-#    secrets: inherit
-#    with:
-#      environment: 'prod'
-#      app_version: '${{ needs.build.outputs.app_version }}'
+  deploy_preprod:
+    name: Deploy to the preprod environment
+    needs:
+      - build
+      - helm_lint
+      - deploy_dev
+      - deploy_alt_dev
+    uses: ministryofjustice/hmpps-github-actions/.github/workflows/deploy_env.yml@v2 # WORKFLOW_VERSION
+    secrets: inherit
+    with:
+      environment: 'preprod'
+      app_version: '${{ needs.build.outputs.app_version }}'
+  deploy_alt_preprod:
+    name: Deploy to the preprod environment
+    needs:
+      - build
+      - helm_lint
+      - deploy_dev
+      - deploy_alt_dev
+    uses: ministryofjustice/hmpps-github-actions/.github/workflows/deploy_env.yml@v2 # WORKFLOW_VERSION
+    secrets: inherit
+    with:
+      environment: 'alt-preprod'
+      k8s_deployment_name: 'alt-calculate-release-dates-api'
+      app_version: '${{ needs.build.outputs.app_version }}'
+  deploy_prod:
+    name: Deploy to the prod environment
+    needs:
+      - build
+      - helm_lint
+      - deploy_preprod
+      - deploy_alt_preprod
+    uses: ministryofjustice/hmpps-github-actions/.github/workflows/deploy_env.yml@v2 # WORKFLOW_VERSION
+    secrets: inherit
+    with:
+      environment: 'prod'
+      app_version: '${{ needs.build.outputs.app_version }}'
