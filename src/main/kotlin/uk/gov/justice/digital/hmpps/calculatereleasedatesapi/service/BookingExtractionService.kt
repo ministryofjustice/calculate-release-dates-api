@@ -453,37 +453,49 @@ class BookingExtractionService(
 
     if (latestEarlyReleaseSchemeEligibilitySentence != null) {
       val sentenceGroup = sentenceGroups.find { it.contains(latestEarlyReleaseSchemeEligibilitySentence) }!!
-      val latestAFineRelease =
+
+      val noAFineOrBotusReleaseAfterLatestEarlyReleaseSchemeEligibilitySentence =
         extractionService.mostRecentSentenceOrNull(
           sentenceGroup.filter {
-            it is AFineSentence &&
+            (it is AFineSentence || it is BotusSentence) &&
               !it.sentenceCalculation.isImmediateRelease() &&
-              it.sentenceCalculation.releaseDate.isAfter(latestEarlyReleaseSchemeEligibilitySentence.sentenceCalculation.earlyReleaseSchemeEligibilityDate)
+              it.sentenceCalculation.releaseDate.isAfter(latestEarlyReleaseSchemeEligibilitySentence.sentenceCalculation.releaseDate)
           },
           SentenceCalculation::releaseDate,
-        )
+        ) == null
 
-      if (latestAFineRelease != null) {
-        breakdownByReleaseDateType[ERSED] = ReleaseDateCalculationBreakdown(
-          rules = setOf(CalculationRule.ERSED_ADJUSTED_TO_CONCURRENT_TERM),
-          releaseDate = latestAFineRelease.sentenceCalculation.releaseDate,
-          unadjustedDate = latestEarlyReleaseSchemeEligibilitySentence.sentenceCalculation.earlyReleaseSchemeEligibilityDate!!,
-        )
-        dates[ERSED] = latestAFineRelease.sentenceCalculation.releaseDate
-        return false
-      } else {
-        if (sentences.any { it.isDto() }) {
-          return calculateErsedWhereDtoIsPresent(
-            dates,
-            latestEarlyReleaseSchemeEligibilitySentence,
-            breakdownByReleaseDateType,
+      if (noAFineOrBotusReleaseAfterLatestEarlyReleaseSchemeEligibilitySentence) {
+        val latestAFineReleaseAfterErsed =
+          extractionService.mostRecentSentenceOrNull(
+            sentenceGroup.filter {
+              it is AFineSentence &&
+                !it.sentenceCalculation.isImmediateRelease() &&
+                it.sentenceCalculation.releaseDate.isAfter(latestEarlyReleaseSchemeEligibilitySentence.sentenceCalculation.earlyReleaseSchemeEligibilityDate)
+            },
+            SentenceCalculation::releaseDate,
           )
-        } else {
-          breakdownByReleaseDateType[ERSED] =
-            latestEarlyReleaseSchemeEligibilitySentence.sentenceCalculation.breakdownByReleaseDateType[ERSED]!!
-          dates[ERSED] =
-            latestEarlyReleaseSchemeEligibilitySentence.sentenceCalculation.earlyReleaseSchemeEligibilityDate!!
+        if (latestAFineReleaseAfterErsed != null) {
+          breakdownByReleaseDateType[ERSED] = ReleaseDateCalculationBreakdown(
+            rules = setOf(CalculationRule.ERSED_ADJUSTED_TO_CONCURRENT_TERM),
+            releaseDate = latestAFineReleaseAfterErsed.sentenceCalculation.releaseDate,
+            unadjustedDate = latestEarlyReleaseSchemeEligibilitySentence.sentenceCalculation.earlyReleaseSchemeEligibilityDate!!,
+          )
+          dates[ERSED] = latestAFineReleaseAfterErsed.sentenceCalculation.releaseDate
           return false
+        } else {
+          if (sentences.any { it.isDto() }) {
+            return calculateErsedWhereDtoIsPresent(
+              dates,
+              latestEarlyReleaseSchemeEligibilitySentence,
+              breakdownByReleaseDateType,
+            )
+          } else {
+            breakdownByReleaseDateType[ERSED] =
+              latestEarlyReleaseSchemeEligibilitySentence.sentenceCalculation.breakdownByReleaseDateType[ERSED]!!
+            dates[ERSED] =
+              latestEarlyReleaseSchemeEligibilitySentence.sentenceCalculation.earlyReleaseSchemeEligibilityDate!!
+            return false
+          }
         }
       }
     }
