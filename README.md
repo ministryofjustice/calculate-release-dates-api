@@ -1,7 +1,6 @@
 # Calculate Release Dates
 
 [![repo standards badge](https://img.shields.io/badge/dynamic/json?color=blue&style=for-the-badge&logo=github&label=MoJ%20Compliant&query=%24.data%5B%3F%28%40.name%20%3D%3D%20%22calculate-release-dates-api%22%29%5D.status&url=https%3A%2F%2Foperations-engineering-reports.cloud-platform.service.justice.gov.uk%2Fgithub_repositories)](https://operations-engineering-reports.cloud-platform.service.justice.gov.uk/github_repositories#calculate-release-dates-api "Link to report")
-[![CircleCI](https://circleci.com/gh/ministryofjustice/calculate-release-dates-api/tree/main.svg?style=svg)](https://circleci.com/gh/ministryofjustice/calculate-release-dates-api)
 [![Docker Repository on Quay](https://quay.io/repository/hmpps/calculate-release-dates-api/status "Docker Repository on Quay")](https://quay.io/repository/hmpps/calculate-release-dates-api)
 [![API docs](https://img.shields.io/badge/API_docs_-view-85EA2D.svg?logo=swagger)](https://calculate-release-dates-api-dev.hmpps.service.justice.gov.uk/swagger-ui.html)
 
