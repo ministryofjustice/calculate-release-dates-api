@@ -29,20 +29,20 @@ spring:
         registration:
           manage-offences-api:
             provider: hmpps-auth
-            client-id: ${system.client.id}
-            client-secret: ${system.client.secret}
+            client-id: ${client.creds.client.id}
+            client-secret: ${client.creds.client.secret}
             authorization-grant-type: client_credentials
             scope: read,write
           prison-api:
             provider: hmpps-auth
-            client-id: ${system.client.id}
-            client-secret: ${system.client.secret}
+            client-id: ${client.creds.client.id}
+            client-secret: ${client.creds.client.secret}
             authorization-grant-type: client_credentials
             scope: read,write
           adjustments-api:
             provider: hmpps-auth
-            client-id: ${system.client.id}
-            client-secret: ${system.client.secret}
+            client-id: ${client.creds.client.id}
+            client-secret: ${client.creds.client.secret}
             authorization-grant-type: client_credentials
             scope: read,write
         provider:
