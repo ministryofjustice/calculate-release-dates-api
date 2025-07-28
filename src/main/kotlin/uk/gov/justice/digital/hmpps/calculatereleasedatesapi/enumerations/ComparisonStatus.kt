@@ -1,6 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations
 
-enum class ComparisonStatusValue {
+enum class ComparisonStatus {
   SETUP, // In setup creating the comparison record, getting prisoners and queuing each message
   PROCESSING, // Processing each calculation required
   COMPLETED, // Processing complete
