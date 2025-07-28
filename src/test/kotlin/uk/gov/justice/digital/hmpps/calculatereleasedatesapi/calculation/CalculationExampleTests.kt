@@ -169,7 +169,7 @@ abstract class CalculationExampleTests : SpringTestBase() {
     if (calculationTestFile.featureToggles != null) {
       overwriteProperties(featureToggles, calculationTestFile.featureToggles)
     } else {
-      overwriteProperties(featureToggles, FeatureToggles(ftr48ManualJourney = true))
+      overwriteProperties(featureToggles, FeatureToggles(ftr48ManualJourney = true, useERS30Calculation = true))
     }
   }
 
