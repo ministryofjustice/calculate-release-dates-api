@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
 import org.springframework.test.context.jdbc.Sql
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonStatusValue
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.SqsIntegrationTestBase
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.MockManageOffencesClient
@@ -95,7 +95,7 @@ class ManualComparisonIntTest(private val mockManageOffencesClient: MockManageOf
       .expectBody(Comparison::class.java)
       .returnResult().responseBody!!
     await untilCallTo { comparisonRepository.findByComparisonShortReference(result.comparisonShortReference) } matches {
-      it!!.comparisonStatus.name == ComparisonStatusValue.COMPLETED.name
+      it!!.comparisonStatus.name == ComparisonStatus.COMPLETED.name
     }
     return result
   }

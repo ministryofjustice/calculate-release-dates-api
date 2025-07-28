@@ -19,7 +19,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoSpyBean
 import org.springframework.test.context.jdbc.Sql
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonPerson
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonStatusValue
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.DiscrepancyCategory
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.DiscrepancyImpact
@@ -201,14 +201,14 @@ class ComparisonEventIntTest(private val mockManageOffencesClient: MockManageOff
     doThrow(IllegalArgumentException("An exception"))
       .whenever(prisonService).getCalculablePrisonerByPrison(eq("PRIS"))
 
-    val result = createComparison("PRIS", completeStatus = ComparisonStatusValue.ERROR)
+    val result = createComparison("PRIS", completeStatus = ComparisonStatus.ERROR)
 
     assertEquals(ComparisonType.ESTABLISHMENT_FULL, result.comparisonType)
     assertEquals(0, result.numberOfPeopleCompared)
-    assertEquals(ComparisonStatusValue.SETUP.name, result.comparisonStatus.name)
+    assertEquals(ComparisonStatus.SETUP.name, result.comparisonStatus.name)
 
     val errorComparison = getComparison(result.comparisonShortReference)
-    assertEquals(ComparisonStatusValue.ERROR.name, errorComparison.comparisonStatus.name)
+    assertEquals(ComparisonStatus.ERROR.name, errorComparison.comparisonStatus.name)
   }
 
   private fun getComparison(comparisonRef: String): ComparisonOverview = webTestClient.get()
@@ -221,7 +221,7 @@ class ComparisonEventIntTest(private val mockManageOffencesClient: MockManageOff
     .expectBody(ComparisonOverview::class.java)
     .returnResult().responseBody!!
 
-  private fun createComparison(prisonId: String, comparisonType: ComparisonType = ComparisonType.ESTABLISHMENT_FULL, completeStatus: ComparisonStatusValue = ComparisonStatusValue.COMPLETED): Comparison {
+  private fun createComparison(prisonId: String, comparisonType: ComparisonType = ComparisonType.ESTABLISHMENT_FULL, completeStatus: ComparisonStatus = ComparisonStatus.COMPLETED): Comparison {
     val request = ComparisonInput(objectMapper.createObjectNode(), prisonId, comparisonType)
     val result = webTestClient.post()
       .uri("/comparison")

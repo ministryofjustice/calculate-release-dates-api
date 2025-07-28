@@ -3,7 +3,6 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.databind.JsonNode
 import io.hypersistence.utils.hibernate.type.json.JsonType
-import jakarta.persistence.CascadeType
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.EnumType
@@ -11,11 +10,11 @@ import jakarta.persistence.Enumerated
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
-import jakarta.persistence.ManyToOne
 import jakarta.persistence.Table
 import jakarta.validation.constraints.NotNull
 import org.hibernate.annotations.Formula
 import org.hibernate.annotations.Type
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonType
 import java.time.LocalDateTime
 import java.util.UUID
@@ -53,7 +52,7 @@ class Comparison(
   val calculatedByUsername: String,
 
   @NotNull
-  @ManyToOne(cascade = [CascadeType.ALL])
+  @Enumerated(EnumType.STRING)
   var comparisonStatus: ComparisonStatus,
 
   var numberOfPeopleExpected: Long = 1,

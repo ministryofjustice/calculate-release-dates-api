@@ -11,9 +11,8 @@ import org.springframework.transaction.annotation.Transactional
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.UserContext
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonPerson
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonStatusValue
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
@@ -91,7 +90,7 @@ class BulkComparisonEventService(
   private fun handleErrorInBulkSetup(comparisonId: Long, e: Exception) {
     log.error("Error setting up bulk comparison $comparisonId", e)
     val comparison = getComparison(comparisonId)
-    comparison.comparisonStatus = ComparisonStatus(comparisonStatusValue = ComparisonStatusValue.ERROR)
+    comparison.comparisonStatus = ComparisonStatus.ERROR
     comparisonRepository.save(comparison)
   }
 
@@ -109,7 +108,7 @@ class BulkComparisonEventService(
 
   fun completeSetup(comparison: Comparison, total: Long) {
     comparison.numberOfPeopleExpected = total
-    comparison.comparisonStatus = ComparisonStatus(comparisonStatusValue = ComparisonStatusValue.PROCESSING)
+    comparison.comparisonStatus = ComparisonStatus.PROCESSING
     comparisonRepository.save(comparison)
   }
 
@@ -138,7 +137,7 @@ class BulkComparisonEventService(
     val count = comparisonPersonRepository.countByComparisonId(comparisonId = comparison.id)
     comparison.numberOfPeopleCompared = count
     if (comparison.numberOfPeopleCompared >= comparison.numberOfPeopleExpected) {
-      comparison.comparisonStatus = ComparisonStatus(comparisonStatusValue = ComparisonStatusValue.COMPLETED)
+      comparison.comparisonStatus = ComparisonStatus.COMPLETED
       comparisonRepository.save(comparison)
     }
   }

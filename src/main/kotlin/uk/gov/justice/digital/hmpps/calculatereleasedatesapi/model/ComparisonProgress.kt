@@ -1,6 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonStatusValue
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonStatus
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 
@@ -9,7 +9,7 @@ data class ComparisonProgress(
   val expectedCompletionTime: LocalDateTime?,
 ) {
   companion object {
-    fun from(comparisonStatus: ComparisonStatusValue, numberOfPeopleCompared: Long, numberOfPeopleExpected: Long, calculatedAt: LocalDateTime): ComparisonProgress = if (comparisonStatus == ComparisonStatusValue.PROCESSING) {
+    fun from(comparisonStatus: ComparisonStatus, numberOfPeopleCompared: Long, numberOfPeopleExpected: Long, calculatedAt: LocalDateTime): ComparisonProgress = if (comparisonStatus == ComparisonStatus.PROCESSING) {
       val completionRatio = (numberOfPeopleCompared.toDouble() / numberOfPeopleExpected.toDouble())
       val secondsSoFar = ChronoUnit.SECONDS.between(calculatedAt, LocalDateTime.now())
 

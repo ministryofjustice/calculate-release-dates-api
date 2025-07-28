@@ -14,8 +14,7 @@ import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonPerson
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonStatus
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonStatusValue
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.manualComparisonTypes
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonPersonOverview
@@ -67,7 +66,7 @@ class ManualComparisonServiceTest {
       ComparisonType.MANUAL,
       LocalDateTime.now(),
       USERNAME,
-      ComparisonStatus(ComparisonStatusValue.PROCESSING),
+      ComparisonStatus.PROCESSING,
     )
 
     Mockito.`when`(serviceUserService.getUsername()).thenReturn(USERNAME)
@@ -90,7 +89,7 @@ class ManualComparisonServiceTest {
       ComparisonType.MANUAL,
       LocalDateTime.now(),
       USERNAME,
-      ComparisonStatus(ComparisonStatusValue.PROCESSING),
+      ComparisonStatus.PROCESSING,
     )
     Mockito.`when`(comparisonRepository.findAllByComparisonTypeIsIn(manualComparisonTypes())).thenReturn(listOf(comparison))
 
@@ -116,7 +115,7 @@ class ManualComparisonServiceTest {
       ComparisonType.MANUAL,
       LocalDateTime.now(),
       USERNAME,
-      ComparisonStatus(ComparisonStatusValue.PROCESSING),
+      ComparisonStatus.PROCESSING,
     )
     Mockito.`when`(comparisonRepository.findByComparisonShortReference("ABCD1234")).thenReturn(comparison)
 
@@ -142,7 +141,7 @@ class ManualComparisonServiceTest {
       ComparisonType.MANUAL,
       LocalDateTime.now(),
       USERNAME,
-      ComparisonStatus(ComparisonStatusValue.PROCESSING),
+      ComparisonStatus.PROCESSING,
     )
     Mockito.`when`(comparisonRepository.findByComparisonShortReference("ABCD1234")).thenReturn(comparison)
     val result = manualComparisonService.getComparisonByComparisonReference("ABCD1234")
@@ -195,7 +194,7 @@ class ManualComparisonServiceTest {
     )
     val comparison = Comparison(
       calculatedByUsername = USERNAME,
-      comparisonStatus = ComparisonStatus(ComparisonStatusValue.COMPLETED),
+      comparisonStatus = ComparisonStatus.COMPLETED,
       comparisonType = ComparisonType.MANUAL,
       criteria = emptyObjectNode,
     )
