@@ -18,7 +18,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonPerson
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonPersonDiscrepancy
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonPersonDiscrepancyCause
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.GenuineOverride
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.ADDITIONAL_DAYS_AWARDED
@@ -29,7 +28,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Adjust
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.TAGGED_BAIL
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.UNLAWFULLY_AT_LARGE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonStatusValue
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonType.MANUAL
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.HistoricalTusedSource
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
@@ -744,7 +743,7 @@ fun transform(
   prison = comparison.prison,
   calculatedAt = LocalDateTime.now(),
   calculatedByUsername = username,
-  comparisonStatus = ComparisonStatus(ComparisonStatusValue.SETUP),
+  comparisonStatus = ComparisonStatus.SETUP,
 )
 
 fun transform(
@@ -755,7 +754,7 @@ fun transform(
   comparisonType = MANUAL,
   calculatedAt = LocalDateTime.now(),
   calculatedByUsername = username,
-  comparisonStatus = ComparisonStatus(ComparisonStatusValue.SETUP),
+  comparisonStatus = ComparisonStatus.SETUP,
 )
 
 fun transform(
@@ -771,7 +770,7 @@ fun transform(comparison: Comparison): ComparisonSummary = ComparisonSummary(
   comparison.comparisonShortReference,
   comparison.prison,
   comparison.comparisonType,
-  ComparisonStatusValue.valueOf(comparison.comparisonStatus.name),
+  ComparisonStatus.valueOf(comparison.comparisonStatus.name),
   comparison.calculatedAt,
   comparison.calculatedByUsername,
   comparison.numberOfMismatches,
@@ -788,7 +787,7 @@ fun transform(
   comparison.comparisonShortReference,
   comparison.prison,
   comparison.comparisonType,
-  ComparisonStatusValue.valueOf(comparison.comparisonStatus.name),
+  ComparisonStatus.valueOf(comparison.comparisonStatus.name),
   comparison.calculatedAt,
   comparison.calculatedByUsername,
   comparison.numberOfMismatches,

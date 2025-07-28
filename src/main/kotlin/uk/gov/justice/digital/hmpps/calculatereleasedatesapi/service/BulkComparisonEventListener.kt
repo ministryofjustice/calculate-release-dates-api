@@ -19,7 +19,12 @@ class BulkComparisonEventListener(
     val log: Logger = LoggerFactory.getLogger(this::class.java)
   }
 
-  @SqsListener("bulkcomparison", factory = "hmppsQueueContainerFactoryProxy")
+  @SqsListener(
+    "bulkcomparison",
+    factory = "hmppsQueueContainerFactoryProxy",
+    maxConcurrentMessages = "8",
+    maxMessagesPerPoll = "8",
+  )
   fun onMessage(
     rawMessage: String,
   ) {

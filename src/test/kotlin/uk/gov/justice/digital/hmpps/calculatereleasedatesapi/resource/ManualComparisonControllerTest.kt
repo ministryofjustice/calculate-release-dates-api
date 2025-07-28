@@ -18,8 +18,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.ControllerAdvice
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonStatus
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonStatusValue
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.DiscrepancyImpact
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.DiscrepancyPriority
@@ -64,7 +63,7 @@ class ManualComparisonControllerTest {
     whenever(manualComparisonService.create(comparisonInput, "Bearer token")).thenReturn(
       Comparison(
         1, UUID.randomUUID(), "ABCD1234", objectMapper.createObjectNode(), "JAS", ComparisonType.MANUAL, LocalDateTime.now(), "JOEL",
-        ComparisonStatus(ComparisonStatusValue.PROCESSING),
+        ComparisonStatus.PROCESSING,
       ),
     )
 
@@ -85,7 +84,7 @@ class ManualComparisonControllerTest {
   @Test
   fun `Test GET of preconfigured comparisons`() {
     val startTime = LocalDateTime.now().minusHours(2)
-    whenever(manualComparisonService.listManual()).thenReturn(listOf(ComparisonSummary("ABCD1234", null, ComparisonType.MANUAL, ComparisonStatusValue.PROCESSING, startTime, "JOEL", 0, 10, 5, 0)))
+    whenever(manualComparisonService.listManual()).thenReturn(listOf(ComparisonSummary("ABCD1234", null, ComparisonType.MANUAL, ComparisonStatus.PROCESSING, startTime, "JOEL", 0, 10, 5, 0)))
 
     val result = mvc.perform(
       MockMvcRequestBuilders.get("/comparison/manual")

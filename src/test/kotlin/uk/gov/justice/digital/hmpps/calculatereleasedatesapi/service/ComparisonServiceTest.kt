@@ -20,8 +20,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonPe
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonPersonDiscrepancy
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonPersonDiscrepancyImpact
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonPersonDiscrepancyPriority
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonStatus
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonStatusValue
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.DiscrepancyCategory
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.DiscrepancyImpact
@@ -115,7 +114,7 @@ class ComparisonServiceTest {
           ComparisonType.ESTABLISHMENT_FULL,
           LocalDateTime.now(),
           USERNAME,
-          ComparisonStatus(ComparisonStatusValue.PROCESSING),
+          ComparisonStatus.PROCESSING,
         ),
       ),
     )
@@ -567,7 +566,7 @@ class ComparisonServiceTest {
     )
     val comparison = Comparison(
       calculatedByUsername = ManualComparisonServiceTest.USERNAME,
-      comparisonStatus = ComparisonStatus(ComparisonStatusValue.COMPLETED),
+      comparisonStatus = ComparisonStatus.COMPLETED,
       comparisonType = ComparisonType.ESTABLISHMENT_FULL,
       criteria = emptyObjectNode,
       prison = "all",
@@ -608,7 +607,7 @@ class ComparisonServiceTest {
     ComparisonType.MANUAL,
     LocalDateTime.now(),
     USERNAME,
-    ComparisonStatus(ComparisonStatusValue.PROCESSING),
+    ComparisonStatus.PROCESSING,
   )
 
   private fun aComparisonPerson(
