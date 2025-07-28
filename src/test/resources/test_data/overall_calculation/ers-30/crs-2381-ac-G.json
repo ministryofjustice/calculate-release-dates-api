@@ -38,8 +38,5 @@
   },
   "userInputs": {
     "calculateErsed": true
-  },
-  "featureToggles": {
-    "useERS30Calculation": true
   }
 }
