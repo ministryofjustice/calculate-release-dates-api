@@ -56,11 +56,7 @@ class HdcedCalculator(
     return true
   }
 
-  fun hasSdsPlus(sentence: CalculableSentence): Boolean = if (sentence is ConsecutiveSentence) {
-    sentence.orderedSentences.any { it.isSDSPlusEligibleSentenceTypeLengthAndOffence }
-  } else {
-    sentence.isSDSPlusEligibleSentenceTypeLengthAndOffence
-  }
+  fun hasSdsPlus(sentence: CalculableSentence): Boolean = sentence.sentenceParts().any { it.isSDSPlusEligibleSentenceTypeLengthAndOffence }
 
   private data class HdcedCalculationInput(
     val custodialPeriodDouble: Double,
