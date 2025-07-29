@@ -11,5 +11,8 @@ enum class ValidationType {
   ;
 
   fun isUnsupported(): Boolean = listOf(UNSUPPORTED_OFFENCE, UNSUPPORTED_SENTENCE, UNSUPPORTED_CALCULATION, MANUAL_ENTRY_JOURNEY_REQUIRED).contains(this)
+
   fun excludedInSave(): Boolean = this == CONCURRENT_CONSECUTIVE
+
+
 }
