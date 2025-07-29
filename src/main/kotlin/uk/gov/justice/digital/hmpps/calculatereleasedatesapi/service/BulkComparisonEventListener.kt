@@ -22,8 +22,8 @@ class BulkComparisonEventListener(
   @SqsListener(
     "bulkcomparison",
     factory = "hmppsQueueContainerFactoryProxy",
-    maxConcurrentMessages = "6",
-    maxMessagesPerPoll = "6",
+    maxConcurrentMessages = "4",
+    maxMessagesPerPoll = "4",
   )
   fun onMessage(
     rawMessage: String,
