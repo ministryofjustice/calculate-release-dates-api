@@ -3,12 +3,14 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.h
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseConfigurations
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseTrancheType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculator
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineHandleResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineTrackingData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
+import java.rmi.UnexpectedException
 import java.time.LocalDate
 
 abstract class TimelineCalculationHandler(
@@ -76,7 +78,13 @@ abstract class TimelineCalculationHandler(
         }
       }
     }
-    return 0.5
+    return defaultSDSReleaseMultiplier(sentence)
+  }
+
+  private fun defaultSDSReleaseMultiplier(sentence: CalculableSentence): Double = when (sentence.identificationTrack) {
+    SentenceIdentificationTrack.SDS -> 0.5
+    SentenceIdentificationTrack.SDS_PLUS -> 2.toDouble().div(3)
+    else -> throw UnexpectedException("Unknown default release multipler.")
   }
 
   private fun getMultiplerForConfiguration(
@@ -86,8 +94,8 @@ abstract class TimelineCalculationHandler(
   ): Double {
     val sds40Tranche3 = earlyReleaseConfig.tranches.find { it.type == EarlyReleaseTrancheType.SDS_40_TRANCHE_3 }
     if (sds40Tranche3 != null && timelineCalculationDate.isAfterOrEqualTo(sds40Tranche3.date) && sentence.hasAnSDSEarlyReleaseExclusion.trancheThreeExclusion) {
-      return 0.5
+      return defaultSDSReleaseMultiplier(sentence)
     }
-    return earlyReleaseConfig.releaseMultiplier
+    return earlyReleaseConfig.releaseMultiplier[sentence.identificationTrack]!!.toDouble()
   }
 }

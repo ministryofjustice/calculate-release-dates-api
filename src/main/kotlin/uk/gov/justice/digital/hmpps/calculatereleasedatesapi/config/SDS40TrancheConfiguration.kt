@@ -4,10 +4,12 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.boot.context.properties.bind.Name
 import org.springframework.format.annotation.DateTimeFormat
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseConfiguration
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseMultipler
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseSentenceFilter
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseTrancheConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseTrancheType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SDSEarlyReleaseTranche
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 
@@ -21,7 +23,7 @@ data class SDS40TrancheConfiguration(
   @DateTimeFormat(pattern = "yyyy-MM-dd") val trancheThreeCommencementDate: LocalDate,
 ) {
   fun getSds40EarlyReleaseConfig(releaseMultiplier: Double) = EarlyReleaseConfiguration(
-    releaseMultiplier = releaseMultiplier,
+    releaseMultiplier = mapOf(SentenceIdentificationTrack.SDS to EarlyReleaseMultipler(releaseMultiplier)),
     filter = EarlyReleaseSentenceFilter.SDS_40_EXCLUSIONS,
     tranches = listOf(
       EarlyReleaseTrancheConfiguration(

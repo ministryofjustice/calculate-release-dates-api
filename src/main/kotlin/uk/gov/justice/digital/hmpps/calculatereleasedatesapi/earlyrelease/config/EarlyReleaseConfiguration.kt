@@ -12,15 +12,33 @@ data class EarlyReleaseConfigurations(
 )
 
 data class EarlyReleaseConfiguration(
-  val releaseMultiplier: Double,
+  val releaseMultiplier: Map<SentenceIdentificationTrack, EarlyReleaseMultipler>,
   val filter: EarlyReleaseSentenceFilter,
   val tranches: List<EarlyReleaseTrancheConfiguration>,
 ) {
-  fun matchesFilter(part: AbstractSentence): Boolean = part.identificationTrack == SentenceIdentificationTrack.SDS &&
-    part is StandardDeterminateSentence &&
-    when (filter) {
-      EarlyReleaseSentenceFilter.SDS_40_EXCLUSIONS -> part.hasAnSDSEarlyReleaseExclusion == SDSEarlyReleaseExclusionType.NO || part.hasAnSDSEarlyReleaseExclusion.trancheThreeExclusion
-    }
+  fun matchesFilter(part: AbstractSentence): Boolean = when (filter) {
+    EarlyReleaseSentenceFilter.SDS_40_EXCLUSIONS -> matchesSDS40Filter(part)
+    EarlyReleaseSentenceFilter.SDS_OR_SDS_PLUS -> matchesSDSOrSDSPlus(part)
+  }
+
+  private fun matchesSDSOrSDSPlus(sentence: AbstractSentence): Boolean = sentence is StandardDeterminateSentence &&
+    listOf(SentenceIdentificationTrack.SDS, SentenceIdentificationTrack.SDS_PLUS).contains(sentence.identificationTrack)
+
+  private fun matchesSDS40Filter(sentence: AbstractSentence): Boolean = sentence is StandardDeterminateSentence &&
+    sentence.identificationTrack == SentenceIdentificationTrack.SDS &&
+    (sentence.hasAnSDSEarlyReleaseExclusion == SDSEarlyReleaseExclusionType.NO || sentence.hasAnSDSEarlyReleaseExclusion.trancheThreeExclusion)
 
   fun earliestTranche() = tranches.minOf { it.date }
+}
+
+/*
+  Early release multipler defined as fraction.
+   e.g. 1/3 1/2
+   or if a decimal, denominator is 1 e.g 0.4/1 = 0.4
+ */
+data class EarlyReleaseMultipler(
+  val numerator: Double,
+  val denominator: Double = 1.toDouble(),
+) {
+  fun toDouble(): Double = numerator.div(denominator)
 }

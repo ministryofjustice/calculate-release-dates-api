@@ -23,7 +23,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Senten
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.EDS_AUTOMATIC_RELEASE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.EDS_DISCRETIONARY_RELEASE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.SDS
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.SDS_PLUS_RELEASE
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.SDS_PLUS
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.SOPC_PED_AT_HALFWAY
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.SOPC_PED_AT_TWO_THIRDS
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AFineSentence
@@ -316,7 +316,7 @@ class SentenceIdentificationService(
     releaseDateTypes: MutableList<ReleaseDateType>,
   ) {
     sentence.identificationTrack = when {
-      sentence is StandardDeterminateSentence && sentence.isSDSPlus -> SDS_PLUS_RELEASE
+      sentence is StandardDeterminateSentence && sentence.isSDSPlus -> SDS_PLUS
       else -> SDS
     }
 
