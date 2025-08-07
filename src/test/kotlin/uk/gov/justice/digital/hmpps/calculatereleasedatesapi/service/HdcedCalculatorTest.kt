@@ -534,7 +534,7 @@ class HdcedCalculatorTest {
     )
     firstSentence.identificationTrack = SentenceIdentificationTrack.SDS
     secondSentence.identificationTrack = SentenceIdentificationTrack.SDS
-    thirdSentence.identificationTrack = SentenceIdentificationTrack.SDS_PLUS_RELEASE
+    thirdSentence.identificationTrack = SentenceIdentificationTrack.SDS_PLUS
     consecSentence.sentenceCalculation =
       sentenceCalculation(
         consecSentence,
