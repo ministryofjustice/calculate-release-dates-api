@@ -8,12 +8,8 @@ enum class SentenceIdentificationTrack(
   private val multiplier: Double?,
 ) {
 
-  // SDS_BEFORE_CJA_LASPO, SDS_AFTER_CJA_LASPO & SDS_TWO_THIRDS_RELEASE deprecated for SDS_STANDARD_RELEASE, SDS_EARLY_RELEASE & SDS_PLUS_RELEASE
-  SDS_BEFORE_CJA_LASPO(HALF),
-  SDS_AFTER_CJA_LASPO(HALF),
-  SDS_TWO_THIRDS_RELEASE(TWO_THIRDS),
   SDS(null),
-  SDS_PLUS_RELEASE(TWO_THIRDS),
+  SDS_PLUS(null),
   EDS_AUTOMATIC_RELEASE(TWO_THIRDS),
   EDS_DISCRETIONARY_RELEASE(FULL),
   SOPC_PED_AT_TWO_THIRDS(FULL),
@@ -33,13 +29,11 @@ enum class SentenceIdentificationTrack(
   fun fixedMultiplier(): Double = multiplier!!
 
   fun calculateErsed(): Boolean = listOf(
-    SDS_AFTER_CJA_LASPO,
     SOPC_PED_AT_HALFWAY,
-    SDS_TWO_THIRDS_RELEASE,
     EDS_AUTOMATIC_RELEASE,
     EDS_DISCRETIONARY_RELEASE,
     SOPC_PED_AT_TWO_THIRDS,
     SDS,
-    SDS_PLUS_RELEASE,
+    SDS_PLUS,
   ).contains(this)
 }

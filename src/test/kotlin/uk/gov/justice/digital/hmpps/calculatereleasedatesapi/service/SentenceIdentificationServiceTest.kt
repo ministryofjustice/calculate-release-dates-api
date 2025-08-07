@@ -232,9 +232,9 @@ class SentenceIdentificationServiceTest {
     "false,false,SEXUAL,SDS",
     "true,false,VIOLENT,SDS",
     "false,false,VIOLENT,SDS",
-    "false,true,NO,SDS_PLUS_RELEASE",
-    "false,true,SEXUAL,SDS_PLUS_RELEASE",
-    "false,true,VIOLENT,SDS_PLUS_RELEASE",
+    "false,true,NO,SDS_PLUS",
+    "false,true,SEXUAL,SDS_PLUS",
+    "false,true,VIOLENT,SDS_PLUS",
   )
   fun `Identify SDS early release correctly`(
     beforeCjaLaspo: Boolean,

@@ -8,7 +8,9 @@ release-point-multipliers:
 
 early-release-configuration:
   configurations:
-    - release-multiplier: ${release-point-multipliers.earlyReleasePoint}
+    - release-multiplier:
+        SDS:
+          numerator: ${release-point-multipliers.earlyReleasePoint}
       filter: SDS_40_EXCLUSIONS
       tranches:
         - type: SENTENCE_LENGTH
@@ -21,8 +23,14 @@ early-release-configuration:
           name: TRANCHE_2
         - type: SDS_40_TRANCHE3
           date: ${sds-40-early-release-tranches.tranche-three-date}
-    - release-multiplier: 0.33
-      filter: SDS_40_EXCLUSIONS
+    - release-multiplier:
+        SDS:
+          numerator: 1
+          denominator: 3
+        SDS_PLUS:
+          numerator: 1
+          denominator: 2
+      filter: SDS_OR_SDS_PLUS
       tranches:
         - type: SENTENCE_LENGTH
           unit: YEARS

@@ -1,0 +1,25 @@
+{
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2019-12-07"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 12
+          }
+        },
+        "sentencedAt": "2025-09-02",
+        "hasAnSDSEarlyReleaseExclusion": "VIOLENT"
+      }
+    ],
+    "adjustments": {}
+  },
+  "params": "sds-33"
+}
