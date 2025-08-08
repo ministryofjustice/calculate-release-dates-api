@@ -1,0 +1,48 @@
+{
+  "booking": {
+    "offender": {
+      "reference": "A1234FG",
+      "dateOfBirth": "1974-06-01",
+      "isActiveSexOffender": false
+    },
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2015-11-17",
+          "offenceCode": "PC02020"
+        },
+        "duration": {
+          "durationElements": {
+            "DAYS": 0,
+            "WEEKS": 0,
+            "YEARS": 6,
+            "MONTHS": 0
+          }
+        },
+        "isSDSPlus": false,
+        "identifier": "1b9c2ba0-9523-36d3-bdae-4ac1f76d273a",
+        "recallType": null,
+        "sentencedAt": "2023-04-16",
+        "caseSequence": 2,
+        "lineSequence": 1,
+        "caseReference": "C2",
+        "externalSentenceId": {
+          "sentenceSequence": 1
+        },
+        "consecutiveSentenceUUIDs": [],
+        "isSDSPlusOffenceInPeriod": false,
+        "hasAnSDSEarlyReleaseExclusion": "NO",
+        "isSDSPlusEligibleSentenceTypeLengthAndOffence": false
+      }
+    ],
+    "adjustments": {},
+    "externalMovements": [],
+    "historicalTusedData": null,
+    "returnToCustodyDate": null,
+    "fixedTermRecallDetails": null
+  },
+  "userInputs": {
+    "calculateErsed": true
+  }
+}

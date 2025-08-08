@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.context.ActiveProfiles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil.Companion.overrideFeatureTogglesForTest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.PRELIMINARY
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.SpringTestBase
@@ -21,15 +22,12 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.Calculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationTransactionalService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationTransactionalServiceTest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationTransactionalServiceTest.Companion.CALCULATION_REASON
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.CalculationTestFile
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessage
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationService
 import java.io.File
 import java.time.LocalDate
 import java.util.UUID
 import java.util.stream.Stream
-import kotlin.reflect.KMutableProperty1
-import kotlin.reflect.full.memberProperties
 import kotlin.test.assertEquals
 import kotlin.test.fail
 
@@ -54,7 +52,7 @@ abstract class CalculationExampleTests : SpringTestBase() {
   ) {
     log.info("Testing example $example")
     val calculationTestFile = jsonTransformation.loadCalculationTestFile("overall_calculation/$example")
-    overrideFeatureTogglesForTest(calculationTestFile)
+    overrideFeatureTogglesForTest(calculationTestFile, featureToggles)
     val calculatedReleaseDates: CalculationOutput
     val returnedValidationMessages: List<ValidationMessage>
     try {
@@ -122,6 +120,7 @@ abstract class CalculationExampleTests : SpringTestBase() {
   ) {
     CalculationTransactionalServiceTest.Companion.log.info("Testing example $example")
     val calculationTestFile = jsonTransformation.loadCalculationTestFile("overall_calculation/$example")
+    overrideFeatureTogglesForTest(calculationTestFile, featureToggles)
     val calculation = jsonTransformation.loadCalculationResult("$example").first
 
     val calculationBreakdown: CalculationBreakdown?
@@ -163,26 +162,6 @@ abstract class CalculationExampleTests : SpringTestBase() {
     )
 
     assertThat(calculationBreakdown).isEqualTo(jsonTransformation.loadCalculationBreakdown("$example"))
-  }
-
-  protected fun overrideFeatureTogglesForTest(calculationTestFile: CalculationTestFile) {
-    if (calculationTestFile.featureToggles != null) {
-      overwriteProperties(featureToggles, calculationTestFile.featureToggles)
-    } else {
-      overwriteProperties(featureToggles, FeatureToggles(ftr48ManualJourney = true, useERS30Calculation = true))
-    }
-  }
-
-  @Suppress("UNCHECKED_CAST")
-  private inline fun <reified T : Any> overwriteProperties(target: T, source: T) {
-    val kClass = T::class
-    for (property in kClass.memberProperties) {
-      if (property is KMutableProperty1) {
-        val mutableProp = property as KMutableProperty1<T, Any?>
-        val value = mutableProp.get(source)
-        mutableProp.set(target, value)
-      }
-    }
   }
 
   companion object {

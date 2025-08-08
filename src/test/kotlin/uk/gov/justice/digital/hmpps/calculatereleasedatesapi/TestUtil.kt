@@ -5,11 +5,15 @@ import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BankHoliday
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BankHolidays
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.RegionBankHolidays
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.CalculationTestFile
 import java.text.SimpleDateFormat
 import java.time.LocalDate
+import kotlin.reflect.KMutableProperty1
+import kotlin.reflect.full.memberProperties
 
 class TestUtil private constructor() {
   companion object {
@@ -33,5 +37,25 @@ class TestUtil private constructor() {
       RegionBankHolidays("Scotland", emptyList()),
       RegionBankHolidays("Northern Ireland", emptyList()),
     )
+
+    fun overrideFeatureTogglesForTest(calculationTestFile: CalculationTestFile, featureToggles: FeatureToggles) {
+      if (calculationTestFile.featureToggles != null) {
+        overwriteProperties(featureToggles, calculationTestFile.featureToggles)
+      } else {
+        overwriteProperties(featureToggles, FeatureToggles(ftr48ManualJourney = true, useERS30Calculation = true))
+      }
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    private inline fun <reified T : Any> overwriteProperties(target: T, source: T) {
+      val kClass = T::class
+      for (property in kClass.memberProperties) {
+        if (property is KMutableProperty1) {
+          val mutableProp = property as KMutableProperty1<T, Any?>
+          val value = mutableProp.get(source)
+          mutableProp.set(target, value)
+        }
+      }
+    }
   }
 }
