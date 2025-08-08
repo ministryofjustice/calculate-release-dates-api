@@ -11,7 +11,9 @@ import org.mockito.kotlin.mock
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil.Companion.overrideFeatureTogglesForTest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.calculation.CalculationExampleTests
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcome
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcomeHistoricOverride
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationReason
@@ -51,6 +53,9 @@ class HintTextTest : SpringTestBase() {
   @Autowired
   private lateinit var workingDayService: WorkingDayService
 
+  @Autowired
+  private lateinit var featureToggles: FeatureToggles
+
   @Test
   fun `Historic SLED date`() {
     val historicDates = listOf(
@@ -80,6 +85,7 @@ class HintTextTest : SpringTestBase() {
   private fun runHintText(testCase: String, historicDates: List<CalculationOutcomeHistoricOverride>) {
     log.info("Running test-case $testCase")
     val calculationFile = jsonTransformation.loadCalculationTestFile("/hint-text/input-data/$testCase")
+    overrideFeatureTogglesForTest(calculationFile, featureToggles)
     val calculation = calculationService.calculateReleaseDates(calculationFile.booking, calculationFile.userInputs)
     val calculatedReleaseDates = createCalculatedReleaseDates(calculation.calculationResult)
     val calculationBreakdown = performCalculationBreakdown(calculationFile.booking, calculatedReleaseDates, calculationFile.userInputs)
