@@ -1,0 +1,117 @@
+{
+  "booking": {
+    "offender": {
+      "reference": "A1234EQ",
+      "dateOfBirth": "1985-04-01",
+      "isActiveSexOffender": true
+    },
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2021-01-29",
+          "offenceCode": "SX03002"
+        },
+        "duration": {
+          "durationElements": {
+            "DAYS": 0,
+            "WEEKS": 0,
+            "YEARS": 0,
+            "MONTHS": 99
+          }
+        },
+        "isSDSPlus": true,
+        "identifier": "1f90b983-e59b-3ce3-8b16-252c124730d2",
+        "recallType": null,
+        "sentencedAt": "2022-10-26",
+        "caseSequence": 3,
+        "lineSequence": 1,
+        "caseReference": "C3",
+        "externalSentenceId": {
+          "sentenceSequence": 1
+        },
+        "consecutiveSentenceUUIDs": [
+          "ae231a2d-0f2a-3366-a4c7-c347b636e491"
+        ],
+        "isSDSPlusOffenceInPeriod": true,
+        "hasAnSDSEarlyReleaseExclusion": "NO",
+        "isSDSPlusEligibleSentenceTypeLengthAndOffence": true
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2021-01-29",
+          "offenceCode": "OF61102"
+        },
+        "duration": {
+          "durationElements": {
+            "DAYS": 0,
+            "WEEKS": 0,
+            "YEARS": 0,
+            "MONTHS": 32
+          }
+        },
+        "isSDSPlus": false,
+        "identifier": "40bf31f2-c773-314e-aa0a-ec638690758a",
+        "recallType": null,
+        "sentencedAt": "2022-10-26",
+        "caseSequence": 3,
+        "lineSequence": 2,
+        "caseReference": "C3",
+        "externalSentenceId": {
+          "sentenceSequence": 2
+        },
+        "consecutiveSentenceUUIDs": [],
+        "isSDSPlusOffenceInPeriod": false,
+        "hasAnSDSEarlyReleaseExclusion": "NO",
+        "isSDSPlusEligibleSentenceTypeLengthAndOffence": false
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2021-05-15",
+          "offenceCode": "CA03007"
+        },
+        "duration": {
+          "durationElements": {
+            "DAYS": 0,
+            "WEEKS": 0,
+            "YEARS": 1,
+            "MONTHS": 0
+          }
+        },
+        "isSDSPlus": false,
+        "identifier": "ae231a2d-0f2a-3366-a4c7-c347b636e491",
+        "recallType": null,
+        "sentencedAt": "2022-10-26",
+        "caseSequence": 1,
+        "lineSequence": 3,
+        "caseReference": "C1",
+        "externalSentenceId": {
+          "sentenceSequence": 3
+        },
+        "consecutiveSentenceUUIDs": [],
+        "isSDSPlusOffenceInPeriod": false,
+        "hasAnSDSEarlyReleaseExclusion": "NO",
+        "isSDSPlusEligibleSentenceTypeLengthAndOffence": false
+      }
+    ],
+    "adjustments": {
+      "REMAND": [
+        {
+          "toDate": "2022-10-25",
+          "fromDate": "2021-05-17",
+          "numberOfDays": 527,
+          "appliesToSentencesFrom": "2022-10-26"
+        }
+      ]
+    },
+    "externalMovements": [],
+    "historicalTusedData": null,
+    "returnToCustodyDate": null,
+    "fixedTermRecallDetails": null
+  },
+  "userInputs": {
+    "calculateErsed": true
+  }
+}
