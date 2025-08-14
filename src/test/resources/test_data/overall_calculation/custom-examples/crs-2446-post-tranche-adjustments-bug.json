@@ -1,0 +1,126 @@
+{
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
+      {
+        "type": "ExtendedDeterminateSentence",
+        "offence": {
+          "committedAt": "2017-09-17",
+          "offenceCode": "FI68077"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "YEARS": 8
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "YEARS": 3
+          }
+        },
+        "sentencedAt": "2018-05-23",
+        "identifier": "c1373dbd-4efb-31f1-a84e-ebf7983e7c5b"
+      },
+      {
+        "offence": {
+          "committedAt": "2022-12-17",
+          "offenceCode": "PR52043"
+        },
+        "duration": {
+          "durationElements": {
+            "WEEKS": 4
+          }
+        },
+        "sentencedAt": "2024-02-27",
+        "identifier": "40ef6c5e-bcc7-3028-b3e0-b466519e9a96",
+        "consecutiveSentenceUUIDs": [
+          "c1373dbd-4efb-31f1-a84e-ebf7983e7c5b"
+        ]
+      },
+      {
+        "offence": {
+          "committedAt": "2023-01-13",
+          "offenceCode": "PR52043"
+        },
+        "duration": {
+          "durationElements": {
+            "WEEKS": 4
+          }
+        },
+        "sentencedAt": "2024-02-27",
+        "identifier": "f447fb41-303d-3177-a681-846bc77662e4",
+        "consecutiveSentenceUUIDs": [
+          "40ef6c5e-bcc7-3028-b3e0-b466519e9a96"
+        ]
+      },
+      {
+        "offence": {
+          "committedAt": "2022-12-05",
+          "offenceCode": "PR52043"
+        },
+        "duration": {
+          "durationElements": {
+            "WEEKS": 4
+          }
+        },
+        "sentencedAt": "2024-02-27",
+        "consecutiveSentenceUUIDs": [
+          "f447fb41-303d-3177-a681-846bc77662e4"
+        ]
+      }
+    ],
+    "adjustments": {
+      "RESTORATION_OF_ADDITIONAL_DAYS_AWARDED": [
+        {
+          "appliesToSentencesFrom": "2025-01-23",
+          "numberOfDays": 70,
+          "fromDate": "2025-01-23",
+          "toDate": "2025-04-02"
+        }
+      ],
+      "ADDITIONAL_DAYS_AWARDED": [
+        {
+          "appliesToSentencesFrom": "2020-02-06",
+          "numberOfDays": 39,
+          "fromDate": "2020-02-06",
+          "toDate": "2020-03-15"
+        },
+        {
+          "appliesToSentencesFrom": "2021-02-14",
+          "numberOfDays": 21,
+          "fromDate": "2021-02-14",
+          "toDate": "2021-03-06"
+        },
+        {
+          "appliesToSentencesFrom": "2018-05-23",
+          "numberOfDays": 18,
+          "fromDate": "2018-05-23",
+          "toDate": "2018-06-09"
+        },
+        {
+          "appliesToSentencesFrom": "2019-07-02",
+          "numberOfDays": 26,
+          "fromDate": "2019-07-02",
+          "toDate": "2019-07-27"
+        },
+        {
+          "appliesToSentencesFrom": "2022-11-24",
+          "numberOfDays": 36,
+          "fromDate": "2022-11-24",
+          "toDate": "2022-12-29"
+        }
+      ],
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2018-05-23",
+          "numberOfDays": 240,
+          "fromDate": "2017-09-25",
+          "toDate": "2018-05-22"
+        }
+      ]
+    }
+  }
+}

@@ -26,7 +26,7 @@ class BookingAnonymiser {
   @Test
   fun anonymiseSingleTestCases() {
     val exampleType = "custom-examples"
-    val exampleNumber = "crs-2341"
+    val exampleNumber = "crs-2446-post-tranche-adjustments-bug"
 
     anonymiseTestCase("$exampleType/$exampleNumber")
   }
