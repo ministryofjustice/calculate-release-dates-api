@@ -16,6 +16,13 @@
       "releaseDate": "2028-07-18",
       "unadjustedDate": "2028-07-18"
     },
+    "PED": {
+      "rules": [],
+      "rulesWithExtraAdjustments": {},
+      "adjustedDays": 0,
+      "releaseDate": "2023-11-18",
+      "unadjustedDate": "2023-11-18"
+    },
     "ERSED": {
       "rules": [
         "ERSED_MIN_EFFECTIVE_DATE"

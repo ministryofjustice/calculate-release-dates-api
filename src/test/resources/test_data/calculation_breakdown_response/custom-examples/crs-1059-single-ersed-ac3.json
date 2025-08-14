@@ -1,48 +1,49 @@
 {
-  "concurrentSentences":[
-
+  "concurrentSentences": [
   ],
-  "consecutiveSentence":null,
-  "breakdownByReleaseDateType":{
-    "CRD":{
-      "rules":[
-
+  "consecutiveSentence": null,
+  "breakdownByReleaseDateType": {
+    "CRD": {
+      "rules": [
       ],
-      "rulesWithExtraAdjustments":{
-
+      "rulesWithExtraAdjustments": {
       },
-      "adjustedDays":-95,
-      "releaseDate":"2029-07-09",
-      "unadjustedDate":"2029-10-12"
+      "adjustedDays": -95,
+      "releaseDate": "2029-07-09",
+      "unadjustedDate": "2029-10-12"
     },
-    "SLED":{
-      "rules":[
-
+    "SLED": {
+      "rules": [
       ],
-      "rulesWithExtraAdjustments":{
-
+      "rulesWithExtraAdjustments": {
       },
-      "adjustedDays":-95,
-      "releaseDate":"2030-07-09",
-      "unadjustedDate":"2030-10-12"
+      "adjustedDays": -95,
+      "releaseDate": "2030-07-09",
+      "unadjustedDate": "2030-10-12"
     },
-    "ERSED":{
-      "rules":[
+    "PED": {
+      "rules": [],
+      "rulesWithExtraAdjustments": {},
+      "adjustedDays": -95,
+      "releaseDate": "2027-03-10",
+      "unadjustedDate": "2027-06-13"
+    },
+    "ERSED": {
+      "rules": [
         "ERSED_MAX_PERIOD"
       ],
-      "rulesWithExtraAdjustments":{
-        "ERSED_MAX_PERIOD":{
-          "adjustmentValue":-544,
-          "type":"DAYS"
+      "rulesWithExtraAdjustments": {
+        "ERSED_MAX_PERIOD": {
+          "adjustmentValue": -544,
+          "type": "DAYS"
         }
       },
-      "adjustedDays":-95,
-      "releaseDate":"2025-09-12",
-      "unadjustedDate":"2027-06-13"
+      "adjustedDays": -95,
+      "releaseDate": "2025-09-12",
+      "unadjustedDate": "2027-06-13"
     }
   },
-  "otherDates":{
-
+  "otherDates": {
   },
   "ersedNotApplicableDueToDtoLaterThanCrd": false
 }

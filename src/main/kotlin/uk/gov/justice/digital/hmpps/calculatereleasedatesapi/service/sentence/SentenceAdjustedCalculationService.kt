@@ -13,6 +13,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.LED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.NCRD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.NPD
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.PED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SLED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.TUSED
@@ -29,6 +30,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.HdcedCalcul
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.TusedCalculator
 import java.time.temporal.ChronoUnit.DAYS
 import java.time.temporal.ChronoUnit.MONTHS
+import kotlin.collections.set
 import kotlin.math.ceil
 import kotlin.math.floor
 
@@ -47,6 +49,7 @@ class SentenceAdjustedCalculationService(
     // Other adjustments need to be included in the sentence calculation here
     setCrdOrArdDetails(sentence, sentenceCalculation)
     setSedOrSledDetails(sentence, sentenceCalculation)
+    setPedDetails(sentence, sentenceCalculation)
 
     if (sentenceCalculation.calculateErsed) {
       ersedCalculator.generateEarlyReleaseSchemeEligibilityDateBreakdown(sentence, sentenceCalculation)
@@ -101,6 +104,22 @@ class SentenceAdjustedCalculationService(
     }
     log.trace(sentence.buildString())
     return sentenceCalculation
+  }
+
+  private fun setPedDetails(
+    sentence: CalculableSentence,
+    sentenceCalculation: SentenceCalculation,
+  ) {
+    if (sentence.releaseDateTypes.contains(PED) && sentenceCalculation.extendedDeterminateParoleEligibilityDate != null) {
+      sentenceCalculation.breakdownByReleaseDateType[PED] = ReleaseDateCalculationBreakdown(
+        releaseDate = sentenceCalculation.extendedDeterminateParoleEligibilityDate!!,
+        unadjustedDate = sentenceCalculation.unadjustedExtendedDeterminateParoleEligibilityDate!!,
+        adjustedDays = DAYS.between(
+          sentenceCalculation.unadjustedExtendedDeterminateParoleEligibilityDate,
+          sentenceCalculation.extendedDeterminateParoleEligibilityDate,
+        ),
+      )
+    }
   }
 
   private fun setSedOrSledDetails(
