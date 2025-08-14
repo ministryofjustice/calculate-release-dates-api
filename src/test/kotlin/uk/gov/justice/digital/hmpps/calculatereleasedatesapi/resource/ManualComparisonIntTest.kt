@@ -82,6 +82,20 @@ class ManualComparisonIntTest(private val mockManageOffencesClient: MockManageOf
     assertEquals(comparisonPerson.person, result.personId)
   }
 
+  @Test
+  fun `Run comparison on a prisoner not existing`() {
+    val result = createManualComparison("NOTEXIST")
+
+    assertEquals(ComparisonType.MANUAL, result.comparisonType)
+    assertEquals(0, result.numberOfPeopleCompared)
+    val comparison = comparisonRepository.findByComparisonShortReference(result.comparisonShortReference)
+    assertEquals(1, comparison!!.numberOfPeopleCompared)
+    val personComparison = comparisonPersonRepository.findByComparisonIdIsAndIsMatchFalse(comparison.id)[0]
+    assertTrue(personComparison.isFatal)
+    assertFalse(personComparison.isMatch)
+    assertEquals("404 Not Found from GET http://localhost:8332/api/offenders/NOTEXIST", personComparison.fatalException)
+  }
+
   private fun createManualComparison(prisonerId: String): Comparison {
     val request = ManualComparisonInput(listOf(prisonerId))
     val result = webTestClient.post()

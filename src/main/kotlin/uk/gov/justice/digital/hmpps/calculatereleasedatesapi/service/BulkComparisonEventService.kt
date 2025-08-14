@@ -5,9 +5,11 @@ import jakarta.persistence.EntityNotFoundException
 import org.apache.commons.text.WordUtils
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.http.HttpStatus
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.UserContext
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonPerson
@@ -152,8 +154,24 @@ class BulkComparisonEventService(
       // Already processed and this is a retry from timeout.
       return
     }
+    val prisonerDetails = try {
+      prisonService.getOffenderDetail(personId)
+    } catch (e: WebClientResponseException) {
+      if (HttpStatus.NOT_FOUND.isSameCodeAs(e.statusCode)) {
+        saveComparisonPersonWithFatalError(
+          comparison,
+          personId,
+          null,
+          "",
+          e,
+        )
+        return
+      } else {
+        throw e
+      }
+    }
 
-    val sourceData = calculationSourceDataService.getCalculationSourceData(personId, InactiveDataOptions.default())
+    val sourceData = calculationSourceDataService.getCalculationSourceData(prisonerDetails, InactiveDataOptions.default())
 
     val calculationUserInput = CalculationUserInputs(
       listOf(),
@@ -174,6 +192,7 @@ class BulkComparisonEventService(
     } catch (e: Exception) {
       saveComparisonPersonWithFatalError(
         comparison,
+        personId,
         sourceData,
         establishmentValue,
         e,
@@ -224,34 +243,35 @@ class BulkComparisonEventService(
 
   private fun saveComparisonPersonWithFatalError(
     comparison: Comparison,
-    sourceData: CalculationSourceData,
+    personId: String,
+    sourceData: CalculationSourceData?,
     establishment: String?,
     lastException: Throwable,
   ) {
     val establishmentValue = getEstablishmentValueForComparisonPerson(comparison, establishment)
     val trimmedException = lastException.message?.trim()?.take(256) ?: "Exception had no message"
     log.error(
-      "Failed to create comparison for ${sourceData.prisonerDetails.offenderNo} due to \"$trimmedException\"",
+      "Failed to create comparison for $personId due to \"$trimmedException\"",
       lastException,
     )
     comparisonPersonRepository.save(
       ComparisonPerson(
         comparisonId = comparison.id,
-        person = sourceData.prisonerDetails.offenderNo,
-        lastName = WordUtils.capitalizeFully(sourceData.prisonerDetails.lastName),
-        latestBookingId = sourceData.prisonerDetails.bookingId,
+        person = personId,
+        lastName = WordUtils.capitalizeFully(sourceData?.prisonerDetails?.lastName),
+        latestBookingId = sourceData?.prisonerDetails?.bookingId ?: -1L,
         isMatch = false,
         isValid = false,
         isFatal = true,
         mismatchType = MismatchType.FATAL_EXCEPTION,
         validationMessages = objectMapper.valueToTree(emptyList<ValidationMessage>()),
         calculatedByUsername = comparison.calculatedByUsername,
-        nomisDates = sourceData.prisonerDetails.sentenceDetail?.let { objectMapper.valueToTree(it.toCalculatedMap()) }
+        nomisDates = sourceData?.prisonerDetails?.sentenceDetail?.let { objectMapper.valueToTree(it.toCalculatedMap()) }
           ?: objectMapper.createObjectNode(),
-        overrideDates = sourceData.prisonerDetails.sentenceDetail?.let { objectMapper.valueToTree(it.toOverrideMap()) }
+        overrideDates = sourceData?.prisonerDetails?.sentenceDetail?.let { objectMapper.valueToTree(it.toOverrideMap()) }
           ?: objectMapper.createObjectNode(),
         breakdownByReleaseDateType = objectMapper.createObjectNode(),
-        isActiveSexOffender = sourceData.prisonerDetails.isActiveSexOffender(),
+        isActiveSexOffender = sourceData?.prisonerDetails?.isActiveSexOffender(),
         sdsPlusSentencesIdentified = objectMapper.createObjectNode(),
         establishment = establishmentValue,
         fatalException = trimmedException,
