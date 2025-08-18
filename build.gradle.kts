@@ -5,10 +5,10 @@ import org.jlleitschuh.gradle.ktlint.tasks.KtLintFormatTask
 import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "8.3.4"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "8.3.6"
   id("org.springdoc.openapi-gradle-plugin") version "1.9.0"
-  kotlin("plugin.spring") version "2.2.0"
-  kotlin("plugin.jpa") version "2.2.0"
+  kotlin("plugin.spring") version "2.2.10"
+  kotlin("plugin.jpa") version "2.2.10"
   id("jacoco")
   id("org.openapi.generator") version "7.14.0"
 }
@@ -38,7 +38,7 @@ dependencies {
   implementation("uk.gov.service.notify:notifications-java-client:5.2.1-RELEASE")
 
   // Enable kotlin reflect
-  implementation("org.jetbrains.kotlin:kotlin-reflect:2.2.0")
+  implementation("org.jetbrains.kotlin:kotlin-reflect:2.2.10")
 
   // Three Ten Date Calculations
   implementation("org.threeten:threeten-extra:1.8.0")
@@ -51,9 +51,9 @@ dependencies {
   runtimeOnly("org.postgresql:postgresql")
 
   // JWT
-  implementation("io.jsonwebtoken:jjwt-api:0.12.6")
-  runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.6")
-  runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.12.6")
+  implementation("io.jsonwebtoken:jjwt-api:0.12.7")
+  runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.7")
+  runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.12.7")
 
   implementation("io.arrow-kt:arrow-core:2.1.2")
   implementation("io.hypersistence:hypersistence-utils-hibernate-63:3.10.3")
@@ -65,7 +65,7 @@ dependencies {
   implementation("io.awspring.cloud:spring-cloud-aws-core:3.4.0")
   implementation("io.awspring.cloud:spring-cloud-aws-sns:3.4.0")
   implementation("io.awspring.cloud:spring-cloud-aws-sqs:3.4.0")
-  implementation("org.springframework:spring-jms:6.2.9")
+  implementation("org.springframework:spring-jms:6.2.10")
   implementation("com.google.code.gson:gson:2.13.1")
   implementation("org.apache.commons:commons-text:1.14.0")
 
