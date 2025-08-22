@@ -1,0 +1,85 @@
+{
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
+      {
+        "offence": {
+          "committedAt": "2024-06-27",
+          "offenceCode": "CJ88160"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 3
+          }
+        },
+        "sentencedAt": "2025-02-05",
+        "identifier": "a6b22284-a6d6-372a-8820-103aaab9f9a5"
+      },
+      {
+        "offence": {
+          "committedAt": "2025-02-01",
+          "offenceCode": "FL96001"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 8
+          }
+        },
+        "sentencedAt": "2025-02-05",
+        "consecutiveSentenceUUIDs": [
+          "a6b22284-a6d6-372a-8820-103aaab9f9a5"
+        ],
+        "hasAnSDSEarlyReleaseExclusion": "DOMESTIC_ABUSE"
+      },
+      {
+        "offence": {
+          "committedAt": "2025-02-03",
+          "offenceCode": "CJ88160"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 3
+          }
+        },
+        "sentencedAt": "2025-07-25"
+      },
+      {
+        "offence": {
+          "committedAt": "2025-02-03",
+          "offenceCode": "PL96001"
+        },
+        "duration": {
+          "durationElements": {
+            "WEEKS": 4
+          }
+        },
+        "sentencedAt": "2025-08-12"
+      }
+    ],
+    "adjustments": {
+      "ADDITIONAL_DAYS_AWARDED": [
+        {
+          "appliesToSentencesFrom": "2025-04-14",
+          "numberOfDays": 17,
+          "fromDate": "2025-04-14",
+          "toDate": "2025-04-30"
+        }
+      ],
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2025-02-05",
+          "numberOfDays": 2,
+          "fromDate": "2025-02-03",
+          "toDate": "2025-02-04"
+        }
+      ]
+    }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params"
+}
