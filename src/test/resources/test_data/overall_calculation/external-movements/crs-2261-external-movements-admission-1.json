@@ -54,7 +54,7 @@
       },
       {
         "movementDate": "2024-10-10",
-        "movementReason": "ADMISSION",
+        "movementReason": "UNKNOWN_ADMISSION",
         "direction": "IN"
       }
     ]

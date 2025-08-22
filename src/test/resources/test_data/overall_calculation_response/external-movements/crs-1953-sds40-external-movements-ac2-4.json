@@ -1,0 +1,10 @@
+{
+  "dates": {
+    "SLED": "2025-01-30",
+    "PRRD": "2025-01-30",
+    "TUSED": "2025-10-01",
+    "ESED": "2025-04-08"
+  },
+  "effectiveSentenceLength": "P8M",
+  "affectedBySds40": true
+}

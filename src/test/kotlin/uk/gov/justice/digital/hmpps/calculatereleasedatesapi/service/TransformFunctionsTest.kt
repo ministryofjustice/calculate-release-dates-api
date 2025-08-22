@@ -597,20 +597,20 @@ class TransformFunctionsTest {
       directionCode = "IN",
       movementReasonCode = "N",
     )
-    assertThat(transform(admission)!!.movementReason).isEqualTo(ExternalMovementReason.ADMISSION)
+    assertThat(transform(admission)!!.movementReason).isEqualTo(ExternalMovementReason.UNKNOWN_ADMISSION)
     val ersReturnFromIRC = admission.copy(
       movementReasonCode = "E",
       fromAgency = "IRC",
     )
-    assertThat(transform(ersReturnFromIRC)!!.movementReason).isEqualTo(ExternalMovementReason.ERS_RETURN)
+    assertThat(transform(ersReturnFromIRC)!!.movementReason).isEqualTo(ExternalMovementReason.FAILED_ERS_REMOVAL)
     val ersReturnFromImmigrationCourt = ersReturnFromIRC.copy(
       fromAgency = "IMM",
     )
-    assertThat(transform(ersReturnFromImmigrationCourt)!!.movementReason).isEqualTo(ExternalMovementReason.ERS_RETURN)
+    assertThat(transform(ersReturnFromImmigrationCourt)!!.movementReason).isEqualTo(ExternalMovementReason.FAILED_ERS_REMOVAL)
     val notErsReturn = ersReturnFromImmigrationCourt.copy(
       fromAgency = "NOT A ERS RETURN",
     )
-    assertThat(transform(notErsReturn)!!.movementReason).isEqualTo(ExternalMovementReason.ADMISSION)
+    assertThat(transform(notErsReturn)!!.movementReason).isEqualTo(ExternalMovementReason.UNKNOWN_ADMISSION)
 
     val hdcRelease = prisonApiExternalMovement.copy(
       movementType = "REL",

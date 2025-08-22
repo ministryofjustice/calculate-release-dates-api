@@ -68,7 +68,7 @@
       },
       {
         "movementDate": "2022-09-12",
-        "movementReason": "ERS_RETURN",
+        "movementReason": "FAILED_ERS_REMOVAL",
         "direction": "IN"
       },
       {
@@ -78,7 +78,7 @@
       },
       {
         "movementDate": "2024-08-10",
-        "movementReason": "ADMISSION",
+        "movementReason": "UNKNOWN_ADMISSION",
         "direction": "IN"
       }
     ]
