@@ -1,0 +1,158 @@
+{
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
+      {
+        "type": "ExtendedDeterminateSentence",
+        "offence": {
+          "committedAt": "2012-07-30",
+          "offenceCode": "SX03002"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "YEARS": 16
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "YEARS": 4
+          }
+        },
+        "sentencedAt": "2013-06-21",
+        "identifier": "d5c31584-7eb7-336c-bf41-6e3824b0ea4a"
+      },
+      {
+        "type": "ExtendedDeterminateSentence",
+        "offence": {
+          "committedAt": "2012-07-30",
+          "offenceCode": "SX03002"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "YEARS": 16
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "YEARS": 4
+          }
+        },
+        "sentencedAt": "2013-06-21"
+      },
+      {
+        "offence": {
+          "committedAt": "2004-09-12",
+          "offenceCode": "COML017"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 3
+          }
+        },
+        "sentencedAt": "2013-06-21"
+      },
+      {
+        "offence": {
+          "committedAt": "2012-07-30",
+          "offenceCode": "COML017"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 2
+          }
+        },
+        "sentencedAt": "2013-06-21"
+      },
+      {
+        "offence": {
+          "committedAt": "2012-07-30",
+          "offenceCode": "SX03007"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 2
+          }
+        },
+        "sentencedAt": "2013-06-21",
+        "hasAnSDSEarlyReleaseExclusion": "SEXUAL"
+      },
+      {
+        "offence": {
+          "committedAt": "2004-09-12",
+          "offenceCode": "SX03002"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 16
+          }
+        },
+        "sentencedAt": "2013-06-21",
+        "isSDSPlusEligibleSentenceTypeLengthAndOffence": true,
+        "hasAnSDSEarlyReleaseExclusion": "SEXUAL"
+      },
+      {
+        "offence": {
+          "committedAt": "2014-04-07",
+          "offenceCode": "CD71017"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 3
+          }
+        },
+        "sentencedAt": "2015-01-09",
+        "consecutiveSentenceUUIDs": [
+          "d5c31584-7eb7-336c-bf41-6e3824b0ea4a"
+        ]
+      }
+    ],
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2013-06-21",
+          "numberOfDays": 185,
+          "fromDate": "2012-12-18",
+          "toDate": "2013-06-20"
+        }
+      ],
+      "UNLAWFULLY_AT_LARGE": [
+        {
+          "appliesToSentencesFrom": "2023-08-24",
+          "numberOfDays": 429,
+          "fromDate": "2023-08-24",
+          "toDate": "2024-10-25"
+        }
+      ]
+    },
+    "externalMovements": [
+      {
+        "movementDate": "2013-06-21",
+        "movementReason": "SENTENCE",
+        "direction": "IN"
+      },
+      {
+        "movementDate": "2023-08-23",
+        "movementReason": "ERS",
+        "direction": "OUT"
+      },
+      {
+        "movementDate": "2024-10-26",
+        "movementReason": "ERS_BREACH",
+        "direction": "IN"
+      }
+    ]
+  },
+  "userInputs": {
+    "useOffenceIndicators": true,
+    "calculateErsed": true
+  },
+  "params": "calculation-params",
+  "featureToggles": {
+    "externalMovementsSds40": true,
+    "externalMovementsAdjustmentSharing": true,
+    "externalMovementsEnabled": true
+  }
+}

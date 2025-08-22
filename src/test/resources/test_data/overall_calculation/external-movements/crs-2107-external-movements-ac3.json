@@ -101,7 +101,7 @@
       },
       {
         "movementDate": "2022-03-23",
-        "movementReason": "ERS_RETURN",
+        "movementReason": "FAILED_ERS_REMOVAL",
         "direction": "IN"
       }
     ]

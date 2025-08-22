@@ -9,14 +9,22 @@ data class ExternalMovement(
 )
 
 enum class ExternalMovementReason {
+  // Releases
   HDC,
   ERS,
   PAROLE,
   ECSL,
   CRD,
   DTO,
-  ADMISSION,
-  ERS_RETURN,
+
+  // Admissions
+  UNKNOWN_ADMISSION, // TODO check with Scott
+  SENTENCE,
+  REMAND,
+  RECALL,
+  HDC_RECALL,
+  ERS_BREACH,
+  FAILED_ERS_REMOVAL,
 }
 
 enum class ExternalMovementDirection {

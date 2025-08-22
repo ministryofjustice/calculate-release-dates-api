@@ -1,0 +1,67 @@
+{
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
+      {
+        "offence": {
+          "committedAt": "2015-08-03",
+          "offenceCode": "COML030C"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 18
+          }
+        },
+        "sentencedAt": "2024-02-14",
+        "recallType": "STANDARD_RECALL"
+      }
+    ],
+    "adjustments": {
+      "RECALL_REMAND": [
+        {
+          "appliesToSentencesFrom": "2024-02-14",
+          "numberOfDays": 58,
+          "fromDate": "2023-12-18",
+          "toDate": "2024-02-13"
+        }
+      ],
+      "UNLAWFULLY_AT_LARGE": [
+        {
+          "appliesToSentencesFrom": "2024-08-08",
+          "numberOfDays": 36,
+          "fromDate": "2024-08-08",
+          "toDate": "2024-09-12"
+        }
+      ]
+    },
+    "externalMovements": [
+      {
+        "movementDate": "2024-02-14",
+        "movementReason": "SENTENCE",
+        "direction": "IN"
+      },
+      {
+        "movementDate": "2024-07-08",
+        "movementReason": "ECSL",
+        "direction": "OUT"
+      },
+      {
+        "movementDate": "2024-09-13",
+        "movementReason": "RECALL",
+        "direction": "IN"
+      }
+    ]
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params",
+  "featureToggles": {
+    "externalMovementsSds40": true,
+    "externalMovementsAdjustmentSharing": true,
+    "externalMovementsEnabled": true
+  }
+}

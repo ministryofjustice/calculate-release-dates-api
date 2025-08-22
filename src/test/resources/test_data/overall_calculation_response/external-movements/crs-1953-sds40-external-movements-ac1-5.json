@@ -1,0 +1,11 @@
+{
+  "dates": {
+    "SLED": "2024-12-26",
+    "CRD": "2024-09-10",
+    "TUSED": "2025-09-08",
+    "HDCED": "2024-08-12",
+    "ESED": "2024-12-06"
+  },
+  "effectiveSentenceLength": "P6M",
+  "affectedBySds40": true
+}

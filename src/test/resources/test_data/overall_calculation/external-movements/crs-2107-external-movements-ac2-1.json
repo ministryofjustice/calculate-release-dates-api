@@ -52,6 +52,11 @@
         "movementDate": "2024-06-02",
         "movementReason": "ECSL",
         "direction": "OUT"
+      },
+      {
+        "movementDate": "2024-06-18",
+        "movementReason": "SENTENCE",
+        "direction": "IN"
       }
     ]
   },

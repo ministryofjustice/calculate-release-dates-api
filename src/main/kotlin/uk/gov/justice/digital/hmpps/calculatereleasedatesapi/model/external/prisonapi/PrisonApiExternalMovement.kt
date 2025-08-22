@@ -27,15 +27,24 @@ data class PrisonApiExternalMovement(
     "ECSLIRC", "ECSL" -> ExternalMovementReason.ECSL
     "CR", "AR", "CE" -> ExternalMovementReason.CRD
     "D3", "D2", "D1", "D4" -> ExternalMovementReason.DTO
+    // TODO check this with scott.
     "E", "R", "I", "T" -> getExternalMovementReasonForErsAdmission()
-    "N", "L", "V", "W", "G", "B", "25", "Y", "F", "C", "27", "26", "ETRLR", "ETB", "29", "ELR" -> ExternalMovementReason.ADMISSION
+    "L" -> ExternalMovementReason.RECALL
+    "I", "W" -> ExternalMovementReason.SENTENCE
+    "V", "N" -> ExternalMovementReason.REMAND
+    "B" -> ExternalMovementReason.HDC_RECALL
+    "ETB" -> ExternalMovementReason.ERS_BREACH
+
+    "N", "L", "V", "W", "G", "B", "25", "Y", "F", "C", "27", "26", "ETRLR", "ETB", "29", "ELR" -> ExternalMovementReason.UNKNOWN_ADMISSION
     else -> null
   }
 
   private fun getExternalMovementReasonForErsAdmission(): ExternalMovementReason = if (isFromIRC() || isFromImmigrationCourt()) {
-    ExternalMovementReason.ERS_RETURN
+    ExternalMovementReason.FAILED_ERS_REMOVAL
+  } else if (movementReasonCode == "I") {
+    ExternalMovementReason.SENTENCE
   } else {
-    ExternalMovementReason.ADMISSION
+    ExternalMovementReason.UNKNOWN_ADMISSION
   }
 
   private fun isFromIRC(): Boolean = (fromAgency ?: "").contains("IRC")
