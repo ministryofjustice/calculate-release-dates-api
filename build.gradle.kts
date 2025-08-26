@@ -5,7 +5,7 @@ import org.jlleitschuh.gradle.ktlint.tasks.KtLintFormatTask
 import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "8.3.6"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "8.3.7"
   id("org.springdoc.openapi-gradle-plugin") version "1.9.0"
   kotlin("plugin.spring") version "2.2.10"
   kotlin("plugin.jpa") version "2.2.10"
@@ -51,14 +51,14 @@ dependencies {
   runtimeOnly("org.postgresql:postgresql")
 
   // JWT
-  implementation("io.jsonwebtoken:jjwt-api:0.12.7")
-  runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.7")
-  runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.12.7")
+  implementation("io.jsonwebtoken:jjwt-api:0.13.0")
+  runtimeOnly("io.jsonwebtoken:jjwt-impl:0.13.0")
+  runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.13.0")
 
   implementation("io.arrow-kt:arrow-core:2.1.2")
   implementation("io.hypersistence:hypersistence-utils-hibernate-63:3.10.3")
   // OpenAPI
-  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.9")
+  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.11")
 
   implementation("com.amazonaws:amazon-sqs-java-messaging-lib:2.1.4")
   implementation("io.awspring.cloud:spring-cloud-aws-starter:3.4.0")
@@ -77,7 +77,7 @@ dependencies {
   testImplementation("org.springframework.security:spring-security-test")
   testImplementation("org.awaitility:awaitility-kotlin:4.3.0")
   testImplementation("net.javacrumbs.json-unit:json-unit-assertj:4.1.1")
-  testImplementation("io.swagger.parser.v3:swagger-parser-v2-converter:2.1.31")
+  testImplementation("io.swagger.parser.v3:swagger-parser-v2-converter:2.1.32")
   testImplementation("org.mockito:mockito-inline:5.2.0")
   testImplementation("org.junit.jupiter:junit-jupiter:5.13.4")
   testImplementation("org.testcontainers:postgresql:1.21.3")
