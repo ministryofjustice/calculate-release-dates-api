@@ -26,6 +26,7 @@ class TimelineUalAdjustmentCalculationHandler(
       setAdjustmentsDuringLicencePeriod(timelineCalculationDate, timelineTrackingData, ualDays, lastDayOfUal)
 
       futureData.ual -= ual
+      previousUalPeriods.addAll(ual.filter { it.fromDate != null && it.toDate != null }.map { it.fromDate!! to it.toDate!! })
     }
     return TimelineHandleResult()
   }
@@ -37,9 +38,24 @@ class TimelineUalAdjustmentCalculationHandler(
     lastDayOfUal: LocalDate?,
   ) {
     with(timelineTrackingData) {
+      val (sentencesBeforeReleaseDate, sentencesAfterReleaseDate) = licenceSentences.partition { timelineCalculationDate.isBeforeOrEqualTo(it.sentenceCalculation.adjustedDeterminateReleaseDate) }
+      val (recallSentencesBeforeRelease, nonRecallSentencesBeforeRelease) = sentencesBeforeReleaseDate.partition { it.isRecall() }
+      timelineCalculator.setAdjustments(
+        recallSentencesBeforeRelease,
+        SentenceAdjustments(
+          ualAfterDeterminateRelease = ualDays,
+        ),
+      )
+      timelineCalculator.setAdjustments(
+        nonRecallSentencesBeforeRelease,
+        SentenceAdjustments(
+          ualDuringCustody = ualDays,
+        ),
+      )
+
       val hasFixedTermRecall =
-        returnToCustodyDate != null && licenceSentences.any { it.recallType?.isFixedTermRecall == true }
-      licenceSentences.filter { it.isRecall() }.forEach { sentence ->
+        returnToCustodyDate != null && sentencesAfterReleaseDate.any { it.recallType?.isFixedTermRecall == true }
+      sentencesAfterReleaseDate.filter { it.isRecall() }.forEach { sentence ->
         val ualAfterFtr =
           if (hasFixedTermRecall &&
             timelineCalculationDate.isAfterOrEqualTo(returnToCustodyDate!!) &&

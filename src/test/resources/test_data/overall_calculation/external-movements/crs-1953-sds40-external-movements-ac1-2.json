@@ -1,0 +1,48 @@
+{
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
+      {
+        "offence": {
+          "committedAt": "2022-03-14",
+          "offenceCode": "MD71130"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 40
+          }
+        },
+        "sentencedAt": "2023-02-03"
+      }
+    ],
+    "externalMovements": [
+      {
+        "movementDate": "2023-02-03",
+        "movementReason": "SENTENCE",
+        "direction": "IN"
+      },
+      {
+        "movementDate": "2024-08-06",
+        "movementReason": "ECSL",
+        "direction": "OUT"
+      },
+      {
+        "movementDate": "2024-08-20",
+        "movementReason": "REMAND",
+        "direction": "IN"
+      }
+    ]
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params",
+  "featureToggles": {
+    "externalMovementsSds40": true,
+    "externalMovementsAdjustmentSharing": true,
+    "externalMovementsEnabled": true
+  }
+}

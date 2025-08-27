@@ -106,6 +106,7 @@ tasks.jacocoTestCoverageVerification {
 }
 
 kotlin {
+  kotlinDaemonJvmArgs = listOf("-Xmx1g", "-Xms256m", "-XX:+UseParallelGC")
   compilerOptions.jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21
 }
 

@@ -136,7 +136,7 @@ class RecallValidationService(
   }
 
   private fun hasUnsupportedRecallType(calculationOutput: CalculationOutput, booking: Booking): Boolean {
-    if (!featureToggles.externalMovementsEnabled) {
+    if (!featureToggles.externalMovementsSds40) {
       return calculationOutput.sentences.any { sentence ->
         val hasTusedReleaseDateType = sentence.releaseDateTypes.contains(ReleaseDateType.TUSED)
         val isDeterminateOrConsecutiveSentence = sentence.sentenceParts().any { it is StandardDeterminateSentence }

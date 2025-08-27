@@ -62,7 +62,7 @@
       },
       {
         "movementDate": "2022-02-02",
-        "movementReason": "ERS_RETURN",
+        "movementReason": "FAILED_ERS_REMOVAL",
         "direction": "IN"
       },
       {
@@ -72,7 +72,7 @@
       },
       {
         "movementDate": "2022-03-02",
-        "movementReason": "ADMISSION",
+        "movementReason": "SENTENCE",
         "direction": "IN"
       }
     ]

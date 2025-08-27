@@ -23,7 +23,9 @@ data class TimelineTrackingData(
   val currentSentenceGroup: MutableList<CalculableSentence> = emptyList<CalculableSentence>().toMutableList(),
   val licenceSentences: MutableList<CalculableSentence> = emptyList<CalculableSentence>().toMutableList(),
 
-  var inPrison: Boolean = true,
+  val previousUalPeriods: MutableList<Pair<LocalDate, LocalDate>> = mutableListOf(),
+
+  var outOfPrisonStatus: OutOfPrisonStatus? = null,
   var padas: Long = 0,
   var beforeTrancheCalculation: CalculationResult? = null,
 
@@ -33,4 +35,13 @@ data class TimelineTrackingData(
 
   lateinit var latestCalculation: CalculationResult
   lateinit var currentTimelineCalculationDate: TimelineCalculationDate
+
+  fun isInPrison() = outOfPrisonStatus == null
+  fun isOutOfPrison() = outOfPrisonStatus != null
+  fun sentencesBeforeReleaseDate(beforeReleaseDate: LocalDate) = currentSentenceGroup + licenceSentences.filter { it.sentenceCalculation.adjustedDeterminateReleaseDate.isAfter(beforeReleaseDate) }
 }
+
+data class OutOfPrisonStatus(
+  val release: ExternalMovement,
+  val admission: ExternalMovement?,
+)

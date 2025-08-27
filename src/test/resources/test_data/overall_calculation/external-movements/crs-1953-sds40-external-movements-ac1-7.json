@@ -1,0 +1,60 @@
+{
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
+      {
+        "offence": {
+          "committedAt": "2018-10-10",
+          "offenceCode": "CD98067"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 13,
+            "MONTHS": 3
+          }
+        },
+        "sentencedAt": "2019-01-14"
+      }
+    ],
+    "adjustments": {
+      "UNLAWFULLY_AT_LARGE": [
+        {
+          "appliesToSentencesFrom": "2024-09-26",
+          "numberOfDays": 40,
+          "fromDate": "2024-09-26",
+          "toDate": "2024-11-04"
+        }
+      ],
+      "TAGGED_BAIL": [
+        {
+          "appliesToSentencesFrom": "2019-01-14",
+          "numberOfDays": 326
+        }
+      ]
+    },
+    "externalMovements": [
+      {
+        "movementDate": "2019-01-14",
+        "movementReason": "SENTENCE",
+        "direction": "IN"
+      },
+      {
+        "movementDate": "2024-11-04",
+        "movementReason": "SENTENCE",
+        "direction": "IN"
+      }
+    ]
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params",
+  "featureToggles": {
+    "externalMovementsSds40": true,
+    "externalMovementsAdjustmentSharing": true,
+    "externalMovementsEnabled": true
+  }
+}
