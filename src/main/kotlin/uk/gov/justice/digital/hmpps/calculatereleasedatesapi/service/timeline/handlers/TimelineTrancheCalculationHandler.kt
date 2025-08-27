@@ -27,10 +27,8 @@ class TimelineTrancheCalculationHandler(
       val earlyReleaseConfiguration = currentTimelineCalculationDate.earlyReleaseConfiguration!!
       val tranche = currentTimelineCalculationDate.trancheConfiguration!!
 
-      if (earlyReleaseConfiguration.earliestTranche() == timelineCalculationDate &&
-        isOutOfPrison() &&
-        outOfPrisonAtTrancheCommencementShouldNotBeEarlyReleased(timelineCalculationDate, timelineTrackingData)
-      ) {
+      if (isPersonConsideredOutOfCustodyAtTrancheCommencement(timelineCalculationDate, earlyReleaseConfiguration, timelineTrackingData)) {
+        // The person is considered out of custody and is excluded from early release.
         return TimelineHandleResult(false)
       }
 
@@ -71,22 +69,22 @@ class TimelineTrancheCalculationHandler(
     return TimelineHandleResult()
   }
 
-  fun outOfPrisonAtTrancheCommencementShouldNotBeEarlyReleased(timelineCalculationDate: LocalDate, timelineTrackingData: TimelineTrackingData): Boolean {
+  fun isPersonConsideredOutOfCustodyAtTrancheCommencement(timelineCalculationDate: LocalDate, earlyReleaseConfiguration: EarlyReleaseConfiguration, timelineTrackingData: TimelineTrackingData): Boolean {
     with(timelineTrackingData) {
-      val ualAtCommencement = previousUalPeriods.any {
-        it.first.isBefore(timelineCalculationDate) && it.second.isAfterOrEqualTo(timelineCalculationDate)
-      }
+      if (isOutOfPrison() && earlyReleaseConfiguration.earliestTranche() == timelineCalculationDate) {
+        // They are out of prison. The following code checking for any exemptions to that.
 
-      // If they were a HDC, ERS or ECSL release then they should not be early released.
-      if (listOf(ExternalMovementReason.HDC, ExternalMovementReason.ERS, ExternalMovementReason.ECSL).contains(outOfPrisonStatus!!.release.movementReason)) {
-        return true
-      }
+        // If they were a HDC, ERS or ECSL release then they should not be early released.
+        if (listOf(ExternalMovementReason.HDC, ExternalMovementReason.ERS, ExternalMovementReason.ECSL).contains(outOfPrisonStatus!!.release.movementReason)) {
+          return true
+        }
 
-      // If the person was not UAL at tranche commencement then they are not subject to early release.
-      if (!ualAtCommencement) {
-        return true
+        // If the person was UAL at tranche commencement then they are subject to early release.
+        val ualAtCommencement = previousUalPeriods.any {
+          it.first.isBefore(timelineCalculationDate) && it.second.isAfterOrEqualTo(timelineCalculationDate)
+        }
+        return !ualAtCommencement
       }
-
       return false
     }
   }
