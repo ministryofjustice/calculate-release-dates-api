@@ -76,7 +76,7 @@
       },
       {
         "movementDate": "2023-06-15",
-        "movementReason": "ADMISSION",
+        "movementReason": "SENTENCE",
         "direction": "IN"
       },
       {
@@ -86,7 +86,7 @@
       },
       {
         "movementDate": "2023-08-02",
-        "movementReason": "ADMISSION",
+        "movementReason": "SENTENCE",
         "direction": "IN"
       },
       {
@@ -96,7 +96,7 @@
       },
       {
         "movementDate": "2024-08-15",
-        "movementReason": "ADMISSION",
+        "movementReason": "SENTENCE",
         "direction": "IN"
       }
     ]

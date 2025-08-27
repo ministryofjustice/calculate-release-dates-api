@@ -1,0 +1,11 @@
+{
+  "dates": {
+    "SLED": "2037-02-19",
+    "CRD": "2031-05-04",
+    "PED": "2026-01-02",
+    "ERSED": "2024-10-22",
+    "ESED": "2036-06-20"
+  },
+  "effectiveSentenceLength": "P23Y",
+  "affectedBySds40": true
+}

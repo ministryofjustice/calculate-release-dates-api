@@ -17,7 +17,8 @@ import kotlin.collections.map
 class TrancheAllocationService {
 
   fun allocateTranche(timelineTrackingData: TimelineTrackingData, earlyReleaseConfig: EarlyReleaseConfiguration): EarlyReleaseTrancheConfiguration? {
-    val sentencesConsideredForTrancheRules = getSentencesForTrancheRules(timelineTrackingData.currentSentenceGroup, earlyReleaseConfig)
+    val sentencesWithReleaseAfterTrancheCommencement = timelineTrackingData.sentencesBeforeReleaseDate(earlyReleaseConfig.earliestTranche())
+    val sentencesConsideredForTrancheRules = getSentencesForTrancheRules(sentencesWithReleaseAfterTrancheCommencement, earlyReleaseConfig)
     if (sentencesConsideredForTrancheRules.isEmpty()) {
       return null
     }
@@ -61,8 +62,7 @@ class TrancheAllocationService {
     }
   }
 
-  private fun isEligibleForTrancheRules(sentence: CalculableSentence): Boolean = sentence.identificationTrack == SentenceIdentificationTrack.SDS &&
-    !sentence.isRecall()
+  private fun isEligibleForTrancheRules(sentence: CalculableSentence): Boolean = sentence.identificationTrack == SentenceIdentificationTrack.SDS
 
   private fun filterAndMapSentencesForNotIncludedTypesByDuration(
     sentenceToFilter: CalculableSentence,

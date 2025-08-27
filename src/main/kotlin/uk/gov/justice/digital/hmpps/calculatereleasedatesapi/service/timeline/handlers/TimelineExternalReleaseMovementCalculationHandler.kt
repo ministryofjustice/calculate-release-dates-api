@@ -5,6 +5,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggl
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseConfigurations
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExternalMovementReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.OutOfPrisonStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculator
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineHandleResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineTrackingData
@@ -22,18 +23,16 @@ class TimelineExternalReleaseMovementCalculationHandler(
       val thisExternalMovement = externalMovements.find { it.movementDate == timelineCalculationDate }!!
       val nextExternalMovement = externalMovements.firstOrNull { it.movementDate > timelineCalculationDate }
 
-      if (thisExternalMovement.movementReason == ExternalMovementReason.ERS) {
-        if (nextExternalMovement?.movementReason == ExternalMovementReason.ERS_RETURN ||
-          timelineCalculationDate.isAfterOrEqualTo(ImportantDates.ERS_STOP_CLOCK_COMMENCEMENT)
-        ) {
-          return TimelineHandleResult(requiresCalculation = false)
-        }
+      if (featureToggles.externalMovementsSds40) {
+        outOfPrisonStatus = OutOfPrisonStatus(
+          thisExternalMovement,
+          nextExternalMovement,
+        )
       }
 
-      if (featureToggles.externalMovementsSds40) {
-        inPrison = false
-      }
-      if (featureToggles.externalMovementsAdjustmentSharing) {
+      val ersRemovalShouldCountAsCustody = thisExternalMovement.movementReason == ExternalMovementReason.ERS && (nextExternalMovement?.movementReason == ExternalMovementReason.FAILED_ERS_REMOVAL || timelineCalculationDate.isAfterOrEqualTo(ImportantDates.ERS_STOP_CLOCK_COMMENCEMENT))
+
+      if (featureToggles.externalMovementsAdjustmentSharing && !ersRemovalShouldCountAsCustody) {
         if (currentSentenceGroup.isNotEmpty()) {
           latestRelease = timelineCalculationDate to latestRelease.second
         }

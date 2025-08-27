@@ -14,7 +14,7 @@ class TimelineExternalAdmissionMovementCalculationHandler(
 ) : TimelineCalculationHandler(timelineCalculator, earlyReleaseConfigurations) {
   override fun handle(timelineCalculationDate: LocalDate, timelineTrackingData: TimelineTrackingData): TimelineHandleResult {
     with(timelineTrackingData) {
-      inPrison = true
+      outOfPrisonStatus = null
     }
     return TimelineHandleResult()
   }
