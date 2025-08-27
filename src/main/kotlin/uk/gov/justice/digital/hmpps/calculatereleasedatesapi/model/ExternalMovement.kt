@@ -16,9 +16,9 @@ enum class ExternalMovementReason {
   ECSL,
   CRD,
   DTO,
+  IMMIGRATION_BAIL,
 
   // Admissions
-  UNKNOWN_ADMISSION, // TODO check with Scott
   SENTENCE,
   REMAND,
   RECALL,

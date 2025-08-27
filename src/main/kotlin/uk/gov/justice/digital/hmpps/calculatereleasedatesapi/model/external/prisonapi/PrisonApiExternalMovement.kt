@@ -20,31 +20,25 @@ data class PrisonApiExternalMovement(
   val commentText: String?,
 ) {
 
-  fun transformMovementReason(): ExternalMovementReason? = when (movementReasonCode) {
-    "HR", "HU" -> ExternalMovementReason.HDC
-    "DE", "DEIRC", "DL", "DD", "ETR" -> ExternalMovementReason.ERS
-    "PX" -> ExternalMovementReason.PAROLE
-    "ECSLIRC", "ECSL" -> ExternalMovementReason.ECSL
-    "CR", "AR", "CE" -> ExternalMovementReason.CRD
-    "D3", "D2", "D1", "D4" -> ExternalMovementReason.DTO
-    // TODO check this with scott.
-    "E", "R", "I", "T" -> getExternalMovementReasonForErsAdmission()
-    "L" -> ExternalMovementReason.RECALL
-    "I", "W" -> ExternalMovementReason.SENTENCE
-    "V", "N" -> ExternalMovementReason.REMAND
-    "B" -> ExternalMovementReason.HDC_RECALL
-    "ETB" -> ExternalMovementReason.ERS_BREACH
-
-    "N", "L", "V", "W", "G", "B", "25", "Y", "F", "C", "27", "26", "ETRLR", "ETB", "29", "ELR" -> ExternalMovementReason.UNKNOWN_ADMISSION
-    else -> null
-  }
-
-  private fun getExternalMovementReasonForErsAdmission(): ExternalMovementReason = if (isFromIRC() || isFromImmigrationCourt()) {
+  fun transformMovementReason(): ExternalMovementReason? = if (directionCode == "IN" && (isFromIRC() || isFromImmigrationCourt())) {
     ExternalMovementReason.FAILED_ERS_REMOVAL
-  } else if (movementReasonCode == "I") {
-    ExternalMovementReason.SENTENCE
   } else {
-    ExternalMovementReason.UNKNOWN_ADMISSION
+    when (movementReasonCode) {
+      "CE", "AR", "FR1", "FR2", "CR" -> ExternalMovementReason.CRD
+      "ECSLIRC", "ECSL" -> ExternalMovementReason.ECSL
+      "DE", "DEIRC", "DL", "DD", "ETR" -> ExternalMovementReason.ERS
+      "HR", "HU", "HD", "HE" -> ExternalMovementReason.HDC
+      "BD" -> ExternalMovementReason.IMMIGRATION_BAIL
+      "PX" -> ExternalMovementReason.PAROLE
+      "D1", "D2" -> ExternalMovementReason.DTO
+
+      "L" -> ExternalMovementReason.RECALL
+      "I", "W", "25" -> ExternalMovementReason.SENTENCE
+      "V", "N" -> ExternalMovementReason.REMAND
+      "B" -> ExternalMovementReason.HDC_RECALL
+      "ETB" -> ExternalMovementReason.ERS_BREACH
+      else -> null
+    }
   }
 
   private fun isFromIRC(): Boolean = (fromAgency ?: "").contains("IRC")

@@ -62,7 +62,6 @@ class TrancheAllocationService {
     }
   }
 
-// TODO different for SDS33.
   private fun isEligibleForTrancheRules(sentence: CalculableSentence): Boolean = sentence.identificationTrack == SentenceIdentificationTrack.SDS
 
   private fun filterAndMapSentencesForNotIncludedTypesByDuration(

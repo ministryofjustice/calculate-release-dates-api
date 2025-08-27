@@ -597,9 +597,8 @@ class TransformFunctionsTest {
       directionCode = "IN",
       movementReasonCode = "N",
     )
-    assertThat(transform(admission)!!.movementReason).isEqualTo(ExternalMovementReason.UNKNOWN_ADMISSION)
+    assertThat(transform(admission)!!.movementReason).isEqualTo(ExternalMovementReason.REMAND)
     val ersReturnFromIRC = admission.copy(
-      movementReasonCode = "E",
       fromAgency = "IRC",
     )
     assertThat(transform(ersReturnFromIRC)!!.movementReason).isEqualTo(ExternalMovementReason.FAILED_ERS_REMOVAL)
@@ -610,7 +609,7 @@ class TransformFunctionsTest {
     val notErsReturn = ersReturnFromImmigrationCourt.copy(
       fromAgency = "NOT A ERS RETURN",
     )
-    assertThat(transform(notErsReturn)!!.movementReason).isEqualTo(ExternalMovementReason.UNKNOWN_ADMISSION)
+    assertThat(transform(notErsReturn)!!.movementReason).isEqualTo(ExternalMovementReason.REMAND)
 
     val hdcRelease = prisonApiExternalMovement.copy(
       movementType = "REL",
@@ -635,7 +634,7 @@ class TransformFunctionsTest {
     )
     assertThat(transform(crdRelease)!!.movementReason).isEqualTo(ExternalMovementReason.CRD)
     val dtoRelease = hdcRelease.copy(
-      movementReasonCode = "D3",
+      movementReasonCode = "D1",
     )
     assertThat(transform(dtoRelease)!!.movementReason).isEqualTo(ExternalMovementReason.DTO)
 
