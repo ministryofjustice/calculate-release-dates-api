@@ -43,44 +43,44 @@ data class CalculationRequest(
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   val id: Long = -1,
 
-  @NotNull
+  @param:NotNull
   val calculationReference: UUID = UUID.randomUUID(),
 
-  @NotNull
+  @param:NotNull
   val prisonerId: String = "",
 
-  @NotNull
+  @param:NotNull
   val bookingId: Long = -1L,
 
-  @NotNull
-  val calculationStatus: String = "",
+  @param:NotNull
+  var calculationStatus: String = "",
 
-  @NotNull
+  @param:NotNull
   val calculatedAt: LocalDateTime = LocalDateTime.now(),
 
-  @NotNull
+  @param:NotNull
   val calculatedByUsername: String = "",
 
   val prisonerLocation: String? = null,
 
-  @NotNull
+  @param:NotNull
   @Type(value = JsonType::class)
   @Column(columnDefinition = "jsonb")
   val inputData: JsonNode = JacksonUtil.toJsonNode("{}"),
 
-  @NotNull
+  @param:NotNull
   @Type(value = JsonType::class)
   @Column(columnDefinition = "jsonb")
   val sentenceAndOffences: JsonNode? = null,
   val sentenceAndOffencesVersion: Int? = 3,
 
-  @NotNull
+  @param:NotNull
   @Type(value = JsonType::class)
   @Column(columnDefinition = "jsonb")
   val prisonerDetails: JsonNode? = null,
   val prisonerDetailsVersion: Int? = 0,
 
-  @NotNull
+  @param:NotNull
   @Type(value = JsonType::class)
   @Column(columnDefinition = "jsonb")
   val adjustments: JsonNode? = null,
@@ -117,7 +117,7 @@ data class CalculationRequest(
 
   @JoinColumn(name = "reasonForCalculation")
   @ManyToOne
-  @NotNull
+  @param:NotNull
   val reasonForCalculation: CalculationReason? = null,
 
   val otherReasonForCalculation: String? = null,
