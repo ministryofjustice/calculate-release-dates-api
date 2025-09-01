@@ -135,7 +135,12 @@ class PrisonApiClientIntTest(private val mockPrisonService: MockPrisonService) :
     )
     // when
     val offenderKeyDates = prisonApiClient.getNOMISOffenderKeyDates(-1)
-      .getOrElse { problemMessage -> throw CrdWebException(problemMessage, HttpStatus.NOT_FOUND) }
+      .getOrElse { problemMessage ->
+        throw CrdWebException(
+          problemMessage,
+          HttpStatus.NOT_FOUND,
+        )
+      }
     assertThat(offenderKeyDates.calculatedAt).isEqualTo(LocalDateTime.of(2017, 8, 28, 0, 0))
     assertThat(offenderKeyDates.reasonCode).isEqualTo("NEW")
     assertThat(offenderKeyDates.comment).isEqualTo("Some Comment Text")

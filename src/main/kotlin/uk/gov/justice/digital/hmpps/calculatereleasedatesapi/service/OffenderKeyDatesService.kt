@@ -43,7 +43,12 @@ class OffenderKeyDatesService(
     }
 
     val dates = offenderKeyDatesEither.map { releaseDates(it) }
-      .getOrElse { throw CrdWebException("Error in mapping/enriching release dates", HttpStatus.NOT_FOUND) }
+      .getOrElse {
+        throw CrdWebException(
+          "Error in mapping/enriching release dates",
+          HttpStatus.NOT_FOUND,
+        )
+      }
 
     val sentenceDateOverrides = prisonService.getSentenceOverrides(calculationRequest.bookingId, dates)
 
@@ -58,7 +63,12 @@ class OffenderKeyDatesService(
         sentenceDateOverrides,
         historicDates,
       ).values.toList()
-    }.getOrElse { throw CrdWebException("Unable to retrieve offender key dates", HttpStatus.NOT_FOUND) }
+    }.getOrElse {
+      throw CrdWebException(
+        "Unable to retrieve offender key dates",
+        HttpStatus.NOT_FOUND,
+      )
+    }
 
     return ReleaseDatesAndCalculationContext(
       CalculationContext(
@@ -79,7 +89,12 @@ class OffenderKeyDatesService(
   fun getNomisCalculationSummary(offenderSentCalculationId: Long): NomisCalculationSummary {
     CalculationController.log.info("Request received to get offender key dates for $offenderSentCalculationId")
     val nomisOffenderKeyDates = prisonService.getNOMISOffenderKeyDates(offenderSentCalculationId)
-      .getOrElse { problemMessage -> throw CrdWebException(problemMessage, HttpStatus.NOT_FOUND) }
+      .getOrElse { problemMessage ->
+        throw CrdWebException(
+          problemMessage,
+          HttpStatus.NOT_FOUND,
+        )
+      }
     val releaseDatesForSentCalculationId = releaseDates(nomisOffenderKeyDates)
 
     val detailsReleaseDates = calculationResultEnrichmentService.addDetailToCalculationDates(
@@ -105,7 +120,12 @@ class OffenderKeyDatesService(
   fun getNomisCalculationSummary(offenderSentCalculationId: Long, bookingId: Long): NomisCalculationSummary {
     CalculationController.log.info("Request received to get offender key dates for $offenderSentCalculationId")
     val nomisOffenderKeyDates = prisonService.getNOMISOffenderKeyDates(offenderSentCalculationId)
-      .getOrElse { problemMessage -> throw CrdWebException(problemMessage, HttpStatus.NOT_FOUND) }
+      .getOrElse { problemMessage ->
+        throw CrdWebException(
+          problemMessage,
+          HttpStatus.NOT_FOUND,
+        )
+      }
     val releaseDatesForSentCalculationId = releaseDates(nomisOffenderKeyDates)
 
     val sentenceDateOverrides = prisonService.getSentenceOverrides(bookingId, releaseDatesForSentCalculationId)
