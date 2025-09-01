@@ -264,7 +264,10 @@ class CalculationTransactionalService(
     val validationErrors = validationService.validateBeforeCalculation(sourceData, userInput)
 
     if (validationErrors.any { !it.type.excludedInSave() }) {
-      throw CrdWebException(message = "The booking now fails validation", status = HttpStatus.INTERNAL_SERVER_ERROR)
+      throw CrdWebException(
+        message = "The booking now fails validation",
+        status = HttpStatus.INTERNAL_SERVER_ERROR,
+      )
     }
 
     return confirmCalculation(

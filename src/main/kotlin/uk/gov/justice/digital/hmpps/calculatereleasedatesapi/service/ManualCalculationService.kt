@@ -8,6 +8,7 @@ import org.springframework.boot.info.BuildProperties
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcome
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
@@ -70,15 +71,15 @@ class ManualCalculationService(
     val calculationUserInputs = CalculationUserInputs()
     val booking = bookingService.getBooking(sourceData, calculationUserInputs)
 
-    val effectiveSentenceLength = try {
+    val effectiveSentenceLength = runCatching {
       calculateEffectiveSentenceLength(booking, manualEntryRequest)
-    } catch (ex: Exception) {
-      log.info("Exception caught calculating ESL for $prisonerId, setting to zero.")
+    }.getOrElse {
+      log.info("Exception caught calculating ESL for $prisonerId, setting to zero.", it)
       Period.ZERO
     }
 
-    val reasonForCalculation = calculationReasonRepository.findById(manualEntryRequest.reasonForCalculationId)
-      .orElse(null) // TODO: This should thrown an EntityNotFoundException when the reason is mandatory.
+    val reasonForCalculation = calculationReasonRepository.findById(manualEntryRequest.reasonForCalculationId).orElse(null)
+
     val type =
       if (isGenuineOverride) {
         CalculationType.MANUAL_OVERRIDE
@@ -88,10 +89,10 @@ class ManualCalculationService(
         CalculationType.MANUAL_DETERMINATE
       }
 
-    val calculationRequest = transform(
+    var request: CalculationRequest = transform(
       booking,
       serviceUserService.getUsername(),
-      CalculationStatus.CONFIRMED,
+      CalculationStatus.IN_PROGRESS,
       sourceData,
       reasonForCalculation,
       objectMapper,
@@ -99,62 +100,54 @@ class ManualCalculationService(
       version = buildProperties.version,
     ).withType(type)
 
-    return try {
-      val savedCalculationRequest = calculationRequestRepository.save(calculationRequest)
+    request = calculationRequestRepository.save(request)
 
-      val preCalcManualJourneyErrors = validationService.validateSupportedSentencesAndCalculations(sourceData)
-      val validationMessages = mutableListOf<ValidationMessage>()
-      validationMessages.addAll(preCalcManualJourneyErrors.unsupportedCalculationMessages)
-      validationMessages.addAll(preCalcManualJourneyErrors.unsupportedSentenceMessages)
-
+    try {
+      val pre = validationService.validateSupportedSentencesAndCalculations(sourceData)
+      val validationMessages = mutableListOf<ValidationMessage>().apply {
+        addAll(pre.unsupportedCalculationMessages)
+        addAll(pre.unsupportedSentenceMessages)
+      }
       if (validationMessages.isNotEmpty()) {
-        savedCalculationRequest.manualCalculationReason = validationMessages.map { transform(savedCalculationRequest, it) }
-        calculationRequestRepository.save(savedCalculationRequest)
-      } else {
-        val calculationOutput = calculationService.calculateReleaseDates(
-          booking,
-          calculationUserInputs,
-        )
-
-        val postCalcManualJourneyErrors = validationService
-          .validateBookingAfterCalculation(calculationOutput, booking)
-          .filter { it.type == MANUAL_ENTRY_JOURNEY_REQUIRED }
-
-        if (postCalcManualJourneyErrors.isNotEmpty()) {
-          savedCalculationRequest.manualCalculationReason = postCalcManualJourneyErrors.map { transform(savedCalculationRequest, it) }
-          calculationRequestRepository.save(savedCalculationRequest)
-        }
+        request.manualCalculationReason = validationMessages.map { transform(request, it) }
+        request.calculationStatus = CalculationStatus.CONFIRMED.name
+        calculationRequestRepository.save(request)
+        return ManualCalculationResponse(emptyMap(), request.id)
       }
 
-      val calculationOutcomes =
-        manualEntryRequest.selectedManualEntryDates.map { transform(savedCalculationRequest, it) }
+      val calculationOutput = calculationService.calculateReleaseDates(booking, calculationUserInputs)
 
-      calculationOutcomeRepository.saveAll(calculationOutcomes)
-      val enteredDates =
-        writeToNomisAndPublishEvent(
-          prisonerId,
-          booking,
-          savedCalculationRequest.id,
-          calculationOutcomes,
-          isGenuineOverride,
-          effectiveSentenceLength,
-        )
-          ?: throw CouldNotSaveManualEntryException("There was a problem saving the dates")
-      ManualCalculationResponse(enteredDates, savedCalculationRequest.id)
+      val post = validationService
+        .validateBookingAfterCalculation(calculationOutput, booking)
+        .filter { it.type == MANUAL_ENTRY_JOURNEY_REQUIRED }
+
+      if (post.isNotEmpty()) {
+        request.manualCalculationReason = post.map { transform(request, it) }
+        request.calculationStatus = CalculationStatus.CONFIRMED.name
+        calculationRequestRepository.save(request)
+        return ManualCalculationResponse(emptyMap(), request.id)
+      }
+
+      val outcomes = manualEntryRequest.selectedManualEntryDates.map { transform(request, it) }
+
+      val enteredDates = writeToNomisAndPublishEvent(
+        prisonerId = prisonerId,
+        booking = booking,
+        calculationRequestId = request.id,
+        calculationOutcomes = outcomes,
+        isGenuineOverride = isGenuineOverride,
+        effectiveSentenceLength = effectiveSentenceLength,
+      ) ?: throw CouldNotSaveManualEntryException("There was a problem saving the dates")
+
+      calculationOutcomeRepository.saveAll(outcomes)
+      request.calculationStatus = CalculationStatus.CONFIRMED.name
+      calculationRequestRepository.save(request)
+
+      return ManualCalculationResponse(enteredDates, request.id)
     } catch (ex: Exception) {
-      calculationRequestRepository.save(
-        transform(
-          booking,
-          serviceUserService.getUsername(),
-          CalculationStatus.ERROR,
-          sourceData,
-          reasonForCalculation,
-          objectMapper,
-          manualEntryRequest.otherReasonDescription,
-          version = buildProperties.version,
-        ),
-      )
-      ManualCalculationResponse(emptyMap(), calculationRequest.id)
+      request.calculationStatus = CalculationStatus.ERROR.name
+      calculationRequestRepository.save(request)
+      throw ex // let controller advice map 423/502/etc.
     }
   }
 

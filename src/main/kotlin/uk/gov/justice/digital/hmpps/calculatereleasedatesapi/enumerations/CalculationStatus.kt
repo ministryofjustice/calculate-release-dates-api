@@ -7,4 +7,5 @@ enum class CalculationStatus {
   TEST,
   RECORD_A_RECALL,
   BULK,
+  IN_PROGRESS,
 }
