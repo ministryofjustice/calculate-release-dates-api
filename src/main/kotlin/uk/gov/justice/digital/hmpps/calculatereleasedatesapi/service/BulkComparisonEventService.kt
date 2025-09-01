@@ -26,6 +26,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.pris
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationReasonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonPersonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonRepository
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.eligibility.ErsedEligibilityService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessage
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationResult
 import kotlin.jvm.optionals.getOrElse
@@ -41,6 +42,7 @@ class BulkComparisonEventService(
   private val comparisonPersonRepository: ComparisonPersonRepository,
   private val objectMapper: ObjectMapper,
   private val serviceUserService: ServiceUserService,
+  private val ersedEligibilityService: ErsedEligibilityService,
 ) {
 
   @Transactional
@@ -175,7 +177,7 @@ class BulkComparisonEventService(
 
     val calculationUserInput = CalculationUserInputs(
       listOf(),
-      sourceData.prisonerDetails.sentenceDetail?.earlyRemovalSchemeEligibilityDate != null,
+      hasExistingErsed(sourceData) && isEligibleForErsed(sourceData),
     )
 
     val establishmentValue = getEstablishmentValueForComparisonPerson(comparison, establishment)
@@ -240,6 +242,10 @@ class BulkComparisonEventService(
       ),
     )
   }
+
+  private fun hasExistingErsed(sourceData: CalculationSourceData): Boolean = sourceData.prisonerDetails.sentenceDetail?.earlyRemovalSchemeEligibilityDate != null
+
+  private fun isEligibleForErsed(sourceData: CalculationSourceData): Boolean = ersedEligibilityService.sentenceIsEligible(sourceData.prisonerDetails.bookingId).isValid
 
   private fun saveComparisonPersonWithFatalError(
     comparison: Comparison,
