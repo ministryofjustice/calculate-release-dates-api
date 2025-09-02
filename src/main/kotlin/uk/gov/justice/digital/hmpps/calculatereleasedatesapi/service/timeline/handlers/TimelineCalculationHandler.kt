@@ -5,6 +5,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseTrancheType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculator
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineHandleResult
@@ -25,22 +26,27 @@ abstract class TimelineCalculationHandler(
   fun multiplierFnForDate(
     timelineCalculationDate: LocalDate,
     allocatedTrancheDate: LocalDate?,
+    offender: Offender,
   ): (sentence: CalculableSentence) -> Double = { sentence ->
     multiplerForSentence(
       timelineCalculationDate,
       allocatedTrancheDate,
       sentence,
+      offender,
     )
   }
 
   /**
    Historic release point is before SDS40 tranching started
    */
-  fun historicMultiplierFnForDate(): (sentence: CalculableSentence) -> Double = { sentence ->
+  fun historicMultiplierFnForDate(
+    offender: Offender,
+  ): (sentence: CalculableSentence) -> Double = { sentence ->
     multiplerForSentence(
       earlyReleaseConfigurations.configurations.minOf { it.earliestTranche() }.minusDays(1),
       null,
       sentence,
+      offender,
     )
   }
 
@@ -48,32 +54,33 @@ abstract class TimelineCalculationHandler(
     timelineCalculationDate: LocalDate,
     allocatedTrancheDate: LocalDate?,
     sentence: CalculableSentence,
+    offender: Offender,
   ): Double = if (sentence.identificationTrack.isMultiplierFixed()) {
     sentence.identificationTrack.fixedMultiplier()
   } else {
-    sdsReleaseMultiplier(sentence, timelineCalculationDate, allocatedTrancheDate)
+    sdsReleaseMultiplier(sentence, timelineCalculationDate, allocatedTrancheDate, offender)
   }
 
   private fun sdsReleaseMultiplier(
     sentence: CalculableSentence,
     timelineCalculationDate: LocalDate,
     allocatedTrancheDate: LocalDate?,
+    offender: Offender,
   ): Double {
     if (sentence is StandardDeterminateSentence) {
-      if (allocatedTrancheDate != null) {
+      val latestEarlyReleaseConfig =
+        earlyReleaseConfigurations.configurations
+          .filter { timelineCalculationDate.isAfterOrEqualTo(it.earliestTranche()) }
+          .maxByOrNull { it.earliestTranche() }
+      if (latestEarlyReleaseConfig != null) {
         // They are tranched.
-        val earlyReleaseConfig =
-          earlyReleaseConfigurations.configurations.find { it.tranches.any { tranche -> tranche.date == allocatedTrancheDate } }
-        if (earlyReleaseConfig!!.matchesFilter(sentence)) {
-          return getMultiplerForConfiguration(earlyReleaseConfig, timelineCalculationDate, sentence)
-        }
-      } else {
-        val sentencedAfterEarlyReleaseConfig =
-          earlyReleaseConfigurations.configurations.filter { config -> timelineCalculationDate.isAfterOrEqualTo(config.earliestTranche()) }
-            .maxByOrNull { it.earliestTranche() }
-        if (sentencedAfterEarlyReleaseConfig != null) {
-          if (sentencedAfterEarlyReleaseConfig.matchesFilter(sentence)) {
-            return getMultiplerForConfiguration(sentencedAfterEarlyReleaseConfig, timelineCalculationDate, sentence)
+        if (allocatedTrancheDate != null) {
+          if (latestEarlyReleaseConfig.matchesFilter(sentence, offender)) {
+            return getMultiplerForConfiguration(latestEarlyReleaseConfig, timelineCalculationDate, sentence)
+          }
+        } else if (sentence.sentencedAt.isAfterOrEqualTo(latestEarlyReleaseConfig.earliestTranche())) {
+          if (latestEarlyReleaseConfig.matchesFilter(sentence, offender)) {
+            return getMultiplerForConfiguration(latestEarlyReleaseConfig, timelineCalculationDate, sentence)
           }
         }
       }
