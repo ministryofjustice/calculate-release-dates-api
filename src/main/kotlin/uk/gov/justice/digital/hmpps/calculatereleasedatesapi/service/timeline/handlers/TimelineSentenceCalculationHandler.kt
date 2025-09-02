@@ -80,8 +80,8 @@ class TimelineSentenceCalculationHandler(
         sentence.sentenceCalculation = SentenceCalculation(
           UnadjustedReleaseDate(
             sentence,
-            multiplierFnForDate(timelineCalculationDate, allocatedTranche?.date),
-            historicMultiplierFnForDate(),
+            multiplierFnForDate(timelineCalculationDate, allocatedTranche?.date, offender),
+            historicMultiplierFnForDate(offender),
             returnToCustodyDate,
           ),
           SentenceAdjustments(),

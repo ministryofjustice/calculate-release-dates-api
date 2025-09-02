@@ -5,6 +5,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseConfigurations
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExternalMovementReason
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.TrancheAllocationService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculator
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineHandleResult
@@ -33,7 +34,7 @@ class TimelineTrancheCalculationHandler(
       }
 
       val allSentences = releasedSentenceGroups.map { it.sentences }.plus(listOf(currentSentenceGroup))
-      val potentialEarlyReleaseSentences = getPotentialEarlyReleaseSentences(allSentences.flatten(), earlyReleaseConfiguration)
+      val potentialEarlyReleaseSentences = getPotentialEarlyReleaseSentences(allSentences.flatten(), earlyReleaseConfiguration, offender)
       if (potentialEarlyReleaseSentences.isNotEmpty() && potentialEarlyReleaseSentences.none { it.sentenceCalculation.adjustedDeterminateReleaseDate.isAfter(earlyReleaseConfiguration.earliestTranche()) }) {
         return TimelineHandleResult(false)
       }
@@ -53,7 +54,7 @@ class TimelineTrancheCalculationHandler(
           timelineCalculator.getLatestCalculation(allSentences, offender, timelineTrackingData.returnToCustodyDate)
         sentencesBeforeReleaseDate(timelineCalculationDate).forEach {
           it.sentenceCalculation.unadjustedReleaseDate.findMultiplierBySentence =
-            multiplierFnForDate(timelineCalculationDate, allocatedTranche!!.date)
+            multiplierFnForDate(timelineCalculationDate, allocatedTranche!!.date, offender)
           it.sentenceCalculation.adjustments = it.sentenceCalculation.adjustments.copy(
             unusedAdaDays = 0,
             unusedLicenceAdaDays = 0,
@@ -89,5 +90,5 @@ class TimelineTrancheCalculationHandler(
     }
   }
 
-  private fun getPotentialEarlyReleaseSentences(allSentences: List<CalculableSentence>, earlyReleaseConfiguration: EarlyReleaseConfiguration): List<CalculableSentence> = allSentences.filter { sentence -> sentence.sentenceParts().any { earlyReleaseConfiguration.matchesFilter(it) } }
+  private fun getPotentialEarlyReleaseSentences(allSentences: List<CalculableSentence>, earlyReleaseConfiguration: EarlyReleaseConfiguration, offender: Offender): List<CalculableSentence> = allSentences.filter { sentence -> sentence.sentenceParts().any { earlyReleaseConfiguration.matchesFilter(it, offender) } }
 }
