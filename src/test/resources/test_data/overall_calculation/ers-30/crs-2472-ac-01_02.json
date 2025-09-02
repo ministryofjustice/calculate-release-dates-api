@@ -1,0 +1,69 @@
+{
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2024-12-06",
+          "offenceCode": "SDSPLUSO1"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 48
+          }
+        },
+        "sentencedAt": "2024-12-06",
+        "identifier": "cb304745-d781-47d3-b931-4baa31551fc5",
+        "isSDSPlus": true,
+        "isSDSPlusEligibleSentenceTypeLengthAndOffence": true,
+        "isSDSPlusOffenceInPeriod": true,
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2025-10-02",
+          "offenceCode": "SDS01"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 1
+          }
+        },
+        "sentencedAt": "2025-10-02",
+        "identifier": "493019e8-36ba-442d-90d6-315ead9dcf51",
+        "consecutiveSentenceUUIDs": [
+          "cb304745-d781-47d3-b931-4baa31551fc5"
+        ],
+        "isSDSPlus": false,
+        "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+        "isSDSPlusOffenceInPeriod": false,
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      }
+    ],
+    "adjustments": {
+      "ADDITIONAL_DAYS_AWARDED": [
+        {
+          "appliesToSentencesFrom": "2024-12-06",
+          "numberOfDays": 10,
+          "fromDate": "2024-12-06"
+        }
+      ],
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2024-12-06",
+          "numberOfDays": 30,
+          "fromDate": "2024-11-05",
+          "toDate": "2024-12-05"
+        }
+      ]
+    }
+  },
+  "userInputs": {
+    "calculateErsed": true
+  }
+}
