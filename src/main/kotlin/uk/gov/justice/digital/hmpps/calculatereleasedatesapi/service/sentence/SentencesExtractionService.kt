@@ -38,12 +38,17 @@ class SentencesExtractionService {
   fun mostRecentSentences(
     sentences: List<CalculableSentence>,
     property: KProperty1<SentenceCalculation, LocalDate?>,
+  ): List<CalculableSentence> = mostRecentSentences(sentences) { property.get(it) }
+
+  fun mostRecentSentences(
+    sentences: List<CalculableSentence>,
+    supplier: (sentence: SentenceCalculation) -> LocalDate?,
   ): List<CalculableSentence> {
     val maxSentence = sentences
-      .filter { property.get(it.sentenceCalculation) != null }
-      .maxByOrNull { property.get(it.sentenceCalculation)!! }!!
-    val max = property.get(maxSentence.sentenceCalculation)
-    return sentences.filter { property.get(it.sentenceCalculation) == max }
+      .filter { supplier(it.sentenceCalculation) != null }
+      .maxByOrNull { supplier(it.sentenceCalculation)!! }!!
+    val max = supplier(maxSentence.sentenceCalculation)
+    return sentences.filter { supplier(it.sentenceCalculation) == max }
   }
 
   fun mostRecentSentenceOrNull(

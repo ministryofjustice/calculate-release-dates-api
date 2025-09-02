@@ -24,7 +24,7 @@ class TimelineTrancheThreeCalculationHandler(
         .filter { sentence -> sentence.sentenceParts().any { sentence -> sentence.identificationTrack == SentenceIdentificationTrack.SDS && sentence is StandardDeterminateSentence && sentence.hasAnSDSEarlyReleaseExclusion.trancheThreeExclusion } }
       sentencesWithT3Exclusion.forEach {
         it.sentenceCalculation.unadjustedReleaseDate.findMultiplierBySentence =
-          multiplierFnForDate(timelineCalculationDate, allocatedTranche?.date)
+          multiplierFnForDate(timelineCalculationDate, allocatedTranche?.date, offender)
       }
       return TimelineHandleResult(requiresCalculation = sentencesWithT3Exclusion.isNotEmpty())
     }
