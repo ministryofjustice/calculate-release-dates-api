@@ -10,7 +10,7 @@ plugins {
   kotlin("plugin.spring") version "2.2.10"
   kotlin("plugin.jpa") version "2.2.10"
   id("jacoco")
-  id("org.openapi.generator") version "7.14.0"
+  id("org.openapi.generator") version "7.15.0"
 }
 
 configurations {
@@ -58,7 +58,7 @@ dependencies {
   implementation("io.arrow-kt:arrow-core:2.1.2")
   implementation("io.hypersistence:hypersistence-utils-hibernate-63:3.10.3")
   // OpenAPI
-  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.11")
+  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.12")
 
   implementation("com.amazonaws:amazon-sqs-java-messaging-lib:2.1.4")
   implementation("io.awspring.cloud:spring-cloud-aws-starter:3.4.0")
@@ -77,7 +77,7 @@ dependencies {
   testImplementation("org.springframework.security:spring-security-test")
   testImplementation("org.awaitility:awaitility-kotlin:4.3.0")
   testImplementation("net.javacrumbs.json-unit:json-unit-assertj:4.1.1")
-  testImplementation("io.swagger.parser.v3:swagger-parser-v2-converter:2.1.32")
+  testImplementation("io.swagger.parser.v3:swagger-parser-v2-converter:2.1.33")
   testImplementation("org.mockito:mockito-inline:5.2.0")
   testImplementation("org.junit.jupiter:junit-jupiter:5.13.4")
   testImplementation("org.testcontainers:postgresql:1.21.3")
