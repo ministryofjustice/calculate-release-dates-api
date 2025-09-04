@@ -740,21 +740,24 @@ class ManualCalculationServiceTest {
         CalculationOutcome(
           calculationRequestId = CALCULATION_REQUEST_WITH_OUTCOMES.id,
           outcomeDate = LocalDate.now(),
-          calculationDateType = "PED"
-        )
+          calculationDateType = "PED",
+        ),
       ),
       manualCalculationReason = listOf(
-      CalculationRequestManualReason(
-        calculationRequest = CALCULATION_REQUEST_WITH_OUTCOMES,
-        code = ValidationCode.CONCURRENT_CONSECUTIVE_SENTENCES_DURATION,
-        message = "Validation Message"
-      )))
+        CalculationRequestManualReason(
+          calculationRequest = CALCULATION_REQUEST_WITH_OUTCOMES,
+          code = ValidationCode.CONCURRENT_CONSECUTIVE_SENTENCES_DURATION,
+          message = "Validation Message",
+        ),
+      ),
+    )
 
     whenever(calculationRequestRepository.findById(any())).thenReturn(Optional.of(manualCalculation))
     whenever(calculationReasonRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REASON))
     whenever(bookingService.getBooking(FAKE_SOURCE_DATA, CalculationUserInputs())).thenReturn(BOOKING)
-    whenever(calculationRequestRepository
-      .findLatestManualCalculation(PRISONER_ID, CalculationStatus.CONFIRMED.name)
+    whenever(
+      calculationRequestRepository
+        .findLatestManualCalculation(PRISONER_ID, CalculationStatus.CONFIRMED.name),
     ).thenReturn(manualCalculation)
 
     val result = manualCalculationService.equivalentManualCalculationExists(PRISONER_ID)
@@ -776,15 +779,17 @@ class ManualCalculationServiceTest {
         CalculationOutcome(
           calculationRequestId = CALCULATION_REQUEST_WITH_OUTCOMES.id,
           outcomeDate = LocalDate.now(),
-          calculationDateType = "PED"
-        )
+          calculationDateType = "PED",
+        ),
       ),
       manualCalculationReason = listOf(
         CalculationRequestManualReason(
           calculationRequest = CALCULATION_REQUEST_WITH_OUTCOMES,
           code = ValidationCode.CONCURRENT_CONSECUTIVE_SENTENCES_DURATION,
-          message = "Validation Message"
-        )))
+          message = "Validation Message",
+        ),
+      ),
+    )
 
     // changed returnToCustodyDate
     val previousCalculation = CALCULATION_REQUEST_WITH_OUTCOMES.copy(
@@ -793,21 +798,24 @@ class ManualCalculationServiceTest {
         CalculationOutcome(
           calculationRequestId = CALCULATION_REQUEST_WITH_OUTCOMES.id,
           outcomeDate = LocalDate.now(),
-          calculationDateType = "PED"
-        )
+          calculationDateType = "PED",
+        ),
       ),
       manualCalculationReason = listOf(
         CalculationRequestManualReason(
           calculationRequest = CALCULATION_REQUEST_WITH_OUTCOMES,
           code = ValidationCode.CONCURRENT_CONSECUTIVE_SENTENCES_DURATION,
-          message = "Validation Message"
-        )))
+          message = "Validation Message",
+        ),
+      ),
+    )
 
     whenever(calculationRequestRepository.findById(any())).thenReturn(Optional.of(currentCalculation))
     whenever(calculationReasonRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REASON))
     whenever(bookingService.getBooking(FAKE_SOURCE_DATA, CalculationUserInputs())).thenReturn(BOOKING)
-    whenever(calculationRequestRepository
-      .findLatestManualCalculation(PRISONER_ID, CalculationStatus.CONFIRMED.name)
+    whenever(
+      calculationRequestRepository
+        .findLatestManualCalculation(PRISONER_ID, CalculationStatus.CONFIRMED.name),
     ).thenReturn(previousCalculation)
 
     val result = manualCalculationService.equivalentManualCalculationExists(PRISONER_ID)

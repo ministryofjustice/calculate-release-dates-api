@@ -96,11 +96,9 @@ class ManualCalculationController(
   @ResponseBody
   @Operation(
     summary = "Check if booking has existing up to date manual calculation",
-    description = "Only applies where the last calculation performed was manual, using the same sentence data as the current booking"
+    description = "Only applies where the last calculation performed was manual, using the same sentence data as the current booking",
   )
-  fun hasExistingCalculation(@PathVariable prisonerId: String): Boolean {
-    return manualCalculationService.equivalentManualCalculationExists(prisonerId)
-  }
+  fun hasExistingCalculation(@PathVariable prisonerId: String): Boolean = manualCalculationService.equivalentManualCalculationExists(prisonerId)
 
   companion object {
     val log: Logger = LoggerFactory.getLogger(this::class.java)
