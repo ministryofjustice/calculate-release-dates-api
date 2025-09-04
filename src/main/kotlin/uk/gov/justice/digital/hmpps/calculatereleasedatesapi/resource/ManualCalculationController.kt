@@ -91,6 +91,17 @@ class ManualCalculationController(
     @RequestBody manualEntryRequest: ManualEntryRequest,
   ): ManualCalculationResponse = manualCalculationService.storeManualCalculation(prisonerId, manualEntryRequest)
 
+  @GetMapping(value = ["/{prisonerId}/has-existing-calculation"])
+  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")
+  @ResponseBody
+  @Operation(
+    summary = "Check if booking has existing up to date manual calculation",
+    description = "Only applies where the last calculation performed was manual, using the same sentence data as the current booking"
+  )
+  fun hasExistingCalculation(@PathVariable prisonerId: String): Boolean {
+    return manualCalculationService.equivalentManualCalculationExists(prisonerId)
+  }
+
   companion object {
     val log: Logger = LoggerFactory.getLogger(this::class.java)
   }
