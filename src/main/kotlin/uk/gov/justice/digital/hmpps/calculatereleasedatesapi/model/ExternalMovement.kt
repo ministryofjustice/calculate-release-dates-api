@@ -17,11 +17,12 @@ enum class ExternalMovementReason {
   CRD,
   DTO,
   IMMIGRATION_BAIL,
+  RECALL_RELEASE,
 
   // Admissions
   SENTENCE,
   REMAND,
-  RECALL,
+  RECALL_ADMISSION,
   HDC_RECALL,
   ERS_BREACH,
   FAILED_ERS_REMOVAL,
