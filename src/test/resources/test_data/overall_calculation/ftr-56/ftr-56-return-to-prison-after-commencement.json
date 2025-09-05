@@ -1,0 +1,35 @@
+{
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2020-10-28"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 8
+          }
+        },
+        "sentencedAt": "2021-01-22",
+        "recallType": "FIXED_TERM_RECALL_56",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      }
+    ],
+    "adjustments": {
+      "RECALL_REMAND": [
+        {
+          "appliesToSentencesFrom": "2021-01-22",
+          "numberOfDays": 1,
+          "fromDate": "2022-02-02",
+          "toDate": "2022-02-02"
+        }
+      ]
+    },
+    "returnToCustodyDate": "2025-10-10"
+  }
+}

@@ -7,6 +7,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AFineSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineTrackingData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
 import java.time.temporal.ChronoUnit
@@ -16,8 +17,8 @@ import kotlin.collections.map
 class TrancheAllocationService {
 
   fun allocateTranche(timelineTrackingData: TimelineTrackingData, earlyReleaseConfig: EarlyReleaseConfiguration): EarlyReleaseTrancheConfiguration? {
-    val sentencesWithReleaseAfterTrancheCommencement = timelineTrackingData.sentencesBeforeReleaseDate(earlyReleaseConfig.earliestTranche())
-    val sentencesConsideredForTrancheRules = getSentencesForTrancheRules(sentencesWithReleaseAfterTrancheCommencement, earlyReleaseConfig)
+    val sentencesWithReleaseAfterTrancheCommencement = earlyReleaseConfig.sentencesWithReleaseAfterTrancheCommencement(timelineTrackingData.currentSentenceGroup + timelineTrackingData.licenceSentences)
+    val sentencesConsideredForTrancheRules = getSentencesForTrancheRules(sentencesWithReleaseAfterTrancheCommencement, earlyReleaseConfig, timelineTrackingData.offender)
     if (sentencesConsideredForTrancheRules.isEmpty()) {
       return null
     }
@@ -54,14 +55,19 @@ class TrancheAllocationService {
   private fun getSentencesForTrancheRules(
     sentences: List<CalculableSentence>,
     earlyReleaseConfig: EarlyReleaseConfiguration,
+    offender: Offender,
   ): List<CalculableSentence> = sentences.filter {
     it.sentenceParts().any { sentence ->
-      isEligibleForTrancheRules(earlyReleaseConfig, sentence) &&
+      isEligibleForTrancheRules(earlyReleaseConfig, sentence, offender) &&
         sentence.sentencedAt.isBefore(earlyReleaseConfig.earliestTranche())
     }
   }
 
-  private fun isEligibleForTrancheRules(earlyReleaseConfiguration: EarlyReleaseConfiguration, sentence: CalculableSentence): Boolean = earlyReleaseConfiguration.releaseMultiplier.keys.contains(sentence.identificationTrack)
+  private fun isEligibleForTrancheRules(earlyReleaseConfiguration: EarlyReleaseConfiguration, sentence: CalculableSentence, offender: Offender): Boolean = if (earlyReleaseConfiguration.releaseMultiplier != null) {
+    earlyReleaseConfiguration.releaseMultiplier.keys.contains(sentence.identificationTrack)
+  } else {
+    sentence.sentenceParts().any { earlyReleaseConfiguration.matchesFilter(it, offender) }
+  }
 
   private fun filterAndMapSentencesForNotIncludedTypesByDuration(
     sentenceToFilter: CalculableSentence,

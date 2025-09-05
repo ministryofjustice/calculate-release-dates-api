@@ -4,9 +4,12 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseConfigurations
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseTrancheType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.NoValidReturnToCustodyDateException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculator
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineHandleResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineTrackingData
@@ -34,6 +37,47 @@ abstract class TimelineCalculationHandler(
       sentence,
       offender,
     )
+  }
+
+  fun findRecallCalculation(
+    timelineCalculationDate: LocalDate,
+    allocatedEarlyReleaseConfiguration: EarlyReleaseConfiguration?,
+  ): (CalculableSentence, LocalDate?, Pair<Int, LocalDate>) -> Pair<Int, LocalDate> = { sentence, returnToCustodyDate, standardCalculation ->
+    when (val recallType = sentence.recallType) {
+      RecallType.STANDARD_RECALL -> standardCalculation
+
+      RecallType.FIXED_TERM_RECALL_14,
+      RecallType.FIXED_TERM_RECALL_28,
+      -> calculateFixedTermRecall(returnToCustodyDate, recallType)
+
+      RecallType.FIXED_TERM_RECALL_56 -> {
+        if (returnToCustodyDate == null) {
+          throw NoValidReturnToCustodyDateException("No return to custody date available")
+        }
+        if (returnToCustodyDate.isAfterOrEqualTo(ImportantDates.FTR_56_COMMENCEMENT_DATE)) {
+          calculateFixedTermRecall(returnToCustodyDate, recallType)
+        } else if (allocatedEarlyReleaseConfiguration != null && allocatedEarlyReleaseConfiguration.recallCalculation != null) {
+          calculateFixedTermRecall(returnToCustodyDate, recallType)
+        } else {
+          standardCalculation
+        }
+      }
+
+      RecallType.STANDARD_RECALL_255 ->
+        error("STANDARD_RECALL_255 is not supported yet")
+      null ->
+        error("Recall type is missing, with a recall, on sentence: $sentence")
+    }
+  }
+
+  private fun calculateFixedTermRecall(returnToCustodyDate: LocalDate?, recallType: RecallType): Pair<Int, LocalDate> {
+    if (returnToCustodyDate == null) {
+      throw NoValidReturnToCustodyDateException("No return to custody date available")
+    }
+    val days = recallType.lengthInDays!!
+    return days to returnToCustodyDate
+      .plusDays(days.toLong())
+      .minusDays(1)
   }
 
   /**
@@ -71,6 +115,7 @@ abstract class TimelineCalculationHandler(
       val latestEarlyReleaseConfig =
         earlyReleaseConfigurations.configurations
           .filter { timelineCalculationDate.isAfterOrEqualTo(it.earliestTranche()) }
+          .filter { it.releaseMultiplier != null }
           .maxByOrNull { it.earliestTranche() }
       if (latestEarlyReleaseConfig != null) {
         // They are tranched.
@@ -103,6 +148,6 @@ abstract class TimelineCalculationHandler(
     if (sds40Tranche3 != null && timelineCalculationDate.isAfterOrEqualTo(sds40Tranche3.date) && sentence.hasAnSDSEarlyReleaseExclusion.trancheThreeExclusion) {
       return defaultSDSReleaseMultiplier(sentence)
     }
-    return earlyReleaseConfig.releaseMultiplier[sentence.identificationTrack]!!.toDouble()
+    return earlyReleaseConfig.releaseMultiplier!![sentence.identificationTrack]!!.toDouble()
   }
 }
