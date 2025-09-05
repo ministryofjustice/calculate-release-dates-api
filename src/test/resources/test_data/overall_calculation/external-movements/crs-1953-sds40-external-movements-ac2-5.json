@@ -50,7 +50,7 @@
       },
       {
         "movementDate": "2024-09-13",
-        "movementReason": "RECALL",
+        "movementReason": "RECALL_ADMISSION",
         "direction": "IN"
       }
     ]
