@@ -31,8 +31,9 @@ data class PrisonApiExternalMovement(
       "BD" -> ExternalMovementReason.IMMIGRATION_BAIL
       "PX" -> ExternalMovementReason.PAROLE
       "D1", "D2" -> ExternalMovementReason.DTO
+      "PD" -> ExternalMovementReason.RECALL_RELEASE
 
-      "L" -> ExternalMovementReason.RECALL
+      "L" -> ExternalMovementReason.RECALL_ADMISSION
       "I", "W", "25" -> ExternalMovementReason.SENTENCE
       "V", "N" -> ExternalMovementReason.REMAND
       "B" -> ExternalMovementReason.HDC_RECALL
