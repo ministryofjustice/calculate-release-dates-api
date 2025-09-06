@@ -1,0 +1,27 @@
+[
+  {
+    "bookingId": 1,
+    "sentenceSequence": 1,
+    "sentenceStatus": "A",
+    "sentenceCategory": "2003",
+    "sentenceCalculationType": "ADIMP",
+    "sentenceTypeDescription": "CJA03 Standard Determinate Sentence",
+    "sentenceDate": "2024-09-30",
+    "committedAt": "2024-09-30",
+    "terms": [{
+      "years": 0,
+      "months": 5,
+      "weeks": 0,
+      "days": 0,
+      "code": "IMP"
+    }],
+    "offences": [
+      {
+        "offenderChargeId": 9991,
+        "offenceStartDate": "2020-12-10",
+        "offenceCode": "SX03220",
+        "offenceDescription": "Sexual assault"
+      }
+    ]
+  }
+]
