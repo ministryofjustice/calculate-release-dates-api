@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.confi
 import org.springframework.boot.context.properties.ConfigurationProperties
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AbstractSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 
@@ -16,12 +17,13 @@ data class EarlyReleaseConfiguration(
   val filter: EarlyReleaseSentenceFilter,
   val tranches: List<EarlyReleaseTrancheConfiguration>,
 ) {
-  fun matchesFilter(part: AbstractSentence): Boolean = when (filter) {
+  fun matchesFilter(part: AbstractSentence, offender: Offender): Boolean = when (filter) {
     EarlyReleaseSentenceFilter.SDS_40_EXCLUSIONS -> matchesSDS40Filter(part)
-    EarlyReleaseSentenceFilter.SDS_OR_SDS_PLUS -> matchesSDSOrSDSPlus(part)
+    EarlyReleaseSentenceFilter.SDS_OR_SDS_PLUS_ADULT -> matchesSDSOrSDSPlusAdult(part, offender)
   }
 
-  private fun matchesSDSOrSDSPlus(sentence: AbstractSentence): Boolean = sentence is StandardDeterminateSentence &&
+  private fun matchesSDSOrSDSPlusAdult(sentence: AbstractSentence, offender: Offender): Boolean = sentence is StandardDeterminateSentence &&
+    !offender.underEighteenAt(sentence.sentencedAt) &&
     listOf(SentenceIdentificationTrack.SDS, SentenceIdentificationTrack.SDS_PLUS).contains(sentence.identificationTrack)
 
   private fun matchesSDS40Filter(sentence: AbstractSentence): Boolean = sentence is StandardDeterminateSentence &&

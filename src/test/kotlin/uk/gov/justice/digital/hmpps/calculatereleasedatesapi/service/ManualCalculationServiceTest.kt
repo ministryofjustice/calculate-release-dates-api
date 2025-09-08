@@ -15,8 +15,10 @@ import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcome
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequestManualReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
@@ -754,6 +756,103 @@ class ManualCalculationServiceTest {
     verify(calculationRequestRepository, times(2)).save(calculationRequestArgumentCaptor.capture())
     val actualRequest = calculationRequestArgumentCaptor.firstValue
     assertThat(actualRequest.calculationType).isEqualTo(CalculationType.MANUAL_DETERMINATE)
+  }
+
+  @Test
+  fun `Equivalent manual calculation returns positive`() {
+    whenever(
+      calculationSourceDataService.getCalculationSourceData(
+        PRISONER_ID,
+        InactiveDataOptions.default(),
+      ),
+    ).thenReturn(FAKE_SOURCE_DATA)
+
+    val manualCalculation = CALCULATION_REQUEST_WITH_OUTCOMES.copy(
+      inputData = objectToJson(BOOKING, objectMapper),
+      calculationOutcomes = listOf(
+        CalculationOutcome(
+          calculationRequestId = CALCULATION_REQUEST_WITH_OUTCOMES.id,
+          outcomeDate = LocalDate.now(),
+          calculationDateType = "PED",
+        ),
+      ),
+      manualCalculationReason = listOf(
+        CalculationRequestManualReason(
+          calculationRequest = CALCULATION_REQUEST_WITH_OUTCOMES,
+          code = ValidationCode.CONCURRENT_CONSECUTIVE_SENTENCES_DURATION,
+          message = "Validation Message",
+        ),
+      ),
+    )
+
+    whenever(calculationRequestRepository.findById(any())).thenReturn(Optional.of(manualCalculation))
+    whenever(calculationReasonRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REASON))
+    whenever(bookingService.getBooking(FAKE_SOURCE_DATA, CalculationUserInputs())).thenReturn(BOOKING)
+    whenever(
+      calculationRequestRepository
+        .findLatestManualCalculation(PRISONER_ID, CalculationStatus.CONFIRMED.name),
+    ).thenReturn(manualCalculation)
+
+    val result = manualCalculationService.equivalentManualCalculationExists(PRISONER_ID)
+    assertThat(result).isTrue
+  }
+
+  @Test
+  fun `Equivalent manual calculation returns negative`() {
+    whenever(
+      calculationSourceDataService.getCalculationSourceData(
+        PRISONER_ID,
+        InactiveDataOptions.default(),
+      ),
+    ).thenReturn(FAKE_SOURCE_DATA)
+
+    val currentCalculation = CALCULATION_REQUEST_WITH_OUTCOMES.copy(
+      inputData = objectToJson(BOOKING, objectMapper),
+      calculationOutcomes = listOf(
+        CalculationOutcome(
+          calculationRequestId = CALCULATION_REQUEST_WITH_OUTCOMES.id,
+          outcomeDate = LocalDate.now(),
+          calculationDateType = "PED",
+        ),
+      ),
+      manualCalculationReason = listOf(
+        CalculationRequestManualReason(
+          calculationRequest = CALCULATION_REQUEST_WITH_OUTCOMES,
+          code = ValidationCode.CONCURRENT_CONSECUTIVE_SENTENCES_DURATION,
+          message = "Validation Message",
+        ),
+      ),
+    )
+
+    // changed returnToCustodyDate
+    val previousCalculation = CALCULATION_REQUEST_WITH_OUTCOMES.copy(
+      inputData = objectToJson(BOOKING.copy(returnToCustodyDate = LocalDate.now()), objectMapper),
+      calculationOutcomes = listOf(
+        CalculationOutcome(
+          calculationRequestId = CALCULATION_REQUEST_WITH_OUTCOMES.id,
+          outcomeDate = LocalDate.now(),
+          calculationDateType = "PED",
+        ),
+      ),
+      manualCalculationReason = listOf(
+        CalculationRequestManualReason(
+          calculationRequest = CALCULATION_REQUEST_WITH_OUTCOMES,
+          code = ValidationCode.CONCURRENT_CONSECUTIVE_SENTENCES_DURATION,
+          message = "Validation Message",
+        ),
+      ),
+    )
+
+    whenever(calculationRequestRepository.findById(any())).thenReturn(Optional.of(currentCalculation))
+    whenever(calculationReasonRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REASON))
+    whenever(bookingService.getBooking(FAKE_SOURCE_DATA, CalculationUserInputs())).thenReturn(BOOKING)
+    whenever(
+      calculationRequestRepository
+        .findLatestManualCalculation(PRISONER_ID, CalculationStatus.CONFIRMED.name),
+    ).thenReturn(previousCalculation)
+
+    val result = manualCalculationService.equivalentManualCalculationExists(PRISONER_ID)
+    assertThat(result).isFalse
   }
 
   private companion object {

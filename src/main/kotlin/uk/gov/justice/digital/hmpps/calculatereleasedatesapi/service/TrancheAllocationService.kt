@@ -4,7 +4,6 @@ import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseTrancheConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseTrancheType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AFineSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
@@ -57,12 +56,12 @@ class TrancheAllocationService {
     earlyReleaseConfig: EarlyReleaseConfiguration,
   ): List<CalculableSentence> = sentences.filter {
     it.sentenceParts().any { sentence ->
-      isEligibleForTrancheRules(sentence) &&
+      isEligibleForTrancheRules(earlyReleaseConfig, sentence) &&
         sentence.sentencedAt.isBefore(earlyReleaseConfig.earliestTranche())
     }
   }
 
-  private fun isEligibleForTrancheRules(sentence: CalculableSentence): Boolean = sentence.identificationTrack == SentenceIdentificationTrack.SDS
+  private fun isEligibleForTrancheRules(earlyReleaseConfiguration: EarlyReleaseConfiguration, sentence: CalculableSentence): Boolean = earlyReleaseConfiguration.releaseMultiplier.keys.contains(sentence.identificationTrack)
 
   private fun filterAndMapSentencesForNotIncludedTypesByDuration(
     sentenceToFilter: CalculableSentence,

@@ -1,0 +1,55 @@
+{
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2024-02-05",
+          "offenceCode": "SDSPLUSO1"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 4
+          }
+        },
+        "sentencedAt": "2024-02-05",
+        "identifier": "cb304745-d781-47d3-b931-4baa31551fc5",
+        "isSDSPlus": false,
+        "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+        "isSDSPlusOffenceInPeriod": false,
+        "hasAnSDSEarlyReleaseExclusion": "VIOLENT"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2025-10-08",
+          "offenceCode": "SDS01"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 1,
+            "MONTHS": 6
+          }
+        },
+        "sentencedAt": "2025-10-08",
+        "identifier": "493019e8-36ba-442d-90d6-315ead9dcf51",
+        "consecutiveSentenceUUIDs": [
+          "cb304745-d781-47d3-b931-4baa31551fc5"
+        ],
+        "isSDSPlus": false,
+        "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+        "isSDSPlusOffenceInPeriod": false,
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      }
+    ],
+    "adjustments": {
+    }
+  },
+  "userInputs": {
+    "calculateErsed": true
+  }
+}

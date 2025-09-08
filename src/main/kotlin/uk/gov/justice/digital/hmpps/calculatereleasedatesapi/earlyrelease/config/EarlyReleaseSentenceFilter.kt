@@ -2,5 +2,5 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.confi
 
 enum class EarlyReleaseSentenceFilter {
   SDS_40_EXCLUSIONS,
-  SDS_OR_SDS_PLUS,
+  SDS_OR_SDS_PLUS_ADULT,
 }
