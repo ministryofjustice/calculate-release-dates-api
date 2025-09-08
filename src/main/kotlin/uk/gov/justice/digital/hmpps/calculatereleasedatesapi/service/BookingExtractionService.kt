@@ -154,7 +154,7 @@ class BookingExtractionService(
     val earliestSentenceDate = sentences.minOf { it.sentencedAt }
 
     val mostRecentSentencesByReleaseDate =
-      extractionService.mostRecentSentences(sentences, SentenceCalculation::releaseDateDefaultedByCommencement)
+      extractionService.mostRecentSentences(sentences) { it.releaseDateDefaultedByCommencement(offender) }
     val mostRecentSentenceByAdjustedDeterminateReleaseDate =
       extractionService.mostRecentSentence(sentences, SentenceCalculation::adjustedDeterminateReleaseDate)
     val mostRecentSentenceByExpiryDate =

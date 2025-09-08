@@ -18,11 +18,14 @@ early-release-configuration:
           duration: 5
           date: ${sds-40-early-release-tranches.tranche-one-date}
           name: TRANCHE_1
+
         - type: FINAL
           date: ${sds-40-early-release-tranches.tranche-two-date}
           name: TRANCHE_2
+
         - type: SDS_40_TRANCHE3
           date: ${sds-40-early-release-tranches.tranche-three-date}
+
     - release-multiplier:
         SDS:
           numerator: 1
@@ -30,24 +33,53 @@ early-release-configuration:
         SDS_PLUS:
           numerator: 1
           denominator: 2
-      filter: SDS_OR_SDS_PLUS
+      filter: SDS_OR_SDS_PLUS_ADULT
       tranches:
         - type: SENTENCE_LENGTH
           unit: YEARS
           duration: 2
-          date: 2025-09-01
+          date: 2026-09-01
+
         - type: SENTENCE_LENGTH
           unit: YEARS
           duration: 3
-          date: 2025-10-01
+          date: 2026-10-01
+
         - type: SENTENCE_LENGTH
           unit: YEARS
           duration: 4
-          date: 2025-11-01
+          date: 2026-11-01
+
         - type: SENTENCE_LENGTH
           unit: YEARS
           duration: 5
-          date: 2025-12-01
+          date: 2026-12-01
+
+        - type: SENTENCE_LENGTH
+          unit: YEARS
+          duration: 6
+          date: 2027-01-01
+
+        - type: SENTENCE_LENGTH
+          unit: YEARS
+          duration: 7
+          date: 2027-02-01
+
+        - type: SENTENCE_LENGTH
+          unit: YEARS
+          duration: 8
+          date: 2028-02-01
+
+        - type: SENTENCE_LENGTH
+          unit: YEARS
+          duration: 9
+          date: 2027-03-01
+
+        - type: SENTENCE_LENGTH
+          unit: YEARS
+          duration: 10
+          date: 2027-04-01
+
         - type: FINAL
-          date: 2026-01-01
+          date: 2027-05-01
         
