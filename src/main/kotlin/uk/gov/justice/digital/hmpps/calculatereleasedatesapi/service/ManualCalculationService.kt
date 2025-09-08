@@ -220,6 +220,33 @@ class ManualCalculationService(
     }
   }
 
+  /**
+   * Compare current booking details in Nomis against the previous calculation.
+   * Previous calculation must be present and manually calculated.
+   * Manual calculations with no submitted dates are ignored.
+   * Both calculations must be identical to return a positive match.
+   */
+  fun equivalentManualCalculationExists(prisonerId: String): Boolean {
+    val sourceData = calculationSourceDataService.getCalculationSourceData(prisonerId, InactiveDataOptions.default())
+    val calculationUserInputs = CalculationUserInputs()
+    val currentBooking = bookingService.getBooking(sourceData, calculationUserInputs)
+    val previousCalculation = calculationRequestRepository
+      .findLatestManualCalculation(prisonerId, CalculationStatus.CONFIRMED.name) ?: return false
+
+    if (
+      previousCalculation.calculationOutcomes.size == 1 &&
+      previousCalculation.calculationOutcomes.first().calculationDateType == "None"
+    ) {
+      return false
+    }
+
+    val previousJson = runCatching {
+      objectToJson(currentBooking, objectMapper)
+    }.getOrElse { return false }
+
+    return previousJson == previousCalculation.inputData
+  }
+
   fun getSED(manualEntryRequest: ManualEntryRequest): LocalDate? {
     val sed = manualEntryRequest.selectedManualEntryDates.find { it.dateType == ReleaseDateType.SED }
     return sed?.date?.toLocalDate()
