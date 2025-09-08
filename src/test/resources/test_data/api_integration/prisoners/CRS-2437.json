@@ -1,7 +1,7 @@
 {
-   "offenderNo": "default",
+   "offenderNo": "ManualPrisoner",
    "bookingId": 1,
-   "firstName": "Default",
+   "firstName": "ManualPrisoner",
    "lastName": "Prisoner",
    "dateOfBirth": "1995-03-08",
    "sentenceDetail": {

@@ -98,7 +98,7 @@ class ManualCalculationIntTest : IntegrationTestBase() {
   }
 
   @Test
-  fun `Confirm previous manual calculation does not exists for SHPO validation fail`() {
+  fun `Confirm previous manual calculation does not exist for SHPO validation fail`() {
     val response = webTestClient.get()
       .uri("/manual-calculation/CRS-2437/has-existing-calculation")
       .accept(MediaType.APPLICATION_JSON)
