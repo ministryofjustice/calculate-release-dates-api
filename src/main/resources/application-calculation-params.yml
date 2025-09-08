@@ -48,11 +48,21 @@ early-release-configuration:
         - type: SENTENCE_LENGTH
           unit: YEARS
           duration: 5
-          date: 2026-04-01
+          date: 2026-03-04
+
+        - type: SENTENCE_LENGTH
+          unit: YEARS
+          duration: 6
+          date: 2026-03-18
 
         - type: SENTENCE_LENGTH
           unit: YEARS
           duration: 7
+          date: 2026-04-01
+
+        - type: SENTENCE_LENGTH
+          unit: YEARS
+          duration: 8
           date: 2026-04-15
 
         - type: SENTENCE_LENGTH

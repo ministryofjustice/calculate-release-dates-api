@@ -3,13 +3,13 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.h
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseConfigurations
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseTrancheType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.RecallCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.NoValidReturnToCustodyDateException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculator
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineHandleResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineTrackingData
@@ -54,9 +54,11 @@ abstract class TimelineCalculationHandler(
         if (returnToCustodyDate == null) {
           throw NoValidReturnToCustodyDateException("No return to custody date available")
         }
-        if (returnToCustodyDate.isAfterOrEqualTo(ImportantDates.FTR_56_COMMENCEMENT_DATE)) {
+
+        val ftr56Configuration = earlyReleaseConfigurations.configurations.find { it.recallCalculation == RecallCalculationType.FTR_56 }
+        if (ftr56Configuration != null && returnToCustodyDate.isAfterOrEqualTo(ftr56Configuration.earliestTranche())) {
           calculateFixedTermRecall(returnToCustodyDate, recallType)
-        } else if (allocatedEarlyReleaseConfiguration != null && allocatedEarlyReleaseConfiguration.recallCalculation != null) {
+        } else if (allocatedEarlyReleaseConfiguration != null && allocatedEarlyReleaseConfiguration == ftr56Configuration) {
           calculateFixedTermRecall(returnToCustodyDate, recallType)
         } else {
           standardCalculation
