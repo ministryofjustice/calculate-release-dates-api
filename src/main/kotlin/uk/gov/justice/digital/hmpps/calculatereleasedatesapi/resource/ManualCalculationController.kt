@@ -2,6 +2,8 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource
 
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
+import io.swagger.v3.oas.annotations.media.Content
+import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
@@ -81,9 +83,13 @@ class ManualCalculationController(
   )
   @ApiResponses(
     value = [
-      ApiResponse(responseCode = "201", description = "Returns a ManualCalculationResponse"),
-      ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
-      ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
+      ApiResponse(responseCode = "201", description = "Manual calculation stored", content = [Content(schema = Schema(implementation = ManualCalculationResponse::class))]),
+      ApiResponse(responseCode = "401", description = "Unauthorised"),
+      ApiResponse(responseCode = "403", description = "Forbidden"),
+      ApiResponse(responseCode = "412", description = "Precondition failed – booking data changed"),
+      ApiResponse(responseCode = "423", description = "Locked – NOMIS resource is locked; retry after closing NOMIS"),
+      ApiResponse(responseCode = "502", description = "Upstream NOMIS error"),
+      ApiResponse(responseCode = "500", description = "Unexpected error"),
     ],
   )
   fun storeManualCalculation(

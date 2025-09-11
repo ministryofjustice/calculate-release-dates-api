@@ -1,11 +1,18 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import jakarta.persistence.EntityNotFoundException
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.web.client.RestClientException
+import org.springframework.web.client.RestClientResponseException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ApprovedDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ApprovedDatesSubmission
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CalculationNotFoundException
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CrdWebException
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.NomisResourceLockedException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualEntrySelectedDate
@@ -45,7 +52,7 @@ class CalculationConfirmationService(
       .orElseThrow { CalculationNotFoundException("Could not find calculation with request id: ${calculation.calculationRequestId}") }
   }
 
-  @Transactional(readOnly = true)
+  @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
   fun writeToNomisAndPublishEvent(
     prisonerId: String,
     booking: Booking,
@@ -53,33 +60,68 @@ class CalculationConfirmationService(
     approvedDates: List<ManualEntrySelectedDate>?,
     isSpecialistSupport: Boolean? = false,
   ) {
-    val calculationRequest = calculationRequestRepository.findById(calculation.calculationRequestId)
+    val request = calculationRequestRepository.findById(calculation.calculationRequestId)
       .orElseThrow { EntityNotFoundException("No calculation request exists") }
 
-    val updateOffenderDates = UpdateOffenderDates(
-      calculationUuid = calculationRequest.calculationReference,
-      submissionUser = serviceUserService.getUsername(),
-      keyDates = transform(calculation, approvedDates),
-      noDates = false,
-      reason = calculationRequest.reasonForCalculation?.nomisReason,
-      comment = nomisCommentService.getNomisComment(calculationRequest, isSpecialistSupport!!, approvedDates),
-    )
+    val payload = buildUpdateOffenderDates(request, approvedDates, isSpecialistSupport == true, calculation)
+
     try {
-      prisonService.postReleaseDates(booking.bookingId, updateOffenderDates)
-    } catch (ex: Exception) {
-      log.error("Nomis write failed: ${ex.message}")
-      throw EntityNotFoundException(
-        "Writing release dates to NOMIS failed for prisonerId $prisonerId " +
-          "and bookingId ${booking.bookingId}",
-      )
+      prisonService.postReleaseDates(booking.bookingId, payload)
+    } catch (ex: RestClientResponseException) {
+      throw mapNomisHttpException(ex, prisonerId, booking.bookingId)
+    } catch (_: RestClientException) {
+      throw nomisBadGateway(prisonerId, booking.bookingId)
+    } catch (_: Exception) {
+      throw nomisUnexpected(prisonerId, booking.bookingId)
     }
-    runCatching {
-      eventService.publishReleaseDatesChangedEvent(prisonerId, booking.bookingId)
-    }.onFailure { error ->
-      log.error(
-        "Failed to send release-dates-changed-event for prisoner ID $prisonerId",
-        error,
-      )
-    }
+    publishReleaseDatesChangedOrLog(prisonerId, booking.bookingId)
+  }
+
+  private fun buildUpdateOffenderDates(
+    request: CalculationRequest,
+    approved: List<ManualEntrySelectedDate>?,
+    specialistSupport: Boolean,
+    calculation: CalculatedReleaseDates,
+  ): UpdateOffenderDates = UpdateOffenderDates(
+    calculationUuid = request.calculationReference,
+    submissionUser = serviceUserService.getUsername(),
+    keyDates = transform(calculation, approved),
+    noDates = false,
+    reason = request.reasonForCalculation?.nomisReason,
+    comment = nomisCommentService.getNomisComment(request, specialistSupport, approved),
+  )
+
+  private fun mapNomisHttpException(
+    ex: RestClientResponseException,
+    prisonerId: String,
+    bookingId: Long,
+  ): CrdWebException = if (ex.statusCode.value() == 423) {
+    NomisResourceLockedException(
+      "NOMIS is locked for prisonerId=$prisonerId, bookingId=$bookingId",
+    )
+  } else {
+    nomisBadGateway(prisonerId, bookingId)
+  }
+
+  private fun nomisBadGateway(
+    prisonerId: String,
+    bookingId: Long,
+  ) = CrdWebException(
+    message = "Failed to write release dates to NOMIS for prisonerId=$prisonerId, bookingId=$bookingId",
+    status = HttpStatus.BAD_GATEWAY,
+    code = "NOMIS_WRITE_FAILED",
+  )
+
+  private fun nomisUnexpected(
+    prisonerId: String,
+    bookingId: Long,
+  ) = CrdWebException(
+    message = "Unexpected error writing release dates for prisonerId=$prisonerId, bookingId=$bookingId",
+    status = HttpStatus.INTERNAL_SERVER_ERROR,
+    code = "NOMIS_WRITE_FAILED",
+  )
+  private fun publishReleaseDatesChangedOrLog(prisonerId: String, bookingId: Long) {
+    runCatching { eventService.publishReleaseDatesChangedEvent(prisonerId, bookingId) }
+      .onFailure { log.error("Failed to publish release-dates-changed-event for prisonerId=$prisonerId", it) }
   }
 }
