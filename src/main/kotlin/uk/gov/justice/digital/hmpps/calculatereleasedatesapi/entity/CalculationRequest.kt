@@ -41,7 +41,7 @@ import java.util.UUID
 data class CalculationRequest(
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  val id: Long = -1,
+  var id: Long = -1,
 
   @param:NotNull
   val calculationReference: UUID = UUID.randomUUID(),
@@ -105,7 +105,7 @@ data class CalculationRequest(
 
   @Column
   @Enumerated(value = EnumType.STRING)
-  val calculationType: CalculationType = CalculationType.CALCULATED,
+  var calculationType: CalculationType = CalculationType.CALCULATED,
 
   @OneToOne(mappedBy = "calculationRequest", cascade = [CascadeType.ALL])
   val calculationRequestUserInput: CalculationRequestUserInput? = null,

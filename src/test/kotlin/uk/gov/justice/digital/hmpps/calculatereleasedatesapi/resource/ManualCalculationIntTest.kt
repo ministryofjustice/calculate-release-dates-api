@@ -141,6 +141,8 @@ class ManualCalculationIntTest : IntegrationTestBase() {
       .returnResult().responseBody!!
     assertThat(newCalculation.calculationRequestId).isNotNull
 
+    
+
     val previousCalculationCheck = webTestClient.get()
       .uri("/manual-calculation/CRS-2437/has-existing-calculation")
       .accept(MediaType.APPLICATION_JSON)
