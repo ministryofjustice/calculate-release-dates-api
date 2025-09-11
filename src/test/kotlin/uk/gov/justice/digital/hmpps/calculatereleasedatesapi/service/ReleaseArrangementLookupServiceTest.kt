@@ -168,6 +168,7 @@ class ReleaseArrangementLookupServiceTest {
       null,
       null,
       null,
+      revocationDates = emptyList(),
     )
     whenever(mockManageOffencesService.getPcscMarkersForOffenceCodes(any())).thenReturn(listOf(markers))
     val returnedResult = underTest.populateReleaseArrangements(listOf(sentence))
@@ -535,6 +536,7 @@ class ReleaseArrangementLookupServiceTest {
       null,
       null,
       null,
+      revocationDates = emptyList(),
     )
     whenever(mockManageOffencesService.getPcscMarkersForOffenceCodes(any())).thenReturn(listOf(markers))
     val returnedResult = underTest.populateReleaseArrangements(listOf(sentence))
@@ -593,6 +595,7 @@ class ReleaseArrangementLookupServiceTest {
         null,
         null,
         null,
+        revocationDates = emptyList(),
       )
       whenever(mockManageOffencesService.getPcscMarkersForOffenceCodes(any())).thenReturn(listOf(markers))
       val returnedResult = underTest.populateReleaseArrangements(listOf(sentence))
@@ -626,6 +629,7 @@ class ReleaseArrangementLookupServiceTest {
         null,
         null,
         null,
+        revocationDates = emptyList(),
       ),
     )
 
@@ -652,6 +656,7 @@ class ReleaseArrangementLookupServiceTest {
         null,
         null,
         null,
+        revocationDates = emptyList(),
       ),
     )
 
@@ -678,6 +683,7 @@ class ReleaseArrangementLookupServiceTest {
         null,
         null,
         null,
+        revocationDates = emptyList(),
       ),
     )
 
@@ -704,6 +710,7 @@ class ReleaseArrangementLookupServiceTest {
         null,
         null,
         null,
+        revocationDates = emptyList(),
       ),
     )
 
@@ -730,6 +737,7 @@ class ReleaseArrangementLookupServiceTest {
         null,
         null,
         null,
+        revocationDates = emptyList(),
       ),
     )
 
@@ -756,6 +764,7 @@ class ReleaseArrangementLookupServiceTest {
         null,
         null,
         null,
+        revocationDates = emptyList(),
       ),
     )
     val nonSDSPlusSentenceAndOffenceFourYears = NormalisedSentenceAndOffence(
@@ -780,6 +789,7 @@ class ReleaseArrangementLookupServiceTest {
       null,
       null,
       null,
+      revocationDates = emptyList(),
     )
 
     private const val OFFENCE_CODE_SOME_PCSC_MARKERS = "A123456"

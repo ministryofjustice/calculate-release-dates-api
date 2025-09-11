@@ -137,6 +137,7 @@ class ValidationServiceTest {
     fineAmount = null,
     courtDescription = null,
     consecutiveToSequence = null,
+    revocationDates = emptyList(),
   )
   private val sentenceWithMissingOffenceDates = NormalisedSentenceAndOffence(
     bookingId = 1L,
@@ -162,6 +163,7 @@ class ValidationServiceTest {
     fineAmount = null,
     courtDescription = null,
     consecutiveToSequence = null,
+    revocationDates = emptyList(),
   )
 
   private val validSopcSentence = validSdsSentence.copy(
@@ -3536,6 +3538,7 @@ class ValidationServiceTest {
       fineAmount = null,
       courtDescription = null,
       consecutiveToSequence = null,
+      revocationDates = listOf(LocalDate.of(2021, 1, 1)),
     )
     private val FTR_28_DAY_SENTENCE = NormalisedSentenceAndOffence(
       bookingId = 1L,
@@ -3561,6 +3564,7 @@ class ValidationServiceTest {
       fineAmount = null,
       courtDescription = null,
       consecutiveToSequence = null,
+      revocationDates = listOf(LocalDate.of(2021, 1, 1)),
     )
     private val VALID_FTR_SOURCE_DATA = CalculationSourceData(
       sentenceAndOffences = listOf(FTR_14_DAY_SENTENCE).map {

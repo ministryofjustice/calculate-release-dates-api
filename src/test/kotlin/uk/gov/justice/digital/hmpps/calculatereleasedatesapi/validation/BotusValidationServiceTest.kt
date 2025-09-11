@@ -78,6 +78,7 @@ class BotusValidationServiceTest {
       fineAmount = null,
       courtDescription = null,
       consecutiveToSequence = null,
+      revocationDates = emptyList(),
     )
 
     private val VALID_PRISONER =

@@ -21,6 +21,7 @@ data class PrisonApiSentenceAndOffences(
   val caseReference: String? = null,
   val courtDescription: String? = null,
   val fineAmount: BigDecimal? = null,
+  val revocationDates: List<LocalDate> = emptyList(),
 ) {
   fun toLatest(): List<SentenceAndOffenceWithReleaseArrangements> = offences.map { offence ->
     SentenceAndOffenceWithReleaseArrangements(
