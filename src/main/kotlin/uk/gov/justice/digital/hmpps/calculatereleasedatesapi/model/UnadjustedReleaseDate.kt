@@ -2,7 +2,6 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.PED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.NoValidReturnToCustodyDateException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.sentence.SentenceAggregator
 import java.time.LocalDate
 import kotlin.math.ceil
@@ -12,6 +11,7 @@ class UnadjustedReleaseDate(
   val sentence: CalculableSentence,
   findMultiplierBySentence: (sentence: CalculableSentence) -> Double,
   historicFindMultiplierBySentence: (sentence: CalculableSentence) -> Double,
+  findRecallCalculation: (CalculableSentence, LocalDate?, Pair<Int, LocalDate>) -> Pair<Int, LocalDate>,
   val returnToCustodyDate: LocalDate? = null,
 ) {
 
@@ -24,6 +24,13 @@ class UnadjustedReleaseDate(
     calculateUnadjustedReleaseDate()
   }
 
+  /*
+    When recall calculation changes. The delegate here will recalculate the unadjusted PRRD dates.
+   */
+  var findRecallCalculation: (CalculableSentence, LocalDate?, Pair<Int, LocalDate>) -> Pair<Int, LocalDate> by Delegates.observable(findRecallCalculation) { _, _, _ ->
+    calculateUnadjustedReleaseDate()
+  }
+
   init {
     this.findMultiplierBySentence = findMultiplierBySentence
     this.historicReleaseDateCalculation = if (sentence is ConsecutiveSentence) {
@@ -31,6 +38,7 @@ class UnadjustedReleaseDate(
     } else {
       getSingleSentenceRelease(historicFindMultiplierBySentence)
     }
+    this.findRecallCalculation = findRecallCalculation
   }
 
   lateinit var releaseDateCalculation: ReleaseDateCalculation
@@ -59,15 +67,6 @@ class UnadjustedReleaseDate(
   var unadjustedPostRecallReleaseDate: LocalDate? = null
     private set
 
-  private fun calculateFixedTermRecall(days: Int): LocalDate {
-    if (returnToCustodyDate == null) {
-      throw NoValidReturnToCustodyDateException("No return to custody date available")
-    }
-    return returnToCustodyDate
-      .plusDays(days.toLong())
-      .minusDays(1)
-  }
-
   private fun calculateUnadjustedReleaseDate() {
     this.releaseDateCalculation = if (sentence is ConsecutiveSentence) {
       getConsecutiveRelease(findMultiplierBySentence)
@@ -76,26 +75,9 @@ class UnadjustedReleaseDate(
     }
 
     if (sentence.isRecall()) {
-      when (val recallType = sentence.recallType) {
-        RecallType.STANDARD_RECALL -> {
-          this.numberOfDaysToPostRecallReleaseDate = releaseDateCalculation.numberOfDaysToSentenceExpiryDate
-          this.unadjustedPostRecallReleaseDate = unadjustedExpiryDate
-        }
-
-        RecallType.FIXED_TERM_RECALL_14,
-        RecallType.FIXED_TERM_RECALL_28,
-        RecallType.FIXED_TERM_RECALL_56,
-        -> {
-          val days = recallType.lengthInDays!!
-          this.numberOfDaysToPostRecallReleaseDate = days
-          this.unadjustedPostRecallReleaseDate = calculateFixedTermRecall(days)
-        }
-
-        RecallType.STANDARD_RECALL_255 ->
-          error("STANDARD_RECALL_255 is not supported yet")
-        null ->
-          error("Recall type is missing, with a recall, on sentence: $sentence")
-      }
+      val (days, releaseDate) = findRecallCalculation(sentence, returnToCustodyDate, releaseDateCalculation.numberOfDaysToSentenceExpiryDate to unadjustedExpiryDate)
+      this.numberOfDaysToPostRecallReleaseDate = days
+      this.unadjustedPostRecallReleaseDate = releaseDate
     }
   }
 

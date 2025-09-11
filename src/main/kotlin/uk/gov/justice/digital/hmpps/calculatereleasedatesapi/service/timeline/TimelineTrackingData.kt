@@ -38,7 +38,6 @@ data class TimelineTrackingData(
 
   fun isInPrison() = outOfPrisonStatus == null
   fun isOutOfPrison() = outOfPrisonStatus != null
-  fun sentencesBeforeReleaseDate(beforeReleaseDate: LocalDate) = currentSentenceGroup + licenceSentences.filter { it.sentenceCalculation.adjustedDeterminateReleaseDate.isAfter(beforeReleaseDate) }
 }
 
 data class OutOfPrisonStatus(
