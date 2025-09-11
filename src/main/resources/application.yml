@@ -162,3 +162,4 @@ feature-toggles:
   historicSled: ${HISTORIC_SLED_ENABLED:false}
   ftr48ManualJourney: ${FTR_48_MANUAL_JOURNEY:false}
   useERS30Calculation: ${USE_ERS30_CALCULATION:false}
+  validateRevocationDate: ${VALIDATE_REVOCATION_DATE:false}

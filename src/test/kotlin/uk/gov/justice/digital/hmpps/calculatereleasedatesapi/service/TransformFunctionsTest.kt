@@ -281,6 +281,7 @@ class TransformFunctionsTest {
       fineAmount = null,
       courtDescription = null,
       consecutiveToSequence = null,
+      revocationDates = listOf(LocalDate.of(2018, 1, 1), LocalDate.of(2019, 1, 1)),
     )
 
     val standardSentence = NormalisedSentenceAndOffence(
@@ -299,6 +300,7 @@ class TransformFunctionsTest {
       fineAmount = null,
       courtDescription = null,
       consecutiveToSequence = null,
+      revocationDates = emptyList(),
     )
 
     val bookingAndSentenceAdjustment = BookingAndSentenceAdjustments(

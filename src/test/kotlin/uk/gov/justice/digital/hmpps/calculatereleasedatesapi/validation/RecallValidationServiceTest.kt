@@ -17,7 +17,11 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType.FTR_14_ORA
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.FTR_48_COMMENCEMENT_DATE
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit.DAYS
@@ -36,8 +40,31 @@ class RecallValidationServiceTest {
       trancheThreeCommencementDate = sdsEarlyReleaseTrancheThreeDate(),
     ),
     validationUtilities = ValidationUtilities(),
-    featureToggles = FeatureToggles(ftr48ManualJourney = true),
+    featureToggles = FeatureToggles(ftr48ManualJourney = true, validateRevocationDate = true),
   )
+
+  @Nested
+  inner class ValidateRevocationDateTests {
+
+    @Test
+    fun `Validate revocation date passed`() {
+      val sentence = FTR_14_DAY_SENTENCE
+
+      val messages = recallValidationService.validateRevocationDate(listOf(sentence))
+
+      assertThat(messages).isEmpty()
+    }
+
+    @Test
+    fun `Validate revocation date missing`() {
+      val sentence = FTR_14_DAY_SENTENCE.copy(revocationDates = emptyList())
+
+      val messages = recallValidationService.validateRevocationDate(listOf(sentence))
+
+      assertThat(messages).isNotEmpty
+      assertThat(messages[0].code).isEqualTo(ValidationCode.RECALL_MISSING_REVOCATION_DATE)
+    }
+  }
 
   @Nested
   @DisplayName("validateFtrFortyOverlap")
@@ -126,7 +153,11 @@ class RecallValidationServiceTest {
     }
   }
 
-  private fun createConsecutiveFTRSentence(sentenceDate: LocalDate, firstSentenceLengthMonths: Long, secondSentenceLengthMonths: Long): ConsecutiveSentence {
+  private fun createConsecutiveFTRSentence(
+    sentenceDate: LocalDate,
+    firstSentenceLengthMonths: Long,
+    secondSentenceLengthMonths: Long,
+  ): ConsecutiveSentence {
     val consecutiveSentencePartOne = StandardDeterminateSentence(
       sentencedAt = sentenceDate,
       duration = Duration(mutableMapOf(DAYS to 0L, WEEKS to 0L, MONTHS to firstSentenceLengthMonths, YEARS to 0L)),
@@ -173,7 +204,39 @@ class RecallValidationServiceTest {
     isSDSPlus = false,
     hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
   )
+
   private companion object {
     val SENTENCE_DATE_BEFORE_COMMENCEMENT: LocalDate = LocalDate.of(2015, 1, 1)
+
+    private val FTR_14_DAY_SENTENCE = SentenceAndOffenceWithReleaseArrangements(
+      bookingId = 1L,
+      sentenceSequence = 7,
+      lineSequence = 1,
+      caseSequence = 1,
+      sentenceDate = LocalDate.of(2021, 1, 1),
+      terms = listOf(
+        SentenceTerms(5, 0, 0, 0, SentenceTerms.IMPRISONMENT_TERM_CODE),
+      ),
+      sentenceCalculationType = FTR_14_ORA.primaryName!!,
+      sentenceCategory = "2003",
+      sentenceStatus = "a",
+      sentenceTypeDescription = "This is a sentence type",
+      offence = OffenderOffence(
+        1,
+        LocalDate.of(2015, 4, 1),
+        null,
+        "A123456",
+        "TEST OFFENCE 2",
+      ),
+      caseReference = null,
+      fineAmount = null,
+      courtDescription = null,
+      consecutiveToSequence = null,
+      revocationDates = listOf(LocalDate.of(2021, 1, 1)),
+      isSDSPlus = false,
+      isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+      isSDSPlusOffenceInPeriod = false,
+      hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
+    )
   }
 }

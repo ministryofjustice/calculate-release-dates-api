@@ -150,6 +150,7 @@ class PrisonServiceTest {
         courtDescription = null,
         fineAmount = null,
         terms = emptyList(),
+        revocationDates = emptyList(),
       ),
       NormalisedSentenceAndOffence(
         1,
@@ -167,6 +168,7 @@ class PrisonServiceTest {
         courtDescription = null,
         fineAmount = null,
         terms = emptyList(),
+        revocationDates = emptyList(),
       ),
 
     )

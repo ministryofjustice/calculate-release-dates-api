@@ -82,6 +82,7 @@ class TimelineSentenceCalculationHandler(
             sentence,
             multiplierFnForDate(timelineCalculationDate, allocatedTranche?.date, offender),
             historicMultiplierFnForDate(offender),
+            findRecallCalculation(timelineCalculationDate, allocatedEarlyRelease),
             returnToCustodyDate,
           ),
           SentenceAdjustments(),

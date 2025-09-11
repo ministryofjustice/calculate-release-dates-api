@@ -3,9 +3,13 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.confi
 import org.springframework.boot.context.properties.ConfigurationProperties
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AbstractSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
+import java.time.LocalDate
 
 @ConfigurationProperties(prefix = "early-release-configuration")
 data class EarlyReleaseConfigurations(
@@ -13,13 +17,15 @@ data class EarlyReleaseConfigurations(
 )
 
 data class EarlyReleaseConfiguration(
-  val releaseMultiplier: Map<SentenceIdentificationTrack, EarlyReleaseMultipler>,
+  val releaseMultiplier: Map<SentenceIdentificationTrack, EarlyReleaseMultiplier>? = null,
+  val recallCalculation: RecallCalculationType? = null,
   val filter: EarlyReleaseSentenceFilter,
   val tranches: List<EarlyReleaseTrancheConfiguration>,
 ) {
   fun matchesFilter(part: AbstractSentence, offender: Offender): Boolean = when (filter) {
     EarlyReleaseSentenceFilter.SDS_40_EXCLUSIONS -> matchesSDS40Filter(part)
     EarlyReleaseSentenceFilter.SDS_OR_SDS_PLUS_ADULT -> matchesSDSOrSDSPlusAdult(part, offender)
+    EarlyReleaseSentenceFilter.FTR_56 -> part.recallType == RecallType.FIXED_TERM_RECALL_56
   }
 
   private fun matchesSDSOrSDSPlusAdult(sentence: AbstractSentence, offender: Offender): Boolean = sentence is StandardDeterminateSentence &&
@@ -31,16 +37,32 @@ data class EarlyReleaseConfiguration(
     (sentence.hasAnSDSEarlyReleaseExclusion == SDSEarlyReleaseExclusionType.NO || sentence.hasAnSDSEarlyReleaseExclusion.trancheThreeExclusion)
 
   fun earliestTranche() = tranches.minOf { it.date }
+
+  fun sentencesWithReleaseAfterTrancheCommencement(sentences: List<CalculableSentence>, earlyReleaseTrancheConfiguration: EarlyReleaseTrancheConfiguration? = null): List<CalculableSentence> = sentences.filter {
+    releaseDateConsidered(it.sentenceCalculation).isAfter(earlyReleaseTrancheConfiguration?.date ?: earliestTranche())
+  }
+
+  fun releaseDateConsidered(
+    sentenceCalculation: SentenceCalculation,
+  ): LocalDate = if (releaseMultiplier != null) {
+    sentenceCalculation.adjustedDeterminateReleaseDate
+  } else {
+    sentenceCalculation.releaseDate
+  }
 }
 
 /*
-  Early release multipler defined as fraction.
+  Early release multiplier defined as fraction.
    e.g. 1/3 1/2
    or if a decimal, denominator is 1 e.g 0.4/1 = 0.4
  */
-data class EarlyReleaseMultipler(
+data class EarlyReleaseMultiplier(
   val numerator: Double,
   val denominator: Double = 1.toDouble(),
 ) {
   fun toDouble(): Double = numerator.div(denominator)
+}
+
+enum class RecallCalculationType {
+  FTR_56,
 }
