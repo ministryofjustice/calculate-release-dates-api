@@ -14,10 +14,12 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Calcul
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CouldNotSaveManualEntryException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOutput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualCalculationResponse
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualEntryRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.UpdateOffenderDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeRepository
@@ -60,7 +62,6 @@ class ManualCalculationService(
     return sentencesAndOffences.any { SentenceCalculationType.from((it.sentenceCalculationType)).recallType != null }
   }
 
-  // Write a method to create EffectiveSentenceLength
   @Transactional
   fun storeManualCalculation(
     prisonerId: String,
@@ -79,16 +80,8 @@ class ManualCalculationService(
     }
 
     val reasonForCalculation = calculationReasonRepository.findById(manualEntryRequest.reasonForCalculationId).orElse(null)
-
-    val type =
-      if (isGenuineOverride) {
-        CalculationType.MANUAL_OVERRIDE
-      } else if (hasIndeterminateSentences(booking.bookingId)) {
-        CalculationType.MANUAL_INDETERMINATE
-      } else {
-        CalculationType.MANUAL_DETERMINATE
-      }
-
+    val type = chooseManualType(isGenuineOverride, booking.bookingId)
+    log.info(type.toString())
     var request: CalculationRequest = transform(
       booking,
       serviceUserService.getUsername(),
@@ -98,37 +91,23 @@ class ManualCalculationService(
       objectMapper,
       manualEntryRequest.otherReasonDescription,
       version = buildProperties.version,
-    ).withType(type)
-
+    )
+    request.calculationType = type
     request = calculationRequestRepository.save(request)
+    val outcomes = createOutcomes(request, manualEntryRequest)
 
     try {
-      val pre = validationService.validateSupportedSentencesAndCalculations(sourceData)
-      val validationMessages = mutableListOf<ValidationMessage>().apply {
-        addAll(pre.unsupportedCalculationMessages)
-        addAll(pre.unsupportedSentenceMessages)
-      }
-      if (validationMessages.isNotEmpty()) {
-        request.manualCalculationReason = validationMessages.map { transform(request, it) }
-        request.calculationStatus = CalculationStatus.CONFIRMED.name
-        calculationRequestRepository.save(request)
-        return ManualCalculationResponse(emptyMap(), request.id)
+      val preMessages = collectPreValidationMessages(sourceData)
+      if (preMessages.isNotEmpty()) {
+        return finaliseWithValidationErrors(request, outcomes, preMessages)
       }
 
       val calculationOutput = calculationService.calculateReleaseDates(booking, calculationUserInputs)
 
-      val post = validationService
-        .validateBookingAfterCalculation(calculationOutput, booking)
-        .filter { it.type == MANUAL_ENTRY_JOURNEY_REQUIRED }
-
-      if (post.isNotEmpty()) {
-        request.manualCalculationReason = post.map { transform(request, it) }
-        request.calculationStatus = CalculationStatus.CONFIRMED.name
-        calculationRequestRepository.save(request)
-        return ManualCalculationResponse(emptyMap(), request.id)
+      val postMessages = collectPostValidationMessages(calculationOutput, booking)
+      if (postMessages.isNotEmpty()) {
+        return finaliseWithValidationErrors(request, outcomes, postMessages)
       }
-
-      val outcomes = manualEntryRequest.selectedManualEntryDates.map { transform(request, it) }
 
       val enteredDates = writeToNomisAndPublishEvent(
         prisonerId = prisonerId,
@@ -139,14 +118,13 @@ class ManualCalculationService(
         effectiveSentenceLength = effectiveSentenceLength,
       ) ?: throw CouldNotSaveManualEntryException("There was a problem saving the dates")
 
-      calculationOutcomeRepository.saveAll(outcomes)
-      request.calculationStatus = CalculationStatus.CONFIRMED.name
-      calculationRequestRepository.save(request)
+      log.info(calculationRequestRepository.findById(request.id).toString())
+      return finaliseWithSuccess(request, outcomes, enteredDates)
 
-      return ManualCalculationResponse(enteredDates, request.id)
     } catch (ex: Exception) {
+      log.error("Error while saving ${request.id}", ex)
       request.calculationStatus = CalculationStatus.ERROR.name
-      calculationRequestRepository.save(request)
+      calculationRequestRepository.saveAndFlush(request)
       throw ex // let controller advice map 423/502/etc.
     }
   }
@@ -243,6 +221,74 @@ class ManualCalculationService(
   fun getSED(manualEntryRequest: ManualEntryRequest): LocalDate? {
     val sed = manualEntryRequest.selectedManualEntryDates.find { it.dateType == ReleaseDateType.SED }
     return sed?.date?.toLocalDate()
+  }
+
+  private fun chooseManualType(isGenuineOverride: Boolean, bookingId: Long): CalculationType =
+    when {
+      isGenuineOverride -> CalculationType.MANUAL_OVERRIDE
+      hasIndeterminateSentences(bookingId) -> CalculationType.MANUAL_INDETERMINATE
+      else -> CalculationType.MANUAL_DETERMINATE
+    }
+
+
+  private fun collectPreValidationMessages(
+    sourceData: CalculationSourceData,
+  ): List<ValidationMessage> {
+    val pre = validationService.validateSupportedSentencesAndCalculations(sourceData)
+    return buildList {
+      addAll(pre.unsupportedCalculationMessages)
+      addAll(pre.unsupportedSentenceMessages)
+    }
+  }
+
+  private fun collectPostValidationMessages(
+    calculationOutput: CalculationOutput,
+    booking: Booking,
+  ): List<ValidationMessage> =
+    validationService
+      .validateBookingAfterCalculation(calculationOutput, booking)
+      .filter { it.type == MANUAL_ENTRY_JOURNEY_REQUIRED }
+
+  private fun finaliseWithValidationErrors(
+    request: CalculationRequest,
+    outcomes: List<CalculationOutcome>,
+    messages: List<ValidationMessage>,
+  ): ManualCalculationResponse {
+    attachReasons(request, messages)
+    calculationOutcomeRepository.saveAll(outcomes)
+    request.calculationStatus = CalculationStatus.CONFIRMED.name
+    calculationRequestRepository.saveAndFlush(request)
+    return ManualCalculationResponse(emptyMap(), request.id)
+  }
+
+  private fun finaliseWithSuccess(
+    request: CalculationRequest,
+    outcomes: List<CalculationOutcome>,
+    enteredDates: Map<ReleaseDateType, LocalDate?>,
+  ): ManualCalculationResponse {
+    attachReasons(request, emptyList())
+    calculationOutcomeRepository.saveAll(outcomes)
+    request.calculationStatus = CalculationStatus.CONFIRMED.name
+    calculationRequestRepository.saveAndFlush(request)
+    return ManualCalculationResponse(enteredDates, request.id)
+  }
+
+  private fun createOutcomes(
+    request: CalculationRequest,
+    manualEntryRequest: ManualEntryRequest,
+  ): List<CalculationOutcome> =
+    manualEntryRequest.selectedManualEntryDates.map { transform(request, it) }
+
+  private fun attachReasons(
+    request: CalculationRequest,
+    messages: List<ValidationMessage>,
+  ) {
+    request.manualCalculationReason = messages.map { transform(request, it) }
+}
+
+  private fun markAsError(request: CalculationRequest) {
+    request.calculationStatus = CalculationStatus.ERROR.name
+    calculationRequestRepository.saveAndFlush(request)
   }
 
   private companion object {
