@@ -23,6 +23,7 @@ data class NormalisedSentenceAndOffence(
   override val caseReference: String?,
   override val courtDescription: String?,
   override val fineAmount: BigDecimal?,
+  override val revocationDates: List<LocalDate>,
 ) : SentenceAndOffence {
   constructor(source: PrisonApiSentenceAndOffences, offence: OffenderOffence) : this(
     source.bookingId,
@@ -40,5 +41,6 @@ data class NormalisedSentenceAndOffence(
     source.caseReference,
     source.courtDescription,
     source.fineAmount,
+    source.revocationDates,
   )
 }

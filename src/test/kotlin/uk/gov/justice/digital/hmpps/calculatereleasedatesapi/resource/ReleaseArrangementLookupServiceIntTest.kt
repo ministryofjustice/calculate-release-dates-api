@@ -58,6 +58,7 @@ class ReleaseArrangementLookupServiceIntTest(private val mockManageOffencesClien
         null,
         null,
         null,
+        emptyList(),
       ),
     )
 
@@ -100,6 +101,7 @@ class ReleaseArrangementLookupServiceIntTest(private val mockManageOffencesClien
           null,
           null,
           null,
+          emptyList(),
         ),
       )
 
@@ -136,6 +138,7 @@ class ReleaseArrangementLookupServiceIntTest(private val mockManageOffencesClien
         null,
         null,
         null,
+        emptyList(),
       ),
       NormalisedSentenceAndOffence(
         1,
@@ -159,6 +162,7 @@ class ReleaseArrangementLookupServiceIntTest(private val mockManageOffencesClien
         null,
         null,
         null,
+        emptyList(),
       ),
     )
 

@@ -14,6 +14,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOu
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType.FIXED_TERM_RECALL_14
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType.FIXED_TERM_RECALL_28
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.FixedTermRecallDetails
@@ -58,6 +59,14 @@ class RecallValidationService(
     val fromDate: LocalDate,
     val toDate: LocalDate,
   )
+
+  internal fun validateRevocationDate(sentences: List<SentenceAndOffenceWithReleaseArrangements>): List<ValidationMessage> {
+    val recallSentences = sentences.filter { from(it.sentenceCalculationType).recallType != null }
+    if (featureToggles.validateRevocationDate && recallSentences.isNotEmpty() && recallSentences.none { it.revocationDates.isNotEmpty() }) {
+      return listOf(ValidationMessage(ValidationCode.RECALL_MISSING_REVOCATION_DATE))
+    }
+    return emptyList()
+  }
 
   internal fun validateRemandPeriodsAgainstSentenceDates(sourceData: CalculationSourceData): List<ValidationMessage> {
     val remandPeriods = sourceData.bookingAndSentenceAdjustments.fold(

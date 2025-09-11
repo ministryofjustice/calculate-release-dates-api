@@ -851,6 +851,7 @@ class ManualCalculationServiceTest {
       fineAmount = null,
       courtDescription = null,
       consecutiveToSequence = null,
+      revocationDates = emptyList(),
     )
     private val FAKE_SOURCE_DATA = CalculationSourceData(
       emptyList(),

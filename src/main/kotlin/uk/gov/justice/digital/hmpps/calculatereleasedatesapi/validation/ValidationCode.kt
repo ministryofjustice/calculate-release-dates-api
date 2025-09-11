@@ -131,4 +131,5 @@ enum class ValidationCode(val message: String, val validationType: ValidationTyp
   CONCURRENT_CONSECUTIVE_SENTENCES_NOTIFICATION("More than one sentence consecutive to the same sentence", CONCURRENT_CONSECUTIVE),
   CONSECUTIVE_SENTENCE_WITH_MULTIPLE_OFFENCES("Sentence with multiple offences is consecutive to another sentence"),
   BROKEN_CONSECUTIVE_CHAINS("You cannot have a sentence consecutive to an inactive sentence."),
+  RECALL_MISSING_REVOCATION_DATE("An active recall sentence is present with no associated court event with a \"Recall to prison\" court outcome."),
 }

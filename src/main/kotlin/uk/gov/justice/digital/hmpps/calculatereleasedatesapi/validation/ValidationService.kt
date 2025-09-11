@@ -66,6 +66,7 @@ class ValidationService(
     validationMessages += adjustmentValidationService.validateAdjustmentsBeforeCalculation(adjustments)
     validationMessages += recallValidationService.validateFixedTermRecall(sourceData)
     validationMessages += recallValidationService.validateRemandPeriodsAgainstSentenceDates(sourceData)
+    validationMessages += recallValidationService.validateRevocationDate(sourceData.sentenceAndOffences)
     validationMessages += preCalculationValidationService.validatePrePcscDtoDoesNotHaveRemandOrTaggedBail(sourceData)
 
     return validationMessages
