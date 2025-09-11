@@ -81,8 +81,7 @@ class ManualCalculationService(
 
     val reasonForCalculation = calculationReasonRepository.findById(manualEntryRequest.reasonForCalculationId).orElse(null)
     val type = chooseManualType(isGenuineOverride, booking.bookingId)
-    log.info(type.toString())
-    var request: CalculationRequest = transform(
+    val request: CalculationRequest = transform(
       booking,
       serviceUserService.getUsername(),
       CalculationStatus.IN_PROGRESS,
@@ -92,10 +91,15 @@ class ManualCalculationService(
       manualEntryRequest.otherReasonDescription,
       version = buildProperties.version,
     )
+    log.info(type.toString())
     request.calculationType = type
-    request = calculationRequestRepository.save(request)
+    log.info(type.toString())
+    log.info(request.calculationType.toString())
+    calculationRequestRepository.save(request)
+    log.info(request.calculationType.toString())
     val outcomes = createOutcomes(request, manualEntryRequest)
 
+    log.info(request.calculationType.toString())
     try {
       val preMessages = collectPreValidationMessages(sourceData)
       if (preMessages.isNotEmpty()) {
@@ -104,11 +108,13 @@ class ManualCalculationService(
 
       val calculationOutput = calculationService.calculateReleaseDates(booking, calculationUserInputs)
 
+      log.info(request.calculationType.toString())
       val postMessages = collectPostValidationMessages(calculationOutput, booking)
       if (postMessages.isNotEmpty()) {
         return finaliseWithValidationErrors(request, outcomes, postMessages)
       }
 
+      log.info(request.calculationType.toString())
       val enteredDates = writeToNomisAndPublishEvent(
         prisonerId = prisonerId,
         booking = booking,
@@ -118,9 +124,9 @@ class ManualCalculationService(
         effectiveSentenceLength = effectiveSentenceLength,
       ) ?: throw CouldNotSaveManualEntryException("There was a problem saving the dates")
 
+      log.info(request.calculationType.toString())
       log.info(calculationRequestRepository.findById(request.id).toString())
       return finaliseWithSuccess(request, outcomes, enteredDates)
-
     } catch (ex: Exception) {
       log.error("Error while saving ${request.id}", ex)
       request.calculationStatus = CalculationStatus.ERROR.name
@@ -223,13 +229,11 @@ class ManualCalculationService(
     return sed?.date?.toLocalDate()
   }
 
-  private fun chooseManualType(isGenuineOverride: Boolean, bookingId: Long): CalculationType =
-    when {
-      isGenuineOverride -> CalculationType.MANUAL_OVERRIDE
-      hasIndeterminateSentences(bookingId) -> CalculationType.MANUAL_INDETERMINATE
-      else -> CalculationType.MANUAL_DETERMINATE
-    }
-
+  private fun chooseManualType(isGenuineOverride: Boolean, bookingId: Long): CalculationType = when {
+    isGenuineOverride -> CalculationType.MANUAL_OVERRIDE
+    hasIndeterminateSentences(bookingId) -> CalculationType.MANUAL_INDETERMINATE
+    else -> CalculationType.MANUAL_DETERMINATE
+  }
 
   private fun collectPreValidationMessages(
     sourceData: CalculationSourceData,
@@ -244,10 +248,9 @@ class ManualCalculationService(
   private fun collectPostValidationMessages(
     calculationOutput: CalculationOutput,
     booking: Booking,
-  ): List<ValidationMessage> =
-    validationService
-      .validateBookingAfterCalculation(calculationOutput, booking)
-      .filter { it.type == MANUAL_ENTRY_JOURNEY_REQUIRED }
+  ): List<ValidationMessage> = validationService
+    .validateBookingAfterCalculation(calculationOutput, booking)
+    .filter { it.type == MANUAL_ENTRY_JOURNEY_REQUIRED }
 
   private fun finaliseWithValidationErrors(
     request: CalculationRequest,
@@ -276,19 +279,13 @@ class ManualCalculationService(
   private fun createOutcomes(
     request: CalculationRequest,
     manualEntryRequest: ManualEntryRequest,
-  ): List<CalculationOutcome> =
-    manualEntryRequest.selectedManualEntryDates.map { transform(request, it) }
+  ): List<CalculationOutcome> = manualEntryRequest.selectedManualEntryDates.map { transform(request, it) }
 
   private fun attachReasons(
     request: CalculationRequest,
     messages: List<ValidationMessage>,
   ) {
     request.manualCalculationReason = messages.map { transform(request, it) }
-}
-
-  private fun markAsError(request: CalculationRequest) {
-    request.calculationStatus = CalculationStatus.ERROR.name
-    calculationRequestRepository.saveAndFlush(request)
   }
 
   private companion object {

@@ -568,7 +568,8 @@ class ManualCalculationServiceTest {
     val manualEntryRequest = ManualEntryRequest(listOf(manualCalcRequest), 1L, "")
 
     manualCalculationService.storeManualCalculation(PRISONER_ID, manualEntryRequest, false)
-    verify(calculationRequestRepository, times(2)).save(calculationRequestArgumentCaptor.capture())
+    verify(calculationRequestRepository, times(1)).saveAndFlush(calculationRequestArgumentCaptor.capture())
+    verify(calculationRequestRepository, times(1)).save(calculationRequestArgumentCaptor.capture())
     val actualRequest = calculationRequestArgumentCaptor.firstValue
     assertThat(actualRequest.calculationType).isEqualTo(CalculationType.MANUAL_INDETERMINATE)
   }
@@ -667,7 +668,8 @@ class ManualCalculationServiceTest {
     val manualEntryRequest = ManualEntryRequest(listOf(manualCalcRequest), 1L, "")
 
     manualCalculationService.storeManualCalculation(PRISONER_ID, manualEntryRequest, false)
-    verify(calculationRequestRepository, times(2)).save(calculationRequestArgumentCaptor.capture())
+    verify(calculationRequestRepository, times(1)).save(calculationRequestArgumentCaptor.capture())
+    verify(calculationRequestRepository, times(1)).saveAndFlush(calculationRequestArgumentCaptor.capture())
     val actualRequest = calculationRequestArgumentCaptor.firstValue
     assertThat(actualRequest.calculationType).isEqualTo(CalculationType.MANUAL_DETERMINATE)
   }
@@ -705,8 +707,8 @@ class ManualCalculationServiceTest {
 
     manualCalculationService.storeManualCalculation(PRISONER_ID, manualEntryRequest, false)
 
-    // save should be called twice, one for initial creation, then one for manual calc reasons
-    verify(calculationRequestRepository, times(2)).save(calculationRequestArgumentCaptor.capture())
+    verify(calculationRequestRepository, times(1)).saveAndFlush(calculationRequestArgumentCaptor.capture())
+    verify(calculationRequestRepository, times(1)).save(calculationRequestArgumentCaptor.capture())
     val actualRequest = calculationRequestArgumentCaptor.firstValue
     assertThat(actualRequest.calculationType).isEqualTo(CalculationType.MANUAL_DETERMINATE)
   }
@@ -754,8 +756,8 @@ class ManualCalculationServiceTest {
 
     manualCalculationService.storeManualCalculation(PRISONER_ID, manualEntryRequest, false)
 
-    // save should be called twice, one for initial creation, then one for manual calc reasons
-    verify(calculationRequestRepository, times(2)).save(calculationRequestArgumentCaptor.capture())
+    verify(calculationRequestRepository, times(1)).saveAndFlush(calculationRequestArgumentCaptor.capture())
+    verify(calculationRequestRepository, times(1)).save(calculationRequestArgumentCaptor.capture())
     val actualRequest = calculationRequestArgumentCaptor.firstValue
     assertThat(actualRequest.calculationType).isEqualTo(CalculationType.MANUAL_DETERMINATE)
   }
