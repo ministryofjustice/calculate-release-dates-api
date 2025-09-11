@@ -427,6 +427,7 @@ class SDSEarlyReleaseDefaultingRulesService(
       ReleaseDateType.ERSED,
       ReleaseDateType.HDCED,
       ReleaseDateType.PED,
+      ReleaseDateType.PRRD,
     )
   }
 
