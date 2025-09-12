@@ -33,12 +33,6 @@ class TimelineTrancheCalculationHandler(
         return TimelineHandleResult(false)
       }
 
-      val allSentences = releasedSentenceGroups.map { it.sentences }.plus(listOf(currentSentenceGroup))
-      val potentialEarlyReleaseSentences = getPotentialEarlyReleaseSentences(allSentences.flatten(), earlyReleaseConfiguration, offender)
-      if (potentialEarlyReleaseSentences.isNotEmpty() && potentialEarlyReleaseSentences.none { earlyReleaseConfiguration.releaseDateConsidered(it.sentenceCalculation).isAfter(earlyReleaseConfiguration.earliestTranche()) }) {
-        return TimelineHandleResult(false)
-      }
-
       val requiresTrancheAllocation = earlyReleaseConfiguration.earliestTranche() == tranche.date || allocatedTranche == null
       if (requiresTrancheAllocation) {
         val allocated = trancheAllocationService.allocateTranche(timelineTrackingData, earlyReleaseConfiguration)
@@ -49,10 +43,12 @@ class TimelineTrancheCalculationHandler(
       }
 
       val thisTrancheIsAllocatedTranche = allocatedTranche?.date == tranche.date
-      if (thisTrancheIsAllocatedTranche && potentialEarlyReleaseSentences.isNotEmpty()) {
+      val sentencesToModifyReleaseDates = sentencesToModifyReleaseDates(timelineTrackingData, timelineCalculationDate, earlyReleaseConfiguration)
+      if (thisTrancheIsAllocatedTranche && sentencesToModifyReleaseDates.isNotEmpty()) {
+        val allSentences = releasedSentenceGroups.map { it.sentences }.plus(listOf(currentSentenceGroup))
         beforeTrancheCalculation =
           timelineCalculator.getLatestCalculation(allSentences, offender, timelineTrackingData.returnToCustodyDate)
-        sentencesToModifyReleaseDates(timelineTrackingData, timelineCalculationDate, earlyReleaseConfiguration).forEach {
+        sentencesToModifyReleaseDates.forEach {
           if (earlyReleaseConfiguration.releaseMultiplier != null) {
             it.sentenceCalculation.unadjustedReleaseDate.findMultiplierBySentence =
               multiplierFnForDate(timelineCalculationDate, allocatedTranche!!.date, offender)
@@ -79,7 +75,8 @@ class TimelineTrancheCalculationHandler(
     timelineTrackingData: TimelineTrackingData,
     timelineCalculationDate: LocalDate,
     earlyReleaseConfiguration: EarlyReleaseConfiguration,
-  ): List<CalculableSentence> = timelineTrackingData.currentSentenceGroup + timelineTrackingData.licenceSentences.filter { earlyReleaseConfiguration.releaseDateConsidered(it.sentenceCalculation).isAfter(timelineCalculationDate) }
+  ): List<CalculableSentence> = (timelineTrackingData.currentSentenceGroup + timelineTrackingData.licenceSentences).filter { earlyReleaseConfiguration.releaseDateConsidered(it.sentenceCalculation).isAfter(timelineCalculationDate) }
+    .filter { sentence -> sentence.sentenceParts().any { earlyReleaseConfiguration.matchesFilter(it, timelineTrackingData.offender) } }
 
   fun isPersonConsideredOutOfCustodyAtTrancheCommencement(timelineCalculationDate: LocalDate, earlyReleaseConfiguration: EarlyReleaseConfiguration, timelineTrackingData: TimelineTrackingData): Boolean {
     with(timelineTrackingData) {
