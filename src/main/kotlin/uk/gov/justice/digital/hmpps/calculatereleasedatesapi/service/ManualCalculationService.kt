@@ -91,47 +91,38 @@ class ManualCalculationService(
       manualEntryRequest.otherReasonDescription,
       version = buildProperties.version,
     )
-    log.info(type.toString())
     request.calculationType = type
-    log.info(type.toString())
-    log.info(request.calculationType.toString())
-    calculationRequestRepository.save(request)
-    log.info(request.calculationType.toString())
-    val outcomes = createOutcomes(request, manualEntryRequest)
 
-    log.info(request.calculationType.toString())
     try {
       val preMessages = collectPreValidationMessages(sourceData)
       if (preMessages.isNotEmpty()) {
-        return finaliseWithValidationErrors(request, outcomes, preMessages)
+        return finaliseWithValidationErrors(request, preMessages, manualEntryRequest)
       }
 
       val calculationOutput = calculationService.calculateReleaseDates(booking, calculationUserInputs)
-
-      log.info(request.calculationType.toString())
       val postMessages = collectPostValidationMessages(calculationOutput, booking)
       if (postMessages.isNotEmpty()) {
-        return finaliseWithValidationErrors(request, outcomes, postMessages)
+        return finaliseWithValidationErrors(request, postMessages, manualEntryRequest)
       }
-
-      log.info(request.calculationType.toString())
+      attachReasons(request, emptyList())
+      request.calculationStatus = CalculationStatus.CONFIRMED.name
+      val savedRequest = calculationRequestRepository.saveAndFlush(request)
+      val outcomes = createOutcomes(savedRequest, manualEntryRequest)
       val enteredDates = writeToNomisAndPublishEvent(
         prisonerId = prisonerId,
         booking = booking,
-        calculationRequestId = request.id,
+        calculationRequestId = savedRequest.id,
         calculationOutcomes = outcomes,
         isGenuineOverride = isGenuineOverride,
         effectiveSentenceLength = effectiveSentenceLength,
       ) ?: throw CouldNotSaveManualEntryException("There was a problem saving the dates")
-
-      log.info(request.calculationType.toString())
-      log.info(calculationRequestRepository.findById(request.id).toString())
-      return finaliseWithSuccess(request, outcomes, enteredDates)
+      calculationOutcomeRepository.saveAll(outcomes)
+      return ManualCalculationResponse(enteredDates, savedRequest.id)
     } catch (ex: Exception) {
       log.error("Error while saving ${request.id}", ex)
       request.calculationStatus = CalculationStatus.ERROR.name
       calculationRequestRepository.saveAndFlush(request)
-      throw ex // let controller advice map 423/502/etc.
+      throw ex
     }
   }
 
@@ -254,26 +245,16 @@ class ManualCalculationService(
 
   private fun finaliseWithValidationErrors(
     request: CalculationRequest,
-    outcomes: List<CalculationOutcome>,
     messages: List<ValidationMessage>,
+    manualEntryRequest: ManualEntryRequest,
   ): ManualCalculationResponse {
     attachReasons(request, messages)
-    calculationOutcomeRepository.saveAll(outcomes)
-    request.calculationStatus = CalculationStatus.CONFIRMED.name
-    calculationRequestRepository.saveAndFlush(request)
-    return ManualCalculationResponse(emptyMap(), request.id)
-  }
 
-  private fun finaliseWithSuccess(
-    request: CalculationRequest,
-    outcomes: List<CalculationOutcome>,
-    enteredDates: Map<ReleaseDateType, LocalDate?>,
-  ): ManualCalculationResponse {
-    attachReasons(request, emptyList())
-    calculationOutcomeRepository.saveAll(outcomes)
     request.calculationStatus = CalculationStatus.CONFIRMED.name
-    calculationRequestRepository.saveAndFlush(request)
-    return ManualCalculationResponse(enteredDates, request.id)
+    val savedRequest = calculationRequestRepository.saveAndFlush(request)
+    val outcomes = createOutcomes(savedRequest, manualEntryRequest)
+    calculationOutcomeRepository.saveAll(outcomes)
+    return ManualCalculationResponse(emptyMap(), savedRequest.id)
   }
 
   private fun createOutcomes(

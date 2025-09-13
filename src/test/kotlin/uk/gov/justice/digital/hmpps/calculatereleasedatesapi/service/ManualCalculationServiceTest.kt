@@ -418,7 +418,7 @@ class ManualCalculationServiceTest {
         InactiveDataOptions.default(),
       ),
     ).thenReturn(FAKE_SOURCE_DATA)
-    whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
+    whenever(calculationRequestRepository.saveAndFlush(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
     whenever(calculationRequestRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES))
     whenever(calculationReasonRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REASON))
     whenever(bookingService.getBooking(FAKE_SOURCE_DATA, CalculationUserInputs())).thenReturn(BOOKING)
@@ -453,7 +453,7 @@ class ManualCalculationServiceTest {
         InactiveDataOptions.default(),
       ),
     ).thenReturn(FAKE_SOURCE_DATA)
-    whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
+    whenever(calculationRequestRepository.saveAndFlush(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
     whenever(calculationRequestRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES))
     whenever(calculationReasonRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REASON))
     whenever(bookingService.getBooking(FAKE_SOURCE_DATA, CalculationUserInputs())).thenReturn(BOOKING)
@@ -513,7 +513,6 @@ class ManualCalculationServiceTest {
 
     manualCalculationService.storeManualCalculation(PRISONER_ID, manualEntryRequest, true)
     verify(calculationRequestRepository, times(1)).saveAndFlush(calculationRequestArgumentCaptor.capture())
-    verify(calculationRequestRepository, times(1)).save(calculationRequestArgumentCaptor.capture())
     val actualRequest = calculationRequestArgumentCaptor.firstValue
     assertThat(actualRequest.calculationType).isEqualTo(CalculationType.MANUAL_OVERRIDE)
   }
@@ -527,7 +526,7 @@ class ManualCalculationServiceTest {
         InactiveDataOptions.default(),
       ),
     ).thenReturn(FAKE_SOURCE_DATA)
-    whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
+    whenever(calculationRequestRepository.saveAndFlush(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
     whenever(calculationRequestRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES))
     whenever(calculationReasonRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REASON))
     whenever(bookingService.getBooking(FAKE_SOURCE_DATA, CalculationUserInputs())).thenReturn(BOOKING)
@@ -569,7 +568,6 @@ class ManualCalculationServiceTest {
 
     manualCalculationService.storeManualCalculation(PRISONER_ID, manualEntryRequest, false)
     verify(calculationRequestRepository, times(1)).saveAndFlush(calculationRequestArgumentCaptor.capture())
-    verify(calculationRequestRepository, times(1)).save(calculationRequestArgumentCaptor.capture())
     val actualRequest = calculationRequestArgumentCaptor.firstValue
     assertThat(actualRequest.calculationType).isEqualTo(CalculationType.MANUAL_INDETERMINATE)
   }
@@ -583,8 +581,8 @@ class ManualCalculationServiceTest {
       ),
     ).thenReturn(FAKE_SOURCE_DATA)
 
-    // allow initial persist (and potential subsequent update) to succeed
-    whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
+    whenever(calculationRequestRepository.saveAndFlush(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
+
     whenever(calculationRequestRepository.findById(any()))
       .thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES))
 
@@ -634,7 +632,7 @@ class ManualCalculationServiceTest {
 
     val updatedDatesCapture = argumentCaptor<UpdateOffenderDates>()
 
-    verify(calculationRequestRepository, atLeastOnce()).save(calculationRequestArgumentCaptor.capture())
+    verify(calculationRequestRepository, atLeastOnce()).saveAndFlush(calculationRequestArgumentCaptor.capture())
     val actualRequest = calculationRequestArgumentCaptor.firstValue
     assertThat(actualRequest.calculationType).isEqualTo(CalculationType.MANUAL_DETERMINATE)
 
@@ -652,7 +650,7 @@ class ManualCalculationServiceTest {
         InactiveDataOptions.default(),
       ),
     ).thenReturn(FAKE_SOURCE_DATA)
-    whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
+    whenever(calculationRequestRepository.saveAndFlush(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
     whenever(calculationRequestRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES))
     whenever(calculationReasonRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REASON))
     whenever(bookingService.getBooking(FAKE_SOURCE_DATA, CalculationUserInputs())).thenReturn(BOOKING)
@@ -668,7 +666,6 @@ class ManualCalculationServiceTest {
     val manualEntryRequest = ManualEntryRequest(listOf(manualCalcRequest), 1L, "")
 
     manualCalculationService.storeManualCalculation(PRISONER_ID, manualEntryRequest, false)
-    verify(calculationRequestRepository, times(1)).save(calculationRequestArgumentCaptor.capture())
     verify(calculationRequestRepository, times(1)).saveAndFlush(calculationRequestArgumentCaptor.capture())
     val actualRequest = calculationRequestArgumentCaptor.firstValue
     assertThat(actualRequest.calculationType).isEqualTo(CalculationType.MANUAL_DETERMINATE)
@@ -682,7 +679,7 @@ class ManualCalculationServiceTest {
         InactiveDataOptions.default(),
       ),
     ).thenReturn(FAKE_SOURCE_DATA)
-    whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
+    whenever(calculationRequestRepository.saveAndFlush(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
     whenever(calculationRequestRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES))
     whenever(calculationReasonRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REASON))
     whenever(bookingService.getBooking(FAKE_SOURCE_DATA, CalculationUserInputs())).thenReturn(BOOKING)
@@ -708,7 +705,6 @@ class ManualCalculationServiceTest {
     manualCalculationService.storeManualCalculation(PRISONER_ID, manualEntryRequest, false)
 
     verify(calculationRequestRepository, times(1)).saveAndFlush(calculationRequestArgumentCaptor.capture())
-    verify(calculationRequestRepository, times(1)).save(calculationRequestArgumentCaptor.capture())
     val actualRequest = calculationRequestArgumentCaptor.firstValue
     assertThat(actualRequest.calculationType).isEqualTo(CalculationType.MANUAL_DETERMINATE)
   }
@@ -721,7 +717,7 @@ class ManualCalculationServiceTest {
         InactiveDataOptions.default(),
       ),
     ).thenReturn(FAKE_SOURCE_DATA)
-    whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
+    whenever(calculationRequestRepository.saveAndFlush(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
     whenever(calculationRequestRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES))
     whenever(calculationReasonRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REASON))
     whenever(bookingService.getBooking(FAKE_SOURCE_DATA, CalculationUserInputs())).thenReturn(BOOKING)
@@ -757,7 +753,6 @@ class ManualCalculationServiceTest {
     manualCalculationService.storeManualCalculation(PRISONER_ID, manualEntryRequest, false)
 
     verify(calculationRequestRepository, times(1)).saveAndFlush(calculationRequestArgumentCaptor.capture())
-    verify(calculationRequestRepository, times(1)).save(calculationRequestArgumentCaptor.capture())
     val actualRequest = calculationRequestArgumentCaptor.firstValue
     assertThat(actualRequest.calculationType).isEqualTo(CalculationType.MANUAL_DETERMINATE)
   }
