@@ -495,7 +495,7 @@ class CalculationTransactionalServiceTest {
     val requestAndOutcomes = CALCULATION_REQUEST_WITH_OUTCOMES.copy(
       calculationOutcomes = CALCULATION_REQUEST_WITH_OUTCOMES.calculationOutcomes.plus(
         CALCULATION_OUTCOME_SLED,
-      ),
+      ).toMutableList(),
     )
     val calculationTransactionalService = calculationTransactionalService
     val expectedSled = LocalDate.of(2026, 2, 2)
@@ -595,7 +595,7 @@ class CalculationTransactionalServiceTest {
     val requestAndOutcomes = CALCULATION_REQUEST_WITH_OUTCOMES.copy(
       calculationOutcomes = CALCULATION_REQUEST_WITH_OUTCOMES.calculationOutcomes.plus(
         CALCULATION_OUTCOME_SLED,
-      ),
+      ).toMutableList(),
     )
     val calculationTransactionalService = calculationTransactionalService
     val expectedSled = LocalDate.of(2026, 2, 2)
@@ -1036,7 +1036,7 @@ class CalculationTransactionalServiceTest {
       calculationReference = CALCULATION_REFERENCE,
       prisonerId = PRISONER_ID,
       bookingId = BOOKING_ID,
-      calculationOutcomes = listOf(CALCULATION_OUTCOME_CRD, CALCULATION_OUTCOME_SED),
+      calculationOutcomes = listOf(CALCULATION_OUTCOME_CRD, CALCULATION_OUTCOME_SED).toMutableList(),
       calculationStatus = CONFIRMED.name,
       inputData = JacksonUtil.toJsonNode(
         "{" + "\"offender\":{" + "\"reference\":\"ABC123D\"," +

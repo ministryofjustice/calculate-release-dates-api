@@ -768,14 +768,14 @@ class ManualCalculationServiceTest {
 
     val manualCalculation = CALCULATION_REQUEST_WITH_OUTCOMES.copy(
       inputData = objectToJson(BOOKING, objectMapper),
-      calculationOutcomes = listOf(
+      calculationOutcomes = mutableListOf(
         CalculationOutcome(
           calculationRequestId = CALCULATION_REQUEST_WITH_OUTCOMES.id,
           outcomeDate = LocalDate.now(),
           calculationDateType = "PED",
         ),
       ),
-      manualCalculationReason = listOf(
+      manualCalculationReason = mutableListOf(
         CalculationRequestManualReason(
           calculationRequest = CALCULATION_REQUEST_WITH_OUTCOMES,
           code = ValidationCode.CONCURRENT_CONSECUTIVE_SENTENCES_DURATION,
@@ -807,14 +807,14 @@ class ManualCalculationServiceTest {
 
     val currentCalculation = CALCULATION_REQUEST_WITH_OUTCOMES.copy(
       inputData = objectToJson(BOOKING, objectMapper),
-      calculationOutcomes = listOf(
+      calculationOutcomes = mutableListOf(
         CalculationOutcome(
           calculationRequestId = CALCULATION_REQUEST_WITH_OUTCOMES.id,
           outcomeDate = LocalDate.now(),
           calculationDateType = "PED",
         ),
       ),
-      manualCalculationReason = listOf(
+      manualCalculationReason = mutableListOf(
         CalculationRequestManualReason(
           calculationRequest = CALCULATION_REQUEST_WITH_OUTCOMES,
           code = ValidationCode.CONCURRENT_CONSECUTIVE_SENTENCES_DURATION,
@@ -826,14 +826,14 @@ class ManualCalculationServiceTest {
     // changed returnToCustodyDate
     val previousCalculation = CALCULATION_REQUEST_WITH_OUTCOMES.copy(
       inputData = objectToJson(BOOKING.copy(returnToCustodyDate = LocalDate.now()), objectMapper),
-      calculationOutcomes = listOf(
+      calculationOutcomes = mutableListOf(
         CalculationOutcome(
           calculationRequestId = CALCULATION_REQUEST_WITH_OUTCOMES.id,
           outcomeDate = LocalDate.now(),
           calculationDateType = "PED",
         ),
       ),
-      manualCalculationReason = listOf(
+      manualCalculationReason = mutableListOf(
         CalculationRequestManualReason(
           calculationRequest = CALCULATION_REQUEST_WITH_OUTCOMES,
           code = ValidationCode.CONCURRENT_CONSECUTIVE_SENTENCES_DURATION,
@@ -916,7 +916,7 @@ class ManualCalculationServiceTest {
       calculationReference = CALCULATION_REFERENCE,
       prisonerId = PRISONER_ID,
       bookingId = BOOKING_ID,
-      calculationOutcomes = listOf(),
+      calculationOutcomes = mutableListOf(),
       calculationStatus = CalculationStatus.CONFIRMED.name,
       inputData = JacksonUtil.toJsonNode(
         "{" + "\"offender\":{" + "\"reference\":\"ABC123D\"," +

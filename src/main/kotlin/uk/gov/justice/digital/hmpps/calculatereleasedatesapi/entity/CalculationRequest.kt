@@ -43,44 +43,40 @@ data class CalculationRequest(
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   var id: Long = -1,
 
-  @param:NotNull
+  @Column(nullable = false)
   val calculationReference: UUID = UUID.randomUUID(),
 
-  @param:NotNull
+  @Column(nullable = false)
   val prisonerId: String = "",
 
-  @param:NotNull
+  @Column(nullable = false)
   val bookingId: Long = -1L,
 
-  @param:NotNull
+  @Column(nullable = false)
   var calculationStatus: String = "",
 
-  @param:NotNull
+  @Column(nullable = false)
   val calculatedAt: LocalDateTime = LocalDateTime.now(),
 
-  @param:NotNull
+  @Column(nullable = false)
   val calculatedByUsername: String = "",
 
   val prisonerLocation: String? = null,
 
-  @param:NotNull
   @Type(value = JsonType::class)
   @Column(columnDefinition = "jsonb")
   val inputData: JsonNode = JacksonUtil.toJsonNode("{}"),
 
-  @param:NotNull
   @Type(value = JsonType::class)
   @Column(columnDefinition = "jsonb")
   val sentenceAndOffences: JsonNode? = null,
   val sentenceAndOffencesVersion: Int? = 3,
 
-  @param:NotNull
   @Type(value = JsonType::class)
   @Column(columnDefinition = "jsonb")
   val prisonerDetails: JsonNode? = null,
   val prisonerDetailsVersion: Int? = 0,
 
-  @param:NotNull
   @Type(value = JsonType::class)
   @Column(columnDefinition = "jsonb")
   val adjustments: JsonNode? = null,
@@ -101,7 +97,7 @@ data class CalculationRequest(
   @JoinColumn(name = "calculationRequestId")
   @OneToMany
   @BatchSize(size = 1000)
-  val calculationOutcomes: List<CalculationOutcome> = ArrayList(),
+  val calculationOutcomes: MutableList<CalculationOutcome> = ArrayList(),
 
   @Column
   @Enumerated(value = EnumType.STRING)
@@ -113,7 +109,7 @@ data class CalculationRequest(
   @JoinColumn(name = "calculationRequestId")
   @OneToMany
   @BatchSize(size = 1000)
-  val approvedDatesSubmissions: List<ApprovedDatesSubmission> = ArrayList(),
+  val approvedDatesSubmissions: MutableList<ApprovedDatesSubmission> = ArrayList(),
 
   @JoinColumn(name = "reasonForCalculation")
   @ManyToOne
@@ -129,7 +125,7 @@ data class CalculationRequest(
   val allocatedSDSTranche: TrancheOutcome? = null,
 
   @OneToMany(mappedBy = "calculationRequest", cascade = [CascadeType.ALL])
-  var manualCalculationReason: List<CalculationRequestManualReason>? = null,
+  var manualCalculationReason: MutableList<CalculationRequestManualReason>? = null,
 
   val version: String = "1",
 ) {
@@ -142,8 +138,7 @@ data class CalculationRequest(
     if (this === other) return true
     if (other == null || Hibernate.getClass(this) != Hibernate.getClass(other)) return false
     other as CalculationRequest
-
-    return id == other.id
+    return id != -1L && id == other.id
   }
 
   @Override
@@ -152,5 +147,4 @@ data class CalculationRequest(
   @Override
   override fun toString(): String = this::class.simpleName + "(calculationReference = $calculationReference )"
 
-  fun withType(calculationType: CalculationType): CalculationRequest = copy(calculationType = calculationType)
 }
