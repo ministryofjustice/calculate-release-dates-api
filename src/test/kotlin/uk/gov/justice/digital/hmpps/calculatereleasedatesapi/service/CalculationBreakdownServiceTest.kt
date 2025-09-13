@@ -48,7 +48,7 @@ class CalculationBreakdownServiceTest {
       prisonerDetails = objectToJson(prisonerDetails, objectMapper),
       sentenceAndOffences = null,
       adjustments = objectToJson(adjustments, objectMapper),
-      calculationOutcomes = listOf(
+      calculationOutcomes = mutableListOf(
         CalculationOutcome(calculationRequestId = CALCULATION_REQUEST_ID, calculationDateType = "CRD", outcomeDate = LocalDate.of(2026, 6, 26)),
       ),
     )
@@ -65,7 +65,7 @@ class CalculationBreakdownServiceTest {
       prisonerDetails = null,
       sentenceAndOffences = objectToJson(listOf(originalSentence), objectMapper),
       adjustments = objectToJson(adjustments, objectMapper),
-      calculationOutcomes = listOf(
+      calculationOutcomes = mutableListOf(
         CalculationOutcome(calculationRequestId = CALCULATION_REQUEST_ID, calculationDateType = "CRD", outcomeDate = LocalDate.of(2026, 6, 26)),
       ),
     )
@@ -82,7 +82,7 @@ class CalculationBreakdownServiceTest {
       prisonerDetails = objectToJson(prisonerDetails, objectMapper),
       sentenceAndOffences = objectToJson(listOf(originalSentence), objectMapper),
       adjustments = null,
-      calculationOutcomes = listOf(
+      calculationOutcomes = mutableListOf(
         CalculationOutcome(calculationRequestId = CALCULATION_REQUEST_ID, calculationDateType = "CRD", outcomeDate = LocalDate.of(2026, 6, 26)),
       ),
     )
@@ -100,7 +100,7 @@ class CalculationBreakdownServiceTest {
       prisonerDetails = objectToJson(prisonerDetails, objectMapper),
       sentenceAndOffences = objectToJson(listOf(originalSentence), objectMapper),
       adjustments = objectToJson(adjustments, objectMapper),
-      calculationOutcomes = listOf(
+      calculationOutcomes = mutableListOf(
         CalculationOutcome(calculationRequestId = CALCULATION_REQUEST_ID, calculationDateType = "CRD", outcomeDate = LocalDate.of(2026, 6, 26)),
       ),
     )
@@ -121,7 +121,7 @@ class CalculationBreakdownServiceTest {
       prisonerDetails = objectToJson(prisonerDetails, objectMapper),
       sentenceAndOffences = objectToJson(listOf(originalSentence), objectMapper),
       adjustments = objectToJson(adjustments, objectMapper),
-      calculationOutcomes = listOf(
+      calculationOutcomes = mutableListOf(
         CalculationOutcome(calculationRequestId = CALCULATION_REQUEST_ID, calculationDateType = "CRD", outcomeDate = LocalDate.of(2026, 6, 26)),
       ),
     )
@@ -142,7 +142,7 @@ class CalculationBreakdownServiceTest {
       prisonerDetails = objectToJson(prisonerDetails, objectMapper),
       sentenceAndOffences = objectToJson(listOf(originalSentence), objectMapper),
       adjustments = objectToJson(adjustments, objectMapper),
-      calculationOutcomes = listOf(
+      calculationOutcomes = mutableListOf(
         CalculationOutcome(calculationRequestId = CALCULATION_REQUEST_ID, calculationDateType = "CRD", outcomeDate = LocalDate.of(2026, 6, 26)),
       ),
     )
@@ -224,7 +224,7 @@ class CalculationBreakdownServiceTest {
     calculationReference = calculationReference,
     prisonerId = PRISONER_ID,
     bookingId = BOOKING_ID,
-    calculationOutcomes = listOf(calculationOutcomeCrd, calculationOutcomeSed),
+    calculationOutcomes = mutableListOf(calculationOutcomeCrd, calculationOutcomeSed),
     calculationStatus = CalculationStatus.CONFIRMED.name,
     inputData = JacksonUtil.toJsonNode(
       "{" + "\"offender\":{" + "\"reference\":\"ABC123D\"," +

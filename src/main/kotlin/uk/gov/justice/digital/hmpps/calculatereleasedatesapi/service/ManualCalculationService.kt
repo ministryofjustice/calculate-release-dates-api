@@ -266,7 +266,7 @@ class ManualCalculationService(
     request: CalculationRequest,
     messages: List<ValidationMessage>,
   ) {
-    request.manualCalculationReason = messages.map { transform(request, it) }
+    request.manualCalculationReason = messages.map { transform(request, it) }.toMutableList()
   }
 
   private companion object {
