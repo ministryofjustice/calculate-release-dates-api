@@ -104,20 +104,9 @@ class ManualCalculationService(
       if (postMessages.isNotEmpty()) {
         return finaliseWithValidationErrors(request, postMessages, manualEntryRequest)
       }
+
       attachReasons(request, emptyList())
-      request.calculationStatus = CalculationStatus.CONFIRMED.name
-      val savedRequest = calculationRequestRepository.saveAndFlush(request)
-      val outcomes = createOutcomes(savedRequest, manualEntryRequest)
-      val enteredDates = writeToNomisAndPublishEvent(
-        prisonerId = prisonerId,
-        booking = booking,
-        calculationRequestId = savedRequest.id,
-        calculationOutcomes = outcomes,
-        isGenuineOverride = isGenuineOverride,
-        effectiveSentenceLength = effectiveSentenceLength,
-      ) ?: throw CouldNotSaveManualEntryException("There was a problem saving the dates")
-      calculationOutcomeRepository.saveAll(outcomes)
-      return ManualCalculationResponse(enteredDates, savedRequest.id)
+      return finaliseWithSuccess(request, manualEntryRequest, prisonerId, booking, isGenuineOverride, effectiveSentenceLength)
     } catch (ex: Exception) {
       log.error("Error while saving ${request.id}", ex)
       request.calculationStatus = CalculationStatus.ERROR.name
@@ -126,15 +115,14 @@ class ManualCalculationService(
     }
   }
 
-  @Transactional(readOnly = true)
-  fun writeToNomisAndPublishEvent(
+  private fun writeToNomisAndPublishEvent(
     prisonerId: String,
     booking: Booking,
     calculationRequestId: Long,
     calculationOutcomes: List<CalculationOutcome>,
     isGenuineOverride: Boolean,
     effectiveSentenceLength: Period,
-  ): Map<ReleaseDateType, LocalDate?>? {
+  ): Map<ReleaseDateType, LocalDate?> {
     val calculationRequest = calculationRequestRepository.findById(calculationRequestId)
       .orElseThrow { EntityNotFoundException("No calculation request exists") }
     val dates = calculationOutcomes.associate { ReleaseDateType.valueOf(it.calculationDateType) to it.outcomeDate }
@@ -149,10 +137,9 @@ class ManualCalculationService(
     try {
       prisonService.postReleaseDates(booking.bookingId, updateOffenderDates)
     } catch (ex: Exception) {
-      CalculationTransactionalService.log.error("Nomis write failed: ${ex.message}")
-      throw EntityNotFoundException(
-        "Writing release dates to NOMIS failed for prisonerId $prisonerId " +
-          "and bookingId ${booking.bookingId}",
+      log.error("Nomis write failed: ${ex.message}")
+      throw CouldNotSaveManualEntryException(
+        "Writing release dates to NOMIS failed for prisonerId $prisonerId and bookingId ${booking.bookingId}",
       )
     }
     runCatching {
@@ -255,6 +242,22 @@ class ManualCalculationService(
     val outcomes = createOutcomes(savedRequest, manualEntryRequest)
     calculationOutcomeRepository.saveAll(outcomes)
     return ManualCalculationResponse(emptyMap(), savedRequest.id)
+  }
+
+  private fun finaliseWithSuccess(request: CalculationRequest, manualEntryRequest: ManualEntryRequest, prisonerId: String, booking: Booking, isGenuineOverride: Boolean, effectiveSentenceLength: Period): ManualCalculationResponse {
+    request.calculationStatus = CalculationStatus.CONFIRMED.name
+    val savedRequest = calculationRequestRepository.saveAndFlush(request)
+    val outcomes = createOutcomes(savedRequest, manualEntryRequest)
+    val enteredDates = writeToNomisAndPublishEvent(
+      prisonerId = prisonerId,
+      booking = booking,
+      calculationRequestId = savedRequest.id,
+      calculationOutcomes = outcomes,
+      isGenuineOverride = isGenuineOverride,
+      effectiveSentenceLength = effectiveSentenceLength,
+    )
+    calculationOutcomeRepository.saveAll(outcomes)
+    return ManualCalculationResponse(enteredDates, savedRequest.id)
   }
 
   private fun createOutcomes(

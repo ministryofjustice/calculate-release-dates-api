@@ -18,7 +18,6 @@ import jakarta.persistence.NamedEntityGraph
 import jakarta.persistence.OneToMany
 import jakarta.persistence.OneToOne
 import jakarta.persistence.Table
-import jakarta.validation.constraints.NotNull
 import org.hibernate.Hibernate
 import org.hibernate.annotations.BatchSize
 import org.hibernate.annotations.Type
@@ -113,7 +112,6 @@ data class CalculationRequest(
 
   @JoinColumn(name = "reasonForCalculation")
   @ManyToOne
-  @param:NotNull
   val reasonForCalculation: CalculationReason? = null,
 
   val otherReasonForCalculation: String? = null,
@@ -146,5 +144,4 @@ data class CalculationRequest(
 
   @Override
   override fun toString(): String = this::class.simpleName + "(calculationReference = $calculationReference )"
-
 }

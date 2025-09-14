@@ -89,12 +89,30 @@ class SentenceAndOffenceServiceTest {
 
   @Test
   fun `If old version did not have SDS plus flag (defaults to false) ignore the difference`() {
-    whenever(prisonService.getSentencesAndOffences(anyLong(), eq(true))).thenReturn(sentenceAndOffences.map { it.copy(isSDSPlus = true) })
+    whenever(prisonService.getSentencesAndOffences(anyLong(), eq(true)))
+      .thenReturn(sentenceAndOffences.map { it.copy(isSDSPlus = true) })
+
     val defaultedSentencesAndOffences = sentenceAndOffences.map { it.copy(isSDSPlus = false) }
-    val calcRequestWithMissingSDSPlusFlag = CalculationRequest(sentenceAndOffences = objectToJson(defaultedSentencesAndOffences, jacksonObjectMapper().findAndRegisterModules()))
-    whenever(sourceDataMapper.mapSentencesAndOffences(calculationRequest)).thenReturn(defaultedSentencesAndOffences)
-    whenever(calculationRequestRepository.findFirstByBookingIdAndCalculationStatusOrderByCalculatedAtDesc(anyLong(), anyString())).thenReturn(Optional.of(calcRequestWithMissingSDSPlusFlag))
+
+    val calcRequestWithMissingSDSPlusFlag = CalculationRequest(
+      sentenceAndOffences = objectToJson(
+        defaultedSentencesAndOffences,
+        jacksonObjectMapper().findAndRegisterModules(),
+      ),
+    )
+
+    whenever(sourceDataMapper.mapSentencesAndOffences(calcRequestWithMissingSDSPlusFlag))
+      .thenReturn(defaultedSentencesAndOffences)
+
+    whenever(
+      calculationRequestRepository.findFirstByBookingIdAndCalculationStatusOrderByCalculatedAtDesc(
+        anyLong(),
+        anyString(),
+      ),
+    ).thenReturn(Optional.of(calcRequestWithMissingSDSPlusFlag))
+
     val response = underTest.getSentencesAndOffences(123)
+
     assertThat(response).hasSize(2)
     assertThat(response[0].sentenceAndOffenceAnalysis).isEqualTo(SentenceAndOffenceAnalysis.SAME)
     assertThat(response[1].sentenceAndOffenceAnalysis).isEqualTo(SentenceAndOffenceAnalysis.SAME)
