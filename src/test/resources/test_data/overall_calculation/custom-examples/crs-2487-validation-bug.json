@@ -1,0 +1,88 @@
+{
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
+      {
+        "offence": {
+          "committedAt": "2025-04-28",
+          "offenceCode": "VG24018"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 2
+          }
+        },
+        "sentencedAt": "2025-08-22"
+      },
+      {
+        "offence": {
+          "committedAt": "2024-11-09",
+          "offenceCode": "COML030"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 6
+          }
+        },
+        "sentencedAt": "2025-08-27",
+        "identifier": "0de48d91-c0de-37d4-940a-9b1ec02eaac5"
+      },
+      {
+        "offence": {
+          "committedAt": "2025-03-24",
+          "offenceCode": "FA06001"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 3
+          }
+        },
+        "sentencedAt": "2025-08-27",
+        "consecutiveSentenceUUIDs": [
+          "0de48d91-c0de-37d4-940a-9b1ec02eaac5"
+        ]
+      },
+      {
+        "offence": {
+          "committedAt": "2025-03-24",
+          "offenceCode": "TH68072"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 3
+          }
+        },
+        "sentencedAt": "2025-08-27"
+      }
+    ],
+    "adjustments": {
+      "REMAND": [
+        {
+          "toDate": "2025-05-23",
+          "fromDate": "2025-04-29",
+          "numberOfDays": 25,
+          "appliesToSentencesFrom": "2025-08-22"
+        },
+        {
+          "toDate": "2025-07-09",
+          "fromDate": "2025-05-24",
+          "numberOfDays": 47,
+          "appliesToSentencesFrom": "2025-08-27"
+        },
+        {
+          "toDate": "2025-08-26",
+          "fromDate": "2025-08-13",
+          "numberOfDays": 14,
+          "appliesToSentencesFrom": "2025-08-27"
+        }
+      ]
+    }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params"
+}
