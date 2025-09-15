@@ -13,10 +13,11 @@ class BookingService {
     val sentenceAndOffences = calculationSourceData.sentenceAndOffences
     val bookingAndSentenceAdjustments = calculationSourceData.bookingAndSentenceAdjustments
     val movements = calculationSourceData.movements
+    val revocationDate = sentenceAndOffences.mapNotNull { it.revocationDates.maxOrNull() }.maxOrNull()
 
     val offender = transform(prisonerDetails)
     val adjustments = transform(bookingAndSentenceAdjustments, sentenceAndOffences)
-    val sentences = sentenceAndOffences.map { transform(it, calculationUserInputs, calculationSourceData.historicalTusedData) }
+    val sentences = sentenceAndOffences.map { transform(it, calculationUserInputs, calculationSourceData.historicalTusedData, revocationDate, calculationSourceData.returnToCustodyDate?.returnToCustodyDate) }
     val externalMovements = movements.mapNotNull { transform(it) }
 
     return Booking(

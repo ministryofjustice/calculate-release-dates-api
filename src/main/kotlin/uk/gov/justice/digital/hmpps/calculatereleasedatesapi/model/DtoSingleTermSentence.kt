@@ -20,11 +20,12 @@ class DtoSingleTermSentence(
       standardSentences.map(AbstractSentence::offence).minByOrNull(Offence::committedAt)!!,
       standardSentences,
     )
-
-  override val recallType: RecallType?
+  
+  override val recall: Recall?
     get() {
-      return standardSentences[0].recallType
+      return standardSentences[0].recall
     }
+
 
   @JsonIgnore
   override lateinit var sentenceCalculation: SentenceCalculation

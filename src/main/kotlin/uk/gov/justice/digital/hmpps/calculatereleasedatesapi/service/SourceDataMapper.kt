@@ -111,4 +111,9 @@ class SourceDataMapper(private val objectMapper: ObjectMapper) {
     }
     return objectMapper.convertValue(historicalTusedDataNode, HistoricalTusedData::class.java)
   }
+
+  fun getSourceData(calculationRequest: CalculationRequest): CalculationSourceData {
+
+  }
+
 }
