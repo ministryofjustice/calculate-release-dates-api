@@ -23,6 +23,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.MismatchType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.SentenceCalcDates
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.prisonapi.model.CalculablePrisoner
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationReasonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonPersonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonRepository
@@ -66,9 +67,13 @@ class BulkComparisonEventService(
       setAuthToken(token)
       val comparison = getComparison(comparisonId)
       val currentUserPrisonsList = prisonService.getCurrentUserPrisonsList()
-      var count = 0L
+      val prisonToPrisonersMap = mutableMapOf<String, List<CalculablePrisoner>>()
       for (prison in currentUserPrisonsList) {
-        val prisoners = prisonService.getCalculablePrisonerByPrison(prison)
+        prisonToPrisonersMap[prison] = prisonService.getCalculablePrisonerByPrison(prison)
+      }
+
+      var count = 0L
+      prisonToPrisonersMap.forEach { prison, prisoners ->
         sendMessages(comparison, prisoners.map { it.prisonerNumber }, prison)
         count += prisoners.size
       }
