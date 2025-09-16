@@ -48,6 +48,14 @@ class ValidationIntTest(private val mockManageOffencesClient: MockManageOffences
   }
 
   @Test
+  fun `Run calculation where remand periods can overlap with an immediate period`() {
+    runValidationAndCheckMessages(
+      REMAND_OVERLAPS_WITH_SENTENCE_IMMEDIATE_RELEASE_PRISONER_ID,
+      listOf(),
+    )
+  }
+
+  @Test
   fun `Run validation for DTO`() {
     runValidationAndCheckMessages("CRS-1184", emptyList())
   }
@@ -326,6 +334,7 @@ class ValidationIntTest(private val mockManageOffencesClient: MockManageOffences
   companion object {
     const val PRISONER_ID = "default"
     const val REMAND_OVERLAPS_WITH_SENTENCE_PRISONER_ID = "REM-SEN"
+    const val REMAND_OVERLAPS_WITH_SENTENCE_IMMEDIATE_RELEASE_PRISONER_ID = "REM-SENI"
     const val VALIDATION_PRISONER_ID = "VALIDATION"
     const val UNSUPPORTED_SENTENCE_PRISONER_ID = "UNSUPP_SENT"
     const val UNSUPPORTED_CALC_DTO_CONSECUTIVE_TO_SENTENCE = "UNSUPPORTED_CALC_DTO_CONSECUTIVE_TO_SENTENCE"
