@@ -25,6 +25,9 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.http.HttpStatus
+import org.springframework.web.client.RestClientException
+import org.springframework.web.client.RestClientResponseException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ApprovedDatesSubmission
@@ -44,6 +47,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SLED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CalculationDataHasChangedError
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CrdWebException
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.NomisResourceLockedException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.PreconditionFailedException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.TestBuildPropertiesConfiguration.Companion.TEST_BUILD_PROPERTIES
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustments
@@ -215,12 +220,12 @@ class CalculationTransactionalServiceTest {
     ).thenReturn(Optional.empty())
     whenever(
       calculationSourceDataService.getCalculationSourceData(
-        CALCULATION_REQUEST_WITH_OUTCOMES.prisonerId,
-        InactiveDataOptions.default(),
+        eq(CALCULATION_REQUEST_WITH_OUTCOMES.prisonerId),
+        eq(InactiveDataOptions.default()),
+        eq(emptyList()),
       ),
-    ).thenReturn(
-      fakeSourceData,
-    )
+    ).thenReturn(fakeSourceData)
+
     whenever(bookingService.getBooking(fakeSourceData, CalculationUserInputs())).thenReturn(BOOKING)
 
     val exception = assertThrows<EntityNotFoundException> {
@@ -311,23 +316,10 @@ class CalculationTransactionalServiceTest {
   }
 
   @Test
-  fun `Test that exception with correct message is thrown if write to NOMIS fails `() {
-    whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
+  fun `writeToNomis throws EntityNotFoundException when calculation request cannot be found`() {
+    whenever(calculationRequestRepository.findById(CALCULATION_REQUEST_ID)).thenReturn(Optional.empty())
 
-    whenever(
-      calculationRequestRepository.findById(
-        CALCULATION_REQUEST_ID,
-      ),
-    ).thenReturn(
-      Optional.of(
-        CALCULATION_REQUEST_WITH_OUTCOMES.copy(inputData = INPUT_DATA),
-      ),
-    )
-    whenever(
-      prisonService.postReleaseDates(any(), any()),
-    ).thenThrow(EntityNotFoundException("test ex"))
-
-    val exception = assertThrows<EntityNotFoundException> {
+    val ex = assertThrows<EntityNotFoundException> {
       calculationConfirmationService.writeToNomisAndPublishEvent(
         PRISONER_ID,
         BOOKING,
@@ -335,13 +327,139 @@ class CalculationTransactionalServiceTest {
         emptyList(),
       )
     }
+    assertThat(ex).hasMessage("No calculation request exists")
+    verify(prisonService, never()).postReleaseDates(any(), any())
+    verify(eventService, never()).publishReleaseDatesChangedEvent(any(), any())
+  }
 
-    assertThat(exception)
-      .isInstanceOf(EntityNotFoundException::class.java)
-      .withFailMessage(
-        "Writing release dates to NOMIS failed for prisonerId $PRISONER_ID " +
-          "and bookingId $BOOKING_ID",
-      )
+  @Test
+  fun `writeToNomis builds payload with calculationUuid reason and comment`() {
+    whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
+    whenever(calculationRequestRepository.findById(CALCULATION_REQUEST_ID))
+      .thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES.copy(inputData = INPUT_DATA)))
+    whenever(nomisCommentService.getNomisComment(any(), any(), any())).thenReturn("Built comment")
+
+    calculationConfirmationService.writeToNomisAndPublishEvent(
+      PRISONER_ID,
+      BOOKING,
+      BOOKING_CALCULATION,
+      emptyList(),
+    )
+
+    updatedOffenderDatesArgumentCaptor.apply {
+      verify(prisonService).postReleaseDates(eq(BOOKING_ID), capture(this))
+    }
+
+    val sent = updatedOffenderDatesArgumentCaptor.value
+    assertThat(sent.calculationUuid).isEqualTo(CALCULATION_REQUEST_WITH_OUTCOMES.calculationReference)
+    assertThat(sent.reason).isEqualTo(CALCULATION_REASON.nomisReason) // "UPDATE"
+    assertThat(sent.comment).isEqualTo("Built comment")
+    verify(eventService).publishReleaseDatesChangedEvent(PRISONER_ID, BOOKING_ID)
+  }
+
+  @Test
+  fun `writeToNomis does not publish event when non-423 RestClientResponseException occurs`() {
+    whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
+    whenever(calculationRequestRepository.findById(CALCULATION_REQUEST_ID))
+      .thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES.copy(inputData = INPUT_DATA)))
+    val http409 = mock<RestClientResponseException>()
+    whenever(http409.statusCode).thenReturn(HttpStatus.CONFLICT)
+    whenever(prisonService.postReleaseDates(any(), any())).thenThrow(http409)
+
+    assertThrows<CrdWebException> {
+      calculationConfirmationService.writeToNomisAndPublishEvent(PRISONER_ID, BOOKING, BOOKING_CALCULATION, emptyList())
+    }
+    verify(eventService, never()).publishReleaseDatesChangedEvent(any(), any())
+  }
+
+  @Test
+  fun `writeToNomis does not publish event when transport error occurs`() {
+    whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
+    whenever(calculationRequestRepository.findById(CALCULATION_REQUEST_ID))
+      .thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES.copy(inputData = INPUT_DATA)))
+    whenever(prisonService.postReleaseDates(any(), any())).thenThrow(RestClientException("i-o"))
+
+    assertThrows<CrdWebException> {
+      calculationConfirmationService.writeToNomisAndPublishEvent(PRISONER_ID, BOOKING, BOOKING_CALCULATION, emptyList())
+    }
+    verify(eventService, never()).publishReleaseDatesChangedEvent(any(), any())
+  }
+
+  @Test
+  fun `writeToNomis does not publish event when unexpected error occurs`() {
+    whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
+    whenever(calculationRequestRepository.findById(CALCULATION_REQUEST_ID))
+      .thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES.copy(inputData = INPUT_DATA)))
+    whenever(prisonService.postReleaseDates(any(), any())).thenThrow(IllegalStateException("boom"))
+
+    assertThrows<CrdWebException> {
+      calculationConfirmationService.writeToNomisAndPublishEvent(PRISONER_ID, BOOKING, BOOKING_CALCULATION, emptyList())
+    }
+    verify(eventService, never()).publishReleaseDatesChangedEvent(any(), any())
+  }
+
+  @Test
+  fun `writeToNomis 423 message contains prisoner and booking context`() {
+    whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
+    whenever(calculationRequestRepository.findById(CALCULATION_REQUEST_ID))
+      .thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES.copy(inputData = INPUT_DATA)))
+    val http423 = mock<RestClientResponseException>()
+    whenever(http423.statusCode).thenReturn(HttpStatus.LOCKED)
+    whenever(prisonService.postReleaseDates(any(), any())).thenThrow(http423)
+
+    val ex = assertThrows<NomisResourceLockedException> {
+      calculationConfirmationService.writeToNomisAndPublishEvent(PRISONER_ID, BOOKING, BOOKING_CALCULATION, emptyList())
+    }
+    assertThat(ex.message).contains(PRISONER_ID).contains(BOOKING_ID.toString())
+  }
+
+  @Test
+  fun `writeToNomis non-423 RestClientResponseException includes prisoner and booking in message`() {
+    whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
+    whenever(calculationRequestRepository.findById(CALCULATION_REQUEST_ID))
+      .thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES.copy(inputData = INPUT_DATA)))
+    val http409 = mock<RestClientResponseException>()
+    whenever(http409.statusCode).thenReturn(HttpStatus.CONFLICT)
+    whenever(prisonService.postReleaseDates(any(), any())).thenThrow(http409)
+
+    val ex = assertThrows<CrdWebException> {
+      calculationConfirmationService.writeToNomisAndPublishEvent(PRISONER_ID, BOOKING, BOOKING_CALCULATION, emptyList())
+    }
+    assertThat(ex.status).isEqualTo(HttpStatus.BAD_GATEWAY)
+    assertThat(ex.code).isEqualTo("NOMIS_WRITE_FAILED")
+    assertThat(ex.message).contains(PRISONER_ID).contains(BOOKING_ID.toString())
+  }
+
+  @Test
+  fun `validateAndConfirmCalculation throws 500 CrdWebException when booking now fails validation`() {
+    whenever(
+      calculationRequestRepository.findByIdAndCalculationStatus(
+        eq(CALCULATION_REQUEST_ID),
+        eq(PRELIMINARY.name),
+      ),
+    ).thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES.copy(inputData = INPUT_DATA)))
+
+    whenever(
+      calculationSourceDataService.getCalculationSourceData(
+        eq(CALCULATION_REQUEST_WITH_OUTCOMES.prisonerId),
+        eq(InactiveDataOptions.default()),
+        eq(emptyList<Long>()),
+      ),
+    ).thenReturn(fakeSourceData)
+
+    whenever(bookingService.getBooking(eq(fakeSourceData), any<CalculationUserInputs>()))
+      .thenReturn(BOOKING)
+
+    whenever(
+      validationService.validateBeforeCalculation(
+        any<CalculationSourceData>(),
+        any<CalculationUserInputs>(),
+        eq(false),
+
+      ),
+    ).thenReturn(listOf(ValidationMessage(ValidationCode.SENTENCE_HAS_NO_IMPRISONMENT_TERM)))
+
+    whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
   }
 
   @Test
@@ -367,7 +485,7 @@ class CalculationTransactionalServiceTest {
         BOOKING_CALCULATION,
         emptyList(),
       )
-    } catch (ex: Exception) {
+    } catch (_: Exception) {
       fail("Exception was thrown!")
     }
   }
@@ -377,7 +495,7 @@ class CalculationTransactionalServiceTest {
     val requestAndOutcomes = CALCULATION_REQUEST_WITH_OUTCOMES.copy(
       calculationOutcomes = CALCULATION_REQUEST_WITH_OUTCOMES.calculationOutcomes.plus(
         CALCULATION_OUTCOME_SLED,
-      ),
+      ).toMutableList(),
     )
     val calculationTransactionalService = calculationTransactionalService
     val expectedSled = LocalDate.of(2026, 2, 2)
@@ -477,7 +595,7 @@ class CalculationTransactionalServiceTest {
     val requestAndOutcomes = CALCULATION_REQUEST_WITH_OUTCOMES.copy(
       calculationOutcomes = CALCULATION_REQUEST_WITH_OUTCOMES.calculationOutcomes.plus(
         CALCULATION_OUTCOME_SLED,
-      ),
+      ).toMutableList(),
     )
     val calculationTransactionalService = calculationTransactionalService
     val expectedSled = LocalDate.of(2026, 2, 2)
@@ -918,7 +1036,7 @@ class CalculationTransactionalServiceTest {
       calculationReference = CALCULATION_REFERENCE,
       prisonerId = PRISONER_ID,
       bookingId = BOOKING_ID,
-      calculationOutcomes = listOf(CALCULATION_OUTCOME_CRD, CALCULATION_OUTCOME_SED),
+      calculationOutcomes = listOf(CALCULATION_OUTCOME_CRD, CALCULATION_OUTCOME_SED).toMutableList(),
       calculationStatus = CONFIRMED.name,
       inputData = JacksonUtil.toJsonNode(
         "{" + "\"offender\":{" + "\"reference\":\"ABC123D\"," +
@@ -984,5 +1102,96 @@ class CalculationTransactionalServiceTest {
     )
 
     val BOOKING = Booking(OFFENDER, listOf(StandardSENTENCE), Adjustments(), null, null, BOOKING_ID)
+  }
+
+  @Test
+  fun `writeToNomis maps 423 to NomisResourceLockedException and does not publish event`() {
+    whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
+    whenever(calculationRequestRepository.findById(CALCULATION_REQUEST_ID))
+      .thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES.copy(inputData = INPUT_DATA)))
+
+    val http423 = mock<RestClientResponseException>()
+    whenever(http423.statusCode).thenReturn(HttpStatus.LOCKED)
+
+    whenever(prisonService.postReleaseDates(any(), any())).thenThrow(http423)
+
+    assertThrows<NomisResourceLockedException> {
+      calculationConfirmationService.writeToNomisAndPublishEvent(
+        PRISONER_ID,
+        BOOKING,
+        BOOKING_CALCULATION,
+        emptyList(),
+      )
+    }
+
+    verify(eventService, never()).publishReleaseDatesChangedEvent(any(), any())
+  }
+
+  @Test
+  fun `writeToNomis maps non-423 RestClientResponseException to CrdWebException 502`() {
+    whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
+    whenever(calculationRequestRepository.findById(CALCULATION_REQUEST_ID))
+      .thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES.copy(inputData = INPUT_DATA)))
+
+    val httpConflict = mock<RestClientResponseException>()
+    whenever(httpConflict.statusCode).thenReturn(HttpStatus.CONFLICT)
+
+    whenever(prisonService.postReleaseDates(any(), any())).thenThrow(httpConflict)
+
+    val ex = assertThrows<CrdWebException> {
+      calculationConfirmationService.writeToNomisAndPublishEvent(
+        PRISONER_ID,
+        BOOKING,
+        BOOKING_CALCULATION,
+        emptyList(),
+      )
+    }
+
+    assertThat(ex.status).isEqualTo(HttpStatus.BAD_GATEWAY)
+    assertThat(ex.code).isEqualTo("NOMIS_WRITE_FAILED")
+  }
+
+  @Test
+  fun `writeToNomis maps transport RestClientException to CrdWebException 502`() {
+    whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
+    whenever(calculationRequestRepository.findById(CALCULATION_REQUEST_ID))
+      .thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES.copy(inputData = INPUT_DATA)))
+
+    whenever(prisonService.postReleaseDates(any(), any()))
+      .thenThrow(RestClientException("i-o"))
+
+    val ex = assertThrows<CrdWebException> {
+      calculationConfirmationService.writeToNomisAndPublishEvent(
+        PRISONER_ID,
+        BOOKING,
+        BOOKING_CALCULATION,
+        emptyList(),
+      )
+    }
+
+    assertThat(ex.status).isEqualTo(HttpStatus.BAD_GATEWAY)
+    assertThat(ex.code).isEqualTo("NOMIS_WRITE_FAILED")
+  }
+
+  @Test
+  fun `writeToNomis maps unexpected exceptions to CrdWebException 500`() {
+    whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
+    whenever(calculationRequestRepository.findById(CALCULATION_REQUEST_ID))
+      .thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES.copy(inputData = INPUT_DATA)))
+
+    whenever(prisonService.postReleaseDates(any(), any()))
+      .thenThrow(IllegalStateException("Intentionally Failed"))
+
+    val ex = assertThrows<CrdWebException> {
+      calculationConfirmationService.writeToNomisAndPublishEvent(
+        PRISONER_ID,
+        BOOKING,
+        BOOKING_CALCULATION,
+        emptyList(),
+      )
+    }
+
+    assertThat(ex.status).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
+    assertThat(ex.code).isEqualTo("NOMIS_WRITE_FAILED")
   }
 }

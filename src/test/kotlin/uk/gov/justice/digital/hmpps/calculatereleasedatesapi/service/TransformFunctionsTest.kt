@@ -180,7 +180,7 @@ class TransformFunctionsTest {
       ),
     )
 
-    assertThat(transform(CALCULATION_REQUEST.copy(approvedDatesSubmissions = listOf(approvedDatesSubmission)))).isEqualTo(
+    assertThat(transform(CALCULATION_REQUEST.copy(approvedDatesSubmissions = mutableListOf(approvedDatesSubmission)))).isEqualTo(
       CalculatedReleaseDates(
         releaseDatesByType,
         CALCULATION_REQUEST_ID,
@@ -731,7 +731,7 @@ class TransformFunctionsTest {
       prisonerId = PRISONER_ID,
       bookingId = BOOKING_ID,
       calculationStatus = CalculationStatus.PRELIMINARY.name,
-      calculationOutcomes = listOf(
+      calculationOutcomes = mutableListOf(
         CalculationOutcome(
           calculationRequestId = CALCULATION_REQUEST_ID,
           outcomeDate = FIRST_JAN_2015,

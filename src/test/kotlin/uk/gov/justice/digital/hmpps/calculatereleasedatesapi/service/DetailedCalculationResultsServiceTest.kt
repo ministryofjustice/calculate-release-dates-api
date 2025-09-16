@@ -79,12 +79,12 @@ class DetailedCalculationResultsServiceTest {
       prisonerDetails = objectToJson(prisonerDetails, objectMapper),
       sentenceAndOffences = objectToJson(listOf(originalSentence), objectMapper),
       adjustments = objectToJson(adjustments, objectMapper),
-      calculationOutcomes = listOf(
+      calculationOutcomes = mutableListOf(
         CalculationOutcome(calculationRequestId = CALCULATION_REQUEST_ID, calculationDateType = "CRD", outcomeDate = LocalDate.of(2026, 6, 26)),
       ),
     )
     val calculationRequestWithApprovedDates = base.copy(
-      approvedDatesSubmissions = listOf(
+      approvedDatesSubmissions = mutableListOf(
         ApprovedDatesSubmission(
           2,
           base,
@@ -162,12 +162,12 @@ class DetailedCalculationResultsServiceTest {
       prisonerDetails = objectToJson(prisonerDetails, objectMapper),
       sentenceAndOffences = objectToJson(listOf(originalSentence), objectMapper),
       adjustments = objectToJson(adjustments, objectMapper),
-      calculationOutcomes = listOf(
+      calculationOutcomes = mutableListOf(
         CalculationOutcome(calculationRequestId = CALCULATION_REQUEST_ID, calculationDateType = "CRD", outcomeDate = LocalDate.of(2026, 6, 26)),
       ),
     )
     val calculationRequestWithApprovedDates = base.copy(
-      approvedDatesSubmissions = listOf(
+      approvedDatesSubmissions = mutableListOf(
         ApprovedDatesSubmission(
           2,
           base,
@@ -304,7 +304,7 @@ class DetailedCalculationResultsServiceTest {
     calculationReference = calculationReference,
     prisonerId = PRISONER_ID,
     bookingId = BOOKING_ID,
-    calculationOutcomes = listOf(calculationOutcomeCrd, calculationOutcomeSed),
+    calculationOutcomes = mutableListOf(calculationOutcomeCrd, calculationOutcomeSed),
     calculationStatus = CalculationStatus.CONFIRMED.name,
     inputData = JacksonUtil.toJsonNode(
       "{" + "\"offender\":{" + "\"reference\":\"ABC123D\"," +

@@ -18,7 +18,6 @@ import jakarta.persistence.NamedEntityGraph
 import jakarta.persistence.OneToMany
 import jakarta.persistence.OneToOne
 import jakarta.persistence.Table
-import jakarta.validation.constraints.NotNull
 import org.hibernate.Hibernate
 import org.hibernate.annotations.BatchSize
 import org.hibernate.annotations.Type
@@ -41,46 +40,42 @@ import java.util.UUID
 data class CalculationRequest(
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  val id: Long = -1,
+  var id: Long = -1,
 
-  @NotNull
+  @Column(nullable = false)
   val calculationReference: UUID = UUID.randomUUID(),
 
-  @NotNull
+  @Column(nullable = false)
   val prisonerId: String = "",
 
-  @NotNull
+  @Column(nullable = false)
   val bookingId: Long = -1L,
 
-  @NotNull
-  val calculationStatus: String = "",
+  @Column(nullable = false)
+  var calculationStatus: String = "",
 
-  @NotNull
+  @Column(nullable = false)
   val calculatedAt: LocalDateTime = LocalDateTime.now(),
 
-  @NotNull
+  @Column(nullable = false)
   val calculatedByUsername: String = "",
 
   val prisonerLocation: String? = null,
 
-  @NotNull
   @Type(value = JsonType::class)
   @Column(columnDefinition = "jsonb")
   val inputData: JsonNode = JacksonUtil.toJsonNode("{}"),
 
-  @NotNull
   @Type(value = JsonType::class)
   @Column(columnDefinition = "jsonb")
   val sentenceAndOffences: JsonNode? = null,
   val sentenceAndOffencesVersion: Int? = 3,
 
-  @NotNull
   @Type(value = JsonType::class)
   @Column(columnDefinition = "jsonb")
   val prisonerDetails: JsonNode? = null,
   val prisonerDetailsVersion: Int? = 0,
 
-  @NotNull
   @Type(value = JsonType::class)
   @Column(columnDefinition = "jsonb")
   val adjustments: JsonNode? = null,
@@ -101,11 +96,11 @@ data class CalculationRequest(
   @JoinColumn(name = "calculationRequestId")
   @OneToMany
   @BatchSize(size = 1000)
-  val calculationOutcomes: List<CalculationOutcome> = ArrayList(),
+  val calculationOutcomes: MutableList<CalculationOutcome> = ArrayList(),
 
   @Column
   @Enumerated(value = EnumType.STRING)
-  val calculationType: CalculationType = CalculationType.CALCULATED,
+  var calculationType: CalculationType = CalculationType.CALCULATED,
 
   @OneToOne(mappedBy = "calculationRequest", cascade = [CascadeType.ALL])
   val calculationRequestUserInput: CalculationRequestUserInput? = null,
@@ -113,11 +108,10 @@ data class CalculationRequest(
   @JoinColumn(name = "calculationRequestId")
   @OneToMany
   @BatchSize(size = 1000)
-  val approvedDatesSubmissions: List<ApprovedDatesSubmission> = ArrayList(),
+  val approvedDatesSubmissions: MutableList<ApprovedDatesSubmission> = ArrayList(),
 
   @JoinColumn(name = "reasonForCalculation")
   @ManyToOne
-  @NotNull
   val reasonForCalculation: CalculationReason? = null,
 
   val otherReasonForCalculation: String? = null,
@@ -129,7 +123,7 @@ data class CalculationRequest(
   val allocatedSDSTranche: TrancheOutcome? = null,
 
   @OneToMany(mappedBy = "calculationRequest", cascade = [CascadeType.ALL])
-  var manualCalculationReason: List<CalculationRequestManualReason>? = null,
+  var manualCalculationReason: MutableList<CalculationRequestManualReason>? = null,
 
   val version: String = "1",
 ) {
@@ -142,8 +136,7 @@ data class CalculationRequest(
     if (this === other) return true
     if (other == null || Hibernate.getClass(this) != Hibernate.getClass(other)) return false
     other as CalculationRequest
-
-    return id == other.id
+    return id != -1L && id == other.id
   }
 
   @Override
@@ -151,6 +144,4 @@ data class CalculationRequest(
 
   @Override
   override fun toString(): String = this::class.simpleName + "(calculationReference = $calculationReference )"
-
-  fun withType(calculationType: CalculationType): CalculationRequest = copy(calculationType = calculationType)
 }

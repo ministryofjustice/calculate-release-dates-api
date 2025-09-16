@@ -7,6 +7,8 @@ import org.junit.jupiter.api.Test
 import org.mockito.ArgumentMatchers.anyLong
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
+import org.mockito.kotlin.atLeastOnce
+import org.mockito.kotlin.doNothing
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
@@ -25,6 +27,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentsSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOutput
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
@@ -415,7 +418,7 @@ class ManualCalculationServiceTest {
         InactiveDataOptions.default(),
       ),
     ).thenReturn(FAKE_SOURCE_DATA)
-    whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
+    whenever(calculationRequestRepository.saveAndFlush(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
     whenever(calculationRequestRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES))
     whenever(calculationReasonRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REASON))
     whenever(bookingService.getBooking(FAKE_SOURCE_DATA, CalculationUserInputs())).thenReturn(BOOKING)
@@ -450,7 +453,7 @@ class ManualCalculationServiceTest {
         InactiveDataOptions.default(),
       ),
     ).thenReturn(FAKE_SOURCE_DATA)
-    whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
+    whenever(calculationRequestRepository.saveAndFlush(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
     whenever(calculationRequestRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES))
     whenever(calculationReasonRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REASON))
     whenever(bookingService.getBooking(FAKE_SOURCE_DATA, CalculationUserInputs())).thenReturn(BOOKING)
@@ -492,11 +495,14 @@ class ManualCalculationServiceTest {
       ),
     ).thenReturn(FAKE_SOURCE_DATA)
     whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
+    whenever(calculationRequestRepository.saveAndFlush(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
     whenever(calculationRequestRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES))
     whenever(calculationReasonRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REASON))
     whenever(bookingService.getBooking(FAKE_SOURCE_DATA, CalculationUserInputs())).thenReturn(BOOKING)
     whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
     whenever(nomisCommentService.getManualNomisComment(any(), any(), any())).thenReturn("The NOMIS Reason")
+    whenever(validationService.validateSupportedSentencesAndCalculations(any()))
+      .thenReturn(SupportedValidationResponse())
 
     val manualCalcRequest = ManualEntrySelectedDate(
       ReleaseDateType.CRD,
@@ -506,7 +512,7 @@ class ManualCalculationServiceTest {
     val manualEntryRequest = ManualEntryRequest(listOf(manualCalcRequest), 1L, "")
 
     manualCalculationService.storeManualCalculation(PRISONER_ID, manualEntryRequest, true)
-    verify(calculationRequestRepository, times(2)).save(calculationRequestArgumentCaptor.capture())
+    verify(calculationRequestRepository, times(1)).saveAndFlush(calculationRequestArgumentCaptor.capture())
     val actualRequest = calculationRequestArgumentCaptor.firstValue
     assertThat(actualRequest.calculationType).isEqualTo(CalculationType.MANUAL_OVERRIDE)
   }
@@ -520,12 +526,14 @@ class ManualCalculationServiceTest {
         InactiveDataOptions.default(),
       ),
     ).thenReturn(FAKE_SOURCE_DATA)
-    whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
+    whenever(calculationRequestRepository.saveAndFlush(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
     whenever(calculationRequestRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES))
     whenever(calculationReasonRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REASON))
     whenever(bookingService.getBooking(FAKE_SOURCE_DATA, CalculationUserInputs())).thenReturn(BOOKING)
     whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
     whenever(nomisCommentService.getManualNomisComment(any(), any(), any())).thenReturn("The NOMIS Reason")
+    whenever(validationService.validateSupportedSentencesAndCalculations(any()))
+      .thenReturn(SupportedValidationResponse())
     whenever(prisonService.getSentencesAndOffences(anyLong(), eq(true))).thenReturn(
       listOf(
         SentenceAndOffenceWithReleaseArrangements(
@@ -559,7 +567,7 @@ class ManualCalculationServiceTest {
     val manualEntryRequest = ManualEntryRequest(listOf(manualCalcRequest), 1L, "")
 
     manualCalculationService.storeManualCalculation(PRISONER_ID, manualEntryRequest, false)
-    verify(calculationRequestRepository, times(2)).save(calculationRequestArgumentCaptor.capture())
+    verify(calculationRequestRepository, times(1)).saveAndFlush(calculationRequestArgumentCaptor.capture())
     val actualRequest = calculationRequestArgumentCaptor.firstValue
     assertThat(actualRequest.calculationType).isEqualTo(CalculationType.MANUAL_INDETERMINATE)
   }
@@ -572,25 +580,47 @@ class ManualCalculationServiceTest {
         InactiveDataOptions.default(),
       ),
     ).thenReturn(FAKE_SOURCE_DATA)
-    whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
-    whenever(calculationRequestRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES))
-    whenever(calculationReasonRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REASON))
-    whenever(bookingService.getBooking(FAKE_SOURCE_DATA, CalculationUserInputs())).thenReturn(BOOKING)
+
+    whenever(calculationRequestRepository.saveAndFlush(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
+
+    whenever(calculationRequestRepository.findById(any()))
+      .thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES))
+
+    whenever(calculationReasonRepository.findById(any()))
+      .thenReturn(Optional.of(CALCULATION_REASON))
+
+    whenever(bookingService.getBooking(FAKE_SOURCE_DATA, CalculationUserInputs()))
+      .thenReturn(BOOKING)
+
     whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
-    whenever(nomisCommentService.getManualNomisComment(any(), any(), any())).thenReturn("The NOMIS Reason")
-    whenever(validationService.validateSupportedSentencesAndCalculations(any())).thenReturn(
-      SupportedValidationResponse(
-        listOf(),
-        listOf(),
+
+    whenever(nomisCommentService.getNomisComment(any(), any(), any()))
+      .thenReturn("The NOMIS Reason")
+
+    whenever(validationService.validateSupportedSentencesAndCalculations(any()))
+      .thenReturn(SupportedValidationResponse())
+
+    whenever(sentenceCombinationService.createConsecutiveSentences(any(), any()))
+      .thenThrow(NullPointerException("An error was thrown"))
+
+    whenever(calculationService.calculateReleaseDates(any(), any())).thenReturn(
+      CalculationOutput(
+        emptyList(),
+        emptyList(),
+        CalculationResult(
+          effectiveSentenceLength = Period.of(9, 9, 9), // this value should be ignored because ESL was zeroed earlier
+          dates = mapOf(
+            ReleaseDateType.CRD to LocalDate.of(2023, 3, 3),
+          ),
+        ),
       ),
     )
-    // Throw exception during consecutive sentence creation
-    whenever(
-      sentenceCombinationService.createConsecutiveSentences(
-        any(),
-        any(),
-      ),
-    ).thenThrow(NullPointerException("An error was thrown"))
+
+    whenever(validationService.validateBookingAfterCalculation(any(), any()))
+      .thenReturn(emptyList())
+
+    doNothing().`when`(prisonService).postReleaseDates(any(), any())
+
     val manualCalcRequest = ManualEntrySelectedDate(
       ReleaseDateType.CRD,
       "CRD also known as the Conditional Release Date",
@@ -601,11 +631,14 @@ class ManualCalculationServiceTest {
     manualCalculationService.storeManualCalculation(PRISONER_ID, manualEntryRequest, false)
 
     val updatedDatesCapture = argumentCaptor<UpdateOffenderDates>()
-    verify(calculationRequestRepository).save(calculationRequestArgumentCaptor.capture())
+
+    verify(calculationRequestRepository, atLeastOnce()).saveAndFlush(calculationRequestArgumentCaptor.capture())
     val actualRequest = calculationRequestArgumentCaptor.firstValue
     assertThat(actualRequest.calculationType).isEqualTo(CalculationType.MANUAL_DETERMINATE)
+
     verify(prisonService).postReleaseDates(anyLong(), updatedDatesCapture.capture())
     val updateOffenderDates = updatedDatesCapture.firstValue
+
     assertThat(updateOffenderDates.keyDates.sentenceLength).isEqualTo("00/00/00")
   }
 
@@ -617,13 +650,14 @@ class ManualCalculationServiceTest {
         InactiveDataOptions.default(),
       ),
     ).thenReturn(FAKE_SOURCE_DATA)
-    whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
+    whenever(calculationRequestRepository.saveAndFlush(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
     whenever(calculationRequestRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES))
     whenever(calculationReasonRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REASON))
     whenever(bookingService.getBooking(FAKE_SOURCE_DATA, CalculationUserInputs())).thenReturn(BOOKING)
     whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
     whenever(nomisCommentService.getManualNomisComment(any(), any(), any())).thenReturn("The NOMIS Reason")
-
+    whenever(validationService.validateSupportedSentencesAndCalculations(any()))
+      .thenReturn(SupportedValidationResponse())
     val manualCalcRequest = ManualEntrySelectedDate(
       ReleaseDateType.CRD,
       "CRD also known as the Conditional Release Date",
@@ -632,7 +666,7 @@ class ManualCalculationServiceTest {
     val manualEntryRequest = ManualEntryRequest(listOf(manualCalcRequest), 1L, "")
 
     manualCalculationService.storeManualCalculation(PRISONER_ID, manualEntryRequest, false)
-    verify(calculationRequestRepository, times(2)).save(calculationRequestArgumentCaptor.capture())
+    verify(calculationRequestRepository, times(1)).saveAndFlush(calculationRequestArgumentCaptor.capture())
     val actualRequest = calculationRequestArgumentCaptor.firstValue
     assertThat(actualRequest.calculationType).isEqualTo(CalculationType.MANUAL_DETERMINATE)
   }
@@ -645,7 +679,7 @@ class ManualCalculationServiceTest {
         InactiveDataOptions.default(),
       ),
     ).thenReturn(FAKE_SOURCE_DATA)
-    whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
+    whenever(calculationRequestRepository.saveAndFlush(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
     whenever(calculationRequestRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES))
     whenever(calculationReasonRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REASON))
     whenever(bookingService.getBooking(FAKE_SOURCE_DATA, CalculationUserInputs())).thenReturn(BOOKING)
@@ -670,8 +704,7 @@ class ManualCalculationServiceTest {
 
     manualCalculationService.storeManualCalculation(PRISONER_ID, manualEntryRequest, false)
 
-    // save should be called twice, one for initial creation, then one for manual calc reasons
-    verify(calculationRequestRepository, times(2)).save(calculationRequestArgumentCaptor.capture())
+    verify(calculationRequestRepository, times(1)).saveAndFlush(calculationRequestArgumentCaptor.capture())
     val actualRequest = calculationRequestArgumentCaptor.firstValue
     assertThat(actualRequest.calculationType).isEqualTo(CalculationType.MANUAL_DETERMINATE)
   }
@@ -684,7 +717,7 @@ class ManualCalculationServiceTest {
         InactiveDataOptions.default(),
       ),
     ).thenReturn(FAKE_SOURCE_DATA)
-    whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
+    whenever(calculationRequestRepository.saveAndFlush(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
     whenever(calculationRequestRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES))
     whenever(calculationReasonRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REASON))
     whenever(bookingService.getBooking(FAKE_SOURCE_DATA, CalculationUserInputs())).thenReturn(BOOKING)
@@ -719,8 +752,7 @@ class ManualCalculationServiceTest {
 
     manualCalculationService.storeManualCalculation(PRISONER_ID, manualEntryRequest, false)
 
-    // save should be called twice, one for initial creation, then one for manual calc reasons
-    verify(calculationRequestRepository, times(2)).save(calculationRequestArgumentCaptor.capture())
+    verify(calculationRequestRepository, times(1)).saveAndFlush(calculationRequestArgumentCaptor.capture())
     val actualRequest = calculationRequestArgumentCaptor.firstValue
     assertThat(actualRequest.calculationType).isEqualTo(CalculationType.MANUAL_DETERMINATE)
   }
@@ -736,14 +768,14 @@ class ManualCalculationServiceTest {
 
     val manualCalculation = CALCULATION_REQUEST_WITH_OUTCOMES.copy(
       inputData = objectToJson(BOOKING, objectMapper),
-      calculationOutcomes = listOf(
+      calculationOutcomes = mutableListOf(
         CalculationOutcome(
           calculationRequestId = CALCULATION_REQUEST_WITH_OUTCOMES.id,
           outcomeDate = LocalDate.now(),
           calculationDateType = "PED",
         ),
       ),
-      manualCalculationReason = listOf(
+      manualCalculationReason = mutableListOf(
         CalculationRequestManualReason(
           calculationRequest = CALCULATION_REQUEST_WITH_OUTCOMES,
           code = ValidationCode.CONCURRENT_CONSECUTIVE_SENTENCES_DURATION,
@@ -775,14 +807,14 @@ class ManualCalculationServiceTest {
 
     val currentCalculation = CALCULATION_REQUEST_WITH_OUTCOMES.copy(
       inputData = objectToJson(BOOKING, objectMapper),
-      calculationOutcomes = listOf(
+      calculationOutcomes = mutableListOf(
         CalculationOutcome(
           calculationRequestId = CALCULATION_REQUEST_WITH_OUTCOMES.id,
           outcomeDate = LocalDate.now(),
           calculationDateType = "PED",
         ),
       ),
-      manualCalculationReason = listOf(
+      manualCalculationReason = mutableListOf(
         CalculationRequestManualReason(
           calculationRequest = CALCULATION_REQUEST_WITH_OUTCOMES,
           code = ValidationCode.CONCURRENT_CONSECUTIVE_SENTENCES_DURATION,
@@ -794,14 +826,14 @@ class ManualCalculationServiceTest {
     // changed returnToCustodyDate
     val previousCalculation = CALCULATION_REQUEST_WITH_OUTCOMES.copy(
       inputData = objectToJson(BOOKING.copy(returnToCustodyDate = LocalDate.now()), objectMapper),
-      calculationOutcomes = listOf(
+      calculationOutcomes = mutableListOf(
         CalculationOutcome(
           calculationRequestId = CALCULATION_REQUEST_WITH_OUTCOMES.id,
           outcomeDate = LocalDate.now(),
           calculationDateType = "PED",
         ),
       ),
-      manualCalculationReason = listOf(
+      manualCalculationReason = mutableListOf(
         CalculationRequestManualReason(
           calculationRequest = CALCULATION_REQUEST_WITH_OUTCOMES,
           code = ValidationCode.CONCURRENT_CONSECUTIVE_SENTENCES_DURATION,
@@ -884,7 +916,7 @@ class ManualCalculationServiceTest {
       calculationReference = CALCULATION_REFERENCE,
       prisonerId = PRISONER_ID,
       bookingId = BOOKING_ID,
-      calculationOutcomes = listOf(),
+      calculationOutcomes = mutableListOf(),
       calculationStatus = CalculationStatus.CONFIRMED.name,
       inputData = JacksonUtil.toJsonNode(
         "{" + "\"offender\":{" + "\"reference\":\"ABC123D\"," +
