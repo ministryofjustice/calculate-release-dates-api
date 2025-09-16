@@ -29,10 +29,10 @@ class ManualComparisonService(
   private var serviceUserService: ServiceUserService,
   private val comparisonPersonRepository: ComparisonPersonRepository,
   private val comparisonPersonDiscrepancyRepository: ComparisonPersonDiscrepancyRepository,
-  private var bulkComparisonService: BulkComparisonEventService,
   private val objectMapper: ObjectMapper,
   private val calculationTransactionalService: CalculationTransactionalService,
   private val comparisonDiscrepancyService: ComparisonDiscrepancyService,
+  private val bulkComparisonEventSenderService: BulkComparisonEventSenderService,
 ) {
 
   fun create(manualComparison: ManualComparisonInput, token: String): Comparison {
@@ -40,7 +40,7 @@ class ManualComparisonService(
     val initialComparisonCreated = comparisonRepository.save(
       comparisonToCreate,
     )
-    bulkComparisonService.processManualComparison(initialComparisonCreated.id, manualComparison.prisonerIds, token)
+    bulkComparisonEventSenderService.processManualComparison(initialComparisonCreated.id, manualComparison.prisonerIds, token)
 
     return initialComparisonCreated
   }
