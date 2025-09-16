@@ -59,11 +59,13 @@ class BulkComparisonEventHandlerService(
       log.error("Couldn't handle message for comparison ${message.body.comparisonId}")
       return
     }
-    val count = comparisonPersonRepository.countByComparisonId(comparisonId = comparison.id)
-    comparison.numberOfPeopleCompared = count
-    if (comparison.numberOfPeopleCompared >= comparison.numberOfPeopleExpected && comparison.comparisonStatus == ComparisonStatus.PROCESSING) {
-      comparison.comparisonStatus = ComparisonStatus.COMPLETED
-      comparisonRepository.save(comparison)
+    if (comparison.comparisonStatus == ComparisonStatus.PROCESSING) {
+      val count = comparisonPersonRepository.countByComparisonId(comparisonId = comparison.id)
+      comparison.numberOfPeopleCompared = count
+      if (comparison.numberOfPeopleCompared >= comparison.numberOfPeopleExpected) {
+        comparison.comparisonStatus = ComparisonStatus.COMPLETED
+        comparisonRepository.save(comparison)
+      }
     }
   }
 
