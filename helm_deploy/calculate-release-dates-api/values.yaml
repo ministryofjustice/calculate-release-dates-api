@@ -31,7 +31,7 @@ generic-service:
     CONCURRENT_CONSECUTIVE_SENTENCES_ENABLED: "true"
     HISTORIC_SLED_ENABLED: "true"
     FTR_48_MANUAL_JOURNEY: "true"
-    USE_ERS30_CALCULATION: "false"
+    USE_ERS30_CALCULATION: "true"
 
   # Pre-existing kubernetes secrets to load as environment variables in the deployment.
   # namespace_secrets:
