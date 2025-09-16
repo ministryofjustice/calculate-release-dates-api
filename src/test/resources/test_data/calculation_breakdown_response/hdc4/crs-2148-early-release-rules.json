@@ -38,10 +38,10 @@
           "adjustedByDays": 28
         },
         "CRD": {
-          "unadjusted": "2024-08-14",
+          "unadjusted": "2024-08-15",
           "adjusted": "2024-08-09",
-          "daysFromSentenceStart": 6,
-          "adjustedByDays": 5
+          "daysFromSentenceStart": 7,
+          "adjustedByDays": 6
         }
       },
       "lineSequence": 2,
@@ -63,14 +63,20 @@
       "unadjustedDate": "2026-09-08"
     },
     "CRD": {
-      "rules": ["SDS_EARLY_RELEASE_APPLIES"],
+      "rules": [
+        "SDS_EARLY_RELEASE_APPLIES"
+      ],
       "rulesWithExtraAdjustments": {},
       "adjustedDays": -28,
       "releaseDate": "2025-05-12",
       "unadjustedDate": "2025-06-09"
     },
     "HDCED": {
-      "rules": ["HDCED_GE_MIN_PERIOD_LT_MIDPOINT", "SDS_EARLY_RELEASE_APPLIES", "HDC_180"],
+      "rules": [
+        "HDCED_GE_MIN_PERIOD_LT_MIDPOINT",
+        "HDC_180",
+        "SDS_EARLY_RELEASE_APPLIES"
+      ],
       "rulesWithExtraAdjustments": {
         "HDCED_GE_MIN_PERIOD_LT_MIDPOINT": {
           "adjustmentValue": 153,
@@ -83,5 +89,6 @@
     }
   },
   "otherDates": {},
-  "ersedNotApplicableDueToDtoLaterThanCrd": false
+  "ersedNotApplicableDueToDtoLaterThanCrd": false,
+  "showSds40Hints": true
 }

@@ -1,0 +1,69 @@
+{
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01",
+      "isActiveSexOffender": true
+    },
+    "sentences": [
+      {
+        "offence": {
+          "committedAt": "2023-11-18",
+          "offenceCode": "SX03245"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 22
+          }
+        },
+        "sentencedAt": "2024-02-15",
+        "recallType": "STANDARD_RECALL",
+        "hasAnSDSEarlyReleaseExclusion": "SEXUAL"
+      },
+      {
+        "offence": {
+          "committedAt": "2023-07-01",
+          "offenceCode": "CJ88001"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 1
+          }
+        },
+        "sentencedAt": "2024-02-15",
+        "recallType": "STANDARD_RECALL"
+      }
+    ],
+    "adjustments": {
+      "RECALL_REMAND": [
+        {
+          "appliesToSentencesFrom": "2024-02-15",
+          "numberOfDays": 87,
+          "fromDate": "2023-11-20",
+          "toDate": "2024-02-14"
+        }
+      ]
+    },
+    "externalMovements": [
+      {
+        "movementDate": "2024-10-17",
+        "movementReason": "CRD",
+        "direction": "OUT"
+      },
+      {
+        "movementDate": "2024-10-22",
+        "movementReason": "RECALL_ADMISSION",
+        "direction": "IN"
+      }
+    ]
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params",
+  "featureToggles": {
+    "externalMovementsSds40": true,
+    "externalMovementsAdjustmentSharing": true,
+    "externalMovementsEnabled": true
+  }
+}
