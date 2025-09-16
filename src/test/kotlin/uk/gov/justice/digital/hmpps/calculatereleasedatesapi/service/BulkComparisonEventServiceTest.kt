@@ -36,25 +36,21 @@ import java.util.*
 class BulkComparisonEventServiceTest {
   private val prisonService: PrisonService = mock()
   private val calculationSourceDataService: CalculationSourceDataService = mock()
-  private val bulkComparisonEventPublisher: BulkComparisonEventPublisher? = mock()
   private val calculationReasonRepository: CalculationReasonRepository = mock()
   private val calculationTransactionalService: CalculationTransactionalService = mock()
   private val comparisonRepository: ComparisonRepository = mock()
   private val comparisonPersonRepository: ComparisonPersonRepository = mock()
   private val objectMapper: ObjectMapper = TestUtil.objectMapper()
-  private val serviceUserService: ServiceUserService = mock()
   private val ersedEligibilityService: ErsedEligibilityService = mock()
 
-  private val service = BulkComparisonEventService(
+  private val service = BulkComparisonEventHandlerService(
     prisonService,
     calculationSourceDataService,
-    bulkComparisonEventPublisher,
     calculationReasonRepository,
     calculationTransactionalService,
     comparisonRepository,
     comparisonPersonRepository,
     objectMapper,
-    serviceUserService,
     ersedEligibilityService,
   )
   private val bookingId = 999L
