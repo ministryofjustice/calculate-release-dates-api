@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service
 @ConditionalOnProperty(value = ["bulk.calculation.process"], havingValue = "SQS", matchIfMissing = true)
 class BulkComparisonEventListener(
   private val objectMapper: ObjectMapper,
-  private val bulkComparisonEventService: BulkComparisonEventService,
+  private val bulkComparisonEventService: BulkComparisonEventHandlerService,
 ) {
 
   private companion object {
