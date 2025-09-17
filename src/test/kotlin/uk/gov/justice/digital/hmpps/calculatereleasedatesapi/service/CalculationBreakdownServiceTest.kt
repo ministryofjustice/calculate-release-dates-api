@@ -6,6 +6,7 @@ import io.hypersistence.utils.hibernate.type.json.internal.JacksonUtil
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
@@ -18,12 +19,15 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationT
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.BreakdownChangedSinceLastCalculation
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.SourceDataMissingException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.UnsupportedCalculationBreakdown
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BreakdownMissingReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustment
@@ -31,6 +35,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Sent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.BookingAndSentenceAdjustments
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.*
@@ -39,7 +44,9 @@ class CalculationBreakdownServiceTest {
 
   private val calculationTransactionalService = mock<CalculationTransactionalService>()
   private val sourceDataMapper = mock<SourceDataMapper>()
-  private val service = CalculationBreakdownService(sourceDataMapper, calculationTransactionalService)
+  private val bookingService = mock<BookingService>()
+  private val calculationRequestRepository = mock<CalculationRequestRepository>()
+  private val service = CalculationBreakdownService(sourceDataMapper, calculationTransactionalService, bookingService, calculationRequestRepository)
   private val objectMapper = TestUtil.objectMapper()
 
   @Test
@@ -52,46 +59,11 @@ class CalculationBreakdownServiceTest {
         CalculationOutcome(calculationRequestId = CALCULATION_REQUEST_ID, calculationDateType = "CRD", outcomeDate = LocalDate.of(2026, 6, 26)),
       ),
     )
-    whenever(sourceDataMapper.mapPrisonerDetails(calculationRequestWithEverythingForBreakdown)).thenReturn(prisonerDetails)
+    whenever(sourceDataMapper.getSourceData(calculationRequestWithEverythingForBreakdown)).thenAnswer { throw SourceDataMissingException("asd") }
 
     val results = service.getBreakdownSafely(calculationRequestWithEverythingForBreakdown)
     assertThat(results).isEqualTo(BreakdownMissingReason.PRISON_API_DATA_MISSING.left())
     verify(sourceDataMapper, never()).mapSentencesAndOffences(calculationRequestWithEverythingForBreakdown)
-  }
-
-  @Test
-  fun `should return missing breakdown if prisoner details are missing`() {
-    val calculationRequestWithEverythingForBreakdown = calculationRequestWithOutcomes().copy(
-      prisonerDetails = null,
-      sentenceAndOffences = objectToJson(listOf(originalSentence), objectMapper),
-      adjustments = objectToJson(adjustments, objectMapper),
-      calculationOutcomes = listOf(
-        CalculationOutcome(calculationRequestId = CALCULATION_REQUEST_ID, calculationDateType = "CRD", outcomeDate = LocalDate.of(2026, 6, 26)),
-      ),
-    )
-    whenever(sourceDataMapper.mapSentencesAndOffences(calculationRequestWithEverythingForBreakdown)).thenReturn(listOf(originalSentence))
-
-    val results = service.getBreakdownSafely(calculationRequestWithEverythingForBreakdown)
-    assertThat(results).isEqualTo(BreakdownMissingReason.PRISON_API_DATA_MISSING.left())
-    verify(sourceDataMapper, never()).mapPrisonerDetails(calculationRequestWithEverythingForBreakdown)
-  }
-
-  @Test
-  fun `should return missing breakdown if adjustments are missing`() {
-    val calculationRequestWithEverythingForBreakdown = calculationRequestWithOutcomes().copy(
-      prisonerDetails = objectToJson(prisonerDetails, objectMapper),
-      sentenceAndOffences = objectToJson(listOf(originalSentence), objectMapper),
-      adjustments = null,
-      calculationOutcomes = listOf(
-        CalculationOutcome(calculationRequestId = CALCULATION_REQUEST_ID, calculationDateType = "CRD", outcomeDate = LocalDate.of(2026, 6, 26)),
-      ),
-    )
-    whenever(sourceDataMapper.mapSentencesAndOffences(calculationRequestWithEverythingForBreakdown)).thenReturn(listOf(originalSentence))
-    whenever(sourceDataMapper.mapPrisonerDetails(calculationRequestWithEverythingForBreakdown)).thenReturn(prisonerDetails)
-
-    val results = service.getBreakdownSafely(calculationRequestWithEverythingForBreakdown)
-    assertThat(results).isEqualTo(BreakdownMissingReason.PRISON_API_DATA_MISSING.left())
-    verify(sourceDataMapper, never()).mapBookingAndSentenceAdjustments(calculationRequestWithEverythingForBreakdown)
   }
 
   @Test
@@ -104,10 +76,11 @@ class CalculationBreakdownServiceTest {
         CalculationOutcome(calculationRequestId = CALCULATION_REQUEST_ID, calculationDateType = "CRD", outcomeDate = LocalDate.of(2026, 6, 26)),
       ),
     )
-    whenever(sourceDataMapper.mapSentencesAndOffences(calculationRequestWithEverythingForBreakdown)).thenReturn(listOf(originalSentence))
-    whenever(sourceDataMapper.mapPrisonerDetails(calculationRequestWithEverythingForBreakdown)).thenReturn(prisonerDetails)
-    whenever(sourceDataMapper.mapBookingAndSentenceAdjustments(calculationRequestWithEverythingForBreakdown)).thenReturn(adjustments)
-    whenever(calculationTransactionalService.calculateWithBreakdown(any(), any(), any())).then {
+    val sourceData = mock<CalculationSourceData>()
+    val booking = mock<Booking>()
+    whenever(sourceDataMapper.getSourceData(calculationRequestWithEverythingForBreakdown)).thenReturn(sourceData)
+    whenever(bookingService.getBooking(eq(sourceData), any())).thenReturn(booking)
+    whenever(calculationTransactionalService.calculateWithBreakdown(eq(booking), any(), any())).then {
       throw BreakdownChangedSinceLastCalculation("Calculation no longer agrees with algorithm.")
     }
 
@@ -125,10 +98,11 @@ class CalculationBreakdownServiceTest {
         CalculationOutcome(calculationRequestId = CALCULATION_REQUEST_ID, calculationDateType = "CRD", outcomeDate = LocalDate.of(2026, 6, 26)),
       ),
     )
-    whenever(sourceDataMapper.mapSentencesAndOffences(calculationRequestWithEverythingForBreakdown)).thenReturn(listOf(originalSentence))
-    whenever(sourceDataMapper.mapPrisonerDetails(calculationRequestWithEverythingForBreakdown)).thenReturn(prisonerDetails)
-    whenever(sourceDataMapper.mapBookingAndSentenceAdjustments(calculationRequestWithEverythingForBreakdown)).thenReturn(adjustments)
-    whenever(calculationTransactionalService.calculateWithBreakdown(any(), any(), any())).then {
+    val sourceData = mock<CalculationSourceData>()
+    val booking = mock<Booking>()
+    whenever(sourceDataMapper.getSourceData(calculationRequestWithEverythingForBreakdown)).thenReturn(sourceData)
+    whenever(bookingService.getBooking(eq(sourceData), any())).thenReturn(booking)
+    whenever(calculationTransactionalService.calculateWithBreakdown(eq(booking), any(), any())).then {
       throw UnsupportedCalculationBreakdown("Bang!")
     }
 
@@ -147,10 +121,12 @@ class CalculationBreakdownServiceTest {
       ),
     )
     val expectedBreakdown = CalculationBreakdown(emptyList(), null, mapOf(ReleaseDateType.CRD to ReleaseDateCalculationBreakdown(emptySet())), mapOf(ReleaseDateType.PRRD to LocalDate.of(2026, 6, 27)))
-    whenever(sourceDataMapper.mapSentencesAndOffences(calculationRequestWithEverythingForBreakdown)).thenReturn(listOf(originalSentence))
-    whenever(sourceDataMapper.mapPrisonerDetails(calculationRequestWithEverythingForBreakdown)).thenReturn(prisonerDetails)
-    whenever(sourceDataMapper.mapBookingAndSentenceAdjustments(calculationRequestWithEverythingForBreakdown)).thenReturn(adjustments)
-    whenever(calculationTransactionalService.calculateWithBreakdown(any(), any(), any())).thenReturn(expectedBreakdown)
+
+    val sourceData = mock<CalculationSourceData>()
+    val booking = mock<Booking>()
+    whenever(sourceDataMapper.getSourceData(calculationRequestWithEverythingForBreakdown)).thenReturn(sourceData)
+    whenever(bookingService.getBooking(eq(sourceData), any())).thenReturn(booking)
+    whenever(calculationTransactionalService.calculateWithBreakdown(eq(booking), any(), any())).thenReturn(expectedBreakdown)
     val results = service.getBreakdownSafely(calculationRequestWithEverythingForBreakdown)
     assertThat(results).isEqualTo(expectedBreakdown.right())
   }
