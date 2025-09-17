@@ -31,7 +31,9 @@
         },
         "sentencedAt": "2022-02-11",
         "identifier": "e6576b88-184b-49ee-9102-3033de9c3a3a",
-        "recallType": "STANDARD_RECALL",
+        "recall": {
+          "recallType": "STANDARD_RECALL"
+        },
         "hasAnSDSEarlyReleaseExclusion": "NO"
       },
       {

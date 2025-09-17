@@ -18,7 +18,9 @@
         },
         "sentencedAt": "2019-02-06",
         "identifier": "5f6fc8a9-a2ed-4822-8310-1fb9c2c04ed7",
-        "recallType": "STANDARD_RECALL",
+        "recall": {
+          "recallType": "STANDARD_RECALL"
+        },
         "hasAnSDSEarlyReleaseExclusion": "NO"
       },
       {
@@ -34,7 +36,9 @@
         },
         "sentencedAt": "2023-02-09",
         "identifier": "a0145859-6f90-42cb-936d-3d0e193aaa5e",
-        "recallType": "STANDARD_RECALL",
+        "recall": {
+          "recallType": "STANDARD_RECALL"
+        },
         "hasAnSDSEarlyReleaseExclusion": "NO"
       }
     ],

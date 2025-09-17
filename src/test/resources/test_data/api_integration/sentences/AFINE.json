@@ -1,26 +1,35 @@
-[{
-  "bookingId": 2656920,
-  "sentenceSequence": 1,
-  "lineSequence": 1,
-  "caseSequence": 1,
-  "sentenceStatus": "A",
-  "sentenceCategory": "2003",
-  "sentenceCalculationType": "A/FINE",
-  "sentenceTypeDescription": "A fine",
-  "sentenceDate": "2022-06-05",
-  "terms": [{
-    "years": 7,
-    "months": 0,
-    "weeks": 0,
-    "days": 0
-  }],
-  "fineAmount": 11000000,
-  "offences": [{
-    "offenderChargeId": 6091206,
-    "offenceStartDate": "2019-07-11",
-    "offenceEndDate": "2019-09-14",
-    "offenceCode": "ZZ01010",
-    "offenceDescription": "CIVIL offence",
-    "indicators": ["D", "86"]
-  }]
-}]
+[
+  {
+    "bookingId": 2656920,
+    "sentenceSequence": 1,
+    "lineSequence": 1,
+    "caseSequence": 1,
+    "sentenceStatus": "A",
+    "sentenceCategory": "2003",
+    "sentenceCalculationType": "A/FINE",
+    "sentenceTypeDescription": "A fine",
+    "sentenceDate": "2022-06-05",
+    "terms": [
+      {
+        "years": 7,
+        "months": 0,
+        "weeks": 0,
+        "days": 0
+      }
+    ],
+    "fineAmount": 11000000,
+    "offences": [
+      {
+        "offenderChargeId": 6091206,
+        "offenceStartDate": "2019-07-11",
+        "offenceEndDate": "2019-09-14",
+        "offenceCode": "ZZ01010",
+        "offenceDescription": "CIVIL offence",
+        "indicators": [
+          "D",
+          "86"
+        ]
+      }
+    ]
+  }
+]

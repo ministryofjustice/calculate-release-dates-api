@@ -18,7 +18,9 @@
         },
         "sentencedAt": "2019-09-01",
         "identifier": "b71e09b6-3728-3b80-8e86-b1c40d52c812",
-        "recallType": "STANDARD_RECALL",
+        "recall": {
+          "recallType": "STANDARD_RECALL"
+        },
         "hasAnSDSEarlyReleaseExclusion": "NO"
       },
       {
@@ -37,7 +39,9 @@
         "consecutiveSentenceUUIDs": [
           "b71e09b6-3728-3b80-8e86-b1c40d52c812"
         ],
-        "recallType": "STANDARD_RECALL",
+        "recall": {
+          "recallType": "STANDARD_RECALL"
+        },
         "hasAnSDSEarlyReleaseExclusion": "NO"
       },
       {

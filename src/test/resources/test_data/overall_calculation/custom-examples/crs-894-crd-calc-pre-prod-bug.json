@@ -17,7 +17,9 @@
         },
         "sentencedAt": "2018-11-09",
         "identifier": "a453754c-6a14-3708-8d6a-2fa09ce6667e",
-        "recallType": "STANDARD_RECALL",
+        "recall": {
+          "recallType": "STANDARD_RECALL"
+        },
         "hasAnSDSEarlyReleaseExclusion": "NO"
       },
       {
@@ -35,7 +37,9 @@
         "consecutiveSentenceUUIDs": [
           "a453754c-6a14-3708-8d6a-2fa09ce6667e"
         ],
-        "recallType": "STANDARD_RECALL",
+        "recall": {
+          "recallType": "STANDARD_RECALL"
+        },
         "hasAnSDSEarlyReleaseExclusion": "NO"
       },
       {

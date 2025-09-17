@@ -4,8 +4,6 @@ import java.time.LocalDate
 
 data class Recall(
   val recallType: RecallType,
-  val revocationDate: LocalDate?,
-  val returnToCustodyDate: LocalDate?
-) {
-
-}
+  val revocationDate: LocalDate? = null,
+  val returnToCustodyDate: LocalDate? = null,
+)

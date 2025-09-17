@@ -1,31 +1,31 @@
 [
   {
-    "bookingId":1,
-    "sentenceSequence":1,
-    "lineSequence":1,
-    "caseSequence":1,
-    "courtDescription":"Gloucester Crown Court",
-    "sentenceStatus":"A",
-    "sentenceCategory":"2020",
-    "sentenceCalculationType":"SEC250_ORA",
-    "sentenceTypeDescription":"ORA Serious Offence Sec 250 Sentencing Code (U18)",
-    "sentenceDate":"2022-06-28",
-    "terms":[
+    "bookingId": 1,
+    "sentenceSequence": 1,
+    "lineSequence": 1,
+    "caseSequence": 1,
+    "courtDescription": "Gloucester Crown Court",
+    "sentenceStatus": "A",
+    "sentenceCategory": "2020",
+    "sentenceCalculationType": "SEC250_ORA",
+    "sentenceTypeDescription": "ORA Serious Offence Sec 250 Sentencing Code (U18)",
+    "sentenceDate": "2022-06-28",
+    "terms": [
       {
-        "years":7,
-        "months":0,
-        "weeks":0,
-        "days":0,
-        "code":"IMP"
+        "years": 7,
+        "months": 0,
+        "weeks": 0,
+        "days": 0,
+        "code": "IMP"
       }
     ],
-    "offences":[
+    "offences": [
       {
-        "offenderChargeId":3933109,
-        "offenceStartDate":"2022-06-06",
-        "offenceCode":"SX03013A",
-        "offenceDescription":"Attempt rape of a girl    under 13 - SOA 2003",
-        "indicators":[
+        "offenderChargeId": 3933109,
+        "offenceStartDate": "2022-06-06",
+        "offenceCode": "SX03013A",
+        "offenceDescription": "Attempt rape of a girl    under 13 - SOA 2003",
+        "indicators": [
           "ERS",
           "S",
           "M",

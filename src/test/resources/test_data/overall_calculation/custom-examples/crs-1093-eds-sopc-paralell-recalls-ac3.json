@@ -22,7 +22,9 @@
         },
         "sentencedAt": "2018-09-26",
         "identifier": "c0ea3cb1-9ec4-406b-852a-6f7ef9dfe228",
-        "recallType": "STANDARD_RECALL"
+        "recall": {
+          "recallType": "STANDARD_RECALL"
+        }
       },
       {
         "type": "SopcSentence",

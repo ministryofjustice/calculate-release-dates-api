@@ -21,7 +21,9 @@
         "caseSequence": 2,
         "lineSequence": 1,
         "caseReference": "STD LR",
-        "recallType": "STANDARD_RECALL",
+        "recall": {
+          "recallType": "STANDARD_RECALL"
+        },
         "hasAnSDSEarlyReleaseExclusion": "NO"
       },
       {
@@ -39,7 +41,9 @@
         "caseSequence": 2,
         "lineSequence": 2,
         "caseReference": "STD LR",
-        "recallType": "STANDARD_RECALL",
+        "recall": {
+          "recallType": "STANDARD_RECALL"
+        },
         "hasAnSDSEarlyReleaseExclusion": "NO"
       },
       {

@@ -33,7 +33,7 @@ open class CalculationBreakdownService(
 
     val calculationUserInputs = transform(calculationRequest.calculationRequestUserInput)
     val calculation = transform(calculationRequest)
-    val booking = bookingService.getBooking(sourceData, calculationUserInputs)
+    val booking = bookingService.getBooking(sourceData)
     return try {
       calculationTransactionalService.calculateWithBreakdown(booking, calculation, calculationUserInputs).right()
     } catch (e: BreakdownChangedSinceLastCalculation) {
@@ -49,7 +49,7 @@ open class CalculationBreakdownService(
     val calculationRequest = getCalculationRequest(calculationRequestId)
     val sourceData = sourceDataMapper.getSourceData(calculationRequest)
     val calculationUserInputs = transform(calculationRequest.calculationRequestUserInput)
-    val booking = bookingService.getBooking(sourceData, calculationUserInputs)
+    val booking = bookingService.getBooking(sourceData)
     val calculation = transform(calculationRequest)
     return calculationTransactionalService.calculateWithBreakdown(booking, calculation, calculationUserInputs)
   }

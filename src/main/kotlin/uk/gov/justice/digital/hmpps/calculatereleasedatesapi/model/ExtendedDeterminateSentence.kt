@@ -20,7 +20,7 @@ data class ExtendedDeterminateSentence(
   override val lineSequence: Int? = null,
   override val externalSentenceId: ExternalSentenceId? = null,
   override val caseReference: String?,
-  override val recall: Recall? = null
+  override val recall: Recall? = null,
 ) : AbstractSentence(offence, sentencedAt, identifier, consecutiveSentenceUUIDs, caseSequence, lineSequence, externalSentenceId, caseReference, recall) {
   override val isSDSPlus: Boolean = false
   override val isSDSPlusEligibleSentenceTypeLengthAndOffence: Boolean = false

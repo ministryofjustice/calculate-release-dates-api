@@ -18,7 +18,9 @@
         },
         "sentencedAt": "2020-12-01",
         "identifier": "3790cf7f-81c3-40d6-9408-b6583306511e",
-        "recallType": "STANDARD_RECALL",
+        "recall": {
+          "recallType": "STANDARD_RECALL"
+        },
         "hasAnSDSEarlyReleaseExclusion": "VIOLENT"
       },
       {
@@ -34,7 +36,9 @@
         },
         "sentencedAt": "2023-01-09",
         "identifier": "2d642e57-759b-49fc-87d2-45c6c5691224",
-        "recallType": "STANDARD_RECALL",
+        "recall": {
+          "recallType": "STANDARD_RECALL"
+        },
         "hasAnSDSEarlyReleaseExclusion": "SEXUAL"
       }
     ],

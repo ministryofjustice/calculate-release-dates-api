@@ -17,7 +17,10 @@
         },
         "sentencedAt": "2024-05-03",
         "identifier": "a31d5d02-611f-43b0-8b1a-4b1edc955e7e",
-        "recallType": "FIXED_TERM_RECALL_28",
+        "recall": {
+          "recallType": "FIXED_TERM_RECALL_28",
+          "returnToCustodyDate": "2024-12-07"
+        },
         "hasAnSDSEarlyReleaseExclusion": "NO"
       },
       {
@@ -35,7 +38,10 @@
         "consecutiveSentenceUUIDs": [
           "a31d5d02-611f-43b0-8b1a-4b1edc955e7e"
         ],
-        "recallType": "FIXED_TERM_RECALL_28",
+        "recall": {
+          "recallType": "FIXED_TERM_RECALL_28",
+          "returnToCustodyDate": "2024-12-07"
+        },
         "hasAnSDSEarlyReleaseExclusion": "NO"
       },
       {
@@ -50,7 +56,10 @@
         },
         "sentencedAt": "2024-09-02",
         "identifier": "a31d5d02-611f-43b0-8b1a-4b1edc955e8a",
-        "recallType": "FIXED_TERM_RECALL_28",
+        "recall": {
+          "recallType": "FIXED_TERM_RECALL_28",
+          "returnToCustodyDate": "2024-12-07"
+        },
         "hasAnSDSEarlyReleaseExclusion": "NO"
       },
       {
@@ -68,7 +77,10 @@
         "consecutiveSentenceUUIDs": [
           "a31d5d02-611f-43b0-8b1a-4b1edc955e8a"
         ],
-        "recallType": "FIXED_TERM_RECALL_28",
+        "recall": {
+          "recallType": "FIXED_TERM_RECALL_28",
+          "returnToCustodyDate": "2024-12-07"
+        },
         "hasAnSDSEarlyReleaseExclusion": "NO"
       }
     ],

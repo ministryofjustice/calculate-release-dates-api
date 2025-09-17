@@ -45,7 +45,9 @@
         },
         "sentencedAt": "2019-01-30",
         "identifier": "ad4b4095-ebd8-4cd1-ac82-6f0dd4dc8c71",
-        "recallType": "STANDARD_RECALL",
+        "recall": {
+          "recallType": "STANDARD_RECALL"
+        },
         "hasAnSDSEarlyReleaseExclusion": "NO"
       },
       {
@@ -60,7 +62,9 @@
         },
         "sentencedAt": "2019-01-30",
         "identifier": "ca85f6c8-1de4-39ed-9cf3-1094b84c58ce",
-        "recallType": "STANDARD_RECALL",
+        "recall": {
+          "recallType": "STANDARD_RECALL"
+        },
         "hasAnSDSEarlyReleaseExclusion": "NO"
       },
       {
@@ -75,7 +79,9 @@
         },
         "sentencedAt": "2019-01-30",
         "identifier": "1dc64292-4d38-478f-b197-31cc77936a0f",
-        "recallType": "STANDARD_RECALL",
+        "recall": {
+          "recallType": "STANDARD_RECALL"
+        },
         "hasAnSDSEarlyReleaseExclusion": "NO"
       },
       {
@@ -93,7 +99,9 @@
         "consecutiveSentenceUUIDs": [
           "ca85f6c8-1de4-39ed-9cf3-1094b84c58ce"
         ],
-        "recallType": "STANDARD_RECALL",
+        "recall": {
+          "recallType": "STANDARD_RECALL"
+        },
         "hasAnSDSEarlyReleaseExclusion": "NO"
       },
       {
@@ -111,7 +119,9 @@
         "consecutiveSentenceUUIDs": [
           "83fd11aa-a579-3b93-aaba-937e138aec88"
         ],
-        "recallType": "STANDARD_RECALL",
+        "recall": {
+          "recallType": "STANDARD_RECALL"
+        },
         "hasAnSDSEarlyReleaseExclusion": "NO"
       }
     ],

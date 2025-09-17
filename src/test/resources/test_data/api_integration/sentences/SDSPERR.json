@@ -1,313 +1,532 @@
-[{
-  "bookingId": 1,
-  "sentenceSequence": 1,
-  "lineSequence": 1,
-  "caseSequence": 1,
-  "caseReference": "ABC",
-  "courtDescription": "ABC",
-  "sentenceStatus": "A",
-  "sentenceCategory": "2003",
-  "sentenceCalculationType": "ADIMP",
-  "sentenceTypeDescription": "CJA03 Standard Determinate Sentence",
-  "sentenceDate": "2018-07-13",
-  "terms": [{
-    "years": 15,
-    "months": 0,
-    "weeks": 0,
-    "days": 0,
-    "code": "IMP"
-  }],
-  "offences": [{
-    "offenderChargeId": 1,
-    "offenceStartDate": "2011-01-01",
-    "offenceCode": "SX03001",
-    "offenceDescription": "Rape a girl aged 13 / 14 / 15 - SOA 2003",
-    "indicators": ["M", "S", "23", "ERS", "PIMMS1", "S1", "SOR", "S15/CJIB", "SCH15/CJIB/L", "V", "PCSC/SDS", "PCSC/SEC250"]
-  }]
-}, {
-  "bookingId": 1,
-  "sentenceSequence": 2,
-  "lineSequence": 2,
-  "caseSequence": 1,
-  "caseReference": "ABC",
-  "courtDescription": "ABC",
-  "sentenceStatus": "A",
-  "sentenceCategory": "2003",
-  "sentenceCalculationType": "ADIMP",
-  "sentenceTypeDescription": "CJA03 Standard Determinate Sentence",
-  "sentenceDate": "2018-07-13",
-  "terms": [{
-    "years": 0,
-    "months": 15,
-    "weeks": 0,
-    "days": 0,
-    "code": "IMP"
-  }],
-  "offences": [{
-    "offenderChargeId": 1,
-    "offenceStartDate": "2011-01-01",
-    "offenceCode": "SX03007",
-    "offenceDescription": "Sexual assault on a female",
-    "indicators": ["S", "M", "ERS", "24", "S15/CJIB", "PIMMS1", "SOR", "SCH15/CJIB/L", "22", "PIMMS3", "V", "H", "99"]
-  }]
-}, {
-  "bookingId": 1,
-  "sentenceSequence": 3,
-  "lineSequence": 3,
-  "caseSequence": 1,
-  "caseReference": "ABC",
-  "courtDescription": "ABC",
-  "sentenceStatus": "A",
-  "sentenceCategory": "2003",
-  "sentenceCalculationType": "ADIMP",
-  "sentenceTypeDescription": "CJA03 Standard Determinate Sentence",
-  "sentenceDate": "2018-07-13",
-  "terms": [{
-    "years": 2,
-    "months": 0,
-    "weeks": 0,
-    "days": 0,
-    "code": "IMP"
-  }],
-  "offences": [{
-    "offenderChargeId": 1,
-    "offenceStartDate": "2011-01-01",
-    "offenceCode": "SX03007",
-    "offenceDescription": "Sexual assault on a female",
-    "indicators": ["S", "M", "ERS", "24", "S15/CJIB", "PIMMS1", "SOR", "SCH15/CJIB/L", "22", "PIMMS3", "V", "H", "99"]
-  }]
-}, {
-  "bookingId": 1,
-  "sentenceSequence": 4,
-  "lineSequence": 4,
-  "caseSequence": 1,
-  "caseReference": "ABC",
-  "courtDescription": "ABC",
-  "sentenceStatus": "A",
-  "sentenceCategory": "2003",
-  "sentenceCalculationType": "ADIMP",
-  "sentenceTypeDescription": "CJA03 Standard Determinate Sentence",
-  "sentenceDate": "2018-07-13",
-  "terms": [{
-    "years": 10,
-    "months": 0,
-    "weeks": 0,
-    "days": 0,
-    "code": "IMP"
-  }],
-  "offences": [{
-    "offenderChargeId": 1,
-    "offenceStartDate": "2011-01-01",
-    "offenceCode": "SX03005",
-    "offenceDescription": "Assault a female 13 and over by    penetration with part of body / a thing - SOA 2003",
-    "indicators": ["S", "M", "ERS", "21", "PIMMS1", "SOR", "S15/CJIB", "SCH15/CJIB/L", "22", "V", "PCSC/SDS", "PCSC/SEC250"]
-  }]
-}, {
-  "bookingId": 1,
-  "sentenceSequence": 5,
-  "lineSequence": 5,
-  "caseSequence": 1,
-  "caseReference": "ABC",
-  "courtDescription": "ABC",
-  "sentenceStatus": "A",
-  "sentenceCategory": "2003",
-  "sentenceCalculationType": "ADIMP",
-  "sentenceTypeDescription": "CJA03 Standard Determinate Sentence",
-  "sentenceDate": "2018-07-13",
-  "terms": [{
-    "years": 10,
-    "months": 0,
-    "weeks": 0,
-    "days": 0,
-    "code": "IMP"
-  }],
-  "offences": [{
-    "offenderChargeId": 1,
-    "offenceStartDate": "2011-01-01",
-    "offenceCode": "SX03005",
-    "offenceDescription": "Assault a female 13 and over by    penetration with part of body / a thing - SOA 2003",
-    "indicators": ["S", "M", "ERS", "21", "PIMMS1", "SOR", "S15/CJIB", "SCH15/CJIB/L", "22", "V", "PCSC/SDS", "PCSC/SEC250"]
-  }]
-}, {
-  "bookingId": 1,
-  "sentenceSequence": 6,
-  "lineSequence": 6,
-  "caseSequence": 1,
-  "caseReference": "ABC",
-  "courtDescription": "ABC",
-  "sentenceStatus": "A",
-  "sentenceCategory": "2003",
-  "sentenceCalculationType": "ADIMP",
-  "sentenceTypeDescription": "CJA03 Standard Determinate Sentence",
-  "sentenceDate": "2018-07-13",
-  "terms": [{
-    "years": 10,
-    "months": 0,
-    "weeks": 0,
-    "days": 0,
-    "code": "IMP"
-  }],
-  "offences": [{
-    "offenderChargeId": 1,
-    "offenceStartDate": "2011-01-01",
-    "offenceCode": "SX03001",
-    "offenceDescription": "Rape a girl aged 13 / 14 / 15 - SOA 2003",
-    "indicators": ["M", "S", "23", "ERS", "PIMMS1", "S1", "SOR", "S15/CJIB", "SCH15/CJIB/L", "V", "PCSC/SDS", "PCSC/SEC250"]
-  }]
-}, {
-  "bookingId": 1,
-  "sentenceSequence": 7,
-  "lineSequence": 7,
-  "caseSequence": 1,
-  "caseReference": "ABC",
-  "courtDescription": "ABC",
-  "sentenceStatus": "A",
-  "sentenceCategory": "2003",
-  "sentenceCalculationType": "ADIMP",
-  "sentenceTypeDescription": "CJA03 Standard Determinate Sentence",
-  "sentenceDate": "2018-07-13",
-  "terms": [{
-    "years": 10,
-    "months": 0,
-    "weeks": 0,
-    "days": 0,
-    "code": "IMP"
-  }],
-  "offences": [{
-    "offenderChargeId": 1,
-    "offenceStartDate": "2011-01-01",
-    "offenceCode": "SX03001",
-    "offenceDescription": "Rape a girl aged 13 / 14 / 15 - SOA 2003",
-    "indicators": ["M", "S", "23", "ERS", "PIMMS1", "S1", "SOR", "S15/CJIB", "SCH15/CJIB/L", "V", "PCSC/SDS", "PCSC/SEC250"]
-  }]
-}, {
-  "bookingId": 1,
-  "sentenceSequence": 8,
-  "lineSequence": 8,
-  "caseSequence": 1,
-  "caseReference": "ABC",
-  "courtDescription": "ABC",
-  "sentenceStatus": "A",
-  "sentenceCategory": "2003",
-  "sentenceCalculationType": "ADIMP",
-  "sentenceTypeDescription": "CJA03 Standard Determinate Sentence",
-  "sentenceDate": "2018-07-13",
-  "terms": [{
-    "years": 10,
-    "months": 0,
-    "weeks": 0,
-    "days": 0,
-    "code": "IMP"
-  }],
-  "offences": [{
-    "offenderChargeId": 1,
-    "offenceStartDate": "2011-01-01",
-    "offenceCode": "SX03001",
-    "offenceDescription": "Rape a girl aged 13 / 14 / 15 - SOA 2003",
-    "indicators": ["M", "S", "23", "ERS", "PIMMS1", "S1", "SOR", "S15/CJIB", "SCH15/CJIB/L", "V", "PCSC/SDS", "PCSC/SEC250"]
-  }]
-}, {
-  "bookingId": 1,
-  "sentenceSequence": 9,
-  "lineSequence": 9,
-  "caseSequence": 1,
-  "caseReference": "ABC",
-  "courtDescription": "ABC",
-  "sentenceStatus": "A",
-  "sentenceCategory": "2003",
-  "sentenceCalculationType": "ADIMP",
-  "sentenceTypeDescription": "CJA03 Standard Determinate Sentence",
-  "sentenceDate": "2018-07-13",
-  "terms": [{
-    "years": 15,
-    "months": 0,
-    "weeks": 0,
-    "days": 0,
-    "code": "IMP"
-  }],
-  "offences": [{
-    "offenderChargeId": 1,
-    "offenceStartDate": "2011-01-01",
-    "offenceCode": "SX03001",
-    "offenceDescription": "Rape a girl aged 13 / 14 / 15 - SOA 2003",
-    "indicators": ["M", "S", "23", "ERS", "PIMMS1", "S1", "SOR", "S15/CJIB", "SCH15/CJIB/L", "V", "PCSC/SDS", "PCSC/SEC250"]
-  }]
-}, {
-  "bookingId": 1,
-  "sentenceSequence": 10,
-  "lineSequence": 10,
-  "caseSequence": 1,
-  "caseReference": "ABC",
-  "courtDescription": "ABC",
-  "sentenceStatus": "A",
-  "sentenceCategory": "2003",
-  "sentenceCalculationType": "ADIMP",
-  "sentenceTypeDescription": "CJA03 Standard Determinate Sentence",
-  "sentenceDate": "2018-07-13",
-  "terms": [{
-    "years": 15,
-    "months": 0,
-    "weeks": 0,
-    "days": 0,
-    "code": "IMP"
-  }],
-  "offences": [{
-    "offenderChargeId": 1,
-    "offenceStartDate": "2011-01-01",
-    "offenceCode": "SX03001",
-    "offenceDescription": "Rape a girl aged 13 / 14 / 15 - SOA 2003",
-    "indicators": ["M", "S", "23", "ERS", "PIMMS1", "S1", "SOR", "S15/CJIB", "SCH15/CJIB/L", "V", "PCSC/SDS", "PCSC/SEC250"]
-  }]
-}, {
-  "bookingId": 1,
-  "sentenceSequence": 11,
-  "lineSequence": 11,
-  "caseSequence": 1,
-  "caseReference": "ABC",
-  "courtDescription": "ABC",
-  "sentenceStatus": "A",
-  "sentenceCategory": "2003",
-  "sentenceCalculationType": "ADIMP",
-  "sentenceTypeDescription": "CJA03 Standard Determinate Sentence",
-  "sentenceDate": "2018-07-13",
-  "terms": [{
-    "years": 15,
-    "months": 0,
-    "weeks": 0,
-    "days": 0,
-    "code": "IMP"
-  }],
-  "offences": [{
-    "offenderChargeId": 1,
-    "offenceStartDate": "2011-01-01",
-    "offenceCode": "SX03001",
-    "offenceDescription": "Rape a girl aged 13 / 14 / 15 - SOA 2003",
-    "indicators": ["M", "S", "23", "ERS", "PIMMS1", "S1", "SOR", "S15/CJIB", "SCH15/CJIB/L", "V", "PCSC/SDS", "PCSC/SEC250"]
-  }]
-}, {
-  "bookingId": 1,
-  "sentenceSequence": 12,
-  "lineSequence": 12,
-  "caseSequence": 1,
-  "caseReference": "ABC",
-  "courtDescription": "ABC",
-  "sentenceStatus": "A",
-  "sentenceCategory": "2003",
-  "sentenceCalculationType": "ADIMP",
-  "sentenceTypeDescription": "CJA03 Standard Determinate Sentence",
-  "sentenceDate": "2018-07-13",
-  "terms": [{
-    "years": 10,
-    "months": 0,
-    "weeks": 0,
-    "days": 0,
-    "code": "IMP"
-  }],
-  "offences": [{
-    "offenderChargeId": 1,
-    "offenceStartDate": "2011-01-01",
-    "offenceCode": "SX03005",
-    "offenceDescription": "Assault a female 13 and over by    penetration with part of body / a thing - SOA 2003",
-    "indicators": ["S", "M", "ERS", "21", "PIMMS1", "SOR", "S15/CJIB", "SCH15/CJIB/L", "22", "V", "PCSC/SDS", "PCSC/SEC250"]
-  }]
-}]
+[
+  {
+    "bookingId": 1,
+    "sentenceSequence": 1,
+    "lineSequence": 1,
+    "caseSequence": 1,
+    "caseReference": "ABC",
+    "courtDescription": "ABC",
+    "sentenceStatus": "A",
+    "sentenceCategory": "2003",
+    "sentenceCalculationType": "ADIMP",
+    "sentenceTypeDescription": "CJA03 Standard Determinate Sentence",
+    "sentenceDate": "2018-07-13",
+    "terms": [
+      {
+        "years": 15,
+        "months": 0,
+        "weeks": 0,
+        "days": 0,
+        "code": "IMP"
+      }
+    ],
+    "offences": [
+      {
+        "offenderChargeId": 1,
+        "offenceStartDate": "2011-01-01",
+        "offenceCode": "SX03001",
+        "offenceDescription": "Rape a girl aged 13 / 14 / 15 - SOA 2003",
+        "indicators": [
+          "M",
+          "S",
+          "23",
+          "ERS",
+          "PIMMS1",
+          "S1",
+          "SOR",
+          "S15/CJIB",
+          "SCH15/CJIB/L",
+          "V",
+          "PCSC/SDS",
+          "PCSC/SEC250"
+        ]
+      }
+    ]
+  },
+  {
+    "bookingId": 1,
+    "sentenceSequence": 2,
+    "lineSequence": 2,
+    "caseSequence": 1,
+    "caseReference": "ABC",
+    "courtDescription": "ABC",
+    "sentenceStatus": "A",
+    "sentenceCategory": "2003",
+    "sentenceCalculationType": "ADIMP",
+    "sentenceTypeDescription": "CJA03 Standard Determinate Sentence",
+    "sentenceDate": "2018-07-13",
+    "terms": [
+      {
+        "years": 0,
+        "months": 15,
+        "weeks": 0,
+        "days": 0,
+        "code": "IMP"
+      }
+    ],
+    "offences": [
+      {
+        "offenderChargeId": 1,
+        "offenceStartDate": "2011-01-01",
+        "offenceCode": "SX03007",
+        "offenceDescription": "Sexual assault on a female",
+        "indicators": [
+          "S",
+          "M",
+          "ERS",
+          "24",
+          "S15/CJIB",
+          "PIMMS1",
+          "SOR",
+          "SCH15/CJIB/L",
+          "22",
+          "PIMMS3",
+          "V",
+          "H",
+          "99"
+        ]
+      }
+    ]
+  },
+  {
+    "bookingId": 1,
+    "sentenceSequence": 3,
+    "lineSequence": 3,
+    "caseSequence": 1,
+    "caseReference": "ABC",
+    "courtDescription": "ABC",
+    "sentenceStatus": "A",
+    "sentenceCategory": "2003",
+    "sentenceCalculationType": "ADIMP",
+    "sentenceTypeDescription": "CJA03 Standard Determinate Sentence",
+    "sentenceDate": "2018-07-13",
+    "terms": [
+      {
+        "years": 2,
+        "months": 0,
+        "weeks": 0,
+        "days": 0,
+        "code": "IMP"
+      }
+    ],
+    "offences": [
+      {
+        "offenderChargeId": 1,
+        "offenceStartDate": "2011-01-01",
+        "offenceCode": "SX03007",
+        "offenceDescription": "Sexual assault on a female",
+        "indicators": [
+          "S",
+          "M",
+          "ERS",
+          "24",
+          "S15/CJIB",
+          "PIMMS1",
+          "SOR",
+          "SCH15/CJIB/L",
+          "22",
+          "PIMMS3",
+          "V",
+          "H",
+          "99"
+        ]
+      }
+    ]
+  },
+  {
+    "bookingId": 1,
+    "sentenceSequence": 4,
+    "lineSequence": 4,
+    "caseSequence": 1,
+    "caseReference": "ABC",
+    "courtDescription": "ABC",
+    "sentenceStatus": "A",
+    "sentenceCategory": "2003",
+    "sentenceCalculationType": "ADIMP",
+    "sentenceTypeDescription": "CJA03 Standard Determinate Sentence",
+    "sentenceDate": "2018-07-13",
+    "terms": [
+      {
+        "years": 10,
+        "months": 0,
+        "weeks": 0,
+        "days": 0,
+        "code": "IMP"
+      }
+    ],
+    "offences": [
+      {
+        "offenderChargeId": 1,
+        "offenceStartDate": "2011-01-01",
+        "offenceCode": "SX03005",
+        "offenceDescription": "Assault a female 13 and over by    penetration with part of body / a thing - SOA 2003",
+        "indicators": [
+          "S",
+          "M",
+          "ERS",
+          "21",
+          "PIMMS1",
+          "SOR",
+          "S15/CJIB",
+          "SCH15/CJIB/L",
+          "22",
+          "V",
+          "PCSC/SDS",
+          "PCSC/SEC250"
+        ]
+      }
+    ]
+  },
+  {
+    "bookingId": 1,
+    "sentenceSequence": 5,
+    "lineSequence": 5,
+    "caseSequence": 1,
+    "caseReference": "ABC",
+    "courtDescription": "ABC",
+    "sentenceStatus": "A",
+    "sentenceCategory": "2003",
+    "sentenceCalculationType": "ADIMP",
+    "sentenceTypeDescription": "CJA03 Standard Determinate Sentence",
+    "sentenceDate": "2018-07-13",
+    "terms": [
+      {
+        "years": 10,
+        "months": 0,
+        "weeks": 0,
+        "days": 0,
+        "code": "IMP"
+      }
+    ],
+    "offences": [
+      {
+        "offenderChargeId": 1,
+        "offenceStartDate": "2011-01-01",
+        "offenceCode": "SX03005",
+        "offenceDescription": "Assault a female 13 and over by    penetration with part of body / a thing - SOA 2003",
+        "indicators": [
+          "S",
+          "M",
+          "ERS",
+          "21",
+          "PIMMS1",
+          "SOR",
+          "S15/CJIB",
+          "SCH15/CJIB/L",
+          "22",
+          "V",
+          "PCSC/SDS",
+          "PCSC/SEC250"
+        ]
+      }
+    ]
+  },
+  {
+    "bookingId": 1,
+    "sentenceSequence": 6,
+    "lineSequence": 6,
+    "caseSequence": 1,
+    "caseReference": "ABC",
+    "courtDescription": "ABC",
+    "sentenceStatus": "A",
+    "sentenceCategory": "2003",
+    "sentenceCalculationType": "ADIMP",
+    "sentenceTypeDescription": "CJA03 Standard Determinate Sentence",
+    "sentenceDate": "2018-07-13",
+    "terms": [
+      {
+        "years": 10,
+        "months": 0,
+        "weeks": 0,
+        "days": 0,
+        "code": "IMP"
+      }
+    ],
+    "offences": [
+      {
+        "offenderChargeId": 1,
+        "offenceStartDate": "2011-01-01",
+        "offenceCode": "SX03001",
+        "offenceDescription": "Rape a girl aged 13 / 14 / 15 - SOA 2003",
+        "indicators": [
+          "M",
+          "S",
+          "23",
+          "ERS",
+          "PIMMS1",
+          "S1",
+          "SOR",
+          "S15/CJIB",
+          "SCH15/CJIB/L",
+          "V",
+          "PCSC/SDS",
+          "PCSC/SEC250"
+        ]
+      }
+    ]
+  },
+  {
+    "bookingId": 1,
+    "sentenceSequence": 7,
+    "lineSequence": 7,
+    "caseSequence": 1,
+    "caseReference": "ABC",
+    "courtDescription": "ABC",
+    "sentenceStatus": "A",
+    "sentenceCategory": "2003",
+    "sentenceCalculationType": "ADIMP",
+    "sentenceTypeDescription": "CJA03 Standard Determinate Sentence",
+    "sentenceDate": "2018-07-13",
+    "terms": [
+      {
+        "years": 10,
+        "months": 0,
+        "weeks": 0,
+        "days": 0,
+        "code": "IMP"
+      }
+    ],
+    "offences": [
+      {
+        "offenderChargeId": 1,
+        "offenceStartDate": "2011-01-01",
+        "offenceCode": "SX03001",
+        "offenceDescription": "Rape a girl aged 13 / 14 / 15 - SOA 2003",
+        "indicators": [
+          "M",
+          "S",
+          "23",
+          "ERS",
+          "PIMMS1",
+          "S1",
+          "SOR",
+          "S15/CJIB",
+          "SCH15/CJIB/L",
+          "V",
+          "PCSC/SDS",
+          "PCSC/SEC250"
+        ]
+      }
+    ]
+  },
+  {
+    "bookingId": 1,
+    "sentenceSequence": 8,
+    "lineSequence": 8,
+    "caseSequence": 1,
+    "caseReference": "ABC",
+    "courtDescription": "ABC",
+    "sentenceStatus": "A",
+    "sentenceCategory": "2003",
+    "sentenceCalculationType": "ADIMP",
+    "sentenceTypeDescription": "CJA03 Standard Determinate Sentence",
+    "sentenceDate": "2018-07-13",
+    "terms": [
+      {
+        "years": 10,
+        "months": 0,
+        "weeks": 0,
+        "days": 0,
+        "code": "IMP"
+      }
+    ],
+    "offences": [
+      {
+        "offenderChargeId": 1,
+        "offenceStartDate": "2011-01-01",
+        "offenceCode": "SX03001",
+        "offenceDescription": "Rape a girl aged 13 / 14 / 15 - SOA 2003",
+        "indicators": [
+          "M",
+          "S",
+          "23",
+          "ERS",
+          "PIMMS1",
+          "S1",
+          "SOR",
+          "S15/CJIB",
+          "SCH15/CJIB/L",
+          "V",
+          "PCSC/SDS",
+          "PCSC/SEC250"
+        ]
+      }
+    ]
+  },
+  {
+    "bookingId": 1,
+    "sentenceSequence": 9,
+    "lineSequence": 9,
+    "caseSequence": 1,
+    "caseReference": "ABC",
+    "courtDescription": "ABC",
+    "sentenceStatus": "A",
+    "sentenceCategory": "2003",
+    "sentenceCalculationType": "ADIMP",
+    "sentenceTypeDescription": "CJA03 Standard Determinate Sentence",
+    "sentenceDate": "2018-07-13",
+    "terms": [
+      {
+        "years": 15,
+        "months": 0,
+        "weeks": 0,
+        "days": 0,
+        "code": "IMP"
+      }
+    ],
+    "offences": [
+      {
+        "offenderChargeId": 1,
+        "offenceStartDate": "2011-01-01",
+        "offenceCode": "SX03001",
+        "offenceDescription": "Rape a girl aged 13 / 14 / 15 - SOA 2003",
+        "indicators": [
+          "M",
+          "S",
+          "23",
+          "ERS",
+          "PIMMS1",
+          "S1",
+          "SOR",
+          "S15/CJIB",
+          "SCH15/CJIB/L",
+          "V",
+          "PCSC/SDS",
+          "PCSC/SEC250"
+        ]
+      }
+    ]
+  },
+  {
+    "bookingId": 1,
+    "sentenceSequence": 10,
+    "lineSequence": 10,
+    "caseSequence": 1,
+    "caseReference": "ABC",
+    "courtDescription": "ABC",
+    "sentenceStatus": "A",
+    "sentenceCategory": "2003",
+    "sentenceCalculationType": "ADIMP",
+    "sentenceTypeDescription": "CJA03 Standard Determinate Sentence",
+    "sentenceDate": "2018-07-13",
+    "terms": [
+      {
+        "years": 15,
+        "months": 0,
+        "weeks": 0,
+        "days": 0,
+        "code": "IMP"
+      }
+    ],
+    "offences": [
+      {
+        "offenderChargeId": 1,
+        "offenceStartDate": "2011-01-01",
+        "offenceCode": "SX03001",
+        "offenceDescription": "Rape a girl aged 13 / 14 / 15 - SOA 2003",
+        "indicators": [
+          "M",
+          "S",
+          "23",
+          "ERS",
+          "PIMMS1",
+          "S1",
+          "SOR",
+          "S15/CJIB",
+          "SCH15/CJIB/L",
+          "V",
+          "PCSC/SDS",
+          "PCSC/SEC250"
+        ]
+      }
+    ]
+  },
+  {
+    "bookingId": 1,
+    "sentenceSequence": 11,
+    "lineSequence": 11,
+    "caseSequence": 1,
+    "caseReference": "ABC",
+    "courtDescription": "ABC",
+    "sentenceStatus": "A",
+    "sentenceCategory": "2003",
+    "sentenceCalculationType": "ADIMP",
+    "sentenceTypeDescription": "CJA03 Standard Determinate Sentence",
+    "sentenceDate": "2018-07-13",
+    "terms": [
+      {
+        "years": 15,
+        "months": 0,
+        "weeks": 0,
+        "days": 0,
+        "code": "IMP"
+      }
+    ],
+    "offences": [
+      {
+        "offenderChargeId": 1,
+        "offenceStartDate": "2011-01-01",
+        "offenceCode": "SX03001",
+        "offenceDescription": "Rape a girl aged 13 / 14 / 15 - SOA 2003",
+        "indicators": [
+          "M",
+          "S",
+          "23",
+          "ERS",
+          "PIMMS1",
+          "S1",
+          "SOR",
+          "S15/CJIB",
+          "SCH15/CJIB/L",
+          "V",
+          "PCSC/SDS",
+          "PCSC/SEC250"
+        ]
+      }
+    ]
+  },
+  {
+    "bookingId": 1,
+    "sentenceSequence": 12,
+    "lineSequence": 12,
+    "caseSequence": 1,
+    "caseReference": "ABC",
+    "courtDescription": "ABC",
+    "sentenceStatus": "A",
+    "sentenceCategory": "2003",
+    "sentenceCalculationType": "ADIMP",
+    "sentenceTypeDescription": "CJA03 Standard Determinate Sentence",
+    "sentenceDate": "2018-07-13",
+    "terms": [
+      {
+        "years": 10,
+        "months": 0,
+        "weeks": 0,
+        "days": 0,
+        "code": "IMP"
+      }
+    ],
+    "offences": [
+      {
+        "offenderChargeId": 1,
+        "offenceStartDate": "2011-01-01",
+        "offenceCode": "SX03005",
+        "offenceDescription": "Assault a female 13 and over by    penetration with part of body / a thing - SOA 2003",
+        "indicators": [
+          "S",
+          "M",
+          "ERS",
+          "21",
+          "PIMMS1",
+          "SOR",
+          "S15/CJIB",
+          "SCH15/CJIB/L",
+          "22",
+          "V",
+          "PCSC/SDS",
+          "PCSC/SEC250"
+        ]
+      }
+    ]
+  }
+]

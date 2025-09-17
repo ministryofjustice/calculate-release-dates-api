@@ -21,7 +21,10 @@
         "caseSequence": 1,
         "lineSequence": 1,
         "caseReference": "C1",
-        "recallType": "FIXED_TERM_RECALL_28",
+        "recall": {
+          "recallType": "FIXED_TERM_RECALL_28",
+          "returnToCustodyDate": "2025-07-10"
+        },
         "hasAnSDSEarlyReleaseExclusion": "NO"
       },
       {
@@ -43,7 +46,10 @@
         "caseSequence": 1,
         "lineSequence": 2,
         "caseReference": "C1",
-        "recallType": "FIXED_TERM_RECALL_28",
+        "recall": {
+          "recallType": "FIXED_TERM_RECALL_28",
+          "returnToCustodyDate": "2025-07-10"
+        },
         "hasAnSDSEarlyReleaseExclusion": "NO"
       }
     ],

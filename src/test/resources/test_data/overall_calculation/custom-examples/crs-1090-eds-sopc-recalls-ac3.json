@@ -22,7 +22,9 @@
         },
         "sentencedAt": "2017-08-04",
         "identifier": "13189678-fbd7-4f72-aa31-f1c8e9c038e5",
-        "recallType": "STANDARD_RECALL"
+        "recall": {
+          "recallType": "STANDARD_RECALL"
+        }
       },
       {
         "type": "ExtendedDeterminateSentence",
@@ -41,27 +43,31 @@
         },
         "sentencedAt": "2017-08-04",
         "identifier": "1b8c3175-e359-47cd-84f2-e429358d62c4",
-        "recallType": "STANDARD_RECALL"
+        "recall": {
+          "recallType": "STANDARD_RECALL"
+        }
       }
-    ],
-    "adjustments": {
-      "UNLAWFULLY_AT_LARGE": [
-        {
-          "appliesToSentencesFrom": "2020-11-21",
-          "numberOfDays": 23,
-          "fromDate": "2020-11-21",
-          "toDate": "2020-12-13"
+        ],
+        "adjustments": {
+          "UNLAWFULLY_AT_LARGE": [
+            {
+              "appliesToSentencesFrom": "2020-11-21",
+              "numberOfDays": 23,
+              "fromDate": "2020-11-21",
+              "toDate": "2020-12-13"
+            }
+          ],
+          "RECALL_REMAND": [
+            {
+              "appliesToSentencesFrom": "2017-08-04",
+              "numberOfDays": 52,
+              "fromDate": "2017-06-13",
+              "toDate": "2017-08-03"
+            }
+          ]
         }
-      ],
-      "RECALL_REMAND": [
-        {
-          "appliesToSentencesFrom": "2017-08-04",
-          "numberOfDays": 52,
-          "fromDate": "2017-06-13",
-          "toDate": "2017-08-03"
-        }
-      ]
-    }
-  },
-  "params": "sds-50"
-}
+      },
+      "params"
+      :
+      "sds-50"
+      }

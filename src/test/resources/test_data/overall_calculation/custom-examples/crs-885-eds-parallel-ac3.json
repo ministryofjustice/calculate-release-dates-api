@@ -17,7 +17,9 @@
         },
         "sentencedAt": "2021-02-11",
         "identifier": "0b5d4c86-ce16-4897-9a6d-85f3db9a5357",
-        "recallType": "STANDARD_RECALL",
+        "recall": {
+          "recallType": "STANDARD_RECALL"
+        },
         "hasAnSDSEarlyReleaseExclusion": "NO"
       },
       {
@@ -32,7 +34,9 @@
         },
         "sentencedAt": "2021-02-11",
         "identifier": "7a0b8779-4b54-4c49-b407-4a9efd6d0aad",
-        "recallType": "STANDARD_RECALL",
+        "recall": {
+          "recallType": "STANDARD_RECALL"
+        },
         "hasAnSDSEarlyReleaseExclusion": "NO"
       },
       {

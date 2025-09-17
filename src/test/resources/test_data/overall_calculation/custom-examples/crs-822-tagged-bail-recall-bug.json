@@ -17,7 +17,9 @@
         },
         "sentencedAt": "2006-11-14",
         "identifier": "ff211312-6e20-456c-825d-e6c4d3892e26",
-        "recallType": "STANDARD_RECALL",
+        "recall": {
+          "recallType": "STANDARD_RECALL"
+        },
         "hasAnSDSEarlyReleaseExclusion": "NO"
       }
     ],

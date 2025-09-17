@@ -79,7 +79,7 @@ class CalculationBreakdownServiceTest {
     val sourceData = mock<CalculationSourceData>()
     val booking = mock<Booking>()
     whenever(sourceDataMapper.getSourceData(calculationRequestWithEverythingForBreakdown)).thenReturn(sourceData)
-    whenever(bookingService.getBooking(eq(sourceData), any())).thenReturn(booking)
+    whenever(bookingService.getBooking(eq(sourceData))).thenReturn(booking)
     whenever(calculationTransactionalService.calculateWithBreakdown(eq(booking), any(), any())).then {
       throw BreakdownChangedSinceLastCalculation("Calculation no longer agrees with algorithm.")
     }
@@ -101,7 +101,7 @@ class CalculationBreakdownServiceTest {
     val sourceData = mock<CalculationSourceData>()
     val booking = mock<Booking>()
     whenever(sourceDataMapper.getSourceData(calculationRequestWithEverythingForBreakdown)).thenReturn(sourceData)
-    whenever(bookingService.getBooking(eq(sourceData), any())).thenReturn(booking)
+    whenever(bookingService.getBooking(eq(sourceData))).thenReturn(booking)
     whenever(calculationTransactionalService.calculateWithBreakdown(eq(booking), any(), any())).then {
       throw UnsupportedCalculationBreakdown("Bang!")
     }
@@ -125,7 +125,7 @@ class CalculationBreakdownServiceTest {
     val sourceData = mock<CalculationSourceData>()
     val booking = mock<Booking>()
     whenever(sourceDataMapper.getSourceData(calculationRequestWithEverythingForBreakdown)).thenReturn(sourceData)
-    whenever(bookingService.getBooking(eq(sourceData), any())).thenReturn(booking)
+    whenever(bookingService.getBooking(eq(sourceData))).thenReturn(booking)
     whenever(calculationTransactionalService.calculateWithBreakdown(eq(booking), any(), any())).thenReturn(expectedBreakdown)
     val results = service.getBreakdownSafely(calculationRequestWithEverythingForBreakdown)
     assertThat(results).isEqualTo(expectedBreakdown.right())

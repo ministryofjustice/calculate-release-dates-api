@@ -7,7 +7,9 @@
   {
     "type": "CRD",
     "date": "2025-07-22",
-    "hints": ["40% date has been applied"]
+    "hints": [
+      "40% date has been applied"
+    ]
   },
   {
     "type": "HDCED",

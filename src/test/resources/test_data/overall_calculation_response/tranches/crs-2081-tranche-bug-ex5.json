@@ -1,9 +1,9 @@
 {
   "dates": {
     "SLED": "2028-09-27",
-    "CRD" : "2026-02-02",
-    "HDCED" : "2025-12-07",
-    "ESED" : "2028-09-30"
+    "CRD": "2026-02-02",
+    "HDCED": "2025-12-07",
+    "ESED": "2028-09-30"
   },
   "effectiveSentenceLength": "P10Y10D",
   "sdsEarlyReleaseTranche": "TRANCHE_2",

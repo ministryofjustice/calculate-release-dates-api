@@ -16,7 +16,11 @@
           }
         },
         "sentencedAt": "2017-08-20",
-        "recallType": "FIXED_TERM_RECALL_56",
+        "recall": {
+          "recallType": "FIXED_TERM_RECALL_56",
+          "returnToCustodyDate": "2023-10-10",
+          "revocationDate": "2023-10-10"
+        },
         "hasAnSDSEarlyReleaseExclusion": "NO"
       }
     ],

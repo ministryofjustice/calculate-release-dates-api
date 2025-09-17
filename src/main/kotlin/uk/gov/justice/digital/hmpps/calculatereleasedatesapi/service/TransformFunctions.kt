@@ -129,10 +129,9 @@ import java.util.UUID
 
 fun transform(
   sentence: SentenceAndOffenceWithReleaseArrangements,
-  calculationUserInputs: CalculationUserInputs?,
   historicalTusedData: HistoricalTusedData? = null,
-  revocationDate: LocalDate?,
-  returnToCustodyDate: LocalDate?
+  revocationDate: LocalDate? = null,
+  returnToCustodyDate: LocalDate? = null,
 ): AbstractSentence = sentence.let {
   val offendersOffence = sentence.offence
   val offence =
@@ -153,11 +152,11 @@ fun transform(
 
   val externalSentenceId = ExternalSentenceId(sentence.sentenceSequence, sentence.bookingId)
   val sentenceCalculationType = SentenceCalculationType.from(sentence.sentenceCalculationType)
-  val recall = if (sentenceCalculationType.recallType !=null) {
+  val recall = if (sentenceCalculationType.recallType != null) {
     Recall(
       sentenceCalculationType.recallType,
       revocationDate,
-      returnToCustodyDate
+      returnToCustodyDate,
     )
   } else {
     null

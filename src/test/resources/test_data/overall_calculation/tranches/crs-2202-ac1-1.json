@@ -18,7 +18,9 @@
         },
         "sentencedAt": "2024-04-03",
         "identifier": "16e95c42-f9be-437e-a4c4-53ef29eaafa8",
-        "recallType": "STANDARD_RECALL",
+        "recall": {
+          "recallType": "STANDARD_RECALL"
+        },
         "hasAnSDSEarlyReleaseExclusion": "DOMESTIC_ABUSE_T3"
       }
     ],
