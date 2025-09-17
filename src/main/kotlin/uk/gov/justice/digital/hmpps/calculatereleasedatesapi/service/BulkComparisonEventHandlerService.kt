@@ -6,11 +6,9 @@ import org.apache.commons.text.WordUtils
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
-import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.reactive.function.client.WebClientResponseException
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.UserContext
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonPerson
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
@@ -32,93 +30,16 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.Validati
 import kotlin.jvm.optionals.getOrElse
 
 @Service
-class BulkComparisonEventService(
+class BulkComparisonEventHandlerService(
   private val prisonService: PrisonService,
   private val calculationSourceDataService: CalculationSourceDataService,
-  private val bulkComparisonEventPublisher: BulkComparisonEventPublisher?,
   private val calculationReasonRepository: CalculationReasonRepository,
   private val calculationTransactionalService: CalculationTransactionalService,
   private val comparisonRepository: ComparisonRepository,
   private val comparisonPersonRepository: ComparisonPersonRepository,
   private val objectMapper: ObjectMapper,
-  private val serviceUserService: ServiceUserService,
   private val ersedEligibilityService: ErsedEligibilityService,
 ) {
-
-  @Transactional
-  @Async
-  fun processPrisonComparison(comparisonId: Long, token: String) {
-    try {
-      setAuthToken(token)
-      val comparison = getComparison(comparisonId)
-      val prisoners = prisonService.getCalculablePrisonerByPrison(comparison.prison!!)
-      sendMessages(comparison, prisoners.map { it.prisonerNumber })
-      completeSetup(comparison, prisoners.size.toLong())
-    } catch (e: Exception) {
-      handleErrorInBulkSetup(comparisonId, e)
-    }
-  }
-
-  @Transactional
-  @Async
-  fun processFullCaseLoadComparison(comparisonId: Long, token: String) {
-    try {
-      setAuthToken(token)
-      val comparison = getComparison(comparisonId)
-      val currentUserPrisonsList = prisonService.getCurrentUserPrisonsList()
-      var count = 0L
-      for (prison in currentUserPrisonsList) {
-        val prisoners = prisonService.getCalculablePrisonerByPrison(prison)
-        sendMessages(comparison, prisoners.map { it.prisonerNumber }, prison)
-        count += prisoners.size
-      }
-      completeSetup(comparison, count)
-    } catch (e: Exception) {
-      handleErrorInBulkSetup(comparisonId, e)
-    }
-  }
-
-  @Transactional
-  @Async
-  fun processManualComparison(comparisonId: Long, prisonerIds: List<String>, token: String) {
-    try {
-      setAuthToken(token)
-      val comparison = getComparison(comparisonId)
-      sendMessages(comparison, prisonerIds)
-      completeSetup(comparison, prisonerIds.size.toLong())
-    } catch (e: Exception) {
-      handleErrorInBulkSetup(comparisonId, e)
-    }
-  }
-
-  private fun handleErrorInBulkSetup(comparisonId: Long, e: Exception) {
-    log.error("Error setting up bulk comparison $comparisonId", e)
-    val comparison = getComparison(comparisonId)
-    comparison.comparisonStatus = ComparisonStatus.ERROR
-    comparisonRepository.save(comparison)
-  }
-
-  fun sendMessages(comparison: Comparison, calculations: List<String>, establishment: String? = null) {
-    if (bulkComparisonEventPublisher == null) {
-      throw IllegalStateException("Bulk comparison publisher is not configured for this environment")
-    }
-    bulkComparisonEventPublisher.sendMessageBatch(
-      comparisonId = comparison.id,
-      persons = calculations,
-      establishment = establishment,
-      username = serviceUserService.getUsername(),
-    )
-  }
-
-  fun completeSetup(comparison: Comparison, total: Long) {
-    comparison.numberOfPeopleExpected = total
-    comparison.comparisonStatus = ComparisonStatus.PROCESSING
-    comparisonRepository.save(comparison)
-  }
-
-  fun getComparison(comparisonId: Long): Comparison = comparisonRepository.findById(comparisonId).orElseThrow {
-    EntityNotFoundException("The comparison $comparisonId could not be found.")
-  }
 
   @Transactional
   fun handleBulkComparisonMessage(message: InternalMessage<BulkComparisonMessageBody>) {
@@ -138,11 +59,13 @@ class BulkComparisonEventService(
       log.error("Couldn't handle message for comparison ${message.body.comparisonId}")
       return
     }
-    val count = comparisonPersonRepository.countByComparisonId(comparisonId = comparison.id)
-    comparison.numberOfPeopleCompared = count
-    if (comparison.numberOfPeopleCompared >= comparison.numberOfPeopleExpected && comparison.comparisonStatus == ComparisonStatus.PROCESSING) {
-      comparison.comparisonStatus = ComparisonStatus.COMPLETED
-      comparisonRepository.save(comparison)
+    if (comparison.comparisonStatus == ComparisonStatus.PROCESSING) {
+      val count = comparisonPersonRepository.countByComparisonId(comparisonId = comparison.id)
+      comparison.numberOfPeopleCompared = count
+      if (comparison.numberOfPeopleCompared >= comparison.numberOfPeopleExpected) {
+        comparison.comparisonStatus = ComparisonStatus.COMPLETED
+        comparisonRepository.save(comparison)
+      }
     }
   }
 
@@ -329,10 +252,6 @@ class BulkComparisonEventService(
       null
     }
     return establishmentValue
-  }
-
-  fun setAuthToken(token: String) {
-    UserContext.setAuthToken(token)
   }
 
   companion object {
