@@ -15,13 +15,7 @@ data class BookingAndSentenceAdjustments(
   fun upgrade(prisoner: PrisonerDetails): List<AdjustmentDto> = bookingAdjustments.map {
     AdjustmentDto(
       bookingId = prisoner.bookingId,
-      adjustmentType = AdjustmentDto.AdjustmentType.entries.find { type ->
-        try {
-          toBookingAdjustmentType(type) == it.type
-        } catch (e: Exception) {
-          false
-        }
-      }!!,
+      adjustmentType = fromBookingAdjustmentType(it.type),
       person = prisoner.offenderNo,
       fromDate = it.fromDate,
       toDate = it.toDate,
@@ -32,13 +26,7 @@ data class BookingAndSentenceAdjustments(
   } + sentenceAdjustments.map {
     AdjustmentDto(
       bookingId = prisoner.bookingId,
-      adjustmentType = AdjustmentDto.AdjustmentType.entries.find { type ->
-        try {
-          toSentenceAdjustmentType(type) == it.type
-        } catch (e: Exception) {
-          false
-        }
-      }!!,
+      adjustmentType = fromSentenceAdjustmentType(it.type),
       person = prisoner.offenderNo,
       fromDate = it.fromDate,
       toDate = it.toDate,
@@ -59,6 +47,16 @@ data class BookingAndSentenceAdjustments(
       else -> throw IllegalArgumentException("Unknown adjustment type $type")
     }
 
+    private fun fromSentenceAdjustmentType(type: SentenceAdjustmentType): AdjustmentDto.AdjustmentType = when (type) {
+      SentenceAdjustmentType.REMAND -> AdjustmentDto.AdjustmentType.REMAND
+      SentenceAdjustmentType.RECALL_SENTENCE_REMAND -> AdjustmentDto.AdjustmentType.REMAND
+      SentenceAdjustmentType.TAGGED_BAIL -> AdjustmentDto.AdjustmentType.TAGGED_BAIL
+      SentenceAdjustmentType.RECALL_SENTENCE_TAGGED_BAIL -> AdjustmentDto.AdjustmentType.TAGGED_BAIL
+      SentenceAdjustmentType.UNUSED_REMAND -> AdjustmentDto.AdjustmentType.UNUSED_DEDUCTIONS
+      SentenceAdjustmentType.TIME_SPENT_IN_CUSTODY_ABROAD -> AdjustmentDto.AdjustmentType.CUSTODY_ABROAD
+      SentenceAdjustmentType.TIME_SPENT_AS_AN_APPEAL_APPLICANT -> AdjustmentDto.AdjustmentType.APPEAL_APPLICANT
+    }
+
     private fun toBookingAdjustmentType(type: AdjustmentDto.AdjustmentType): BookingAdjustmentType = when (type) {
       AdjustmentDto.AdjustmentType.UNLAWFULLY_AT_LARGE -> BookingAdjustmentType.UNLAWFULLY_AT_LARGE
       AdjustmentDto.AdjustmentType.LAWFULLY_AT_LARGE -> BookingAdjustmentType.LAWFULLY_AT_LARGE
@@ -66,6 +64,14 @@ data class BookingAndSentenceAdjustments(
       AdjustmentDto.AdjustmentType.RESTORATION_OF_ADDITIONAL_DAYS_AWARDED -> BookingAdjustmentType.RESTORED_ADDITIONAL_DAYS_AWARDED
       AdjustmentDto.AdjustmentType.SPECIAL_REMISSION -> BookingAdjustmentType.SPECIAL_REMISSION
       else -> throw IllegalArgumentException("Unknown adjustment type $type")
+    }
+
+    private fun fromBookingAdjustmentType(type: BookingAdjustmentType): AdjustmentDto.AdjustmentType = when (type) {
+      BookingAdjustmentType.UNLAWFULLY_AT_LARGE -> AdjustmentDto.AdjustmentType.UNLAWFULLY_AT_LARGE
+      BookingAdjustmentType.LAWFULLY_AT_LARGE -> AdjustmentDto.AdjustmentType.LAWFULLY_AT_LARGE
+      BookingAdjustmentType.ADDITIONAL_DAYS_AWARDED -> AdjustmentDto.AdjustmentType.ADDITIONAL_DAYS_AWARDED
+      BookingAdjustmentType.RESTORED_ADDITIONAL_DAYS_AWARDED -> AdjustmentDto.AdjustmentType.RESTORATION_OF_ADDITIONAL_DAYS_AWARDED
+      BookingAdjustmentType.SPECIAL_REMISSION -> AdjustmentDto.AdjustmentType.SPECIAL_REMISSION
     }
 
     fun downgrade(adjustments: List<AdjustmentDto>): BookingAndSentenceAdjustments = BookingAndSentenceAdjustments(
