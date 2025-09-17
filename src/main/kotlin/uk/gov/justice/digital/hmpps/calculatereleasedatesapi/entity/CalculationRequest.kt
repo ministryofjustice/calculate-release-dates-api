@@ -96,6 +96,11 @@ data class CalculationRequest(
   val offenderFinePayments: JsonNode? = null,
   val offenderFinePaymentsVersion: Int? = 0,
 
+  @Type(value = JsonType::class)
+  @Column(columnDefinition = "jsonb")
+  val externalMovements: JsonNode? = null,
+  val externalMovementsVersion: Int? = 0,
+
   val breakdownHtml: String? = null,
 
   @JoinColumn(name = "calculationRequestId")

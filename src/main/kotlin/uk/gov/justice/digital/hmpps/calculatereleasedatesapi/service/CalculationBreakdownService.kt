@@ -3,14 +3,16 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 import arrow.core.Either
 import arrow.core.left
 import arrow.core.right
+import jakarta.persistence.EntityNotFoundException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.BreakdownChangedSinceLastCalculation
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.SourceDataMissingException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.UnsupportedCalculationBreakdown
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BreakdownMissingReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 
 @Service
 @Transactional(readOnly = true)
@@ -18,58 +20,41 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBr
 open class CalculationBreakdownService(
   private val sourceDataMapper: SourceDataMapper,
   private val calculationTransactionalService: CalculationTransactionalService,
+  private val bookingService: BookingService,
+  private val calculationRequestRepository: CalculationRequestRepository,
 ) {
 
   fun getBreakdownSafely(calculationRequest: CalculationRequest): Either<BreakdownMissingReason, CalculationBreakdown> {
-    val sentenceAndOffences = calculationRequest.sentenceAndOffences?.let { sourceDataMapper.mapSentencesAndOffences(calculationRequest) }
-    val prisonerDetails = calculationRequest.prisonerDetails?.let { sourceDataMapper.mapPrisonerDetails(calculationRequest) }
+    val sourceData = try {
+      sourceDataMapper.getSourceData(calculationRequest)
+    } catch (e: SourceDataMissingException) {
+      return BreakdownMissingReason.PRISON_API_DATA_MISSING.left()
+    }
+
     val calculationUserInputs = transform(calculationRequest.calculationRequestUserInput)
-    val bookingAndSentenceAdjustments = calculationRequest.adjustments?.let { sourceDataMapper.mapBookingAndSentenceAdjustments(calculationRequest) }
-    val returnToCustodyDate = calculationRequest.returnToCustodyDate?.let { sourceDataMapper.mapReturnToCustodyDate(calculationRequest) }
     val calculation = transform(calculationRequest)
-    val historicalTusedData = sourceDataMapper.mapHistoricalTusedData(calculationRequest)
-    return if (sentenceAndOffences != null && prisonerDetails != null && bookingAndSentenceAdjustments != null) {
-      val booking = Booking(
-        offender = transform(prisonerDetails),
-        sentences = sentenceAndOffences.map {
-          transform(
-            sentence = it,
-            calculationUserInputs = calculationUserInputs,
-            historicalTusedData = historicalTusedData,
-          )
-        },
-        adjustments = transform(bookingAndSentenceAdjustments, sentenceAndOffences),
-        bookingId = prisonerDetails.bookingId,
-        returnToCustodyDate = returnToCustodyDate?.returnToCustodyDate,
-      )
-      try {
-        calculationTransactionalService.calculateWithBreakdown(booking, calculation, calculationUserInputs).right()
-      } catch (e: BreakdownChangedSinceLastCalculation) {
-        BreakdownMissingReason.BREAKDOWN_CHANGED_SINCE_LAST_CALCULATION.left()
-      } catch (e: UnsupportedCalculationBreakdown) {
-        BreakdownMissingReason.UNSUPPORTED_CALCULATION_BREAKDOWN.left()
-      }
-    } else {
-      BreakdownMissingReason.PRISON_API_DATA_MISSING.left()
+    val booking = bookingService.getBooking(sourceData, calculationUserInputs)
+    return try {
+      calculationTransactionalService.calculateWithBreakdown(booking, calculation, calculationUserInputs).right()
+    } catch (e: BreakdownChangedSinceLastCalculation) {
+      BreakdownMissingReason.BREAKDOWN_CHANGED_SINCE_LAST_CALCULATION.left()
+    } catch (e: UnsupportedCalculationBreakdown) {
+      BreakdownMissingReason.UNSUPPORTED_CALCULATION_BREAKDOWN.left()
     }
   }
 
   fun getBreakdownUnsafely(
     calculationRequestId: Long,
   ): CalculationBreakdown {
-    val calculationUserInputs = calculationTransactionalService.findUserInput(calculationRequestId)
-    val prisonerDetails = calculationTransactionalService.findPrisonerDetailsFromCalculation(calculationRequestId)
-    val sentenceAndOffences = calculationTransactionalService.findSentenceAndOffencesFromCalculation(calculationRequestId)
-    val bookingAndSentenceAdjustments = calculationTransactionalService.findBookingAndSentenceAdjustmentsFromCalculation(calculationRequestId)
-    val returnToCustodyDate = calculationTransactionalService.findReturnToCustodyDateFromCalculation(calculationRequestId)
-    val calculation = calculationTransactionalService.findCalculationResults(calculationRequestId)
-    val booking = Booking(
-      offender = transform(prisonerDetails),
-      sentences = sentenceAndOffences.map { transform(it, calculationUserInputs) },
-      adjustments = transform(bookingAndSentenceAdjustments, sentenceAndOffences),
-      bookingId = prisonerDetails.bookingId,
-      returnToCustodyDate = returnToCustodyDate?.returnToCustodyDate,
-    )
+    val calculationRequest = getCalculationRequest(calculationRequestId)
+    val sourceData = sourceDataMapper.getSourceData(calculationRequest)
+    val calculationUserInputs = transform(calculationRequest.calculationRequestUserInput)
+    val booking = bookingService.getBooking(sourceData, calculationUserInputs)
+    val calculation = transform(calculationRequest)
     return calculationTransactionalService.calculateWithBreakdown(booking, calculation, calculationUserInputs)
+  }
+
+  private fun getCalculationRequest(calculationRequestId: Long): CalculationRequest = calculationRequestRepository.findById(calculationRequestId).orElseThrow {
+    EntityNotFoundException("No calculation results exist for calculationRequestId $calculationRequestId")
   }
 }

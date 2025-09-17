@@ -5,18 +5,46 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.adjustmentsapi.model.AdjustmentDto
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.SourceDataMissingException
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentsSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.HistoricalTusedData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffencesWithSDSPlus
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderFinePayment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiDataVersions
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ReturnToCustodyDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.BookingAndSentenceAdjustments
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.PrisonApiExternalMovement
 
 @Service
 class SourceDataMapper(private val objectMapper: ObjectMapper) {
+
+  fun getSourceData(calculationRequest: CalculationRequest): CalculationSourceData {
+    val sentenceAndOffences = calculationRequest.sentenceAndOffences?.let { mapSentencesAndOffences(calculationRequest) }
+    val prisonerDetails = calculationRequest.prisonerDetails?.let { mapPrisonerDetails(calculationRequest) }
+    val bookingAndSentenceAdjustments = calculationRequest.adjustments?.let { mapBookingAndSentenceAdjustments(calculationRequest) }
+    val returnToCustodyDate = calculationRequest.returnToCustodyDate?.let { mapReturnToCustodyDate(calculationRequest) }
+    val finePayments = calculationRequest.offenderFinePayments?. let { mapOffenderFinePayment(calculationRequest) } ?: emptyList()
+    val historicalTusedData = mapHistoricalTusedData(calculationRequest)
+    val externalMovements = calculationRequest.externalMovements?.let { mapPrisonApiExternalMovement(calculationRequest) } ?: emptyList()
+
+    if (sentenceAndOffences == null || prisonerDetails == null || bookingAndSentenceAdjustments == null) {
+      throw SourceDataMissingException("Source data is missing from calculation ${calculationRequest.id}")
+    }
+    return CalculationSourceData(
+      sentenceAndOffences,
+      prisonerDetails,
+      AdjustmentsSourceData(prisonApiData = bookingAndSentenceAdjustments),
+      finePayments,
+      returnToCustodyDate,
+      null, // TODO CRS-2486 Store fixed term recall details to db.
+      historicalTusedData,
+      externalMovements,
+    )
+  }
 
   fun mapSentencesAndOffences(calculationRequest: CalculationRequest): List<SentenceAndOffenceWithReleaseArrangements> = when (calculationRequest.sentenceAndOffencesVersion) {
     0 -> {
@@ -70,6 +98,10 @@ class SourceDataMapper(private val objectMapper: ObjectMapper) {
   fun mapOffenderFinePayment(calculationRequest: CalculationRequest): List<OffenderFinePayment> {
     val reader = objectMapper.readerFor(object : TypeReference<List<OffenderFinePayment>>() {})
     return reader.readValue(calculationRequest.offenderFinePayments)
+  }
+  fun mapPrisonApiExternalMovement(calculationRequest: CalculationRequest): List<PrisonApiExternalMovement> {
+    val reader = objectMapper.readerFor(object : TypeReference<List<PrisonApiExternalMovement>>() {})
+    return reader.readValue(calculationRequest.externalMovements)
   }
 
   fun mapHistoricalTusedData(calculationRequest: CalculationRequest): HistoricalTusedData? {

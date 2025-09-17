@@ -1251,6 +1251,18 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
     assertThat(calculation.dates[ERSED]).isEqualTo(
       LocalDate.of(2022, 7, 13),
     )
+
+    val breakdown = webTestClient.get()
+      .uri("/calculation/breakdown/${calculation.calculationRequestId}")
+      .accept(MediaType.APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+      .exchange()
+      .expectStatus().isOk
+      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectBody(CalculationBreakdown::class.java)
+      .returnResult().responseBody!!
+
+    assertThat(breakdown).isNotNull
   }
 
   val calculationRequestModel = CalculationRequestModel(CalculationUserInputs(), 1L)

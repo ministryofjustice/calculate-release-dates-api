@@ -461,6 +461,7 @@ fun transform(
   historicalTusedSource = historicalTusedSource,
   otherReasonForCalculation = otherReasonDescription,
   version = version,
+  externalMovements = objectToJson(sourceData.movements, objectMapper),
 )
 
 fun transform(
