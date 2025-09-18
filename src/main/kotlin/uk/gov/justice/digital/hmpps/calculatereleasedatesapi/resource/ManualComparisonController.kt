@@ -53,7 +53,7 @@ class ManualComparisonController(
   ): Comparison {
     ComparisonController.log.info("Request received to create a new Comparison -- $manualComparison")
     UserContext.setAuthToken(token)
-    return manualComparisonService.create(manualComparison, token)
+    return manualComparisonService.create(manualComparison.copy(prisonerIds = manualComparison.prisonerIds.distinct()), token)
   }
 
   @GetMapping
