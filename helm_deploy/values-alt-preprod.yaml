@@ -21,8 +21,7 @@ generic-service:
     ADJUSTMENTS_API_URL: https://adjustments-api-preprod.hmpps.service.justice.gov.uk
     MANAGE-OFFENCES_API_URL: https://manage-offences-api-preprod.hmpps.service.justice.gov.uk
     USE_ADJUSTMENTS_API: "true"
-    HISTORIC_SLED_ENABLED: "true"
-    VALIDATE_REVOCATION_DATE: "true"
+    HISTORIC_SLED_ENABLED: "false"
 
   serviceAccountName: calculate-release-dates-api-preprod
 
