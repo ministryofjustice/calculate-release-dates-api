@@ -20,7 +20,7 @@ generic-service:
     PRISON_API_URL: https://prison-api-preprod.prison.service.justice.gov.uk
     ADJUSTMENTS_API_URL: https://adjustments-api-preprod.hmpps.service.justice.gov.uk
     MANAGE-OFFENCES_API_URL: https://manage-offences-api-preprod.hmpps.service.justice.gov.uk
-    USE_ADJUSTMENTS_API: "false"
+    USE_ADJUSTMENTS_API: "true"
     HISTORIC_SLED_ENABLED: "true"
     VALIDATE_REVOCATION_DATE: "true"
 
