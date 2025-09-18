@@ -32,6 +32,7 @@ generic-service:
     HISTORIC_SLED_ENABLED: "true"
     FTR_48_MANUAL_JOURNEY: "true"
     USE_ERS30_CALCULATION: "true"
+    SUPPORT_INACTIVE_SENTENCES_AND_ADJUSTMENTS: "false"
 
   # Pre-existing kubernetes secrets to load as environment variables in the deployment.
   # namespace_secrets:
