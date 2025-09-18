@@ -51,7 +51,7 @@ class ManualComparisonIntTest(private val mockManageOffencesClient: MockManageOf
 
   @Test
   fun `Run comparison on a prison must compare all viable prisoners`() {
-    val result = createManualComparison("EDS")
+    val result = createManualComparison(listOf("EDS"))
 
     assertEquals(ComparisonType.MANUAL, result.comparisonType)
     assertEquals(0, result.numberOfPeopleCompared)
@@ -65,7 +65,7 @@ class ManualComparisonIntTest(private val mockManageOffencesClient: MockManageOf
 
   @Test
   fun `Retrieve comparison person must return all dates`() {
-    val comparison = createManualComparison("EDS")
+    val comparison = createManualComparison(listOf("EDS"))
     val storedComparison = comparisonRepository.findByComparisonShortReference(comparison.comparisonShortReference)
     val comparisonPerson = comparisonPersonRepository.findByComparisonIdIsAndIsMatchFalse(storedComparison!!.id)[0]
     val result = webTestClient.get()
@@ -84,7 +84,7 @@ class ManualComparisonIntTest(private val mockManageOffencesClient: MockManageOf
 
   @Test
   fun `Run comparison on a prisoner not existing`() {
-    val result = createManualComparison("NOTEXIST")
+    val result = createManualComparison(listOf("NOTEXIST"))
 
     assertEquals(ComparisonType.MANUAL, result.comparisonType)
     assertEquals(0, result.numberOfPeopleCompared)
@@ -96,8 +96,22 @@ class ManualComparisonIntTest(private val mockManageOffencesClient: MockManageOf
     assertEquals("404 Not Found from GET http://localhost:8332/api/offenders/NOTEXIST", personComparison.fatalException)
   }
 
-  private fun createManualComparison(prisonerId: String): Comparison {
-    val request = ManualComparisonInput(listOf(prisonerId))
+  @Test
+  fun `Run manual comparison with duplicates`() {
+    val result = createManualComparison(listOf("EDS", "EDS", "EDS", "EDS"))
+
+    assertEquals(ComparisonType.MANUAL, result.comparisonType)
+    assertEquals(0, result.numberOfPeopleCompared)
+    val comparison = comparisonRepository.findByComparisonShortReference(result.comparisonShortReference)
+    assertEquals(1, comparison!!.numberOfPeopleCompared)
+    val personComparison = comparisonPersonRepository.findByComparisonIdIsAndIsMatchFalse(comparison.id)[0]
+    assertTrue(personComparison.isValid)
+    assertFalse(personComparison.isMatch)
+    assertEquals("EDS", personComparison.person)
+  }
+
+  private fun createManualComparison(prisonerIds: List<String>): Comparison {
+    val request = ManualComparisonInput(prisonerIds)
     val result = webTestClient.post()
       .uri("/comparison/manual")
       .accept(MediaType.APPLICATION_JSON)
