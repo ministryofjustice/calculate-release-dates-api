@@ -17,7 +17,10 @@
         },
         "sentencedAt": "2021-02-22",
         "identifier": "f56c49e6-64d9-4d66-ac66-8b80ebc71290",
-        "recallType": "FIXED_TERM_RECALL_14",
+        "recall": {
+          "recallType": "FIXED_TERM_RECALL_14",
+          "returnToCustodyDate": "2021-09-10"
+        },
         "hasAnSDSEarlyReleaseExclusion": "NO"
       },
       {
@@ -35,7 +38,10 @@
         "consecutiveSentenceUUIDs": [
           "f56c49e6-64d9-4d66-ac66-8b80ebc71290"
         ],
-        "recallType": "FIXED_TERM_RECALL_14",
+        "recall": {
+          "recallType": "FIXED_TERM_RECALL_14",
+          "returnToCustodyDate": "2021-09-10"
+        },
         "hasAnSDSEarlyReleaseExclusion": "NO"
       }
     ],

@@ -23,7 +23,9 @@
         },
         "sentencedAt": "2014-08-29",
         "identifier": "6f5670f7-07b0-48d3-b461-da2c3f955e9c",
-        "recallType": "STANDARD_RECALL"
+        "recall": {
+          "recallType": "STANDARD_RECALL"
+        }
       },
       {
         "type": "ExtendedDeterminateSentence",

@@ -22,7 +22,7 @@
         },
         "isSDSPlus": false,
         "identifier": "1b9c2ba0-9523-36d3-bdae-4ac1f76d273a",
-        "recallType": null,
+        "recall": null,
         "sentencedAt": "2023-04-16",
         "caseSequence": 2,
         "lineSequence": 1,

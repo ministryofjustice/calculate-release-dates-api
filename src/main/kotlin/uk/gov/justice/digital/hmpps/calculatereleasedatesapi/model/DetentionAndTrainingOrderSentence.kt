@@ -13,8 +13,8 @@ data class DetentionAndTrainingOrderSentence(
   override val lineSequence: Int? = null,
   override val externalSentenceId: ExternalSentenceId? = null,
   override val caseReference: String? = null,
-  override val recallType: RecallType? = null,
-) : AbstractSentence(offence, sentencedAt, identifier, consecutiveSentenceUUIDs, caseSequence, lineSequence, externalSentenceId, caseReference, recallType),
+  override val recall: Recall? = null,
+) : AbstractSentence(offence, sentencedAt, identifier, consecutiveSentenceUUIDs, caseSequence, lineSequence, externalSentenceId, caseReference, recall),
   Term {
   override val isSDSPlus: Boolean = false
   override val isSDSPlusEligibleSentenceTypeLengthAndOffence: Boolean = false

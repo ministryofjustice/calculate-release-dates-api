@@ -18,7 +18,10 @@
         },
         "sentencedAt": "2024-03-22",
         "identifier": "38a0376c-44c9-3f5d-9f67-e83d1cd345a3",
-        "recallType": "FIXED_TERM_RECALL_14",
+        "recall": {
+          "recallType": "FIXED_TERM_RECALL_14",
+          "returnToCustodyDate": "2024-06-14"
+        },
         "hasAnSDSEarlyReleaseExclusion": "DOMESTIC_ABUSE"
       },
       {
@@ -37,7 +40,10 @@
         "consecutiveSentenceUUIDs": [
           "38a0376c-44c9-3f5d-9f67-e83d1cd345a3"
         ],
-        "recallType": "FIXED_TERM_RECALL_14",
+        "recall": {
+          "recallType": "FIXED_TERM_RECALL_14",
+          "returnToCustodyDate": "2024-06-14"
+        },
         "hasAnSDSEarlyReleaseExclusion": "DOMESTIC_ABUSE"
       },
       {
@@ -53,7 +59,10 @@
         },
         "sentencedAt": "2024-03-22",
         "identifier": "f82549df-6d99-46fc-97d9-d8dc26e458d9",
-        "recallType": "FIXED_TERM_RECALL_14",
+        "recall": {
+          "recallType": "FIXED_TERM_RECALL_14",
+          "returnToCustodyDate": "2024-06-14"
+        },
         "hasAnSDSEarlyReleaseExclusion": "DOMESTIC_ABUSE"
       }
     ],

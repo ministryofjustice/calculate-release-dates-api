@@ -92,6 +92,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.HistoricalTus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualEntrySelectedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Recall
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceAnalysis
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
@@ -128,8 +129,9 @@ import java.util.UUID
 
 fun transform(
   sentence: SentenceAndOffenceWithReleaseArrangements,
-  calculationUserInputs: CalculationUserInputs?,
   historicalTusedData: HistoricalTusedData? = null,
+  revocationDate: LocalDate? = null,
+  returnToCustodyDate: LocalDate? = null,
 ): AbstractSentence = sentence.let {
   val offendersOffence = sentence.offence
   val offence =
@@ -150,6 +152,16 @@ fun transform(
 
   val externalSentenceId = ExternalSentenceId(sentence.sentenceSequence, sentence.bookingId)
   val sentenceCalculationType = SentenceCalculationType.from(sentence.sentenceCalculationType)
+  val recall = if (sentenceCalculationType.recallType != null) {
+    Recall(
+      sentenceCalculationType.recallType,
+      revocationDate,
+      returnToCustodyDate,
+    )
+  } else {
+    null
+  }
+
   when (sentenceCalculationType.sentenceType?.sentenceClazz) {
     AFineSentence::class.java -> {
       AFineSentence(
@@ -162,7 +174,7 @@ fun transform(
         lineSequence = sentence.lineSequence,
         externalSentenceId = externalSentenceId,
         caseReference = sentence.caseReference,
-        recallType = sentenceCalculationType.recallType,
+        recall = recall,
         fineAmount = sentence.fineAmount,
       )
     }
@@ -178,7 +190,7 @@ fun transform(
         lineSequence = sentence.lineSequence,
         externalSentenceId = externalSentenceId,
         caseReference = sentence.caseReference,
-        recallType = sentenceCalculationType.recallType,
+        recall = recall,
       )
     }
 
@@ -215,7 +227,7 @@ fun transform(
         lineSequence = sentence.lineSequence,
         externalSentenceId = externalSentenceId,
         caseReference = sentence.caseReference,
-        recallType = sentenceCalculationType.recallType,
+        recall = recall,
       )
     }
 
@@ -238,7 +250,7 @@ fun transform(
         lineSequence = sentence.lineSequence,
         externalSentenceId = externalSentenceId,
         caseReference = sentence.caseReference,
-        recallType = sentenceCalculationType.recallType,
+        recall = recall,
       )
     }
 
@@ -254,7 +266,7 @@ fun transform(
         lineSequence = sentence.lineSequence,
         externalSentenceId = externalSentenceId,
         caseReference = sentence.caseReference,
-        recallType = sentenceCalculationType.recallType,
+        recall = recall,
         isSDSPlus = sentence.isSDSPlus,
         isSDSPlusEligibleSentenceTypeLengthAndOffence = sentence.isSDSPlusEligibleSentenceTypeLengthAndOffence,
         isSDSPlusOffenceInPeriod = sentence.isSDSPlusOffenceInPeriod,

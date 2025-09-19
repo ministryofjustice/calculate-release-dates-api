@@ -17,7 +17,9 @@
         },
         "sentencedAt": "2017-08-28",
         "identifier": "cb3aa145-0ac8-4a90-bda5-064065a222d4",
-        "recallType": "STANDARD_RECALL",
+        "recall": {
+          "recallType": "STANDARD_RECALL"
+        },
         "hasAnSDSEarlyReleaseExclusion": "NO"
       },
       {

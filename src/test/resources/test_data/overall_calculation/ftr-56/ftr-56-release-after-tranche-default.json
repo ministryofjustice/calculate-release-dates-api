@@ -16,7 +16,11 @@
           }
         },
         "sentencedAt": "2020-08-20",
-        "recallType": "FIXED_TERM_RECALL_56",
+        "recall": {
+          "recallType": "FIXED_TERM_RECALL_56",
+          "returnToCustodyDate": "2026-03-10",
+          "revocationDate": "2026-03-10"
+        },
         "hasAnSDSEarlyReleaseExclusion": "NO"
       }
     ],

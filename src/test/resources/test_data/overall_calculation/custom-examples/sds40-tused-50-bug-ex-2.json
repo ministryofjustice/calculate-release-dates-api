@@ -18,7 +18,9 @@
         },
         "sentencedAt": "2023-10-25",
         "identifier": "644a3db1-5522-33e3-8a8f-d578d249df13",
-        "recallType": "STANDARD_RECALL",
+        "recall": {
+          "recallType": "STANDARD_RECALL"
+        },
         "hasAnSDSEarlyReleaseExclusion": "NO"
       },
       {
@@ -34,7 +36,9 @@
         },
         "sentencedAt": "2023-10-25",
         "identifier": "8bf28e43-ba80-42c2-94d0-e2b726a633c0",
-        "recallType": "STANDARD_RECALL",
+        "recall": {
+          "recallType": "STANDARD_RECALL"
+        },
         "hasAnSDSEarlyReleaseExclusion": "NO"
       },
       {
@@ -53,7 +57,9 @@
         "consecutiveSentenceUUIDs": [
           "644a3db1-5522-33e3-8a8f-d578d249df13"
         ],
-        "recallType": "STANDARD_RECALL",
+        "recall": {
+          "recallType": "STANDARD_RECALL"
+        },
         "hasAnSDSEarlyReleaseExclusion": "NO"
       },
       {
@@ -69,7 +75,9 @@
         },
         "sentencedAt": "2023-10-25",
         "identifier": "69cf08b5-ddc7-43c1-bcd8-aeea6c78ba84",
-        "recallType": "STANDARD_RECALL",
+        "recall": {
+          "recallType": "STANDARD_RECALL"
+        },
         "hasAnSDSEarlyReleaseExclusion": "NO"
       },
       {

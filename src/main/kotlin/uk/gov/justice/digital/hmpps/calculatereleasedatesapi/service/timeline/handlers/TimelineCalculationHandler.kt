@@ -6,6 +6,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.RecallCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.NoValidReturnToCustodyDateException
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.NoValidRevocationDateException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType
@@ -42,7 +43,9 @@ abstract class TimelineCalculationHandler(
   fun findRecallCalculation(
     timelineCalculationDate: LocalDate,
     allocatedEarlyReleaseConfiguration: EarlyReleaseConfiguration?,
-  ): (CalculableSentence, LocalDate?, Pair<Int, LocalDate>) -> Pair<Int, LocalDate> = { sentence, returnToCustodyDate, standardCalculation ->
+  ): (CalculableSentence, Pair<Int, LocalDate>) -> Pair<Int, LocalDate> = { sentence, standardCalculation ->
+    val revocationDate = sentence.recall?.revocationDate
+    val returnToCustodyDate = sentence.recall?.returnToCustodyDate
     when (val recallType = sentence.recallType) {
       RecallType.STANDARD_RECALL -> standardCalculation
 
@@ -54,9 +57,12 @@ abstract class TimelineCalculationHandler(
         if (returnToCustodyDate == null) {
           throw NoValidReturnToCustodyDateException("No return to custody date available")
         }
+        if (revocationDate == null) {
+          throw NoValidRevocationDateException("No revocation date available")
+        }
 
         val ftr56Configuration = earlyReleaseConfigurations.configurations.find { it.recallCalculation == RecallCalculationType.FTR_56 }
-        if (ftr56Configuration != null && returnToCustodyDate.isAfterOrEqualTo(ftr56Configuration.earliestTranche())) {
+        if (ftr56Configuration != null && revocationDate.isAfterOrEqualTo(ftr56Configuration.earliestTranche())) {
           calculateFixedTermRecall(returnToCustodyDate, recallType)
         } else if (allocatedEarlyReleaseConfiguration != null && allocatedEarlyReleaseConfiguration == ftr56Configuration) {
           calculateFixedTermRecall(returnToCustodyDate, recallType)

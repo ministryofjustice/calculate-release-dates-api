@@ -34,7 +34,7 @@ class UnusedDeductionsCalculationService(
     if (validationMessages.isNotEmpty()) {
       return UnusedDeductionCalculationResponse(null, validationMessages)
     }
-    val booking = bookingService.getBooking(sourceData, calculationUserInputs)
+    val booking = bookingService.getBooking(sourceData)
     validationMessages = validationService.validateBeforeCalculation(booking)
     if (validationMessages.isNotEmpty()) {
       return UnusedDeductionCalculationResponse(null, validationMessages)

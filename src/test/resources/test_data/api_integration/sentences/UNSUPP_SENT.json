@@ -7,12 +7,14 @@
     "sentenceSequence": 1,
     "sentenceStatus": "A",
     "sentenceCategory": "2003",
-    "terms": [{
-      "years": 0,
-      "months": 0,
-      "weeks": 0,
-      "days": 1
-    }],
+    "terms": [
+      {
+        "years": 0,
+        "months": 0,
+        "weeks": 0,
+        "days": 1
+      }
+    ],
     "sentenceCalculationType": "UNSUPORTED",
     "sentenceTypeDescription": "This sentence is unsupported",
     "offences": [

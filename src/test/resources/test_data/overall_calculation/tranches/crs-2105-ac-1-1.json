@@ -17,7 +17,9 @@
         },
         "sentencedAt": "2020-08-03",
         "identifier": "3f0febd8-8a71-419c-9e18-94071e36c1de",
-        "recallType": "STANDARD_RECALL",
+        "recall": {
+          "recallType": "STANDARD_RECALL"
+        },
         "hasAnSDSEarlyReleaseExclusion": "NO"
       },
       {

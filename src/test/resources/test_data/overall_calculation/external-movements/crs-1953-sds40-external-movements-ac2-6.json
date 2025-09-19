@@ -16,7 +16,9 @@
           }
         },
         "sentencedAt": "2024-05-20",
-        "recallType": "STANDARD_RECALL"
+        "recall": {
+          "recallType": "STANDARD_RECALL"
+        }
       },
       {
         "offence": {
@@ -30,52 +32,60 @@
         },
         "sentencedAt": "2024-05-20",
         "hasAnSDSEarlyReleaseExclusion": "DOMESTIC_ABUSE",
-        "recallType": "STANDARD_RECALL"
-      }
-    ],
-    "adjustments": {
-      "RECALL_REMAND": [
-        {
-          "appliesToSentencesFrom": "2024-05-20",
-          "numberOfDays": 28,
-          "fromDate": "2024-04-22",
-          "toDate": "2024-05-19"
+        "recall": {
+          "recallType": "STANDARD_RECALL"
         }
-      ],
-      "UNLAWFULLY_AT_LARGE": [
-        {
-          "appliesToSentencesFrom": "2024-08-27",
-          "numberOfDays": 37,
-          "fromDate": "2024-08-27",
-          "toDate": "2024-10-02"
-        }
-      ]
-    },
-    "externalMovements": [
-      {
-        "movementDate": "2024-05-20",
-        "movementReason": "SENTENCE",
-        "direction": "IN"
-      },
-      {
-        "movementDate": "2024-08-23",
-        "movementReason": "HDC",
-        "direction": "OUT"
-      },
-      {
-        "movementDate": "2024-10-03",
-        "movementReason": "HDC_RECALL",
-        "direction": "IN"
       }
-    ]
-  },
-  "userInputs": {
-    "useOffenceIndicators": true
-  },
-  "params": "calculation-params",
-  "featureToggles": {
-    "externalMovementsSds40": true,
-    "externalMovementsAdjustmentSharing": true,
-    "externalMovementsEnabled": true
-  }
-}
+        ],
+        "adjustments": {
+          "RECALL_REMAND": [
+            {
+              "appliesToSentencesFrom": "2024-05-20",
+              "numberOfDays": 28,
+              "fromDate": "2024-04-22",
+              "toDate": "2024-05-19"
+            }
+          ],
+          "UNLAWFULLY_AT_LARGE": [
+            {
+              "appliesToSentencesFrom": "2024-08-27",
+              "numberOfDays": 37,
+              "fromDate": "2024-08-27",
+              "toDate": "2024-10-02"
+            }
+          ]
+        },
+        "externalMovements": [
+          {
+            "movementDate": "2024-05-20",
+            "movementReason": "SENTENCE",
+            "direction": "IN"
+          },
+          {
+            "movementDate": "2024-08-23",
+            "movementReason": "HDC",
+            "direction": "OUT"
+          },
+          {
+            "movementDate": "2024-10-03",
+            "movementReason": "HDC_RECALL",
+            "direction": "IN"
+          }
+        ]
+      },
+      "userInputs"
+      :
+      {
+        "useOffenceIndicators": true
+      },
+      "params"
+      :
+      "calculation-params",
+      "featureToggles"
+      :
+      {
+        "externalMovementsSds40": true,
+        "externalMovementsAdjustmentSharing": true,
+        "externalMovementsEnabled": true
+      }
+      }

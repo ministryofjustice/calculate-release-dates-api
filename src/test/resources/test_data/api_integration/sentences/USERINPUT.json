@@ -9,12 +9,14 @@
     "sentenceCalculationType": "ADIMP",
     "sentenceTypeDescription": "Sentencing Code Standard Determinate Sentence",
     "sentenceDate": "2022-01-10",
-    "terms": [{
-      "years": 12,
-      "months": 0,
-      "weeks": 0,
-      "days": 0
-    }],
+    "terms": [
+      {
+        "years": 12,
+        "months": 0,
+        "weeks": 0,
+        "days": 0
+      }
+    ],
     "offences": [
       {
         "offenderChargeId": 3932624,

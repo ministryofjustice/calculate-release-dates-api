@@ -17,7 +17,10 @@
         },
         "sentencedAt": "2021-04-15",
         "identifier": "c28b9eb8-977b-446c-9e88-f02cee86b424",
-        "recallType": "FIXED_TERM_RECALL_28",
+        "recall": {
+          "recallType": "FIXED_TERM_RECALL_28",
+          "returnToCustodyDate": "2021-08-10"
+        },
         "hasAnSDSEarlyReleaseExclusion": "NO"
       }
     ],

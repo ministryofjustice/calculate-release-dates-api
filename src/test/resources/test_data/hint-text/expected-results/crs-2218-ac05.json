@@ -12,7 +12,9 @@
   {
     "type": "HDCED",
     "date": "2025-10-31",
-    "hints": ["HDCED adjusted for the CRD of a concurrent sentence or default term"]
+    "hints": [
+      "HDCED adjusted for the CRD of a concurrent sentence or default term"
+    ]
   },
   {
     "type": "ESED",

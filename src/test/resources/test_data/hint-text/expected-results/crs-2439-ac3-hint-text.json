@@ -7,17 +7,25 @@
   {
     "type": "CRD",
     "date": "2027-02-28",
-    "hints": ["Friday, 26 February 2027 when adjusted to a working day", "40% date has been applied"]
+    "hints": [
+      "Friday, 26 February 2027 when adjusted to a working day",
+      "40% date has been applied"
+    ]
   },
   {
     "type": "HDCED",
     "date": "2026-03-01",
-    "hints": ["Monday, 02 March 2026 when adjusted to a working day", "40% date has been applied"]
+    "hints": [
+      "Monday, 02 March 2026 when adjusted to a working day",
+      "40% date has been applied"
+    ]
   },
   {
     "type": "ERSED",
     "date": "2025-09-02",
-    "hints": ["40% date has been applied"]
+    "hints": [
+      "40% date has been applied"
+    ]
   },
   {
     "type": "ESED",

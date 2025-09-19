@@ -192,7 +192,7 @@ class CalculationTransactionalServiceTest {
     ).thenReturn(
       fakeSourceData,
     )
-    whenever(bookingService.getBooking(fakeSourceData, CalculationUserInputs())).thenReturn(BOOKING)
+    whenever(bookingService.getBooking(fakeSourceData)).thenReturn(BOOKING)
 
     val exception = assertThrows<PreconditionFailedException> {
       calculationTransactionalService.validateAndConfirmCalculation(
@@ -221,7 +221,7 @@ class CalculationTransactionalServiceTest {
     ).thenReturn(
       fakeSourceData,
     )
-    whenever(bookingService.getBooking(fakeSourceData, CalculationUserInputs())).thenReturn(BOOKING)
+    whenever(bookingService.getBooking(fakeSourceData)).thenReturn(BOOKING)
 
     val exception = assertThrows<EntityNotFoundException> {
       calculationTransactionalService.validateAndConfirmCalculation(
@@ -247,7 +247,7 @@ class CalculationTransactionalServiceTest {
     ).thenReturn(
       fakeSourceData,
     )
-    whenever(bookingService.getBooking(fakeSourceData, CalculationUserInputs())).thenReturn(BOOKING)
+    whenever(bookingService.getBooking(fakeSourceData)).thenReturn(BOOKING)
     whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
     whenever(calculationRequestRepository.findById(CALCULATION_REQUEST_ID)).thenReturn(
       Optional.of(
@@ -395,7 +395,7 @@ class CalculationTransactionalServiceTest {
     whenever(calculationRequestRepository.findById(any())).thenReturn(
       Optional.of(requestAndOutcomes),
     )
-    whenever(bookingService.getBooking(fakeSourceData, CalculationUserInputs())).thenReturn(BOOKING)
+    whenever(bookingService.getBooking(fakeSourceData)).thenReturn(BOOKING)
     whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
     whenever(calculationRequestRepository.findById(CALCULATION_REQUEST_ID)).thenReturn(Optional.of(requestAndOutcomes))
     whenever(nomisCommentService.getNomisComment(any(), any(), any())).thenReturn("The NOMIS Reason")
@@ -495,7 +495,7 @@ class CalculationTransactionalServiceTest {
     whenever(calculationRequestRepository.findById(any())).thenReturn(
       Optional.of(requestAndOutcomes),
     )
-    whenever(bookingService.getBooking(fakeSourceData, CalculationUserInputs())).thenReturn(BOOKING)
+    whenever(bookingService.getBooking(fakeSourceData)).thenReturn(BOOKING)
     whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
     whenever(calculationRequestRepository.findById(CALCULATION_REQUEST_ID)).thenReturn(Optional.of(requestAndOutcomes))
     whenever(nomisCommentService.getNomisComment(any(), any(), any())).thenReturn("The NOMIS Reason")
@@ -588,7 +588,7 @@ class CalculationTransactionalServiceTest {
     whenever(calculationSourceDataService.getCalculationSourceData(CALCULATION_REQUEST_WITH_OUTCOMES.prisonerId, InactiveDataOptions.default())).thenReturn(
       fakeSourceData,
     )
-    whenever(bookingService.getBooking(fakeSourceData, CalculationUserInputs())).thenReturn(BOOKING)
+    whenever(bookingService.getBooking(fakeSourceData)).thenReturn(BOOKING)
     whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
     whenever(calculationRequestRepository.findById(CALCULATION_REQUEST_ID)).thenReturn(
       Optional.of(
@@ -721,7 +721,7 @@ class CalculationTransactionalServiceTest {
       ),
     )
     whenever(calculationSourceDataService.getCalculationSourceData(anyString(), eq(InactiveDataOptions.default()), eq(emptyList()))).thenReturn(SOURCE_DATA)
-    whenever(bookingService.getBooking(eq(SOURCE_DATA), any())).thenReturn(BOOKING)
+    whenever(bookingService.getBooking(eq(SOURCE_DATA))).thenReturn(BOOKING)
     assertThrows<CalculationDataHasChangedError> {
       calculationTransactionalService.findCalculationResultsByCalculationReference(
         UUID.randomUUID().toString(),
@@ -741,7 +741,7 @@ class CalculationTransactionalServiceTest {
     val response = calculationTransactionalService.supportedValidation(prisonerDetails.offenderNo)
 
     assertThat(response).isEqualTo(expectedResponse)
-    verify(bookingService, never()).getBooking(any(), any())
+    verify(bookingService, never()).getBooking(any())
     verify(calculationService, never()).calculateReleaseDates(any(), any())
   }
 
@@ -755,7 +755,7 @@ class CalculationTransactionalServiceTest {
     val response = calculationTransactionalService.supportedValidation(prisonerDetails.offenderNo)
 
     assertThat(response).isEqualTo(expectedResponse)
-    verify(bookingService, never()).getBooking(any(), any())
+    verify(bookingService, never()).getBooking(any())
     verify(calculationService, never()).calculateReleaseDates(any(), any())
   }
 
@@ -769,7 +769,7 @@ class CalculationTransactionalServiceTest {
     val response = calculationTransactionalService.supportedValidation(prisonerDetails.offenderNo)
 
     assertThat(response).isEqualTo(expectedResponse)
-    verify(bookingService, never()).getBooking(any(), any())
+    verify(bookingService, never()).getBooking(any())
     verify(calculationService, never()).calculateReleaseDates(any(), any())
   }
 
@@ -779,7 +779,7 @@ class CalculationTransactionalServiceTest {
     whenever(calculationSourceDataService.getCalculationSourceData(prisonerDetails.offenderNo, InactiveDataOptions.default())).thenReturn(SOURCE_DATA)
     whenever(validationService.validateSupportedSentencesAndCalculations(SOURCE_DATA)).thenReturn(expectedResponse)
     whenever(validationService.validateBeforeCalculation(SOURCE_DATA, CalculationUserInputs())).thenReturn(emptyList())
-    whenever(bookingService.getBooking(SOURCE_DATA, CalculationUserInputs())).thenReturn(BOOKING)
+    whenever(bookingService.getBooking(SOURCE_DATA)).thenReturn(BOOKING)
     whenever(validationService.validateBeforeCalculation(BOOKING)).thenReturn(listOf(ValidationMessage(ValidationCode.FTR_14_DAYS_SENTENCE_GE_12_MONTHS)))
 
     val response = calculationTransactionalService.supportedValidation(prisonerDetails.offenderNo)
@@ -796,7 +796,7 @@ class CalculationTransactionalServiceTest {
     whenever(calculationSourceDataService.getCalculationSourceData(prisonerDetails.offenderNo, InactiveDataOptions.default())).thenReturn(SOURCE_DATA)
     whenever(validationService.validateSupportedSentencesAndCalculations(SOURCE_DATA)).thenReturn(SupportedValidationResponse())
     whenever(validationService.validateBeforeCalculation(SOURCE_DATA, CalculationUserInputs())).thenReturn(emptyList())
-    whenever(bookingService.getBooking(SOURCE_DATA, CalculationUserInputs())).thenReturn(BOOKING)
+    whenever(bookingService.getBooking(SOURCE_DATA)).thenReturn(BOOKING)
     whenever(validationService.validateBeforeCalculation(BOOKING)).thenReturn(emptyList())
     whenever(calculationService.calculateReleaseDates(BOOKING, CalculationUserInputs())).thenReturn(CALCULATION_OUTPUT)
     whenever(validationService.validateManualEntryJourneyRequirements(BOOKING, CALCULATION_OUTPUT)).thenReturn(listOf(ValidationMessage(ValidationCode.FTR_TYPE_48_DAYS_OVERLAPPING_SENTENCE)))
@@ -906,7 +906,7 @@ class CalculationTransactionalServiceTest {
           "\"offenceCode\":null},\"duration\":{\"durationElements\":{\"DAYS\":0,\"WEEKS\":0,\"MONTHS\":0,\"YEARS\":5}}," +
           "\"sentencedAt\":\"2021-02-03\",\"identifier\":\"5ac7a5ae-fa7b-4b57-a44f-8eddde24f5fa\"," +
           "\"consecutiveSentenceUUIDs\":[],\"caseSequence\":1,\"lineSequence\":2,\"externalSentenceId\":{\"sentenceSequence\":1,\"bookingId\":12345},\"caseReference\":null," +
-          "\"recallType\":null,\"isSDSPlus\":false,\"isSDSPlusEligibleSentenceTypeLengthAndOffence\":false,\"isSDSPlusOffenceInPeriod\":false,\"hasAnSDSEarlyReleaseExclusion\":\"NO\"}],\"adjustments\":{},\"returnToCustodyDate\":null,\"fixedTermRecallDetails\":null," +
+          "\"recall\":null,\"isSDSPlus\":false,\"isSDSPlusEligibleSentenceTypeLengthAndOffence\":false,\"isSDSPlusOffenceInPeriod\":false,\"hasAnSDSEarlyReleaseExclusion\":\"NO\"}],\"adjustments\":{},\"returnToCustodyDate\":null,\"fixedTermRecallDetails\":null," +
           "\"bookingId\":12345}",
       )
 

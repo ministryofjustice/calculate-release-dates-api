@@ -18,7 +18,9 @@
         },
         "sentencedAt": "2024-01-29",
         "identifier": "97263f3a-d28a-4649-a3e5-75aeffef0fd0",
-        "recallType": "STANDARD_RECALL",
+        "recall": {
+          "recallType": "STANDARD_RECALL"
+        },
         "hasAnSDSEarlyReleaseExclusion": "NO"
       }
     ],

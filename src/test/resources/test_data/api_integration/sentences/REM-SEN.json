@@ -2,16 +2,18 @@
   {
     "bookingId": 1,
     "sentenceSequence": 1,
-    "lineSequence":1,
-    "caseSequence":1,
+    "lineSequence": 1,
+    "caseSequence": 1,
     "sentenceStatus": "A",
     "sentenceCategory": "2003",
     "sentenceCalculationType": "ADIMP_ORA",
     "sentenceTypeDescription": "Standard Determinate",
     "sentenceDate": "2000-04-29",
-    "terms": [{
-      "months": 20
-    }],
+    "terms": [
+      {
+        "months": 20
+      }
+    ],
     "offences": [
       {
         "offenderChargeId": 9991,
@@ -24,16 +26,18 @@
   {
     "bookingId": 1,
     "sentenceSequence": 2,
-    "lineSequence":2,
-    "caseSequence":1,
+    "lineSequence": 2,
+    "caseSequence": 1,
     "sentenceStatus": "A",
     "sentenceCategory": "2003",
     "sentenceCalculationType": "ADIMP_ORA",
     "sentenceTypeDescription": "Standard Determinate",
     "sentenceDate": "2000-05-29",
-    "terms": [{
-      "months": 5
-    }],
+    "terms": [
+      {
+        "months": 5
+      }
+    ],
     "offences": [
       {
         "offenderChargeId": 9992,

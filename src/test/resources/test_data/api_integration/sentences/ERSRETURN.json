@@ -7,12 +7,14 @@
     "sentenceCalculationType": "ADIMP_ORA",
     "sentenceTypeDescription": "Standard Determinate",
     "sentenceDate": "2020-04-02",
-    "terms": [{
-      "years": 7,
-      "months": 0,
-      "weeks": 0,
-      "days": 0
-    }],
+    "terms": [
+      {
+        "years": 7,
+        "months": 0,
+        "weeks": 0,
+        "days": 0
+      }
+    ],
     "offences": [
       {
         "offenderChargeId": 9991,
@@ -30,12 +32,14 @@
     "sentenceCalculationType": "ADIMP_ORA",
     "sentenceTypeDescription": "Standard Determinate",
     "sentenceDate": "2020-04-02",
-    "terms": [{
-      "years": 3,
-      "months": 0,
-      "weeks": 0,
-      "days": 0
-    }],
+    "terms": [
+      {
+        "years": 3,
+        "months": 0,
+        "weeks": 0,
+        "days": 0
+      }
+    ],
     "offences": [
       {
         "offenderChargeId": 9991,
@@ -53,12 +57,14 @@
     "sentenceCalculationType": "ADIMP_ORA",
     "sentenceTypeDescription": "Standard Determinate",
     "sentenceDate": "2020-04-02",
-    "terms": [{
-      "years": 0,
-      "months": 15,
-      "weeks": 0,
-      "days": 0
-    }],
+    "terms": [
+      {
+        "years": 0,
+        "months": 15,
+        "weeks": 0,
+        "days": 0
+      }
+    ],
     "offences": [
       {
         "offenderChargeId": 9991,
@@ -76,12 +82,14 @@
     "sentenceCalculationType": "ADIMP_ORA",
     "sentenceTypeDescription": "Standard Determinate",
     "sentenceDate": "2022-03-29",
-    "terms": [{
-      "years": 6,
-      "months": 0,
-      "weeks": 0,
-      "days": 0
-    }],
+    "terms": [
+      {
+        "years": 6,
+        "months": 0,
+        "weeks": 0,
+        "days": 0
+      }
+    ],
     "offences": [
       {
         "offenderChargeId": 9991,

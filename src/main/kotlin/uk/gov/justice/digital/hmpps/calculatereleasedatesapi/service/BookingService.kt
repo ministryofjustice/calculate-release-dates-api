@@ -2,21 +2,21 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
 
 @Service
 class BookingService {
 
-  fun getBooking(calculationSourceData: CalculationSourceData, calculationUserInputs: CalculationUserInputs): Booking {
+  fun getBooking(calculationSourceData: CalculationSourceData): Booking {
     val prisonerDetails = calculationSourceData.prisonerDetails
     val sentenceAndOffences = calculationSourceData.sentenceAndOffences
     val bookingAndSentenceAdjustments = calculationSourceData.bookingAndSentenceAdjustments
     val movements = calculationSourceData.movements
+    val revocationDate = sentenceAndOffences.mapNotNull { it.revocationDates.maxOrNull() }.maxOrNull()
 
     val offender = transform(prisonerDetails)
     val adjustments = transform(bookingAndSentenceAdjustments, sentenceAndOffences)
-    val sentences = sentenceAndOffences.map { transform(it, calculationUserInputs, calculationSourceData.historicalTusedData) }
+    val sentences = sentenceAndOffences.map { transform(it, calculationSourceData.historicalTusedData, revocationDate, calculationSourceData.returnToCustodyDate?.returnToCustodyDate) }
     val externalMovements = movements.mapNotNull { transform(it) }
 
     return Booking(

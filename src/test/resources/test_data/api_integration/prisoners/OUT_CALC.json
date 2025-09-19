@@ -1,81 +1,72 @@
 {
-  "offenderNo":"A9146DY",
-  "bookingId":1202876,
-  "bookingNo":"39896A",
-  "offenderId":2583915,
-  "rootOffenderId":2583915,
-  "firstName":"BLAKE",
-  "lastName":"CLARK",
-  "dateOfBirth":"1992-02-11",
-  "age":30,
-  "activeFlag":false,
-  "agencyId":"OUT",
-  "alertsCodes":[
-
+  "offenderNo": "A9146DY",
+  "bookingId": 1202876,
+  "bookingNo": "39896A",
+  "offenderId": 2583915,
+  "rootOffenderId": 2583915,
+  "firstName": "BLAKE",
+  "lastName": "CLARK",
+  "dateOfBirth": "1992-02-11",
+  "age": 30,
+  "activeFlag": false,
+  "agencyId": "OUT",
+  "alertsCodes": [
   ],
-  "activeAlertCount":0,
-  "inactiveAlertCount":0,
-  "alerts":[
-
+  "activeAlertCount": 0,
+  "inactiveAlertCount": 0,
+  "alerts": [
   ],
-  "assignedLivingUnit":{
-    "agencyId":"OUT",
-    "agencyName":"Outside"
+  "assignedLivingUnit": {
+    "agencyId": "OUT",
+    "agencyName": "Outside"
   },
-  "physicalAttributes":{
-    "sexCode":"M",
-    "gender":"Male"
+  "physicalAttributes": {
+    "sexCode": "M",
+    "gender": "Male"
   },
-  "physicalCharacteristics":[
-
+  "physicalCharacteristics": [
   ],
-  "profileInformation":[
+  "profileInformation": [
     {
-      "type":"YOUTH",
-      "question":"Youth Offender?",
-      "resultValue":"No"
+      "type": "YOUTH",
+      "question": "Youth Offender?",
+      "resultValue": "No"
     }
   ],
-  "physicalMarks":[
-
+  "physicalMarks": [
   ],
-  "inOutStatus":"OUT",
-  "identifiers":[
-
+  "inOutStatus": "OUT",
+  "identifiers": [
   ],
-  "personalCareNeeds":[
-
+  "personalCareNeeds": [
   ],
-  "sentenceDetail":{
-    "bookingId":1202876
+  "sentenceDetail": {
+    "bookingId": 1202876
   },
-  "offenceHistory":[
-
+  "offenceHistory": [
   ],
-  "sentenceTerms":[
-
+  "sentenceTerms": [
   ],
-  "aliases":[
-
+  "aliases": [
   ],
-  "status":"INACTIVE OUT",
-  "statusReason":"REL-SC",
-  "lastMovementTypeCode":"REL",
-  "lastMovementReasonCode":"SC",
-  "legalStatus":"UNKNOWN",
-  "recall":false,
-  "imprisonmentStatus":"UNKNOWN",
-  "imprisonmentStatusDescription":"Disposal Not Known",
-  "privilegeSummary":{
-    "bookingId":1202876,
-    "iepLevel":"Standard",
-    "iepDate":"2021-08-21",
-    "iepTime":"2021-08-21T17:29:37",
-    "daysSinceReview":376,
-    "iepDetails":[
+  "status": "INACTIVE OUT",
+  "statusReason": "REL-SC",
+  "lastMovementTypeCode": "REL",
+  "lastMovementReasonCode": "SC",
+  "legalStatus": "UNKNOWN",
+  "recall": false,
+  "imprisonmentStatus": "UNKNOWN",
+  "imprisonmentStatusDescription": "Disposal Not Known",
+  "privilegeSummary": {
+    "bookingId": 1202876,
+    "iepLevel": "Standard",
+    "iepDate": "2021-08-21",
+    "iepTime": "2021-08-21T17:29:37",
+    "daysSinceReview": 376,
+    "iepDetails": [
     ]
   },
-  "receptionDate":"2021-08-21",
-  "locationDescription":"Outside - released from KIRKHAM (HMP)",
-  "latestLocationId":"KMI"
+  "receptionDate": "2021-08-21",
+  "locationDescription": "Outside - released from KIRKHAM (HMP)",
+  "latestLocationId": "KMI"
 }

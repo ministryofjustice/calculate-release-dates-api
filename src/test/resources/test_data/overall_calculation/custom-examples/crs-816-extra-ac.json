@@ -17,7 +17,9 @@
         },
         "sentencedAt": "2019-10-16",
         "identifier": "52e29dfc-1fbb-4c59-8007-94d3106da5ad",
-        "recallType": "STANDARD_RECALL",
+        "recall": {
+          "recallType": "STANDARD_RECALL"
+        },
         "hasAnSDSEarlyReleaseExclusion": "NO"
       }
     ],

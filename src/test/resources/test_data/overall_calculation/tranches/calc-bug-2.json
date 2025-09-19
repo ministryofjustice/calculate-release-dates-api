@@ -17,7 +17,9 @@
         },
         "sentencedAt": "2019-04-16",
         "identifier": "d7449876-d80b-3769-916e-4a165431c6c3",
-        "recallType": "STANDARD_RECALL"
+        "recall": {
+          "recallType": "STANDARD_RECALL"
+        }
       },
       {
         "offence": {
@@ -33,7 +35,9 @@
         "consecutiveSentenceUUIDs": [
           "d7449876-d80b-3769-916e-4a165431c6c3"
         ],
-        "recallType": "STANDARD_RECALL"
+        "recall": {
+          "recallType": "STANDARD_RECALL"
+        }
       },
       {
         "offence": {
