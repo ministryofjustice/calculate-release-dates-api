@@ -88,6 +88,7 @@ class ThingsToDoServiceTest {
       isSDSPlus = false,
       hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
       sentenceAndOffenceAnalysis = SentenceAndOffenceAnalysis.NEW,
+      revocationDates = emptyList(),
     )
     val SENTENCES = listOf(BASE_SENTENCE)
 
