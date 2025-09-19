@@ -71,6 +71,7 @@ class SentenceAndOffenceServiceTest {
       isSDSPlus = false,
       hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
       sentenceAndOffenceAnalysis = SentenceAndOffenceAnalysis.NEW,
+      revocationDates = listOf(LocalDate.of(2024, 1, 1)),
     )
     assertThat(response[0]).isEqualTo(analysedSentenceAndOffence)
     assertThat(response[1]).isEqualTo(analysedSentenceAndOffence.copy(offence = offences[1]))
@@ -200,6 +201,7 @@ class SentenceAndOffenceServiceTest {
         isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
         isSDSPlusOffenceInPeriod = false,
         hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
+        revocationDates = listOf(LocalDate.of(2024, 1, 1)),
       )
     }
     val changedSentenceAndOffences = changedOffences.map {
@@ -230,6 +232,7 @@ class SentenceAndOffenceServiceTest {
         isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
         isSDSPlusOffenceInPeriod = false,
         hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
+        revocationDates = listOf(LocalDate.of(2024, 1, 1)),
       )
     }
   }
@@ -262,6 +265,7 @@ class SentenceAndOffenceServiceTest {
       isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
       isSDSPlusOffenceInPeriod = false,
       hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
+      revocationDates = listOf(LocalDate.of(2024, 1, 1)),
     )
   }
   val calculationRequest = CalculationRequest(sentenceAndOffences = objectToJson(listOf(sentenceAndOffences), jacksonObjectMapper().findAndRegisterModules()))
