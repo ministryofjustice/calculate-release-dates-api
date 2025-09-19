@@ -904,6 +904,7 @@ fun transform(
   sentenceAndOffenceAnalysis,
   sentenceAndOffences.isSDSPlus,
   sentenceAndOffences.hasAnSDSEarlyReleaseExclusion,
+  sentenceAndOffences.revocationDates,
 )
 
 fun transform(
