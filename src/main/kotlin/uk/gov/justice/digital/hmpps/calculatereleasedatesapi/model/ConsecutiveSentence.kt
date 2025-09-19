@@ -12,9 +12,9 @@ class ConsecutiveSentence(val orderedSentences: List<AbstractSentence>) : Calcul
   override val isSDSPlusEligibleSentenceTypeLengthAndOffence: Boolean = orderedSentences.all { it.isSDSPlusEligibleSentenceTypeLengthAndOffence }
   override val isSDSPlusOffenceInPeriod: Boolean = orderedSentences.all { it.isSDSPlusOffenceInPeriod }
 
-  override val recallType: RecallType?
+  override val recall: Recall?
     get() {
-      return orderedSentences[0].recallType
+      return orderedSentences[0].recall
     }
 
   @JsonIgnore

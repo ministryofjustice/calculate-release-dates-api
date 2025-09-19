@@ -17,7 +17,9 @@
         },
         "sentencedAt": "2023-10-27",
         "identifier": "843ee8a9-42fd-4187-824f-9d5176ed9ad9",
-        "recallType": "STANDARD_RECALL",
+        "recall": {
+          "recallType": "STANDARD_RECALL"
+        },
         "hasAnSDSEarlyReleaseExclusion": "NO"
       },
       {

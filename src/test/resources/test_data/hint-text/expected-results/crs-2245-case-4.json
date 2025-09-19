@@ -7,17 +7,24 @@
   {
     "type": "CRD",
     "date": "2024-11-08",
-    "hints": ["40% date has been applied"]
+    "hints": [
+      "40% date has been applied"
+    ]
   },
   {
     "type": "TUSED",
     "date": "2025-11-08",
-    "hints": ["Anniversary of 40% CRD"]
+    "hints": [
+      "Anniversary of 40% CRD"
+    ]
   },
   {
     "type": "HDCED",
     "date": "2024-09-12",
-    "hints": ["40% date has been applied","Adjusted for sentence date, plus 14 days as per HDC policy"]
+    "hints": [
+      "40% date has been applied",
+      "Adjusted for sentence date, plus 14 days as per HDC policy"
+    ]
   },
   {
     "type": "ESED",

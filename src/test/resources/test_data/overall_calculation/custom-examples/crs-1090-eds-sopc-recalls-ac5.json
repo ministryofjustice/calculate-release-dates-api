@@ -22,7 +22,9 @@
         },
         "sentencedAt": "2015-01-15",
         "identifier": "00b6fc66-3e34-4b51-9ff9-78f013840e37",
-        "recallType": "STANDARD_RECALL"
+        "recall": {
+          "recallType": "STANDARD_RECALL"
+        }
       },
       {
         "type": "StandardSentence",
@@ -36,7 +38,9 @@
         },
         "sentencedAt": "2015-01-15",
         "identifier": "8deeaeda-8675-4213-823c-67aac1c7221b",
-        "recallType": "STANDARD_RECALL",
+        "recall": {
+          "recallType": "STANDARD_RECALL"
+        },
         "hasAnSDSEarlyReleaseExclusion": "NO"
       }
     ],

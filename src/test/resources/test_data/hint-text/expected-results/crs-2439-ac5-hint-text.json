@@ -7,17 +7,23 @@
   {
     "type": "CRD",
     "date": "2025-09-08",
-    "hints": ["40% date has been applied"]
+    "hints": [
+      "40% date has been applied"
+    ]
   },
   {
     "type": "HDCED",
     "date": "2025-03-13",
-    "hints": ["40% date has been applied"]
+    "hints": [
+      "40% date has been applied"
+    ]
   },
   {
     "type": "ERSED",
     "date": "2024-10-18",
-    "hints": ["50% date has been applied"]
+    "hints": [
+      "50% date has been applied"
+    ]
   },
   {
     "type": "ESED",

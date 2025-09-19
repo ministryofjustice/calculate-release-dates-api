@@ -7,12 +7,14 @@
     "sentenceCalculationType": "ADIMP_ORA",
     "sentenceTypeDescription": "Standard Determinate",
     "sentenceDate": "2024-06-01",
-    "terms": [{
-      "years": 2,
-      "months": 0,
-      "weeks": 0,
-      "days": 0
-    }],
+    "terms": [
+      {
+        "years": 2,
+        "months": 0,
+        "weeks": 0,
+        "days": 0
+      }
+    ],
     "offences": [
       {
         "offenderChargeId": 1,

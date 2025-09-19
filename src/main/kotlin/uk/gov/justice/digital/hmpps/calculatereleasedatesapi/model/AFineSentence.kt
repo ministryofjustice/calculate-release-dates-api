@@ -14,9 +14,9 @@ data class AFineSentence(
   override val lineSequence: Int? = null,
   override val externalSentenceId: ExternalSentenceId? = null,
   override val caseReference: String? = null,
-  override val recallType: RecallType? = null,
+  override val recall: Recall? = null,
   val fineAmount: BigDecimal? = null,
-) : AbstractSentence(offence, sentencedAt, identifier, consecutiveSentenceUUIDs, caseSequence, lineSequence, externalSentenceId, caseReference, recallType),
+) : AbstractSentence(offence, sentencedAt, identifier, consecutiveSentenceUUIDs, caseSequence, lineSequence, externalSentenceId, caseReference, recall),
   Term {
 
   override val isSDSPlus: Boolean = false

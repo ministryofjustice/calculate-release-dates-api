@@ -19,7 +19,10 @@
         },
         "sentencedAt": "2024-06-17",
         "identifier": "55836324-3c33-4a21-9b5a-8e6238d24724",
-        "recallType": "FIXED_TERM_RECALL_14",
+        "recall": {
+          "recallType": "FIXED_TERM_RECALL_14",
+          "returnToCustodyDate": "2024-09-16"
+        },
         "hasAnSDSEarlyReleaseExclusion": "NO"
       },
       {

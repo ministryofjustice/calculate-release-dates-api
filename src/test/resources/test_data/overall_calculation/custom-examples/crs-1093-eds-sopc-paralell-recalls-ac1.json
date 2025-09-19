@@ -22,7 +22,9 @@
         },
         "sentencedAt": "2012-12-03",
         "identifier": "5f6d7178-29a3-436d-affd-707e9ee940e4",
-        "recallType": "STANDARD_RECALL"
+        "recall": {
+          "recallType": "STANDARD_RECALL"
+        }
       },
       {
         "type": "StandardSentence",

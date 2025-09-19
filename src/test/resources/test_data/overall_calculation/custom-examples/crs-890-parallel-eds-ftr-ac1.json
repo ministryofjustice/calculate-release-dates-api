@@ -17,7 +17,10 @@
         },
         "sentencedAt": "2015-11-08",
         "identifier": "9aa01690-20d9-495a-844e-b80ffb44bf88",
-        "recallType": "FIXED_TERM_RECALL_28",
+        "recall": {
+          "recallType": "FIXED_TERM_RECALL_28",
+          "returnToCustodyDate": "2019-03-10"
+        },
         "hasAnSDSEarlyReleaseExclusion": "NO"
       },
       {

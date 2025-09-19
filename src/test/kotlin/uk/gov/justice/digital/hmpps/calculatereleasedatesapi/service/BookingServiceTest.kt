@@ -11,17 +11,15 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentsSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationSentenceUserInput
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExternalSentenceId
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Recall
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.UserInputType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
@@ -129,7 +127,7 @@ class BookingServiceTest {
   @Test
   @Suppress("LongMethod")
   fun `A booking object is generated correctly when requesting a booking for a prisonerId`() {
-    val result = bookingService.getBooking(sourceData, CalculationUserInputs(useOffenceIndicators = true))
+    val result = bookingService.getBooking(sourceData)
 
     assertThat(result).isEqualTo(
       Booking(
@@ -154,7 +152,7 @@ class BookingServiceTest {
             lineSequence = lineSequence,
             caseSequence = caseSequence,
             externalSentenceId = ExternalSentenceId(sentenceSequence = sequence, bookingId = bookingId),
-            recallType = RecallType.FIXED_TERM_RECALL_28,
+            recall = Recall(RecallType.FIXED_TERM_RECALL_28, returnToCustodyDate = returnToCustodyDate.returnToCustodyDate),
             isSDSPlus = false,
             hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
           ),
@@ -186,7 +184,7 @@ class BookingServiceTest {
   @Test
   @Suppress("LongMethod")
   fun `A booking object is generated correctly when requesting a booking for a prisonerId with user input`() {
-    val result = bookingService.getBooking(sourceData, CalculationUserInputs(listOf(CalculationSentenceUserInput(sequence, offenceCode, UserInputType.ORIGINAL, true))))
+    val result = bookingService.getBooking(sourceData)
 
     assertThat(result).isEqualTo(
       Booking(
@@ -211,7 +209,7 @@ class BookingServiceTest {
             lineSequence = lineSequence,
             caseSequence = caseSequence,
             externalSentenceId = ExternalSentenceId(sentenceSequence = sequence, bookingId = bookingId),
-            recallType = RecallType.FIXED_TERM_RECALL_28,
+            recall = Recall(RecallType.FIXED_TERM_RECALL_28, returnToCustodyDate = returnToCustodyDate.returnToCustodyDate),
             isSDSPlus = false,
             hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
           ),
@@ -245,7 +243,7 @@ class BookingServiceTest {
   @Test
   @Suppress("LongMethod")
   fun `A booking object is generated correctly when requesting a booking for a prisonerId with user input of UPDATED`() {
-    val result = bookingService.getBooking(sourceData, CalculationUserInputs(listOf(CalculationSentenceUserInput(sequence, offenceCode, UserInputType.UPDATED, true)), calculateErsed = false, useOffenceIndicators = false))
+    val result = bookingService.getBooking(sourceData)
 
     assertThat(result).isEqualTo(
       Booking(
@@ -270,7 +268,7 @@ class BookingServiceTest {
             lineSequence = lineSequence,
             caseSequence = caseSequence,
             externalSentenceId = ExternalSentenceId(sentenceSequence = sequence, bookingId = bookingId),
-            recallType = RecallType.FIXED_TERM_RECALL_28,
+            recall = Recall(RecallType.FIXED_TERM_RECALL_28, returnToCustodyDate = returnToCustodyDate.returnToCustodyDate),
             isSDSPlus = false,
             hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
           ),
@@ -302,7 +300,7 @@ class BookingServiceTest {
   @Test
   @Suppress("LongMethod")
   fun `A booking object is generated correctly when requesting a booking for a prisonerId with user input of SECTION 250`() {
-    val result = bookingService.getBooking(sourceData, CalculationUserInputs(listOf(CalculationSentenceUserInput(sequence, offenceCode, UserInputType.SECTION_250, true)), calculateErsed = false, useOffenceIndicators = false))
+    val result = bookingService.getBooking(sourceData)
 
     assertThat(result).isEqualTo(
       Booking(
@@ -327,7 +325,7 @@ class BookingServiceTest {
             lineSequence = lineSequence,
             caseSequence = caseSequence,
             externalSentenceId = ExternalSentenceId(sentenceSequence = sequence, bookingId = bookingId),
-            recallType = RecallType.FIXED_TERM_RECALL_28,
+            recall = Recall(RecallType.FIXED_TERM_RECALL_28, returnToCustodyDate = returnToCustodyDate.returnToCustodyDate),
             isSDSPlus = false,
             hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
           ),
@@ -359,7 +357,7 @@ class BookingServiceTest {
   @Test
   @Suppress("LongMethod")
   fun `A booking object is generated correctly when requesting a booking for a prisonerId with user input of FOUR_TO_UNDER_SEVEN`() {
-    val result = bookingService.getBooking(sourceData, CalculationUserInputs(listOf(CalculationSentenceUserInput(sequence, offenceCode, UserInputType.FOUR_TO_UNDER_SEVEN, true)), calculateErsed = false, useOffenceIndicators = false))
+    val result = bookingService.getBooking(sourceData)
 
     assertThat(result).isEqualTo(
       Booking(
@@ -384,7 +382,7 @@ class BookingServiceTest {
             lineSequence = lineSequence,
             caseSequence = caseSequence,
             externalSentenceId = ExternalSentenceId(sentenceSequence = sequence, bookingId = bookingId),
-            recallType = RecallType.FIXED_TERM_RECALL_28,
+            recall = Recall(RecallType.FIXED_TERM_RECALL_28, returnToCustodyDate = returnToCustodyDate.returnToCustodyDate),
             isSDSPlus = false,
             hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
           ),

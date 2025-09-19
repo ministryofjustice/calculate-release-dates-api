@@ -19,7 +19,9 @@
         "identifier": "6284af77-8b93-4f40-b5f0-cde255f4dab6",
         "caseSequence": 2,
         "lineSequence": 3,
-        "recallType": "STANDARD_RECALL",
+        "recall": {
+          "recallType": "STANDARD_RECALL"
+        },
         "hasAnSDSEarlyReleaseExclusion": "NO"
       },
       {

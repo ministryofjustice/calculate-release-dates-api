@@ -21,7 +21,10 @@
         "caseSequence": 1,
         "lineSequence": 1,
         "caseReference": "C1",
-        "recallType": "FIXED_TERM_RECALL_28",
+        "recall": {
+          "recallType": "FIXED_TERM_RECALL_28",
+          "returnToCustodyDate": "2025-06-26"
+        },
         "hasAnSDSEarlyReleaseExclusion": "NO"
       }
     ],

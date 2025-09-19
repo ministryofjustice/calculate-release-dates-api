@@ -7,7 +7,10 @@
   {
     "type": "CRD",
     "date": "2027-04-11",
-    "hints": ["Friday, 09 April 2027 when adjusted to a working day", "40% date has been applied"]
+    "hints": [
+      "Friday, 09 April 2027 when adjusted to a working day",
+      "40% date has been applied"
+    ]
   },
   {
     "type": "ERSED",

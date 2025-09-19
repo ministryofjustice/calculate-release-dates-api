@@ -17,7 +17,10 @@
         },
         "sentencedAt": "2020-01-24",
         "identifier": "f4c68ec3-fb5d-495f-b9a4-2793e91b3c4c",
-        "recallType": "FIXED_TERM_RECALL_28",
+        "recall": {
+          "recallType": "FIXED_TERM_RECALL_28",
+          "returnToCustodyDate": "2021-12-28"
+        },
         "hasAnSDSEarlyReleaseExclusion": "NO"
       },
       {
@@ -32,7 +35,10 @@
         },
         "sentencedAt": "2020-01-24",
         "identifier": "5a0d1348-377b-47f6-8990-79d023a297a4",
-        "recallType": "FIXED_TERM_RECALL_28",
+        "recall": {
+          "recallType": "FIXED_TERM_RECALL_28",
+          "returnToCustodyDate": "2021-12-28"
+        },
         "hasAnSDSEarlyReleaseExclusion": "NO"
       }
     ],

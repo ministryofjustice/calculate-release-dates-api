@@ -2,7 +2,9 @@
   {
     "type": "SLED",
     "date": "2029-07-06",
-    "hints": ["Dominant SLED from a previous sentence"]
+    "hints": [
+      "Dominant SLED from a previous sentence"
+    ]
   },
   {
     "type": "CRD",

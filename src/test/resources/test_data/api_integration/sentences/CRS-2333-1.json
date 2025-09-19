@@ -7,13 +7,15 @@
     "sentenceCalculationType": "DTO_ORA",
     "sentenceTypeDescription": "ORA Detention and Training Order",
     "sentenceDate": "2015-03-17",
-    "terms": [{
-      "years": 0,
-      "months": 20,
-      "weeks": 0,
-      "days": 0,
-      "code": "SEC104"
-    }],
+    "terms": [
+      {
+        "years": 0,
+        "months": 20,
+        "weeks": 0,
+        "days": 0,
+        "code": "SEC104"
+      }
+    ],
     "offences": [
       {
         "offenderChargeId": 9991,

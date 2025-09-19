@@ -1,5 +1,11 @@
 {
-  "dates": {"SLED":"2025-08-21","CRD":"2024-12-21","TUSED":"2025-12-21","HDCED":"2024-08-22","ESED":"2025-10-18"},
+  "dates": {
+    "SLED": "2025-08-21",
+    "CRD": "2024-12-21",
+    "TUSED": "2025-12-21",
+    "HDCED": "2024-08-22",
+    "ESED": "2025-10-18"
+  },
   "effectiveSentenceLength": "P1Y4M",
   "affectedBySds40": true
 }

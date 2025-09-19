@@ -17,7 +17,10 @@
         },
         "sentencedAt": "2019-03-25",
         "identifier": "3aa363a8-d856-4324-8a60-06f98a2574e3",
-        "recallType": "FIXED_TERM_RECALL_28",
+        "recall": {
+          "recallType": "FIXED_TERM_RECALL_28",
+          "returnToCustodyDate": "2022-03-15"
+        },
         "hasAnSDSEarlyReleaseExclusion": "NO"
       }
     ],

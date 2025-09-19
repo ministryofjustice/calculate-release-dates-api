@@ -26,6 +26,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NormalisedSentenceAndOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Recall
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType.FIXED_TERM_RECALL_14
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType.FIXED_TERM_RECALL_28
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType.STANDARD_RECALL
@@ -2032,7 +2033,12 @@ class ValidationServiceTest {
         val result = validationService.validateBeforeCalculation(
           BOOKING.copy(
             fixedTermRecallDetails = FTR_DETAILS_28,
-            sentences = listOf(FTR_SDS_SENTENCE.copy(recallType = FIXED_TERM_RECALL_14, duration = FIVE_YEAR_DURATION)),
+            sentences = listOf(
+              FTR_SDS_SENTENCE.copy(
+                recall = Recall(FIXED_TERM_RECALL_14),
+                duration = FIVE_YEAR_DURATION,
+              ),
+            ),
           ),
         )
 
@@ -2090,13 +2096,13 @@ class ValidationServiceTest {
       @Test
       fun `Test 14 day FTR sentence and aggregate duration greater than 12 months`() {
         val consecutiveSentenceOne = FTR_SDS_SENTENCE.copy(
-          recallType = FIXED_TERM_RECALL_14,
+          recall = Recall(FIXED_TERM_RECALL_14),
           duration = FIVE_YEAR_DURATION,
           consecutiveSentenceUUIDs = emptyList(),
         )
         val consecutiveSentenceTwo = FTR_SDS_SENTENCE.copy(
           identifier = UUID.randomUUID(),
-          recallType = FIXED_TERM_RECALL_14,
+          recall = Recall(FIXED_TERM_RECALL_14),
           consecutiveSentenceUUIDs = listOf(FTR_SDS_SENTENCE.identifier),
         )
         consecutiveSentenceOne.sentenceCalculation = SENTENCE_CALCULATION
@@ -2127,12 +2133,12 @@ class ValidationServiceTest {
       @Test
       fun `Test 28 day FTR sentence and aggregate duration less than 12 months`() {
         val consecutiveSentenceOne = FTR_SDS_SENTENCE.copy(
-          recallType = FIXED_TERM_RECALL_14,
+          recall = Recall(FIXED_TERM_RECALL_14),
           duration = ONE_MONTH_DURATION,
           consecutiveSentenceUUIDs = emptyList(),
         )
         val consecutiveSentenceTwo = FTR_SDS_SENTENCE.copy(
-          recallType = FIXED_TERM_RECALL_14,
+          recall = Recall(FIXED_TERM_RECALL_14),
           identifier = UUID.randomUUID(),
           duration = ONE_MONTH_DURATION,
           consecutiveSentenceUUIDs = listOf(FTR_SDS_SENTENCE.identifier),
@@ -2159,12 +2165,12 @@ class ValidationServiceTest {
       @Test
       fun `Test 28 day FTR type sentence and aggregate duration less than 12 months`() {
         val consecutiveSentenceOne = FTR_SDS_SENTENCE.copy(
-          recallType = FIXED_TERM_RECALL_28,
+          recall = Recall(FIXED_TERM_RECALL_28),
           duration = ONE_MONTH_DURATION,
           consecutiveSentenceUUIDs = emptyList(),
         )
         val consecutiveSentenceTwo = FTR_SDS_SENTENCE.copy(
-          recallType = FIXED_TERM_RECALL_28,
+          recall = Recall(FIXED_TERM_RECALL_28),
           duration = ONE_MONTH_DURATION,
           identifier = UUID.randomUUID(),
           consecutiveSentenceUUIDs = listOf(FTR_SDS_SENTENCE.identifier),
@@ -2197,12 +2203,12 @@ class ValidationServiceTest {
       @Test
       fun `Test 14 day aggregate Type sentence and aggregate duration greater than 12 months`() {
         val consecutiveSentenceOne = FTR_SDS_SENTENCE.copy(
-          recallType = FIXED_TERM_RECALL_14,
+          recall = Recall(FIXED_TERM_RECALL_14),
           duration = ONE_MONTH_DURATION,
           consecutiveSentenceUUIDs = emptyList(),
         )
         val consecutiveSentenceTwo = FTR_SDS_SENTENCE.copy(
-          recallType = FIXED_TERM_RECALL_14,
+          recall = Recall(FIXED_TERM_RECALL_14),
           duration = FIVE_YEAR_DURATION,
           identifier = UUID.randomUUID(),
           consecutiveSentenceUUIDs = listOf(FTR_SDS_SENTENCE.identifier),
@@ -3594,7 +3600,7 @@ class ValidationServiceTest {
       ),
       lineSequence = LINE_SEQUENCE,
       caseSequence = CASE_SEQUENCE,
-      recallType = FIXED_TERM_RECALL_28,
+      recall = Recall(FIXED_TERM_RECALL_28),
       isSDSPlus = true,
       hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
     )
@@ -3609,7 +3615,7 @@ class ValidationServiceTest {
       identifier = UUID.nameUUIDFromBytes(("$COMPANION_BOOKING_ID-$SEQUENCE").toByteArray()),
       lineSequence = LINE_SEQUENCE,
       caseSequence = CASE_SEQUENCE,
-      recallType = STANDARD_RECALL,
+      recall = Recall(STANDARD_RECALL),
       isSDSPlus = false,
       hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
     )

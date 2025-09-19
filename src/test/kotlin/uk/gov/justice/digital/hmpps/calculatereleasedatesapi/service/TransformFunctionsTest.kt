@@ -46,6 +46,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.MismatchType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NormalisedSentenceAndOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Recall
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
@@ -517,7 +518,7 @@ class TransformFunctionsTest {
       sentencedAt = FIRST_JAN_2015,
       duration = ONE_YEAR_DURATION,
       offence = Offence(committedAt = SECOND_JAN_2015, offenceCode = "RR1"),
-      recallType = RecallType.FIXED_TERM_RECALL_14,
+      recall = Recall(RecallType.FIXED_TERM_RECALL_14),
       identifier = UUID.nameUUIDFromBytes(("$BOOKING_ID-$sequence").toByteArray()),
       lineSequence = lineSequence,
       caseSequence = caseSequence,
@@ -529,8 +530,8 @@ class TransformFunctionsTest {
     )
 
     for ((sentenceType, recallType) in SentenceRecallTypePairs) {
-      assertThat(transform(request.copy(sentenceCalculationType = sentenceType), null))
-        .isEqualTo(expectedSentence.copy(recallType = recallType))
+      assertThat(transform(request.copy(sentenceCalculationType = sentenceType)))
+        .isEqualTo(expectedSentence.copy(recall = if (recallType != null) Recall(recallType) else null))
     }
   }
 

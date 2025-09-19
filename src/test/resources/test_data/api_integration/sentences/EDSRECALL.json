@@ -1,33 +1,40 @@
-[{
-  "bookingId": 1,
-  "sentenceSequence": 1,
-  "lineSequence": 1,
-  "caseSequence": 1,
-  "caseReference": "123ABC",
-  "courtDescription": "A court",
-  "sentenceStatus": "A",
-  "sentenceCategory": "2003",
-  "sentenceCalculationType": "LR_LASPO_DR",
-  "sentenceTypeDescription": "LR - EDS LASPO Discretionary Release",
-  "sentenceDate": "2018-06-15",
-  "terms": [{
-    "years": 0,
-    "months": 40,
-    "weeks": 0,
-    "days": 0,
-    "code": "IMP"
-  }, {
-    "years": 0,
-    "months": 32,
-    "weeks": 0,
-    "days": 0,
-    "code": "LIC"
-  }],
-  "offences": [{
-    "offenderChargeId": 1,
-    "offenceStartDate": "2018-03-30",
-    "offenceCode": "A1234BC",
-    "offenceDescription": "Offending",
-    "indicators": []
-  }]
-}]
+[
+  {
+    "bookingId": 1,
+    "sentenceSequence": 1,
+    "lineSequence": 1,
+    "caseSequence": 1,
+    "caseReference": "123ABC",
+    "courtDescription": "A court",
+    "sentenceStatus": "A",
+    "sentenceCategory": "2003",
+    "sentenceCalculationType": "LR_LASPO_DR",
+    "sentenceTypeDescription": "LR - EDS LASPO Discretionary Release",
+    "sentenceDate": "2018-06-15",
+    "terms": [
+      {
+        "years": 0,
+        "months": 40,
+        "weeks": 0,
+        "days": 0,
+        "code": "IMP"
+      },
+      {
+        "years": 0,
+        "months": 32,
+        "weeks": 0,
+        "days": 0,
+        "code": "LIC"
+      }
+    ],
+    "offences": [
+      {
+        "offenderChargeId": 1,
+        "offenceStartDate": "2018-03-30",
+        "offenceCode": "A1234BC",
+        "offenceDescription": "Offending",
+        "indicators": []
+      }
+    ]
+  }
+]

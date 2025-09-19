@@ -7,17 +7,23 @@
   {
     "type": "CRD",
     "date": "2025-08-19",
-    "hints": ["40% date has been applied"]
+    "hints": [
+      "40% date has been applied"
+    ]
   },
   {
     "type": "HDCED",
     "date": "2025-02-21",
-    "hints": ["40% date has been applied"]
+    "hints": [
+      "40% date has been applied"
+    ]
   },
   {
     "type": "ERSED",
     "date": "2024-10-22",
-    "hints": ["Defaulted to tranche 2 commencement"]
+    "hints": [
+      "Defaulted to tranche 2 commencement"
+    ]
   },
   {
     "type": "ESED",

@@ -21,6 +21,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationRe
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Recall
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateTypes
@@ -142,7 +143,7 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
       lineSequence = 1,
       isSDSPlus = false,
       hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
-      recallType = RecallType.STANDARD_RECALL,
+      recall = Recall(RecallType.STANDARD_RECALL),
     )
     sentence.releaseDateTypes = ReleaseDateTypes(listOf(ReleaseDateType.TUSED), sentence, testOffender)
     sentence.identificationTrack = SentenceIdentificationTrack.SDS
@@ -152,7 +153,7 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
         sentence,
         { 0.5 },
         { 0.5 },
-        { a, b, c -> 0 to LocalDate.now() },
+        { a, c -> 0 to LocalDate.now() },
       ),
       SentenceAdjustments(),
       false,
@@ -209,7 +210,7 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
       lineSequence = 1,
       isSDSPlus = false,
       hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
-      recallType = RecallType.STANDARD_RECALL,
+      recall = Recall(RecallType.STANDARD_RECALL),
     )
     sentence.releaseDateTypes = ReleaseDateTypes(listOf(ReleaseDateType.TUSED), sentence, testOffender)
     sentence.identificationTrack = SentenceIdentificationTrack.SDS
@@ -219,7 +220,7 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
         sentence,
         { 0.5 },
         { 0.5 },
-        { a, b, c -> c },
+        { a, b -> b },
       ),
       SentenceAdjustments(),
       false,
@@ -386,7 +387,7 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
         sentence,
         { 0.5 },
         { 0.5 },
-        { a, b, c -> c },
+        { a, b -> b },
       ),
       SentenceAdjustments(remand = 1),
       false,

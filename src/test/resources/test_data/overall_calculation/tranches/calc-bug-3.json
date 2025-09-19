@@ -18,7 +18,9 @@
         },
         "sentencedAt": "2016-04-12",
         "identifier": "8d36aa01-5b4f-3c21-9a94-1653b2f0f6fb",
-        "recallType": "STANDARD_RECALL",
+        "recall": {
+          "recallType": "STANDARD_RECALL"
+        },
         "hasAnSDSEarlyReleaseExclusion": "NO"
       },
       {
@@ -34,7 +36,9 @@
         },
         "sentencedAt": "2016-04-12",
         "identifier": "f4d107c7-1b4c-4e25-9787-e513621e276b",
-        "recallType": "STANDARD_RECALL",
+        "recall": {
+          "recallType": "STANDARD_RECALL"
+        },
         "hasAnSDSEarlyReleaseExclusion": "NO"
       },
       {
@@ -53,7 +57,9 @@
         "consecutiveSentenceUUIDs": [
           "8d36aa01-5b4f-3c21-9a94-1653b2f0f6fb"
         ],
-        "recallType": "STANDARD_RECALL",
+        "recall": {
+          "recallType": "STANDARD_RECALL"
+        },
         "hasAnSDSEarlyReleaseExclusion": "NO"
       },
       {

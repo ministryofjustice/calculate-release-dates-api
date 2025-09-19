@@ -1,23 +1,28 @@
 {
-  "sentenceAdjustments": [{
-    "sentenceSequence": 1,
-    "type": "REMAND",
-    "numberOfDays": 31,
-    "fromDate": "2021-02-09",
-    "toDate": "2021-03-11",
-    "active": true
-  }],
-  "bookingAdjustments": [{
-    "type": "ADDITIONAL_DAYS_AWARDED",
-    "numberOfDays": 26,
-    "fromDate": "2021-11-09",
-    "toDate": "2021-12-04",
-    "active": true
-  }, {
-    "type": "RESTORED_ADDITIONAL_DAYS_AWARDED",
-    "numberOfDays": 5,
-    "fromDate": "2059-08-27",
-    "toDate": "2059-08-31",
-    "active": true
-  }]
+  "sentenceAdjustments": [
+    {
+      "sentenceSequence": 1,
+      "type": "REMAND",
+      "numberOfDays": 31,
+      "fromDate": "2021-02-09",
+      "toDate": "2021-03-11",
+      "active": true
+    }
+  ],
+  "bookingAdjustments": [
+    {
+      "type": "ADDITIONAL_DAYS_AWARDED",
+      "numberOfDays": 26,
+      "fromDate": "2021-11-09",
+      "toDate": "2021-12-04",
+      "active": true
+    },
+    {
+      "type": "RESTORED_ADDITIONAL_DAYS_AWARDED",
+      "numberOfDays": 5,
+      "fromDate": "2059-08-27",
+      "toDate": "2059-08-31",
+      "active": true
+    }
+  ]
 }

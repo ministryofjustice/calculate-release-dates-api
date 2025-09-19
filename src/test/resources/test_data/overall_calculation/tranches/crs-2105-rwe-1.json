@@ -18,7 +18,9 @@
         },
         "sentencedAt": "2023-11-15",
         "identifier": "d211f333-aa1a-3e25-ac8d-0459c1f98868",
-        "recallType": "STANDARD_RECALL",
+        "recall": {
+          "recallType": "STANDARD_RECALL"
+        },
         "hasAnSDSEarlyReleaseExclusion": "NO"
       },
       {
@@ -37,7 +39,9 @@
         "consecutiveSentenceUUIDs": [
           "d211f333-aa1a-3e25-ac8d-0459c1f98868"
         ],
-        "recallType": "STANDARD_RECALL",
+        "recall": {
+          "recallType": "STANDARD_RECALL"
+        },
         "hasAnSDSEarlyReleaseExclusion": "NO"
       },
       {
@@ -56,7 +60,9 @@
         "consecutiveSentenceUUIDs": [
           "023e388e-1673-3bbc-9f13-1b1d915f3b73"
         ],
-        "recallType": "STANDARD_RECALL",
+        "recall": {
+          "recallType": "STANDARD_RECALL"
+        },
         "hasAnSDSEarlyReleaseExclusion": "NO"
       },
       {

@@ -102,7 +102,7 @@ class CalculationTransactionalService(
       return initialValidationMessages
     }
 
-    val booking = bookingService.getBooking(sourceData, calculationUserInputs)
+    val booking = bookingService.getBooking(sourceData)
 
     return fullValidationFromBookingData(booking, calculationUserInputs)
   }
@@ -136,7 +136,7 @@ class CalculationTransactionalService(
       validationService.validateBeforeCalculation(providedSourceData, calculationUserInputs, bulkCalcValidation = true) // Validation stage 1 of 3
     if (messages.isNotEmpty()) return ValidationResult(messages, null, null, null)
     // getBooking relies on the previous validation stage to have succeeded
-    val booking = bookingService.getBooking(providedSourceData, calculationUserInputs)
+    val booking = bookingService.getBooking(providedSourceData)
     messages = validationService.validateBeforeCalculation(booking) // Validation stage 2 of 4
     if (messages.isNotEmpty()) return ValidationResult(messages, null, null, null)
     val calculationOutput = calculationService.calculateReleaseDates(booking, calculationUserInputs) // Validation stage 3 of 4
@@ -176,7 +176,7 @@ class CalculationTransactionalService(
       return SupportedValidationResponse()
     }
 
-    val booking = bookingService.getBooking(sourceData, noInputs)
+    val booking = bookingService.getBooking(sourceData)
     val bookingValidationMessages = validationService.validateBeforeCalculation(booking)
 
     if (bookingValidationMessages.isNotEmpty()) {
@@ -214,7 +214,7 @@ class CalculationTransactionalService(
     calculationType: CalculationStatus = PRELIMINARY,
   ): CalculatedReleaseDates {
     val calculationUserInputs = calculationRequestModel.calculationUserInputs ?: CalculationUserInputs()
-    val booking = bookingService.getBooking(sourceData, calculationUserInputs)
+    val booking = bookingService.getBooking(sourceData)
     val reasonForCalculation = calculationReasonRepository.findById(calculationRequestModel.calculationReasonId)
       .orElse(null) // TODO: This should thrown an EntityNotFoundException when the reason is mandatory.
     try {
@@ -253,7 +253,7 @@ class CalculationTransactionalService(
       }
     val sourceData = calculationSourceDataService.getCalculationSourceData(calculationRequest.prisonerId, InactiveDataOptions.default())
     val userInput = transform(calculationRequest.calculationRequestUserInput)
-    val booking = bookingService.getBooking(sourceData, userInput)
+    val booking = bookingService.getBooking(sourceData)
     val currentBookingJson = objectToJson(booking, objectMapper)
     val preliminaryBookingJson = calculationRequest.inputData
 
@@ -577,7 +577,7 @@ class CalculationTransactionalService(
       log.info("Checking for change in data")
       val sourceData = calculationSourceDataService.getCalculationSourceData(calculationRequest.prisonerId, InactiveDataOptions.default())
       val userInput = transform(calculationRequest.calculationRequestUserInput)
-      val booking = bookingService.getBooking(sourceData, userInput)
+      val booking = bookingService.getBooking(sourceData)
 
       if (calculationRequest.inputData.hashCode() != objectToJson(booking, objectMapper).hashCode()) {
         throw CalculationDataHasChangedError(calculationReference, calculationRequest.prisonerId)

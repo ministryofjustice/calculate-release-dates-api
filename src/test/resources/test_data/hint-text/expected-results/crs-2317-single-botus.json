@@ -12,6 +12,8 @@
   {
     "type": "TUSED",
     "date": "2025-10-02",
-    "hints": ["TUSED from last calculation saved to NOMIS"]
+    "hints": [
+      "TUSED from last calculation saved to NOMIS"
+    ]
   }
 ]

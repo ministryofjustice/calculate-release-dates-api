@@ -11,7 +11,7 @@ class UnadjustedReleaseDate(
   val sentence: CalculableSentence,
   findMultiplierBySentence: (sentence: CalculableSentence) -> Double,
   historicFindMultiplierBySentence: (sentence: CalculableSentence) -> Double,
-  findRecallCalculation: (CalculableSentence, LocalDate?, Pair<Int, LocalDate>) -> Pair<Int, LocalDate>,
+  findRecallCalculation: (CalculableSentence, Pair<Int, LocalDate>) -> Pair<Int, LocalDate>,
   val returnToCustodyDate: LocalDate? = null,
 ) {
 
@@ -27,7 +27,7 @@ class UnadjustedReleaseDate(
   /*
     When recall calculation changes. The delegate here will recalculate the unadjusted PRRD dates.
    */
-  var findRecallCalculation: (CalculableSentence, LocalDate?, Pair<Int, LocalDate>) -> Pair<Int, LocalDate> by Delegates.observable(findRecallCalculation) { _, _, _ ->
+  var findRecallCalculation: (CalculableSentence, Pair<Int, LocalDate>) -> Pair<Int, LocalDate> by Delegates.observable(findRecallCalculation) { _, _, _ ->
     calculateUnadjustedReleaseDate()
   }
 
@@ -75,7 +75,7 @@ class UnadjustedReleaseDate(
     }
 
     if (sentence.isRecall()) {
-      val (days, releaseDate) = findRecallCalculation(sentence, returnToCustodyDate, releaseDateCalculation.numberOfDaysToSentenceExpiryDate to unadjustedExpiryDate)
+      val (days, releaseDate) = findRecallCalculation(sentence, releaseDateCalculation.numberOfDaysToSentenceExpiryDate to unadjustedExpiryDate)
       this.numberOfDaysToPostRecallReleaseDate = days
       this.unadjustedPostRecallReleaseDate = releaseDate
     }

@@ -17,6 +17,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOu
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Recall
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType.FIXED_TERM_RECALL_28
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType.STANDARD_RECALL
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateTypes
@@ -197,7 +198,7 @@ class UnsupportedSDS40RecallSentenceTest {
       ),
       lineSequence = LINE_SEQUENCE,
       caseSequence = CASE_SEQUENCE,
-      recallType = FIXED_TERM_RECALL_28,
+      recall = Recall(FIXED_TERM_RECALL_28),
       isSDSPlus = true,
       hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
     )
@@ -212,7 +213,7 @@ class UnsupportedSDS40RecallSentenceTest {
       identifier = UUID.nameUUIDFromBytes(("$COMPANION_BOOKING_ID-$SEQUENCE").toByteArray()),
       lineSequence = LINE_SEQUENCE,
       caseSequence = CASE_SEQUENCE,
-      recallType = STANDARD_RECALL,
+      recall = Recall(STANDARD_RECALL),
       isSDSPlus = false,
       hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
     )

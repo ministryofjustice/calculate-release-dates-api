@@ -19,13 +19,17 @@ import kotlin.math.roundToLong
 interface CalculableSentence {
   var releaseDateTypes: ReleaseDateTypes
   var sentenceCalculation: SentenceCalculation
-  val recallType: RecallType?
+  val recall: Recall?
   val sentencedAt: LocalDate
   val offence: Offence
   var identificationTrack: SentenceIdentificationTrack
   val isSDSPlus: Boolean
   val isSDSPlusEligibleSentenceTypeLengthAndOffence: Boolean
   val isSDSPlusOffenceInPeriod: Boolean
+
+  val recallType: RecallType?
+    @JsonIgnore
+    get() = recall?.recallType
 
   companion object {
     val log: Logger = LoggerFactory.getLogger(this::class.java)

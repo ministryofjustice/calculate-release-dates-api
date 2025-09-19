@@ -1,9 +1,9 @@
 {
-"dates": {
-"SLED": "2032-09-25",
-"CRD": "2025-01-13",
-"ERSED": "2024-03-30",
-"ESED": "2032-09-25"
-},
-"effectiveSentenceLength": "P14Y"
+  "dates": {
+    "SLED": "2032-09-25",
+    "CRD": "2025-01-13",
+    "ERSED": "2024-03-30",
+    "ESED": "2032-09-25"
+  },
+  "effectiveSentenceLength": "P14Y"
 }

@@ -17,7 +17,9 @@
         },
         "sentencedAt": "2024-09-11",
         "identifier": "d309682d-6733-3bfc-b7ad-7024162a341c",
-        "recallType": "STANDARD_RECALL",
+        "recall": {
+          "recallType": "STANDARD_RECALL"
+        },
         "hasAnSDSEarlyReleaseExclusion": "NO"
       },
       {
@@ -35,7 +37,9 @@
         "consecutiveSentenceUUIDs": [
           "d309682d-6733-3bfc-b7ad-7024162a341c"
         ],
-        "recallType": "STANDARD_RECALL",
+        "recall": {
+          "recallType": "STANDARD_RECALL"
+        },
         "hasAnSDSEarlyReleaseExclusion": "NO"
       }
     ],

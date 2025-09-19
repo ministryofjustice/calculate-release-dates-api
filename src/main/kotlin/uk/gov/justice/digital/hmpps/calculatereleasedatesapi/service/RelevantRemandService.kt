@@ -41,7 +41,7 @@ class RelevantRemandService(
         validationMessages = validationMessages,
       )
     }
-    val booking = bookingService.getBooking(sourceData, calculationUserInputs)
+    val booking = bookingService.getBooking(sourceData)
     validationMessages = validationService.validateBeforeCalculation(booking)
     if (validationMessages.isNotEmpty()) {
       return RelevantRemandCalculationResult(

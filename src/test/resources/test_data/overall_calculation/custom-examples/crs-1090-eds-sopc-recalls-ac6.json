@@ -24,7 +24,9 @@
         },
         "sentencedAt": "2015-10-16",
         "identifier": "70b10e6a-a5b2-43e7-a5db-3694d75bedec",
-        "recallType": "STANDARD_RECALL"
+        "recall": {
+          "recallType": "STANDARD_RECALL"
+        }
       },
       {
         "type": "StandardSentence",
@@ -41,7 +43,9 @@
         "consecutiveSentenceUUIDs": [
           "70b10e6a-a5b2-43e7-a5db-3694d75bedec"
         ],
-        "recallType": "STANDARD_RECALL",
+        "recall": {
+          "recallType": "STANDARD_RECALL"
+        },
         "hasAnSDSEarlyReleaseExclusion": "NO"
       }
     ],

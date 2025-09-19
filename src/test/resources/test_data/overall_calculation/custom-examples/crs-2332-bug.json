@@ -91,7 +91,9 @@
         },
         "sentencedAt": "2017-12-18",
         "identifier": "d725438b-e686-38f8-84ad-bdbf09d5717d",
-        "recallType": "STANDARD_RECALL",
+        "recall": {
+          "recallType": "STANDARD_RECALL"
+        },
         "hasAnSDSEarlyReleaseExclusion": "VIOLENT"
       },
       {
@@ -111,7 +113,9 @@
         "consecutiveSentenceUUIDs": [
           "d725438b-e686-38f8-84ad-bdbf09d5717d"
         ],
-        "recallType": "STANDARD_RECALL",
+        "recall": {
+          "recallType": "STANDARD_RECALL"
+        },
         "hasAnSDSEarlyReleaseExclusion": "NO"
       },
       {
@@ -130,7 +134,9 @@
         "consecutiveSentenceUUIDs": [
           "18f370a8-e3bc-3792-9578-53919dca0648"
         ],
-        "recallType": "STANDARD_RECALL",
+        "recall": {
+          "recallType": "STANDARD_RECALL"
+        },
         "hasAnSDSEarlyReleaseExclusion": "NO"
       },
       {
@@ -149,7 +155,9 @@
         "consecutiveSentenceUUIDs": [
           "a5af2e50-e679-3ed5-b92e-c5b5c70f347a"
         ],
-        "recallType": "STANDARD_RECALL",
+        "recall": {
+          "recallType": "STANDARD_RECALL"
+        },
         "hasAnSDSEarlyReleaseExclusion": "NO"
       },
       {

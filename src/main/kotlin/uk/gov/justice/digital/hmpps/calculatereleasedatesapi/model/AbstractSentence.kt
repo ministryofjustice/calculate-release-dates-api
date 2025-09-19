@@ -35,7 +35,7 @@ abstract class AbstractSentence(
   open val lineSequence: Int? = null,
   open val externalSentenceId: ExternalSentenceId? = null,
   open val caseReference: String? = null,
-  override val recallType: RecallType? = null,
+  override val recall: Recall? = null,
 ) : CalculableSentence {
   @JsonIgnore
   override lateinit var sentenceCalculation: SentenceCalculation

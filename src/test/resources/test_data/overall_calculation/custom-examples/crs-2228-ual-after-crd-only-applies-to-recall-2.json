@@ -33,7 +33,10 @@
         },
         "sentencedAt": "2023-12-11",
         "identifier": "42e5dfd6-2e01-494b-8343-feafe6f261b1",
-        "recallType": "FIXED_TERM_RECALL_28",
+        "recall": {
+          "recallType": "FIXED_TERM_RECALL_28",
+          "returnToCustodyDate": "2024-12-12"
+        },
         "hasAnSDSEarlyReleaseExclusion": "NO"
       }
     ],

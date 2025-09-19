@@ -18,7 +18,9 @@
         },
         "sentencedAt": "2024-12-20",
         "identifier": "9c0d978d-f94c-41e3-b1dd-11b4f2afeb20",
-        "recallType": "STANDARD_RECALL",
+        "recall": {
+          "recallType": "STANDARD_RECALL"
+        },
         "hasAnSDSEarlyReleaseExclusion": "SEXUAL_T3"
       }
     ],

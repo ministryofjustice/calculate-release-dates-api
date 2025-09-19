@@ -15,6 +15,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.SDS40Tranche
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Recall
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
@@ -168,7 +169,7 @@ class RecallValidationServiceTest {
       identifier = UUID.randomUUID(),
       lineSequence = 1,
       caseSequence = 1,
-      recallType = RecallType.FIXED_TERM_RECALL_28,
+      recall = Recall(RecallType.FIXED_TERM_RECALL_28),
       isSDSPlus = false,
       hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
     )
@@ -182,7 +183,7 @@ class RecallValidationServiceTest {
       identifier = UUID.randomUUID(),
       lineSequence = 2,
       caseSequence = 1,
-      recallType = RecallType.FIXED_TERM_RECALL_28,
+      recall = Recall(RecallType.FIXED_TERM_RECALL_28),
       isSDSPlus = false,
       hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
       consecutiveSentenceUUIDs = listOf(consecutiveSentencePartOne.identifier),
@@ -200,7 +201,7 @@ class RecallValidationServiceTest {
     identifier = UUID.randomUUID(),
     lineSequence = 1,
     caseSequence = 1,
-    recallType = RecallType.FIXED_TERM_RECALL_28,
+    recall = Recall(RecallType.FIXED_TERM_RECALL_28),
     isSDSPlus = false,
     hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
   )

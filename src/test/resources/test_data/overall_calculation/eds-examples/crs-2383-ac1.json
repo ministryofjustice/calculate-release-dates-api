@@ -23,7 +23,9 @@
         },
         "sentencedAt": "2017-09-29",
         "identifier": "49edac49-781b-3265-a766-6b8e6919639c",
-        "recallType": "STANDARD_RECALL"
+        "recall": {
+          "recallType": "STANDARD_RECALL"
+        }
       },
       {
         "type": "StandardSentence",
@@ -41,7 +43,9 @@
         "consecutiveSentenceUUIDs": [
           "49edac49-781b-3265-a766-6b8e6919639c"
         ],
-        "recallType": "STANDARD_RECALL",
+        "recall": {
+          "recallType": "STANDARD_RECALL"
+        },
         "hasAnSDSEarlyReleaseExclusion": "NO"
       },
       {
@@ -60,7 +64,9 @@
         "consecutiveSentenceUUIDs": [
           "49edac49-781b-3265-a766-6b8e6919639c"
         ],
-        "recallType": "STANDARD_RECALL",
+        "recall": {
+          "recallType": "STANDARD_RECALL"
+        },
         "hasAnSDSEarlyReleaseExclusion": "NO"
       },
       {

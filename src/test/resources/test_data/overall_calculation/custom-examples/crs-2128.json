@@ -16,7 +16,9 @@
           }
         },
         "sentencedAt": "2005-12-21",
-        "recallType": "STANDARD_RECALL"
+        "recall": {
+          "recallType": "STANDARD_RECALL"
+        }
       },
       {
         "offence": {
@@ -29,30 +31,32 @@
           }
         },
         "sentencedAt": "2005-12-21",
-        "recallType": "STANDARD_RECALL"
+        "recall": {
+          "recallType": "STANDARD_RECALL"
+        }
       }
-    ],
-    "adjustments": {
-      "RECALL_REMAND": [
-        {
-          "appliesToSentencesFrom": "2005-12-21",
-          "numberOfDays": 208
+        ],
+        "adjustments": {
+          "RECALL_REMAND": [
+            {
+              "appliesToSentencesFrom": "2005-12-21",
+              "numberOfDays": 208
+            }
+          ],
+          "UNLAWFULLY_AT_LARGE": [
+            {
+              "appliesToSentencesFrom": "2013-06-26",
+              "numberOfDays": 1100,
+              "fromDate": "2013-06-26",
+              "toDate": "2016-06-29"
+            },
+            {
+              "appliesToSentencesFrom": "2024-08-08",
+              "numberOfDays": 2,
+              "fromDate": "2024-08-08",
+              "toDate": "2024-08-09"
+            }
+          ]
         }
-      ],
-      "UNLAWFULLY_AT_LARGE": [
-        {
-          "appliesToSentencesFrom": "2013-06-26",
-          "numberOfDays": 1100,
-          "fromDate": "2013-06-26",
-          "toDate": "2016-06-29"
-        },
-        {
-          "appliesToSentencesFrom": "2024-08-08",
-          "numberOfDays": 2,
-          "fromDate": "2024-08-08",
-          "toDate": "2024-08-09"
-        }
-      ]
+      }
     }
-  }
-}

@@ -17,7 +17,9 @@
         },
         "sentencedAt": "2021-04-15",
         "identifier": "2d7deda2-6008-4104-bc59-78f9c864b8c7",
-        "recallType": "STANDARD_RECALL",
+        "recall": {
+          "recallType": "STANDARD_RECALL"
+        },
         "hasAnSDSEarlyReleaseExclusion": "NO"
       }
     ],

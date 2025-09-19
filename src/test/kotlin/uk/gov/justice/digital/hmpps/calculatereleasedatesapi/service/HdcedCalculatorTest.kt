@@ -577,7 +577,7 @@ class HdcedCalculatorTest {
       sentence,
       { 0.0 },
       { 0.0 },
-      { a, b, c -> 0 to LocalDate.now() },
+      { a, b -> 0 to LocalDate.now() },
     )
     unadjustedReleaseDate = spy(unadjustedReleaseDate)
     lenient().whenever(unadjustedReleaseDate.releaseDateCalculation).thenReturn(releaseDateCalculation)

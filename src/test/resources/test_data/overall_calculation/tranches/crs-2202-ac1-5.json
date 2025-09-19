@@ -18,7 +18,10 @@
         },
         "sentencedAt": "2024-09-12",
         "identifier": "c480bdff-5bd1-427f-bb90-c67b2363f17f",
-        "recallType": "FIXED_TERM_RECALL_14",
+        "recall": {
+          "recallType": "FIXED_TERM_RECALL_14",
+          "returnToCustodyDate": "2025-01-06"
+        },
         "hasAnSDSEarlyReleaseExclusion": "SEXUAL_T3"
       }
     ],

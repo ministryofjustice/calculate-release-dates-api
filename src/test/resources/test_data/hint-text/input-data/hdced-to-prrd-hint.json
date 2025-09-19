@@ -19,7 +19,9 @@
         "identifier": "769d40e1-92db-33f1-9ac5-a90828065c3e",
         "caseSequence": 1,
         "lineSequence": 1,
-        "recallType": "STANDARD_RECALL",
+        "recall": {
+          "recallType": "STANDARD_RECALL"
+        },
         "hasAnSDSEarlyReleaseExclusion": "NO"
       },
       {
@@ -39,7 +41,9 @@
         ],
         "caseSequence": 1,
         "lineSequence": 2,
-        "recallType": "STANDARD_RECALL",
+        "recall": {
+          "recallType": "STANDARD_RECALL"
+        },
         "hasAnSDSEarlyReleaseExclusion": "NO"
       },
       {

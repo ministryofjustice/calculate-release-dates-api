@@ -17,7 +17,9 @@
         },
         "sentencedAt": "2014-02-22",
         "identifier": "3122affd-f116-4718-8848-618ba70ab750",
-        "recallType": "STANDARD_RECALL",
+        "recall": {
+          "recallType": "STANDARD_RECALL"
+        },
         "hasAnSDSEarlyReleaseExclusion": "NO"
       },
       {

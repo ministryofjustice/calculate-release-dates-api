@@ -68,7 +68,7 @@ class ManualCalculationService(
   ): ManualCalculationResponse {
     val sourceData = calculationSourceDataService.getCalculationSourceData(prisonerId, InactiveDataOptions.default())
     val calculationUserInputs = CalculationUserInputs()
-    val booking = bookingService.getBooking(sourceData, calculationUserInputs)
+    val booking = bookingService.getBooking(sourceData)
 
     val effectiveSentenceLength = try {
       calculateEffectiveSentenceLength(booking, manualEntryRequest)
@@ -229,7 +229,7 @@ class ManualCalculationService(
   fun equivalentManualCalculationExists(prisonerId: String): Boolean {
     val sourceData = calculationSourceDataService.getCalculationSourceData(prisonerId, InactiveDataOptions.default())
     val calculationUserInputs = CalculationUserInputs()
-    val currentBooking = bookingService.getBooking(sourceData, calculationUserInputs)
+    val currentBooking = bookingService.getBooking(sourceData)
     val previousCalculation = calculationRequestRepository
       .findLatestManualCalculation(prisonerId, CalculationStatus.CONFIRMED.name) ?: return false
 
