@@ -1,0 +1,68 @@
+[
+  {
+    "bookingId": 833085967,
+    "sentenceSequence":1,
+    "lineSequence":1,
+    "caseSequence":1,
+    "caseReference":"F1",
+    "courtDescription":"Birmingham Crown Court",
+    "sentenceStatus":"A",
+    "sentenceCategory":"2020",
+    "sentenceCalculationType":"ADIMP",
+    "sentenceTypeDescription":"Sentencing Code Standard Determinate Sentence",
+    "sentenceDate":"2024-05-14",
+    "terms":[
+      {
+        "years":0,
+        "months":41,
+        "weeks":0,
+        "days":0,
+        "code":"IMP"
+      }
+    ],
+    "offences":[
+      {
+        "offenderChargeId":3933931,
+        "offenceStartDate":"2023-07-18",
+        "offenceCode":"WR91001",
+        "offenceDescription":"Abstract water without a licence",
+        "indicators":[
+          "62"
+        ]
+      }
+    ]
+  },
+  {
+    "bookingId": 833085967,
+    "sentenceSequence":2,
+    "lineSequence":2,
+    "caseSequence":2,
+    "caseReference":"F2",
+    "courtDescription":"Birmingham Crown Court",
+    "sentenceStatus":"A",
+    "sentenceCategory":"2020",
+    "sentenceCalculationType":"ADIMP_ORA",
+    "sentenceTypeDescription":"ORA Sentencing Code Standard Determinate Sentence",
+    "sentenceDate":"2025-09-01",
+    "terms":[
+      {
+        "years":0,
+        "months":12,
+        "weeks":0,
+        "days":0,
+        "code":"IMP"
+      }
+    ],
+    "offences":[
+      {
+        "offenderChargeId":3933932,
+        "offenceStartDate":"2024-04-23",
+        "offenceCode":"CS00011",
+        "offenceDescription":"Act as child minder while disqualified from registration as a child minder",
+        "indicators":[
+          "99","79"
+        ]
+      }
+    ]
+  }
+]

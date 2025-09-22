@@ -41,16 +41,17 @@ class UnusedDeductionsCalculationService(
     }
 
     val result = calculationService.calculateReleaseDates(booking, calculationUserInputs)
+    val sentences = result.sentenceGroup.last().sentences
     val releaseDateTypes = listOf(ReleaseDateType.CRD, ReleaseDateType.ARD, ReleaseDateType.MTD)
     val calculationResult = result.calculationResult
     val releaseDate = calculationResult.dates.filter { releaseDateTypes.contains(it.key) }.minOfOrNull { it.value }
     val unusedDeductions = if (releaseDate != null) {
-      val maxNonDeductionAdjustedReleaseDateSentence = result.sentences.maxBy {
+      val maxNonDeductionAdjustedReleaseDateSentence = sentences.maxBy {
         it.sentenceCalculation.releaseDateWithoutDeductions
       }
       val maxNonDeductionAdjustedReleaseDate = maxNonDeductionAdjustedReleaseDateSentence.sentenceCalculation.releaseDateWithoutDeductions
 
-      val maxSentenceDate = result.sentences.maxOf { it.sentencedAt }
+      val maxSentenceDate = sentences.maxOf { it.sentencedAt }
       val maxDeductions = if (maxSentenceDate != maxNonDeductionAdjustedReleaseDateSentence.sentencedAt) {
         ChronoUnit.DAYS.between(maxSentenceDate, maxNonDeductionAdjustedReleaseDate)
       } else {
@@ -59,13 +60,7 @@ class UnusedDeductionsCalculationService(
         maxNonDeductionAdjustedReleaseDateSentence.sentenceCalculation.numberOfDaysToDeterminateReleaseDate + allAdjustmentDaysExceptDeductions
       }
 
-      val remand =
-        adjustments.filter { it.adjustmentType == AdjustmentDto.AdjustmentType.REMAND }.map { it.days!! }
-          .reduceOrNull { acc, it -> acc + it } ?: 0
-      val taggedBail =
-        adjustments.filter { it.adjustmentType == AdjustmentDto.AdjustmentType.TAGGED_BAIL }.map { it.days!! }
-          .reduceOrNull { acc, it -> acc + it } ?: 0
-      val deductions = taggedBail + remand
+      val deductions = sentences.maxOf { it.sentenceCalculation.adjustments.deductions }
       max(0, deductions - maxDeductions)
     } else {
       0
