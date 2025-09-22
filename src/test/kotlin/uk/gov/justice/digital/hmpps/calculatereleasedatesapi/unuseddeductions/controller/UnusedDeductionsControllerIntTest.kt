@@ -298,7 +298,7 @@ class UnusedDeductionsControllerIntTest(private val mockManageOffencesClient: Mo
   }
 
   @Test
-  fun `Remand 1 then Sentence 1 then Remand 2 then Sentence 2`() {
+  fun `Release in-between sentences unused deductions calculation  (ADJST-1363)`() {
     mockManageOffencesClient.noneInPCSC(listOf("CS00011", "WR91001"))
 
     val adjustments = listOf(
@@ -342,7 +342,7 @@ class UnusedDeductionsControllerIntTest(private val mockManageOffencesClient: Mo
   }
 
   @Test
-  fun `Second support query, no unused deductions should be present (ADJST-1373)`() {
+  fun `Release in-between sentences unused deductions calculation (ADJST-1373)`() {
     mockManageOffencesClient.noneInPCSC(listOf("CS00011", "PA53052", "WR91001"))
 
     val adjustments = listOf(
