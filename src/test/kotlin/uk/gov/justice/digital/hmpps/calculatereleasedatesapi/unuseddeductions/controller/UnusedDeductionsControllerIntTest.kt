@@ -296,4 +296,103 @@ class UnusedDeductionsControllerIntTest(private val mockManageOffencesClient: Mo
 
     Assertions.assertThat(calculation.unusedDeductions).isEqualTo(20)
   }
+
+  @Test
+  fun `Release in-between sentences unused deductions calculation  (ADJST-1363)`() {
+    mockManageOffencesClient.noneInPCSC(listOf("CS00011", "WR91001"))
+
+    val adjustments = listOf(
+      AdjustmentDto(
+        fromDate = LocalDate.of(2024, 2, 2),
+        toDate = LocalDate.of(2024, 5, 13),
+        days = 102,
+        effectiveDays = 102,
+        bookingId = "UNUSED-F".hashCode().toLong(),
+        sentenceSequence = 1,
+        adjustmentType = AdjustmentDto.AdjustmentType.REMAND,
+        person = "UNUSED-F",
+        id = UUID.randomUUID(),
+      ),
+      AdjustmentDto(
+        fromDate = LocalDate.of(2025, 6, 16),
+        toDate = LocalDate.of(2025, 8, 31),
+        days = 77,
+        effectiveDays = 77,
+        bookingId = "UNUSED-F".hashCode().toLong(),
+        sentenceSequence = 2,
+        adjustmentType = AdjustmentDto.AdjustmentType.REMAND,
+        person = "UNUSED-F",
+        id = UUID.randomUUID(),
+      ),
+    )
+
+    val calculation: UnusedDeductionCalculationResponse = webTestClient.post()
+      .uri("/unused-deductions/UNUSED-F/calculation")
+      .accept(MediaType.APPLICATION_JSON)
+      .contentType(MediaType.APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+      .bodyValue(objectMapper.writeValueAsString(adjustments))
+      .exchange()
+      .expectStatus().isOk
+      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectBody(UnusedDeductionCalculationResponse::class.java)
+      .returnResult().responseBody!!
+
+    Assertions.assertThat(calculation.unusedDeductions).isEqualTo(0)
+  }
+
+  @Test
+  fun `Release in-between sentences unused deductions calculation (ADJST-1373)`() {
+    mockManageOffencesClient.noneInPCSC(listOf("CS00011", "PA53052", "WR91001"))
+
+    val adjustments = listOf(
+      AdjustmentDto(
+        fromDate = LocalDate.of(2024, 7, 19),
+        toDate = LocalDate.of(2024, 7, 30),
+        days = 12,
+        effectiveDays = 12,
+        bookingId = "UNUSED-G".hashCode().toLong(),
+        sentenceSequence = 1,
+        adjustmentType = AdjustmentDto.AdjustmentType.REMAND,
+        person = "UNUSED-G",
+        id = UUID.randomUUID(),
+      ),
+      AdjustmentDto(
+        fromDate = LocalDate.of(2025, 5, 24),
+        toDate = LocalDate.of(2025, 8, 4),
+        days = 73,
+        effectiveDays = 73,
+        bookingId = "UNUSED-G".hashCode().toLong(),
+        sentenceSequence = 1,
+        adjustmentType = AdjustmentDto.AdjustmentType.REMAND,
+        person = "UNUSED-G",
+        id = UUID.randomUUID(),
+      ),
+      AdjustmentDto(
+        fromDate = LocalDate.of(2025, 8, 10),
+        toDate = LocalDate.of(2025, 8, 28),
+        days = 19,
+        effectiveDays = 19,
+        bookingId = "UNUSED-G".hashCode().toLong(),
+        sentenceSequence = 10,
+        adjustmentType = AdjustmentDto.AdjustmentType.REMAND,
+        person = "UNUSED-G",
+        id = UUID.randomUUID(),
+      ),
+    )
+
+    val calculation: UnusedDeductionCalculationResponse = webTestClient.post()
+      .uri("/unused-deductions/UNUSED-G/calculation")
+      .accept(MediaType.APPLICATION_JSON)
+      .contentType(MediaType.APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+      .bodyValue(objectMapper.writeValueAsString(adjustments))
+      .exchange()
+      .expectStatus().isOk
+      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectBody(UnusedDeductionCalculationResponse::class.java)
+      .returnResult().responseBody!!
+
+    Assertions.assertThat(calculation.unusedDeductions).isEqualTo(0)
+  }
 }

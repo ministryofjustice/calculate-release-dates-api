@@ -1,0 +1,109 @@
+[
+  {
+    "identifier": "f36bc182-5c02-3cc3-a4bf-df55a1a41fb4",
+    "bookingId": 833085968,
+    "sentenceSequence": 1,
+    "lineSequence": 1,
+    "caseSequence": 1,
+    "caseReference": "F1",
+    "courtDescription": "Birmingham Crown Court",
+    "sentenceStatus": "A",
+    "sentenceCategory": "2020",
+    "sentenceCalculationType": "ADIMP_ORA",
+    "sentenceTypeDescription": "Sentencing Code Standard Determinate Sentence",
+    "sentenceDate": "2025-08-05",
+    "terms": [
+      {
+        "years": 0,
+        "months": 0,
+        "weeks": 30,
+        "days": 0,
+        "code": "IMP"
+      }
+    ],
+    "offences": [
+      {
+        "offenderChargeId": 3933931,
+        "offenceStartDate": "2024-07-17",
+        "offenceCode": "WR91001",
+        "offenceDescription": "Abstract water without a licence",
+        "indicators": [
+          "14",
+          "99"
+        ]
+      }
+    ]
+  },
+  {
+    "identifier": "f36bc182-5c02-3cc3-a4bf-df55a1a41fb5",
+    "bookingId": 833085968,
+    "sentenceSequence": 2,
+    "lineSequence": 2,
+    "caseSequence": 2,
+    "consecutiveToSequence": 1,
+    "caseReference": "F2",
+    "courtDescription": "Birmingham Crown Court",
+    "sentenceStatus": "A",
+    "sentenceCategory": "2020",
+    "sentenceCalculationType": "ADIMP_ORA",
+    "sentenceTypeDescription": "ORA Sentencing Code Standard Determinate Sentence",
+    "sentenceStartDate": "2025-08-05",
+    "sentenceDate": "2025-08-05",
+    "terms": [
+      {
+        "years": 0,
+        "months": 0,
+        "weeks": 2,
+        "days": 0,
+        "code": "IMP"
+      }
+    ],
+    "offences": [
+      {
+        "offenderChargeId": 3933932,
+        "offenceStartDate": "2024-04-23",
+        "offenceCode": "CS00011",
+        "offenceDescription": "Act as child minder while disqualified from registration as a child minder",
+        "indicators": [
+          "99",
+          "79"
+        ]
+      }
+    ]
+  },
+  {
+    "bookingId": 833085968,
+    "sentenceSequence": 10,
+    "lineSequence": 4,
+    "caseSequence": 3,
+    "caseReference": "01GD5047422",
+    "sentenceStatus": "A",
+    "sentenceCategory": "2020",
+    "sentenceCalculationType": "ADIMP_ORA",
+    "sentenceTypeDescription": "ORA Sentencing Code Standard Determinate Sentence",
+    "sentenceDate": "2025-08-29",
+    "sentenceStartDate": "2025-08-29",
+    "terms": [
+      {
+        "years": 0,
+        "months": 3,
+        "weeks": 0,
+        "days": 0,
+        "code": "IMP"
+      }
+    ],
+    "offences": [
+      {
+        "offenderChargeId": 8154521,
+        "offenceStartDate": "2022-11-12",
+        "offenceStatute": "PC53",
+        "offenceCode": "PA53052",
+        "offenceDescription": "Possess an offensive weapon in a public place",
+        "indicators": [
+          "14",
+          "PIMMS2"
+        ]
+      }
+    ]
+  }
+]
