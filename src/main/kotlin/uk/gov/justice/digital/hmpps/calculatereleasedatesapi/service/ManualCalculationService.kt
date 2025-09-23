@@ -5,16 +5,23 @@ import jakarta.persistence.EntityNotFoundException
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.boot.info.BuildProperties
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.web.client.RestClientException
+import org.springframework.web.client.RestClientResponseException
+import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcome
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CouldNotSaveManualEntryException
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CalculationNotFoundException
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CrdWebException
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.NomisResourceLockedException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOutput
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationRequestSummary
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualCalculationResponse
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualEntryRequest
@@ -114,7 +121,6 @@ class ManualCalculationService(
       throw ex
     }
   }
-
   private fun writeToNomisAndPublishEvent(
     prisonerId: String,
     booking: Booking,
@@ -125,7 +131,9 @@ class ManualCalculationService(
   ): Map<ReleaseDateType, LocalDate?> {
     val calculationRequest = calculationRequestRepository.findById(calculationRequestId)
       .orElseThrow { EntityNotFoundException("No calculation request exists") }
+
     val dates = calculationOutcomes.associate { ReleaseDateType.valueOf(it.calculationDateType) to it.outcomeDate }
+
     val updateOffenderDates = UpdateOffenderDates(
       calculationUuid = calculationRequest.calculationReference,
       submissionUser = serviceUserService.getUsername(),
@@ -134,22 +142,26 @@ class ManualCalculationService(
       reason = calculationRequest.reasonForCalculation?.nomisReason,
       comment = nomisCommentService.getManualNomisComment(calculationRequest, dates, isGenuineOverride),
     )
+
     try {
       prisonService.postReleaseDates(booking.bookingId, updateOffenderDates)
+    } catch (ex: RestClientResponseException) {
+      throw mapNomisHttpException(ex, prisonerId, booking.bookingId)
+    } catch (ex: WebClientResponseException) {
+      throw mapNomisHttpException(ex, prisonerId, booking.bookingId)
+    } catch (_: RestClientException) {
+      throw nomisBadGateway(prisonerId, booking.bookingId)
     } catch (ex: Exception) {
-      log.error("Nomis write failed: ${ex.message}")
-      throw CouldNotSaveManualEntryException(
-        "Writing release dates to NOMIS failed for prisonerId $prisonerId and bookingId ${booking.bookingId}",
-      )
+      log.error(ex.message, ex)
+      throw nomisUnexpected(prisonerId, booking.bookingId)
     }
+
     runCatching {
       eventService.publishReleaseDatesChangedEvent(prisonerId, booking.bookingId)
     }.onFailure { error ->
-      log.error(
-        "Failed to send release-dates-changed-event for prisoner ID $prisonerId",
-        error,
-      )
+      log.error("Failed to send release-dates-changed-event for prisoner ID $prisonerId", error)
     }
+
     return dates
   }
 
@@ -200,6 +212,12 @@ class ManualCalculationService(
     }.getOrElse { return false }
 
     return previousJson == previousCalculation.inputData
+  }
+
+  fun getCalculationRequestSummary(id: Long): CalculationRequestSummary {
+    val request = calculationRequestRepository.findById(id)
+      .orElseThrow { CalculationNotFoundException("Calculation request not found for ID $id") }
+    return CalculationRequestSummary(request.id, request.calculationStatus)
   }
 
   fun getSED(manualEntryRequest: ManualEntryRequest): LocalDate? {
@@ -271,6 +289,36 @@ class ManualCalculationService(
   ) {
     request.manualCalculationReason = messages.map { transform(request, it) }.toMutableList()
   }
+
+  private fun mapNomisHttpException(
+    ex: RestClientResponseException,
+    prisonerId: String,
+    bookingId: Long,
+  ): CrdWebException = mapByStatus(ex.statusCode.value(), prisonerId, bookingId)
+
+  private fun mapNomisHttpException(
+    ex: WebClientResponseException,
+    prisonerId: String,
+    bookingId: Long,
+  ): CrdWebException = mapByStatus(ex.statusCode.value(), prisonerId, bookingId)
+
+  private fun mapByStatus(status: Int, prisonerId: String, bookingId: Long): CrdWebException = if (status == 423) {
+    NomisResourceLockedException("NOMIS is locked for prisonerId=$prisonerId, bookingId=$bookingId")
+  } else {
+    nomisBadGateway(prisonerId, bookingId)
+  }
+
+  private fun nomisBadGateway(prisonerId: String, bookingId: Long) = CrdWebException(
+    message = "Failed to write release dates to NOMIS for prisonerId=$prisonerId, bookingId=$bookingId",
+    status = HttpStatus.BAD_GATEWAY,
+    code = "NOMIS_WRITE_FAILED",
+  )
+
+  private fun nomisUnexpected(prisonerId: String, bookingId: Long) = CrdWebException(
+    message = "Unexpected error writing release dates for prisonerId=$prisonerId, bookingId=$bookingId",
+    status = HttpStatus.INTERNAL_SERVER_ERROR,
+    code = "NOMIS_WRITE_FAILED",
+  )
 
   private companion object {
     val log: Logger = LoggerFactory.getLogger(this::class.java)
