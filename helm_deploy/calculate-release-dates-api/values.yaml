@@ -33,6 +33,8 @@ generic-service:
     FTR_48_MANUAL_JOURNEY: "true"
     USE_ERS30_CALCULATION: "true"
     SUPPORT_INACTIVE_SENTENCES_AND_ADJUSTMENTS: "false"
+    EXTERNAL_MOVEMENTS_SDS_40_FEATURE_TOGGLE: "true"
+    EXTERNAL_MOVEMENTS_ADJUSTMENTS_FEATURE_TOGGLE: "true"
 
   # Pre-existing kubernetes secrets to load as environment variables in the deployment.
   # namespace_secrets:
