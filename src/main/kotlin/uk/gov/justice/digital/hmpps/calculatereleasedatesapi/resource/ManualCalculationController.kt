@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.RestController
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationRequestSummary
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualCalculationResponse
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualEntryRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ManualCalculationService
@@ -105,6 +106,11 @@ class ManualCalculationController(
     description = "Only applies where the last calculation performed was manual, using the same sentence data as the current booking",
   )
   fun hasExistingCalculation(@PathVariable prisonerId: String): Boolean = manualCalculationService.equivalentManualCalculationExists(prisonerId)
+
+  @GetMapping("/{calculationRequestId}")
+  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")
+  @ResponseBody
+  fun getCalculationRequest(@PathVariable calculationRequestId: Long): CalculationRequestSummary = manualCalculationService.getCalculationRequestSummary(calculationRequestId)
 
   companion object {
     val log: Logger = LoggerFactory.getLogger(this::class.java)

@@ -1,10 +1,16 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource
 
+import com.github.tomakehurst.wiremock.client.WireMock.aResponse
+import com.github.tomakehurst.wiremock.client.WireMock.post
+import com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor
+import com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.IntegrationTestBase
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.PrisonApiExtension
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualCalculationResponse
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualEntryRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualEntrySelectedDate
@@ -152,6 +158,81 @@ class ManualCalculationIntTest : IntegrationTestBase() {
       .returnResult().responseBody!!
     assertThat(previousCalculationCheck).isEqualTo(true)
   }
+
+  @Test
+  fun `When NOMIS write fails then calculation request is marked as ERROR`() {
+    PrisonApiExtension.prisonApi.stubFor(
+      post(urlPathMatching("/api/offender-dates/.*"))
+        .willReturn(aResponse().withStatus(423)),
+    )
+    val postResponse = webTestClient.post()
+      .uri("/manual-calculation/$PRISONER_ID")
+      .bodyValue(
+        ManualEntryRequest(
+          reasonForCalculationId = 1,
+          otherReasonDescription = "",
+          selectedManualEntryDates = listOf(
+            ManualEntrySelectedDate(
+              ReleaseDateType.CRD,
+              "CRD",
+              SubmittedDate(1, 1, LocalDate.now().year + 1),
+            ),
+          ),
+        ),
+      )
+      .accept(MediaType.APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+      .exchange()
+      .expectStatus().isOk
+      .expectBody(ManualCalculationResponse::class.java)
+      .returnResult().responseBody!!
+
+    PrisonApiExtension.prisonApi.verify(
+      postRequestedFor(urlPathMatching("/api/offender-dates/.*")),
+    )
+
+    webTestClient.get()
+      .uri("/manual-calculation/${postResponse.calculationRequestId}")
+      .accept(MediaType.APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+      .exchange()
+      .expectStatus().isOk
+      .expectBody()
+      .jsonPath("$.calculationStatus").isEqualTo("ERROR")
+  }
+
+  @Test
+  fun `When NOMIS returns 500 then API responds with 502 Bad Gateway`() {
+    PrisonApiExtension.prisonApi.stubFor(
+      post(urlPathMatching("/api/offender-dates/.*"))
+        .willReturn(aResponse().withStatus(500)),
+    )
+
+    webTestClient.post()
+      .uri("/manual-calculation/$PRISONER_ID")
+      .bodyValue(validManualEntryRequest())
+      .accept(MediaType.APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+      .exchange()
+      .expectStatus().isEqualTo(HttpStatus.BAD_GATEWAY)
+      .expectBody()
+      .jsonPath("$.errorCode").isEqualTo("NOMIS_WRITE_FAILED")
+      .jsonPath("$.userMessage").value<String> { msg ->
+        assertThat(msg).contains("Failed to write release dates to NOMIS")
+      }
+  }
+
+  private fun validManualEntryRequest(): ManualEntryRequest = ManualEntryRequest(
+    reasonForCalculationId = 1,
+    otherReasonDescription = "",
+    selectedManualEntryDates = listOf(
+      ManualEntrySelectedDate(
+        dateType = ReleaseDateType.CRD,
+        date = SubmittedDate(1, 1, LocalDate.now().year + 1),
+        dateText = "1/1/2024",
+      ),
+    ),
+  )
 
   companion object {
     private const val PRISONER_ID = "default"

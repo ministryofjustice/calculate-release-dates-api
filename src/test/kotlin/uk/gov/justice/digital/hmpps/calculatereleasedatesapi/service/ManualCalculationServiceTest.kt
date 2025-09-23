@@ -2,18 +2,24 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import io.hypersistence.utils.hibernate.type.json.internal.JacksonUtil
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.mockito.ArgumentMatchers.anyLong
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.atLeastOnce
 import org.mockito.kotlin.doNothing
+import org.mockito.kotlin.doThrow
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.springframework.http.HttpStatus
+import org.springframework.web.client.RestClientResponseException
+import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcome
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationReason
@@ -22,6 +28,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationR
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CrdWebException
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.NomisResourceLockedException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.TestBuildPropertiesConfiguration.Companion.TEST_BUILD_PROPERTIES
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentsSourceData
@@ -61,7 +69,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.Validati
 import java.time.LocalDate
 import java.time.Period
 import java.time.temporal.ChronoUnit
-import java.util.*
+import java.util.Optional
+import java.util.UUID
 
 class ManualCalculationServiceTest {
   private val prisonService = mock<PrisonService>()
@@ -852,6 +861,119 @@ class ManualCalculationServiceTest {
 
     val result = manualCalculationService.equivalentManualCalculationExists(PRISONER_ID)
     assertThat(result).isFalse
+  }
+
+  @Nested
+  inner class NomisErrorMappingTests {
+
+    private val booking = Booking(
+      bookingId = 12345L,
+      offender = Offender(
+        "A1234AJ",
+        dateOfBirth = LocalDate.of(
+          1980,
+          1,
+          1,
+        ),
+      ),
+      sentences = emptyList(),
+    )
+
+    @BeforeEach
+    fun setupBooking() {
+      whenever(
+        calculationSourceDataService.getCalculationSourceData(
+          eq(PRISONER_ID),
+          any<InactiveDataOptions>(),
+          any<List<Long>>(),
+        ),
+      ).thenReturn(FAKE_SOURCE_DATA)
+
+      whenever(
+        bookingService.getBooking(eq(FAKE_SOURCE_DATA), any()),
+      ).thenReturn(this@NomisErrorMappingTests.booking)
+
+      whenever(serviceUserService.getUsername()).thenReturn("user1")
+
+      whenever(
+        validationService.validateSupportedSentencesAndCalculations(any()),
+      ).thenReturn(SupportedValidationResponse(emptyList(), emptyList()))
+
+      whenever(calculationRequestRepository.saveAndFlush(any()))
+        .thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
+    }
+
+    @Test
+    fun `RestClientResponseException with 423 is mapped to NomisResourceLockedException`() {
+      whenever(calculationRequestRepository.findById(any()))
+        .thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES))
+
+      doThrow(
+        RestClientResponseException("locked", 423, "Locked", null, null, null),
+      ).whenever(prisonService).postReleaseDates(
+        any<Long>(),
+        any<UpdateOffenderDates>(),
+      )
+
+      val ex = assertThrows<NomisResourceLockedException> {
+        manualCalculationService.storeManualCalculation(PRISONER_ID, MANUAL_ENTRY)
+      }
+      assertThat(ex.message).contains("NOMIS is locked")
+    }
+
+    @Test
+    fun `RestClientResponseException with 500 is mapped to CrdWebException with BAD_GATEWAY`() {
+      whenever(calculationRequestRepository.findById(any()))
+        .thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES))
+
+      doThrow(
+        RestClientResponseException("error", 500, "Internal Server Error", null, null, null),
+      ).whenever(prisonService).postReleaseDates(
+        any<Long>(),
+        any<UpdateOffenderDates>(),
+      )
+
+      val ex = assertThrows<CrdWebException> {
+        manualCalculationService.storeManualCalculation(PRISONER_ID, MANUAL_ENTRY)
+      }
+      assertThat(ex.status).isEqualTo(HttpStatus.BAD_GATEWAY)
+      assertThat(ex.code).isEqualTo("NOMIS_WRITE_FAILED")
+    }
+
+    @Test
+    fun `WebClientResponseException with 500 is mapped to CrdWebException with BAD_GATEWAY`() {
+      whenever(calculationRequestRepository.findById(any()))
+        .thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES))
+
+      doThrow(
+        WebClientResponseException.create(500, "Internal Error", null, null, null, null),
+      ).whenever(prisonService).postReleaseDates(
+        any<Long>(),
+        any<UpdateOffenderDates>(),
+      )
+
+      val ex = assertThrows<CrdWebException> {
+        manualCalculationService.storeManualCalculation(PRISONER_ID, MANUAL_ENTRY)
+      }
+      assertThat(ex.status).isEqualTo(HttpStatus.BAD_GATEWAY)
+    }
+
+    @Test
+    fun `Unexpected RuntimeException is mapped to CrdWebException with INTERNAL_SERVER_ERROR`() {
+      whenever(calculationRequestRepository.findById(any()))
+        .thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES))
+
+      doThrow(RuntimeException("boom"))
+        .whenever(prisonService).postReleaseDates(
+          any<Long>(),
+          any<UpdateOffenderDates>(),
+        )
+
+      val ex = assertThrows<CrdWebException> {
+        manualCalculationService.storeManualCalculation(PRISONER_ID, MANUAL_ENTRY)
+      }
+      assertThat(ex.status).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
+    }
   }
 
   private companion object {
