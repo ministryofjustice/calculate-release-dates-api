@@ -22,8 +22,6 @@ generic-service:
     ADJUSTMENTS_API_URL: https://adjustments-api-dev.hmpps.service.justice.gov.uk
     MANAGE-OFFENCES_API_URL: https://manage-offences-api-dev.hmpps.service.justice.gov.uk
     USE_ADJUSTMENTS_API: "true"
-    EXTERNAL_MOVEMENTS_SDS_40_FEATURE_TOGGLE: "true"
-    EXTERNAL_MOVEMENTS_ADJUSTMENTS_FEATURE_TOGGLE: "true"
 
   # Switches off the allow list in the DEV env only.
   allowlist: null
