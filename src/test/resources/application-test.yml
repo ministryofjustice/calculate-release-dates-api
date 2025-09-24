@@ -69,6 +69,7 @@ feature-toggles:
   externalMovementsAdjustmentSharing: true
   concurrentConsecutiveSentencesEnabled: true
   historicSled: true
+  validatePostRecallRepealDate: true
 
 hdced4:
   hdc4-commencement-date: 2025-01-01

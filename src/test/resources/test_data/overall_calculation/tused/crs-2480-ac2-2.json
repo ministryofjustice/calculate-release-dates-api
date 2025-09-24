@@ -1,0 +1,29 @@
+{
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
+      {
+        "type": "StandardDeterminate",
+        "offence": {
+          "committedAt": "2025-09-04",
+          "offenceCode": "TH68036"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 6
+          }
+        },
+        "sentencedAt": "2025-09-05",
+        "identifier": "48e79e3f-fb29-461a-bcca-6a033799ee03",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      }
+    ],
+    "adjustments": {}
+  },
+  "featureToggles": {
+    "validatePostRecallRepealDate": true
+  }
+}

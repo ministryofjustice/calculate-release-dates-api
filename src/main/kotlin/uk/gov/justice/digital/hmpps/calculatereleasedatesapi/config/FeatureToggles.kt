@@ -13,6 +13,7 @@ data class FeatureToggles(
   var ftr48ManualJourney: Boolean = false,
   var useERS30Calculation: Boolean = false,
   var validateRevocationDate: Boolean = false,
+  var validatePostRecallRepealDate: Boolean = false,
 ) {
 
   val externalMovementsEnabled: Boolean

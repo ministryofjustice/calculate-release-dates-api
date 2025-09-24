@@ -222,7 +222,7 @@ class SentenceIdentificationService(
         beforeCJAAndLASPO(sentence, releaseDateTypes)
       }
 
-      if (tusedCalculator.doesTopUpSentenceExpiryDateApply(sentence, offender)) {
+      if (tusedCalculator.sentenceIsEligibleForTused(sentence, offender)) {
         releaseDateTypes += TUSED
       }
 
@@ -302,7 +302,7 @@ class SentenceIdentificationService(
       afterCJAAndLASPOorSDSPlus(sentence, releaseDateTypes)
     }
 
-    if (tusedCalculator.doesTopUpSentenceExpiryDateApply(sentence, offender)) {
+    if (tusedCalculator.sentenceIsEligibleForTused(sentence, offender)) {
       releaseDateTypes += TUSED
     }
     if (hdcedCalculator.doesHdcedDateApply(sentence, offender)) {

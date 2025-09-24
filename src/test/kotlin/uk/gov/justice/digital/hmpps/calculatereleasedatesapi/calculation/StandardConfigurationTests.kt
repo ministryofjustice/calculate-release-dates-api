@@ -7,6 +7,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.File
 import java.util.stream.Stream
+import kotlin.test.Test
 
 class StandardConfigurationTests : CalculationExampleTests() {
 
@@ -16,6 +17,12 @@ class StandardConfigurationTests : CalculationExampleTests() {
     example: String,
   ) {
     `Test Example`(example)
+  }
+
+  @Test
+  fun testone() {
+//    `Test Example`("tused/crs-2480-ac2-1")
+    `Test Example`("custom-examples/crs-1322-bug")
   }
 
   @ParameterizedTest
