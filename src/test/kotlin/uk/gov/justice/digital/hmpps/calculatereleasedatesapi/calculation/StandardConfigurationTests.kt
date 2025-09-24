@@ -19,12 +19,6 @@ class StandardConfigurationTests : CalculationExampleTests() {
     `Test Example`(example)
   }
 
-  @Test
-  fun testone() {
-//    `Test Example`("tused/crs-2480-ac2-1")
-    `Test Example`("custom-examples/crs-1322-bug")
-  }
-
   @ParameterizedTest
   @MethodSource(value = ["breakdownTestCaseSource"])
   fun `Test breakdown with standard configuration`(
