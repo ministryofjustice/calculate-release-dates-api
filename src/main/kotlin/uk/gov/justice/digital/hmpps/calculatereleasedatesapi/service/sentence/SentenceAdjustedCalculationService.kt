@@ -28,6 +28,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeter
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ErsedCalculator
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.HdcedCalculator
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.TusedCalculator
+import java.time.LocalDate
 import java.time.temporal.ChronoUnit.DAYS
 import java.time.temporal.ChronoUnit.MONTHS
 import kotlin.collections.set
@@ -242,22 +243,23 @@ class SentenceAdjustedCalculationService(
     ).minusDays(ONE)
   }
 
-  /**
-   * If sentence contains a TUSED AND
-   * the Offender is over 18 on release AND
-   * The license period is one of at least 12 months THEN
-   * calculate TUSED date
-   *
-   * (PSI 03/2015: P53: therefore there is no requirement for a TUSED)
-   */
-  private fun determineTUSED(sentenceCalculation: SentenceCalculation, sentence: CalculableSentence, offender: Offender) {
-    if (
-      sentenceCalculation.numberOfDaysToSentenceExpiryDate - sentenceCalculation.numberOfDaysToDeterminateReleaseDate < YEAR_IN_DAYS &&
-      sentence.releaseDateTypes.contains(TUSED) &&
-      offender.getAgeOnDate(sentence.sentenceCalculation.releaseDateWithoutAwarded) >= 18
-    ) {
-      sentenceCalculation.topUpSupervisionDate = tusedCalculator.calculateTused(sentenceCalculation)
-      sentenceCalculation.breakdownByReleaseDateType[TUSED] = tusedCalculator.getCalculationBreakdown(sentenceCalculation)
+  private fun determineTUSED(
+    sentenceCalculation: SentenceCalculation,
+    sentence: CalculableSentence,
+    offender: Offender,
+  ) {
+    if (!tusedCalculator.sentenceMatchesTusedCriteria(sentence, offender)) {
+      sentenceCalculation.topUpSupervisionDate = null
+      sentenceCalculation.breakdownByReleaseDateType.remove(TUSED)
+      return
+    }
+
+    val tused = tusedCalculator.calculateTused(sentenceCalculation)
+
+    if (tused is LocalDate) {
+      sentenceCalculation.topUpSupervisionDate = tused
+      sentenceCalculation.breakdownByReleaseDateType[TUSED] =
+        tusedCalculator.getCalculationBreakdown(sentenceCalculation)
     } else {
       sentenceCalculation.topUpSupervisionDate = null
       sentenceCalculation.breakdownByReleaseDateType.remove(TUSED)
