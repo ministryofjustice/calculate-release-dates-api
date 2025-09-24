@@ -103,9 +103,9 @@ class UnadjustedReleaseDate(
 
         val ftr56Configuration =
           earlyReleaseConfigurations.configurations.find { it.recallCalculation == RecallCalculationType.FTR_56 }
-        if (ftr56Configuration != null && revocationDate.isAfterOrEqualTo(ftr56Configuration.earliestTranche())) {
-          calculateFixedTermRecall(returnToCustodyDate, recallType)
-        } else if (calculationTrigger.allocatedEarlyReleaseConfiguration != null && calculationTrigger.allocatedEarlyReleaseConfiguration == ftr56Configuration) {
+        val revocationDateAfterFtr56Commencement = ftr56Configuration != null && revocationDate.isAfterOrEqualTo(ftr56Configuration.earliestTranche())
+        val allocatedToFtr56Tranche = calculationTrigger.allocatedEarlyReleaseConfiguration != null && calculationTrigger.allocatedEarlyReleaseConfiguration == ftr56Configuration
+        if (revocationDateAfterFtr56Commencement || allocatedToFtr56Tranche) {
           calculateFixedTermRecall(returnToCustodyDate, recallType)
         } else {
           standardCalculation

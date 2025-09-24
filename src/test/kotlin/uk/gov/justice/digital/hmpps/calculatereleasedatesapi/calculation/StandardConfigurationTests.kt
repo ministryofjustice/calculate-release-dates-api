@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.calculation
 
-import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
@@ -10,11 +9,6 @@ import java.io.File
 import java.util.stream.Stream
 
 class StandardConfigurationTests : CalculationExampleTests() {
-
-  @Test
-  fun blah() {
-    `Test calculation with standard configuration`("/custom-examples/crs-2343")
-  }
 
   @ParameterizedTest
   @MethodSource(value = ["testCases"])
