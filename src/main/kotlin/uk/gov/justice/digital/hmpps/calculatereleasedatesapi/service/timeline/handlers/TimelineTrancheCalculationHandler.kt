@@ -5,7 +5,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseConfigurations
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExternalMovementReason
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.TrancheAllocationService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculator
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineHandleResult
@@ -51,7 +50,7 @@ class TimelineTrancheCalculationHandler(
         sentencesToModifyReleaseDates.forEach {
           if (earlyReleaseConfiguration.releaseMultiplier != null) {
             it.sentenceCalculation.unadjustedReleaseDate.findMultiplierBySentence =
-              multiplierFnForDate(timelineCalculationDate, allocatedTranche!!.date, offender)
+              multiplierFnForDate(timelineCalculationDate, allocatedTranche!!.date)
           } else {
             it.sentenceCalculation.unadjustedReleaseDate.findRecallCalculation =
               findRecallCalculation(timelineCalculationDate, allocatedEarlyRelease)
@@ -76,7 +75,7 @@ class TimelineTrancheCalculationHandler(
     timelineCalculationDate: LocalDate,
     earlyReleaseConfiguration: EarlyReleaseConfiguration,
   ): List<CalculableSentence> = (timelineTrackingData.currentSentenceGroup + timelineTrackingData.licenceSentences).filter { earlyReleaseConfiguration.releaseDateConsidered(it.sentenceCalculation).isAfter(timelineCalculationDate) }
-    .filter { sentence -> sentence.sentenceParts().any { earlyReleaseConfiguration.matchesFilter(it, timelineTrackingData.offender) } }
+    .filter { sentence -> sentence.sentenceParts().any { earlyReleaseConfiguration.matchesFilter(it) } }
 
   fun isPersonConsideredOutOfCustodyAtTrancheCommencement(timelineCalculationDate: LocalDate, earlyReleaseConfiguration: EarlyReleaseConfiguration, timelineTrackingData: TimelineTrackingData): Boolean {
     with(timelineTrackingData) {
@@ -98,5 +97,5 @@ class TimelineTrancheCalculationHandler(
     }
   }
 
-  private fun getPotentialEarlyReleaseSentences(allSentences: List<CalculableSentence>, earlyReleaseConfiguration: EarlyReleaseConfiguration, offender: Offender): List<CalculableSentence> = allSentences.filter { sentence -> sentence.sentenceParts().any { earlyReleaseConfiguration.matchesFilter(it, offender) } }
+  private fun getPotentialEarlyReleaseSentences(allSentences: List<CalculableSentence>, earlyReleaseConfiguration: EarlyReleaseConfiguration): List<CalculableSentence> = allSentences.filter { sentence -> sentence.sentenceParts().any { earlyReleaseConfiguration.matchesFilter(it) } }
 }

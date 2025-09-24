@@ -19,7 +19,8 @@
         "isSDSPlus": true,
         "isSDSPlusEligibleSentenceTypeLengthAndOffence": true,
         "isSDSPlusOffenceInPeriod": true,
-        "hasAnSDSEarlyReleaseExclusion": "VIOLENT"
+        "hasAnSDSEarlyReleaseExclusion": "VIOLENT",
+        "section250": true
       }
     ],
     "adjustments": {}

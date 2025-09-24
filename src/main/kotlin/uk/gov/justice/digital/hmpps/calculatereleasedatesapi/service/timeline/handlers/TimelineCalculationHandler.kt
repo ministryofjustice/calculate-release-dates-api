@@ -8,7 +8,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Senten
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.NoValidReturnToCustodyDateException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.NoValidRevocationDateException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculator
@@ -30,13 +29,11 @@ abstract class TimelineCalculationHandler(
   fun multiplierFnForDate(
     timelineCalculationDate: LocalDate,
     allocatedTrancheDate: LocalDate?,
-    offender: Offender,
   ): (sentence: CalculableSentence) -> Double = { sentence ->
     multiplerForSentence(
       timelineCalculationDate,
       allocatedTrancheDate,
       sentence,
-      offender,
     )
   }
 
@@ -91,14 +88,11 @@ abstract class TimelineCalculationHandler(
   /**
    Historic release point is before SDS40 tranching started
    */
-  fun historicMultiplierFnForDate(
-    offender: Offender,
-  ): (sentence: CalculableSentence) -> Double = { sentence ->
+  fun historicMultiplierFnForDate(): (sentence: CalculableSentence) -> Double = { sentence ->
     multiplerForSentence(
       earlyReleaseConfigurations.configurations.minOf { it.earliestTranche() }.minusDays(1),
       null,
       sentence,
-      offender,
     )
   }
 
@@ -106,18 +100,16 @@ abstract class TimelineCalculationHandler(
     timelineCalculationDate: LocalDate,
     allocatedTrancheDate: LocalDate?,
     sentence: CalculableSentence,
-    offender: Offender,
   ): Double = if (sentence.identificationTrack.isMultiplierFixed()) {
     sentence.identificationTrack.fixedMultiplier()
   } else {
-    sdsReleaseMultiplier(sentence, timelineCalculationDate, allocatedTrancheDate, offender)
+    sdsReleaseMultiplier(sentence, timelineCalculationDate, allocatedTrancheDate)
   }
 
   private fun sdsReleaseMultiplier(
     sentence: CalculableSentence,
     timelineCalculationDate: LocalDate,
     allocatedTrancheDate: LocalDate?,
-    offender: Offender,
   ): Double {
     if (sentence is StandardDeterminateSentence) {
       val latestEarlyReleaseConfig =
@@ -128,11 +120,11 @@ abstract class TimelineCalculationHandler(
       if (latestEarlyReleaseConfig != null) {
         // They are tranched.
         if (allocatedTrancheDate != null) {
-          if (latestEarlyReleaseConfig.matchesFilter(sentence, offender)) {
+          if (latestEarlyReleaseConfig.matchesFilter(sentence)) {
             return getMultiplerForConfiguration(latestEarlyReleaseConfig, timelineCalculationDate, sentence)
           }
         } else if (sentence.sentencedAt.isAfterOrEqualTo(latestEarlyReleaseConfig.earliestTranche())) {
-          if (latestEarlyReleaseConfig.matchesFilter(sentence, offender)) {
+          if (latestEarlyReleaseConfig.matchesFilter(sentence)) {
             return getMultiplerForConfiguration(latestEarlyReleaseConfig, timelineCalculationDate, sentence)
           }
         }

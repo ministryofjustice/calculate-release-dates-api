@@ -271,6 +271,7 @@ fun transform(
         isSDSPlusEligibleSentenceTypeLengthAndOffence = sentence.isSDSPlusEligibleSentenceTypeLengthAndOffence,
         isSDSPlusOffenceInPeriod = sentence.isSDSPlusOffenceInPeriod,
         hasAnSDSEarlyReleaseExclusion = sentence.hasAnSDSEarlyReleaseExclusion,
+        section250 = sentenceCalculationType.sdsPlusEligibilityType === SentenceCalculationType.SDSPlusEligibilityType.SECTION250,
       )
     }
   }
