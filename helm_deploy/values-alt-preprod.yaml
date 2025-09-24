@@ -22,6 +22,7 @@ generic-service:
     MANAGE-OFFENCES_API_URL: https://manage-offences-api-preprod.hmpps.service.justice.gov.uk
     USE_ADJUSTMENTS_API: "true"
     HISTORIC_SLED_ENABLED: "false"
+    VALIDATE_POST_RECALL_REPEAL_DATE: "true"
 
   serviceAccountName: calculate-release-dates-api-preprod
 
