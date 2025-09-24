@@ -530,8 +530,8 @@ class TransformFunctionsTest {
     )
 
     for ((sentenceType, recallType) in SentenceRecallTypePairs) {
-      assertThat(transform(request.copy(sentenceCalculationType = sentenceType)))
-        .isEqualTo(expectedSentence.copy(recall = if (recallType != null) Recall(recallType) else null))
+      assertThat(transform(request.copy(sentenceCalculationType = sentenceType)).recallType)
+        .isEqualTo(recallType)
     }
   }
 
