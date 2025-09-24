@@ -112,7 +112,7 @@ class AdjustmentValidationService {
       return emptyList()
     }
 
-    val latestReleaseDate = nonTermSentences.maxOf { it.sentenceCalculation.releaseDateDefaultedByCommencement(booking.offender) }
+    val latestReleaseDate = nonTermSentences.maxOf { it.sentenceCalculation.releaseDateDefaultedByCommencement() }
     val messages = mutableSetOf<ValidationMessage>()
 
     adjustments.forEach { (type, adjustment) ->

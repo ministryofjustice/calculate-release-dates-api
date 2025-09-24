@@ -15,7 +15,8 @@
             "YEARS": 12
           }
         },
-        "sentencedAt": "2026-09-02"
+        "sentencedAt": "2026-09-02",
+        "section250": true
       }
     ],
     "adjustments": {}

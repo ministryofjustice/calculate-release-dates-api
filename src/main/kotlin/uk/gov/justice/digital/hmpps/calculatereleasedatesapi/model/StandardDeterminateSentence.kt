@@ -23,6 +23,7 @@ data class StandardDeterminateSentence(
   override val isSDSPlusEligibleSentenceTypeLengthAndOffence: Boolean = isSDSPlus,
   override val isSDSPlusOffenceInPeriod: Boolean = isSDSPlus,
   val hasAnSDSEarlyReleaseExclusion: SDSEarlyReleaseExclusionType,
+  val section250: Boolean = false,
 ) : AbstractSentence(offence, sentencedAt, identifier, consecutiveSentenceUUIDs, caseSequence, lineSequence, externalSentenceId, caseReference, recall) {
 
   override fun buildString(): String = "Sentence\t:\t\n" +
