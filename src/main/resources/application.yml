@@ -65,7 +65,7 @@ spring:
     password: ${DB_PASS}
     hikari:
       pool-name: Release-Dates-DB-CP
-      maximum-pool-size: 16
+      maximum-pool-size: 8
       connectionTimeout: 1000
       validationTimeout: 500
 
@@ -163,3 +163,4 @@ feature-toggles:
   ftr48ManualJourney: ${FTR_48_MANUAL_JOURNEY:false}
   useERS30Calculation: ${USE_ERS30_CALCULATION:false}
   validateRevocationDate: ${VALIDATE_REVOCATION_DATE:false}
+  applyPostRecallRepealRules: ${APPLY_POST_RECALL_REPEAL_RULES:false}

@@ -195,7 +195,7 @@ data class SentenceCalculation(
       }
     }
 
-  fun releaseDateDefaultedByCommencement(offender: Offender): LocalDate = if (isDateDefaultedToCommencement(adjustedDeterminateReleaseDate, offender)) {
+  fun releaseDateDefaultedByCommencement(): LocalDate = if (isDateDefaultedToCommencement(adjustedDeterminateReleaseDate)) {
     allocatedTranche!!.date
   } else {
     releaseDate
@@ -213,7 +213,7 @@ data class SentenceCalculation(
   var topUpSupervisionDate: LocalDate? = null
   var isReleaseDateConditional: Boolean = false
 
-  private fun isDateDefaultedToCommencement(releaseDate: LocalDate, offender: Offender): Boolean = !sentence.isRecall() && allocatedTranche != null && allocatedEarlyRelease != null && sentence.sentenceParts().any { allocatedEarlyRelease!!.matchesFilter(it, offender) } && releaseDate.isBefore(allocatedTranche!!.date)
+  private fun isDateDefaultedToCommencement(releaseDate: LocalDate): Boolean = !sentence.isRecall() && allocatedTranche != null && allocatedEarlyRelease != null && sentence.sentenceParts().any { allocatedEarlyRelease!!.matchesFilter(it) } && releaseDate.isBefore(allocatedTranche!!.date)
 
   fun buildString(releaseDateTypes: List<ReleaseDateType>): String {
     val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
