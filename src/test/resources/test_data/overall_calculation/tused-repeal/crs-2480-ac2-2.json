@@ -24,6 +24,6 @@
     "adjustments": {}
   },
   "featureToggles": {
-    "validatePostRecallRepealDate": true
+    "applyPostRecallRepealRules": true
   }
 }

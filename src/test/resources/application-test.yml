@@ -62,14 +62,12 @@ domain-events-sns:
   provider: localstack
 
 feature-toggles:
-  sds-early-release: true
   support-inactive-sentences-and-adjustments: false
-  hdc365: true
   externalMovementsSds40: true
   externalMovementsAdjustmentSharing: true
   concurrentConsecutiveSentencesEnabled: true
   historicSled: true
-  validatePostRecallRepealDate: true
+  applyPostRecallRepealRules: true
 
 hdced4:
   hdc4-commencement-date: 2025-01-01

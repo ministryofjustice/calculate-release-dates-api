@@ -19,7 +19,7 @@ import java.time.temporal.ChronoUnit
 @Service
 class TusedCalculator(private val featureToggles: FeatureToggles) {
   fun sentenceIsEligibleForTused(sentence: CalculableSentence, offender: Offender): Boolean {
-    if (featureToggles.validatePostRecallRepealDate &&
+    if (featureToggles.applyPostRecallRepealRules &&
       sentence.sentenceParts()
         .any { it.sentencedAt.isAfterOrEqualTo(POST_SUPERVISION_REPEAL_DATE) }
     ) {
@@ -71,7 +71,7 @@ class TusedCalculator(private val featureToggles: FeatureToggles) {
 
   fun calculateTused(sentenceCalculation: SentenceCalculation): LocalDate? {
     val tused = getInitialTused(sentenceCalculation)
-    return if (featureToggles.validatePostRecallRepealDate) {
+    return if (featureToggles.applyPostRecallRepealRules) {
       amendTusedInlineWithPostSupervisionRepeal(
         sentenceCalculation,
         tused,

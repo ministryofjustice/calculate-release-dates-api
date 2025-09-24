@@ -24,7 +24,7 @@ import java.time.temporal.ChronoUnit.YEARS
 
 @ExtendWith(MockitoExtension::class)
 class SentenceIdentificationServiceTest {
-  private val tusedCalculator = TusedCalculator(FeatureToggles(validatePostRecallRepealDate = false))
+  private val tusedCalculator = TusedCalculator(FeatureToggles(applyPostRecallRepealRules = false))
   private val hdcedCalculator = HdcedCalculator(hdcedConfigurationForTests())
   private val sentenceIdentificationService: SentenceIdentificationService =
     SentenceIdentificationService(tusedCalculator, hdcedCalculator)
