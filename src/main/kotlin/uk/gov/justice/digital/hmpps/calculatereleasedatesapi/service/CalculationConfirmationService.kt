@@ -51,7 +51,6 @@ class CalculationConfirmationService(
     booking: Booking,
     calculation: CalculatedReleaseDates,
     approvedDates: List<ManuallyEnteredDate>?,
-    isSpecialistSupport: Boolean? = false,
   ) {
     val calculationRequest = calculationRequestRepository.findById(calculation.calculationRequestId)
       .orElseThrow { EntityNotFoundException("No calculation request exists") }
@@ -62,7 +61,7 @@ class CalculationConfirmationService(
       keyDates = transform(calculation, approvedDates),
       noDates = false,
       reason = calculationRequest.reasonForCalculation?.nomisReason,
-      comment = nomisCommentService.getNomisComment(calculationRequest, isSpecialistSupport!!, approvedDates),
+      comment = nomisCommentService.getNomisComment(calculationRequest, approvedDates),
     )
     try {
       prisonService.postReleaseDates(booking.bookingId, updateOffenderDates)
