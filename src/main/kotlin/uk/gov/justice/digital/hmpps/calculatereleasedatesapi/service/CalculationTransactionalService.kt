@@ -34,7 +34,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationFr
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationRequestModel
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualEntrySelectedDate
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManuallyEnteredDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmitCalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SupportedValidationResponse
@@ -283,7 +283,7 @@ class CalculationTransactionalService(
     sourceData: CalculationSourceData,
     booking: Booking,
     userInput: CalculationUserInputs,
-    approvedDates: List<ManualEntrySelectedDate>?,
+    approvedDates: List<ManuallyEnteredDate>?,
     isSpecialistSupport: Boolean? = false,
     reasonForCalculation: CalculationReason?,
     otherReasonForCalculation: String?,

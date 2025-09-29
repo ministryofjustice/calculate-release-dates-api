@@ -3,7 +3,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualEntrySelectedDate
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManuallyEnteredDate
 import java.time.LocalDate
 
 @Service
@@ -12,7 +12,7 @@ class NomisCommentService {
   fun getNomisComment(
     calculationRequest: CalculationRequest,
     isSpecialistSupport: Boolean,
-    approvedDates: List<ManualEntrySelectedDate>?,
+    approvedDates: List<ManuallyEnteredDate>?,
   ): String {
     val comment = if (isSpecialistSupport) {
       SPECIALIST_SUPPORT_COMMENT

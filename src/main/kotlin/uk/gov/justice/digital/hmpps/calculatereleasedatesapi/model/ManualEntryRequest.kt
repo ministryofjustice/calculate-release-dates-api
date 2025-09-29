@@ -1,7 +1,7 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 
 data class ManualEntryRequest(
-  val selectedManualEntryDates: List<ManualEntrySelectedDate>,
+  val selectedManualEntryDates: List<ManuallyEnteredDate>,
   val reasonForCalculationId: Long,
   val otherReasonDescription: String?,
 )
