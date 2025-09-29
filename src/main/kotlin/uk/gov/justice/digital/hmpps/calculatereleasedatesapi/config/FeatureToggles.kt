@@ -12,7 +12,7 @@ data class FeatureToggles(
   var historicSled: Boolean = false,
   var ftr48ManualJourney: Boolean = false,
   var useERS30Calculation: Boolean = false,
-  var validateRevocationDate: Boolean = false,
+  var extraReturnToCustodyValidation: Boolean = false,
   var applyPostRecallRepealRules: Boolean = false,
 ) {
 
