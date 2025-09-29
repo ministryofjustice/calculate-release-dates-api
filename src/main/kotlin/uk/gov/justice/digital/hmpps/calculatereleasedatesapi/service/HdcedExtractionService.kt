@@ -69,7 +69,7 @@ class HdcedExtractionService(
           it.sentenceCalculation.releaseDate.isAfter(calculatedHDCED) &&
           !it.isDto()
       }
-    val containsOnlyImmediateRelease = otherNonSentencesInGroup.all { it.sentenceCalculation.isImmediateRelease() }
+    val containsOnlyImmediateRelease = otherNonSentencesInGroup.all { it.sentenceCalculation.isImmediateRelease() && !it.isRecall() }
 
     val nextApplicableSentence =
       extractionService.mostRecentSentenceOrNull(
