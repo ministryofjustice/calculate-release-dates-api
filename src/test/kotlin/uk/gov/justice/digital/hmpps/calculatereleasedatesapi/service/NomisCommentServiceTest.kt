@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualEntrySelectedDate
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManuallyEnteredDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmittedDate
 import java.time.LocalDate
 import java.util.UUID
@@ -33,7 +33,7 @@ class NomisCommentServiceTest {
       nomisCommentService.getNomisComment(
         CALCULATION_REQUEST,
         isSpecialistSupport = false,
-        approvedDates = listOf(ManualEntrySelectedDate(ReleaseDateType.CRD, "text", SubmittedDate(1, 1, 2023))),
+        approvedDates = listOf(ManuallyEnteredDate(ReleaseDateType.CRD, SubmittedDate(1, 1, 2023))),
       ),
       "If the calculation had manually entered dates this is captured in the NOMIS comment",
     )

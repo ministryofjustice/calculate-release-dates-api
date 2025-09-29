@@ -89,7 +89,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExternalMovem
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExternalSentenceId
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.GenuineOverrideResponse
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.HistoricalTusedData
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualEntrySelectedDate
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManuallyEnteredDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Recall
@@ -622,9 +622,8 @@ fun transform(
   )
 }
 
-fun transform(calculation: CalculatedReleaseDates, approvedDates: List<ManualEntrySelectedDate>?): OffenderKeyDates {
-  val groupedApprovedDates =
-    approvedDates?.map { it.dateType to LocalDate.of(it.date!!.year, it.date.month, it.date.day) }?.toMap()
+fun transform(calculation: CalculatedReleaseDates, approvedDates: List<ManuallyEnteredDate>?): OffenderKeyDates {
+  val groupedApprovedDates = approvedDates?.associate { it.dateType to it.date!!.toLocalDate() }
   val hdcad = groupedApprovedDates?.get(HDCAD) ?: calculation.dates[HDCAD]
   val rotl = groupedApprovedDates?.get(ROTL) ?: calculation.dates[ROTL]
   val apd = groupedApprovedDates?.get(APD) ?: calculation.dates[APD]
@@ -691,24 +690,17 @@ fun transform(fixedTermRecallDetails: FixedTermRecallDetails): ReturnToCustodyDa
 
 fun transform(
   calculationRequest: CalculationRequest,
-  manualEntrySelectedDate: ManualEntrySelectedDate,
+  manuallyEnteredDate: ManuallyEnteredDate,
 ): CalculationOutcome {
-  if (manualEntrySelectedDate.date != null) {
-    val date = manualEntrySelectedDate.date.year.let {
-      LocalDate.of(
-        it,
-        manualEntrySelectedDate.date.month,
-        manualEntrySelectedDate.date.day,
-      )
-    }
+  if (manuallyEnteredDate.date != null) {
     return CalculationOutcome(
-      calculationDateType = manualEntrySelectedDate.dateType.name,
-      outcomeDate = date,
+      calculationDateType = manuallyEnteredDate.dateType.name,
+      outcomeDate = manuallyEnteredDate.date.toLocalDate(),
       calculationRequestId = calculationRequest.id,
     )
   }
   return CalculationOutcome(
-    calculationDateType = manualEntrySelectedDate.dateType.name,
+    calculationDateType = manuallyEnteredDate.dateType.name,
     outcomeDate = null,
     calculationRequestId = calculationRequest.id,
   )

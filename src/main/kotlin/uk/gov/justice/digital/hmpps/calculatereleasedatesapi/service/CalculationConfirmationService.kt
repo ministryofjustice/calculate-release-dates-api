@@ -8,7 +8,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ApprovedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CalculationNotFoundException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualEntrySelectedDate
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManuallyEnteredDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.UpdateOffenderDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ApprovedDatesSubmissionRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
@@ -24,7 +24,7 @@ class CalculationConfirmationService(
   private val approvedDatesSubmissionRepository: ApprovedDatesSubmissionRepository,
 ) {
   @Transactional
-  fun storeApprovedDates(calculation: CalculatedReleaseDates, approvedDates: List<ManualEntrySelectedDate>) {
+  fun storeApprovedDates(calculation: CalculatedReleaseDates, approvedDates: List<ManuallyEnteredDate>) {
     val foundCalculation = calculationRequestRepository.findById(calculation.calculationRequestId)
     foundCalculation.map {
       val submittedDatesToSave = approvedDates.map { approvedDate ->
@@ -50,7 +50,7 @@ class CalculationConfirmationService(
     prisonerId: String,
     booking: Booking,
     calculation: CalculatedReleaseDates,
-    approvedDates: List<ManualEntrySelectedDate>?,
+    approvedDates: List<ManuallyEnteredDate>?,
     isSpecialistSupport: Boolean? = false,
   ) {
     val calculationRequest = calculationRequestRepository.findById(calculation.calculationRequestId)

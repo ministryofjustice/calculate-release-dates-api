@@ -41,7 +41,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationRe
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResults
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationSentenceUserInput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualEntrySelectedDate
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManuallyEnteredDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RelevantRemand
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RelevantRemandCalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RelevantRemandCalculationResult
@@ -266,7 +266,7 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
     val resultCalculation = createPreliminaryCalculation(PRISONER_ID)
     val calc = createConfirmCalculationForPrisoner(
       resultCalculation.calculationRequestId,
-      listOf(ManualEntrySelectedDate(APD, "APD", SubmittedDate(3, 3, 2023))),
+      listOf(ManuallyEnteredDate(APD, SubmittedDate(3, 3, 2023))),
     )
     assertThat(calc).isNotNull
     val result = webTestClient.get()

@@ -28,7 +28,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOu
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualEntryRequest
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualEntrySelectedDate
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManuallyEnteredDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NormalisedSentenceAndOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
@@ -122,9 +122,8 @@ class ManualCalculationServiceTest {
         BOOKING,
         ManualEntryRequest(
           listOf(
-            ManualEntrySelectedDate(
+            ManuallyEnteredDate(
               ReleaseDateType.LED,
-              "None",
               SubmittedDate(1, 1, 2026),
             ),
           ),
@@ -427,7 +426,7 @@ class ManualCalculationServiceTest {
         listOf(),
       ),
     )
-    val manualCalcRequest = ManualEntrySelectedDate(ReleaseDateType.None, "None of the dates apply", null)
+    val manualCalcRequest = ManuallyEnteredDate(ReleaseDateType.None, null)
     val manualEntryRequest = ManualEntryRequest(listOf(manualCalcRequest), 1L, "")
     manualCalculationService.storeManualCalculation(PRISONER_ID, manualEntryRequest)
     val expectedUpdatedOffenderDates = UpdateOffenderDates(
@@ -463,9 +462,8 @@ class ManualCalculationServiceTest {
       ),
     )
 
-    val manualCalcRequest = ManualEntrySelectedDate(
+    val manualCalcRequest = ManuallyEnteredDate(
       ReleaseDateType.CRD,
-      "CRD also known as the Conditional Release Date",
       SubmittedDate(3, 3, 2023),
     )
     val manualEntryRequest = ManualEntryRequest(listOf(manualCalcRequest), 1L, "")
@@ -498,9 +496,8 @@ class ManualCalculationServiceTest {
     whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
     whenever(nomisCommentService.getManualNomisComment(any(), any(), any())).thenReturn("The NOMIS Reason")
 
-    val manualCalcRequest = ManualEntrySelectedDate(
+    val manualCalcRequest = ManuallyEnteredDate(
       ReleaseDateType.CRD,
-      "CRD also known as the Conditional Release Date",
       SubmittedDate(3, 3, 2023),
     )
     val manualEntryRequest = ManualEntryRequest(listOf(manualCalcRequest), 1L, "")
@@ -551,9 +548,8 @@ class ManualCalculationServiceTest {
       ),
     )
 
-    val manualCalcRequest = ManualEntrySelectedDate(
+    val manualCalcRequest = ManuallyEnteredDate(
       ReleaseDateType.CRD,
-      "CRD also known as the Conditional Release Date",
       SubmittedDate(3, 3, 2023),
     )
     val manualEntryRequest = ManualEntryRequest(listOf(manualCalcRequest), 1L, "")
@@ -591,9 +587,8 @@ class ManualCalculationServiceTest {
         any(),
       ),
     ).thenThrow(NullPointerException("An error was thrown"))
-    val manualCalcRequest = ManualEntrySelectedDate(
+    val manualCalcRequest = ManuallyEnteredDate(
       ReleaseDateType.CRD,
-      "CRD also known as the Conditional Release Date",
       SubmittedDate(3, 3, 2023),
     )
     val manualEntryRequest = ManualEntryRequest(listOf(manualCalcRequest), 1L, "")
@@ -624,9 +619,8 @@ class ManualCalculationServiceTest {
     whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
     whenever(nomisCommentService.getManualNomisComment(any(), any(), any())).thenReturn("The NOMIS Reason")
 
-    val manualCalcRequest = ManualEntrySelectedDate(
+    val manualCalcRequest = ManuallyEnteredDate(
       ReleaseDateType.CRD,
-      "CRD also known as the Conditional Release Date",
       SubmittedDate(3, 3, 2023),
     )
     val manualEntryRequest = ManualEntryRequest(listOf(manualCalcRequest), 1L, "")
@@ -661,9 +655,8 @@ class ManualCalculationServiceTest {
       ),
     )
 
-    val manualCalcRequest = ManualEntrySelectedDate(
+    val manualCalcRequest = ManuallyEnteredDate(
       ReleaseDateType.CRD,
-      "CRD also known as the Conditional Release Date",
       SubmittedDate(3, 3, 2023),
     )
     val manualEntryRequest = ManualEntryRequest(listOf(manualCalcRequest), 1L, "")
@@ -710,9 +703,8 @@ class ManualCalculationServiceTest {
       ),
     )
 
-    val manualCalcRequest = ManualEntrySelectedDate(
+    val manualCalcRequest = ManuallyEnteredDate(
       ReleaseDateType.CRD,
-      "CRD also known as the Conditional Release Date",
       SubmittedDate(3, 3, 2023),
     )
     val manualEntryRequest = ManualEntryRequest(listOf(manualCalcRequest), 1L, "")
@@ -910,9 +902,8 @@ class ManualCalculationServiceTest {
     private val BOOKING = Booking(OFFENDER, listOf(StandardSENTENCE), Adjustments(), null, null, BOOKING_ID)
     private val MANUAL_ENTRY = ManualEntryRequest(
       listOf(
-        ManualEntrySelectedDate(
+        ManuallyEnteredDate(
           ReleaseDateType.SED,
-          "None",
           SubmittedDate(1, 1, 2026),
         ),
       ),

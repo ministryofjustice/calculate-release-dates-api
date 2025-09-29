@@ -12,7 +12,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.GenuineOverri
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.GenuineOverrideRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.GenuineOverrideResponse
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualEntryRequest
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualEntrySelectedDate
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManuallyEnteredDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmittedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.GenuineOverrideRepository
 import java.util.UUID
@@ -117,7 +117,7 @@ class SpecialistSupportIntTest : IntegrationTestBase() {
         originalCalculationReference = preliminaryCalculation.calculationReference.toString(),
         manualEntryRequest = ManualEntryRequest(
           listOf(
-            ManualEntrySelectedDate(ReleaseDateType.APD, "text", SubmittedDate(day = 1, month = 2, year = 2023)),
+            ManuallyEnteredDate(ReleaseDateType.APD, SubmittedDate(day = 1, month = 2, year = 2023)),
           ),
           1L,
           "",
