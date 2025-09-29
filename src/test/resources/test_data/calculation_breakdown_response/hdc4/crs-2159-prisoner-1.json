@@ -150,19 +150,13 @@
     },
     "HDCED": {
       "rules": [
-        "HDCED_GE_MIN_PERIOD_LT_MIDPOINT",
-        "HDC_180",
+        "HDCED_ADJUSTED_TO_CONCURRENT_PRRD",
         "SDS_EARLY_RELEASE_APPLIES"
       ],
-      "rulesWithExtraAdjustments": {
-        "HDCED_GE_MIN_PERIOD_LT_MIDPOINT": {
-          "adjustmentValue": 28,
-          "type": "DAYS"
-        }
-      },
-      "adjustedDays": -1,
-      "releaseDate": "2024-10-15",
-      "unadjustedDate": "2024-09-18"
+      "rulesWithExtraAdjustments": {},
+      "adjustedDays": -213,
+      "releaseDate": "2025-05-16",
+      "unadjustedDate": "2024-10-15"
     }
   },
   "otherDates": {
