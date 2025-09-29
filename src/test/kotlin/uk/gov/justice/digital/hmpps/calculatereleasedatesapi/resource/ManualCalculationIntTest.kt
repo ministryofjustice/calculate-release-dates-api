@@ -7,7 +7,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualCalculationResponse
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualEntryRequest
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualEntrySelectedDate
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManuallyEnteredDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmittedDate
 import java.time.LocalDate
 
@@ -32,7 +32,7 @@ class ManualCalculationIntTest : IntegrationTestBase() {
   fun `Storing a no dates manual entry is successful`() {
     val response = webTestClient.post()
       .uri("/manual-calculation/$PRISONER_ID")
-      .bodyValue(ManualEntryRequest(listOf(ManualEntrySelectedDate(ReleaseDateType.None, "None", null)), 1L, ""))
+      .bodyValue(ManualEntryRequest(listOf(ManuallyEnteredDate(ReleaseDateType.None, null)), 1L, ""))
       .accept(MediaType.APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
       .exchange()
@@ -50,9 +50,8 @@ class ManualCalculationIntTest : IntegrationTestBase() {
       .bodyValue(
         ManualEntryRequest(
           listOf(
-            ManualEntrySelectedDate(
+            ManuallyEnteredDate(
               ReleaseDateType.CRD,
-              "CRD",
               SubmittedDate(1, 1, LocalDate.now().year + 1),
             ),
           ),
@@ -77,9 +76,8 @@ class ManualCalculationIntTest : IntegrationTestBase() {
       .bodyValue(
         ManualEntryRequest(
           listOf(
-            ManualEntrySelectedDate(
+            ManuallyEnteredDate(
               ReleaseDateType.CRD,
-              "CRD",
               SubmittedDate(1, 1, LocalDate.now().year + 1),
             ),
           ),
@@ -120,9 +118,8 @@ class ManualCalculationIntTest : IntegrationTestBase() {
           reasonForCalculationId = 1,
           otherReasonDescription = "",
           selectedManualEntryDates = listOf(
-            ManualEntrySelectedDate(
+            ManuallyEnteredDate(
               ReleaseDateType.PED,
-              "PED",
               SubmittedDate(
                 day = 1,
                 month = 1,

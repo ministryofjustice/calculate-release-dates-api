@@ -56,7 +56,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationRe
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExternalSentenceId
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualEntrySelectedDate
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManuallyEnteredDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
@@ -455,9 +455,9 @@ class CalculationTransactionalServiceTest {
       SubmitCalculationRequest(
         calculationFragments = CalculationFragments(""),
         approvedDates = listOf(
-          ManualEntrySelectedDate(ROTL, "rotl text", SubmittedDate(1, 1, 2020)),
-          ManualEntrySelectedDate(APD, "apd text", SubmittedDate(1, 2, 2020)),
-          ManualEntrySelectedDate(HDCAD, "hdcad text", SubmittedDate(1, 3, 2020)),
+          ManuallyEnteredDate(ROTL, SubmittedDate(1, 1, 2020)),
+          ManuallyEnteredDate(APD, SubmittedDate(1, 2, 2020)),
+          ManuallyEnteredDate(HDCAD, SubmittedDate(1, 3, 2020)),
         ),
       ),
     )
@@ -562,9 +562,9 @@ class CalculationTransactionalServiceTest {
       SubmitCalculationRequest(
         calculationFragments = CalculationFragments(""),
         approvedDates = listOf(
-          ManualEntrySelectedDate(ROTL, "rotl text", SubmittedDate(1, 1, 2020)),
-          ManualEntrySelectedDate(APD, "apd text", SubmittedDate(1, 2, 2020)),
-          ManualEntrySelectedDate(HDCAD, "hdcad text", SubmittedDate(1, 3, 2020)),
+          ManuallyEnteredDate(ROTL, SubmittedDate(1, 1, 2020)),
+          ManuallyEnteredDate(APD, SubmittedDate(1, 2, 2020)),
+          ManuallyEnteredDate(HDCAD, SubmittedDate(1, 3, 2020)),
         ),
       ),
     )
@@ -609,9 +609,9 @@ class CalculationTransactionalServiceTest {
       SubmitCalculationRequest(
         calculationFragments = CalculationFragments(""),
         approvedDates = listOf(
-          ManualEntrySelectedDate(ROTL, "rotl text", SubmittedDate(1, 1, 2020)),
-          ManualEntrySelectedDate(APD, "apd text", SubmittedDate(1, 2, 2020)),
-          ManualEntrySelectedDate(HDCAD, "hdcad text", SubmittedDate(1, 3, 2020)),
+          ManuallyEnteredDate(ROTL, SubmittedDate(1, 1, 2020)),
+          ManuallyEnteredDate(APD, SubmittedDate(1, 2, 2020)),
+          ManuallyEnteredDate(HDCAD, SubmittedDate(1, 3, 2020)),
         ),
       ),
     )
@@ -650,9 +650,9 @@ class CalculationTransactionalServiceTest {
         effectiveSentenceLength = Period.of(6, 2, 3),
       ),
       listOf(
-        ManualEntrySelectedDate(ROTL, "rotl text", SubmittedDate(1, 1, 2020)),
-        ManualEntrySelectedDate(APD, "apd text", SubmittedDate(1, 2, 2020)),
-        ManualEntrySelectedDate(HDCAD, "hdcad text", SubmittedDate(1, 3, 2020)),
+        ManuallyEnteredDate(ROTL, SubmittedDate(1, 1, 2020)),
+        ManuallyEnteredDate(APD, SubmittedDate(1, 2, 2020)),
+        ManuallyEnteredDate(HDCAD, SubmittedDate(1, 3, 2020)),
       ),
     )
     doNothing().`when`(prisonService).postReleaseDates(any(), any())

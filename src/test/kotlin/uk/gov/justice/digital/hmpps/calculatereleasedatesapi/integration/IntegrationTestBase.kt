@@ -25,7 +25,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedRel
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationFragments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationRequestModel
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualEntrySelectedDate
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManuallyEnteredDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecordARecallResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmitCalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSentenceAndOffences
@@ -100,7 +100,7 @@ open class IntegrationTestBase internal constructor() {
 
   protected fun createConfirmCalculationForPrisoner(
     calculationRequestId: Long,
-    approvedDates: List<ManualEntrySelectedDate>,
+    approvedDates: List<ManuallyEnteredDate>,
   ): CalculatedReleaseDates = webTestClient.post()
     .uri("/calculation/confirm/$calculationRequestId")
     .accept(MediaType.APPLICATION_JSON)
