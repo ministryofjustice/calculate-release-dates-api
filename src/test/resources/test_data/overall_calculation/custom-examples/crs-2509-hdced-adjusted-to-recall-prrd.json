@@ -1,0 +1,72 @@
+{
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
+      {
+        "offence": {
+          "committedAt": "2021-06-26",
+          "offenceCode": "TH68023"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 43
+          }
+        },
+        "sentencedAt": "2025-05-16",
+        "recall": {
+          "recallType": "STANDARD_RECALL",
+          "revocationDate": "2025-06-13"
+        }
+      },
+      {
+        "offence": {
+          "committedAt": "2025-06-11",
+          "offenceCode": "TH68037"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 3
+          }
+        },
+        "sentencedAt": "2025-07-22"
+      },
+      {
+        "offence": {
+          "committedAt": "2025-06-02",
+          "offenceCode": "TH68037"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 2
+          }
+        },
+        "sentencedAt": "2025-07-22"
+      }
+    ],
+    "adjustments": {
+      "RECALL_REMAND": [
+        {
+          "appliesToSentencesFrom": "2025-05-16",
+          "numberOfDays": 853,
+          "fromDate": "2023-01-14",
+          "toDate": "2025-05-15"
+        }
+      ]
+    },
+    "externalMovements": [
+      {
+        "movementDate": "2025-05-16",
+        "movementReason": "CRD",
+        "direction": "OUT"
+      },
+      {
+        "movementDate": "2025-06-13",
+        "movementReason": "REMAND",
+        "direction": "IN"
+      }
+    ]
+  }
+}
