@@ -18,21 +18,14 @@ class NomisCommentServiceTest {
   fun `Tests for comments produced on the regular route`() {
     assertEquals(
       "{NOMIS_COMMENT} using the Calculate Release Dates service. The calculation ID is: The calculation ID is: 219db65e-d7b7-4c70-9239-98babff7bcd5",
-      nomisCommentService.getNomisComment(CALCULATION_REQUEST, isSpecialistSupport = false, approvedDates = null),
+      nomisCommentService.getNomisComment(CALCULATION_REQUEST, approvedDates = null),
       "If the default comment is selected the reason is captured in the NOMIS comment",
-    )
-
-    assertEquals(
-      "{NOMIS_COMMENT} using the Calculate release dates service by Specialist Support. The calculation ID is: 219db65e-d7b7-4c70-9239-98babff7bcd5",
-      nomisCommentService.getNomisComment(CALCULATION_REQUEST, isSpecialistSupport = true, approvedDates = null),
-      "If the calculation was created by specialist support this is captured in the NOMIS comment",
     )
 
     assertEquals(
       "{NOMIS_COMMENT} using the Calculate Release Dates service with manually entered dates. The calculation ID is: 219db65e-d7b7-4c70-9239-98babff7bcd5",
       nomisCommentService.getNomisComment(
         CALCULATION_REQUEST,
-        isSpecialistSupport = false,
         approvedDates = listOf(ManuallyEnteredDate(ReleaseDateType.CRD, SubmittedDate(1, 1, 2023))),
       ),
       "If the calculation had manually entered dates this is captured in the NOMIS comment",
@@ -42,21 +35,6 @@ class NomisCommentServiceTest {
   @Test
   fun `If the other reason flag is set it is handled correctly`() {
     assertEquals(
-      "{Other} using the Calculate release dates service by Specialist Support. The calculation ID is: 219db65e-d7b7-4c70-9239-98babff7bcd5",
-      nomisCommentService.getNomisComment(
-        CALCULATION_REQUEST.copy(
-          reasonForCalculation = CALCULATION_REASON.copy(
-            isOther = true,
-            displayName = "Other",
-            nomisComment = "Other",
-          ),
-        ),
-        isSpecialistSupport = true,
-        approvedDates = null,
-      ),
-      "If the calculation was created by specialist support this is captured in the NOMIS comment",
-    )
-    assertEquals(
       "Calculated using the Calculate Release Dates service. The calculation ID is: 219db65e-d7b7-4c70-9239-98babff7bcd5",
       nomisCommentService.getNomisComment(
         CALCULATION_REQUEST.copy(
@@ -64,7 +42,6 @@ class NomisCommentServiceTest {
             isOther = true,
           ),
         ),
-        isSpecialistSupport = false,
         approvedDates = null,
       ),
       "If the calculation is not created by specialist support the comment is correct.",

@@ -23,6 +23,7 @@ import org.hibernate.Hibernate
 import org.hibernate.annotations.BatchSize
 import org.hibernate.annotations.Type
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.HistoricalTusedSource
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.GenuineOverrideReason
 import java.time.LocalDateTime
 import java.util.UUID
 
@@ -137,6 +138,15 @@ data class CalculationRequest(
   var manualCalculationReason: List<CalculationRequestManualReason>? = null,
 
   val version: String = "1",
+
+  val overriddenByCalculationRequestId: Long? = null,
+
+  val overridesCalculationRequestId: Long? = null,
+
+  val genuineOverrideReason: GenuineOverrideReason? = null,
+
+  val genuineOverrideReasonFurtherDetail: String? = null,
+
 ) {
   init {
     calculationRequestUserInput?.calculationRequest = this

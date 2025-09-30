@@ -1,67 +1,139 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import jakarta.persistence.EntityNotFoundException
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
+import org.springframework.boot.info.BuildProperties
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.GenuineOverride
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CalculationNotFoundException
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CouldNotSaveGenuineOverrideException
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.GenuineOverrideNotFoundException
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.GenuineOverrideDateRequest
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.GenuineOverrideDateResponse
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcome
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.PRELIMINARY
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CouldNotSaveManualEntryException
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.GenuineOverrideCreatedResponse
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.GenuineOverrideRequest
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.GenuineOverrideResponse
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.GenuineOverrideRepository
-import java.util.UUID
+import java.time.Period.ZERO
 
 @Service
 class GenuineOverrideService(
-  val genuineOverrideRepository: GenuineOverrideRepository,
-  val calculationRequestRepository: CalculationRequestRepository,
-  val manualCalculationService: ManualCalculationService,
+  private val calculationRequestRepository: CalculationRequestRepository,
+  private val manualCalculationService: ManualCalculationService,
+  private val serviceUserService: ServiceUserService,
+  private val bookingService: BookingService,
+  private val calculationSourceDataService: CalculationSourceDataService,
+  private val calculationOutcomeRepository: CalculationOutcomeRepository,
+  private val buildProperties: BuildProperties,
+  private val objectMapper: ObjectMapper,
 ) {
 
-  fun createGenuineOverride(genuineOverrideRequest: GenuineOverrideRequest): GenuineOverrideResponse {
-    val originalCalculation = calculationRequestRepository.findByCalculationReference(UUID.fromString(genuineOverrideRequest.originalCalculationRequest))
-    val savedCalc = try {
-      calculationRequestRepository.findByCalculationReference(UUID.fromString(genuineOverrideRequest.savedCalculation)).get()
-    } catch (ex: NullPointerException) {
-      null
-    }
-    return originalCalculation.map {
-      val genuineOverride = GenuineOverride(
-        reason = genuineOverrideRequest.reason,
-        originalCalculationRequest = it,
-        isOverridden = genuineOverrideRequest.isOverridden,
-        savedCalculation = savedCalc,
-      )
-      val savedGenuineOverride = genuineOverrideRepository.save(genuineOverride)
-      transform(savedGenuineOverride)
-    }.orElseThrow { CalculationNotFoundException("Could not find original calculation with reference ${genuineOverrideRequest.originalCalculationRequest}") }
-  }
-
   @Transactional
-  fun storeGenuineOverrideDates(genuineOverrideRequest: GenuineOverrideDateRequest): GenuineOverrideDateResponse {
-    val originalCalculation = calculationRequestRepository.findByCalculationReference(UUID.fromString(genuineOverrideRequest.originalCalculationReference))
-    return originalCalculation.map { it ->
-      val storeManualCalculation = manualCalculationService.storeManualCalculation(it.prisonerId, genuineOverrideRequest.manualEntryRequest, GENUINE_OVERRIDE)
-      val overridesForCalculation = genuineOverrideRepository.findAllByOriginalCalculationRequestCalculationReferenceOrderBySavedAtDesc(UUID.fromString(genuineOverrideRequest.originalCalculationReference))
-      if (overridesForCalculation.isNotEmpty()) {
-        return@map calculationRequestRepository.findById(storeManualCalculation.calculationRequestId).map {
-          val mostRecentOverrideRequest = overridesForCalculation[0]
-          mostRecentOverrideRequest.savedCalculation = it
-          GenuineOverrideDateResponse(it.calculationReference.toString(), genuineOverrideRequest.originalCalculationReference)
-        }.orElseThrow { CouldNotSaveGenuineOverrideException("Could not find new calculation to store against Genuine Override") }
-      } else {
-        throw CouldNotSaveGenuineOverrideException("No overrides existed for the original calculation reference ${genuineOverrideRequest.originalCalculationReference}")
-      }
-    }.orElseThrow { CouldNotSaveGenuineOverrideException("Could not find new calculation to store against Genuine Override") }
+  fun overrideDatesForACalculation(calculationRequestId: Long, genuineOverrideRequest: GenuineOverrideRequest): GenuineOverrideCreatedResponse {
+    val originalRequest = getOriginalRequest(calculationRequestId)
+
+    val sourceData = calculationSourceDataService.getCalculationSourceData(originalRequest.prisonerId, InactiveDataOptions.default())
+    val booking = bookingService.getBooking(sourceData)
+
+    val newRequest = saveNewRequest(booking, sourceData, originalRequest, genuineOverrideRequest)
+
+    markOldRequestAsOverridden(originalRequest, newRequest, genuineOverrideRequest)
+
+    saveOverriddenDates(genuineOverrideRequest, newRequest)
+
+    writeToNomisAndPublishEvent(booking, genuineOverrideRequest, newRequest)
+
+    return GenuineOverrideCreatedResponse(
+      originalCalculationRequestId = originalRequest.id,
+      newCalculationRequestId = newRequest.id,
+    )
   }
 
-  fun getGenuineOverride(calculationReference: String): GenuineOverrideResponse = genuineOverrideRepository.findBySavedCalculationCalculationReference(UUID.fromString(calculationReference)).map {
-    GenuineOverrideResponse(it.reason, it.originalCalculationRequest.calculationReference.toString(), it.savedCalculation?.calculationReference.toString(), it.isOverridden)
-  }.orElseThrow { GenuineOverrideNotFoundException("Could not find genuine override for reference: $calculationReference") }
+  private fun getOriginalRequest(calculationRequestId: Long): CalculationRequest = calculationRequestRepository.findByIdAndCalculationStatus(
+    calculationRequestId,
+    PRELIMINARY.name,
+  ).orElseThrow {
+    EntityNotFoundException("No preliminary calculation exists for calculationRequestId $calculationRequestId")
+  }
+
+  private fun saveNewRequest(
+    booking: Booking,
+    sourceData: CalculationSourceData,
+    originalRequest: CalculationRequest,
+    genuineOverrideRequest: GenuineOverrideRequest,
+  ): CalculationRequest = calculationRequestRepository.save(
+    transform(
+      booking,
+      serviceUserService.getUsername(),
+      CalculationStatus.CONFIRMED,
+      sourceData,
+      originalRequest.reasonForCalculation,
+      objectMapper,
+      originalRequest.otherReasonForCalculation,
+      version = buildProperties.version,
+    ).copy(
+      calculationType = CalculationType.GENUINE_OVERRIDE,
+      overridesCalculationRequestId = originalRequest.id,
+      genuineOverrideReason = genuineOverrideRequest.reason,
+      genuineOverrideReasonFurtherDetail = genuineOverrideRequest.reasonFurtherDetail,
+    ),
+  )
+
+  private fun markOldRequestAsOverridden(
+    originalRequest: CalculationRequest,
+    newRequestWithOriginalInputs: CalculationRequest,
+    genuineOverrideRequest: GenuineOverrideRequest,
+  ) {
+    calculationRequestRepository.save(
+      originalRequest.copy(
+        calculationStatus = CalculationStatus.OVERRIDDEN.name,
+        overriddenByCalculationRequestId = newRequestWithOriginalInputs.id,
+        genuineOverrideReason = genuineOverrideRequest.reason,
+        genuineOverrideReasonFurtherDetail = genuineOverrideRequest.reasonFurtherDetail,
+      ),
+    )
+  }
+
+  private fun saveOverriddenDates(genuineOverrideRequest: GenuineOverrideRequest, newRequestWithOriginalInputs: CalculationRequest) {
+    calculationOutcomeRepository.saveAll(
+      genuineOverrideRequest.dates.map {
+        CalculationOutcome(
+          calculationDateType = it.dateType.name,
+          outcomeDate = it.date,
+          calculationRequestId = newRequestWithOriginalInputs.id,
+        )
+      },
+    )
+  }
+
+  private fun writeToNomisAndPublishEvent(
+    booking: Booking,
+    genuineOverrideRequest: GenuineOverrideRequest,
+    newRequest: CalculationRequest,
+  ) {
+    val effectiveSentenceLength = try {
+      manualCalculationService.calculateEffectiveSentenceLength(booking, genuineOverrideRequest.dates.find { it.dateType == ReleaseDateType.SED }?.date)
+    } catch (ex: Exception) {
+      log.info("Exception caught calculating ESL for ${newRequest.prisonerId}, setting to zero.", ex)
+      ZERO
+    }
+    manualCalculationService.writeToNomisAndPublishEvent(
+      prisonerId = newRequest.prisonerId,
+      booking = booking,
+      calculationRequestId = newRequest.id,
+      calculationOutcomes = emptyList<CalculationOutcome>(),
+      isGenuineOverride = true,
+      effectiveSentenceLength = effectiveSentenceLength,
+    ) ?: throw CouldNotSaveManualEntryException("There was a problem saving the overridden dates to NOMIS")
+  }
+
   private companion object {
-    private const val GENUINE_OVERRIDE = true
+    val log: Logger = LoggerFactory.getLogger(this::class.java)
   }
 }

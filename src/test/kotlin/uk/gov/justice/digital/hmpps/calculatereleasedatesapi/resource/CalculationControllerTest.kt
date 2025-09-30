@@ -56,9 +56,9 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmitCalcula
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationBreakdownService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationTransactionalService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.DetailedCalculationResultsService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.GenuineOverrideService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.LatestCalculationService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.OffenderKeyDatesService
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.RecordARecallService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.RelevantRemandService
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -90,7 +90,7 @@ class CalculationControllerTest {
   private lateinit var offenderKeyDatesService: OffenderKeyDatesService
 
   @MockitoBean
-  private lateinit var recordARecallService: RecordARecallService
+  private lateinit var genuineOverrideService: GenuineOverrideService
 
   @Autowired
   private lateinit var mvc: MockMvc
@@ -116,7 +116,7 @@ class CalculationControllerTest {
           latestCalculationService,
           calculationBreakdownService,
           offenderKeyDatesService,
-          recordARecallService,
+          genuineOverrideService,
         ),
       )
       .setControllerAdvice(ControllerAdvice())

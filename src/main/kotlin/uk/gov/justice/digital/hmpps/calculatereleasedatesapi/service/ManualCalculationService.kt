@@ -64,29 +64,25 @@ class ManualCalculationService(
   fun storeManualCalculation(
     prisonerId: String,
     manualEntryRequest: ManualEntryRequest,
-    isGenuineOverride: Boolean = false,
   ): ManualCalculationResponse {
     val sourceData = calculationSourceDataService.getCalculationSourceData(prisonerId, InactiveDataOptions.default())
     val calculationUserInputs = CalculationUserInputs()
     val booking = bookingService.getBooking(sourceData)
 
     val effectiveSentenceLength = try {
-      calculateEffectiveSentenceLength(booking, manualEntryRequest)
+      calculateEffectiveSentenceLength(booking, getSED(manualEntryRequest))
     } catch (ex: Exception) {
-      log.info("Exception caught calculating ESL for $prisonerId, setting to zero.")
+      log.info("Exception caught calculating ESL for $prisonerId, setting to zero.", ex)
       Period.ZERO
     }
 
     val reasonForCalculation = calculationReasonRepository.findById(manualEntryRequest.reasonForCalculationId)
       .orElse(null) // TODO: This should thrown an EntityNotFoundException when the reason is mandatory.
-    val type =
-      if (isGenuineOverride) {
-        CalculationType.MANUAL_OVERRIDE
-      } else if (hasIndeterminateSentences(booking.bookingId)) {
-        CalculationType.MANUAL_INDETERMINATE
-      } else {
-        CalculationType.MANUAL_DETERMINATE
-      }
+    val type = if (hasIndeterminateSentences(booking.bookingId)) {
+      CalculationType.MANUAL_INDETERMINATE
+    } else {
+      CalculationType.MANUAL_DETERMINATE
+    }
 
     val calculationRequest = transform(
       booking,
@@ -132,12 +128,12 @@ class ManualCalculationService(
       calculationOutcomeRepository.saveAll(calculationOutcomes)
       val enteredDates =
         writeToNomisAndPublishEvent(
-          prisonerId,
-          booking,
-          savedCalculationRequest.id,
-          calculationOutcomes,
-          isGenuineOverride,
-          effectiveSentenceLength,
+          prisonerId = prisonerId,
+          booking = booking,
+          calculationRequestId = savedCalculationRequest.id,
+          calculationOutcomes = calculationOutcomes,
+          isGenuineOverride = false,
+          effectiveSentenceLength = effectiveSentenceLength,
         )
           ?: throw CouldNotSaveManualEntryException("There was a problem saving the dates")
       ManualCalculationResponse(enteredDates, savedCalculationRequest.id)
@@ -198,7 +194,7 @@ class ManualCalculationService(
     return dates
   }
 
-  fun calculateEffectiveSentenceLength(booking: Booking, manualEntryRequest: ManualEntryRequest): Period {
+  fun calculateEffectiveSentenceLength(booking: Booking, sed: LocalDate?): Period {
     val hasFixedTermRecallSentences = booking.sentences.filter { it.recallType == RecallType.FIXED_TERM_RECALL_14 || it.recallType == RecallType.FIXED_TERM_RECALL_28 }
     if (hasIndeterminateSentences(booking.bookingId) ||
       (hasFixedTermRecallSentences.isNotEmpty() && booking.returnToCustodyDate == null)
@@ -210,7 +206,6 @@ class ManualCalculationService(
       }
       val sentences = sentenceCombinationService.getSentencesToCalculate(booking.sentences, booking.offender)
       val earliestSentenceDate = sentences.minOfOrNull { it.sentencedAt }
-      val sed = getSED(manualEntryRequest)
       return if (sed != null && earliestSentenceDate != null) {
         val period = Period.between(earliestSentenceDate, sed)
         if (!period.isNegative) period else Period.ZERO
@@ -228,7 +223,6 @@ class ManualCalculationService(
    */
   fun equivalentManualCalculationExists(prisonerId: String): Boolean {
     val sourceData = calculationSourceDataService.getCalculationSourceData(prisonerId, InactiveDataOptions.default())
-    val calculationUserInputs = CalculationUserInputs()
     val currentBooking = bookingService.getBooking(sourceData)
     val previousCalculation = calculationRequestRepository
       .findLatestManualCalculation(prisonerId, CalculationStatus.CONFIRMED.name) ?: return false

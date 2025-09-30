@@ -47,7 +47,7 @@ class RecordARecallService(
     val calculation = calculationTransactionalService.calculate(
       sourceData,
       calculationRequestModel,
-      calculationType = RECORD_A_RECALL,
+      calculationStatus = RECORD_A_RECALL,
     )
     return RecordARecallResult(
       validationResult,

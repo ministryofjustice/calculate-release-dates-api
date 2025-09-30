@@ -120,15 +120,17 @@ class ManualCalculationServiceTest {
       // Act
       val result = manualCalculationService.calculateEffectiveSentenceLength(
         BOOKING,
-        ManualEntryRequest(
-          listOf(
-            ManuallyEnteredDate(
-              ReleaseDateType.LED,
-              SubmittedDate(1, 1, 2026),
+        manualCalculationService.getSED(
+          ManualEntryRequest(
+            listOf(
+              ManuallyEnteredDate(
+                ReleaseDateType.LED,
+                SubmittedDate(1, 1, 2026),
+              ),
             ),
+            1L,
+            "",
           ),
-          1L,
-          "",
         ),
       )
 
@@ -152,7 +154,7 @@ class ManualCalculationServiceTest {
       )
 
       // Act
-      val result = manualCalculationService.calculateEffectiveSentenceLength(workingBooking, MANUAL_ENTRY)
+      val result = manualCalculationService.calculateEffectiveSentenceLength(workingBooking, manualCalculationService.getSED(MANUAL_ENTRY))
 
       // Assert
       assertThat(result).isEqualTo(Period.of(0, 0, 0))
@@ -161,7 +163,7 @@ class ManualCalculationServiceTest {
     @Test
     fun `Check if ESL is set to zero for when calculated ESL is negative`() {
       // Act
-      val result = manualCalculationService.calculateEffectiveSentenceLength(BOOKING, MANUAL_ENTRY)
+      val result = manualCalculationService.calculateEffectiveSentenceLength(BOOKING, manualCalculationService.getSED(MANUAL_ENTRY))
 
       // Assert
       assertThat(result).isEqualTo(Period.of(0, 0, 0))
@@ -183,7 +185,7 @@ class ManualCalculationServiceTest {
       )
 
       // Act
-      val result = manualCalculationService.calculateEffectiveSentenceLength(workingBooking, MANUAL_ENTRY)
+      val result = manualCalculationService.calculateEffectiveSentenceLength(workingBooking, manualCalculationService.getSED(MANUAL_ENTRY))
 
       // Assert
       assertThat(result).isEqualTo(Period.of(0, 0, 0))
@@ -212,7 +214,7 @@ class ManualCalculationServiceTest {
       )
 
       // Act
-      val result = manualCalculationService.calculateEffectiveSentenceLength(BOOKING, MANUAL_ENTRY)
+      val result = manualCalculationService.calculateEffectiveSentenceLength(BOOKING, manualCalculationService.getSED(MANUAL_ENTRY))
 
       // Assert
       assertThat(result).isEqualTo(Period.of(0, 0, 0))
@@ -238,7 +240,7 @@ class ManualCalculationServiceTest {
       )
 
       // Act
-      val result = manualCalculationService.calculateEffectiveSentenceLength(BOOKING, MANUAL_ENTRY)
+      val result = manualCalculationService.calculateEffectiveSentenceLength(BOOKING, manualCalculationService.getSED(MANUAL_ENTRY))
 
       // Assert
       assertThat(result).isEqualTo(Period.of(5, 0, 0))
@@ -259,7 +261,7 @@ class ManualCalculationServiceTest {
       )
 
       // Act
-      val result = manualCalculationService.calculateEffectiveSentenceLength(BOOKING, MANUAL_ENTRY)
+      val result = manualCalculationService.calculateEffectiveSentenceLength(BOOKING, manualCalculationService.getSED(MANUAL_ENTRY))
 
       // Assert
       assertThat(result).isEqualTo(Period.of(4, 0, 0))
@@ -289,7 +291,7 @@ class ManualCalculationServiceTest {
       )
 
       // Act
-      val result = manualCalculationService.calculateEffectiveSentenceLength(BOOKING, MANUAL_ENTRY)
+      val result = manualCalculationService.calculateEffectiveSentenceLength(BOOKING, manualCalculationService.getSED(MANUAL_ENTRY))
 
       // Assert
       assertThat(result).isEqualTo(Period.of(4, 10, 29))
@@ -482,33 +484,6 @@ class ManualCalculationServiceTest {
   }
 
   @Test
-  fun `Check type is set to Genuine Override when its a genuine override`() {
-    whenever(
-      calculationSourceDataService.getCalculationSourceData(
-        PRISONER_ID,
-        InactiveDataOptions.default(),
-      ),
-    ).thenReturn(FAKE_SOURCE_DATA)
-    whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
-    whenever(calculationRequestRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES))
-    whenever(calculationReasonRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REASON))
-    whenever(bookingService.getBooking(FAKE_SOURCE_DATA)).thenReturn(BOOKING)
-    whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
-    whenever(nomisCommentService.getManualNomisComment(any(), any(), any())).thenReturn("The NOMIS Reason")
-
-    val manualCalcRequest = ManuallyEnteredDate(
-      ReleaseDateType.CRD,
-      SubmittedDate(3, 3, 2023),
-    )
-    val manualEntryRequest = ManualEntryRequest(listOf(manualCalcRequest), 1L, "")
-
-    manualCalculationService.storeManualCalculation(PRISONER_ID, manualEntryRequest, true)
-    verify(calculationRequestRepository, times(2)).save(calculationRequestArgumentCaptor.capture())
-    val actualRequest = calculationRequestArgumentCaptor.firstValue
-    assertThat(actualRequest.calculationType).isEqualTo(CalculationType.MANUAL_OVERRIDE)
-  }
-
-  @Test
   fun `Check type is set to manual indeterminate when indeterminate sentences are present`() {
     val offence = OffenderOffence(1L, LocalDate.of(2015, 1, 1), null, "ADIMP", "description", listOf("A"))
     whenever(
@@ -554,7 +529,7 @@ class ManualCalculationServiceTest {
     )
     val manualEntryRequest = ManualEntryRequest(listOf(manualCalcRequest), 1L, "")
 
-    manualCalculationService.storeManualCalculation(PRISONER_ID, manualEntryRequest, false)
+    manualCalculationService.storeManualCalculation(PRISONER_ID, manualEntryRequest)
     verify(calculationRequestRepository, times(2)).save(calculationRequestArgumentCaptor.capture())
     val actualRequest = calculationRequestArgumentCaptor.firstValue
     assertThat(actualRequest.calculationType).isEqualTo(CalculationType.MANUAL_INDETERMINATE)
@@ -593,7 +568,7 @@ class ManualCalculationServiceTest {
     )
     val manualEntryRequest = ManualEntryRequest(listOf(manualCalcRequest), 1L, "")
 
-    manualCalculationService.storeManualCalculation(PRISONER_ID, manualEntryRequest, false)
+    manualCalculationService.storeManualCalculation(PRISONER_ID, manualEntryRequest)
 
     val updatedDatesCapture = argumentCaptor<UpdateOffenderDates>()
     verify(calculationRequestRepository).save(calculationRequestArgumentCaptor.capture())
@@ -625,7 +600,7 @@ class ManualCalculationServiceTest {
     )
     val manualEntryRequest = ManualEntryRequest(listOf(manualCalcRequest), 1L, "")
 
-    manualCalculationService.storeManualCalculation(PRISONER_ID, manualEntryRequest, false)
+    manualCalculationService.storeManualCalculation(PRISONER_ID, manualEntryRequest)
     verify(calculationRequestRepository, times(2)).save(calculationRequestArgumentCaptor.capture())
     val actualRequest = calculationRequestArgumentCaptor.firstValue
     assertThat(actualRequest.calculationType).isEqualTo(CalculationType.MANUAL_DETERMINATE)
@@ -661,7 +636,7 @@ class ManualCalculationServiceTest {
     )
     val manualEntryRequest = ManualEntryRequest(listOf(manualCalcRequest), 1L, "")
 
-    manualCalculationService.storeManualCalculation(PRISONER_ID, manualEntryRequest, false)
+    manualCalculationService.storeManualCalculation(PRISONER_ID, manualEntryRequest)
 
     // save should be called twice, one for initial creation, then one for manual calc reasons
     verify(calculationRequestRepository, times(2)).save(calculationRequestArgumentCaptor.capture())
@@ -709,7 +684,7 @@ class ManualCalculationServiceTest {
     )
     val manualEntryRequest = ManualEntryRequest(listOf(manualCalcRequest), 1L, "")
 
-    manualCalculationService.storeManualCalculation(PRISONER_ID, manualEntryRequest, false)
+    manualCalculationService.storeManualCalculation(PRISONER_ID, manualEntryRequest)
 
     // save should be called twice, one for initial creation, then one for manual calc reasons
     verify(calculationRequestRepository, times(2)).save(calculationRequestArgumentCaptor.capture())

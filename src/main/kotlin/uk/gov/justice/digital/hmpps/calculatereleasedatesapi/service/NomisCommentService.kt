@@ -11,12 +11,9 @@ class NomisCommentService {
 
   fun getNomisComment(
     calculationRequest: CalculationRequest,
-    isSpecialistSupport: Boolean,
     approvedDates: List<ManuallyEnteredDate>?,
   ): String {
-    val comment = if (isSpecialistSupport) {
-      SPECIALIST_SUPPORT_COMMENT
-    } else if (approvedDates?.isNotEmpty() == true) {
+    val comment = if (approvedDates?.isNotEmpty() == true) {
       MANUAL_ENTERED_DATES_COMMENT
     } else if (calculationRequest.reasonForCalculation?.isOther == false) {
       DEFAULT_COMMENT
@@ -55,8 +52,6 @@ class NomisCommentService {
     private const val OTHER_COMMENT = "Calculated using the Calculate Release Dates service. The calculation ID is: %s"
     private const val MANUAL_ENTERED_DATES_COMMENT =
       "{%s} using the Calculate Release Dates service with manually entered dates. The calculation ID is: %s"
-    private const val SPECIALIST_SUPPORT_COMMENT =
-      "{%s} using the Calculate release dates service by Specialist Support. The calculation ID is: %s"
     private const val INDETERMINATE_COMMENT =
       "{%s} An Indeterminate (Life) sentence was entered using the Calculate Release Dates service and was intentionally recorded as blank. The calculation ID is: %s"
     private const val MANUAL_ENTRY_COMMENT =
