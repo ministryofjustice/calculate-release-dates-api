@@ -2,7 +2,6 @@ DELETE FROM comparison_person_discrepancy_cause;
 DELETE FROM comparison_person_discrepancy;
 DELETE FROM comparison_person;
 DELETE FROM comparison;
-DELETE From genuine_override;
 DELETE FROM approved_dates_submission_approved_dates;
 DELETE FROM approved_dates;
 DELETE From approved_dates_submission;
