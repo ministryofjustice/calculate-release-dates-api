@@ -45,9 +45,9 @@ class GenuineOverrideService(
 
     markOldRequestAsOverridden(originalRequest, newRequest, genuineOverrideRequest)
 
-    saveOverriddenDates(genuineOverrideRequest, newRequest)
+    val calculationOutcomes = saveOverriddenDates(genuineOverrideRequest, newRequest)
 
-    writeToNomisAndPublishEvent(booking, genuineOverrideRequest, newRequest)
+    writeToNomisAndPublishEvent(booking, genuineOverrideRequest, newRequest, calculationOutcomes)
 
     return GenuineOverrideCreatedResponse(
       originalCalculationRequestId = originalRequest.id,
@@ -100,22 +100,21 @@ class GenuineOverrideService(
     )
   }
 
-  private fun saveOverriddenDates(genuineOverrideRequest: GenuineOverrideRequest, newRequestWithOriginalInputs: CalculationRequest) {
-    calculationOutcomeRepository.saveAll(
-      genuineOverrideRequest.dates.map {
-        CalculationOutcome(
-          calculationDateType = it.dateType.name,
-          outcomeDate = it.date,
-          calculationRequestId = newRequestWithOriginalInputs.id,
-        )
-      },
-    )
-  }
+  private fun saveOverriddenDates(genuineOverrideRequest: GenuineOverrideRequest, newRequestWithOriginalInputs: CalculationRequest): List<CalculationOutcome> = calculationOutcomeRepository.saveAll(
+    genuineOverrideRequest.dates.map {
+      CalculationOutcome(
+        calculationDateType = it.dateType.name,
+        outcomeDate = it.date,
+        calculationRequestId = newRequestWithOriginalInputs.id,
+      )
+    },
+  )
 
   private fun writeToNomisAndPublishEvent(
     booking: Booking,
     genuineOverrideRequest: GenuineOverrideRequest,
     newRequest: CalculationRequest,
+    calculationOutcomes: List<CalculationOutcome>,
   ) {
     val effectiveSentenceLength = try {
       manualCalculationService.calculateEffectiveSentenceLength(booking, genuineOverrideRequest.dates.find { it.dateType == ReleaseDateType.SED }?.date)
@@ -127,7 +126,7 @@ class GenuineOverrideService(
       prisonerId = newRequest.prisonerId,
       booking = booking,
       calculationRequestId = newRequest.id,
-      calculationOutcomes = emptyList<CalculationOutcome>(),
+      calculationOutcomes = calculationOutcomes,
       isGenuineOverride = true,
       effectiveSentenceLength = effectiveSentenceLength,
     ) ?: throw CouldNotSaveManualEntryException("There was a problem saving the overridden dates to NOMIS")

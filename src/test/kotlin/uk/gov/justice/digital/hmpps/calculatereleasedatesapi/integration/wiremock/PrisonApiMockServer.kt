@@ -8,6 +8,7 @@ import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 import com.github.tomakehurst.wiremock.client.WireMock.get
 import com.github.tomakehurst.wiremock.client.WireMock.post
 import com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo
+import com.github.tomakehurst.wiremock.matching.RequestPatternBuilder
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import org.junit.jupiter.api.extension.AfterAllCallback
 import org.junit.jupiter.api.extension.BeforeAllCallback
@@ -186,6 +187,10 @@ class MockPrisonService(
   }
 
   fun withStub(mappingBuilder: MappingBuilder): StubMapping = prisonApi.stubFor(mappingBuilder)
+
+  fun verify(requestPatternBuilder: RequestPatternBuilder) {
+    prisonApi.verify(requestPatternBuilder)
+  }
 }
 
 class PrisonApiMockServer : WireMockServer(WIREMOCK_PORT) {

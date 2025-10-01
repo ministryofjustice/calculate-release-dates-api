@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
-import com.google.common.base.Verify.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.mockito.ArgumentMatchers.argThat
@@ -9,6 +8,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcome
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
@@ -71,6 +71,26 @@ class GenuineOverrideServiceTest {
       reasonForCalculation = REASON,
       otherReasonForCalculation = "Other reason",
     )
+    val calculationOutcomes = listOf(
+      CalculationOutcome(
+        id = 1,
+        calculationRequestId = newRequest.id,
+        outcomeDate = LocalDate.of(2025, 1, 2),
+        calculationDateType = "SED",
+      ),
+      CalculationOutcome(
+        id = 2,
+        calculationRequestId = newRequest.id,
+        outcomeDate = LocalDate.of(2029, 12, 13),
+        calculationDateType = "LED",
+      ),
+      CalculationOutcome(
+        id = 3,
+        calculationRequestId = newRequest.id,
+        outcomeDate = LocalDate.of(2021, 6, 7),
+        calculationDateType = "HDCED",
+      ),
+    )
     whenever(calculationSourceDataService.getCalculationSourceData(PRISONER_ID, InactiveDataOptions.default())).thenReturn(FAKE_SOURCE_DATA)
     whenever(bookingService.getBooking(FAKE_SOURCE_DATA)).thenReturn(BOOKING)
     whenever(serviceUserService.getUsername()).thenReturn("USER1")
@@ -78,6 +98,7 @@ class GenuineOverrideServiceTest {
     whenever(calculationRequestRepository.save(argThat { request -> request?.id == -1L })).thenReturn(newRequest)
     whenever(calculationRequestRepository.save(argThat { request -> request?.id == 123L })).thenReturn(originalRequest)
     whenever(manualCalculationService.calculateEffectiveSentenceLength(BOOKING, LocalDate.of(2025, 1, 2))).thenReturn(Period.ZERO)
+    whenever(calculationOutcomeRepository.saveAll<CalculationOutcome>(any())).thenReturn(calculationOutcomes)
 
     val result = genuineOverrideService.overrideDatesForACalculation(
       123L,
@@ -93,7 +114,14 @@ class GenuineOverrideServiceTest {
     )
     assertThat(result.originalCalculationRequestId).isEqualTo(123L)
 
-    verify(manualCalculationService).writeToNomisAndPublishEvent(any(), any(), any(), any(), any(), any())
+    verify(manualCalculationService).writeToNomisAndPublishEvent(
+      PRISONER_ID,
+      BOOKING,
+      newRequest.id,
+      calculationOutcomes,
+      true,
+      Period.ZERO,
+    )
   }
 
   companion object {
