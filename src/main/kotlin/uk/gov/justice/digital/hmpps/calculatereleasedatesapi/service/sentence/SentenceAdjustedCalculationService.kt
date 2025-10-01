@@ -57,7 +57,7 @@ class SentenceAdjustedCalculationService(
     }
 
     if (sentence is BotusSentence) {
-      getBotusTusedDate(sentence, sentenceCalculation)
+      tusedCalculator.updateBotusSentenceTused(sentence)
     } else {
       determineTUSED(sentenceCalculation, sentence, offender)
     }
@@ -263,17 +263,6 @@ class SentenceAdjustedCalculationService(
     } else {
       sentenceCalculation.topUpSupervisionDate = null
       sentenceCalculation.breakdownByReleaseDateType.remove(TUSED)
-    }
-  }
-
-  /**
-   * If sentence type is BOTUS, reference the historical TUSED relating to the breach. Dates in the past are ignored,
-   * since they are no longer valid.
-   */
-  private fun getBotusTusedDate(sentence: BotusSentence, sentenceCalculation: SentenceCalculation) {
-    if (sentence.latestTusedDate?.isAfter(sentenceCalculation.releaseDate) == true) {
-      sentenceCalculation.topUpSupervisionDate = sentence.latestTusedDate
-      sentenceCalculation.breakdownByReleaseDateType[TUSED] = tusedCalculator.getCalculationBreakdownForBotus(sentenceCalculation)
     }
   }
 

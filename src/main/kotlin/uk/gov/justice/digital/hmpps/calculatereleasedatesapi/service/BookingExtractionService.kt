@@ -45,6 +45,7 @@ class BookingExtractionService(
   val hdcedExtractionService: HdcedExtractionService,
   val extractionService: SentencesExtractionService,
   val fixedTermRecallsService: FixedTermRecallsService,
+  val tusedCalculator: TusedCalculator,
 ) {
 
   fun extract(
@@ -124,7 +125,7 @@ class BookingExtractionService(
       sentence.latestTusedDate != null &&
       sentenceCalculation.expiryDate.isBefore(sentence.latestTusedDate)
     ) {
-      dates[TUSED] = sentence.latestTusedDate!!
+      dates[TUSED] = tusedCalculator.getHistoricTused(sentence.latestTusedDate!!)
       historicalTusedSource = sentence.latestTusedSource!!
     }
 

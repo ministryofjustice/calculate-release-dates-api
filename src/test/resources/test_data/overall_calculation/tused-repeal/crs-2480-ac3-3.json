@@ -1,0 +1,37 @@
+{
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
+      {
+        "type": "BotusSentence",
+        "offence": {
+          "committedAt": "2025-09-02",
+          "offenceCode": "CJ03524"
+        },
+        "duration": {
+          "durationElements": {
+            "DAYS": 5
+          }
+        },
+        "sentencedAt": "2025-09-02",
+        "latestTusedDate": "2026-07-29",
+        "latestTusedSource": "CRDS"
+      }
+    ],
+    "adjustments": {},
+    "historicalTusedData": {
+      "tused": "2026-07-29",
+      "historicalTusedSource": "CRDS"
+    }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params",
+  "featureToggles": {
+    "applyPostRecallRepealRules": true
+  }
+}
