@@ -5,6 +5,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggl
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.TUSED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentDuration
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BotusSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
@@ -108,12 +109,26 @@ class TusedCalculator(private val featureToggles: FeatureToggles) {
     unadjustedDate = sentenceCalculation.unadjustedDeterminateReleaseDate,
   )
 
-  fun getCalculationBreakdownForBotus(sentenceCalculation: SentenceCalculation): ReleaseDateCalculationBreakdown = ReleaseDateCalculationBreakdown(
-    rules = setOf(CalculationRule.BOTUS_LATEST_TUSED_USED) + if (sentenceCalculation.isImmediateRelease()) setOf(CalculationRule.IMMEDIATE_RELEASE) else emptySet(),
-    adjustedDays = getAdjustedDays(sentenceCalculation),
-    releaseDate = sentenceCalculation.topUpSupervisionDate!!,
-    unadjustedDate = sentenceCalculation.unadjustedDeterminateReleaseDate,
-  )
+  fun getCalculationBreakdownForBotus(sentenceCalculation: SentenceCalculation, postRepeal: Boolean = false): ReleaseDateCalculationBreakdown {
+    val rules = mutableSetOf<CalculationRule>()
+
+    if (featureToggles.applyPostRecallRepealRules && postRepeal) {
+      rules.add(CalculationRule.BOTUS_LATEST_TUSED_USED_POST_REPEAL)
+    } else {
+      rules.add(CalculationRule.BOTUS_LATEST_TUSED_USED)
+    }
+
+    if (sentenceCalculation.isImmediateRelease()) {
+      rules.add(CalculationRule.IMMEDIATE_RELEASE)
+    }
+
+    return ReleaseDateCalculationBreakdown(
+      rules,
+      adjustedDays = getAdjustedDays(sentenceCalculation),
+      releaseDate = sentenceCalculation.topUpSupervisionDate!!,
+      unadjustedDate = sentenceCalculation.unadjustedDeterminateReleaseDate,
+    )
+  }
 
   fun amendTusedInlineWithPostSupervisionRepeal(sentenceCalculation: SentenceCalculation, tused: LocalDate): LocalDate? {
     val sentence = sentenceCalculation.sentence
@@ -136,6 +151,30 @@ class TusedCalculator(private val featureToggles: FeatureToggles) {
     }
 
     return if (areAllSentencesImposedBeforeRepealDate) tused else null
+  }
+
+  /**
+   * If sentence type is BOTUS, reference the historical TUSED relating to the breach. Dates in the past are ignored,
+   * since they are no longer valid.
+   */
+  fun updateBotusSentenceTused(botusSentence: BotusSentence) {
+    val latestTusedAfterRelease = botusSentence.latestTusedDate?.isAfter(botusSentence.sentenceCalculation.releaseDate) == true
+    if (!latestTusedAfterRelease) return
+
+    if (featureToggles.applyPostRecallRepealRules && botusSentence.latestTusedDate!!.isAfter(POST_SUPERVISION_REPEAL_DATE)) {
+      botusSentence.sentenceCalculation.topUpSupervisionDate = POST_SUPERVISION_REPEAL_DATE.minusDays(1)
+      botusSentence.sentenceCalculation.breakdownByReleaseDateType[TUSED] = getCalculationBreakdownForBotus(botusSentence.sentenceCalculation, true)
+    } else {
+      botusSentence.sentenceCalculation.topUpSupervisionDate = botusSentence.latestTusedDate!!
+      botusSentence.sentenceCalculation.breakdownByReleaseDateType[TUSED] = getCalculationBreakdownForBotus(botusSentence.sentenceCalculation)
+    }
+  }
+
+  fun getHistoricTused(tused: LocalDate): LocalDate {
+    if (featureToggles.applyPostRecallRepealRules && tused.isAfterOrEqualTo(POST_SUPERVISION_REPEAL_DATE)) {
+      return POST_SUPERVISION_REPEAL_DATE.minusDays(1)
+    }
+    return tused
   }
 
   private fun getAdjustedDays(sentenceCalculation: SentenceCalculation): Long = sentenceCalculation.adjustments.adjustmentsForInitialReleaseWithoutAwarded()
