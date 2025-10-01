@@ -18,7 +18,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonPerson
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonPersonDiscrepancy
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonPersonDiscrepancyCause
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.GenuineOverride
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.ADDITIONAL_DAYS_AWARDED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.RECALL_REMAND
@@ -87,9 +86,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExternalMovement
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExternalSentenceId
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.GenuineOverrideResponse
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.HistoricalTusedData
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualEntrySelectedDate
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManuallyEnteredDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Recall
@@ -120,7 +118,7 @@ import java.time.temporal.ChronoUnit.DAYS
 import java.time.temporal.ChronoUnit.MONTHS
 import java.time.temporal.ChronoUnit.WEEKS
 import java.time.temporal.ChronoUnit.YEARS
-import java.util.UUID
+import java.util.*
 
 /*
 ** Functions which transform entities objects into their model equivalents.
@@ -622,9 +620,8 @@ fun transform(
   )
 }
 
-fun transform(calculation: CalculatedReleaseDates, approvedDates: List<ManualEntrySelectedDate>?): OffenderKeyDates {
-  val groupedApprovedDates =
-    approvedDates?.map { it.dateType to LocalDate.of(it.date!!.year, it.date.month, it.date.day) }?.toMap()
+fun transform(calculation: CalculatedReleaseDates, approvedDates: List<ManuallyEnteredDate>?): OffenderKeyDates {
+  val groupedApprovedDates = approvedDates?.associate { it.dateType to it.date!!.toLocalDate() }
   val hdcad = groupedApprovedDates?.get(HDCAD) ?: calculation.dates[HDCAD]
   val rotl = groupedApprovedDates?.get(ROTL) ?: calculation.dates[ROTL]
   val apd = groupedApprovedDates?.get(APD) ?: calculation.dates[APD]
@@ -691,24 +688,17 @@ fun transform(fixedTermRecallDetails: FixedTermRecallDetails): ReturnToCustodyDa
 
 fun transform(
   calculationRequest: CalculationRequest,
-  manualEntrySelectedDate: ManualEntrySelectedDate,
+  manuallyEnteredDate: ManuallyEnteredDate,
 ): CalculationOutcome {
-  if (manualEntrySelectedDate.date != null) {
-    val date = manualEntrySelectedDate.date.year.let {
-      LocalDate.of(
-        it,
-        manualEntrySelectedDate.date.month,
-        manualEntrySelectedDate.date.day,
-      )
-    }
+  if (manuallyEnteredDate.date != null) {
     return CalculationOutcome(
-      calculationDateType = manualEntrySelectedDate.dateType.name,
-      outcomeDate = date,
+      calculationDateType = manuallyEnteredDate.dateType.name,
+      outcomeDate = manuallyEnteredDate.date.toLocalDate(),
       calculationRequestId = calculationRequest.id,
     )
   }
   return CalculationOutcome(
-    calculationDateType = manualEntrySelectedDate.dateType.name,
+    calculationDateType = manuallyEnteredDate.dateType.name,
     outcomeDate = null,
     calculationRequestId = calculationRequest.id,
   )
@@ -769,15 +759,6 @@ fun transform(
   calculatedAt = LocalDateTime.now(),
   calculatedByUsername = username,
   comparisonStatus = ComparisonStatus.SETUP,
-)
-
-fun transform(
-  genuineOverride: GenuineOverride,
-): GenuineOverrideResponse = GenuineOverrideResponse(
-  reason = genuineOverride.reason,
-  originalCalculationRequest = genuineOverride.originalCalculationRequest.calculationReference.toString(),
-  savedCalculation = genuineOverride.savedCalculation?.calculationReference.toString(),
-  isOverridden = genuineOverride.isOverridden,
 )
 
 fun transform(comparison: Comparison): ComparisonSummary = ComparisonSummary(

@@ -56,7 +56,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationRe
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExternalSentenceId
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualEntrySelectedDate
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManuallyEnteredDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
@@ -276,7 +276,7 @@ class CalculationTransactionalServiceTest {
         CALCULATION_REQUEST_WITH_OUTCOMES.copy(inputData = INPUT_DATA),
       ),
     )
-    whenever(nomisCommentService.getNomisComment(any(), any(), any())).thenReturn("The NOMIS Reason")
+    whenever(nomisCommentService.getNomisComment(any(), any())).thenReturn("The NOMIS Reason")
 
     calculationConfirmationService.writeToNomisAndPublishEvent(
       PRISONER_ID,
@@ -398,7 +398,7 @@ class CalculationTransactionalServiceTest {
     whenever(bookingService.getBooking(fakeSourceData)).thenReturn(BOOKING)
     whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
     whenever(calculationRequestRepository.findById(CALCULATION_REQUEST_ID)).thenReturn(Optional.of(requestAndOutcomes))
-    whenever(nomisCommentService.getNomisComment(any(), any(), any())).thenReturn("The NOMIS Reason")
+    whenever(nomisCommentService.getNomisComment(any(), any())).thenReturn("The NOMIS Reason")
     whenever(calculationTransactionalService.historicDatesFromSled(fakeSourceData.prisonerDetails.offenderNo, expectedSled)).thenReturn(
       listOf(
         CalculationOutcome(
@@ -441,7 +441,7 @@ class CalculationTransactionalServiceTest {
     whenever(calculationOutcomeRepository.save(hdcedOutcome)).thenReturn(hdcedOutcome)
     whenever(calculationOutcomeRepository.save(esedOutcome)).thenReturn(esedOutcome)
     whenever(calculationOutcomeRepository.save(sledOutcome)).thenReturn(sledOutcome)
-    whenever(nomisCommentService.getNomisComment(any(), any(), any())).thenReturn("The NOMIS Reason")
+    whenever(nomisCommentService.getNomisComment(any(), any())).thenReturn("The NOMIS Reason")
     val submission = ApprovedDatesSubmission(
       calculationRequest = CALCULATION_REQUEST,
       prisonerId = PRISONER_ID,
@@ -455,9 +455,9 @@ class CalculationTransactionalServiceTest {
       SubmitCalculationRequest(
         calculationFragments = CalculationFragments(""),
         approvedDates = listOf(
-          ManualEntrySelectedDate(ROTL, "rotl text", SubmittedDate(1, 1, 2020)),
-          ManualEntrySelectedDate(APD, "apd text", SubmittedDate(1, 2, 2020)),
-          ManualEntrySelectedDate(HDCAD, "hdcad text", SubmittedDate(1, 3, 2020)),
+          ManuallyEnteredDate(ROTL, SubmittedDate(1, 1, 2020)),
+          ManuallyEnteredDate(APD, SubmittedDate(1, 2, 2020)),
+          ManuallyEnteredDate(HDCAD, SubmittedDate(1, 3, 2020)),
         ),
       ),
     )
@@ -498,7 +498,7 @@ class CalculationTransactionalServiceTest {
     whenever(bookingService.getBooking(fakeSourceData)).thenReturn(BOOKING)
     whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
     whenever(calculationRequestRepository.findById(CALCULATION_REQUEST_ID)).thenReturn(Optional.of(requestAndOutcomes))
-    whenever(nomisCommentService.getNomisComment(any(), any(), any())).thenReturn("The NOMIS Reason")
+    whenever(nomisCommentService.getNomisComment(any(), any())).thenReturn("The NOMIS Reason")
     whenever(calculationTransactionalService.historicDatesFromSled(fakeSourceData.prisonerDetails.offenderNo, expectedSled)).thenReturn(
       listOf(
         CalculationOutcome(
@@ -548,7 +548,7 @@ class CalculationTransactionalServiceTest {
     whenever(calculationOutcomeRepository.save(esedOutcome)).thenReturn(esedOutcome)
     whenever(calculationOutcomeRepository.save(ledOutcome)).thenReturn(ledOutcome)
     whenever(calculationOutcomeRepository.save(sedOutcome)).thenReturn(sedOutcome)
-    whenever(nomisCommentService.getNomisComment(any(), any(), any())).thenReturn("The NOMIS Reason")
+    whenever(nomisCommentService.getNomisComment(any(), any())).thenReturn("The NOMIS Reason")
     val submission = ApprovedDatesSubmission(
       calculationRequest = CALCULATION_REQUEST,
       prisonerId = PRISONER_ID,
@@ -562,9 +562,9 @@ class CalculationTransactionalServiceTest {
       SubmitCalculationRequest(
         calculationFragments = CalculationFragments(""),
         approvedDates = listOf(
-          ManualEntrySelectedDate(ROTL, "rotl text", SubmittedDate(1, 1, 2020)),
-          ManualEntrySelectedDate(APD, "apd text", SubmittedDate(1, 2, 2020)),
-          ManualEntrySelectedDate(HDCAD, "hdcad text", SubmittedDate(1, 3, 2020)),
+          ManuallyEnteredDate(ROTL, SubmittedDate(1, 1, 2020)),
+          ManuallyEnteredDate(APD, SubmittedDate(1, 2, 2020)),
+          ManuallyEnteredDate(HDCAD, SubmittedDate(1, 3, 2020)),
         ),
       ),
     )
@@ -595,7 +595,7 @@ class CalculationTransactionalServiceTest {
         CALCULATION_REQUEST_WITH_OUTCOMES,
       ),
     )
-    whenever(nomisCommentService.getNomisComment(any(), any(), any())).thenReturn("The NOMIS Reason")
+    whenever(nomisCommentService.getNomisComment(any(), any())).thenReturn("The NOMIS Reason")
     val submission = ApprovedDatesSubmission(
       calculationRequest = CALCULATION_REQUEST,
       prisonerId = PRISONER_ID,
@@ -609,9 +609,9 @@ class CalculationTransactionalServiceTest {
       SubmitCalculationRequest(
         calculationFragments = CalculationFragments(""),
         approvedDates = listOf(
-          ManualEntrySelectedDate(ROTL, "rotl text", SubmittedDate(1, 1, 2020)),
-          ManualEntrySelectedDate(APD, "apd text", SubmittedDate(1, 2, 2020)),
-          ManualEntrySelectedDate(HDCAD, "hdcad text", SubmittedDate(1, 3, 2020)),
+          ManuallyEnteredDate(ROTL, SubmittedDate(1, 1, 2020)),
+          ManuallyEnteredDate(APD, SubmittedDate(1, 2, 2020)),
+          ManuallyEnteredDate(HDCAD, SubmittedDate(1, 3, 2020)),
         ),
       ),
     )
@@ -650,9 +650,9 @@ class CalculationTransactionalServiceTest {
         effectiveSentenceLength = Period.of(6, 2, 3),
       ),
       listOf(
-        ManualEntrySelectedDate(ROTL, "rotl text", SubmittedDate(1, 1, 2020)),
-        ManualEntrySelectedDate(APD, "apd text", SubmittedDate(1, 2, 2020)),
-        ManualEntrySelectedDate(HDCAD, "hdcad text", SubmittedDate(1, 3, 2020)),
+        ManuallyEnteredDate(ROTL, SubmittedDate(1, 1, 2020)),
+        ManuallyEnteredDate(APD, SubmittedDate(1, 2, 2020)),
+        ManuallyEnteredDate(HDCAD, SubmittedDate(1, 3, 2020)),
       ),
     )
     doNothing().`when`(prisonService).postReleaseDates(any(), any())
@@ -678,7 +678,7 @@ class CalculationTransactionalServiceTest {
         CALCULATION_REQUEST_WITH_OUTCOMES.copy(inputData = INPUT_DATA),
       ),
     )
-    whenever(nomisCommentService.getNomisComment(any(), any(), any())).thenReturn("The NOMIS Reason")
+    whenever(nomisCommentService.getNomisComment(any(), any())).thenReturn("The NOMIS Reason")
 
     calculationConfirmationService.writeToNomisAndPublishEvent(
       PRISONER_ID,
@@ -693,7 +693,6 @@ class CalculationTransactionalServiceTest {
         effectiveSentenceLength = Period.of(6, 2, 3),
       ),
       emptyList(),
-      true,
     )
 
     verify(prisonService).postReleaseDates(

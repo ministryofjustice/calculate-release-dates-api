@@ -34,7 +34,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationFr
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationRequestModel
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualEntrySelectedDate
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManuallyEnteredDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmitCalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SupportedValidationResponse
@@ -211,7 +211,7 @@ class CalculationTransactionalService(
   fun calculate(
     sourceData: CalculationSourceData,
     calculationRequestModel: CalculationRequestModel,
-    calculationType: CalculationStatus = PRELIMINARY,
+    calculationStatus: CalculationStatus = PRELIMINARY,
   ): CalculatedReleaseDates {
     val calculationUserInputs = calculationRequestModel.calculationUserInputs ?: CalculationUserInputs()
     val booking = bookingService.getBooking(sourceData)
@@ -220,7 +220,7 @@ class CalculationTransactionalService(
     try {
       return calculate(
         booking,
-        calculationType,
+        calculationStatus,
         sourceData,
         reasonForCalculation,
         calculationUserInputs,
@@ -270,7 +270,7 @@ class CalculationTransactionalService(
     return confirmCalculation(
       calculationRequest.prisonerId,
       submitCalculationRequest.calculationFragments, sourceData, booking, userInput,
-      submitCalculationRequest.approvedDates, submitCalculationRequest.isSpecialistSupport,
+      submitCalculationRequest.approvedDates,
       calculationRequest.reasonForCalculation,
       calculationRequest.otherReasonForCalculation,
       sourceData.historicalTusedData?.historicalTusedSource,
@@ -283,8 +283,7 @@ class CalculationTransactionalService(
     sourceData: CalculationSourceData,
     booking: Booking,
     userInput: CalculationUserInputs,
-    approvedDates: List<ManualEntrySelectedDate>?,
-    isSpecialistSupport: Boolean? = false,
+    approvedDates: List<ManuallyEnteredDate>?,
     reasonForCalculation: CalculationReason?,
     otherReasonForCalculation: String?,
     historicalTusedSource: HistoricalTusedSource? = null,
@@ -292,8 +291,6 @@ class CalculationTransactionalService(
     try {
       val calculationType = if (approvedDates != null) {
         CalculationType.CALCULATED
-      } else if (isSpecialistSupport!!) {
-        CalculationType.CALCULATED_BY_SPECIALIST_SUPPORT
       } else {
         CalculationType.CALCULATED_WITH_APPROVED_DATES
       }
@@ -311,7 +308,7 @@ class CalculationTransactionalService(
       if (!approvedDates.isNullOrEmpty()) {
         calculationConfirmationService.storeApprovedDates(calculation, approvedDates)
       }
-      calculationConfirmationService.writeToNomisAndPublishEvent(prisonerId, booking, calculation, approvedDates, isSpecialistSupport)
+      calculationConfirmationService.writeToNomisAndPublishEvent(prisonerId, booking, calculation, approvedDates)
       return calculation
     } catch (error: Exception) {
       recordError(booking, sourceData, userInput, reasonForCalculation, otherReasonForCalculation)
