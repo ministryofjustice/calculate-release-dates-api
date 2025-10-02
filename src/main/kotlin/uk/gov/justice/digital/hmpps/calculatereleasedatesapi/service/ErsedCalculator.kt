@@ -38,7 +38,7 @@ class ErsedCalculator(
   }
 
   private fun calculateUsingBothERS30AndERS50(sentence: CalculableSentence, sentenceCalculation: SentenceCalculation) {
-    val ers50Result = if (isConsecutiveSentenceWithSentencesBeforeAndAfterCommencement(sentence)) {
+    val ers50Result = if (isSentencedOnOrAfterCommencement(sentence) || isConsecutiveSentenceWithSentencesBeforeAndAfterCommencement(sentence)) {
       null
     } else {
       calculate(
@@ -79,6 +79,8 @@ class ErsedCalculator(
   }
 
   private fun isConsecutiveSentenceWithSentencesBeforeAndAfterCommencement(sentence: CalculableSentence): Boolean = (sentence is ConsecutiveSentence) && sentence.hasSentencesBeforeAndAfter(ImportantDates.ERS30_COMMENCEMENT_DATE)
+
+  private fun isSentencedOnOrAfterCommencement(sentence: CalculableSentence): Boolean = sentence.sentencedAt.isAfterOrEqualTo(ImportantDates.ERS30_COMMENCEMENT_DATE)
 
   private fun calculateUsingERS50Only(sentence: CalculableSentence, sentenceCalculation: SentenceCalculation) {
     val params = Params(
@@ -124,7 +126,7 @@ class ErsedCalculator(
           adjustedDays = addedDays,
           rules = setOf(CalculationRule.ERSED_BEFORE_SENTENCE_DATE),
         ),
-        adjustedErsed.plusDays(params.sentenceCalculation.adjustments.ualDuringCustody),
+        params.sentence.sentencedAt,
       )
     } else {
       Result(ersed, adjustedErsed.plusDays(params.sentenceCalculation.adjustments.ualDuringCustody))
