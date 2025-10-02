@@ -26,7 +26,8 @@ class UnusedDeductionsCalculationService(
 
   fun calculate(adjustments: List<AdjustmentDto>, offenderNo: String): UnusedDeductionCalculationResponse {
     val prisoner = prisonService.getOffenderDetail(offenderNo)
-    val sourceData = sourceDataService.getCalculationSourceData(prisoner, InactiveDataOptions.default()).copy(bookingAndSentenceAdjustments = AdjustmentsSourceData(adjustmentsApiData = adjustments))
+    val sourceData = sourceDataService.getCalculationSourceData(prisoner, InactiveDataOptions.default())
+      .copy(bookingAndSentenceAdjustments = AdjustmentsSourceData(adjustmentsApiData = adjustments.map { it.copy(effectiveDays = it.days) }))
 
     val calculationUserInputs = CalculationUserInputs(useOffenceIndicators = true)
 

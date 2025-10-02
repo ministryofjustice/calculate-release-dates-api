@@ -46,6 +46,37 @@ class UnusedDeductionsControllerIntTest(private val mockManageOffencesClient: Mo
   }
 
   @Test
+  fun `Run unused deductions calculation again, once unused deductions is already set`() {
+    mockManageOffencesClient.noneInPCSC(listOf("TH68010A", "TH68037"))
+    val adjustments = listOf(
+      AdjustmentDto(
+        fromDate = LocalDate.of(2020, 2, 1),
+        toDate = LocalDate.of(2021, 1, 31),
+        days = 396,
+        effectiveDays = 91,
+        bookingId = "UNUSED".hashCode().toLong(),
+        sentenceSequence = 4,
+        adjustmentType = AdjustmentDto.AdjustmentType.REMAND,
+        person = "UNUSED",
+        id = UUID.randomUUID(),
+      ),
+    )
+    val calculation: UnusedDeductionCalculationResponse = webTestClient.post()
+      .uri("/unused-deductions/UNUSED/calculation")
+      .accept(MediaType.APPLICATION_JSON)
+      .contentType(MediaType.APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+      .bodyValue(objectMapper.writeValueAsString(adjustments))
+      .exchange()
+      .expectStatus().isOk
+      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectBody(UnusedDeductionCalculationResponse::class.java)
+      .returnResult().responseBody!!
+
+    Assertions.assertThat(calculation.unusedDeductions).isEqualTo(305)
+  }
+
+  @Test
   fun `Run unused deductions calculation (not enough deductions)`() {
     val adjustments = listOf(
       AdjustmentDto(
