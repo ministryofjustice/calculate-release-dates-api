@@ -1,0 +1,44 @@
+{
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
+      {
+        "offence": {
+          "committedAt": "2025-06-05",
+          "offenceCode": "SE20002"
+        },
+        "duration": {
+          "durationElements": {
+            "WEEKS": 20
+          }
+        },
+        "sentencedAt": "2025-09-26",
+        "hasAnSDSEarlyReleaseExclusion": "DOMESTIC_ABUSE"
+      }
+    ],
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2025-09-26",
+          "numberOfDays": 29,
+          "fromDate": "2025-06-06",
+          "toDate": "2025-07-04"
+        }
+      ]
+    },
+    "externalMovements": [
+      {
+        "movementDate": "2025-09-26",
+        "movementReason": "SENTENCE",
+        "direction": "IN"
+      }
+    ]
+  },
+  "userInputs": {
+    "calculateErsed": true,
+    "useOffenceIndicators": true
+  }
+}

@@ -19,6 +19,7 @@ data class EarlyReleaseConfiguration(
   val releaseMultiplier: Map<SentenceIdentificationTrack, EarlyReleaseMultiplier>? = null,
   val recallCalculation: RecallCalculationType? = null,
   val filter: EarlyReleaseSentenceFilter,
+  val additionsAppliedAfterDefaulting: Boolean = false,
   val tranches: List<EarlyReleaseTrancheConfiguration>,
 ) {
   fun matchesFilter(part: AbstractSentence): Boolean = when (filter) {
@@ -48,6 +49,8 @@ data class EarlyReleaseConfiguration(
   } else {
     sentenceCalculation.releaseDate
   }
+
+  fun modifiesRecallReleaseDate(): Boolean = releaseMultiplier == null
 }
 
 /*
