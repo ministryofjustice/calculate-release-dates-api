@@ -66,7 +66,7 @@ class HdcedExtractionService(
     val otherNonSentencesInGroup =
       sentenceGroup.filter {
         it != hdcSentence &&
-          it.sentenceCalculation.releaseDate.isAfter(calculatedHDCED) &&
+          it.sentenceCalculation.releaseDateDefaultedByCommencement().isAfter(calculatedHDCED) &&
           !it.isDto()
       }
     val containsOnlyImmediateRelease = otherNonSentencesInGroup.all { it.sentenceCalculation.isImmediateRelease() && !it.isRecall() }
@@ -79,7 +79,7 @@ class HdcedExtractionService(
 
     if (nextApplicableSentence != null) {
       if (!containsOnlyImmediateRelease || nextApplicableSentence.sentenceCalculation.isImmediateCustodyRelease()) {
-        return nextApplicableSentence to nextApplicableSentence.sentenceCalculation.releaseDate
+        return nextApplicableSentence to nextApplicableSentence.sentenceCalculation.releaseDateDefaultedByCommencement()
       }
     }
 
