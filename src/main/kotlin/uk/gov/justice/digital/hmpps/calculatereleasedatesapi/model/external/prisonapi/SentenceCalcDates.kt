@@ -81,6 +81,7 @@ data class SentenceCalcDates(
     ReleaseDateType.LTD to (ltdOverrideDate ?: ltdCalculatedDate),
     ReleaseDateType.TUSED to (topupSupervisionExpiryOverrideDate ?: topupSupervisionExpiryCalculatedDate),
     ReleaseDateType.DPRRD to (dtoPostRecallReleaseDateOverride ?: dtoPostRecallReleaseDate),
+    ReleaseDateType.ERSED to earlyRemovalSchemeEligibilityDate,
   )
   fun toCalculatedMap(): Map<ReleaseDateType, LocalDate?> = mapOf(
     ReleaseDateType.SED to sentenceExpiryCalculatedDate,
@@ -97,6 +98,7 @@ data class SentenceCalcDates(
     ReleaseDateType.TUSED to topupSupervisionExpiryCalculatedDate,
     ReleaseDateType.DPRRD to dtoPostRecallReleaseDate,
     ReleaseDateType.ESED to effectiveSentenceEndDate,
+    ReleaseDateType.ERSED to earlyRemovalSchemeEligibilityDate,
   )
 
   fun toOverrideMap(): Map<ReleaseDateType, LocalDate?> = mapOf(
