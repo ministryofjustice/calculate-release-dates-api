@@ -34,6 +34,7 @@ early-release-configuration:
           numerator: 1
           denominator: 2
       filter: SDS_OR_SDS_PLUS_ADULT
+      additions-applied-after-defaulting: true
       tranches:
         - type: SENTENCE_LENGTH
           unit: YEARS

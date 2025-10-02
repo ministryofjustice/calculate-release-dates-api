@@ -7,6 +7,13 @@ enum class SDSEarlyReleaseTranche {
   TRANCHE_0,
   TRANCHE_1,
   TRANCHE_2,
+
+  FTR_56_TRANCHE_1,
+  FTR_56_TRANCHE_2,
+  FTR_56_TRANCHE_3,
+  FTR_56_TRANCHE_4,
+  FTR_56_TRANCHE_5,
+  FTR_56_TRANCHE_6,
   ;
 
   companion object {
