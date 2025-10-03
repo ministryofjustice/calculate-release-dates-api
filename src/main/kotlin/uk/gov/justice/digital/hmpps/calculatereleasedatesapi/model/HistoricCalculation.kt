@@ -16,4 +16,6 @@ data class HistoricCalculation(
   val calculationRequestId: Long?,
   val calculationReason: String?,
   val offenderSentCalculationId: Long?,
+  val genuineOverrideReasonCode: GenuineOverrideReason?,
+  val genuineOverrideReasonDescription: String?,
 )
