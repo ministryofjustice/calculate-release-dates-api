@@ -6,6 +6,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationT
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.CONFIRMED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationSource
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationViewConfiguration
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.GenuineOverrideReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.HistoricCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 
@@ -28,6 +29,8 @@ class HistoricCalculationsService(
       var calculationReason: String? = nomisCalculation.calculationReason
       var establishment: String? = null
       val nomisComment = nomisCalculation.commentText
+      var genuineOverrideReason: GenuineOverrideReason? = null
+      var genuineOverrideReasonDescription: String? = null
       calculations.firstOrNull {
         nomisComment != null && nomisCalculation.commentText.contains(it.calculationReference.toString())
       }?.let {
@@ -37,9 +40,24 @@ class HistoricCalculationsService(
         calculationViewData = CalculationViewConfiguration(it.calculationReference.toString(), it.id)
         calculationRequestId = it.id
         calculationReason = it.reasonForCalculation?.displayName
+        genuineOverrideReason = it.genuineOverrideReason
+        genuineOverrideReasonDescription = it.genuineOverrideReasonFurtherDetail ?: it.genuineOverrideReason?.description
       }
 
-      HistoricCalculation(prisonerId, nomisCalculation.calculationDate, source, calculationViewData, nomisCalculation.commentText, calculationType, establishment, calculationRequestId, calculationReason, nomisCalculation.offenderSentCalculationId)
+      HistoricCalculation(
+        offenderNo = prisonerId,
+        calculationDate = nomisCalculation.calculationDate,
+        calculationSource = source,
+        calculationViewConfiguration = calculationViewData,
+        commentText = nomisCalculation.commentText,
+        calculationType = calculationType,
+        establishment = establishment,
+        calculationRequestId = calculationRequestId,
+        calculationReason = calculationReason,
+        offenderSentCalculationId = nomisCalculation.offenderSentCalculationId,
+        genuineOverrideReasonCode = genuineOverrideReason,
+        genuineOverrideReasonDescription = genuineOverrideReasonDescription,
+      )
     }
     return historicCalculations
   }
