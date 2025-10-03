@@ -154,6 +154,7 @@ class CalculationBreakdownServiceTest {
     caseReference = null,
     fineAmount = null,
     courtDescription = null,
+    courtTypeCode = null,
     consecutiveToSequence = null,
     isSDSPlus = false,
     isSDSPlusEligibleSentenceTypeLengthAndOffence = false,

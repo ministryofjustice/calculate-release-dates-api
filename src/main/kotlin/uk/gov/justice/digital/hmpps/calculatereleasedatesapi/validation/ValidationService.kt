@@ -107,9 +107,12 @@ class ValidationService(
   internal fun validateSupportedSentencesAndCalculations(sourceData: CalculationSourceData): SupportedValidationResponse {
     val sentencesAndOffences = sourceData.sentenceAndOffences
     val sortedSentences = sentencesAndOffences.sortedWith(validationUtilities::sortByCaseNumberAndLineSequence)
+    val validationMessages = preCalculationValidationService
+      .validateSupportedSentences(sortedSentences).distinct()
+      .plus(preCalculationValidationService.isCourtMarshalWithSDSPlus(sourceData))
 
     return SupportedValidationResponse(
-      preCalculationValidationService.validateSupportedSentences(sortedSentences).distinct(),
+      validationMessages,
       preCalculationValidationService.validateUnsupportedCalculation(sourceData).distinct(),
     )
   }

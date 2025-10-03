@@ -281,6 +281,7 @@ class TransformFunctionsTest {
       caseReference = null,
       fineAmount = null,
       courtDescription = null,
+      courtTypeCode = null,
       consecutiveToSequence = null,
       revocationDates = listOf(LocalDate.of(2018, 1, 1), LocalDate.of(2019, 1, 1)),
     )
@@ -300,6 +301,7 @@ class TransformFunctionsTest {
       caseReference = null,
       fineAmount = null,
       courtDescription = null,
+      courtTypeCode = null,
       consecutiveToSequence = null,
       revocationDates = emptyList(),
     )

@@ -137,6 +137,7 @@ class ValidationServiceTest {
     caseReference = null,
     fineAmount = null,
     courtDescription = null,
+    courtTypeCode = null,
     consecutiveToSequence = null,
     revocationDates = emptyList(),
   )
@@ -163,6 +164,7 @@ class ValidationServiceTest {
     caseReference = null,
     fineAmount = null,
     courtDescription = null,
+    courtTypeCode = null,
     consecutiveToSequence = null,
     revocationDates = emptyList(),
   )
@@ -2616,6 +2618,7 @@ class ValidationServiceTest {
       caseReference = null,
       fineAmount = null,
       courtDescription = null,
+      courtTypeCode = null,
       consecutiveToSequence = 3,
       isSDSPlus = false,
       isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
@@ -2652,6 +2655,7 @@ class ValidationServiceTest {
       caseReference = null,
       fineAmount = null,
       courtDescription = null,
+      courtTypeCode = null,
       consecutiveToSequence = 1,
       isSDSPlus = false,
       isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
@@ -2696,6 +2700,7 @@ class ValidationServiceTest {
       caseReference = null,
       fineAmount = null,
       courtDescription = null,
+      courtTypeCode = null,
       consecutiveToSequence = 3,
       isSDSPlus = false,
       isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
@@ -2724,6 +2729,7 @@ class ValidationServiceTest {
       caseReference = null,
       fineAmount = null,
       courtDescription = null,
+      courtTypeCode = null,
       consecutiveToSequence = 3,
       isSDSPlus = false,
       isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
@@ -2752,6 +2758,7 @@ class ValidationServiceTest {
       caseReference = null,
       fineAmount = null,
       courtDescription = null,
+      courtTypeCode = null,
       consecutiveToSequence = 1,
       isSDSPlus = false,
       isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
@@ -3488,6 +3495,44 @@ class ValidationServiceTest {
     assertThat(result).isEmpty()
   }
 
+  @Test
+  fun `SDS+ Sentence with court martial offence triggers manual journey`() {
+    val validationService = getActiveValidationService(
+      SentencesExtractionService(),
+      TRANCHE_CONFIGURATION,
+    )
+
+    val sentence1 = (
+      SentenceAndOffenceWithReleaseArrangements(
+        source = validSdsSentence.copy(
+          sentenceDate = LocalDate.of(2024, 2, 2),
+          lineSequence = 1,
+          caseSequence = 1,
+          offence = validSdsSentence.offence.copy(
+            offenceCode = "ABC",
+            offenceStartDate = LocalDate.of(2021, 12, 24),
+          ),
+        ),
+        isSdsPlus = true,
+        isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+        isSDSPlusOffenceInPeriod = false,
+        hasAnSDSExclusion = SDSEarlyReleaseExclusionType.TERRORISM_T3,
+      )
+      )
+
+    val result = validationService.validateBeforeCalculation(
+      CalculationSourceData(
+        listOf(sentence1),
+        VALID_PRISONER,
+        VALID_ADJUSTMENTS,
+        listOf(),
+        null,
+      ),
+      USER_INPUTS,
+    )
+    assertThat(result).isEmpty()
+  }
+
   companion object {
     val FIRST_MAY_2018: LocalDate = LocalDate.of(2018, 5, 1)
     val FIRST_MAY_2021: LocalDate = LocalDate.of(2021, 5, 1)
@@ -3533,6 +3578,7 @@ class ValidationServiceTest {
       sentenceCategory = "2003",
       sentenceStatus = "a",
       sentenceTypeDescription = "This is a sentence type",
+      courtTypeCode = "ABC",
       offence = OffenderOffence(
         1,
         LocalDate.of(2015, 4, 1),
@@ -3569,6 +3615,7 @@ class ValidationServiceTest {
       caseReference = null,
       fineAmount = null,
       courtDescription = null,
+      courtTypeCode = null,
       consecutiveToSequence = null,
       revocationDates = listOf(LocalDate.of(2021, 1, 1)),
     )
@@ -3693,7 +3740,6 @@ class ValidationServiceTest {
       featuresToggles = featureToggles,
     )
     val preCalculationValidationService = PreCalculationValidationService(
-      featureToggles = featureToggles,
       fineValidationService = fineValidationService,
       adjustmentValidationService = adjustmentValidationService,
       dtoValidationService = dtoValidationService,
