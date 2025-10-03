@@ -11,6 +11,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Senten
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType.FIXED_TERM_RECALL_14
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType.FIXED_TERM_RECALL_28
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType.FIXED_TERM_RECALL_56
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType.STANDARD_RECALL
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType.STANDARD_RECALL_255
 
@@ -82,6 +83,7 @@ enum class SentenceCalculationType(
   FTRSCH15_ORA(sentenceType = StandardDeterminate, recallType = FIXED_TERM_RECALL_28),
   FTRSCH18(sentenceType = StandardDeterminate, recallType = FIXED_TERM_RECALL_28),
   FTRSCH18_ORA(sentenceType = StandardDeterminate, recallType = FIXED_TERM_RECALL_28),
+  FTR_56ORA(sentenceType = StandardDeterminate, recallType = FIXED_TERM_RECALL_56),
   //endregion
 
   //region Indeterminate Sentences

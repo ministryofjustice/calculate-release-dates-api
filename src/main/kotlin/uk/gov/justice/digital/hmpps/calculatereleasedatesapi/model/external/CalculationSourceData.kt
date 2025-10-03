@@ -15,4 +15,6 @@ data class CalculationSourceData(
   val fixedTermRecallDetails: FixedTermRecallDetails? = null,
   val historicalTusedData: HistoricalTusedData? = null,
   val movements: List<PrisonApiExternalMovement> = emptyList(),
-)
+) {
+  fun findLatestRevocationDate() = sentenceAndOffences.mapNotNull { it.revocationDates.maxOrNull() }.maxOrNull()
+}

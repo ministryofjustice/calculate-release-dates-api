@@ -12,7 +12,7 @@ class BookingService {
     val sentenceAndOffences = calculationSourceData.sentenceAndOffences
     val bookingAndSentenceAdjustments = calculationSourceData.bookingAndSentenceAdjustments
     val movements = calculationSourceData.movements
-    val revocationDate = sentenceAndOffences.mapNotNull { it.revocationDates.maxOrNull() }.maxOrNull()
+    val revocationDate = calculationSourceData.findLatestRevocationDate()
 
     val offender = transform(prisonerDetails)
     val adjustments = transform(bookingAndSentenceAdjustments, sentenceAndOffences)
