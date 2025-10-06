@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseTrancheConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isBeforeOrEqualTo
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import kotlin.math.abs
@@ -107,8 +108,14 @@ data class SentenceCalculation(
           return expiryDate
         }
         if (sentence.recallType!!.isFixedTermRecall) {
+
+          val unadjustedDate = if (allocatedEarlyRelease?.modifiesRecallReleaseDate() == true && allocatedEarlyRelease!!.additionsAppliedAfterDefaulting && unadjustedPostRecallReleaseDate!!.isBeforeOrEqualTo(allocatedTranche!!.date)) {
+            allocatedTranche!!.date
+          } else {
+            unadjustedPostRecallReleaseDate
+          }
           // Fixed term recalls only apply adjustments from return to custody date
-          val fixedTermRecallRelease = unadjustedPostRecallReleaseDate?.plusDays(
+          val fixedTermRecallRelease = unadjustedDate?.plusDays(
             adjustments.adjustmentsForFixedTermRecall(),
           )
           return minOf(fixedTermRecallRelease!!, expiryDate)
@@ -197,7 +204,7 @@ data class SentenceCalculation(
       }
     }
 
-  fun releaseDateDefaultedByCommencement(): LocalDate = if (isDateDefaultedToCommencement(adjustedDeterminateReleaseDate)) {
+  fun releaseDateDefaultedByCommencement(): LocalDate = if (isDateDefaultedToCommencement(releaseDate)) {
     allocatedTranche!!.date
   } else {
     releaseDate
@@ -215,7 +222,7 @@ data class SentenceCalculation(
   var topUpSupervisionDate: LocalDate? = null
   var isReleaseDateConditional: Boolean = false
 
-  private fun isDateDefaultedToCommencement(releaseDate: LocalDate): Boolean = !sentence.isRecall() && allocatedTranche != null && allocatedEarlyRelease != null && sentence.sentenceParts().any { allocatedEarlyRelease!!.matchesFilter(it) } && releaseDate.isBefore(allocatedTranche!!.date)
+  private fun isDateDefaultedToCommencement(releaseDate: LocalDate): Boolean = allocatedTranche != null && allocatedEarlyRelease != null && sentence.sentenceParts().any { allocatedEarlyRelease!!.matchesFilter(it) } && releaseDate.isBeforeOrEqualTo(allocatedTranche!!.date)
 
   fun buildString(releaseDateTypes: List<ReleaseDateType>): String {
     val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")

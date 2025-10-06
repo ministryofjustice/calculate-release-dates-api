@@ -46,8 +46,11 @@ class TimelineTrancheCalculationHandler(
       val sentencesToModifyReleaseDates = sentencesToModifyReleaseDates(timelineTrackingData, timelineCalculationDate, earlyReleaseConfiguration)
       if (thisTrancheIsAllocatedTranche && sentencesToModifyReleaseDates.isNotEmpty()) {
         val allSentences = releasedSentenceGroups.map { it.sentences }.plus(listOf(currentSentenceGroup))
-        beforeTrancheCalculation =
+        beforeTrancheCalculation = if (earlyReleaseConfiguration.additionsAppliedAfterDefaulting) {
+          null
+        } else {
           timelineCalculator.getLatestCalculation(allSentences, offender, timelineTrackingData.returnToCustodyDate)
+        }
         sentencesToModifyReleaseDates.forEach {
           it.sentenceCalculation.allocatedTranche = currentTimelineCalculationDate.trancheConfiguration
           it.sentenceCalculation.allocatedEarlyRelease = currentTimelineCalculationDate.earlyReleaseConfiguration

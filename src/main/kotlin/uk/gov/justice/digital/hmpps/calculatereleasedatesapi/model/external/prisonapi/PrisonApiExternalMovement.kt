@@ -12,10 +12,10 @@ data class PrisonApiExternalMovement(
   val movementType: String,
   val movementTypeDescription: String?,
   val directionCode: String,
-  val movementDate: LocalDate,
+  val movementDate: LocalDate?,
   val movementTime: LocalTime?,
   val movementReason: String?,
-  val movementReasonCode: String,
+  val movementReasonCode: String?,
   val fromAgency: String?,
   val commentText: String?,
 ) {
