@@ -16,4 +16,6 @@ data class CalculationContext(
   val otherReasonDescription: String?,
   val calculationDate: LocalDate?,
   val calculationType: CalculationType,
+  val genuineOverrideReasonCode: GenuineOverrideReason?,
+  val genuineOverrideReasonDescription: String?,
 )

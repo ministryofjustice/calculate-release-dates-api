@@ -22,6 +22,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CrdWebException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationContext
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedDate
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.GenuineOverrideReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NomisCalculationReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NomisCalculationSummary
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OffenderKeyDates
@@ -139,6 +140,8 @@ open class OffenderKeyDatesServiceTest {
         null,
         LocalDate.of(2024, 1, 1),
         CalculationType.CALCULATED,
+        null,
+        null,
       ),
       listOf(
         DetailedDate(
@@ -219,6 +222,8 @@ open class OffenderKeyDatesServiceTest {
         null,
         LocalDate.of(2024, 1, 1),
         CalculationType.CALCULATED,
+        null,
+        null,
       ),
       listOf(
         DetailedDate(
@@ -554,5 +559,171 @@ open class OffenderKeyDatesServiceTest {
     val result = underTest.releaseDates(offenderKeyDates)
 
     assertThat(dates).isEqualTo(result)
+  }
+
+  @Test
+  fun `Get release dates for genuine override not OTHER successfully`() {
+    val bookingId = 5636121L
+    val calcRequestId = 1L
+    val offenderKeyDates = OffenderKeyDates(
+      reasonCode = "FS",
+      calculatedAt = LocalDateTime.of(2024, 2, 29, 10, 30),
+      comment = null,
+      homeDetentionCurfewEligibilityDate = LocalDate.of(2024, 1, 1),
+    )
+    val expected = ReleaseDatesAndCalculationContext(
+      CalculationContext(
+        calcRequestId,
+        bookingId,
+        "A1234AB",
+        CalculationStatus.CONFIRMED,
+        reference,
+        CalculationReason(-1, false, false, "14 day check", false, null, null, 1),
+        null,
+        LocalDate.of(2024, 1, 1),
+        CalculationType.GENUINE_OVERRIDE,
+        GenuineOverrideReason.TERRORISM,
+        "Terrorism or terror-related offences",
+      ),
+      listOf(
+        DetailedDate(
+          ReleaseDateType.HDCED,
+          ReleaseDateType.HDCED.description,
+          LocalDate.of(2024, 1, 1),
+          emptyList(),
+        ),
+      ),
+    )
+
+    val detailedDates = mapOf(
+      ReleaseDateType.HDCED to DetailedDate(
+        ReleaseDateType.HDCED,
+        ReleaseDateType.HDCED.description,
+        LocalDate.of(2024, 1, 1),
+        emptyList(),
+      ),
+    )
+    val calcRequest = CalculationRequest(
+      1,
+      reference,
+      "A1234AB",
+      bookingId,
+      CalculationStatus.CONFIRMED.name,
+      calculatedAt = LocalDateTime.of(2024, 1, 1, 0, 0),
+      reasonForCalculation = CalculationReason(
+        -1,
+        false,
+        false,
+        "14 day check",
+        false,
+        null,
+        null,
+        1,
+      ),
+      otherReasonForCalculation = null,
+      calculationType = CalculationType.GENUINE_OVERRIDE,
+      genuineOverrideReason = GenuineOverrideReason.TERRORISM,
+      genuineOverrideReasonFurtherDetail = null,
+    )
+
+    whenever(prisonService.getOffenderKeyDates(any())).thenReturn(offenderKeyDates.right())
+    whenever(calculationRequestRepository.findById(calcRequestId)).thenReturn(Optional.of(calcRequest))
+    whenever(
+      calculationResultEnrichmentService.addDetailToCalculationDates(
+        anyList(),
+        isNull(),
+        isNull(),
+        isNull(),
+        anyList(),
+        anyList(),
+      ),
+    ).thenReturn(detailedDates)
+
+    val result = underTest.getKeyDatesByCalcId(calcRequestId)
+
+    assertThat(result).isEqualTo(expected)
+  }
+
+  @Test
+  fun `Get release dates for genuine override OTHER successfully`() {
+    val bookingId = 5636121L
+    val calcRequestId = 1L
+    val offenderKeyDates = OffenderKeyDates(
+      reasonCode = "FS",
+      calculatedAt = LocalDateTime.of(2024, 2, 29, 10, 30),
+      comment = null,
+      homeDetentionCurfewEligibilityDate = LocalDate.of(2024, 1, 1),
+    )
+    val expected = ReleaseDatesAndCalculationContext(
+      CalculationContext(
+        calcRequestId,
+        bookingId,
+        "A1234AB",
+        CalculationStatus.CONFIRMED,
+        reference,
+        CalculationReason(-1, false, false, "14 day check", false, null, null, 1),
+        null,
+        LocalDate.of(2024, 1, 1),
+        CalculationType.GENUINE_OVERRIDE,
+        GenuineOverrideReason.OTHER,
+        "Some extra detail",
+      ),
+      listOf(
+        DetailedDate(
+          ReleaseDateType.HDCED,
+          ReleaseDateType.HDCED.description,
+          LocalDate.of(2024, 1, 1),
+          emptyList(),
+        ),
+      ),
+    )
+
+    val detailedDates = mapOf(
+      ReleaseDateType.HDCED to DetailedDate(
+        ReleaseDateType.HDCED,
+        ReleaseDateType.HDCED.description,
+        LocalDate.of(2024, 1, 1),
+        emptyList(),
+      ),
+    )
+    val calcRequest = CalculationRequest(
+      1,
+      reference,
+      "A1234AB",
+      bookingId,
+      CalculationStatus.CONFIRMED.name,
+      calculatedAt = LocalDateTime.of(2024, 1, 1, 0, 0),
+      reasonForCalculation = CalculationReason(
+        -1,
+        false,
+        false,
+        "14 day check",
+        false,
+        null,
+        null,
+        1,
+      ),
+      otherReasonForCalculation = null,
+      calculationType = CalculationType.GENUINE_OVERRIDE,
+      genuineOverrideReason = GenuineOverrideReason.OTHER,
+      genuineOverrideReasonFurtherDetail = "Some extra detail",
+    )
+
+    whenever(prisonService.getOffenderKeyDates(any())).thenReturn(offenderKeyDates.right())
+    whenever(calculationRequestRepository.findById(calcRequestId)).thenReturn(Optional.of(calcRequest))
+    whenever(
+      calculationResultEnrichmentService.addDetailToCalculationDates(
+        anyList(),
+        isNull(),
+        isNull(),
+        isNull(),
+        anyList(),
+        anyList(),
+      ),
+    ).thenReturn(detailedDates)
+
+    val result = underTest.getKeyDatesByCalcId(calcRequestId)
+
+    assertThat(result).isEqualTo(expected)
   }
 }

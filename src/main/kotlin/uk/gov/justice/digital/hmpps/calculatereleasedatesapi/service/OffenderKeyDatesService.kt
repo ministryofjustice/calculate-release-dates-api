@@ -71,6 +71,8 @@ class OffenderKeyDatesService(
         calculationRequest.otherReasonForCalculation,
         calculationRequest.calculatedAt.toLocalDate(),
         calculationRequest.calculationType,
+        calculationRequest.genuineOverrideReason,
+        calculationRequest.genuineOverrideReasonFurtherDetail ?: calculationRequest.genuineOverrideReason?.description,
       ),
       enrichedDates,
     )
