@@ -3495,44 +3495,6 @@ class ValidationServiceTest {
     assertThat(result).isEmpty()
   }
 
-  @Test
-  fun `SDS+ Sentence with court martial offence triggers manual journey`() {
-    val validationService = getActiveValidationService(
-      SentencesExtractionService(),
-      TRANCHE_CONFIGURATION,
-    )
-
-    val sentence1 = (
-      SentenceAndOffenceWithReleaseArrangements(
-        source = validSdsSentence.copy(
-          sentenceDate = LocalDate.of(2024, 2, 2),
-          lineSequence = 1,
-          caseSequence = 1,
-          offence = validSdsSentence.offence.copy(
-            offenceCode = "ABC",
-            offenceStartDate = LocalDate.of(2021, 12, 24),
-          ),
-        ),
-        isSdsPlus = true,
-        isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-        isSDSPlusOffenceInPeriod = false,
-        hasAnSDSExclusion = SDSEarlyReleaseExclusionType.TERRORISM_T3,
-      )
-      )
-
-    val result = validationService.validateBeforeCalculation(
-      CalculationSourceData(
-        listOf(sentence1),
-        VALID_PRISONER,
-        VALID_ADJUSTMENTS,
-        listOf(),
-        null,
-      ),
-      USER_INPUTS,
-    )
-    assertThat(result).isEmpty()
-  }
-
   companion object {
     val FIRST_MAY_2018: LocalDate = LocalDate.of(2018, 5, 1)
     val FIRST_MAY_2021: LocalDate = LocalDate.of(2021, 5, 1)

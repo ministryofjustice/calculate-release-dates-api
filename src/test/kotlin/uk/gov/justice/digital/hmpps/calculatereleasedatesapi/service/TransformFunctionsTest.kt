@@ -516,20 +516,6 @@ class TransformFunctionsTest {
       isSDSPlusOffenceInPeriod = true,
       hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
     )
-    val expectedSentence = StandardDeterminateSentence(
-      sentencedAt = FIRST_JAN_2015,
-      duration = ONE_YEAR_DURATION,
-      offence = Offence(committedAt = SECOND_JAN_2015, offenceCode = "RR1"),
-      recall = Recall(RecallType.FIXED_TERM_RECALL_14),
-      identifier = UUID.nameUUIDFromBytes(("$BOOKING_ID-$sequence").toByteArray()),
-      lineSequence = lineSequence,
-      caseSequence = caseSequence,
-      externalSentenceId = ExternalSentenceId(sequence, BOOKING_ID),
-      isSDSPlus = true,
-      isSDSPlusEligibleSentenceTypeLengthAndOffence = true,
-      isSDSPlusOffenceInPeriod = true,
-      hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
-    )
 
     for ((sentenceType, recallType) in SentenceRecallTypePairs) {
       assertThat(transform(request.copy(sentenceCalculationType = sentenceType)).recallType)

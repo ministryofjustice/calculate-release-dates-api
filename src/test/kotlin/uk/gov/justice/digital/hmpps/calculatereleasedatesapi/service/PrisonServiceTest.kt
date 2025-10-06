@@ -32,7 +32,6 @@ import java.time.LocalDateTime
 class PrisonServiceTest {
   private val prisonApiClient = mock<PrisonApiClient>()
   private val releaseArrangementLookupService = mock<ReleaseArrangementLookupService>()
-  private val botusTusedService = mock<BotusTusedService>()
   private val prisonService = PrisonService(prisonApiClient, releaseArrangementLookupService, FeatureToggles())
 
   @Test
@@ -459,7 +458,6 @@ class PrisonServiceTest {
   }
 
   companion object {
-    private val mapper = ObjectMapper()
 
     val firstPage = RestResponsePage<CalculablePrisoner>(
       content = emptyList(),
