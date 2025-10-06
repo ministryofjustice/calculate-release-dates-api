@@ -23,8 +23,7 @@ class TimelineTrancheThreeCalculationHandler(
       val sentencesWithT3Exclusion = currentSentenceGroup
         .filter { sentence -> sentence.sentenceParts().any { sentence -> sentence.identificationTrack == SentenceIdentificationTrack.SDS && sentence is StandardDeterminateSentence && sentence.hasAnSDSEarlyReleaseExclusion.trancheThreeExclusion } }
       sentencesWithT3Exclusion.forEach {
-        it.sentenceCalculation.unadjustedReleaseDate.findMultiplierBySentence =
-          multiplierFnForDate(timelineCalculationDate, allocatedTranche?.date)
+        it.sentenceCalculation.unadjustedReleaseDate.calculationTrigger = it.sentenceCalculation.unadjustedReleaseDate.calculationTrigger.copy(timelineCalculationDate = timelineCalculationDate)
       }
       return TimelineHandleResult(requiresCalculation = sentencesWithT3Exclusion.isNotEmpty())
     }

@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseConfigurations
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AbstractSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationTrigger
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.UnadjustedReleaseDate
@@ -80,10 +81,13 @@ class TimelineSentenceCalculationHandler(
         sentence.sentenceCalculation = SentenceCalculation(
           UnadjustedReleaseDate(
             sentence,
-            multiplierFnForDate(timelineCalculationDate, allocatedTranche?.date),
-            historicMultiplierFnForDate(),
-            findRecallCalculation(timelineCalculationDate, allocatedEarlyRelease),
-            returnToCustodyDate,
+            earlyReleaseConfigurations,
+            CalculationTrigger(
+              timelineCalculationDate,
+              allocatedEarlyRelease,
+              allocatedTranche,
+            ),
+
           ),
           SentenceAdjustments(),
           calculateErsed = options.calculateErsed,

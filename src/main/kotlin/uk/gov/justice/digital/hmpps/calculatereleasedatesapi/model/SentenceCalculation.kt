@@ -12,11 +12,13 @@ data class SentenceCalculation(
   val unadjustedReleaseDate: UnadjustedReleaseDate,
   var adjustments: SentenceAdjustments,
   val calculateErsed: Boolean,
-  var allocatedEarlyRelease: EarlyReleaseConfiguration? = null,
-  var allocatedTranche: EarlyReleaseTrancheConfiguration? = null,
   val sentence: CalculableSentence = unadjustedReleaseDate.sentence,
   var lastDayOfUal: LocalDate? = null,
 ) {
+
+  var allocatedEarlyRelease: EarlyReleaseConfiguration? = null
+  var allocatedTranche: EarlyReleaseTrancheConfiguration? = null
+
   val releaseDateCalculation: ReleaseDateCalculation get() = unadjustedReleaseDate.releaseDateCalculation
   val numberOfDaysToSentenceExpiryDate: Int get() = releaseDateCalculation.numberOfDaysToSentenceExpiryDate
   val numberOfDaysToDeterminateReleaseDateDouble: Double get() = releaseDateCalculation.numberOfDaysToDeterminateReleaseDateDouble

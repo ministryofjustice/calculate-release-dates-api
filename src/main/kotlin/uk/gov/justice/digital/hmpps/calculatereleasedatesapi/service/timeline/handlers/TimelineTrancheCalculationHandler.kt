@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseConfigurations
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationTrigger
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExternalMovementReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.TrancheAllocationService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculator
@@ -51,19 +52,17 @@ class TimelineTrancheCalculationHandler(
           timelineCalculator.getLatestCalculation(allSentences, offender, timelineTrackingData.returnToCustodyDate)
         }
         sentencesToModifyReleaseDates.forEach {
-          if (earlyReleaseConfiguration.releaseMultiplier != null) {
-            it.sentenceCalculation.unadjustedReleaseDate.findMultiplierBySentence =
-              multiplierFnForDate(timelineCalculationDate, allocatedTranche!!.date)
-          } else {
-            it.sentenceCalculation.unadjustedReleaseDate.findRecallCalculation =
-              findRecallCalculation(timelineCalculationDate, allocatedEarlyRelease)
-          }
+          it.sentenceCalculation.allocatedTranche = currentTimelineCalculationDate.trancheConfiguration
+          it.sentenceCalculation.allocatedEarlyRelease = currentTimelineCalculationDate.earlyReleaseConfiguration
+          it.sentenceCalculation.unadjustedReleaseDate.calculationTrigger = CalculationTrigger(
+            timelineCalculationDate,
+            allocatedEarlyRelease,
+            allocatedTranche,
+          )
           it.sentenceCalculation.adjustments = it.sentenceCalculation.adjustments.copy(
             unusedAdaDays = 0,
             unusedLicenceAdaDays = 0,
           )
-          it.sentenceCalculation.allocatedTranche = currentTimelineCalculationDate.trancheConfiguration
-          it.sentenceCalculation.allocatedEarlyRelease = currentTimelineCalculationDate.earlyReleaseConfiguration
         }
       } else {
         // No sentences at tranche date.
