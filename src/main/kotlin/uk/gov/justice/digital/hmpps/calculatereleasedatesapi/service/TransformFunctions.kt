@@ -892,9 +892,10 @@ fun transform(
 fun transform(
   externalMovement: PrisonApiExternalMovement,
 ): ExternalMovement? {
+  val movementDate = externalMovement.movementDate ?: return null
   val externalMovementReason = externalMovement.transformMovementReason() ?: return null
   return ExternalMovement(
-    movementDate = externalMovement.movementDate,
+    movementDate = movementDate,
     movementReason = externalMovementReason,
     direction = externalMovement.transformMovementDirection(),
   )
