@@ -37,7 +37,7 @@ class NomisCommentService {
     isGenuineOverride: Boolean,
   ): String {
     val comment = if (isGenuineOverride) {
-      MANUALLY_ENTERED_OVERRIDE
+      GENUINE_OVERRIDE
     } else if (dates.containsKey(ReleaseDateType.None)) {
       INDETERMINATE_COMMENT
     } else {
@@ -56,7 +56,7 @@ class NomisCommentService {
       "{%s} An Indeterminate (Life) sentence was entered using the Calculate Release Dates service and was intentionally recorded as blank. The calculation ID is: %s"
     private const val MANUAL_ENTRY_COMMENT =
       "{%s} The information shown was manually recorded in the Calculate Release Dates service. The calculation ID is: %s"
-    private const val MANUALLY_ENTERED_OVERRIDE =
-      "{%s} was manually recorded in the Calculate release dates service by Specialist Support. The calculation ID is: %s"
+    private const val GENUINE_OVERRIDE =
+      "{%s} using the Calculate Release Dates service via override. The calculation ID is: %s"
   }
 }

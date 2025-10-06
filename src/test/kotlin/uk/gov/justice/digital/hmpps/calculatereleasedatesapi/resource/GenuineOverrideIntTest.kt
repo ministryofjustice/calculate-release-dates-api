@@ -91,7 +91,7 @@ class GenuineOverrideIntTest(private val mockPrisonService: MockPrisonService) :
         .withRequestBody(matchingJsonPath("$.keyDates[?(@.licenceExpiryDate == '2029-12-13')]"))
         .withRequestBody(matchingJsonPath("$.keyDates[?(@.sentenceExpiryDate == '2025-01-02')]"))
         .withRequestBody(matchingJsonPath("$.keyDates[?(@.homeDetentionCurfewEligibilityDate == '2021-06-07')]"))
-        .withRequestBody(matchingJsonPath("$.comment", containing("{Initial calculation} was manually recorded in the Calculate release dates service by Specialist Support. The calculation ID is: ${newRequest.calculationReference}"))),
+        .withRequestBody(matchingJsonPath("$.comment", containing("{Initial calculation} using the Calculate Release Dates service via override. The calculation ID is: ${newRequest.calculationReference}"))),
     )
   }
 
