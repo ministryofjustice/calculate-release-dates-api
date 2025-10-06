@@ -12,11 +12,13 @@ import org.mockito.kotlin.spy
 import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.hdcedConfigurationForTests
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.HdcedConfiguration
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseConfigurations
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentDuration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationTrigger
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
@@ -575,9 +577,8 @@ class HdcedCalculatorTest {
     )
     var unadjustedReleaseDate = UnadjustedReleaseDate(
       sentence,
-      { 0.0 },
-      { 0.0 },
-      { a, b -> 0 to LocalDate.now() },
+      EarlyReleaseConfigurations(emptyList()),
+      CalculationTrigger(LocalDate.now()),
     )
     unadjustedReleaseDate = spy(unadjustedReleaseDate)
     lenient().whenever(unadjustedReleaseDate.releaseDateCalculation).thenReturn(releaseDateCalculation)
