@@ -80,6 +80,8 @@ open class DetailedCalculationResultsService(
     calculationRequest.otherReasonForCalculation,
     calculationRequest.calculatedAt.toLocalDate(),
     calculationRequest.calculationType,
+    calculationRequest.genuineOverrideReason,
+    calculationRequest.genuineOverrideReasonFurtherDetail ?: calculationRequest.genuineOverrideReason?.description,
   )
 
   private fun approvedDates(latestApprovedDatesSubmission: ApprovedDatesSubmission?): Map<ReleaseDateType, DetailedDate>? = latestApprovedDatesSubmission?.approvedDates?.associate {
