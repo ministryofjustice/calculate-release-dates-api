@@ -1,7 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import arrow.core.right
-import com.fasterxml.jackson.databind.ObjectMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.mock
@@ -32,7 +31,6 @@ import java.time.LocalDateTime
 class PrisonServiceTest {
   private val prisonApiClient = mock<PrisonApiClient>()
   private val releaseArrangementLookupService = mock<ReleaseArrangementLookupService>()
-  private val botusTusedService = mock<BotusTusedService>()
   private val prisonService = PrisonService(prisonApiClient, releaseArrangementLookupService, FeatureToggles())
 
   @Test
@@ -148,6 +146,7 @@ class PrisonServiceTest {
         offence = offence1,
         caseReference = null,
         courtDescription = null,
+        courtTypeCode = null,
         fineAmount = null,
         terms = emptyList(),
         revocationDates = emptyList(),
@@ -166,6 +165,7 @@ class PrisonServiceTest {
         offence = offence2,
         caseReference = null,
         courtDescription = null,
+        courtTypeCode = null,
         fineAmount = null,
         terms = emptyList(),
         revocationDates = emptyList(),
@@ -457,7 +457,6 @@ class PrisonServiceTest {
   }
 
   companion object {
-    private val mapper = ObjectMapper()
 
     val firstPage = RestResponsePage<CalculablePrisoner>(
       content = emptyList(),

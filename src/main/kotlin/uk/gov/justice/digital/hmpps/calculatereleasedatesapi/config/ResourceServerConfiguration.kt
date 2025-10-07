@@ -10,7 +10,6 @@ import org.springframework.security.config.annotation.web.invoke
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher
 
 @Configuration
 @EnableMethodSecurity
@@ -29,17 +28,17 @@ private class ResourceServerConfiguration {
         }
       }
       authorizeHttpRequests {
-        authorize(AntPathRequestMatcher("/webjars/**", HttpMethod.GET.name()), permitAll)
-        authorize(AntPathRequestMatcher("favicon.ico", HttpMethod.GET.name()), permitAll)
-        authorize(AntPathRequestMatcher("/health/**", HttpMethod.GET.name()), permitAll)
-        authorize(AntPathRequestMatcher("/info", HttpMethod.GET.name()), permitAll)
-        authorize(AntPathRequestMatcher("/swagger-resources/**", HttpMethod.GET.name()), permitAll)
-        authorize(AntPathRequestMatcher("/v3/api-docs/**", HttpMethod.GET.name()), permitAll)
-        authorize(AntPathRequestMatcher("/swagger-ui/**", HttpMethod.GET.name()), permitAll)
-        authorize(AntPathRequestMatcher("/swagger-ui.html", HttpMethod.GET.name()), permitAll)
-        authorize(AntPathRequestMatcher("/h2-console/**", HttpMethod.POST.name()), permitAll)
-        authorize(AntPathRequestMatcher("/some-url-not-found", HttpMethod.GET.name()), permitAll)
-        authorize(AntPathRequestMatcher("/queue-admin/retry-all-dlqs", HttpMethod.PUT.name()), permitAll)
+        authorize(HttpMethod.GET, "/webjars/**", permitAll)
+        authorize(HttpMethod.GET, "/favicon.ico", permitAll)
+        authorize(HttpMethod.GET, "/health/**", permitAll)
+        authorize(HttpMethod.GET, "/info", permitAll)
+        authorize(HttpMethod.GET, "/swagger-resources/**", permitAll)
+        authorize(HttpMethod.GET, "/v3/api-docs/**", permitAll)
+        authorize(HttpMethod.GET, "/swagger-ui/**", permitAll)
+        authorize(HttpMethod.GET, "/swagger-ui.html", permitAll)
+        authorize(HttpMethod.POST, "/h2-console/**", permitAll)
+        authorize(HttpMethod.GET, "/some-url-not-found", permitAll)
+        authorize(HttpMethod.PUT, "/queue-admin/retry-all-dlqs", permitAll)
         authorize(anyRequest, authenticated)
       }
       oauth2ResourceServer {

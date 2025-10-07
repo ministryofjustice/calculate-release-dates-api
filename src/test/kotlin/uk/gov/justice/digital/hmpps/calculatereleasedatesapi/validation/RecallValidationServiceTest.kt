@@ -297,6 +297,7 @@ class RecallValidationServiceTest {
       caseReference = null,
       fineAmount = null,
       courtDescription = null,
+      courtTypeCode = null,
       consecutiveToSequence = null,
       revocationDates = listOf(LocalDate.of(2024, 1, 1)),
       isSDSPlus = false,

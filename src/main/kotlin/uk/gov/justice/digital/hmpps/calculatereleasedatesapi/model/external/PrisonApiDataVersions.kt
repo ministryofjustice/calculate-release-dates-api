@@ -40,6 +40,7 @@ class PrisonApiDataVersions {
           offence = offence,
           caseReference = null,
           courtDescription = null,
+          courtTypeCode = null,
           fineAmount = 0.toBigDecimal(),
           isSDSPlus = false,
           isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
