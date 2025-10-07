@@ -46,7 +46,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.MismatchType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NormalisedSentenceAndOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Recall
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
@@ -281,6 +280,7 @@ class TransformFunctionsTest {
       caseReference = null,
       fineAmount = null,
       courtDescription = null,
+      courtTypeCode = null,
       consecutiveToSequence = null,
       revocationDates = listOf(LocalDate.of(2018, 1, 1), LocalDate.of(2019, 1, 1)),
     )
@@ -300,6 +300,7 @@ class TransformFunctionsTest {
       caseReference = null,
       fineAmount = null,
       courtDescription = null,
+      courtTypeCode = null,
       consecutiveToSequence = null,
       revocationDates = emptyList(),
     )
@@ -513,20 +514,6 @@ class TransformFunctionsTest {
       isSDSPlusEligibleSentenceTypeLengthAndOffence = true,
       isSDSPlusOffenceInPeriod = true,
       hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
-    )
-    val expectedSentence = StandardDeterminateSentence(
-      sentencedAt = FIRST_JAN_2015,
-      duration = ONE_YEAR_DURATION,
-      offence = Offence(committedAt = SECOND_JAN_2015, offenceCode = "RR1"),
-      recall = Recall(RecallType.FIXED_TERM_RECALL_14),
-      identifier = UUID.nameUUIDFromBytes(("$BOOKING_ID-$sequence").toByteArray()),
-      lineSequence = lineSequence,
-      caseSequence = caseSequence,
-      externalSentenceId = ExternalSentenceId(sequence, BOOKING_ID),
-      isSDSPlus = true,
-      isSDSPlusEligibleSentenceTypeLengthAndOffence = true,
-      isSDSPlusOffenceInPeriod = true,
-      hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
     )
 
     for ((sentenceType, recallType) in SentenceRecallTypePairs) {

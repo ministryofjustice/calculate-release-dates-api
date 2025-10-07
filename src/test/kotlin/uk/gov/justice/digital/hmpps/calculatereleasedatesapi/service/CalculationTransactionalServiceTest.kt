@@ -805,6 +805,24 @@ class CalculationTransactionalServiceTest {
     assertThat(response).isEqualTo(expectedResponse)
   }
 
+  @Test
+  fun `supported validation performs a calculation and validates for manual entry journey if any sentence is SDS+ from a court martial`() {
+    val expectedResponse = SupportedValidationResponse(
+      unsupportedManualMessages = listOf(ValidationMessage(ValidationCode.COURT_MARTIAL_WITH_SDS_PLUS)),
+    )
+    whenever(calculationSourceDataService.getCalculationSourceData(prisonerDetails.offenderNo, InactiveDataOptions.default())).thenReturn(SOURCE_DATA)
+    whenever(validationService.validateSupportedSentencesAndCalculations(SOURCE_DATA)).thenReturn(SupportedValidationResponse())
+    whenever(validationService.validateBeforeCalculation(SOURCE_DATA, CalculationUserInputs())).thenReturn(emptyList())
+    whenever(bookingService.getBooking(SOURCE_DATA)).thenReturn(BOOKING)
+    whenever(validationService.validateBeforeCalculation(BOOKING)).thenReturn(emptyList())
+    whenever(calculationService.calculateReleaseDates(BOOKING, CalculationUserInputs())).thenReturn(CALCULATION_OUTPUT)
+    whenever(validationService.validateManualEntryJourneyRequirements(BOOKING, CALCULATION_OUTPUT)).thenReturn(listOf(ValidationMessage(ValidationCode.COURT_MARTIAL_WITH_SDS_PLUS)))
+
+    val response = calculationTransactionalService.supportedValidation(prisonerDetails.offenderNo)
+
+    assertThat(response).isEqualTo(expectedResponse)
+  }
+
   private fun <T> capture(argumentCaptor: ArgumentCaptor<T>): T = argumentCaptor.capture()
 
   @BeforeEach

@@ -18,6 +18,7 @@ interface SentenceAndOffence {
   val offence: OffenderOffence
   val caseReference: String?
   val courtDescription: String?
+  val courtTypeCode: String?
   val fineAmount: BigDecimal?
   val revocationDates: List<LocalDate>
 }

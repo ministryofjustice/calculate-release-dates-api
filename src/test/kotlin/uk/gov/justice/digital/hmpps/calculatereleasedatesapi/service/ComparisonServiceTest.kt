@@ -540,6 +540,7 @@ class ComparisonServiceTest {
       offence = OffenderOffence(1L, LocalDate.of(2015, 1, 1), null, "ADIMP_ORA", "description", listOf("A")),
       caseReference = null,
       courtDescription = null,
+      courtTypeCode = null,
       fineAmount = null,
       isSDSPlus = true,
       isSDSPlusEligibleSentenceTypeLengthAndOffence = false,

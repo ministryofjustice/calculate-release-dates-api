@@ -2,7 +2,6 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation
 
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.adjustmentsapi.model.AdjustmentDto
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
@@ -15,7 +14,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDa
 
 @Service
 class PreCalculationValidationService(
-  private val featureToggles: FeatureToggles,
   private val fineValidationService: FineValidationService,
   private val adjustmentValidationService: AdjustmentValidationService,
   private val dtoValidationService: DtoValidationService,
@@ -23,6 +21,8 @@ class PreCalculationValidationService(
   private val unsupportedValidationService: UnsupportedValidationService,
   private val toreraValidationService: ToreraValidationService,
 ) {
+
+  val courtMarshalCourtTypeCodes = listOf("DCM", "GCM")
 
   internal fun validatePrePcscDtoDoesNotHaveRemandOrTaggedBail(sourceData: CalculationSourceData): List<ValidationMessage> {
     val messages = mutableListOf<ValidationMessage>()
@@ -121,6 +121,12 @@ class PreCalculationValidationService(
       return listOf(ValidationMessage(ValidationCode.NO_SENTENCES))
     }
     return emptyList()
+  }
+
+  fun isCourtMarshalWithSDSPlus(sourceData: CalculationSourceData): List<ValidationMessage> = if (sourceData.sentenceAndOffences.any { it.isSDSPlus && courtMarshalCourtTypeCodes.contains(it.courtTypeCode) }) {
+    listOf(ValidationMessage(ValidationCode.COURT_MARTIAL_WITH_SDS_PLUS))
+  } else {
+    emptyList()
   }
 
   data class RemandAndTaggedBail(

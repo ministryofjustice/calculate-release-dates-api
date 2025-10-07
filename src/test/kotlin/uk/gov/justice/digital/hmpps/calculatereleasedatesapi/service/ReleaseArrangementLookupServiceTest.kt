@@ -168,6 +168,7 @@ class ReleaseArrangementLookupServiceTest {
       null,
       null,
       null,
+      null,
       revocationDates = emptyList(),
     )
     whenever(mockManageOffencesService.getPcscMarkersForOffenceCodes(any())).thenReturn(listOf(markers))
@@ -536,6 +537,7 @@ class ReleaseArrangementLookupServiceTest {
       null,
       null,
       null,
+      null,
       revocationDates = emptyList(),
     )
     whenever(mockManageOffencesService.getPcscMarkersForOffenceCodes(any())).thenReturn(listOf(markers))
@@ -595,6 +597,7 @@ class ReleaseArrangementLookupServiceTest {
         null,
         null,
         null,
+        null,
         revocationDates = emptyList(),
       )
       whenever(mockManageOffencesService.getPcscMarkersForOffenceCodes(any())).thenReturn(listOf(markers))
@@ -629,6 +632,7 @@ class ReleaseArrangementLookupServiceTest {
         null,
         null,
         null,
+        null,
         revocationDates = emptyList(),
       ),
     )
@@ -653,6 +657,7 @@ class ReleaseArrangementLookupServiceTest {
           "A123456",
           "TEST OFFENSE",
         ),
+        null,
         null,
         null,
         null,
@@ -683,6 +688,7 @@ class ReleaseArrangementLookupServiceTest {
         null,
         null,
         null,
+        null,
         revocationDates = emptyList(),
       ),
     )
@@ -707,6 +713,7 @@ class ReleaseArrangementLookupServiceTest {
           "A123456",
           "TEST OFFENSE",
         ),
+        null,
         null,
         null,
         null,
@@ -737,6 +744,7 @@ class ReleaseArrangementLookupServiceTest {
         null,
         null,
         null,
+        null,
         revocationDates = emptyList(),
       ),
     )
@@ -764,6 +772,7 @@ class ReleaseArrangementLookupServiceTest {
         null,
         null,
         null,
+        null,
         revocationDates = emptyList(),
       ),
     )
@@ -786,6 +795,7 @@ class ReleaseArrangementLookupServiceTest {
         OFFENCE_CODE_NON_SDS_PLUS,
         "TEST OFFENSE",
       ),
+      null,
       null,
       null,
       null,

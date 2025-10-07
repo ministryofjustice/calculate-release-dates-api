@@ -137,6 +137,7 @@ class ValidationServiceTest {
     caseReference = null,
     fineAmount = null,
     courtDescription = null,
+    courtTypeCode = null,
     consecutiveToSequence = null,
     revocationDates = emptyList(),
   )
@@ -163,6 +164,7 @@ class ValidationServiceTest {
     caseReference = null,
     fineAmount = null,
     courtDescription = null,
+    courtTypeCode = null,
     consecutiveToSequence = null,
     revocationDates = emptyList(),
   )
@@ -2618,6 +2620,7 @@ class ValidationServiceTest {
       caseReference = null,
       fineAmount = null,
       courtDescription = null,
+      courtTypeCode = null,
       consecutiveToSequence = 3,
       isSDSPlus = false,
       isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
@@ -2654,6 +2657,7 @@ class ValidationServiceTest {
       caseReference = null,
       fineAmount = null,
       courtDescription = null,
+      courtTypeCode = null,
       consecutiveToSequence = 1,
       isSDSPlus = false,
       isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
@@ -2698,6 +2702,7 @@ class ValidationServiceTest {
       caseReference = null,
       fineAmount = null,
       courtDescription = null,
+      courtTypeCode = null,
       consecutiveToSequence = 3,
       isSDSPlus = false,
       isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
@@ -2726,6 +2731,7 @@ class ValidationServiceTest {
       caseReference = null,
       fineAmount = null,
       courtDescription = null,
+      courtTypeCode = null,
       consecutiveToSequence = 3,
       isSDSPlus = false,
       isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
@@ -2754,6 +2760,7 @@ class ValidationServiceTest {
       caseReference = null,
       fineAmount = null,
       courtDescription = null,
+      courtTypeCode = null,
       consecutiveToSequence = 1,
       isSDSPlus = false,
       isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
@@ -3535,6 +3542,7 @@ class ValidationServiceTest {
       sentenceCategory = "2003",
       sentenceStatus = "a",
       sentenceTypeDescription = "This is a sentence type",
+      courtTypeCode = "ABC",
       offence = OffenderOffence(
         1,
         LocalDate.of(2015, 4, 1),
@@ -3571,6 +3579,7 @@ class ValidationServiceTest {
       caseReference = null,
       fineAmount = null,
       courtDescription = null,
+      courtTypeCode = null,
       consecutiveToSequence = null,
       revocationDates = listOf(LocalDate.of(2021, 1, 1)),
     )
@@ -3695,7 +3704,6 @@ class ValidationServiceTest {
       featuresToggles = featureToggles,
     )
     val preCalculationValidationService = PreCalculationValidationService(
-      featureToggles = featureToggles,
       fineValidationService = fineValidationService,
       adjustmentValidationService = adjustmentValidationService,
       dtoValidationService = dtoValidationService,

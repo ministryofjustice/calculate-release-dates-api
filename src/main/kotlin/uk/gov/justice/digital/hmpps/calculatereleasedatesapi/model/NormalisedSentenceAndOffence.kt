@@ -22,6 +22,7 @@ data class NormalisedSentenceAndOffence(
   override val offence: OffenderOffence,
   override val caseReference: String?,
   override val courtDescription: String?,
+  override val courtTypeCode: String?,
   override val fineAmount: BigDecimal?,
   override val revocationDates: List<LocalDate>,
 ) : SentenceAndOffence {
@@ -40,6 +41,7 @@ data class NormalisedSentenceAndOffence(
     offence,
     source.caseReference,
     source.courtDescription,
+    source.courtTypeCode,
     source.fineAmount,
     source.revocationDates,
   )

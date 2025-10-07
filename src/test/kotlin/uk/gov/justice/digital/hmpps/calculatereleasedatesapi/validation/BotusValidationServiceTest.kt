@@ -77,6 +77,7 @@ class BotusValidationServiceTest {
       caseReference = null,
       fineAmount = null,
       courtDescription = null,
+      courtTypeCode = null,
       consecutiveToSequence = null,
       revocationDates = emptyList(),
     )
