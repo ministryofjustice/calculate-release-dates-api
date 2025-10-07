@@ -87,7 +87,7 @@ open class IntegrationTestBase internal constructor() {
   protected fun createCalculationForRecordARecall(prisonerId: String): RecordARecallResult = webTestClient.post()
     .uri("/record-a-recall/$prisonerId")
     .accept(MediaType.APPLICATION_JSON)
-    .headers(setAuthorisation(roles = listOf("ROLE_RECORD_A_RECALL")))
+    .headers(setAuthorisation(roles = listOf("ROLE_CALCULATE_RELEASE_DATES__RECALL__CALCULATE__RW")))
     .exchange()
     .expectStatus().isOk
     .expectHeader().contentType(MediaType.APPLICATION_JSON)
