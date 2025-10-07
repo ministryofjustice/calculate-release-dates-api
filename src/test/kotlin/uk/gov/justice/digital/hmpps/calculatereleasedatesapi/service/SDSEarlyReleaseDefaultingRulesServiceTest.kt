@@ -18,6 +18,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Senten
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationTrigger
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
@@ -151,9 +152,8 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
     val sentenceCalculation = SentenceCalculation(
       UnadjustedReleaseDate(
         sentence,
-        { 0.5 },
-        { 0.5 },
-        { a, c -> 0 to LocalDate.now() },
+        EarlyReleaseConfigurations(emptyList()),
+        CalculationTrigger(LocalDate.now()),
       ),
       SentenceAdjustments(),
       false,
@@ -218,9 +218,8 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
     val sentenceCalculation = SentenceCalculation(
       UnadjustedReleaseDate(
         sentence,
-        { 0.5 },
-        { 0.5 },
-        { a, b -> b },
+        EarlyReleaseConfigurations(emptyList()),
+        CalculationTrigger(LocalDate.now()),
       ),
       SentenceAdjustments(),
       false,
@@ -385,9 +384,8 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
     val sentenceCalculation = SentenceCalculation(
       UnadjustedReleaseDate(
         sentence,
-        { 0.5 },
-        { 0.5 },
-        { a, b -> b },
+        EarlyReleaseConfigurations(emptyList()),
+        CalculationTrigger(LocalDate.now()),
       ),
       SentenceAdjustments(remand = 1),
       false,

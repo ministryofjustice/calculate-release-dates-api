@@ -56,8 +56,12 @@ class TrancheAllocationService {
     earlyReleaseConfig: EarlyReleaseConfiguration,
   ): List<CalculableSentence> = sentences.filter {
     it.sentenceParts().any { sentence ->
-      isEligibleForTrancheRules(earlyReleaseConfig, sentence) &&
+      val isInRangeOfEarlyRelease = if (earlyReleaseConfig.modifiesRecallReleaseDate()) {
+        sentence.recall?.revocationDate?.isBefore(earlyReleaseConfig.earliestTranche()) == true
+      } else {
         sentence.sentencedAt.isBefore(earlyReleaseConfig.earliestTranche())
+      }
+      isEligibleForTrancheRules(earlyReleaseConfig, sentence) && isInRangeOfEarlyRelease
     }
   }
 

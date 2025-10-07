@@ -53,7 +53,7 @@ class NomisCommentServiceTest {
     val releaseDates = mutableMapOf<ReleaseDateType, LocalDate?>()
     releaseDates[ReleaseDateType.SED] = LocalDate.of(2026, 1, 1)
     assertEquals(
-      "{NOMIS_COMMENT} was manually recorded in the Calculate release dates service by Specialist Support. The calculation ID is: 219db65e-d7b7-4c70-9239-98babff7bcd5",
+      "{NOMIS_COMMENT} using the Calculate Release Dates service via override. The calculation ID is: 219db65e-d7b7-4c70-9239-98babff7bcd5",
       nomisCommentService.getManualNomisComment(CALCULATION_REQUEST, releaseDates, isGenuineOverride = true),
       "If the calculation request is a Genuine Override then it has the correct comment",
     )
