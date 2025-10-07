@@ -1385,6 +1385,7 @@ class ValidationServiceTest {
         sentenceSequence = 2,
         consecutiveToSequence = 1,
         sentenceCalculationType = "DTO",
+        sentenceDate = LocalDate.of(2021, 2, 1),
         terms = listOf(SentenceTerms(years = 1, code = "IMP")),
       ),
     )
@@ -1441,6 +1442,7 @@ class ValidationServiceTest {
         sentenceSequence = 2,
         consecutiveToSequence = 1,
         sentenceCalculationType = "DTO",
+        sentenceDate = LocalDate.of(2021, 2, 1),
         terms = listOf(SentenceTerms(years = 1, code = "IMP")),
       ),
     )

@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation
 
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
@@ -375,6 +376,28 @@ class SentenceValidationServiceTest {
     )
     val result = sentenceValidationService.validateSentences(sentences, bulkCalcValidation = true)
     assertTrue(result.count() == 0)
+  }
+
+  @Test
+  fun `Sentence cannot be made consecutive to a sentence imposed after`() {
+    val laterSentence = activeOffence.copy(
+      sentenceDate = LocalDate.of(2025, 1, 1),
+      sentenceSequence = 1,
+      lineSequence = 1,
+      consecutiveToSequence = null,
+    )
+    val earlierSentence = activeOffence.copy(
+      sentenceDate = LocalDate.of(2024, 1, 1),
+      sentenceSequence = 2,
+      lineSequence = 2,
+      consecutiveToSequence = 1,
+    )
+
+    val sentences = listOf(laterSentence, earlierSentence)
+    val result = sentenceValidationService.validateSentences(sentences)
+
+    assertThat(result).hasSize(1)
+    assertThat(result[0].message).isEqualTo("Court case 1 NOMIS line number 2 cannot be consecutive to a sentence that has a later date")
   }
 
   companion object {
