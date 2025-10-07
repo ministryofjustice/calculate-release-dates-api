@@ -30,7 +30,10 @@ class SentenceValidationService(
   private val featuresToggles: FeatureToggles,
 ) {
 
-  internal fun validateSentences(sentences: List<SentenceAndOffence>, bulkCalcValidation: Boolean = false): MutableList<ValidationMessage> {
+  internal fun validateSentences(
+    sentences: List<SentenceAndOffence>,
+    bulkCalcValidation: Boolean = false,
+  ): MutableList<ValidationMessage> {
     val validationMessages = sentences.map { validateSentence(it) }.flatten().toMutableList()
     validateNoBrokenConsecutiveChains(sentences)?.let { validationMessages += it }
 
@@ -39,8 +42,25 @@ class SentenceValidationService(
     } else {
       validationMessages += validateConsecutiveChains(sentences)
     }
-
+    validationMessages += validateConsecutiveToSentenceInPast(sentences)
     return validationMessages
+  }
+
+  private fun validateConsecutiveToSentenceInPast(sentences: List<SentenceAndOffence>): List<ValidationMessage> {
+    val consecutiveToSentences = sentences.filter { it.consecutiveToSequence != null }
+    val sentencesMap = sentences.associateBy { it.sentenceSequence }
+
+    return consecutiveToSentences.mapNotNull {
+      val sentence = sentencesMap[it.consecutiveToSequence]
+      if (sentence != null && sentence.sentenceDate.isAfter(it.sentenceDate)) {
+        return@mapNotNull ValidationMessage(
+          ValidationCode.CONSECUTIVE_TO_SENTENCE_IMPOSED_AFTER,
+          listOf(it.caseSequence.toString(), it.lineSequence.toString()),
+        )
+      } else {
+        return@mapNotNull null
+      }
+    }
   }
 
   private data class ValidateConsecutiveSentenceUniqueRecord(
@@ -116,7 +136,11 @@ class SentenceValidationService(
       .takeIf { it.isNotEmpty() } ?: return emptyList()
 
     val chainsOfSentences =
-      ConsecutiveSentenceUtil.createConsecutiveChains(distinctSentences, { it.sentenceSequence }, { it.consecutiveToSequence })
+      ConsecutiveSentenceUtil.createConsecutiveChains(
+        distinctSentences,
+        { it.sentenceSequence },
+        { it.consecutiveToSequence },
+      )
 
     val duplicateChains =
       chainsOfSentences.filter { chain ->
@@ -179,7 +203,10 @@ class SentenceValidationService(
     // either case. If an end date is null it will be set to the start date in the transformation.
     val invalid = sentencesAndOffence.offence.offenceStartDate == null
     if (invalid) {
-      return ValidationMessage(ValidationCode.OFFENCE_MISSING_DATE, validationUtilities.getCaseSeqAndLineSeq(sentencesAndOffence))
+      return ValidationMessage(
+        ValidationCode.OFFENCE_MISSING_DATE,
+        validationUtilities.getCaseSeqAndLineSeq(sentencesAndOffence),
+      )
     }
     return null
   }
@@ -189,7 +216,10 @@ class SentenceValidationService(
   ): ValidationMessage? {
     val offence = sentencesAndOffence.offence
     if (offence.offenceStartDate != null && offence.offenceStartDate > sentencesAndOffence.sentenceDate) {
-      return ValidationMessage(ValidationCode.OFFENCE_DATE_AFTER_SENTENCE_START_DATE, validationUtilities.getCaseSeqAndLineSeq(sentencesAndOffence))
+      return ValidationMessage(
+        ValidationCode.OFFENCE_DATE_AFTER_SENTENCE_START_DATE,
+        validationUtilities.getCaseSeqAndLineSeq(sentencesAndOffence),
+      )
     }
     return null
   }
@@ -198,7 +228,10 @@ class SentenceValidationService(
     val offence = sentencesAndOffence.offence
     val invalid = offence.offenceEndDate != null && offence.offenceEndDate > sentencesAndOffence.sentenceDate
     if (invalid) {
-      return ValidationMessage(ValidationCode.OFFENCE_DATE_AFTER_SENTENCE_RANGE_DATE, validationUtilities.getCaseSeqAndLineSeq(sentencesAndOffence))
+      return ValidationMessage(
+        ValidationCode.OFFENCE_DATE_AFTER_SENTENCE_RANGE_DATE,
+        validationUtilities.getCaseSeqAndLineSeq(sentencesAndOffence),
+      )
     }
     return null
   }
