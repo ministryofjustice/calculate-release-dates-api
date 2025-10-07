@@ -29,6 +29,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationCo
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOriginalData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedCalculationResults
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedDate
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.GenuineOverrideReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
@@ -154,6 +155,78 @@ class DetailedCalculationResultsServiceTest {
       emptyList(),
       emptyList(),
     )
+  }
+
+  @Test
+  fun `should return genuine override reason that is not OTHER`() {
+    val base = calculationRequestWithOutcomes().copy(
+      prisonerDetails = objectToJson(prisonerDetails, objectMapper),
+      sentenceAndOffences = objectToJson(listOf(originalSentence), objectMapper),
+      adjustments = objectToJson(adjustments, objectMapper),
+      calculationOutcomes = listOf(
+        CalculationOutcome(calculationRequestId = CALCULATION_REQUEST_ID, calculationDateType = "CRD", outcomeDate = LocalDate.of(2026, 6, 26)),
+      ),
+      calculationType = CalculationType.GENUINE_OVERRIDE,
+      genuineOverrideReason = GenuineOverrideReason.TERRORISM,
+      genuineOverrideReasonFurtherDetail = null,
+    )
+
+    val enrichedReleaseDates = mapOf(ReleaseDateType.CRD to DetailedDate(ReleaseDateType.CRD, ReleaseDateType.CRD.description, LocalDate.of(2026, 6, 26), emptyList()))
+    val expectedBreakdown = CalculationBreakdown(emptyList(), null, mapOf(ReleaseDateType.CRD to ReleaseDateCalculationBreakdown(emptySet())), mapOf(ReleaseDateType.PRRD to LocalDate.of(2026, 6, 27)))
+    whenever(calculationRequestRepository.findById(CALCULATION_REQUEST_ID)).thenReturn(Optional.of(base))
+    whenever(sourceDataMapper.mapSentencesAndOffences(base)).thenReturn(listOf(originalSentence))
+    whenever(sourceDataMapper.mapPrisonerDetails(base)).thenReturn(prisonerDetails)
+    whenever(sourceDataMapper.mapBookingAndSentenceAdjustments(base)).thenReturn(adjustments)
+    whenever(
+      calculationResultEnrichmentService.addDetailToCalculationDates(
+        toReleaseDates(base),
+        listOf(originalSentence),
+        expectedBreakdown,
+        null,
+        emptyList(),
+        emptyList(),
+      ),
+    ).thenReturn(enrichedReleaseDates)
+    whenever(calculationBreakdownService.getBreakdownSafely(any())).thenReturn(expectedBreakdown.right())
+    val results = service.findDetailedCalculationResults(CALCULATION_REQUEST_ID)
+    assertThat(results.context.genuineOverrideReasonCode).isEqualTo(GenuineOverrideReason.TERRORISM)
+    assertThat(results.context.genuineOverrideReasonDescription).isEqualTo("Terrorism or terror-related offences")
+  }
+
+  @Test
+  fun `should return genuine override reason that is OTHER`() {
+    val base = calculationRequestWithOutcomes().copy(
+      prisonerDetails = objectToJson(prisonerDetails, objectMapper),
+      sentenceAndOffences = objectToJson(listOf(originalSentence), objectMapper),
+      adjustments = objectToJson(adjustments, objectMapper),
+      calculationOutcomes = listOf(
+        CalculationOutcome(calculationRequestId = CALCULATION_REQUEST_ID, calculationDateType = "CRD", outcomeDate = LocalDate.of(2026, 6, 26)),
+      ),
+      calculationType = CalculationType.GENUINE_OVERRIDE,
+      genuineOverrideReason = GenuineOverrideReason.OTHER,
+      genuineOverrideReasonFurtherDetail = "Some extra detail",
+    )
+
+    val enrichedReleaseDates = mapOf(ReleaseDateType.CRD to DetailedDate(ReleaseDateType.CRD, ReleaseDateType.CRD.description, LocalDate.of(2026, 6, 26), emptyList()))
+    val expectedBreakdown = CalculationBreakdown(emptyList(), null, mapOf(ReleaseDateType.CRD to ReleaseDateCalculationBreakdown(emptySet())), mapOf(ReleaseDateType.PRRD to LocalDate.of(2026, 6, 27)))
+    whenever(calculationRequestRepository.findById(CALCULATION_REQUEST_ID)).thenReturn(Optional.of(base))
+    whenever(sourceDataMapper.mapSentencesAndOffences(base)).thenReturn(listOf(originalSentence))
+    whenever(sourceDataMapper.mapPrisonerDetails(base)).thenReturn(prisonerDetails)
+    whenever(sourceDataMapper.mapBookingAndSentenceAdjustments(base)).thenReturn(adjustments)
+    whenever(
+      calculationResultEnrichmentService.addDetailToCalculationDates(
+        toReleaseDates(base),
+        listOf(originalSentence),
+        expectedBreakdown,
+        null,
+        emptyList(),
+        emptyList(),
+      ),
+    ).thenReturn(enrichedReleaseDates)
+    whenever(calculationBreakdownService.getBreakdownSafely(any())).thenReturn(expectedBreakdown.right())
+    val results = service.findDetailedCalculationResults(CALCULATION_REQUEST_ID)
+    assertThat(results.context.genuineOverrideReasonCode).isEqualTo(GenuineOverrideReason.OTHER)
+    assertThat(results.context.genuineOverrideReasonDescription).isEqualTo("Some extra detail")
   }
 
   @Test
@@ -330,6 +403,8 @@ class DetailedCalculationResultsServiceTest {
     "foo",
     LocalDate.of(2021, 1, 1),
     CalculationType.CALCULATED,
+    null,
+    null,
   )
 
   private fun toReleaseDates(request: CalculationRequest): List<ReleaseDate> = request.calculationOutcomes

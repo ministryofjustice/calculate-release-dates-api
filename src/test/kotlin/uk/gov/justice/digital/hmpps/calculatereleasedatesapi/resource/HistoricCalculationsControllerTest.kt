@@ -72,6 +72,8 @@ class HistoricCalculationsControllerTest {
       48,
       "Adding more sentences or terms",
       -1,
+      genuineOverrideReasonCode = null,
+      genuineOverrideReasonDescription = null,
     )
 
     whenever(historicCalculationsService.getHistoricCalculationsForPrisoner(anyString())).thenReturn(listOf(historicCalculation))

@@ -1,0 +1,63 @@
+{
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2020-10-28"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 4
+          }
+        },
+        "sentencedAt": "2023-09-25",
+        "recall": {
+          "recallType": "FIXED_TERM_RECALL_56",
+          "returnToCustodyDate": "2025-11-08",
+          "revocationDate": "2025-11-05"
+        }
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2020-10-28"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 3
+          }
+        },
+        "sentencedAt": "2023-09-25",
+        "recall": {
+          "recallType": "FIXED_TERM_RECALL_56",
+          "returnToCustodyDate": "2025-11-08",
+          "revocationDate": "2025-11-05"
+        }
+      }
+    ],
+    "adjustments": {
+      "UNLAWFULLY_AT_LARGE": [
+        {
+          "appliesToSentencesFrom": "2025-11-06",
+          "numberOfDays": 2,
+          "fromDate": "2025-11-06",
+          "toDate": "2025-11-07"
+        }
+      ],
+      "RECALL_REMAND": [
+        {
+          "appliesToSentencesFrom": "2023-09-25",
+          "numberOfDays": 32,
+          "fromDate": "2023-08-24",
+          "toDate": "2023-09-24"
+        }
+      ]
+    },
+    "returnToCustodyDate": "2025-11-08"
+  }
+}

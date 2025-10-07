@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.junit.jupiter.MockitoExtension
+import org.mockito.kotlin.mock
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.sdsEarlyReleaseTrancheOneDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.sdsEarlyReleaseTrancheThreeDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.sdsEarlyReleaseTrancheTwoDate
@@ -20,7 +21,11 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.FixedTermRecallDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ReturnToCustodyDate
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType.FTR_14_ORA
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.FTR_48_COMMENCEMENT_DATE
@@ -41,15 +46,58 @@ class RecallValidationServiceTest {
       trancheThreeCommencementDate = sdsEarlyReleaseTrancheThreeDate(),
     ),
     validationUtilities = ValidationUtilities(),
-    featureToggles = FeatureToggles(ftr48ManualJourney = true, validateRevocationDate = true),
+    featureToggles = FeatureToggles(ftr48ManualJourney = true, extraReturnToCustodyValidation = true),
   )
+
+  @Nested
+  inner class ValidateReturnToCustodyDateTests {
+
+    @Test
+    fun `Validate return to custody date passed`() {
+      val sentence = FTR_14_DAY_SENTENCE
+
+      val messages = recallValidationService.validateFixedTermRecall(createSourceData(listOf(sentence), LocalDate.of(2024, 2, 1), 14))
+
+      assertThat(messages).isEmpty()
+    }
+
+    @Test
+    fun `Validate return to custody before sentence date fails`() {
+      val sentence = FTR_14_DAY_SENTENCE
+
+      val messages = recallValidationService.validateFixedTermRecall(createSourceData(listOf(sentence), sentence.sentenceDate.minusDays(1), 14))
+
+      assertThat(messages).isNotEmpty
+      assertThat(messages[0].code).isEqualTo(ValidationCode.FTR_RTC_DATE_BEFORE_SENTENCE_DATE)
+    }
+
+    @Test
+    fun `Validate return to custody in future fails`() {
+      val sentence = FTR_14_DAY_SENTENCE
+
+      val messages = recallValidationService.validateFixedTermRecall(createSourceData(listOf(sentence), LocalDate.now().plusDays(1), 14))
+
+      assertThat(messages).isNotEmpty
+      assertThat(messages[0].code).isEqualTo(ValidationCode.FTR_RTC_DATE_IN_FUTURE)
+    }
+
+    @Test
+    fun `Validate return to custody before revocation for FTR-56 fails`() {
+      val sentence = FTR_14_DAY_SENTENCE.copy(sentenceCalculationType = SentenceCalculationType.FTR_56ORA.name)
+
+      val messages = recallValidationService.validateFixedTermRecall(createSourceData(listOf(sentence), LocalDate.of(2023, 12, 1), 14))
+
+      assertThat(messages).isNotEmpty
+      assertThat(messages[0].code).isEqualTo(ValidationCode.FTR_RTC_DATE_BEFORE_REVOCATION_DATE)
+    }
+  }
 
   @Nested
   inner class ValidateRevocationDateTests {
 
     @Test
     fun `Validate revocation date passed`() {
-      val sentence = FTR_14_DAY_SENTENCE
+      val sentence = FTR_14_DAY_SENTENCE.copy(sentenceCalculationType = SentenceCalculationType.FTR_56ORA.name)
 
       val messages = recallValidationService.validateRevocationDate(listOf(sentence))
 
@@ -58,12 +106,21 @@ class RecallValidationServiceTest {
 
     @Test
     fun `Validate revocation date missing`() {
-      val sentence = FTR_14_DAY_SENTENCE.copy(revocationDates = emptyList())
+      val sentence = FTR_14_DAY_SENTENCE.copy(revocationDates = emptyList(), sentenceCalculationType = SentenceCalculationType.FTR_56ORA.name)
 
       val messages = recallValidationService.validateRevocationDate(listOf(sentence))
 
       assertThat(messages).isNotEmpty
       assertThat(messages[0].code).isEqualTo(ValidationCode.RECALL_MISSING_REVOCATION_DATE)
+    }
+
+    @Test
+    fun `Do not validate revocation date for non ftr-56 recalls`() {
+      val sentence = FTR_14_DAY_SENTENCE.copy(revocationDates = emptyList())
+
+      val messages = recallValidationService.validateRevocationDate(listOf(sentence))
+
+      assertThat(messages).isEmpty()
     }
   }
 
@@ -206,6 +263,14 @@ class RecallValidationServiceTest {
     hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
   )
 
+  private fun createSourceData(sentences: List<SentenceAndOffenceWithReleaseArrangements>, returnToCustodyDate: LocalDate, recallLength: Int) = CalculationSourceData(
+    prisonerDetails = mock(),
+    sentenceAndOffences = sentences,
+    bookingAndSentenceAdjustments = mock(),
+    returnToCustodyDate = ReturnToCustodyDate(returnToCustodyDate = returnToCustodyDate, bookingId = 1L),
+    fixedTermRecallDetails = FixedTermRecallDetails(returnToCustodyDate = returnToCustodyDate, bookingId = 1L, recallLength = recallLength),
+  )
+
   private companion object {
     val SENTENCE_DATE_BEFORE_COMMENCEMENT: LocalDate = LocalDate.of(2015, 1, 1)
 
@@ -234,7 +299,7 @@ class RecallValidationServiceTest {
       courtDescription = null,
       courtTypeCode = null,
       consecutiveToSequence = null,
-      revocationDates = listOf(LocalDate.of(2021, 1, 1)),
+      revocationDates = listOf(LocalDate.of(2024, 1, 1)),
       isSDSPlus = false,
       isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
       isSDSPlusOffenceInPeriod = false,
