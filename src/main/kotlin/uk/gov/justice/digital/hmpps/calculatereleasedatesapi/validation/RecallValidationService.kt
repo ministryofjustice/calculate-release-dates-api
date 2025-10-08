@@ -15,7 +15,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSe
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType.FIXED_TERM_RECALL_14
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType.FIXED_TERM_RECALL_28
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType.FIXED_TERM_RECALL_56
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.FixedTermRecallDetails
@@ -82,10 +81,18 @@ class RecallValidationService(
     val toDate: LocalDate,
   )
 
-  internal fun validateRevocationDate(sentences: List<SentenceAndOffenceWithReleaseArrangements>): List<ValidationMessage> {
-    val recallSentences = sentences.filter { from(it.sentenceCalculationType).recallType == FIXED_TERM_RECALL_56 }
-    if (recallSentences.isNotEmpty() && recallSentences.none { it.revocationDates.isNotEmpty() }) {
-      return listOf(ValidationMessage(ValidationCode.RECALL_MISSING_REVOCATION_DATE))
+  internal fun validateRevocationDate(sourceData: CalculationSourceData): List<ValidationMessage> {
+    val recallSentences = sourceData.sentenceAndOffences.filter { from(it.sentenceCalculationType).recallType != null }
+    val revocationDate = sourceData.findLatestRevocationDate()
+    if (recallSentences.isNotEmpty()) {
+      if (revocationDate == null && recallSentences.any { from(it.sentenceCalculationType).recallType == FIXED_TERM_RECALL_56 }) {
+        return listOf(ValidationMessage(ValidationCode.RECALL_MISSING_REVOCATION_DATE))
+      }
+      if (featureToggles.extraReturnToCustodyValidation) {
+        if (revocationDate != null && revocationDate.isAfter(LocalDate.now())) {
+          return listOf(ValidationMessage(ValidationCode.REVOCATION_DATE_IN_THE_FUTURE))
+        }
+      }
     }
     return emptyList()
   }
