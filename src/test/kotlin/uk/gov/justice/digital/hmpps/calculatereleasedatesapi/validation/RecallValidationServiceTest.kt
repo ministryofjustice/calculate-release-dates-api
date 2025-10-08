@@ -99,26 +99,45 @@ class RecallValidationServiceTest {
     fun `Validate revocation date passed`() {
       val sentence = FTR_14_DAY_SENTENCE.copy(sentenceCalculationType = SentenceCalculationType.FTR_56ORA.name)
 
-      val messages = recallValidationService.validateRevocationDate(listOf(sentence))
+      val messages = recallValidationService.validateRevocationDate(createSourceData(listOf(sentence)))
 
       assertThat(messages).isEmpty()
     }
 
     @Test
-    fun `Validate revocation date missing`() {
+    fun `Validate missing revocation date for non ftr-56 passed`() {
+      val sentence = FTR_14_DAY_SENTENCE.copy(revocationDates = emptyList())
+
+      val messages = recallValidationService.validateRevocationDate(createSourceData(listOf(sentence)))
+
+      assertThat(messages).isEmpty()
+    }
+
+    @Test
+    fun `Validate revocation date missing for FTR-56`() {
       val sentence = FTR_14_DAY_SENTENCE.copy(revocationDates = emptyList(), sentenceCalculationType = SentenceCalculationType.FTR_56ORA.name)
 
-      val messages = recallValidationService.validateRevocationDate(listOf(sentence))
+      val messages = recallValidationService.validateRevocationDate(createSourceData(listOf(sentence)))
 
       assertThat(messages).isNotEmpty
       assertThat(messages[0].code).isEqualTo(ValidationCode.RECALL_MISSING_REVOCATION_DATE)
     }
 
     @Test
+    fun `Validate revocation date in future for all recall sentence types`() {
+      val sentence = FTR_14_DAY_SENTENCE.copy(revocationDates = listOf(LocalDate.now().plusDays(1)))
+
+      val messages = recallValidationService.validateRevocationDate(createSourceData(listOf(sentence)))
+
+      assertThat(messages).isNotEmpty
+      assertThat(messages[0].code).isEqualTo(ValidationCode.REVOCATION_DATE_IN_THE_FUTURE)
+    }
+
+    @Test
     fun `Do not validate revocation date for non ftr-56 recalls`() {
       val sentence = FTR_14_DAY_SENTENCE.copy(revocationDates = emptyList())
 
-      val messages = recallValidationService.validateRevocationDate(listOf(sentence))
+      val messages = recallValidationService.validateRevocationDate(createSourceData(listOf(sentence)))
 
       assertThat(messages).isEmpty()
     }
@@ -263,12 +282,12 @@ class RecallValidationServiceTest {
     hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
   )
 
-  private fun createSourceData(sentences: List<SentenceAndOffenceWithReleaseArrangements>, returnToCustodyDate: LocalDate, recallLength: Int) = CalculationSourceData(
+  private fun createSourceData(sentences: List<SentenceAndOffenceWithReleaseArrangements>, returnToCustodyDate: LocalDate? = null, recallLength: Int? = null) = CalculationSourceData(
     prisonerDetails = mock(),
     sentenceAndOffences = sentences,
     bookingAndSentenceAdjustments = mock(),
-    returnToCustodyDate = ReturnToCustodyDate(returnToCustodyDate = returnToCustodyDate, bookingId = 1L),
-    fixedTermRecallDetails = FixedTermRecallDetails(returnToCustodyDate = returnToCustodyDate, bookingId = 1L, recallLength = recallLength),
+    returnToCustodyDate = if (returnToCustodyDate != null)ReturnToCustodyDate(returnToCustodyDate = returnToCustodyDate, bookingId = 1L) else null,
+    fixedTermRecallDetails = if (recallLength != null && returnToCustodyDate != null) FixedTermRecallDetails(returnToCustodyDate = returnToCustodyDate, bookingId = 1L, recallLength = recallLength) else null,
   )
 
   private companion object {
