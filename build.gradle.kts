@@ -70,7 +70,7 @@ dependencies {
   implementation("org.apache.commons:commons-text:1.14.0")
 
   // SQS
-  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:5.4.11")
+  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:5.5.0")
 
   // Test dependencies
   testImplementation("org.wiremock:wiremock-standalone:3.13.1")
