@@ -266,7 +266,7 @@ class CalculationController(
   }
 
   @GetMapping(value = ["/breakdown/{calculationRequestId}"])
-  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")
+  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR', 'CALCULATE_RELEASE_DATES__RECALL__CALCULATE__RO')")
   @ResponseBody
   @Operation(
     summary = "Get breakdown for a calculationRequestId",
@@ -290,7 +290,7 @@ class CalculationController(
   }
 
   @GetMapping(value = ["/sentence-and-offences/{calculationRequestId}"])
-  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")
+  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR', 'CALCULATE_RELEASE_DATES__RECALL__CALCULATE__RO')")
   @ResponseBody
   @Operation(
     summary = "Get sentences and offences for a calculationRequestId",
@@ -459,7 +459,7 @@ class CalculationController(
   ): RelevantRemandCalculationResult = relevantRemandService.relevantRemandCalculation(prisonerId, relevantRemandCalculationRequest)
 
   @GetMapping(value = ["/{prisonerId}/latest"])
-  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")
+  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR', 'CALCULATE_RELEASE_DATES__RECALL__CALCULATE__RO')")
   @ResponseBody
   @Operation(
     summary = "Get latest release dates for a prisoner",
