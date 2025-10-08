@@ -21,7 +21,7 @@ class RecordARecallController(
   private val recordARecallService: RecordARecallService,
 ) {
   @PostMapping(value = ["/record-a-recall/{prisonerId}"])
-  @PreAuthorize("hasAnyRole('RECORD_A_RECALL', 'ROLE_CALCULATE_RELEASE_DATES__RECALL__CALCULATE__RW')")
+  @PreAuthorize("hasAnyRole('RECORD_A_RECALL', 'CALCULATE_RELEASE_DATES__RECALL__CALCULATE__RW')")
   @ResponseBody
   @Operation(
     summary = "Calculate release dates for a prisoner - used explicitly by the record-a-recall service, this does not publish to NOMIS",
