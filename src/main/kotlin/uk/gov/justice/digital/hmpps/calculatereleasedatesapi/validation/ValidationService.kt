@@ -62,6 +62,11 @@ class ValidationService(
       return se20offenceViolations
     }
 
+    val unsupportedRecallFromHdcOrEcsl = recallValidationService.validateUnsupportedRecallFromHdcOrEcsl(sourceData)
+    if (unsupportedRecallFromHdcOrEcsl.isNotEmpty()) {
+      return unsupportedRecallFromHdcOrEcsl
+    }
+
     val validationMessages = sentenceValidationService.validateSentences(sortedSentences, bulkCalcValidation)
     validationMessages += adjustmentValidationService.validateAdjustmentsBeforeCalculation(adjustments)
     validationMessages += recallValidationService.validateFixedTermRecall(sourceData)

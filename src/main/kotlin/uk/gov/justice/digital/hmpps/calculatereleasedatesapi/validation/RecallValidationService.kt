@@ -12,6 +12,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOutput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExternalMovementDirection
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExternalMovementReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType.FIXED_TERM_RECALL_14
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType.FIXED_TERM_RECALL_28
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType.FIXED_TERM_RECALL_56
@@ -40,10 +42,11 @@ class RecallValidationService(
 
   internal fun validateFixedTermRecall(sourceData: CalculationSourceData): List<ValidationMessage> {
     val ftrDetails = sourceData.fixedTermRecallDetails ?: return emptyList()
-    val (recallLength, has14DayFTRSentence, has28DayFTRSentence, has56DayFTRSentence) = getFtrValidationDetails(
+    val ftrValidationDetails = getFtrValidationDetails(
       ftrDetails,
       sourceData.sentenceAndOffences,
     )
+    val (recallLength, has14DayFTRSentence, has28DayFTRSentence, has56DayFTRSentence) = ftrValidationDetails
 
     val validationMessages = when {
       sourceData.returnToCustodyDate == null -> mutableListOf(ValidationMessage(ValidationCode.FTR_NO_RETURN_TO_CUSTODY_DATE))
@@ -74,6 +77,22 @@ class RecallValidationService(
     }
 
     return validationMessages
+  }
+
+  fun validateUnsupportedRecallFromHdcOrEcsl(sourceData: CalculationSourceData): List<ValidationMessage> {
+    val hasFixedTermRecall =
+      sourceData.sentenceAndOffences.any { from(it.sentenceCalculationType).recallType?.isFixedTermRecall == true }
+    val lastRelease = sourceData.movements.filter { it.transformMovementDirection() == ExternalMovementDirection.OUT }
+      .filter { it.movementDate == null }.maxByOrNull { it.movementDate!! }?.transformMovementReason()
+    if (hasFixedTermRecall && lastRelease != null && listOf(
+        ExternalMovementReason.ECSL,
+        ExternalMovementReason.HDC,
+      ).contains(lastRelease)
+    ) {
+      return listOf(ValidationMessage(ValidationCode.FTR_FROM_HDC_OR_ECSL))
+    }
+    return emptyList()
+
   }
 
   data class RemandPeriodToValidate(
@@ -161,7 +180,10 @@ class RecallValidationService(
     return FtrValidationDetails(recallLength, has14DayFTRSentence, has28DayFTRSentence, has56DayFTRSentence)
   }
 
-  internal fun validateUnsupportedRecallTypes(calculationOutput: CalculationOutput, booking: Booking): List<ValidationMessage> = if (hasUnsupportedRecallType(calculationOutput, booking)) {
+  internal fun validateUnsupportedRecallTypes(
+    calculationOutput: CalculationOutput,
+    booking: Booking,
+  ): List<ValidationMessage> = if (hasUnsupportedRecallType(calculationOutput, booking)) {
     listOf(ValidationMessage(ValidationCode.UNSUPPORTED_SDS40_RECALL_SENTENCE_TYPE))
   } else {
     emptyList()
@@ -247,7 +269,10 @@ class RecallValidationService(
     return validationMessages
   }
 
-  internal fun validateFixedTermRecallAfterCalc(calculationOutput: CalculationOutput, booking: Booking): List<ValidationMessage> {
+  internal fun validateFixedTermRecallAfterCalc(
+    calculationOutput: CalculationOutput,
+    booking: Booking,
+  ): List<ValidationMessage> {
     val messages = mutableListOf<ValidationMessage>()
     val ftrDetails = booking.fixedTermRecallDetails ?: return messages
 
@@ -261,7 +286,12 @@ class RecallValidationService(
     return if (hasUnderTwelveMonthSentence && hasOverTwelveMonthSentence) {
       validateMixedDurations(ftrSentences, booking, calculationOutput)
     } else {
-      validateSingleDurationRecalls(calculationOutput, ftrDetails, hasUnderTwelveMonthSentence, hasOverTwelveMonthSentence)
+      validateSingleDurationRecalls(
+        calculationOutput,
+        ftrDetails,
+        hasUnderTwelveMonthSentence,
+        hasOverTwelveMonthSentence,
+      )
     }
   }
 
@@ -294,13 +324,21 @@ class RecallValidationService(
     }
 
     consecutiveSentences.forEach {
-      if (!hasOverTwelveMonthSentence && it.recallType == FIXED_TERM_RECALL_28 && it.durationIsLessThan(TWELVE, MONTHS)) {
+      if (!hasOverTwelveMonthSentence && it.recallType == FIXED_TERM_RECALL_28 && it.durationIsLessThan(
+          TWELVE,
+          MONTHS,
+        )
+      ) {
         messages += ValidationMessage(ValidationCode.FTR_TYPE_28_DAYS_AGGREGATE_LT_12_MONTHS)
       }
     }
 
     consecutiveSentences.forEach {
-      if (!hasUnderTwelveMonthSentence && it.recallType == FIXED_TERM_RECALL_14 && it.durationIsGreaterThanOrEqualTo(TWELVE, MONTHS)) {
+      if (!hasUnderTwelveMonthSentence && it.recallType == FIXED_TERM_RECALL_14 && it.durationIsGreaterThanOrEqualTo(
+          TWELVE,
+          MONTHS,
+        )
+      ) {
         messages += ValidationMessage(ValidationCode.FTR_TYPE_14_DAYS_AGGREGATE_GE_12_MONTHS)
       }
     }
@@ -308,7 +346,8 @@ class RecallValidationService(
   }
 
   internal fun validateFtrFortyOverlap(sentences: List<CalculableSentence>): List<ValidationMessage> {
-    val possibleSentences = sentences.filter { it.recallType == FIXED_TERM_RECALL_28 && it.sentencedAt.isBefore(FTR_48_COMMENCEMENT_DATE) }
+    val possibleSentences =
+      sentences.filter { it.recallType == FIXED_TERM_RECALL_28 && it.sentencedAt.isBefore(FTR_48_COMMENCEMENT_DATE) }
     val allSentencesLessThan12Months = possibleSentences.all { it.durationIsLessThan(12, MONTHS) }
     val anySentenceEqualOrOver48Months = possibleSentences.any { it.durationIsGreaterThanOrEqualTo(48, MONTHS) }
     if (featureToggles.ftr48ManualJourney && possibleSentences.isNotEmpty() && !allSentencesLessThan12Months && !anySentenceEqualOrOver48Months) {
@@ -324,32 +363,50 @@ class RecallValidationService(
   ): List<ValidationMessage> {
     val returnToCustodyDate = booking.returnToCustodyDate ?: return emptyList()
     val calculatedSled = calculationOutput.calculationResult.dates[ReleaseDateType.SLED]
-    val sledProducingSentence = ftrSentences.find { it.sentenceCalculation.adjustedExpiryDate == calculatedSled } ?: return emptyList()
+    val sledProducingSentence =
+      ftrSentences.find { it.sentenceCalculation.adjustedExpiryDate == calculatedSled } ?: return emptyList()
     val sledSentenceUnder12Months = sledProducingSentence.durationIsLessThan(12, MONTHS)
     val sledSentenceOver12Months = !sledSentenceUnder12Months
 
-    val closestUnder12MonthSentence = ftrSentences.findClosestUnder12MonthSentence(sledProducingSentence, returnToCustodyDate)
-    val closest12MonthSentence = ftrSentences.findClosest12MonthOrGreaterSentence(sledProducingSentence, returnToCustodyDate)
+    val closestUnder12MonthSentence =
+      ftrSentences.findClosestUnder12MonthSentence(sledProducingSentence, returnToCustodyDate)
+    val closest12MonthSentence =
+      ftrSentences.findClosest12MonthOrGreaterSentence(sledProducingSentence, returnToCustodyDate)
 
     return when {
       sledSentenceOver12Months &&
         closestUnder12MonthSentence !== null &&
         closestUnder12MonthSentence.recallType == FIXED_TERM_RECALL_14 &&
-        abs(ChronoUnit.DAYS.between(closestUnder12MonthSentence.sentenceCalculation.adjustedExpiryDate, calculatedSled)) >= 14 -> {
+        abs(
+          ChronoUnit.DAYS.between(
+            closestUnder12MonthSentence.sentenceCalculation.adjustedExpiryDate,
+            calculatedSled,
+          ),
+        ) >= 14 -> {
         listOf(ValidationMessage(ValidationCode.FTR_TYPE_14_DAYS_SENTENCE_GT_12_MONTHS))
       }
 
       sledSentenceUnder12Months &&
         closest12MonthSentence != null &&
         sledProducingSentence.recallType == FIXED_TERM_RECALL_14 &&
-        abs(ChronoUnit.DAYS.between(returnToCustodyDate, closest12MonthSentence.sentenceCalculation.adjustedExpiryDate)) >= 14 -> {
+        abs(
+          ChronoUnit.DAYS.between(
+            returnToCustodyDate,
+            closest12MonthSentence.sentenceCalculation.adjustedExpiryDate,
+          ),
+        ) >= 14 -> {
         listOf(ValidationMessage(ValidationCode.FTR_TYPE_14_DAYS_SENTENCE_GAP_GT_14_DAYS))
       }
 
       closest12MonthSentence !== null &&
         sledProducingSentence.recallType == FIXED_TERM_RECALL_28 &&
         sledSentenceUnder12Months &&
-        abs(ChronoUnit.DAYS.between(returnToCustodyDate, closest12MonthSentence.sentenceCalculation.adjustedExpiryDate)) <= 14 -> {
+        abs(
+          ChronoUnit.DAYS.between(
+            returnToCustodyDate,
+            closest12MonthSentence.sentenceCalculation.adjustedExpiryDate,
+          ),
+        ) <= 14 -> {
         listOf(ValidationMessage(ValidationCode.FTR_TYPE_28_DAYS_SENTENCE_GAP_LT_14_DAYS))
       }
 
@@ -368,4 +425,6 @@ data class FtrValidationDetails(
   val has14DayFTRSentence: Boolean,
   val has28DayFTRSentence: Boolean,
   val has56DayFTRSentence: Boolean,
-)
+) {
+  val isFixedTermRecall = has14DayFTRSentence || has28DayFTRSentence || has56DayFTRSentence
+}

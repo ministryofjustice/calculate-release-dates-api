@@ -20,6 +20,7 @@ class PreCalculationValidationService(
   private val botusValidationService: BotusValidationService,
   private val unsupportedValidationService: UnsupportedValidationService,
   private val toreraValidationService: ToreraValidationService,
+  private val recallValidationService: RecallValidationService
 ) {
 
   val courtMarshalCourtTypeCodes = listOf("DCM", "GCM")
@@ -88,6 +89,7 @@ class PreCalculationValidationService(
     messages += dtoValidationService.validate(sourceData)
     messages += botusValidationService.validate(sourceData)
     messages += toreraValidationService.validateToreraExempt(sourceData)
+    messages += recallValidationService.validateUnsupportedRecallFromHdcOrEcsl(sourceData)
     return messages
   }
 

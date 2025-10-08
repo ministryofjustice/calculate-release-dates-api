@@ -137,4 +137,5 @@ enum class ValidationCode(val message: String, val validationType: ValidationTyp
   RECALL_MISSING_REVOCATION_DATE("An active recall sentence is present with no associated court event with a \"Recall to prison\" court outcome."),
   COURT_MARTIAL_WITH_SDS_PLUS("The calculation includes an SDS+ from a military court", MANUAL_ENTRY_JOURNEY_REQUIRED),
   CONSECUTIVE_TO_SENTENCE_IMPOSED_AFTER("Court case %s NOMIS line number %s cannot be consecutive to a sentence that has a later date"),
+  FTR_FROM_HDC_OR_ECSL("Fixed term recall while on HDC", UNSUPPORTED_SENTENCE),
 }
