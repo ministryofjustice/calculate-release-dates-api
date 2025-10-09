@@ -1,18 +1,22 @@
-package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation
+package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.validator
 
-import org.springframework.stereotype.Service
+import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
-@Service
-class DtoValidationService {
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessage
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationOrder
 
-  internal fun validate(calculationSourceData: CalculationSourceData): List<ValidationMessage> {
+@Component
+class DtoSupportedValidator : PreCalculationSourceDataValidator {
+
+  override fun validate(sourceData: CalculationSourceData): List<ValidationMessage> {
     val messages = mutableListOf<ValidationMessage>()
-    messages.addAll(validateDtoIsNotRecall(calculationSourceData))
-    messages.addAll(validateDtoIsNotConsecutiveToSentence(calculationSourceData))
+    messages.addAll(validateDtoIsNotRecall(sourceData))
+    messages.addAll(validateDtoIsNotConsecutiveToSentence(sourceData))
     return messages
   }
 
@@ -60,9 +64,19 @@ class DtoValidationService {
     it.code == SentenceTerms.BREACH_OF_SUPERVISION_REQUIREMENTS_TERM_CODE || it.code == SentenceTerms.BREACH_DUE_TO_IMPRISONABLE_OFFENCE_TERM_CODE
   }
 
-  private fun isConsecutiveToNonDto(sentenceAndOffence: SentenceAndOffence, sourceData: CalculationSourceData): Boolean = sentenceAndOffence.consecutiveToSequence != null && sequenceNotDto(sentenceAndOffence.consecutiveToSequence!!, sourceData)
+  private fun isConsecutiveToNonDto(
+    sentenceAndOffence: SentenceAndOffence,
+    sourceData: CalculationSourceData,
+  ): Boolean = sentenceAndOffence.consecutiveToSequence != null &&
+    sequenceNotDto(
+      sentenceAndOffence.consecutiveToSequence!!,
+      sourceData,
+    )
 
-  private fun hasNonDtoConsecutiveToIt(sentenceAndOffence: SentenceAndOffence, sourceData: CalculationSourceData): Boolean = sourceData.sentenceAndOffences.any {
+  private fun hasNonDtoConsecutiveToIt(
+    sentenceAndOffence: SentenceAndOffence,
+    sourceData: CalculationSourceData,
+  ): Boolean = sourceData.sentenceAndOffences.any {
     it.consecutiveToSequence == sentenceAndOffence.sentenceSequence &&
       SentenceCalculationType.from(it.sentenceCalculationType).sentenceType != SentenceType.DetentionAndTrainingOrder
   }
@@ -71,4 +85,6 @@ class DtoValidationService {
     val consecutiveTo = sourceData.sentenceAndOffences.firstOrNull { it.sentenceSequence == consecutiveSequence }
     return consecutiveTo != null && SentenceCalculationType.from(consecutiveTo.sentenceCalculationType).sentenceType != SentenceType.DetentionAndTrainingOrder
   }
+
+  override fun validationOrder() = ValidationOrder.UNSUPPORTED
 }

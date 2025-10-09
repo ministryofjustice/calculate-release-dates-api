@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore
 import java.time.LocalDate
 
 data class Offence(
-  val committedAt: LocalDate,
+  val committedAt: LocalDate?,
   val offenceCode: String? = null,
 ) {
   @JsonIgnore

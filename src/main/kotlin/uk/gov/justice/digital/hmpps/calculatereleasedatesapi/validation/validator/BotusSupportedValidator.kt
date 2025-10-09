@@ -1,19 +1,18 @@
-package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation
+package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.validator
 
-import org.springframework.stereotype.Service
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
+import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType.BOTUS
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.BOTUS_CONSECUTIVE_TO_OTHER_SENTENCE
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessage
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationOrder
 
-@Service
-class BotusValidationService(
-  private val featureToggles: FeatureToggles,
-) {
+@Component
+class BotusSupportedValidator : PreCalculationSourceDataValidator {
 
-  internal fun validate(sourceData: CalculationSourceData): List<ValidationMessage> = validateUnsupportedConsecutiveBotusSentences(sourceData)
+  override fun validate(sourceData: CalculationSourceData): List<ValidationMessage> = validateUnsupportedConsecutiveBotusSentences(sourceData)
 
   private fun validateUnsupportedConsecutiveBotusSentences(sourceData: CalculationSourceData): List<ValidationMessage> {
     val consecutiveSentences = sourceData.sentenceAndOffences
@@ -55,4 +54,5 @@ class BotusValidationService(
 
     return sentenceChains
   }
+  override fun validationOrder() = ValidationOrder.UNSUPPORTED
 }

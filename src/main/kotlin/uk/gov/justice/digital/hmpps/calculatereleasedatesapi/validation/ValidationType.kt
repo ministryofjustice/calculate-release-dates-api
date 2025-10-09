@@ -1,15 +1,22 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation
 
-enum class ValidationType {
-  UNSUPPORTED_SENTENCE,
-  UNSUPPORTED_CALCULATION,
-  VALIDATION,
-  UNSUPPORTED_OFFENCE,
-  SUSPENDED_OFFENCE,
-  MANUAL_ENTRY_JOURNEY_REQUIRED,
-  CONCURRENT_CONSECUTIVE,
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationOrder.INVALID
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationOrder.UNSUPPORTED
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationOrder.WARNING
+
+enum class ValidationType(
+  val order: ValidationOrder,
+) {
+
+  UNSUPPORTED_SENTENCE(UNSUPPORTED),
+  UNSUPPORTED_CALCULATION(UNSUPPORTED),
+  VALIDATION(INVALID),
+  UNSUPPORTED_OFFENCE(UNSUPPORTED),
+  SUSPENDED_OFFENCE(INVALID),
+  MANUAL_ENTRY_JOURNEY_REQUIRED(UNSUPPORTED),
+  CONCURRENT_CONSECUTIVE(WARNING),
   ;
 
-  fun isUnsupported(): Boolean = listOf(UNSUPPORTED_OFFENCE, UNSUPPORTED_SENTENCE, UNSUPPORTED_CALCULATION, MANUAL_ENTRY_JOURNEY_REQUIRED).contains(this)
-  fun excludedInSave(): Boolean = this == CONCURRENT_CONSECUTIVE
+  fun isUnsupported(): Boolean = order == UNSUPPORTED
+  fun excludedInSave(): Boolean = order == WARNING
 }

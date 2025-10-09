@@ -1,16 +1,20 @@
-package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation
+package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.validator
 
-import org.springframework.stereotype.Service
+import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessage
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationOrder
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationUtilities
 
-@Service
-class FineValidationService(private val validationUtilities: ValidationUtilities) {
+@Component
+class FineSentenceSupportedValidator(private val validationUtilities: ValidationUtilities) : PreCalculationSourceDataValidator {
 
-  fun validateFineSentenceSupported(calculationSourceData: CalculationSourceData): List<ValidationMessage> {
-    val fineSentences = getFineSentences(calculationSourceData)
+  override fun validate(sourceData: CalculationSourceData): List<ValidationMessage> {
+    val fineSentences = getFineSentences(sourceData)
 
     if (fineSentences.isEmpty()) {
       return emptyList()
@@ -18,7 +22,7 @@ class FineValidationService(private val validationUtilities: ValidationUtilities
 
     val validationMessages = mutableListOf<ValidationMessage>()
 
-    if (hasFinePayments(calculationSourceData)) {
+    if (hasFinePayments(sourceData)) {
       validationMessages.add(ValidationMessage(ValidationCode.A_FINE_SENTENCE_WITH_PAYMENTS))
     }
 
@@ -26,7 +30,7 @@ class FineValidationService(private val validationUtilities: ValidationUtilities
       validationMessages.add(ValidationMessage(ValidationCode.A_FINE_SENTENCE_CONSECUTIVE_TO))
     }
 
-    if (hasConsecutiveToFineSentence(calculationSourceData, fineSentences)) {
+    if (hasConsecutiveToFineSentence(sourceData, fineSentences)) {
       validationMessages.add(ValidationMessage(ValidationCode.A_FINE_SENTENCE_CONSECUTIVE))
     }
 
@@ -48,15 +52,6 @@ class FineValidationService(private val validationUtilities: ValidationUtilities
     }
   }
 
-  internal fun validateFineAmount(sentencesAndOffence: SentenceAndOffence): ValidationMessage? {
-    if (isFineSentence(sentencesAndOffence) && sentencesAndOffence.fineAmount == null) {
-      return ValidationMessage(
-        ValidationCode.A_FINE_SENTENCE_MISSING_FINE_AMOUNT,
-        validationUtilities.getCaseSeqAndLineSeq(sentencesAndOffence),
-      )
-    }
-    return null
-  }
-
   private fun isFineSentence(sentencesAndOffence: SentenceAndOffence): Boolean = SentenceCalculationType.from(sentencesAndOffence.sentenceCalculationType).sentenceType == SentenceType.AFine
+  override fun validationOrder() = ValidationOrder.UNSUPPORTED
 }

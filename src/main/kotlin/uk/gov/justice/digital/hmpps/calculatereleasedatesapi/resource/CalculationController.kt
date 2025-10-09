@@ -19,12 +19,10 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.adjustmentsapi.model.AdjustmentDto
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.TEST
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.NoActiveBookingException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationRequestModel
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResults
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedCalculationResults
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.GenuineOverrideCreatedResponse
@@ -43,7 +41,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.Calculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationTransactionalService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.DetailedCalculationResultsService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.GenuineOverrideService
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.InactiveDataOptions
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.LatestCalculationService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.OffenderKeyDatesService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.RelevantRemandService
@@ -85,49 +82,6 @@ class CalculationController(
   ): CalculatedReleaseDates {
     log.info("Request received to calculate release dates for $prisonerId")
     return calculationTransactionalService.calculate(prisonerId, calculationRequestModel)
-  }
-
-  @PostMapping(value = ["/{prisonerId}/test"])
-  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")
-  @ResponseBody
-  @Operation(
-    summary = "Calculate release dates for a prisoner - test calculation, this does not publish to NOMIS",
-    description = "This endpoint will calculate release dates based on a prisoners latest booking, this can include" +
-      "inactive bookings of historic prisoners. Endpoint is used to test calculations against NOMIS.",
-  )
-  @ApiResponses(
-    value = [
-      ApiResponse(responseCode = "200", description = "Returns calculated dates"),
-      ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
-      ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
-    ],
-  )
-  fun testCalculation(
-    @Parameter(required = true, example = "A1234AB", description = "The prisoners ID (aka nomsId)")
-    @PathVariable("prisonerId")
-    prisonerId: String,
-    @RequestBody
-    calculationRequestModel: CalculationRequestModel,
-  ): CalculationResults {
-    log.info("Request received to calculate release dates for $prisonerId")
-    val validationMessages = calculationTransactionalService.fullValidation(
-      prisonerId,
-      calculationRequestModel.calculationUserInputs ?: CalculationUserInputs(),
-      InactiveDataOptions.overrideToIncludeInactiveData(),
-    )
-
-    return if (validationMessages.isNotEmpty()) {
-      CalculationResults(validationMessages = validationMessages)
-    } else {
-      CalculationResults(
-        calculationTransactionalService.calculate(
-          prisonerId,
-          calculationRequestModel,
-          InactiveDataOptions.overrideToIncludeInactiveData(),
-          TEST,
-        ),
-      )
-    }
   }
 
   @PostMapping(value = ["/confirm/{calculationRequestId}"])
