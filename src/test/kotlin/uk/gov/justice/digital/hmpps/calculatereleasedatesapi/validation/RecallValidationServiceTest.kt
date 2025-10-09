@@ -46,7 +46,7 @@ class RecallValidationServiceTest {
       trancheThreeCommencementDate = sdsEarlyReleaseTrancheThreeDate(),
     ),
     validationUtilities = ValidationUtilities(),
-    featureToggles = FeatureToggles(ftr48ManualJourney = true, extraReturnToCustodyValidation = true),
+    featureToggles = FeatureToggles(ftr48ManualJourney = true),
   )
 
   @Nested

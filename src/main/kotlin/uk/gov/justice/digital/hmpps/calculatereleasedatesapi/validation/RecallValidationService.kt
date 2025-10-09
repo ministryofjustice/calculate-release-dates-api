@@ -52,24 +52,25 @@ class RecallValidationService(
       else -> mutableListOf()
     }
 
-    if (featureToggles.extraReturnToCustodyValidation) {
+    if (sourceData.returnToCustodyDate != null) {
       val fixedTermRecallSentences =
         sourceData.sentenceAndOffences.filter { from(it.sentenceCalculationType).recallType?.isFixedTermRecall == true }
-      if (fixedTermRecallSentences.any { it.sentenceDate.isAfter(sourceData.returnToCustodyDate!!.returnToCustodyDate) }) {
+      if (fixedTermRecallSentences.any { it.sentenceDate.isAfter(sourceData.returnToCustodyDate.returnToCustodyDate) }) {
         validationMessages.add(ValidationMessage(ValidationCode.FTR_RTC_DATE_BEFORE_SENTENCE_DATE))
       }
 
       if (fixedTermRecallSentences.isNotEmpty() &&
-        sourceData.returnToCustodyDate!!.returnToCustodyDate.isAfter(
+        sourceData.returnToCustodyDate.returnToCustodyDate.isAfter(
           LocalDate.now(),
         )
       ) {
         validationMessages.add(ValidationMessage(ValidationCode.FTR_RTC_DATE_IN_FUTURE))
       }
-    }
-    val revocationDate = sourceData.findLatestRevocationDate()
-    if (has56DayFTRSentence && revocationDate!!.isAfter(sourceData.returnToCustodyDate!!.returnToCustodyDate)) {
-      validationMessages.add(ValidationMessage(ValidationCode.FTR_RTC_DATE_BEFORE_REVOCATION_DATE))
+
+      val revocationDate = sourceData.findLatestRevocationDate()
+      if (has56DayFTRSentence && revocationDate!!.isAfter(sourceData.returnToCustodyDate.returnToCustodyDate)) {
+        validationMessages.add(ValidationMessage(ValidationCode.FTR_RTC_DATE_BEFORE_REVOCATION_DATE))
+      }
     }
 
     return validationMessages
@@ -88,10 +89,8 @@ class RecallValidationService(
       if (revocationDate == null && recallSentences.any { from(it.sentenceCalculationType).recallType == FIXED_TERM_RECALL_56 }) {
         return listOf(ValidationMessage(ValidationCode.RECALL_MISSING_REVOCATION_DATE))
       }
-      if (featureToggles.extraReturnToCustodyValidation) {
-        if (revocationDate != null && revocationDate.isAfter(LocalDate.now())) {
-          return listOf(ValidationMessage(ValidationCode.REVOCATION_DATE_IN_THE_FUTURE))
-        }
+      if (revocationDate != null && revocationDate.isAfter(LocalDate.now())) {
+        return listOf(ValidationMessage(ValidationCode.REVOCATION_DATE_IN_THE_FUTURE))
       }
     }
     return emptyList()
