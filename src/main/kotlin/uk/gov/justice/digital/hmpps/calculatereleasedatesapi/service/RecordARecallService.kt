@@ -8,6 +8,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecordARecallResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationReasonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationOrder
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.service.ValidationService
 
 @Service
 class RecordARecallService(
@@ -15,6 +17,7 @@ class RecordARecallService(
   private val calculationSourceDataService: CalculationSourceDataService,
   private val calculationTransactionalService: CalculationTransactionalService,
   private val calculationReasonRepository: CalculationReasonRepository,
+  private val validationService: ValidationService,
 ) {
 
   fun calculateAndValidateForRecordARecall(prisonerId: String): RecordARecallResult {
@@ -29,7 +32,7 @@ class RecordARecallService(
 
     val inactiveDataOptions = InactiveDataOptions.overrideToIncludeInactiveData()
     val sourceData = calculationSourceDataService.getCalculationSourceData(prisonerId, inactiveDataOptions, listOfNotNull(penultimateBooking))
-    val validationResult = calculationTransactionalService.fullValidationFromSourceData(sourceData, CalculationUserInputs())
+    val validationResult = validationService.validate(sourceData, CalculationUserInputs(), ValidationOrder.allValidations())
 
     if (validationResult.any { criticalValidationErrors.contains(it.code) }) {
       return RecordARecallResult(validationResult)

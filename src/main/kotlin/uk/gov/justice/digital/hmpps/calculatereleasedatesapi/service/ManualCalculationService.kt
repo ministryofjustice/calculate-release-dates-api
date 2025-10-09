@@ -24,9 +24,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.Calculat
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.sentence.SentenceCombinationService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.sentence.SentenceIdentificationService
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessage
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationService
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationType.MANUAL_ENTRY_JOURNEY_REQUIRED
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationOrder
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.service.ValidationService
 import java.time.LocalDate
 import java.time.Period
 
@@ -97,29 +96,12 @@ class ManualCalculationService(
 
     return try {
       val savedCalculationRequest = calculationRequestRepository.save(calculationRequest)
-
-      val preCalcManualJourneyErrors = validationService.validateSupportedSentencesAndCalculations(sourceData)
-      val validationMessages = mutableListOf<ValidationMessage>()
-      validationMessages.addAll(preCalcManualJourneyErrors.unsupportedCalculationMessages)
-      validationMessages.addAll(preCalcManualJourneyErrors.unsupportedSentenceMessages)
+      val validationMessages = validationService.validate(sourceData, calculationUserInputs, ValidationOrder.UNSUPPORTED)
 
       if (validationMessages.isNotEmpty()) {
-        savedCalculationRequest.manualCalculationReason = validationMessages.map { transform(savedCalculationRequest, it) }
+        savedCalculationRequest.manualCalculationReason =
+          validationMessages.map { transform(savedCalculationRequest, it) }
         calculationRequestRepository.save(savedCalculationRequest)
-      } else {
-        val calculationOutput = calculationService.calculateReleaseDates(
-          booking,
-          calculationUserInputs,
-        )
-
-        val postCalcManualJourneyErrors = validationService
-          .validateBookingAfterCalculation(calculationOutput, booking)
-          .filter { it.type == MANUAL_ENTRY_JOURNEY_REQUIRED }
-
-        if (postCalcManualJourneyErrors.isNotEmpty()) {
-          savedCalculationRequest.manualCalculationReason = postCalcManualJourneyErrors.map { transform(savedCalculationRequest, it) }
-          calculationRequestRepository.save(savedCalculationRequest)
-        }
       }
 
       val calculationOutcomes =

@@ -25,6 +25,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyRelea
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ReturnToCustodyDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.UNSUPPORTED_SDS40_RECALL_SENTENCE_TYPE
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.validator.UnsupportedSDS40RecallValidator
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit.DAYS
 import java.time.temporal.ChronoUnit.MONTHS
@@ -59,7 +60,7 @@ class UnsupportedSDS40RecallSentenceTest {
       mock(),
     )
 
-    val result = RecallValidationService(TRANCHE_CONFIGURATION, ValidationUtilities(), FeatureToggles()).validateUnsupportedRecallTypes(
+    val result = UnsupportedSDS40RecallValidator(FeatureToggles(), TRANCHE_CONFIGURATION).validate(
       calculationOutput,
       workingBooking,
     )
@@ -92,7 +93,7 @@ class UnsupportedSDS40RecallSentenceTest {
       mock(),
     )
 
-    val result = RecallValidationService(TRANCHE_CONFIGURATION, ValidationUtilities(), FeatureToggles()).validateUnsupportedRecallTypes(
+    val result = UnsupportedSDS40RecallValidator(FeatureToggles(), TRANCHE_CONFIGURATION).validate(
       calculationOutput,
       workingBooking,
     )
@@ -126,7 +127,7 @@ class UnsupportedSDS40RecallSentenceTest {
       mock(),
     )
 
-    val result = RecallValidationService(TRANCHE_CONFIGURATION, ValidationUtilities(), FeatureToggles()).validateUnsupportedRecallTypes(
+    val result = UnsupportedSDS40RecallValidator(FeatureToggles(), TRANCHE_CONFIGURATION).validate(
       calculationOutput,
       workingBooking,
     )

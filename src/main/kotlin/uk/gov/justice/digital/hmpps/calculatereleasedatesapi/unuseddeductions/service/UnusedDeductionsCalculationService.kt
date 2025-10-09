@@ -11,7 +11,9 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.Calculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationSourceDataService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.InactiveDataOptions
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.PrisonService
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationOrder
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.service.ValidationService
 import java.time.temporal.ChronoUnit
 import kotlin.math.max
 
@@ -31,16 +33,13 @@ class UnusedDeductionsCalculationService(
 
     val calculationUserInputs = CalculationUserInputs(useOffenceIndicators = true)
 
-    var validationMessages = validationService.validateBeforeCalculation(sourceData, calculationUserInputs)
-    if (validationMessages.isNotEmpty()) {
-      return UnusedDeductionCalculationResponse(null, validationMessages)
-    }
-    val booking = bookingService.getBooking(sourceData)
-    validationMessages = validationService.validateBeforeCalculation(booking)
+    val validationMessages = validationService.validate(sourceData, calculationUserInputs, ValidationOrder.INVALID)
+      .filterNot { listOf(ValidationCode.CUSTODIAL_PERIOD_EXTINGUISHED_TAGGED_BAIL, ValidationCode.CUSTODIAL_PERIOD_EXTINGUISHED_REMAND).contains(it.code) }
     if (validationMessages.isNotEmpty()) {
       return UnusedDeductionCalculationResponse(null, validationMessages)
     }
 
+    val booking = bookingService.getBooking(sourceData)
     val result = calculationService.calculateReleaseDates(booking, calculationUserInputs)
     val sentences = result.sentenceGroup.last().sentences
     val releaseDateTypes = listOf(ReleaseDateType.CRD, ReleaseDateType.ARD, ReleaseDateType.MTD)
@@ -67,7 +66,6 @@ class UnusedDeductionsCalculationService(
       0
     }
 
-    validationMessages = validationService.validateBookingAfterCalculation(result, booking)
     return UnusedDeductionCalculationResponse(unusedDeductions, validationMessages)
   }
 }

@@ -54,7 +54,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.TUSED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.Tariff
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.MissingTermException
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.NoOffenceDatesProvidedException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AFineSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AbstractSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustment
@@ -135,8 +134,8 @@ fun transform(
   val offence =
     Offence(
       committedAt = offendersOffence.offenceEndDate
-        ?: offendersOffence.offenceStartDate
-        ?: throw NoOffenceDatesProvidedException("No offence end or start dates provided on charge id [${offendersOffence.offenderChargeId}]"),
+        ?: offendersOffence.offenceStartDate,
+//        ?: throw NoOffenceDatesProvidedException("No offence end or start dates provided on charge id [${offendersOffence.offenderChargeId}]"),
       offenceCode = offendersOffence.offenceCode,
     )
 
