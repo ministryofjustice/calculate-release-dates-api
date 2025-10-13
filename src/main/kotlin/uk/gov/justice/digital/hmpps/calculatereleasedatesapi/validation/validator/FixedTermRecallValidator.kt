@@ -33,21 +33,20 @@ class FixedTermRecallValidator(private val featureToggles: FeatureToggles) : Pre
       else -> mutableListOf()
     }
 
-    if (featureToggles.extraReturnToCustodyValidation) {
-      val fixedTermRecallSentences =
-        sourceData.sentenceAndOffences.filter { from(it.sentenceCalculationType).recallType?.isFixedTermRecall == true }
-      if (fixedTermRecallSentences.any { it.sentenceDate.isAfter(sourceData.returnToCustodyDate!!.returnToCustodyDate) }) {
-        validationMessages.add(ValidationMessage(ValidationCode.FTR_RTC_DATE_BEFORE_SENTENCE_DATE))
-      }
-
-      if (fixedTermRecallSentences.isNotEmpty() &&
-        sourceData.returnToCustodyDate!!.returnToCustodyDate.isAfter(
-          LocalDate.now(),
-        )
-      ) {
-        validationMessages.add(ValidationMessage(ValidationCode.FTR_RTC_DATE_IN_FUTURE))
-      }
+    val fixedTermRecallSentences =
+      sourceData.sentenceAndOffences.filter { from(it.sentenceCalculationType).recallType?.isFixedTermRecall == true }
+    if (fixedTermRecallSentences.any { it.sentenceDate.isAfter(sourceData.returnToCustodyDate!!.returnToCustodyDate) }) {
+      validationMessages.add(ValidationMessage(ValidationCode.FTR_RTC_DATE_BEFORE_SENTENCE_DATE))
     }
+
+    if (fixedTermRecallSentences.isNotEmpty() &&
+      sourceData.returnToCustodyDate!!.returnToCustodyDate.isAfter(
+        LocalDate.now(),
+      )
+    ) {
+      validationMessages.add(ValidationMessage(ValidationCode.FTR_RTC_DATE_IN_FUTURE))
+    }
+
     val revocationDate = sourceData.findLatestRevocationDate()
     if (has56DayFTRSentence && revocationDate!!.isAfter(sourceData.returnToCustodyDate!!.returnToCustodyDate)) {
       validationMessages.add(ValidationMessage(ValidationCode.FTR_RTC_DATE_BEFORE_REVOCATION_DATE))

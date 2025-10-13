@@ -52,10 +52,11 @@ enum class ValidationCode(val message: String, val validationType: ValidationTyp
   LASPO_AR_SENTENCE_TYPE_INCORRECT("The sentence type for court case %s NOMIS line reference %s is invalid for the sentence date entered."),
   MORE_THAN_ONE_IMPRISONMENT_TERM("Court case %s NOMIS line reference %s must only have one imprisonment term."),
   MORE_THAN_ONE_LICENCE_TERM("Court case %s NOMIS line reference %s must only have one licence term."),
+  MULTIPLE_SENTENCES_CONSECUTIVE_TO("Court case %s NOMIS line reference %s has multiple sentences that have been made consecutive to it. A sentence should only have one other sentence consecutive to it."),
   OFFENCE_DATE_AFTER_SENTENCE_RANGE_DATE("The offence date range for court case %s NOMIS line reference %s must be before the sentence date."),
   OFFENCE_DATE_AFTER_SENTENCE_START_DATE("The offence date for court case %s NOMIS line reference %s must be before the sentence date."),
   OFFENCE_MISSING_DATE("Court case %s NOMIS line reference %s must include an offence date."),
-  PRISONER_SUBJECT_TO_PTD("Prisoner has PTD alert after PCSC commencement date, this is unsupported", UNSUPPORTED_CALCULATION),
+  PRISONER_SUBJECT_TO_PTD("Prisoner has PTD alert after PCSC commencement date, this is unsupported"),
   REMAND_FROM_TO_DATES_REQUIRED("Remand periods must have a from and to date."),
   REMAND_OVERLAPS_WITH_REMAND("Remand time can only be added once, it can cannot overlap with other remand dates."),
   REMAND_OVERLAPS_WITH_SENTENCE("Remand time cannot be credited when a custodial sentence is being served."),
@@ -66,8 +67,8 @@ enum class ValidationCode(val message: String, val validationType: ValidationTyp
   SENTENCE_HAS_NO_LICENCE_TERM("Court case %s NOMIS line reference %s must include a licence term."),
   SOPC18_SOPC21_SENTENCE_TYPE_INCORRECT("The sentence type for court case %s NOMIS line reference %s is invalid for the sentence date entered."),
   SOPC_LICENCE_TERM_NOT_12_MONTHS("Court case %s NOMIS line reference %s must include a licence term of 12 months or 1 year."),
-  SDS_TORERA_EXCLUSION("The calculation includes SDS TORERA offences.", UNSUPPORTED_CALCULATION),
-  SOPC_TORERA_EXCLUSION("The calculation includes SOPC TORERA offences.", UNSUPPORTED_CALCULATION),
+  SDS_TORERA_EXCLUSION("The calculation includes SDS TORERA offences."),
+  SOPC_TORERA_EXCLUSION("The calculation includes SOPC TORERA offences."),
   UNSUPPORTED_ADJUSTMENT_LAWFULLY_AT_LARGE(
     "A Lawfully at large (LAL) adjustment has been recorded.",
     UNSUPPORTED_CALCULATION,
@@ -116,7 +117,7 @@ enum class ValidationCode(val message: String, val validationType: ValidationTyp
 
   UNSUPPORTED_SUSPENDED_OFFENCE("Replace this offence in NOMIS with the original offence they were sentenced for, then reload this page.", SUSPENDED_OFFENCE),
   FTR_NO_RETURN_TO_CUSTODY_DATE("The Fixed term recall must have a 'return to custody' date"),
-  NO_SENTENCES("Prisoner has no sentences", UNSUPPORTED_CALCULATION),
+  NO_SENTENCES("Prisoner has no sentences"),
   UNABLE_TO_DETERMINE_SHPO_RELEASE_PROVISIONS(
     "The calculation requires release provisions for SHPO SX03, which cannot be determined by the service.",
     MANUAL_ENTRY_JOURNEY_REQUIRED,
@@ -124,7 +125,6 @@ enum class ValidationCode(val message: String, val validationType: ValidationTyp
   SE2020_INVALID_OFFENCE_DETAIL(
     "Offence %s falls under the Sentencing Act 2020. The offence date entered is before this offence became law. \n" +
       " Any offences under this act must be on or after 01 December 2020.\n Change the offence date or choose a relevant offence.",
-    UNSUPPORTED_OFFENCE,
   ),
   SE2020_INVALID_OFFENCE_COURT_DETAIL("Court case %s NOMIS line reference %s offence date is before the offence became law. Change the offence date or choose a relevant offence."),
   REMAND_ON_OR_AFTER_SENTENCE_DATE("The 'From' or 'To' date of the remand period must be earlier than the sentence date for court case %s NOMIS line reference %s."),
@@ -134,8 +134,8 @@ enum class ValidationCode(val message: String, val validationType: ValidationTyp
   CONCURRENT_CONSECUTIVE_SENTENCES_NOTIFICATION("More than one sentence consecutive to the same sentence", CONCURRENT_CONSECUTIVE),
   CONSECUTIVE_SENTENCE_WITH_MULTIPLE_OFFENCES("Sentence with multiple offences is consecutive to another sentence"),
   BROKEN_CONSECUTIVE_CHAINS("You cannot have a sentence consecutive to an inactive sentence."),
-  RECALL_MISSING_REVOCATION_DATE("An active recall sentence is present with no associated court event with a \"Recall to prison\" court outcome."),
+  RECALL_MISSING_REVOCATION_DATE("An active recall sentence is present with no associated court event with a \"Recall to prison\" court outcome"),
   COURT_MARTIAL_WITH_SDS_PLUS("The calculation includes an SDS+ from a military court", MANUAL_ENTRY_JOURNEY_REQUIRED),
   CONSECUTIVE_TO_SENTENCE_IMPOSED_AFTER("Court case %s NOMIS line number %s cannot be consecutive to a sentence that has a later date"),
-  FTR_FROM_HDC_OR_ECSL("Fixed term recall while on HDC", UNSUPPORTED_SENTENCE),
+  REVOCATION_DATE_IN_THE_FUTURE("Revocation date must not be in the future"),
 }

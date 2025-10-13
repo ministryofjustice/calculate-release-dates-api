@@ -39,7 +39,7 @@ import java.util.*
 @ExtendWith(MockitoExtension::class)
 class RecallValidationServiceTest {
 
-  private val featureToggles = FeatureToggles(ftr48ManualJourney = true, extraReturnToCustodyValidation = true)
+  private val featureToggles = FeatureToggles(ftr48ManualJourney = true)
 
   @Nested
   inner class ValidateReturnToCustodyDateTests {
