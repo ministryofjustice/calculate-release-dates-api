@@ -5,7 +5,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
-import org.mockito.kotlin.eq
+import org.mockito.kotlin.isNull
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.same
@@ -14,9 +14,11 @@ import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentsSourceData
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
@@ -26,9 +28,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.Comparis
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.eligibility.ErsedEligibilityService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.eligibility.ErsedEligibilityService.ErsedEligibility
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessage
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationResult
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.service.ValidationService
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.*
@@ -42,6 +42,8 @@ class BulkComparisonEventServiceTest {
   private val comparisonPersonRepository: ComparisonPersonRepository = mock()
   private val objectMapper: ObjectMapper = TestUtil.objectMapper()
   private val ersedEligibilityService: ErsedEligibilityService = mock()
+  private val bookingService: BookingService = mock()
+  private val validationService: ValidationService = mock()
 
   private val service = BulkComparisonEventHandlerService(
     prisonService,
@@ -52,6 +54,9 @@ class BulkComparisonEventServiceTest {
     comparisonPersonRepository,
     objectMapper,
     ersedEligibilityService,
+    validationService,
+    bookingService,
+
   )
   private val bookingId = 999L
   private val body = BulkComparisonMessageBody(
@@ -134,13 +139,16 @@ class BulkComparisonEventServiceTest {
     whenever(calculationSourceDataService.getCalculationSourceData(same(prisonerDetails), any(), any())).thenReturn(
       CalculationSourceData(emptyList(), prisonerDetails, AdjustmentsSourceData(adjustmentsApiData = emptyList()), emptyList(), null),
     )
-    whenever(calculationTransactionalService.validateAndCalculateForBulk(eq(body.personId), any(), any(), any(), any(), any()))
-      .thenReturn(ValidationResult(listOf(ValidationMessage(ValidationCode.NO_SENTENCES)), null, null, null))
+    whenever(validationService.validate(any(), any(), any()))
+      .thenReturn(emptyList())
+    whenever(bookingService.getBooking(any())).thenReturn(mock())
+    whenever(calculationTransactionalService.calculate(any(), any(), any(), any(), any(), isNull(), isNull(), any(), isNull(), any()))
+      .thenReturn(CalculatedReleaseDates(emptyMap(), 1L, 1L, "ASD", CalculationStatus.BULK, calculationReference = UUID.randomUUID(), calculationReason = null, calculationDate = LocalDate.now(), calculationOutput = null))
 
     service.handleBulkComparisonMessage(InternalMessage(body))
 
     val calculationInputsCaptor = argumentCaptor<CalculationUserInputs>()
-    verify(calculationTransactionalService).validateAndCalculateForBulk(eq(body.personId), calculationInputsCaptor.capture(), any(), any(), any(), any())
+    verify(validationService).validate(any(), calculationInputsCaptor.capture(), any())
     assertThat(calculationInputsCaptor.firstValue.calculateErsed).isFalse()
     verify(ersedEligibilityService, never()).sentenceIsEligible(any())
   }
@@ -162,14 +170,17 @@ class BulkComparisonEventServiceTest {
     whenever(calculationSourceDataService.getCalculationSourceData(same(prisonerDetails), any(), any())).thenReturn(
       CalculationSourceData(emptyList(), prisonerDetails, AdjustmentsSourceData(adjustmentsApiData = emptyList()), emptyList(), null),
     )
-    whenever(calculationTransactionalService.validateAndCalculateForBulk(eq(body.personId), any(), any(), any(), any(), any()))
-      .thenReturn(ValidationResult(listOf(ValidationMessage(ValidationCode.NO_SENTENCES)), null, null, null))
+    whenever(validationService.validate(any(), any(), any()))
+      .thenReturn(emptyList())
+    whenever(bookingService.getBooking(any())).thenReturn(mock())
+    whenever(calculationTransactionalService.calculate(any(), any(), any(), any(), any(), isNull(), isNull(), any(), isNull(), any()))
+      .thenReturn(CalculatedReleaseDates(emptyMap(), 1L, 1L, "ASD", CalculationStatus.BULK, calculationReference = UUID.randomUUID(), calculationReason = null, calculationDate = LocalDate.now(), calculationOutput = null))
     whenever(ersedEligibilityService.sentenceIsEligible(bookingId)).thenReturn(ErsedEligibility(false, "foo"))
 
     service.handleBulkComparisonMessage(InternalMessage(body))
 
     val calculationInputsCaptor = argumentCaptor<CalculationUserInputs>()
-    verify(calculationTransactionalService).validateAndCalculateForBulk(eq(body.personId), calculationInputsCaptor.capture(), any(), any(), any(), any())
+    verify(validationService).validate(any(), calculationInputsCaptor.capture(), any())
     assertThat(calculationInputsCaptor.firstValue.calculateErsed).isFalse()
     verify(ersedEligibilityService).sentenceIsEligible(bookingId)
   }
@@ -191,14 +202,17 @@ class BulkComparisonEventServiceTest {
     whenever(calculationSourceDataService.getCalculationSourceData(same(prisonerDetails), any(), any())).thenReturn(
       CalculationSourceData(emptyList(), prisonerDetails, AdjustmentsSourceData(adjustmentsApiData = emptyList()), emptyList(), null),
     )
-    whenever(calculationTransactionalService.validateAndCalculateForBulk(eq(body.personId), any(), any(), any(), any(), any()))
-      .thenReturn(ValidationResult(listOf(ValidationMessage(ValidationCode.NO_SENTENCES)), null, null, null))
+    whenever(validationService.validate(any(), any(), any()))
+      .thenReturn(emptyList())
+    whenever(bookingService.getBooking(any())).thenReturn(mock())
+    whenever(calculationTransactionalService.calculate(any(), any(), any(), any(), any(), isNull(), isNull(), any(), isNull(), any()))
+      .thenReturn(CalculatedReleaseDates(emptyMap(), 1L, 1L, "ASD", CalculationStatus.BULK, calculationReference = UUID.randomUUID(), calculationReason = null, calculationDate = LocalDate.now(), calculationOutput = null))
     whenever(ersedEligibilityService.sentenceIsEligible(bookingId)).thenReturn(ErsedEligibility(true))
 
     service.handleBulkComparisonMessage(InternalMessage(body))
 
     val calculationInputsCaptor = argumentCaptor<CalculationUserInputs>()
-    verify(calculationTransactionalService).validateAndCalculateForBulk(eq(body.personId), calculationInputsCaptor.capture(), any(), any(), any(), any())
+    verify(validationService).validate(any(), calculationInputsCaptor.capture(), any())
     assertThat(calculationInputsCaptor.firstValue.calculateErsed).isTrue()
     verify(ersedEligibilityService).sentenceIsEligible(bookingId)
   }

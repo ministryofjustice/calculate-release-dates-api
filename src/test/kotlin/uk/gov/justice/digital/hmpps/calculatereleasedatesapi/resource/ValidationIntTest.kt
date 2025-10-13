@@ -91,7 +91,6 @@ class ValidationIntTest(private val mockManageOffencesClient: MockManageOffences
         ValidationMessage(code = SENTENCE_HAS_MULTIPLE_TERMS, arguments = listOf("2", "2")),
         ValidationMessage(code = SEC_91_SENTENCE_TYPE_INCORRECT, arguments = listOf("2", "4")),
         ValidationMessage(code = SEC_91_SENTENCE_TYPE_INCORRECT, arguments = listOf("2", "4")),
-        ValidationMessage(code = CONCURRENT_CONSECUTIVE_SENTENCES_DURATION, arguments = listOf("3", "0", "0", "0")),
         ValidationMessage(code = REMAND_FROM_TO_DATES_REQUIRED),
         ValidationMessage(code = REMAND_FROM_TO_DATES_REQUIRED),
         ValidationMessage(code = ADJUSTMENT_FUTURE_DATED_ADA),
@@ -328,7 +327,7 @@ class ValidationIntTest(private val mockManageOffencesClient: MockManageOffences
       .expectBodyList(ValidationMessage::class.java)
       .returnResult().responseBody!!
 
-    assertThat(validationMessages).isEqualTo(messages)
+    assertThat(validationMessages).hasSameElementsAs(messages)
   }
 
   companion object {

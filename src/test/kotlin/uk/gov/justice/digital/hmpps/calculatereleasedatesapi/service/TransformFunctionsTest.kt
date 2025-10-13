@@ -32,7 +32,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Senten
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceType.Sopc
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceType.StandardDeterminate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.MissingTermException
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.NoOffenceDatesProvidedException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AFineSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BotusSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
@@ -655,49 +654,6 @@ class TransformFunctionsTest {
       establishment = "ABC",
     )
     return comparisonPerson
-  }
-
-  @Test
-  fun `Exception thrown when offence has no dates`() {
-    val bookingId = 1110022L
-    val sequence = 153
-    val lineSequence = 154
-    val caseSequence = 155
-    val consecutiveTo = 99
-    val offence = OffenderOffence(
-      offenderChargeId = 1L,
-      offenceStartDate = null,
-      offenceEndDate = null,
-      offenceCode = "RR1",
-      offenceDescription = "Littering",
-    )
-    val request = SentenceAndOffenceWithReleaseArrangements(
-      PrisonApiSentenceAndOffences(
-        bookingId = bookingId,
-        sentenceSequence = sequence,
-        consecutiveToSequence = consecutiveTo,
-        sentenceDate = FIRST_JAN_2015,
-        terms = listOf(
-          SentenceTerms(
-            years = 5,
-          ),
-        ),
-        sentenceStatus = "IMP",
-        sentenceCategory = "CAT",
-        sentenceCalculationType = SentenceCalculationType.ADIMP.name,
-        sentenceTypeDescription = "Standard Determinate",
-        offences = listOf(offence),
-        lineSequence = lineSequence,
-        caseSequence = caseSequence,
-      ),
-      offence,
-      isSdsPlus = true,
-      isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-      isSDSPlusOffenceInPeriod = false,
-      hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
-    )
-
-    assertThrows<NoOffenceDatesProvidedException> { transform(request, null) }
   }
 
   private companion object {

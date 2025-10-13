@@ -2,8 +2,6 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import org.mockito.kotlin.mock
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentsSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NormalisedSentenceAndOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
@@ -15,11 +13,11 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Sent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.BOTUS_CONSECUTIVE_TO_OTHER_SENTENCE
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.validator.BotusSupportedValidator
 import java.time.LocalDate
 
-class BotusValidationServiceTest {
-  private val featureToggles = mock<FeatureToggles>()
-  private val botusValidationService = BotusValidationService(featureToggles)
+class BotusSupportedValidatorTest {
+  private val botusValidationService = BotusSupportedValidator()
 
   @Test
   fun `should perform validation when botusConcurrentJourney feature toggle is enabled`() {

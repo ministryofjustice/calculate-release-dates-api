@@ -23,7 +23,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.Calculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationTransactionalServiceTest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationTransactionalServiceTest.Companion.CALCULATION_REASON
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessage
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.validator.PostCalculationValidator
 import java.io.File
 import java.time.LocalDate
 import java.util.UUID
@@ -42,7 +42,7 @@ abstract class CalculationExampleTests : SpringTestBase() {
   private lateinit var calculationTransactionalService: CalculationTransactionalService
 
   @Autowired
-  private lateinit var validationService: ValidationService
+  private lateinit var validators: List<PostCalculationValidator>
 
   @Autowired
   private lateinit var featureToggles: FeatureToggles
@@ -59,10 +59,9 @@ abstract class CalculationExampleTests : SpringTestBase() {
       calculatedReleaseDates = calculationService
         .calculateReleaseDates(calculationTestFile.booking, calculationTestFile.userInputs)
 
-      returnedValidationMessages = validationService.validateBookingAfterCalculation(
-        calculatedReleaseDates,
-        calculationTestFile.booking,
-      ).distinct()
+      returnedValidationMessages = validators.map { it.validate(calculatedReleaseDates, calculationTestFile.booking) }
+        .flatten()
+        .distinct()
     } catch (e: Exception) {
       if (!calculationTestFile.error.isNullOrEmpty()) {
         assertEquals(calculationTestFile.error, e.javaClass.simpleName)

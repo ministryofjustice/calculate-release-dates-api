@@ -20,7 +20,6 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.doNothing
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.slf4j.Logger
@@ -53,7 +52,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedRel
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationFragments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOutput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExternalSentenceId
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManuallyEnteredDate
@@ -64,7 +62,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOf
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmitCalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmittedDate
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SupportedValidationResponse
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderKeyDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
@@ -82,9 +79,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.Calculat
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationReasonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.TrancheOutcomeRepository
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessage
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.service.ValidationService
 import java.time.LocalDate
 import java.time.Period
 import java.time.temporal.ChronoUnit.DAYS
@@ -727,100 +722,6 @@ class CalculationTransactionalServiceTest {
         true,
       )
     }
-  }
-
-  @Test
-  fun `supported validation check returns without loading the booking if there are unsupported sentences`() {
-    whenever(calculationSourceDataService.getCalculationSourceData(prisonerDetails.offenderNo, InactiveDataOptions.default())).thenReturn(SOURCE_DATA)
-    val expectedResponse = SupportedValidationResponse(
-      unsupportedSentenceMessages = listOf(ValidationMessage(ValidationCode.SENTENCE_HAS_NO_IMPRISONMENT_TERM)),
-    )
-    whenever(validationService.validateSupportedSentencesAndCalculations(SOURCE_DATA)).thenReturn(expectedResponse)
-
-    val response = calculationTransactionalService.supportedValidation(prisonerDetails.offenderNo)
-
-    assertThat(response).isEqualTo(expectedResponse)
-    verify(bookingService, never()).getBooking(any())
-    verify(calculationService, never()).calculateReleaseDates(any(), any())
-  }
-
-  @Test
-  fun `supported validation check returns without loading the booking if the calculation is unsupported`() {
-    whenever(calculationSourceDataService.getCalculationSourceData(prisonerDetails.offenderNo, InactiveDataOptions.default())).thenReturn(SOURCE_DATA)
-    val expectedResponse = SupportedValidationResponse(
-      unsupportedCalculationMessages = listOf(ValidationMessage(ValidationCode.UNSUPPORTED_CALCULATION_DTO_WITH_RECALL)),
-    )
-    whenever(validationService.validateSupportedSentencesAndCalculations(SOURCE_DATA)).thenReturn(expectedResponse)
-    val response = calculationTransactionalService.supportedValidation(prisonerDetails.offenderNo)
-
-    assertThat(response).isEqualTo(expectedResponse)
-    verify(bookingService, never()).getBooking(any())
-    verify(calculationService, never()).calculateReleaseDates(any(), any())
-  }
-
-  @Test
-  fun `supported validation check loads booking and runs pre-calculation checks returning immediately without loading the booking if there are errros`() {
-    val expectedResponse = SupportedValidationResponse()
-    whenever(calculationSourceDataService.getCalculationSourceData(prisonerDetails.offenderNo, InactiveDataOptions.default())).thenReturn(SOURCE_DATA)
-    whenever(validationService.validateSupportedSentencesAndCalculations(SOURCE_DATA)).thenReturn(expectedResponse)
-    whenever(validationService.validateBeforeCalculation(SOURCE_DATA, CalculationUserInputs())).thenReturn(listOf(ValidationMessage(ValidationCode.SENTENCE_HAS_NO_IMPRISONMENT_TERM)))
-
-    val response = calculationTransactionalService.supportedValidation(prisonerDetails.offenderNo)
-
-    assertThat(response).isEqualTo(expectedResponse)
-    verify(bookingService, never()).getBooking(any())
-    verify(calculationService, never()).calculateReleaseDates(any(), any())
-  }
-
-  @Test
-  fun `supported validation check loads booking and validates the booking then returns immediately without calc if there are booking validation errors`() {
-    val expectedResponse = SupportedValidationResponse()
-    whenever(calculationSourceDataService.getCalculationSourceData(prisonerDetails.offenderNo, InactiveDataOptions.default())).thenReturn(SOURCE_DATA)
-    whenever(validationService.validateSupportedSentencesAndCalculations(SOURCE_DATA)).thenReturn(expectedResponse)
-    whenever(validationService.validateBeforeCalculation(SOURCE_DATA, CalculationUserInputs())).thenReturn(emptyList())
-    whenever(bookingService.getBooking(SOURCE_DATA)).thenReturn(BOOKING)
-    whenever(validationService.validateBeforeCalculation(BOOKING)).thenReturn(listOf(ValidationMessage(ValidationCode.FTR_14_DAYS_SENTENCE_GE_12_MONTHS)))
-
-    val response = calculationTransactionalService.supportedValidation(prisonerDetails.offenderNo)
-
-    assertThat(response).isEqualTo(expectedResponse)
-    verify(calculationService, never()).calculateReleaseDates(any(), any())
-  }
-
-  @Test
-  fun `supported validation performs a calculation and validates for manual entry journey if there are no other issues with the booking`() {
-    val expectedResponse = SupportedValidationResponse(
-      unsupportedManualMessages = listOf(ValidationMessage(ValidationCode.FTR_TYPE_48_DAYS_OVERLAPPING_SENTENCE)),
-    )
-    whenever(calculationSourceDataService.getCalculationSourceData(prisonerDetails.offenderNo, InactiveDataOptions.default())).thenReturn(SOURCE_DATA)
-    whenever(validationService.validateSupportedSentencesAndCalculations(SOURCE_DATA)).thenReturn(SupportedValidationResponse())
-    whenever(validationService.validateBeforeCalculation(SOURCE_DATA, CalculationUserInputs())).thenReturn(emptyList())
-    whenever(bookingService.getBooking(SOURCE_DATA)).thenReturn(BOOKING)
-    whenever(validationService.validateBeforeCalculation(BOOKING)).thenReturn(emptyList())
-    whenever(calculationService.calculateReleaseDates(BOOKING, CalculationUserInputs())).thenReturn(CALCULATION_OUTPUT)
-    whenever(validationService.validateManualEntryJourneyRequirements(BOOKING, CALCULATION_OUTPUT)).thenReturn(listOf(ValidationMessage(ValidationCode.FTR_TYPE_48_DAYS_OVERLAPPING_SENTENCE)))
-
-    val response = calculationTransactionalService.supportedValidation(prisonerDetails.offenderNo)
-
-    assertThat(response).isEqualTo(expectedResponse)
-  }
-
-  @Test
-  fun `supported validation performs a calculation and validates for manual entry journey if any sentence is SDS+ from a court martial`() {
-    val expectedResponse = SupportedValidationResponse(
-      unsupportedManualMessages = listOf(ValidationMessage(ValidationCode.COURT_MARTIAL_WITH_SDS_PLUS)),
-    )
-    whenever(calculationSourceDataService.getCalculationSourceData(prisonerDetails.offenderNo, InactiveDataOptions.default())).thenReturn(SOURCE_DATA)
-    whenever(validationService.validateSupportedSentencesAndCalculations(SOURCE_DATA)).thenReturn(SupportedValidationResponse())
-    whenever(validationService.validateBeforeCalculation(SOURCE_DATA, CalculationUserInputs())).thenReturn(emptyList())
-    whenever(bookingService.getBooking(SOURCE_DATA)).thenReturn(BOOKING)
-    whenever(validationService.validateBeforeCalculation(BOOKING)).thenReturn(emptyList())
-    whenever(calculationService.calculateReleaseDates(BOOKING, CalculationUserInputs())).thenReturn(CALCULATION_OUTPUT)
-    whenever(validationService.validateManualEntryJourneyRequirements(BOOKING, CALCULATION_OUTPUT)).thenReturn(listOf(ValidationMessage(ValidationCode.COURT_MARTIAL_WITH_SDS_PLUS)))
-
-    val response = calculationTransactionalService.supportedValidation(prisonerDetails.offenderNo)
-
-    assertThat(response).isEqualTo(expectedResponse)
   }
 
   private fun <T> capture(argumentCaptor: ArgumentCaptor<T>): T = argumentCaptor.capture()
