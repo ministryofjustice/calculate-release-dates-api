@@ -18,11 +18,15 @@ class FixedTerm48OverlapValidator(private val featureToggles: FeatureToggles) : 
     calculationOutput: CalculationOutput,
     booking: Booking,
   ): List<ValidationMessage> {
-    val possibleSentences =
-      calculationOutput.sentences.filter { it.recallType == FIXED_TERM_RECALL_28 && it.sentencedAt.isBefore(FTR_48_COMMENCEMENT_DATE) }
+    if (!featureToggles.ftr48ManualJourney) return emptyList()
+
+    val possibleSentences = calculationOutput.sentences.filter {
+      val relativeDate = it.recall?.revocationDate ?: it.sentencedAt
+      it.recallType == FIXED_TERM_RECALL_28 && relativeDate.isBefore(FTR_48_COMMENCEMENT_DATE)
+    }
     val allSentencesLessThan12Months = possibleSentences.all { it.durationIsLessThan(12, MONTHS) }
     val anySentenceEqualOrOver48Months = possibleSentences.any { it.durationIsGreaterThanOrEqualTo(48, MONTHS) }
-    if (featureToggles.ftr48ManualJourney && possibleSentences.isNotEmpty() && !allSentencesLessThan12Months && !anySentenceEqualOrOver48Months) {
+    if (possibleSentences.isNotEmpty() && !allSentencesLessThan12Months && !anySentenceEqualOrOver48Months) {
       return listOf(ValidationMessage(ValidationCode.FTR_TYPE_48_DAYS_OVERLAPPING_SENTENCE))
     }
     return emptyList()
