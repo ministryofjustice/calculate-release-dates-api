@@ -38,7 +38,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedRel
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationFragments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationRequestModel
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResults
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationSentenceUserInput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManuallyEnteredDate
@@ -807,52 +806,6 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
     assertThat(calculation.dates[ERSED]).isEqualTo(
       LocalDate.of(2025, 8, 31),
     )
-  }
-
-  @Test
-  fun `Run calculation on a test of historic inactive released prisoner`() {
-    mockManageOffencesClient.withPCSCMarkersResponse(
-      OffencePcscMarkers(
-        offenceCode = "TH68010A",
-        pcscMarkers = PcscMarkers(inListA = false, inListB = false, inListC = false, inListD = false),
-      ),
-      OffencePcscMarkers(
-        offenceCode = "TH68164",
-        pcscMarkers = PcscMarkers(inListA = false, inListB = false, inListC = false, inListD = false),
-      ),
-      offences = "TH68010A,TH68164",
-    )
-
-    val calculation: CalculationResults = webTestClient.post()
-      .uri("/calculation/OUT_CALC/test")
-      .accept(MediaType.APPLICATION_JSON)
-      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
-      .bodyValue(calculationRequestModel)
-      .exchange()
-      .expectStatus().isOk
-      .expectHeader().contentType(MediaType.APPLICATION_JSON)
-      .expectBody(CalculationResults::class.java)
-      .returnResult().responseBody!!
-
-    assertThat(calculation.calculatedReleaseDates!!.dates[CRD]).isEqualTo(
-      LocalDate.of(2021, 12, 29),
-    )
-  }
-
-  @Test
-  fun `Run calculation on a test of prisoner`() {
-    val calculation: CalculationResults = webTestClient.post()
-      .uri("/calculation/default/test")
-      .accept(MediaType.APPLICATION_JSON)
-      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
-      .bodyValue(calculationRequestModel)
-      .exchange()
-      .expectStatus().isOk
-      .expectHeader().contentType(MediaType.APPLICATION_JSON)
-      .expectBody(CalculationResults::class.java)
-      .returnResult().responseBody!!
-
-    assertThat(calculation.calculatedReleaseDates!!.dates[SLED]).isEqualTo(LocalDate.of(2016, 11, 6))
   }
 
   @Test

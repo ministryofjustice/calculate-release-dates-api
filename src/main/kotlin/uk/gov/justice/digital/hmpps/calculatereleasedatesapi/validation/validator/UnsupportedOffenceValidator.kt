@@ -1,26 +1,34 @@
-package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation
+package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.validator
 
-import org.springframework.stereotype.Service
+import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessage
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationOrder
 import java.time.LocalDate
+import kotlin.collections.forEach
+import kotlin.collections.plusAssign
 
-@Service
-class UnsupportedValidationService {
+@Component
+class UnsupportedOffenceValidator : PreCalculationSourceDataValidator {
 
-  fun validateUnsupportedOffenceCodes(
-    sentences: List<SentenceAndOffenceWithReleaseArrangements>,
+  override fun validate(
+    sourceData: CalculationSourceData,
   ): List<ValidationMessage> {
     val messages = mutableListOf<ValidationMessage>()
 
     unsupportedOffenceCodeValidationMap.forEach { (predicate, code) ->
-      if (sentences.any(predicate)) {
+      if (sourceData.sentenceAndOffences.any(predicate)) {
         messages += ValidationMessage(code)
       }
     }
 
     return messages
   }
+
+  override fun validationOrder() = ValidationOrder.UNSUPPORTED
 
   companion object {
     private val AFTER_97_BREACH_PROVISION_INVALID = LocalDate.of(2020, 12, 1)

@@ -19,15 +19,18 @@ import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SupportedValidationResponse
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationTransactionalService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.InactiveDataOptions
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessage
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationOrder
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.service.ValidationService
+import kotlin.collections.List
 
 @RestController
 @RequestMapping("/validation", produces = [MediaType.APPLICATION_JSON_VALUE])
 @Tag(name = "validation-controller", description = "Validation related requests")
 class ValidationController(
-  private val calculationTransactionalService: CalculationTransactionalService,
+  private val validationService: ValidationService,
 ) {
   @PostMapping(value = ["/{prisonerId}/full-validation"])
   @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")
@@ -55,10 +58,11 @@ class ValidationController(
     calculationUserInputs: CalculationUserInputs?,
   ): List<ValidationMessage> {
     log.info("Request received to validate prisonerId $prisonerId")
-    return calculationTransactionalService.fullValidation(
+    return validationService.validate(
       prisonerId,
-      calculationUserInputs ?: CalculationUserInputs(),
       if (includeInactiveData == true) InactiveDataOptions.overrideToIncludeInactiveData() else InactiveDataOptions.default(),
+      calculationUserInputs ?: CalculationUserInputs(),
+      ValidationOrder.allValidations(),
     )
   }
 
@@ -83,9 +87,22 @@ class ValidationController(
     prisonerId: String,
   ): SupportedValidationResponse {
     log.info("Request received to validate prisonerId $prisonerId")
-    val result = calculationTransactionalService.supportedValidation(prisonerId)
+    val result = validationService.validate(
+      prisonerId,
+      InactiveDataOptions.default(),
+      CalculationUserInputs(),
+      ValidationOrder.UNSUPPORTED,
+    )
     log.info("Returning supported validation response for prisoner $prisonerId: {}", result)
-    return result
+    val unsupportedSentence = result.filter { it.type == ValidationType.UNSUPPORTED_SENTENCE }
+    val unsupportedCalculationMessages = result.filter { it.type == ValidationType.UNSUPPORTED_CALCULATION }
+    val unsupportedManualMessages = result.filter { !unsupportedSentence.contains(it) && !unsupportedCalculationMessages.contains(it) }
+
+    return SupportedValidationResponse(
+      unsupportedSentence,
+      unsupportedCalculationMessages,
+      unsupportedManualMessages,
+    )
   }
 
   @GetMapping(value = ["/{prisonerId}/manual-entry-validation"])
@@ -109,7 +126,7 @@ class ValidationController(
     prisonerId: String,
   ): List<ValidationMessage> {
     log.info("Request received to validate prisonerId for manual date entry $prisonerId")
-    val errorMessages = calculationTransactionalService.validateForManualBooking(prisonerId)
+    val errorMessages = validationService.validateOnlyOffenceDatesForManualEntry(prisonerId)
     return errorMessages
   }
 
@@ -131,7 +148,7 @@ class ValidationController(
     @RequestParam releaseDates: List<String>,
   ): List<ValidationMessage> {
     log.info("Request received to validate calculation dates for ${releaseDates.size} dates")
-    return calculationTransactionalService.validateRequestedDates(releaseDates)
+    return validationService.validateRequestedDates(releaseDates)
   }
 
   companion object {

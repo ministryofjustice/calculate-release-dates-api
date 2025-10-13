@@ -26,7 +26,9 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.Comparis
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.eligibility.ErsedEligibilityService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessage
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationOrder
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationResult
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.service.ValidationService
 import kotlin.jvm.optionals.getOrElse
 
 @Service
@@ -39,6 +41,8 @@ class BulkComparisonEventHandlerService(
   private val comparisonPersonRepository: ComparisonPersonRepository,
   private val objectMapper: ObjectMapper,
   private val ersedEligibilityService: ErsedEligibilityService,
+  private val validationService: ValidationService,
+  private val bookingService: BookingService,
 ) {
 
   @Transactional
@@ -106,14 +110,22 @@ class BulkComparisonEventHandlerService(
     val establishmentValue = getEstablishmentValueForComparisonPerson(comparison, establishment)
 
     val validationResult = try {
-      calculationTransactionalService.validateAndCalculateForBulk(
-        personId,
-        calculationUserInput,
-        bulkCalculationReason,
-        sourceData,
-        CalculationStatus.BULK,
-        username,
-      )
+      val messages = validationService.validate(sourceData, calculationUserInput, ValidationOrder.INVALID)
+      if (messages.isNotEmpty()) {
+        ValidationResult(messages, null, null, null)
+      } else {
+        val booking = bookingService.getBooking(sourceData)
+        val calculatedReleaseDates = calculationTransactionalService.calculate(
+          booking,
+          CalculationStatus.BULK,
+          sourceData,
+          bulkCalculationReason,
+          calculationUserInput,
+          historicalTusedSource = sourceData.historicalTusedData?.historicalTusedSource,
+          usernameOverride = username,
+        )
+        ValidationResult(messages, booking, calculatedReleaseDates, calculatedReleaseDates.calculationOutput?.calculationResult)
+      }
     } catch (e: Exception) {
       saveComparisonPersonWithFatalError(
         comparison,

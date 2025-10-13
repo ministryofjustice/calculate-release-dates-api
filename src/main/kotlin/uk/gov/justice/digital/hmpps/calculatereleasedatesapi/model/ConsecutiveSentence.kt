@@ -7,7 +7,7 @@ import java.time.temporal.ChronoUnit
 
 class ConsecutiveSentence(val orderedSentences: List<AbstractSentence>) : CalculableSentence {
   override val sentencedAt: LocalDate = orderedSentences.minOf(CalculableSentence::sentencedAt)
-  override val offence: Offence = orderedSentences.map(CalculableSentence::offence).minByOrNull(Offence::committedAt)!!
+  override val offence: Offence = orderedSentences.map(CalculableSentence::offence).filter { it.committedAt != null }.minByOrNull { it.committedAt!! } ?: orderedSentences[0].offence
   override val isSDSPlus: Boolean = orderedSentences.all { it.isSDSPlus }
   override val isSDSPlusEligibleSentenceTypeLengthAndOffence: Boolean = orderedSentences.all { it.isSDSPlusEligibleSentenceTypeLengthAndOffence }
   override val isSDSPlusOffenceInPeriod: Boolean = orderedSentences.all { it.isSDSPlusOffenceInPeriod }

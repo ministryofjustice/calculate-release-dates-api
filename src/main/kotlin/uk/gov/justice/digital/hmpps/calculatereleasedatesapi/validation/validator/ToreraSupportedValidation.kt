@@ -1,18 +1,19 @@
-package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation
+package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.validator
 
-import org.springframework.stereotype.Service
+import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.SDS_DYO_TORERA_START_DATE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.SOPC_TORERA_END_DATE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ManageOffencesService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessage
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationOrder
 
-@Service
-class ToreraValidationService(
-  private val manageOffencesService: ManageOffencesService,
-) {
+@Component
+class ToreraSupportedValidation(private val manageOffencesService: ManageOffencesService) : PreCalculationSourceDataValidator {
 
-  internal fun validateToreraExempt(sourceData: CalculationSourceData): List<ValidationMessage> {
+  override fun validate(sourceData: CalculationSourceData): List<ValidationMessage> {
     val messages = mutableListOf<ValidationMessage>()
     val sdsCodes = getToreraSdsOffenceCodes(sourceData)
     val sopcCodes = getToreraSopcOffenceCodes(sourceData)
@@ -41,7 +42,7 @@ class ToreraValidationService(
   /**
    * Any SDS sentences with a sentence date greater than 2005-04-04
    */
-  internal fun getToreraSdsOffenceCodes(sourceData: CalculationSourceData): Set<String> = sourceData.sentenceAndOffences.filter { s ->
+  private fun getToreraSdsOffenceCodes(sourceData: CalculationSourceData): Set<String> = sourceData.sentenceAndOffences.filter { s ->
     SentenceCalculationType.isToreraEligible(
       s.sentenceCalculationType,
       eligibilityType = SentenceCalculationType.ToreraEligibilityType.SDS,
@@ -54,7 +55,7 @@ class ToreraValidationService(
   /**
    * Any SOPC sentences with a sentence date before 2022-06-28
    */
-  internal fun getToreraSopcOffenceCodes(sourceData: CalculationSourceData): Set<String> = sourceData.sentenceAndOffences.filter { s ->
+  private fun getToreraSopcOffenceCodes(sourceData: CalculationSourceData): Set<String> = sourceData.sentenceAndOffences.filter { s ->
     SentenceCalculationType.isToreraEligible(
       s.sentenceCalculationType,
       eligibilityType = SentenceCalculationType.ToreraEligibilityType.SOPC,
@@ -63,4 +64,6 @@ class ToreraValidationService(
   }
     .map { it.offence.offenceCode }
     .toSet()
+
+  override fun validationOrder() = ValidationOrder.UNSUPPORTED
 }

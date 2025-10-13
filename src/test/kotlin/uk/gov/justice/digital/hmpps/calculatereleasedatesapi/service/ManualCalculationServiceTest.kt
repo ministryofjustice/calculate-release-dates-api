@@ -38,7 +38,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyRelea
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmittedDate
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SupportedValidationResponse
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderKeyDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
@@ -54,7 +53,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.sentence.Se
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.sentence.SentenceIdentificationService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessage
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.service.ValidationService
 import java.time.LocalDate
 import java.time.Period
 import java.time.temporal.ChronoUnit
@@ -422,12 +421,8 @@ class ManualCalculationServiceTest {
     whenever(bookingService.getBooking(FAKE_SOURCE_DATA)).thenReturn(BOOKING)
     whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
     whenever(nomisCommentService.getManualNomisComment(any(), any(), any())).thenReturn("The NOMIS Reason")
-    whenever(validationService.validateSupportedSentencesAndCalculations(any())).thenReturn(
-      SupportedValidationResponse(
-        listOf(),
-        listOf(),
-      ),
-    )
+    whenever(validationService.validate(any(), any(), any())).thenReturn(emptyList())
+
     val manualCalcRequest = ManuallyEnteredDate(ReleaseDateType.None, null)
     val manualEntryRequest = ManualEntryRequest(listOf(manualCalcRequest), 1L, "")
     manualCalculationService.storeManualCalculation(PRISONER_ID, manualEntryRequest)
@@ -457,12 +452,7 @@ class ManualCalculationServiceTest {
     whenever(bookingService.getBooking(FAKE_SOURCE_DATA)).thenReturn(BOOKING)
     whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
     whenever(nomisCommentService.getManualNomisComment(any(), any(), any())).thenReturn("The NOMIS Reason")
-    whenever(validationService.validateSupportedSentencesAndCalculations(any())).thenReturn(
-      SupportedValidationResponse(
-        listOf(),
-        listOf(),
-      ),
-    )
+    whenever(validationService.validate(any(), any(), any())).thenReturn(emptyList())
 
     val manualCalcRequest = ManuallyEnteredDate(
       ReleaseDateType.CRD,
@@ -530,7 +520,7 @@ class ManualCalculationServiceTest {
     val manualEntryRequest = ManualEntryRequest(listOf(manualCalcRequest), 1L, "")
 
     manualCalculationService.storeManualCalculation(PRISONER_ID, manualEntryRequest)
-    verify(calculationRequestRepository, times(2)).save(calculationRequestArgumentCaptor.capture())
+    verify(calculationRequestRepository).save(calculationRequestArgumentCaptor.capture())
     val actualRequest = calculationRequestArgumentCaptor.firstValue
     assertThat(actualRequest.calculationType).isEqualTo(CalculationType.MANUAL_INDETERMINATE)
   }
@@ -549,12 +539,8 @@ class ManualCalculationServiceTest {
     whenever(bookingService.getBooking(FAKE_SOURCE_DATA)).thenReturn(BOOKING)
     whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
     whenever(nomisCommentService.getManualNomisComment(any(), any(), any())).thenReturn("The NOMIS Reason")
-    whenever(validationService.validateSupportedSentencesAndCalculations(any())).thenReturn(
-      SupportedValidationResponse(
-        listOf(),
-        listOf(),
-      ),
-    )
+    whenever(validationService.validate(any(), any(), any())).thenReturn(emptyList())
+
     // Throw exception during consecutive sentence creation
     whenever(
       sentenceCombinationService.createConsecutiveSentences(
@@ -601,7 +587,7 @@ class ManualCalculationServiceTest {
     val manualEntryRequest = ManualEntryRequest(listOf(manualCalcRequest), 1L, "")
 
     manualCalculationService.storeManualCalculation(PRISONER_ID, manualEntryRequest)
-    verify(calculationRequestRepository, times(2)).save(calculationRequestArgumentCaptor.capture())
+    verify(calculationRequestRepository).save(calculationRequestArgumentCaptor.capture())
     val actualRequest = calculationRequestArgumentCaptor.firstValue
     assertThat(actualRequest.calculationType).isEqualTo(CalculationType.MANUAL_DETERMINATE)
   }
@@ -620,14 +606,13 @@ class ManualCalculationServiceTest {
     whenever(bookingService.getBooking(FAKE_SOURCE_DATA)).thenReturn(BOOKING)
     whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
     whenever(nomisCommentService.getManualNomisComment(any(), any(), any())).thenReturn("The NOMIS Reason")
-    whenever(validationService.validateSupportedSentencesAndCalculations(any())).thenReturn(
-      SupportedValidationResponse(
-        unsupportedSentenceMessages = listOf(),
-        unsupportedCalculationMessages = listOf(
-          ValidationMessage(ValidationCode.UNSUPPORTED_CALCULATION_DTO_WITH_RECALL),
-          ValidationMessage(ValidationCode.BOTUS_CONSECUTIVE_TO_OTHER_SENTENCE),
-        ),
+    whenever(validationService.validate(any(), any(), any())).thenReturn(
+
+      listOf(
+        ValidationMessage(ValidationCode.UNSUPPORTED_CALCULATION_DTO_WITH_RECALL),
+        ValidationMessage(ValidationCode.BOTUS_CONSECUTIVE_TO_OTHER_SENTENCE),
       ),
+
     )
 
     val manualCalcRequest = ManuallyEnteredDate(
@@ -665,13 +650,7 @@ class ManualCalculationServiceTest {
         mock(),
       ),
     )
-    whenever(validationService.validateSupportedSentencesAndCalculations(any())).thenReturn(
-      SupportedValidationResponse(
-        listOf(),
-        listOf(),
-      ),
-    )
-    whenever(validationService.validateBookingAfterCalculation(any(), any())).thenReturn(
+    whenever(validationService.validate(any(), any(), any())).thenReturn(
       listOf(
         ValidationMessage(ValidationCode.UNSUPPORTED_SDS40_RECALL_SENTENCE_TYPE),
         ValidationMessage(ValidationCode.UNABLE_TO_DETERMINE_SHPO_RELEASE_PROVISIONS),

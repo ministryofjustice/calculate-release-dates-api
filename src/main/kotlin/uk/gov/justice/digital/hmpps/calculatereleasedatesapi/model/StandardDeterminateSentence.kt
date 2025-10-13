@@ -40,10 +40,10 @@ data class StandardDeterminateSentence(
   override fun hasAnyEdsOrSopcSentence(): Boolean = false
 
   @JsonIgnore
-  fun isOraSentence(): Boolean = offence.committedAt.isAfterOrEqualTo(ImportantDates.ORA_DATE)
+  fun isOraSentence(): Boolean = offence.committedAt?.isAfterOrEqualTo(ImportantDates.ORA_DATE) == true
 
   @JsonIgnore
-  fun isBeforeCJAAndLASPO(): Boolean = sentencedAt.isBefore(LASPO_DATE) && offence.committedAt.isBefore(CJA_DATE)
+  fun isBeforeCJAAndLASPO(): Boolean = sentencedAt.isBefore(LASPO_DATE) && offence.committedAt?.isBefore(CJA_DATE) == true
 
   @JsonIgnore
   fun isAfterCJAAndLASPO(): Boolean = !isBeforeCJAAndLASPO()

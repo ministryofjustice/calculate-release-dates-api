@@ -41,7 +41,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.mana
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonPersonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.PrisonService
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.service.ValidationService
 
 @Sql(scripts = ["classpath:/test_data/reset-base-data.sql", "classpath:/test_data/load-base-data.sql"])
 class ComparisonEventIntTest(private val mockManageOffencesClient: MockManageOffencesClient, private val mockPrisonService: MockPrisonService) : SqsIntegrationTestBase() {
@@ -98,7 +98,7 @@ class ComparisonEventIntTest(private val mockManageOffencesClient: MockManageOff
   @Test
   fun `Run comparison on a prison must compare where there are fatal errors`() {
     doThrow(IllegalArgumentException("An exception"))
-      .whenever(validationService).validateBeforeCalculation(any(), any(), any())
+      .whenever(validationService).validate(any(), any(), any())
 
     val result = createComparison("PRIS")
 

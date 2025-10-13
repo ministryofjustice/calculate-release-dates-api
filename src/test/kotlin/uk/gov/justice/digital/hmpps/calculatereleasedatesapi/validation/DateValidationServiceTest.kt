@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.junit.jupiter.MockitoExtension
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.service.DateValidationService
 
 @ExtendWith(MockitoExtension::class)
 class DateValidationServiceTest {

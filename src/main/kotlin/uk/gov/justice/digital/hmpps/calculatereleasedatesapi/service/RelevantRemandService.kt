@@ -16,7 +16,9 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Sent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isBeforeOrEqualTo
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationOrder
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.service.ValidationService
 import java.time.LocalDate
 
 @Service
@@ -33,22 +35,17 @@ class RelevantRemandService(
       bookingId = request.sentence.bookingId,
     )
     val sourceData = filterSentencesAndAdjustmentsForRelevantRemandCalc(calculationSourceDataService.getCalculationSourceData(prisoner, InactiveDataOptions.overrideToIncludeInactiveData()), request)
-    val calculationUserInputs = CalculationUserInputs(useOffenceIndicators = true)
+    val calculationUserInputs = CalculationUserInputs()
 
-    var validationMessages = validationService.validateBeforeCalculation(sourceData, calculationUserInputs)
+    val validationMessages = validationService.validate(sourceData, calculationUserInputs, ValidationOrder.INVALID)
+      .filterNot { listOf(ValidationCode.CUSTODIAL_PERIOD_EXTINGUISHED_TAGGED_BAIL, ValidationCode.CUSTODIAL_PERIOD_EXTINGUISHED_REMAND).contains(it.code) }
     if (validationMessages.isNotEmpty()) {
       return RelevantRemandCalculationResult(
         validationMessages = validationMessages,
       )
     }
+
     val booking = bookingService.getBooking(sourceData)
-    validationMessages = validationService.validateBeforeCalculation(booking)
-    if (validationMessages.isNotEmpty()) {
-      return RelevantRemandCalculationResult(
-        validationMessages = validationMessages,
-      )
-    }
-
     val result = calculationService.calculateReleaseDates(booking, calculationUserInputs)
     val calculationResult = result.calculationResult
     val releaseDateTypes = listOf(ReleaseDateType.CRD, ReleaseDateType.ARD, ReleaseDateType.MTD)

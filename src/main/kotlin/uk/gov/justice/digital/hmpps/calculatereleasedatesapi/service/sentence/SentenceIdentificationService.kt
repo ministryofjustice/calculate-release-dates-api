@@ -295,7 +295,7 @@ class SentenceIdentificationService(
 
     if (
       sentence.sentencedAt.isBefore(LASPO_DATE) &&
-      sentence.offence.committedAt.isBefore(CJA_DATE)
+      sentence.offence.committedAt?.isBefore(CJA_DATE) == true
     ) {
       beforeCJAAndLASPO(sentence, releaseDateTypes)
     } else {
@@ -321,9 +321,9 @@ class SentenceIdentificationService(
     }
 
     val preOraLessThanTwelve = sentence.durationIsLessThan(TWELVE, ChronoUnit.MONTHS) &&
-      sentence.offence.committedAt.isBefore(
+      sentence.offence.committedAt?.isBefore(
         ImportantDates.ORA_DATE,
-      )
+      ) == true
     val oneDateSentence = sentence.durationIsLessThanEqualTo(ONE, ChronoUnit.DAYS)
     val sentenceDoesntHaveLicencePeriod = preOraLessThanTwelve || oneDateSentence
     if (sentenceDoesntHaveLicencePeriod) {

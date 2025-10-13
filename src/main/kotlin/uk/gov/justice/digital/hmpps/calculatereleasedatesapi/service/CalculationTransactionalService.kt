@@ -37,7 +37,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManuallyEnteredDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmitCalculationRequest
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SupportedValidationResponse
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ReturnToCustodyDate
@@ -47,9 +46,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.Calculat
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationReasonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.TrancheOutcomeRepository
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessage
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationResult
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationOrder
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.service.ValidationService
 import java.time.LocalDate
 import java.util.UUID
 
@@ -72,129 +70,6 @@ class CalculationTransactionalService(
   private val trancheOutcomeRepository: TrancheOutcomeRepository,
   private val featureToggles: FeatureToggles,
 ) {
-
-  /*
-   * There are 4 stages of full validation:
-   * 1. validate user input data, the raw sentence and offence data from NOMIS
-   * 2. validate the raw Booking (NOMIS offence data transformed into a Booking object)
-   * 3. Run the calculation and catch any errors thrown by the calculation algorithm
-   * 4. Validate the post calculation Booking (The Booking is transformed during the calculation). e.g. Consecutive sentences (aggregates)
-   *
-   * activeDataOnly is only used by the test 1000 calcs functionality
-   */
-  @Transactional(readOnly = true)
-  fun fullValidation(
-    prisonerId: String,
-    calculationUserInputs: CalculationUserInputs,
-    inactiveDataOptions: InactiveDataOptions = InactiveDataOptions.default(),
-  ): List<ValidationMessage> {
-    log.info("Full Validation for $prisonerId")
-    val sourceData = calculationSourceDataService.getCalculationSourceData(prisonerId, inactiveDataOptions)
-    return fullValidationFromSourceData(sourceData, calculationUserInputs)
-  }
-
-  @Transactional(readOnly = true)
-  fun fullValidationFromSourceData(sourceData: CalculationSourceData, calculationUserInputs: CalculationUserInputs): List<ValidationMessage> {
-    val initialValidationMessages = validationService.validateBeforeCalculation(sourceData, calculationUserInputs)
-
-    if (initialValidationMessages.isNotEmpty()) {
-      log.info(initialValidationMessages.joinToString("\n"))
-      return initialValidationMessages
-    }
-
-    val booking = bookingService.getBooking(sourceData)
-
-    return fullValidationFromBookingData(booking, calculationUserInputs)
-  }
-
-  @Transactional(readOnly = true)
-  fun fullValidationFromBookingData(booking: Booking, calculationUserInputs: CalculationUserInputs): List<ValidationMessage> {
-    val bookingValidationMessages = validationService.validateBeforeCalculation(booking)
-
-    if (bookingValidationMessages.isNotEmpty()) {
-      return bookingValidationMessages
-    }
-
-    val calculationOutput = calculationService.calculateReleaseDates(
-      booking,
-      calculationUserInputs,
-    )
-
-    return validationService.validateBookingAfterCalculation(calculationOutput, booking)
-  }
-
-  // Deliberately not transactional. Transaction started in bulk services.
-  fun validateAndCalculateForBulk(
-    prisonerId: String,
-    calculationUserInputs: CalculationUserInputs,
-    calculationReason: CalculationReason,
-    providedSourceData: CalculationSourceData,
-    calculationType: CalculationStatus = PRELIMINARY,
-    usernameOverride: String? = null,
-  ): ValidationResult {
-    var messages =
-      validationService.validateBeforeCalculation(providedSourceData, calculationUserInputs, bulkCalcValidation = true) // Validation stage 1 of 3
-    if (messages.isNotEmpty()) return ValidationResult(messages, null, null, null)
-    // getBooking relies on the previous validation stage to have succeeded
-    val booking = bookingService.getBooking(providedSourceData)
-    messages = validationService.validateBeforeCalculation(booking) // Validation stage 2 of 4
-    if (messages.isNotEmpty()) return ValidationResult(messages, null, null, null)
-    val calculationOutput = calculationService.calculateReleaseDates(booking, calculationUserInputs) // Validation stage 3 of 4
-    val calculationResult = calculationOutput.calculationResult
-    messages = validationService.validateBookingAfterCalculation(calculationOutput, booking) // Validation stage 4 of 4
-    if (messages.isNotEmpty()) return ValidationResult(messages, null, null, null)
-
-    val calculatedReleaseDates = calculate(
-      booking,
-      calculationType,
-      providedSourceData,
-      calculationReason,
-      calculationUserInputs,
-      historicalTusedSource = providedSourceData.historicalTusedData?.historicalTusedSource,
-      usernameOverride = usernameOverride,
-    )
-    return ValidationResult(messages, booking, calculatedReleaseDates, calculationResult)
-  }
-
-  @Transactional(readOnly = true)
-  fun supportedValidation(prisonerId: String, inactiveDataOptions: InactiveDataOptions = InactiveDataOptions.default()): SupportedValidationResponse {
-    val sourceData = calculationSourceDataService.getCalculationSourceData(prisonerId, inactiveDataOptions)
-    val supportedResponse = validationService.validateSupportedSentencesAndCalculations(sourceData)
-
-    if (
-      supportedResponse.unsupportedSentenceMessages.isNotEmpty() ||
-      supportedResponse.unsupportedCalculationMessages.isNotEmpty()
-    ) {
-      // loading the booking will blow up unless the sentences and calculation are supported so return early if not.
-      return supportedResponse
-    }
-
-    val noInputs = CalculationUserInputs()
-    val preCalculationValidationMessages = validationService.validateBeforeCalculation(sourceData, noInputs)
-    if (preCalculationValidationMessages.isNotEmpty()) {
-      // this booking will not be able to calculate later anyway so skip the manual entry check
-      return SupportedValidationResponse()
-    }
-
-    val booking = bookingService.getBooking(sourceData)
-    val bookingValidationMessages = validationService.validateBeforeCalculation(booking)
-
-    if (bookingValidationMessages.isNotEmpty()) {
-      // this booking will not be able to calculate later anyway so skip the manual entry check
-      return SupportedValidationResponse()
-    }
-
-    val calculationOutput = calculationService.calculateReleaseDates(
-      booking,
-      noInputs,
-    )
-
-    val manualEntryMessages = validationService.validateManualEntryJourneyRequirements(booking, calculationOutput)
-
-    return supportedResponse.copy(
-      unsupportedManualMessages = manualEntryMessages,
-    )
-  }
 
   @Transactional
   fun calculate(
@@ -261,7 +136,7 @@ class CalculationTransactionalService(
       throw PreconditionFailedException("The booking data used for the preliminary calculation has changed")
     }
 
-    val validationErrors = validationService.validateBeforeCalculation(sourceData, userInput)
+    val validationErrors = validationService.validate(sourceData, userInput, ValidationOrder.INVALID)
 
     if (validationErrors.any { !it.type.excludedInSave() }) {
       throw CrdWebException(message = "The booking now fails validation", status = HttpStatus.INTERNAL_SERVER_ERROR)
@@ -582,15 +457,6 @@ class CalculationTransactionalService(
     }
     return transform(calculationRequest)
   }
-
-  @Transactional(readOnly = true)
-  fun validateForManualBooking(prisonerId: String): List<ValidationMessage> {
-    val sourceData = calculationSourceDataService.getCalculationSourceData(prisonerId, InactiveDataOptions.default())
-    return validationService.validateSentenceForManualEntry(sourceData.sentenceAndOffences)
-  }
-
-  @Transactional(readOnly = true)
-  fun validateRequestedDates(dates: List<String>): List<ValidationMessage> = validationService.validateRequestedDates(dates)
 
   fun recordError(
     booking: Booking,
