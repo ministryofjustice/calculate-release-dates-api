@@ -25,6 +25,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.Calculat
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonPersonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.eligibility.ErsedEligibilityService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessage
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationOrder
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationResult
@@ -73,7 +74,12 @@ class BulkComparisonEventHandlerService(
     }
   }
 
-  private fun calculateAndStoreResult(personId: String, comparison: Comparison, establishment: String?, username: String) {
+  private fun calculateAndStoreResult(
+    personId: String,
+    comparison: Comparison,
+    establishment: String?,
+    username: String,
+  ) {
     val bulkCalculationReason = calculationReasonRepository.findTopByIsBulkTrue().orElseThrow {
       EntityNotFoundException("The bulk calculation reason was not found.")
     }
@@ -100,7 +106,8 @@ class BulkComparisonEventHandlerService(
       }
     }
 
-    val sourceData = calculationSourceDataService.getCalculationSourceData(prisonerDetails, InactiveDataOptions.default())
+    val sourceData =
+      calculationSourceDataService.getCalculationSourceData(prisonerDetails, InactiveDataOptions.default())
 
     val calculationUserInput = CalculationUserInputs(
       listOf(),
@@ -110,7 +117,14 @@ class BulkComparisonEventHandlerService(
     val establishmentValue = getEstablishmentValueForComparisonPerson(comparison, establishment)
 
     val validationResult = try {
-      val messages = validationService.validate(sourceData, calculationUserInput, ValidationOrder.INVALID)
+      val messages =
+        validationService.validate(sourceData, calculationUserInput, ValidationOrder.allValidations()).map { it ->
+          if (it.code == ValidationCode.CONCURRENT_CONSECUTIVE_SENTENCES_DURATION) {
+            ValidationMessage(ValidationCode.CONCURRENT_CONSECUTIVE_SENTENCES_NOTIFICATION)
+          } else {
+            it
+          }
+        }
       if (messages.isNotEmpty()) {
         ValidationResult(messages, null, null, null)
       } else {
@@ -124,7 +138,12 @@ class BulkComparisonEventHandlerService(
           historicalTusedSource = sourceData.historicalTusedData?.historicalTusedSource,
           usernameOverride = username,
         )
-        ValidationResult(messages, booking, calculatedReleaseDates, calculatedReleaseDates.calculationOutput?.calculationResult)
+        ValidationResult(
+          messages,
+          booking,
+          calculatedReleaseDates,
+          calculatedReleaseDates.calculationOutput?.calculationResult,
+        )
       }
     } catch (e: Exception) {
       saveComparisonPersonWithFatalError(
