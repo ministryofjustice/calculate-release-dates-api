@@ -53,7 +53,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.TERSED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.TUSED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.Tariff
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.MissingTermException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AFineSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AbstractSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustment
@@ -135,7 +134,6 @@ fun transform(
     Offence(
       committedAt = offendersOffence.offenceEndDate
         ?: offendersOffence.offenceStartDate,
-//        ?: throw NoOffenceDatesProvidedException("No offence end or start dates provided on charge id [${offendersOffence.offenderChargeId}]"),
       offenceCode = offendersOffence.offenceCode,
     )
 
@@ -163,7 +161,7 @@ fun transform(
     AFineSentence::class.java -> {
       AFineSentence(
         sentencedAt = sentence.sentenceDate,
-        duration = transform(sentence.terms[0]),
+        duration = transform(sentence.terms.firstOrNull() ?: SentenceTerms()),
         offence = offence,
         identifier = generateUUIDForSentence(sentence.bookingId, sentence.sentenceSequence),
         consecutiveSentenceUUIDs = consecutiveSentenceUUIDs,
@@ -179,7 +177,7 @@ fun transform(
     DetentionAndTrainingOrderSentence::class.java -> {
       DetentionAndTrainingOrderSentence(
         sentencedAt = sentence.sentenceDate,
-        duration = transform(sentence.terms[0]),
+        duration = transform(sentence.terms.firstOrNull() ?: SentenceTerms()),
         offence = offence,
         identifier = generateUUIDForSentence(sentence.bookingId, sentence.sentenceSequence),
         consecutiveSentenceUUIDs = consecutiveSentenceUUIDs,
@@ -194,7 +192,7 @@ fun transform(
     BotusSentence::class.java -> {
       BotusSentence(
         sentencedAt = sentence.sentenceDate,
-        duration = transform(sentence.terms[0]),
+        duration = transform(sentence.terms.firstOrNull() ?: SentenceTerms()),
         offence = offence,
         identifier = generateUUIDForSentence(sentence.bookingId, sentence.sentenceSequence),
         consecutiveSentenceUUIDs = consecutiveSentenceUUIDs,
@@ -208,9 +206,9 @@ fun transform(
 
     ExtendedDeterminateSentence::class.java -> {
       val imprisonmentTerm = sentence.terms.firstOrNull { it.code == SentenceTerms.IMPRISONMENT_TERM_CODE }
-        ?: throw MissingTermException("Missing IMPRISONMENT_TERM_CODE for ExtendedDeterminateSentence")
+        ?: SentenceTerms()
       val licenceTerm = sentence.terms.firstOrNull { it.code == SentenceTerms.LICENCE_TERM_CODE }
-        ?: throw MissingTermException("Missing LICENCE_TERM_CODE for ExtendedDeterminateSentence")
+        ?: SentenceTerms()
 
       ExtendedDeterminateSentence(
         sentencedAt = sentence.sentenceDate,
@@ -231,9 +229,9 @@ fun transform(
     // SopcSentence
     SopcSentence::class.java -> {
       val imprisonmentTerm = sentence.terms.firstOrNull { it.code == SentenceTerms.IMPRISONMENT_TERM_CODE }
-        ?: throw MissingTermException("Missing IMPRISONMENT_TERM_CODE for SopcSentence")
+        ?: SentenceTerms()
       val licenceTerm = sentence.terms.firstOrNull { it.code == SentenceTerms.LICENCE_TERM_CODE }
-        ?: throw MissingTermException("Missing LICENCE_TERM_CODE for SopcSentence")
+        ?: SentenceTerms()
 
       SopcSentence(
         sentencedAt = sentence.sentenceDate,
@@ -255,7 +253,7 @@ fun transform(
     else -> {
       StandardDeterminateSentence(
         sentencedAt = sentence.sentenceDate,
-        duration = transform(sentence.terms.first()),
+        duration = transform(sentence.terms.firstOrNull() ?: SentenceTerms()),
         offence = offence,
         identifier = generateUUIDForSentence(sentence.bookingId, sentence.sentenceSequence),
         consecutiveSentenceUUIDs = consecutiveSentenceUUIDs,

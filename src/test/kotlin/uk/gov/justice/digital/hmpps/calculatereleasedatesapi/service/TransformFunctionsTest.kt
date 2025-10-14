@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
@@ -31,7 +30,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Senten
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceType.Indeterminate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceType.Sopc
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceType.StandardDeterminate
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.MissingTermException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AFineSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BotusSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
@@ -519,50 +517,6 @@ class TransformFunctionsTest {
       assertThat(transform(request.copy(sentenceCalculationType = sentenceType)).recallType)
         .isEqualTo(recallType)
     }
-  }
-
-  @Test
-  fun `Transform throws exception for missing sentence terms needed for EDS sentence`() {
-    val sequence = 153
-    val lineSequence = 154
-    val caseSequence = 155
-    val offence = OffenderOffence(
-      offenderChargeId = 1L,
-      offenceStartDate = FIRST_JAN_2015,
-      offenceEndDate = SECOND_JAN_2015,
-      offenceCode = "RR1",
-      offenceDescription = "Littering",
-    )
-    val request = SentenceAndOffenceWithReleaseArrangements(
-      PrisonApiSentenceAndOffences(
-        bookingId = BOOKING_ID,
-        sentenceSequence = sequence,
-        sentenceDate = FIRST_JAN_2015,
-        terms = listOf(),
-        sentenceStatus = "IMP",
-        sentenceCategory = "CAT",
-        sentenceCalculationType = SentenceCalculationType.EDSU18.name,
-        sentenceTypeDescription = "Generic",
-        offences = listOf(offence),
-        lineSequence = lineSequence,
-        caseSequence = caseSequence,
-      ),
-      offence,
-      isSdsPlus = true,
-      isSDSPlusEligibleSentenceTypeLengthAndOffence = true,
-      isSDSPlusOffenceInPeriod = true,
-      hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
-    )
-
-    val exceptionImpCode = assertThrows<MissingTermException> {
-      transform(request, null)
-    }
-    assertThat(exceptionImpCode.message).isEqualTo("Missing IMPRISONMENT_TERM_CODE for ExtendedDeterminateSentence")
-
-    val exceptionLicCode = assertThrows<MissingTermException> {
-      transform(request.copy(terms = listOf(SentenceTerms(years = 1))), null)
-    }
-    assertThat(exceptionLicCode.message).isEqualTo("Missing LICENCE_TERM_CODE for ExtendedDeterminateSentence")
   }
 
   @Test

@@ -99,13 +99,32 @@ class RecallValidationServiceTest {
     }
 
     @Test
-    fun `Validate revocation date missing`() {
+    fun `Validate missing revocation date for non ftr-56 passed`() {
+      val sentence = FTR_14_DAY_SENTENCE.copy(revocationDates = emptyList())
+
+      val messages = revocationDateValidator.validate(createSourceData(listOf(sentence)))
+
+      assertThat(messages).isEmpty()
+    }
+
+    @Test
+    fun `Validate revocation date missing for FTR-56`() {
       val sentence = FTR_14_DAY_SENTENCE.copy(revocationDates = emptyList(), sentenceCalculationType = SentenceCalculationType.FTR_56ORA.name)
 
       val messages = revocationDateValidator.validate(createSourceData(listOf(sentence)))
 
       assertThat(messages).isNotEmpty
       assertThat(messages[0].code).isEqualTo(ValidationCode.RECALL_MISSING_REVOCATION_DATE)
+    }
+
+    @Test
+    fun `Validate revocation date in future for all recall sentence types`() {
+      val sentence = FTR_14_DAY_SENTENCE.copy(revocationDates = listOf(LocalDate.now().plusDays(1)))
+
+      val messages = revocationDateValidator.validate(createSourceData(listOf(sentence)))
+
+      assertThat(messages).isNotEmpty
+      assertThat(messages[0].code).isEqualTo(ValidationCode.REVOCATION_DATE_IN_THE_FUTURE)
     }
 
     @Test
