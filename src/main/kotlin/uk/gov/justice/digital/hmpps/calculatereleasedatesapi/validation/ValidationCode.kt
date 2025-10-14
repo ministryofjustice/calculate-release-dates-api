@@ -56,7 +56,7 @@ enum class ValidationCode(val message: String, val validationType: ValidationTyp
   OFFENCE_DATE_AFTER_SENTENCE_RANGE_DATE("The offence date range for court case %s NOMIS line reference %s must be before the sentence date."),
   OFFENCE_DATE_AFTER_SENTENCE_START_DATE("The offence date for court case %s NOMIS line reference %s must be before the sentence date."),
   OFFENCE_MISSING_DATE("Court case %s NOMIS line reference %s must include an offence date."),
-  PRISONER_SUBJECT_TO_PTD("Prisoner has PTD alert after PCSC commencement date, this is unsupported"),
+  PRISONER_SUBJECT_TO_PTD("Prisoner has PTD alert after PCSC commencement date, this is unsupported", UNSUPPORTED_CALCULATION),
   REMAND_FROM_TO_DATES_REQUIRED("Remand periods must have a from and to date."),
   REMAND_OVERLAPS_WITH_REMAND("Remand time can only be added once, it can cannot overlap with other remand dates."),
   REMAND_OVERLAPS_WITH_SENTENCE("Remand time cannot be credited when a custodial sentence is being served."),
