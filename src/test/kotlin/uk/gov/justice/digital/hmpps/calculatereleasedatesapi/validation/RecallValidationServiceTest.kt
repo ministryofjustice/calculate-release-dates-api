@@ -34,7 +34,7 @@ import java.time.temporal.ChronoUnit.DAYS
 import java.time.temporal.ChronoUnit.MONTHS
 import java.time.temporal.ChronoUnit.WEEKS
 import java.time.temporal.ChronoUnit.YEARS
-import java.util.*
+import java.util.UUID
 
 @ExtendWith(MockitoExtension::class)
 class RecallValidationServiceTest {
@@ -144,7 +144,7 @@ class RecallValidationServiceTest {
 
     @Test
     fun `returns validation message when all sentences matches all conditions`() {
-      val sentence24Months = createSingleFTRSentence(SENTENCE_DATE_BEFORE_COMMENCEMENT, 24L)
+      val sentence24Months = createSingleFTRSentence(SENTENCE_DATE_BEFORE_COMMENCEMENT, 24L, null)
       val calculationOutput = listOf(sentence24Months)
 
       val result = fixedTerm48OverlapValidator.validate(CalculationOutput(calculationOutput, emptyList(), mock()), mock())
@@ -178,7 +178,7 @@ class RecallValidationServiceTest {
 
     @Test
     fun `returns empty list when duration is less than 12 months`() {
-      val sentence11Months = createSingleFTRSentence(SENTENCE_DATE_BEFORE_COMMENCEMENT, 11L)
+      val sentence11Months = createSingleFTRSentence(SENTENCE_DATE_BEFORE_COMMENCEMENT, 11L, null)
       val calculationOutput = listOf(sentence11Months)
 
       val result = fixedTerm48OverlapValidator.validate(CalculationOutput(calculationOutput, emptyList(), mock()), mock())
@@ -207,7 +207,7 @@ class RecallValidationServiceTest {
 
     @Test
     fun `returns empty list when sentence is after FTR 48 commencement date`() {
-      val sentence18Months = createSingleFTRSentence(FTR_48_COMMENCEMENT_DATE.plusDays(1), 18L)
+      val sentence18Months = createSingleFTRSentence(FTR_48_COMMENCEMENT_DATE.plusDays(1), 18L, null)
       val calculationOutput = listOf(sentence18Months)
 
       val result = fixedTerm48OverlapValidator.validate(CalculationOutput(calculationOutput, emptyList(), mock()), mock())
@@ -217,12 +217,42 @@ class RecallValidationServiceTest {
 
     @Test
     fun `returns empty list when sentence is on FTR 48 commencement date`() {
-      val sentence18Months = createSingleFTRSentence(FTR_48_COMMENCEMENT_DATE, 18L)
+      val sentence18Months = createSingleFTRSentence(FTR_48_COMMENCEMENT_DATE, 18L, null)
       val calculationOutput = listOf(sentence18Months)
 
       val result = fixedTerm48OverlapValidator.validate(CalculationOutput(calculationOutput, emptyList(), mock()), mock())
 
       assertThat(result).isEmpty()
+    }
+
+    @Test
+    fun `return empty list where recall revocation date is after FTR 48 commencement date`() {
+      val sentence27Months = createSingleFTRSentence(LocalDate.of(2024, 12, 20), 27L, LocalDate.of(2025, 10, 1))
+      val calculationOutput = listOf(sentence27Months)
+
+      val result = fixedTerm48OverlapValidator.validate(CalculationOutput(calculationOutput, emptyList(), mock()), mock())
+
+      assertThat(result).isEmpty()
+    }
+
+    @Test
+    fun `returns validation message when recall revocation date is before 2025-09-02`() {
+      val sentence20Months = createSingleFTRSentence(LocalDate.of(2024, 12, 20), 20L, LocalDate.of(2025, 8, 1))
+      val calculationOutput = listOf(sentence20Months)
+
+      val result = fixedTerm48OverlapValidator.validate(CalculationOutput(calculationOutput, emptyList(), mock()), mock())
+
+      assertEquals(ValidationCode.FTR_TYPE_48_DAYS_OVERLAPPING_SENTENCE, result.first().code)
+    }
+
+    @Test
+    fun `returns validation message where no revocation date is present and sentence is before 2025-09-02`() {
+      val sentence20Months = createSingleFTRSentence(LocalDate.of(2024, 12, 20), 20L, null)
+      val calculationOutput = listOf(sentence20Months)
+
+      val result = fixedTerm48OverlapValidator.validate(CalculationOutput(calculationOutput, emptyList(), mock()), mock())
+
+      assertEquals(ValidationCode.FTR_TYPE_48_DAYS_OVERLAPPING_SENTENCE, result.first().code)
     }
   }
 
@@ -263,7 +293,7 @@ class RecallValidationServiceTest {
     return ConsecutiveSentence(listOf(consecutiveSentencePartOne, consecutiveSentencePartTwo))
   }
 
-  private fun createSingleFTRSentence(sentenceDate: LocalDate, months: Long) = StandardDeterminateSentence(
+  private fun createSingleFTRSentence(sentenceDate: LocalDate, months: Long, recallRevocationDate: LocalDate?) = StandardDeterminateSentence(
     sentencedAt = sentenceDate,
     duration = Duration(mutableMapOf(DAYS to 0L, WEEKS to 0L, MONTHS to months, YEARS to 0L)),
     offence = Offence(
@@ -273,7 +303,7 @@ class RecallValidationServiceTest {
     identifier = UUID.randomUUID(),
     lineSequence = 1,
     caseSequence = 1,
-    recall = Recall(RecallType.FIXED_TERM_RECALL_28),
+    recall = Recall(RecallType.FIXED_TERM_RECALL_28, revocationDate = recallRevocationDate),
     isSDSPlus = false,
     hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
   )
