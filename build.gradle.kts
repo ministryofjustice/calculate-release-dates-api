@@ -5,7 +5,7 @@ import org.jlleitschuh.gradle.ktlint.tasks.KtLintFormatTask
 import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "9.1.2"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "9.1.3"
   id("org.springdoc.openapi-gradle-plugin") version "1.9.0"
   kotlin("plugin.spring") version "2.2.20"
   kotlin("plugin.jpa") version "2.2.20"
@@ -65,7 +65,7 @@ dependencies {
   implementation("io.awspring.cloud:spring-cloud-aws-core:3.4.0")
   implementation("io.awspring.cloud:spring-cloud-aws-sns:3.4.0")
   implementation("io.awspring.cloud:spring-cloud-aws-sqs:3.4.0")
-  implementation("org.springframework:spring-jms:6.2.11")
+  implementation("org.springframework:spring-jms:6.2.12")
   implementation("com.google.code.gson:gson:2.13.2")
   implementation("org.apache.commons:commons-text:1.14.0")
 
@@ -77,7 +77,7 @@ dependencies {
   testImplementation("org.springframework.security:spring-security-test")
   testImplementation("org.awaitility:awaitility-kotlin:4.3.0")
   testImplementation("net.javacrumbs.json-unit:json-unit-assertj:4.1.1")
-  testImplementation("io.swagger.parser.v3:swagger-parser-v2-converter:2.1.34")
+  testImplementation("io.swagger.parser.v3:swagger-parser-v2-converter:2.1.35")
   testImplementation("org.mockito:mockito-inline:5.2.0")
   testImplementation("org.junit.jupiter:junit-jupiter:6.0.0")
   testImplementation("org.testcontainers:postgresql:1.21.3")
@@ -92,7 +92,7 @@ dependencies {
 
 jacoco {
   // You may modify the Jacoco version here
-  toolVersion = "0.8.13"
+  toolVersion = "0.8.14"
 }
 
 tasks.jacocoTestCoverageVerification {
