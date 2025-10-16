@@ -61,7 +61,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.OffenderKey
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.RelevantRemandService
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.util.*
+import java.util.UUID
 
 @ExtendWith(SpringExtension::class)
 @ActiveProfiles("test")
