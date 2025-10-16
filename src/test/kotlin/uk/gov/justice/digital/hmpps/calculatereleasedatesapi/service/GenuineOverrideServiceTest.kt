@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
+import io.hypersistence.utils.hibernate.type.json.internal.JacksonUtil
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.mockito.ArgumentMatchers.argThat
@@ -11,6 +12,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcome
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.TestBuildPropertiesConfiguration.Companion.TEST_BUILD_PROPERTIES
@@ -19,10 +21,13 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentsSo
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.GenuineOverrideDate
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.GenuineOverrideInputResponse
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.GenuineOverrideMode
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.GenuineOverrideReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.GenuineOverrideRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.PreviousGenuineOverride
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
@@ -121,6 +126,227 @@ class GenuineOverrideServiceTest {
       calculationOutcomes,
       true,
       Period.ZERO,
+    )
+  }
+
+  @Test
+  fun `should return standard override inputs if previous calc not a genuine override `() {
+    val previousRequest = CalculationRequest(
+      id = 123L,
+      prisonerId = PRISONER_ID,
+      bookingId = BOOKING.bookingId,
+      calculationStatus = CalculationStatus.CONFIRMED.name,
+      calculationType = CalculationType.CALCULATED,
+      reasonForCalculation = REASON,
+      otherReasonForCalculation = "Other reason",
+    )
+    val preliminaryRequest = CalculationRequest(
+      id = 456L,
+      prisonerId = PRISONER_ID,
+      bookingId = BOOKING.bookingId,
+      calculationStatus = CalculationStatus.CONFIRMED.name,
+      reasonForCalculation = REASON,
+      otherReasonForCalculation = "Other reason",
+      calculationOutcomes = listOf(
+        CalculationOutcome(
+          id = 1,
+          calculationRequestId = 456L,
+          outcomeDate = LocalDate.of(2025, 1, 2),
+          calculationDateType = "SED",
+        ),
+        CalculationOutcome(
+          id = 2,
+          calculationRequestId = 456L,
+          outcomeDate = LocalDate.of(2029, 12, 13),
+          calculationDateType = "LED",
+        ),
+        CalculationOutcome(
+          id = 3,
+          calculationRequestId = 456L,
+          outcomeDate = LocalDate.of(2021, 6, 7),
+          calculationDateType = "HDCED",
+        ),
+      ),
+    )
+    whenever(calculationRequestRepository.findFirstByPrisonerIdAndCalculationStatusOrderByCalculatedAtDesc(PRISONER_ID, "CONFIRMED")).thenReturn(Optional.of(previousRequest))
+    whenever(calculationRequestRepository.findByIdAndCalculationStatus(123L, "PRELIMINARY")).thenReturn(Optional.of(preliminaryRequest))
+
+    val result = genuineOverrideService.inputsForCalculation(
+      123L,
+    )
+    assertThat(result).isEqualTo(
+      GenuineOverrideInputResponse(
+        mode = GenuineOverrideMode.STANDARD,
+        calculatedDates = listOf(
+          GenuineOverrideDate(ReleaseDateType.SED, LocalDate.of(2025, 1, 2)),
+          GenuineOverrideDate(ReleaseDateType.LED, LocalDate.of(2029, 12, 13)),
+          GenuineOverrideDate(ReleaseDateType.HDCED, LocalDate.of(2021, 6, 7)),
+        ),
+        previousOverrideForExpressGenuineOverride = null,
+      ),
+    )
+  }
+
+  @Test
+  fun `should return standard override inputs if previous calc was a genuine override but the inputs are different`() {
+    val previousRequest = CalculationRequest(
+      id = 123L,
+      prisonerId = PRISONER_ID,
+      bookingId = BOOKING.bookingId,
+      calculationStatus = CalculationStatus.CONFIRMED.name,
+      calculationType = CalculationType.GENUINE_OVERRIDE,
+      reasonForCalculation = REASON,
+      otherReasonForCalculation = "Other reason",
+      genuineOverrideReason = GenuineOverrideReason.OTHER,
+      genuineOverrideReasonFurtherDetail = "Foo",
+      overridesCalculationRequestId = 87914565156L,
+      inputData = JacksonUtil.toJsonNode("""{"foo": "bar1"}"""),
+    )
+    val preliminaryRequest = CalculationRequest(
+      id = 456L,
+      prisonerId = PRISONER_ID,
+      bookingId = BOOKING.bookingId,
+      calculationStatus = CalculationStatus.CONFIRMED.name,
+      reasonForCalculation = REASON,
+      otherReasonForCalculation = "Other reason",
+      inputData = JacksonUtil.toJsonNode("""{"foo": "bar2"}"""),
+      calculationOutcomes = listOf(
+        CalculationOutcome(
+          id = 1,
+          calculationRequestId = 456L,
+          outcomeDate = LocalDate.of(2025, 1, 2),
+          calculationDateType = "SED",
+        ),
+        CalculationOutcome(
+          id = 2,
+          calculationRequestId = 456L,
+          outcomeDate = LocalDate.of(2029, 12, 13),
+          calculationDateType = "LED",
+        ),
+        CalculationOutcome(
+          id = 3,
+          calculationRequestId = 456L,
+          outcomeDate = LocalDate.of(2021, 6, 7),
+          calculationDateType = "HDCED",
+        ),
+      ),
+    )
+    whenever(calculationRequestRepository.findFirstByPrisonerIdAndCalculationStatusOrderByCalculatedAtDesc(PRISONER_ID, "CONFIRMED")).thenReturn(Optional.of(previousRequest))
+    whenever(calculationRequestRepository.findByIdAndCalculationStatus(123L, "PRELIMINARY")).thenReturn(Optional.of(preliminaryRequest))
+
+    val result = genuineOverrideService.inputsForCalculation(
+      123L,
+    )
+    assertThat(result).isEqualTo(
+      GenuineOverrideInputResponse(
+        mode = GenuineOverrideMode.STANDARD,
+        calculatedDates = listOf(
+          GenuineOverrideDate(ReleaseDateType.SED, LocalDate.of(2025, 1, 2)),
+          GenuineOverrideDate(ReleaseDateType.LED, LocalDate.of(2029, 12, 13)),
+          GenuineOverrideDate(ReleaseDateType.HDCED, LocalDate.of(2021, 6, 7)),
+        ),
+        previousOverrideForExpressGenuineOverride = null,
+      ),
+    )
+  }
+
+  @Test
+  fun `should return express override inputs if previous calc was a genuine override and the inputs are the same`() {
+    val previousRequest = CalculationRequest(
+      id = 123L,
+      prisonerId = PRISONER_ID,
+      bookingId = BOOKING.bookingId,
+      calculationStatus = CalculationStatus.CONFIRMED.name,
+      calculationType = CalculationType.GENUINE_OVERRIDE,
+      reasonForCalculation = REASON,
+      otherReasonForCalculation = "Other reason",
+      genuineOverrideReason = GenuineOverrideReason.OTHER,
+      genuineOverrideReasonFurtherDetail = "Foo",
+      overridesCalculationRequestId = 87914565156L,
+      inputData = JacksonUtil.toJsonNode("""{"foo": "bar1"}"""),
+      calculationOutcomes = listOf(
+        CalculationOutcome(
+          id = 1,
+          calculationRequestId = 123L,
+          outcomeDate = LocalDate.of(2035, 1, 2),
+          calculationDateType = "SED",
+        ),
+        CalculationOutcome(
+          id = 2,
+          calculationRequestId = 123L,
+          outcomeDate = LocalDate.of(2039, 12, 13),
+          calculationDateType = "LED",
+        ),
+        CalculationOutcome(
+          id = 3,
+          calculationRequestId = 123L,
+          outcomeDate = LocalDate.of(2031, 6, 7),
+          calculationDateType = "HDCED",
+        ),
+        CalculationOutcome(
+          id = 4,
+          calculationRequestId = 123L,
+          outcomeDate = LocalDate.of(2031, 7, 6),
+          calculationDateType = "ERSED",
+        ),
+      ),
+
+    )
+    val preliminaryRequest = CalculationRequest(
+      id = 456L,
+      prisonerId = PRISONER_ID,
+      bookingId = BOOKING.bookingId,
+      calculationStatus = CalculationStatus.CONFIRMED.name,
+      reasonForCalculation = REASON,
+      otherReasonForCalculation = "Other reason",
+      inputData = JacksonUtil.toJsonNode("""{"foo": "bar1"}"""),
+      calculationOutcomes = listOf(
+        CalculationOutcome(
+          id = 1,
+          calculationRequestId = 456L,
+          outcomeDate = LocalDate.of(2025, 1, 2),
+          calculationDateType = "SED",
+        ),
+        CalculationOutcome(
+          id = 2,
+          calculationRequestId = 456L,
+          outcomeDate = LocalDate.of(2029, 12, 13),
+          calculationDateType = "LED",
+        ),
+        CalculationOutcome(
+          id = 3,
+          calculationRequestId = 456L,
+          outcomeDate = LocalDate.of(2021, 6, 7),
+          calculationDateType = "HDCED",
+        ),
+      ),
+    )
+    whenever(calculationRequestRepository.findFirstByPrisonerIdAndCalculationStatusOrderByCalculatedAtDesc(PRISONER_ID, "CONFIRMED")).thenReturn(Optional.of(previousRequest))
+    whenever(calculationRequestRepository.findByIdAndCalculationStatus(123L, "PRELIMINARY")).thenReturn(Optional.of(preliminaryRequest))
+
+    val result = genuineOverrideService.inputsForCalculation(
+      123L,
+    )
+    assertThat(result).isEqualTo(
+      GenuineOverrideInputResponse(
+        mode = GenuineOverrideMode.EXPRESS,
+        calculatedDates = listOf(
+          GenuineOverrideDate(ReleaseDateType.SED, LocalDate.of(2025, 1, 2)),
+          GenuineOverrideDate(ReleaseDateType.LED, LocalDate.of(2029, 12, 13)),
+          GenuineOverrideDate(ReleaseDateType.HDCED, LocalDate.of(2021, 6, 7)),
+        ),
+        previousOverrideForExpressGenuineOverride = PreviousGenuineOverride(
+          calculationRequestId = 123L,
+          dates = listOf(
+            GenuineOverrideDate(ReleaseDateType.SED, LocalDate.of(2035, 1, 2)),
+            GenuineOverrideDate(ReleaseDateType.LED, LocalDate.of(2039, 12, 13)),
+            GenuineOverrideDate(ReleaseDateType.HDCED, LocalDate.of(2031, 6, 7)),
+            GenuineOverrideDate(ReleaseDateType.ERSED, LocalDate.of(2031, 7, 6)),
+          ),
+          reason = GenuineOverrideReason.OTHER,
+          reasonFurtherDetail = "Foo",
+        ),
+      ),
     )
   }
 
