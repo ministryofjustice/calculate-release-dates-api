@@ -2,14 +2,28 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import jakarta.persistence.EntityNotFoundException
 import org.springframework.stereotype.Service
+import org.threeten.extra.LocalDateRange
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.RECORD_A_RECALL
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationRequestModel
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExternalSentenceId
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallSentenceCalculation
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallableSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecordARecallDecision
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecordARecallDecisionResult
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecordARecallRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecordARecallResult
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Term
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.nomissyncmapping.model.NomisDpsSentenceMapping
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.nomissyncmapping.model.NomisSentenceId
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.remandandsentencing.model.Recall
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationReasonRepository
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isBeforeOrEqualTo
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationOrder
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.service.ValidationService
+import java.util.UUID
 
 @Service
 class RecordARecallService(
@@ -18,6 +32,8 @@ class RecordARecallService(
   private val calculationTransactionalService: CalculationTransactionalService,
   private val calculationReasonRepository: CalculationReasonRepository,
   private val validationService: ValidationService,
+  private val bookingService: BookingService,
+  private val nomisSyncMappingApiClient: NomisSyncMappingApiClient,
 ) {
 
   fun calculateAndValidateForRecordARecall(prisonerId: String): RecordARecallResult {
@@ -41,21 +57,101 @@ class RecordARecallService(
     val recallReason = calculationReasonRepository.findByDisplayName(RECALL_REASON)
       ?: throw EntityNotFoundException()
 
-    val calculationRequestModel = CalculationRequestModel(
-      calculationReasonId = recallReason.id,
-      otherReasonDescription = RECALL_REASON,
-      calculationUserInputs = null,
-    )
+    val booking = bookingService.getBooking(sourceData)
 
     val calculation = calculationTransactionalService.calculate(
-      sourceData,
-      calculationRequestModel,
+      booking = booking,
+      sourceData = sourceData,
       calculationStatus = RECORD_A_RECALL,
+      reasonForCalculation = recallReason,
+      calculationUserInputs = CalculationUserInputs(),
     )
     return RecordARecallResult(
       validationResult,
       calculation,
+      booking,
     )
+  }
+
+  fun makeRecallDecision(prisonerId: String, recordARecallRequest: RecordARecallRequest): RecordARecallDecisionResult {
+    val calculation = calculateAndValidateForRecordARecall(prisonerId)
+
+    if (calculation.calculatedReleaseDates == null || calculation.booking == null) {
+      return RecordARecallDecisionResult(
+        RecordARecallDecision.CRITICAL_ERRORS,
+        validationMessages = calculation.validationMessages,
+      )
+    }
+    if (calculation.validationMessages.isNotEmpty()) {
+      return RecordARecallDecisionResult(
+        RecordARecallDecision.VALIDATION,
+        validationMessages = calculation.validationMessages,
+      )
+    }
+
+    if (recordARecallRequest.requiresUal()) {
+      val requestPeriod = LocalDateRange.of(recordARecallRequest.revocationDate, recordARecallRequest.arrestDate!!)
+      val existingPeriods = calculation.booking.adjustments.getOrEmptyList(AdjustmentType.UNLAWFULLY_AT_LARGE)
+        .filter { it.fromDate != null && it.toDate != null }
+        .map { LocalDateRange.of(it.fromDate, it.toDate) }
+      val anyOverlappingAdjustments = existingPeriods.any { it.overlaps(requestPeriod) }
+      if (anyOverlappingAdjustments) {
+        return RecordARecallDecisionResult(
+          decision = RecordARecallDecision.CONFLICTING_ADJUSTMENTS,
+        )
+      }
+    }
+
+    val output = calculation.calculatedReleaseDates.calculationOutput!!
+    val sentenceGroupsReleasedBeforeRevocation = output.sentenceGroup.filter { it.to.isBeforeOrEqualTo(recordARecallRequest.revocationDate) }
+    val recallableSentenceGroups = sentenceGroupsReleasedBeforeRevocation.flatMap { it.sentences.map { sentence -> it to sentence } }
+      .filter { it.second.sentenceCalculation.licenceExpiryDate?.isAfter(recordARecallRequest.revocationDate) == true }
+      .filter { it.second.sentenceParts().none { part -> part is Term } }
+
+    if (recallableSentenceGroups.isEmpty()) {
+      return RecordARecallDecisionResult(
+        RecordARecallDecision.NO_RECALLABLE_SENTENCES_FOUND,
+      )
+    }
+
+    val nomisIds = recallableSentenceGroups.flatMap { (group, sentence) ->
+      sentence.sentenceParts().map {
+        NomisSentenceId(it.externalSentenceId!!.bookingId, it.externalSentenceId!!.sentenceSequence)
+      }
+    }
+    val mappings = nomisSyncMappingApiClient.postNomisToDpsMappingLookup(nomisIds)
+
+    val anyNonSdsSentences = recallableSentenceGroups.any { (group, sentence) -> sentence.sentenceParts().any { it !is StandardDeterminateSentence } }
+
+    return RecordARecallDecisionResult(
+      RecordARecallDecision.AUTOMATED,
+      recallableSentences = recallableSentenceGroups.flatMap { (group, sentence) ->
+        sentence.sentenceParts().map {
+          RecallableSentence(
+            sentenceSequence = it.externalSentenceId!!.sentenceSequence,
+            bookingId = it.externalSentenceId!!.bookingId,
+            uuid = findUuid(it.externalSentenceId!!, mappings),
+            sentenceCalculation = RecallSentenceCalculation(
+              calculatedRelease = sentence.sentenceCalculation.adjustedDeterminateReleaseDate,
+              sentenceGroupRelease = group.to,
+              licenseExpiry = sentence.sentenceCalculation.licenceExpiryDate!!,
+            ),
+          )
+        }
+      },
+      eligibleRecallTypes = if (anyNonSdsSentences) listOf(Recall.RecallType.LR) else Recall.RecallType.entries,
+    )
+  }
+
+  private fun findUuid(
+    externalSentenceId: ExternalSentenceId,
+    mappings: List<NomisDpsSentenceMapping>,
+  ): UUID {
+    val mapping = mappings.find { it.nomisSentenceId == NomisSentenceId(externalSentenceId.bookingId, externalSentenceId.sentenceSequence) }
+    if (mapping == null) {
+      throw IllegalArgumentException("No DPS mapping found for $externalSentenceId")
+    }
+    return UUID.fromString(mapping.dpsSentenceId)
   }
 
   companion object {
