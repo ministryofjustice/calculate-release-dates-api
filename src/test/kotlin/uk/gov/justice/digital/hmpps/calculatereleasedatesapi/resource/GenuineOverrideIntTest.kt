@@ -42,7 +42,7 @@ class GenuineOverrideIntTest(private val mockPrisonService: MockPrisonService) :
       reasonFurtherDetail = null,
     )
     val response = webTestClient.post()
-      .uri("/calculation/genuine-override/${preliminaryCalculation.calculationRequestId}")
+      .uri("/genuine-override/calculation/${preliminaryCalculation.calculationRequestId}")
       .accept(MediaType.APPLICATION_JSON)
       .bodyValue(request)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
@@ -108,7 +108,7 @@ class GenuineOverrideIntTest(private val mockPrisonService: MockPrisonService) :
       reasonFurtherDetail = "A test reason",
     )
     val response = webTestClient.post()
-      .uri("/calculation/genuine-override/${preliminaryCalculation.calculationRequestId}")
+      .uri("/genuine-override/calculation/${preliminaryCalculation.calculationRequestId}")
       .accept(MediaType.APPLICATION_JSON)
       .bodyValue(request)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
@@ -145,7 +145,7 @@ class GenuineOverrideIntTest(private val mockPrisonService: MockPrisonService) :
       reasonFurtherDetail = "A test reason",
     )
     webTestClient.post()
-      .uri("/calculation/genuine-override/-1000")
+      .uri("/genuine-override/calculation/-1000")
       .accept(MediaType.APPLICATION_JSON)
       .bodyValue(request)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
