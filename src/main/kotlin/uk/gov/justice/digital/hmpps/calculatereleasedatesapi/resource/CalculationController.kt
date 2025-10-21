@@ -25,8 +25,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBr
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationRequestModel
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedCalculationResults
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.GenuineOverrideCreatedResponse
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.GenuineOverrideRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.LatestCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NomisCalculationSummary
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDatesAndCalculationContext
@@ -40,7 +38,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.pris
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationBreakdownService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationTransactionalService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.DetailedCalculationResultsService
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.GenuineOverrideService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.LatestCalculationService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.OffenderKeyDatesService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.RelevantRemandService
@@ -55,7 +52,6 @@ class CalculationController(
   private val latestCalculationService: LatestCalculationService,
   private val calculationBreakdownService: CalculationBreakdownService,
   private val offenderKeyDatesService: OffenderKeyDatesService,
-  private val genuineOverrideService: GenuineOverrideService,
 ) {
   @PostMapping(value = ["/{prisonerId}"])
   @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")
@@ -114,34 +110,6 @@ class CalculationController(
   ): CalculatedReleaseDates {
     log.info("Request received to confirm release dates calculation for $calculationRequestId")
     return calculationTransactionalService.validateAndConfirmCalculation(calculationRequestId, submitCalculationRequest)
-  }
-
-  @PostMapping(value = ["/genuine-override/{calculationRequestId}"])
-  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")
-  @ResponseBody
-  @Operation(
-    summary = "Override the dates for a given calculation",
-    description = "Replace the calculated dates with a dates that may have been added, removed or modified by OMU",
-  )
-  @ApiResponses(
-    value = [
-      ApiResponse(responseCode = "200", description = "Dates were successfully overridden"),
-      ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
-      ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
-      ApiResponse(
-        responseCode = "404",
-        description = "Couldn't find the requested calculation or it's in an invalid state",
-      ),
-    ],
-  )
-  fun storeGenuineOverrideForCalculation(
-    @PathVariable("calculationRequestId")
-    calculationRequestId: Long,
-    @RequestBody
-    request: GenuineOverrideRequest,
-  ): GenuineOverrideCreatedResponse {
-    log.info("Request received to override release dates for calculation $calculationRequestId")
-    return genuineOverrideService.overrideDatesForACalculation(calculationRequestId, request)
   }
 
   @GetMapping(value = ["/results/{prisonerId}/{bookingId}"])
