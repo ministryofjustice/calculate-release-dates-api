@@ -4,7 +4,15 @@
       "active": true,
       "type": "UNLAWFULLY_AT_LARGE",
       "fromDate": "2015-03-17",
+      "toDate": "2015-04-15",
       "numberOfDays": 29
+    },
+    {
+      "active": true,
+      "type": "UNLAWFULLY_AT_LARGE",
+      "fromDate": "2016-02-01",
+      "toDate": "2016-02-20",
+      "numberOfDays": 20
     }
   ],
   "sentenceAdjustments": [
