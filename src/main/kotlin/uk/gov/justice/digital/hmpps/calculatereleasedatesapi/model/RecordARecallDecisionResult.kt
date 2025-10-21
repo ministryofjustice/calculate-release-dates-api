@@ -20,8 +20,10 @@ data class RecallableSentence(
 )
 
 data class RecallSentenceCalculation(
-  val calculatedRelease: LocalDate,
-  val sentenceGroupRelease: LocalDate,
+  // The CRD calculated by CRDS.
+  val conditionalReleaseDate: LocalDate,
+  // The actual release date (given by external movements if exists)
+  val actualReleaseDate: LocalDate,
   val licenseExpiry: LocalDate,
 )
 

@@ -34,8 +34,8 @@ class RecordARecallControllerIntTest(private val mockManageOffencesClient: MockM
         bookingId = CalculationIntTest.PRISONER_ID.hashCode().toLong(),
         uuid = UUID.fromString("0e1fdbd3-f296-3c0e-8c0e-97bad6fc1509"),
         sentenceCalculation = RecallSentenceCalculation(
-          calculatedRelease = LocalDate.of(2016, 1, 6),
-          sentenceGroupRelease = LocalDate.of(2016, 1, 6),
+          conditionalReleaseDate = LocalDate.of(2016, 1, 6),
+          actualReleaseDate = LocalDate.of(2016, 1, 6),
           licenseExpiry = LocalDate.of(2016, 11, 6),
         ),
       ),

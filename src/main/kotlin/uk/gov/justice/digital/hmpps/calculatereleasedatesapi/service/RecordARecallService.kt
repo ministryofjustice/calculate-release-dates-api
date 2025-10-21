@@ -132,8 +132,8 @@ class RecordARecallService(
             bookingId = it.externalSentenceId!!.bookingId,
             uuid = findUuid(it.externalSentenceId!!, mappings),
             sentenceCalculation = RecallSentenceCalculation(
-              calculatedRelease = sentence.sentenceCalculation.adjustedDeterminateReleaseDate,
-              sentenceGroupRelease = group.to,
+              conditionalReleaseDate = sentence.sentenceCalculation.adjustedDeterminateReleaseDate,
+              actualReleaseDate = group.to,
               licenseExpiry = sentence.sentenceCalculation.licenceExpiryDate!!,
             ),
           )
