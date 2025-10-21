@@ -22,6 +22,7 @@ class WebClientConfiguration(
   @Value("\${bank-holiday.api.url:https://www.gov.uk}") private val bankHolidayApiUrl: String,
   @Value("\${adjustments.api.url}") private val adjustmentsApiUrl: String,
   @Value("\${manage-offences.api.url}") private val manageOffencesApiUrl: String,
+  @Value("\${nomis-sync-mapping.api.url}") private val nomisSyncMappingApiUrl: String,
 ) {
 
   @Bean
@@ -81,6 +82,19 @@ class WebClientConfiguration(
     oauth2Client.setDefaultClientRegistrationId("manage-offences-api")
     return builder
       .baseUrl(manageOffencesApiUrl)
+      .apply(oauth2Client.oauth2Configuration())
+      .build()
+  }
+
+  @Bean
+  fun nomisSyncMappingApiWebClient(
+    webClientBuilder: WebClient.Builder,
+    authorizedClientManager: OAuth2AuthorizedClientManager,
+  ): WebClient {
+    val oauth2Client = ServletOAuth2AuthorizedClientExchangeFilterFunction(authorizedClientManager)
+    oauth2Client.setDefaultClientRegistrationId("nomis-sync-mapping-api")
+    return webClientBuilder
+      .baseUrl(nomisSyncMappingApiUrl)
       .apply(oauth2Client.oauth2Configuration())
       .build()
   }
