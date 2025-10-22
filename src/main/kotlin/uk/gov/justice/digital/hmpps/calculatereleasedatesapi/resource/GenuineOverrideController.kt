@@ -4,7 +4,9 @@ import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
+import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
+import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -66,9 +68,14 @@ class GenuineOverrideController(private val genuineOverrideService: GenuineOverr
     calculationRequestId: Long,
     @RequestBody
     request: GenuineOverrideRequest,
-  ): GenuineOverrideCreatedResponse {
+  ): ResponseEntity<GenuineOverrideCreatedResponse> {
     log.info("Request received to override release dates for calculation $calculationRequestId")
-    return genuineOverrideService.overrideDatesForACalculation(calculationRequestId, request)
+    val response = genuineOverrideService.overrideDatesForACalculation(calculationRequestId, request)
+    return if (response.success) {
+      ResponseEntity.status(HttpStatus.OK).body(response)
+    } else {
+      ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response)
+    }
   }
 
   @GetMapping(value = ["/calculation/{calculationRequestId}/inputs"])

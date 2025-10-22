@@ -24,6 +24,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.PreviousGenui
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.service.DateValidationService
 import java.time.Period.ZERO
 import kotlin.jvm.optionals.getOrNull
 
@@ -37,10 +38,18 @@ class GenuineOverrideService(
   private val calculationOutcomeRepository: CalculationOutcomeRepository,
   private val buildProperties: BuildProperties,
   private val objectMapper: ObjectMapper,
+  private val dateValidationService: DateValidationService,
 ) {
 
   @Transactional
   fun overrideDatesForACalculation(calculationRequestId: Long, genuineOverrideRequest: GenuineOverrideRequest): GenuineOverrideCreatedResponse {
+    val validationErrorsForSelectedDates = dateValidationService.validateDates(genuineOverrideRequest.dates.map { it.dateType.name })
+    if (validationErrorsForSelectedDates.isNotEmpty()) {
+      return GenuineOverrideCreatedResponse(
+        success = false,
+        validationMessages = validationErrorsForSelectedDates,
+      )
+    }
     val originalRequest = getPreliminaryRequest(calculationRequestId)
 
     val sourceData = calculationSourceDataService.getCalculationSourceData(originalRequest.prisonerId, InactiveDataOptions.default())
@@ -55,6 +64,7 @@ class GenuineOverrideService(
     writeToNomisAndPublishEvent(booking, genuineOverrideRequest, newRequest, calculationOutcomes)
 
     return GenuineOverrideCreatedResponse(
+      success = true,
       originalCalculationRequestId = originalRequest.id,
       newCalculationRequestId = newRequest.id,
     )
