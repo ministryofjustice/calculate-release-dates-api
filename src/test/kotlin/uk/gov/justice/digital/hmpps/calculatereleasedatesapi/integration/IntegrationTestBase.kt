@@ -29,6 +29,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManuallyEnteredDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecordARecallDecisionResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecordARecallRequest
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecordARecallValidationResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmitCalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSentenceAndOffences
 
@@ -102,6 +103,16 @@ open class IntegrationTestBase internal constructor() {
     .expectStatus().isOk
     .expectHeader().contentType(MediaType.APPLICATION_JSON)
     .expectBody(RecordARecallDecisionResult::class.java)
+    .returnResult().responseBody!!
+
+  protected fun validateForRecordARecall(prisonerId: String): RecordARecallValidationResult = webTestClient.get()
+    .uri("/record-a-recall/$prisonerId/validate")
+    .accept(MediaType.APPLICATION_JSON)
+    .headers(setAuthorisation(roles = listOf("ROLE_CALCULATE_RELEASE_DATES__RECALL__CALCULATE__RW")))
+    .exchange()
+    .expectStatus().isOk
+    .expectHeader().contentType(MediaType.APPLICATION_JSON)
+    .expectBody(RecordARecallValidationResult::class.java)
     .returnResult().responseBody!!
 
   protected fun createConfirmCalculationForPrisoner(
