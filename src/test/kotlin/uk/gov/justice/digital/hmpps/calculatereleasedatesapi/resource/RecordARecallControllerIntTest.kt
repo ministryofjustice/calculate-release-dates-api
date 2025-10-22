@@ -22,7 +22,7 @@ class RecordARecallControllerIntTest(private val mockManageOffencesClient: MockM
   fun `Find sentences that have license periods for revocation date`() {
     val result = createCalculationForRecordARecall(
       CalculationIntTest.PRISONER_ID,
-      RecordARecallRequest(revocationDate = LocalDate.of(2016, 3, 6), arrestDate = LocalDate.of(2016, 3, 10)),
+      RecordARecallRequest(revocationDate = LocalDate.of(2016, 3, 6)),
     )
 
     assertThat(result.decision).isEqualTo(RecordARecallDecision.AUTOMATED)
@@ -43,6 +43,17 @@ class RecordARecallControllerIntTest(private val mockManageOffencesClient: MockM
   }
 
   @Test
+  fun `Validation passes`() {
+    mockManageOffencesClient.noneInPCSC(listOf("GBH", "SX03014"))
+    val result = validateForRecordARecall(
+      CalculationIntTest.PRISONER_ID,
+    )
+
+    assertThat(result.criticalValidationMessages).isEmpty()
+    assertThat(result.otherValidationMessages).isEmpty()
+  }
+
+  @Test
   fun `No sentences for recall`() {
     val result = createCalculationForRecordARecall(
       CalculationIntTest.PRISONER_ID,
@@ -56,7 +67,7 @@ class RecordARecallControllerIntTest(private val mockManageOffencesClient: MockM
   fun `Conflicting UAL`() {
     val result = createCalculationForRecordARecall(
       CalculationIntTest.PRISONER_ID,
-      RecordARecallRequest(revocationDate = LocalDate.of(2016, 2, 6), arrestDate = LocalDate.of(2016, 2, 10)),
+      RecordARecallRequest(revocationDate = LocalDate.of(2016, 2, 6)),
     )
 
     assertThat(result.decision).isEqualTo(RecordARecallDecision.CONFLICTING_ADJUSTMENTS)
@@ -72,6 +83,17 @@ class RecordARecallControllerIntTest(private val mockManageOffencesClient: MockM
 
     assertThat(result.decision).isEqualTo(RecordARecallDecision.CRITICAL_ERRORS)
     assertThat(result.validationMessages).isNotEmpty()
+  }
+
+  @Test
+  fun `Validation errors from validation endpoint`() {
+    mockManageOffencesClient.noneInPCSC(listOf("GBH", "SX03014"))
+    val result = validateForRecordARecall(
+      VALIDATION_PRISONER_ID,
+    )
+
+    assertThat(result.criticalValidationMessages).isNotEmpty()
+    assertThat(result.otherValidationMessages).isNotEmpty()
   }
 
   @Test

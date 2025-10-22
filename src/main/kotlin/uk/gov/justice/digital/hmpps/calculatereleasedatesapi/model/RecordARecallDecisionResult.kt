@@ -10,6 +10,7 @@ data class RecordARecallDecisionResult(
   val validationMessages: List<ValidationMessage> = emptyList(),
   val recallableSentences: List<RecallableSentence> = emptyList(),
   val eligibleRecallTypes: List<Recall.RecallType> = emptyList(),
+  val calculationRequestId: Long? = null,
 )
 
 data class RecallableSentence(
