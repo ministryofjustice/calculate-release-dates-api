@@ -35,6 +35,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Pris
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.service.DateValidationService
 import java.time.LocalDate
 import java.time.Period
 import java.time.temporal.ChronoUnit
@@ -47,6 +48,7 @@ class GenuineOverrideServiceTest {
   private val bookingService: BookingService = mock<BookingService>()
   private val calculationSourceDataService: CalculationSourceDataService = mock<CalculationSourceDataService>()
   private val calculationOutcomeRepository: CalculationOutcomeRepository = mock<CalculationOutcomeRepository>()
+  private val dateValidationService: DateValidationService = mock<DateValidationService>()
   private val buildProperties = TEST_BUILD_PROPERTIES
   private val objectMapper = TestUtil.objectMapper()
   private val genuineOverrideService = GenuineOverrideService(
@@ -58,6 +60,7 @@ class GenuineOverrideServiceTest {
     calculationOutcomeRepository,
     buildProperties,
     objectMapper,
+    dateValidationService,
   )
 
   @Test
