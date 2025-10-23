@@ -83,7 +83,7 @@ data class Duration(
       if (!allElements.containsKey(it.key)) {
         allElements[it.key] = it.value
       } else {
-        allElements[it.key] = it.value + allElements[it.key]!!
+        allElements[it.key] = it.value + allElements.getOrDefault(it.key, 0)
       }
     }
     return Duration(allElements.toMap())
@@ -92,7 +92,7 @@ data class Duration(
   fun removeAll(durationElements: Map<ChronoUnit, Long>): Duration {
     val allElements = mutableMapOf<ChronoUnit, Long>()
     this.durationElements.forEach {
-      allElements[it.key] = it.value - durationElements[it.key]!!
+      allElements[it.key] = it.value - durationElements.getOrDefault(it.key, 0)
     }
     return Duration(allElements.toMap())
   }
