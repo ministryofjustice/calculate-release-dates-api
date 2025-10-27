@@ -50,7 +50,7 @@ class DtoSingleTermSentence(
     val latestSentence = standardSentences.maxOf { it.sentencedAt }
 
     val longestEarliestSentence = standardSentences
-      .filter {it.sentencedAt.compareTo(earliestSentence) == 0 }
+      .filter { it.sentencedAt.compareTo(earliestSentence) == 0 }
       .maxBy { it.getLengthInDays() }
 
     val shortestRecentSentence = standardSentences
