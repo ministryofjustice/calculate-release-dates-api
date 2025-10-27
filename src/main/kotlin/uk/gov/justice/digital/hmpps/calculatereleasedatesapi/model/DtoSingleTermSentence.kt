@@ -46,9 +46,17 @@ class DtoSingleTermSentence(
   override fun isIdentificationTrackInitialized(): Boolean = this::identificationTrack.isInitialized
 
   fun combinedDuration(): Duration {
-    val sentencesOrderedByLengthThenSentenceDate = standardSentences.sortedWith(compareBy({ it.getLengthInDays() }, { it.sentencedAt }))
-    val longestEarliestSentence = sentencesOrderedByLengthThenSentenceDate.first()
-    val shortestRecentSentence = sentencesOrderedByLengthThenSentenceDate.last()
+    val earliestSentence = standardSentences.minOf { it.sentencedAt }
+    val latestSentence = standardSentences.maxOf { it.sentencedAt }
+
+    val longestEarliestSentence = standardSentences
+      .filter {it.sentencedAt.compareTo(earliestSentence) == 0 }
+      .maxBy { it.getLengthInDays() }
+
+    val shortestRecentSentence = standardSentences
+      .filter { it.sentencedAt.compareTo(latestSentence) == 0 }
+      .maxBy { it.getLengthInDays() }
+
     val durationElements: MutableMap<ChronoUnit, Long> = mutableMapOf()
     durationElements[ChronoUnit.DAYS] = ChronoUnit.DAYS.between(
       earliestSentencedAt(longestEarliestSentence, shortestRecentSentence),
