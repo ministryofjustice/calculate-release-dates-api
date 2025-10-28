@@ -16,7 +16,8 @@
             "MONTHS": 6
           }
         },
-        "sentencedAt": "2025-05-01"
+        "sentencedAt": "2025-05-01",
+        "identifier": "f7ea34bb-8164-49cd-8057-a891bd7468de"
       },
       {
         "type": "DetentionAndTrainingOrderSentence",
@@ -29,12 +30,13 @@
             "MONTHS": 8
           }
         },
-        "sentencedAt": "2025-05-01"
+        "sentencedAt": "2025-05-01",
+        "identifier": "5dfde034-b7d7-4c54-a86c-67d42a1fd669"
       },
       {
         "type": "DetentionAndTrainingOrderSentence",
         "offence": {
-          "committedAt": "2026-01-01",
+          "committedAt": "2025-07-11",
           "offenceCode": "PR52044"
         },
         "duration": {
@@ -42,7 +44,11 @@
             "MONTHS": 18
           }
         },
-        "sentencedAt": "2026-01-01"
+        "sentencedAt": "2025-07-11",
+        "identifier": "7b39c441-3878-49a1-9f63-b540e7241ddf",
+        "consecutiveSentenceUUIDs": [
+          "5dfde034-b7d7-4c54-a86c-67d42a1fd669"
+        ]
       }
     ]
   },
