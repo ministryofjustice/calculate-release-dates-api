@@ -1,0 +1,59 @@
+{
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
+      {
+        "type": "DetentionAndTrainingOrderSentence",
+        "offence": {
+          "committedAt": "2025-05-01",
+          "offenceCode": "OF61016A"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 6
+          }
+        },
+        "sentencedAt": "2025-05-01",
+        "identifier": "f7ea34bb-8164-49cd-8057-a891bd7468de"
+      },
+      {
+        "type": "DetentionAndTrainingOrderSentence",
+        "offence": {
+          "committedAt": "2025-05-01",
+          "offenceCode": "PR52044"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 8
+          }
+        },
+        "sentencedAt": "2025-05-01",
+        "identifier": "5dfde034-b7d7-4c54-a86c-67d42a1fd669"
+      },
+      {
+        "type": "DetentionAndTrainingOrderSentence",
+        "offence": {
+          "committedAt": "2025-07-11",
+          "offenceCode": "PR52044"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 18
+          }
+        },
+        "sentencedAt": "2025-07-11",
+        "identifier": "7b39c441-3878-49a1-9f63-b540e7241ddf",
+        "consecutiveSentenceUUIDs": [
+          "5dfde034-b7d7-4c54-a86c-67d42a1fd669"
+        ]
+      }
+    ]
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params"
+}
