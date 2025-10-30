@@ -192,4 +192,24 @@ class DurationAggregatorTest {
       ),
     )
   }
+
+  @Test
+  fun `Handles aggregate durations with zero days`() {
+    val durations = listOf(
+      Duration(
+        mapOf(
+          ChronoUnit.MONTHS to 0,
+        ),
+      ),
+      Duration(
+        mapOf(
+          ChronoUnit.MONTHS to 0,
+        ),
+      ),
+    )
+
+    val result = DurationAggregator(durations).aggregate()
+
+    Assertions.assertThat(result).isEmpty()
+  }
 }

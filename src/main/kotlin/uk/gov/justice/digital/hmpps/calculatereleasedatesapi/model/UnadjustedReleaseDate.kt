@@ -154,11 +154,11 @@ class UnadjustedReleaseDate(
         // They are tranched.
         if (allocatedTrancheDate != null) {
           if (latestEarlyReleaseConfig.matchesFilter(sentence)) {
-            return getMultiplerForConfiguration(latestEarlyReleaseConfig, timelineCalculationDate, sentence)
+            return getMultiplierForConfiguration(latestEarlyReleaseConfig, timelineCalculationDate, sentence)
           }
         } else if (sentence.sentencedAt.isAfterOrEqualTo(latestEarlyReleaseConfig.earliestTranche())) {
           if (latestEarlyReleaseConfig.matchesFilter(sentence)) {
-            return getMultiplerForConfiguration(latestEarlyReleaseConfig, timelineCalculationDate, sentence)
+            return getMultiplierForConfiguration(latestEarlyReleaseConfig, timelineCalculationDate, sentence)
           }
         }
       }
@@ -172,7 +172,7 @@ class UnadjustedReleaseDate(
     else -> throw UnexpectedException("Unknown default release multipler.")
   }
 
-  private fun getMultiplerForConfiguration(
+  private fun getMultiplierForConfiguration(
     earlyReleaseConfig: EarlyReleaseConfiguration,
     timelineCalculationDate: LocalDate,
     sentence: StandardDeterminateSentence,
@@ -233,7 +233,7 @@ class UnadjustedReleaseDate(
     var numberOfDaysToParoleEligibilityDate: Long? = null
     sentencesInCalculationOrder.forEach { sentencesWithMultipliers ->
       if (sentencesWithMultipliers.isNotEmpty()) {
-        val releaseStartDate = if (notionalCrd != null) notionalCrd!!.plusDays(1) else sentence.sentencedAt
+        val releaseStartDate = if (notionalCrd != null) notionalCrd.plusDays(1) else sentence.sentencedAt
 
         val daysInThisCustodialDuration = SentenceAggregator()
           .getDaysInGroup(
