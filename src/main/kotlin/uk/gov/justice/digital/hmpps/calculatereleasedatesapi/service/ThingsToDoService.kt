@@ -34,15 +34,34 @@ class ThingsToDoService(
     )
   }
 
+  /**
+   * Asserts whether an offender requires a new calculation.
+   *
+   * Rules:
+   * - The offender must always have active sentences and offences.
+   * - If no calculations exist, a calculation is required.
+   * - If any data between the previous and current booking has changed, a calculation is required.
+   */
   private fun isCalculationRequired(prisonerDetails: PrisonerDetails): Boolean {
     val adjustments = adjustmentsService.getAnalysedBookingAndSentenceAdjustments(prisonerDetails.bookingId)
-    val latestConfirmedCalculation = calculationRequestRepository.findFirstByBookingIdAndCalculationStatusOrderByCalculatedAtDesc(bookingId = prisonerDetails.bookingId, status = CalculationStatus.CONFIRMED.name)
+    val currentSourceData =
+      calculationSourceDataService.getCalculationSourceData(prisonerDetails, InactiveDataOptions.default())
+
+    if (currentSourceData.sentenceAndOffences.isEmpty()) {
+      return false
+    }
+
+    val latestConfirmedCalculation = calculationRequestRepository.findFirstByBookingIdAndCalculationStatusOrderByCalculatedAtDesc(
+      bookingId = prisonerDetails.bookingId,
+      status = CalculationStatus.CONFIRMED.name,
+    )
+
     if (!latestConfirmedCalculation.isPresent) {
-      // there's never been a calculation so triggering a calculation is required
       return true
     }
+
     val previousSourceData = sourceDataMapper.getSourceData(latestConfirmedCalculation.get())
-    val currentSourceData = calculationSourceDataService.getCalculationSourceData(prisonerDetails, InactiveDataOptions.default())
+
     return hasNewOrUpdatedSentences(previousSourceData, currentSourceData) ||
       hasNewBookingAdjustments(adjustments) ||
       hasNewSentenceAdjustments(adjustments) ||
