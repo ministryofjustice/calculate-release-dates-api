@@ -45,6 +45,7 @@ class ThingsToDoServiceTest {
 
   @BeforeEach
   fun setUp() {
+    whenever(calculationSourceDataService.getCalculationSourceData(PRISONER_DETAILS, InactiveDataOptions.default())).thenReturn(BASE_SOURCE_DATA)
     whenever(prisonService.getOffenderDetail(NOMS_ID)).thenReturn(PRISONER_DETAILS)
   }
 
@@ -467,6 +468,16 @@ class ThingsToDoServiceTest {
     )
 
     assertThatHasACalcToDo()
+  }
+
+  @Test
+  fun `should not require a calc if there are no sentences`() {
+    whenever(calculationRequestRepository.findFirstByBookingIdAndCalculationStatusOrderByCalculatedAtDesc(BOOKING_ID, "CONFIRMED")).thenReturn(Optional.empty())
+    whenever(calculationSourceDataService.getCalculationSourceData(PRISONER_DETAILS, InactiveDataOptions.default())).thenReturn(
+      BASE_SOURCE_DATA.copy(sentenceAndOffences = emptyList()),
+    )
+
+    assertThatHasNothingToDo()
   }
 
   @Test

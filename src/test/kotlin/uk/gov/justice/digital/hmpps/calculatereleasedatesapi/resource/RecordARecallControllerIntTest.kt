@@ -1,67 +1,109 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource
 
-import com.github.tomakehurst.wiremock.client.WireMock.get
-import jakarta.persistence.EntityNotFoundException
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.CRD
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ESED
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.HDCED
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SLED
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.TUSED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.MockManageOffencesClient
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallSentenceCalculation
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallableSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecordARecallDecision
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecordARecallRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource.ValidationIntTest.Companion.VALIDATION_PRISONER_ID
 import java.time.LocalDate
+import java.util.UUID
 
 class RecordARecallControllerIntTest(private val mockManageOffencesClient: MockManageOffencesClient) : IntegrationTestBase() {
   @Autowired
   lateinit var calculationRequestRepository: CalculationRequestRepository
 
-  // TODO setup a decent test for this. WIth sled and sentences from old booking.
-  // TODO test adjustments from old bookings link up correctly
-  // TODO adjustments API filter on booking id.
-
   @Test
-  fun `Run calculation using the record-a-recall endpoint for a prisoner (based on example 13 from the unit tests)`() {
-    val result = createCalculationForRecordARecall(CalculationIntTest.PRISONER_ID)
+  fun `Find sentences that have license periods for revocation date`() {
+    val result = createCalculationForRecordARecall(
+      CalculationIntTest.PRISONER_ID,
+      RecordARecallRequest(revocationDate = LocalDate.of(2016, 3, 6)),
+    )
+
+    assertThat(result.decision).isEqualTo(RecordARecallDecision.AUTOMATED)
     assertThat(result.validationMessages).isEmpty()
-
-    val calculationResult = result.calculatedReleaseDates!!
-
-    val calculationRequest = calculationRequestRepository.findById(calculationResult.calculationRequestId)
-      .orElseThrow { EntityNotFoundException("No calculation request exists for id ${calculationResult.calculationRequestId}") }
-
-    assertThat(calculationRequest.calculationStatus).isEqualTo("RECORD_A_RECALL")
-    assertThat(calculationResult.dates[SLED]).isEqualTo(LocalDate.of(2016, 11, 6))
-    assertThat(calculationResult.dates[CRD]).isEqualTo(LocalDate.of(2016, 1, 6))
-    assertThat(calculationResult.dates[TUSED]).isEqualTo(LocalDate.of(2017, 1, 6))
-    assertThat(calculationResult.dates[HDCED]).isEqualTo(LocalDate.of(2015, 8, 7))
-    assertThat(calculationResult.dates[ESED]).isEqualTo(LocalDate.of(2016, 11, 16))
-    assertThat(calculationRequest.inputData["offender"]["reference"].asText()).isEqualTo(CalculationIntTest.PRISONER_ID)
-    assertThat(calculationRequest.inputData["sentences"][0]["offence"]["committedAt"].asText())
-      .isEqualTo("2015-03-17")
+    assertThat(result.recallableSentences).hasSize(1)
+    assertThat(result.recallableSentences[0]).isEqualTo(
+      RecallableSentence(
+        sentenceSequence = 1,
+        bookingId = CalculationIntTest.PRISONER_ID.hashCode().toLong(),
+        uuid = UUID.fromString("0e1fdbd3-f296-3c0e-8c0e-97bad6fc1509"),
+        sentenceCalculation = RecallSentenceCalculation(
+          conditionalReleaseDate = LocalDate.of(2016, 1, 6),
+          actualReleaseDate = LocalDate.of(2016, 1, 6),
+          licenseExpiry = LocalDate.of(2016, 11, 6),
+        ),
+      ),
+    )
   }
 
   @Test
-  fun `Run calculation using the record-a-recall endpoint for a prisoner with validation failures`() {
+  fun `Validation passes`() {
     mockManageOffencesClient.noneInPCSC(listOf("GBH", "SX03014"))
-    val result = createCalculationForRecordARecall(VALIDATION_PRISONER_ID)
+    val result = validateForRecordARecall(
+      CalculationIntTest.PRISONER_ID,
+    )
 
-    assertThat(result.validationMessages).isNotEmpty()
-    assertThat(result.calculatedReleaseDates).isNull()
+    assertThat(result.criticalValidationMessages).isEmpty()
+    assertThat(result.otherValidationMessages).isEmpty()
   }
 
   @Test
-  fun `Run calculation using the record-a-recall endpoint for a prisoner sentences on a previous booking`() {
-    val result = createCalculationForRecordARecall(RECALL_PRISONER_WITH_SENTENCES_ON_OLDER_BOOKING)
+  fun `No sentences for recall`() {
+    val result = createCalculationForRecordARecall(
+      CalculationIntTest.PRISONER_ID,
+      RecordARecallRequest(revocationDate = LocalDate.of(2022, 2, 6)),
+    )
 
+    assertThat(result.decision).isEqualTo(RecordARecallDecision.NO_RECALLABLE_SENTENCES_FOUND)
+  }
+
+  @Test
+  fun `Conflicting UAL`() {
+    val result = createCalculationForRecordARecall(
+      CalculationIntTest.PRISONER_ID,
+      RecordARecallRequest(revocationDate = LocalDate.of(2016, 2, 6)),
+    )
+
+    assertThat(result.decision).isEqualTo(RecordARecallDecision.CONFLICTING_ADJUSTMENTS)
+  }
+
+  @Test
+  fun `Validation errors`() {
+    mockManageOffencesClient.noneInPCSC(listOf("GBH", "SX03014"))
+    val result = createCalculationForRecordARecall(
+      VALIDATION_PRISONER_ID,
+      RecordARecallRequest(revocationDate = LocalDate.of(2016, 2, 6)),
+    )
+
+    assertThat(result.decision).isEqualTo(RecordARecallDecision.CRITICAL_ERRORS)
+    assertThat(result.validationMessages).isNotEmpty()
+  }
+
+  @Test
+  fun `Validation errors from validation endpoint`() {
+    mockManageOffencesClient.noneInPCSC(listOf("GBH", "SX03014"))
+    val result = validateForRecordARecall(
+      VALIDATION_PRISONER_ID,
+    )
+
+    assertThat(result.criticalValidationMessages).isNotEmpty()
+    assertThat(result.otherValidationMessages).isNotEmpty()
+  }
+
+  @Test
+  fun `Calculation across multiple bookings`() {
+    val result = createCalculationForRecordARecall(RECALL_PRISONER_WITH_SENTENCES_ON_OLDER_BOOKING, RecordARecallRequest(revocationDate = LocalDate.of(2025, 7, 6)))
+
+    assertThat(result.decision).isEqualTo(RecordARecallDecision.AUTOMATED)
     assertThat(result.validationMessages).isEmpty()
-
-    val sentencesAndOffences = getSentencesAndOffencesForCalculation(result.calculatedReleaseDates!!.calculationRequestId)
-    val bookingIds = sentencesAndOffences.map { it.bookingId }.distinct()
+    assertThat(result.recallableSentences).hasSize(2)
+    val bookingIds = result.recallableSentences.map { it.bookingId }.distinct()
     assertThat(bookingIds).hasSize(2).contains(RECALL_PRISONER_WITH_SENTENCES_ON_OLDER_BOOKING_NEW_BOOKING_ID, RECALL_PRISONER_WITH_SENTENCES_ON_OLDER_BOOKING_OLD_BOOKING_ID)
   }
 

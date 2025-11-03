@@ -76,18 +76,9 @@ class CalculationTransactionalService(
     prisonerId: String,
     calculationRequestModel: CalculationRequestModel,
     inactiveDataOptions: InactiveDataOptions = InactiveDataOptions.default(),
-    calculationType: CalculationStatus = PRELIMINARY,
-  ): CalculatedReleaseDates {
-    val sourceData = calculationSourceDataService.getCalculationSourceData(prisonerId, inactiveDataOptions)
-    return calculate(sourceData, calculationRequestModel, calculationType)
-  }
-
-  @Transactional
-  fun calculate(
-    sourceData: CalculationSourceData,
-    calculationRequestModel: CalculationRequestModel,
     calculationStatus: CalculationStatus = PRELIMINARY,
   ): CalculatedReleaseDates {
+    val sourceData = calculationSourceDataService.getCalculationSourceData(prisonerId, inactiveDataOptions)
     val calculationUserInputs = calculationRequestModel.calculationUserInputs ?: CalculationUserInputs()
     val booking = bookingService.getBooking(sourceData)
     val reasonForCalculation = calculationReasonRepository.findById(calculationRequestModel.calculationReasonId)
