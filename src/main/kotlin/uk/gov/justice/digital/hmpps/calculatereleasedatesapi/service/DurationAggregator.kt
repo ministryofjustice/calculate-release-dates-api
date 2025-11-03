@@ -20,8 +20,13 @@ data class DurationAggregator(val durations: List<Duration>) {
       workingDuration = handleUnits(it, workingDuration, aggregated, Duration::hasMonthsOrYears, Duration::getMonthAndYearPart)
       workingDuration = handleUnits(it, workingDuration, aggregated, Duration::hasDaysOrWeeks, Duration::getDayAndWeekPart)
     }
-    aggregated.add(workingDuration!!)
-    return aggregated
+
+    return if (workingDuration == null) {
+      aggregated
+    } else {
+      aggregated.add(workingDuration)
+      aggregated
+    }
   }
 
   fun calculateDays(startDate: LocalDate): Int {

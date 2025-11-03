@@ -19,6 +19,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.contain
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.AdjustmentsApiExtension
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.BankHolidayApiExtension
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.ManageOffencesApiExtension
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.NomisSyncMappingApiExtension
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.OAuthExtension
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.PrisonApiExtension
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
@@ -26,7 +27,9 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationFr
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationRequestModel
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManuallyEnteredDate
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecordARecallResult
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecordARecallDecisionResult
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecordARecallRequest
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecordARecallValidationResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmitCalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSentenceAndOffences
 
@@ -43,7 +46,14 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Pris
 **     - A logger.
 */
 
-@ExtendWith(OAuthExtension::class, PrisonApiExtension::class, BankHolidayApiExtension::class, ManageOffencesApiExtension::class, AdjustmentsApiExtension::class)
+@ExtendWith(
+  OAuthExtension::class,
+  PrisonApiExtension::class,
+  BankHolidayApiExtension::class,
+  ManageOffencesApiExtension::class,
+  AdjustmentsApiExtension::class,
+  NomisSyncMappingApiExtension::class,
+)
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @Import(TestBuildPropertiesConfiguration::class)
 @ActiveProfiles("test")
@@ -84,14 +94,25 @@ open class IntegrationTestBase internal constructor() {
     .expectBody(CalculatedReleaseDates::class.java)
     .returnResult().responseBody!!
 
-  protected fun createCalculationForRecordARecall(prisonerId: String): RecordARecallResult = webTestClient.post()
-    .uri("/record-a-recall/$prisonerId")
+  protected fun createCalculationForRecordARecall(prisonerId: String, recordARecallRequest: RecordARecallRequest): RecordARecallDecisionResult = webTestClient.post()
+    .uri("/record-a-recall/$prisonerId/decision")
+    .accept(MediaType.APPLICATION_JSON)
+    .headers(setAuthorisation(roles = listOf("ROLE_CALCULATE_RELEASE_DATES__RECALL__CALCULATE__RW")))
+    .bodyValue(recordARecallRequest)
+    .exchange()
+    .expectStatus().isOk
+    .expectHeader().contentType(MediaType.APPLICATION_JSON)
+    .expectBody(RecordARecallDecisionResult::class.java)
+    .returnResult().responseBody!!
+
+  protected fun validateForRecordARecall(prisonerId: String): RecordARecallValidationResult = webTestClient.get()
+    .uri("/record-a-recall/$prisonerId/validate")
     .accept(MediaType.APPLICATION_JSON)
     .headers(setAuthorisation(roles = listOf("ROLE_CALCULATE_RELEASE_DATES__RECALL__CALCULATE__RW")))
     .exchange()
     .expectStatus().isOk
     .expectHeader().contentType(MediaType.APPLICATION_JSON)
-    .expectBody(RecordARecallResult::class.java)
+    .expectBody(RecordARecallValidationResult::class.java)
     .returnResult().responseBody!!
 
   protected fun createConfirmCalculationForPrisoner(

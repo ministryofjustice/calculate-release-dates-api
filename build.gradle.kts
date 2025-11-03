@@ -154,6 +154,20 @@ val models = listOf(
     output = "prisonapi",
     packageName = "prisonapi",
   ),
+  // https://remand-and-sentencing-api-dev.hmpps.service.justice.gov.uk/v3/api-docs
+  ModelConfiguration(
+    name = "buildRemandAndSentencingApiModel",
+    input = "remand-and-sentencing-api-docs.json",
+    output = "remandandsentencing",
+    packageName = "remandandsentencing",
+  ),
+  // https://nomis-sync-prisoner-mapping-dev.hmpps.service.justice.gov.uk/v3/api-docs
+  ModelConfiguration(
+    name = "buildNomisSyncMappingApiModel",
+    input = "nomis-mapping-sync-api-docs.json",
+    output = "nomissyncmapping",
+    packageName = "nomissyncmapping",
+  ),
 )
 
 tasks {

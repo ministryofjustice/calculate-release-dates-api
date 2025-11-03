@@ -3,7 +3,6 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 import jakarta.persistence.EntityNotFoundException
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.RECORD_A_RECALL
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationRequestModel
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecordARecallResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationReasonRepository
@@ -18,6 +17,7 @@ class RecordARecallService(
   private val calculationTransactionalService: CalculationTransactionalService,
   private val calculationReasonRepository: CalculationReasonRepository,
   private val validationService: ValidationService,
+  private val bookingService: BookingService,
 ) {
 
   fun calculateAndValidateForRecordARecall(prisonerId: String): RecordARecallResult {
@@ -41,16 +41,13 @@ class RecordARecallService(
     val recallReason = calculationReasonRepository.findByDisplayName(RECALL_REASON)
       ?: throw EntityNotFoundException()
 
-    val calculationRequestModel = CalculationRequestModel(
-      calculationReasonId = recallReason.id,
-      otherReasonDescription = RECALL_REASON,
-      calculationUserInputs = null,
-    )
-
+    val booking = bookingService.getBooking(sourceData)
     val calculation = calculationTransactionalService.calculate(
-      sourceData,
-      calculationRequestModel,
+      booking = booking,
       calculationStatus = RECORD_A_RECALL,
+      sourceData = sourceData,
+      reasonForCalculation = recallReason,
+      calculationUserInputs = CalculationUserInputs(),
     )
     return RecordARecallResult(
       validationResult,

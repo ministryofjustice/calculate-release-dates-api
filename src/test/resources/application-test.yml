@@ -57,6 +57,9 @@ manage-offences:
   api:
     url: http://localhost:8335
 
+nomis-sync-mapping:
+  api:
+    url: http://localhost:8336
 
 domain-events-sns:
   provider: localstack
