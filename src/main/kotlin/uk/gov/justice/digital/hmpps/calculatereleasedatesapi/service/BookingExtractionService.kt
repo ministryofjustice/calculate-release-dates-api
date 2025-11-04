@@ -7,11 +7,32 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Calcul
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule.ERSED_ADJUSTED_TO_MTD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.HistoricalTusedSource
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.*
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ARD
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.CRD
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ERSED
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ESED
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ETD
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.HDCED
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.LED
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.LTD
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.MTD
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.NCRD
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.NPD
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.PED
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.PRRD
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SED
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SLED
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.TUSED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.NoSentencesProvidedException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.SentenceGroupNotFound
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.*
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AFineSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BotusSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.sentence.SentencesExtractionService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.sentence.oraAndNoneOraExtraction
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
@@ -56,9 +77,9 @@ class BookingExtractionService(
     dates[sentence.getReleaseDateType()] = sentenceCalculation.releaseDate
 
     if (sentence.releaseDateTypes.contains(LED)) {
-        sentenceCalculation.licenceExpiryDate?.let {
-          dates[LED] = it
-        }
+      sentenceCalculation.licenceExpiryDate?.let {
+        dates[LED] = it
+      }
     }
 
     sentenceCalculation.nonParoleDate?.let {
@@ -453,7 +474,7 @@ class BookingExtractionService(
       ) == null
 
     if (noAFineOrBotusReleaseAfterLatestEarlyReleaseSchemeEligibilitySentence) {
-     val earlyReleaseSchemeEligibilityDate = latestEarlyReleaseSchemeEligibilitySentence.sentenceCalculation.earlyReleaseSchemeEligibilityDate ?: return false
+      val earlyReleaseSchemeEligibilityDate = latestEarlyReleaseSchemeEligibilitySentence.sentenceCalculation.earlyReleaseSchemeEligibilityDate ?: return false
       val latestAFineReleaseAfterErsed =
         extractionService.mostRecentSentenceOrNull(
           sentenceGroup.filter {
@@ -598,7 +619,7 @@ class BookingExtractionService(
       .maxByOrNull { it.sentenceCalculation.topUpSupervisionDate!! }
 
     val latestHistoricTUSEDSentence = historicTUSEDs
-      .filter { it.isCalculationInitialised() && it.sentenceCalculation.topUpSupervisionDate is LocalDate}
+      .filter { it.isCalculationInitialised() && it.sentenceCalculation.topUpSupervisionDate is LocalDate }
       .maxByOrNull { it.sentenceCalculation.topUpSupervisionDate!! }
 
     // Use the latest calculated TUSED, otherwise use historic TUSED
