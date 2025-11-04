@@ -78,5 +78,6 @@ charts/
 
 #env files
 .env
+**/application-local.yml
 
 .run/
