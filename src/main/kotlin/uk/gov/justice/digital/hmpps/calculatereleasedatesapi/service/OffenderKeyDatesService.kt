@@ -45,7 +45,8 @@ class OffenderKeyDatesService(
     val dates = offenderKeyDatesEither.map { releaseDates(it) }
       .getOrElse { throw CrdWebException("Error in mapping/enriching release dates", HttpStatus.NOT_FOUND) }
 
-    val sentenceDateOverrides = prisonService.getSentenceOverrides(calculationRequest.bookingId, dates)
+    // Only NOMIS calcs can have overridden dates
+    val sentenceDateOverrides = emptyList<String>()
 
     val historicDates = if (featureToggles.historicSled) calculationOutcomeHistoricOverrideRepository.findByCalculationRequestId(calculationRequestId) else emptyList()
 
@@ -110,6 +111,7 @@ class OffenderKeyDatesService(
       .getOrElse { problemMessage -> throw CrdWebException(problemMessage, HttpStatus.NOT_FOUND) }
     val releaseDatesForSentCalculationId = releaseDates(nomisOffenderKeyDates)
 
+    // TODO this is getting from the latest calc on the booking so is not correct unless this is the latest calc.
     val sentenceDateOverrides = prisonService.getSentenceOverrides(bookingId, releaseDatesForSentCalculationId)
 
     val detailsReleaseDates = calculationResultEnrichmentService.addDetailToCalculationDates(
