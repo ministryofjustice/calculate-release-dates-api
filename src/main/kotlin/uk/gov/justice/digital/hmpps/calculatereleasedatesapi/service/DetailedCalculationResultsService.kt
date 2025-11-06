@@ -42,7 +42,8 @@ open class DetailedCalculationResultsService(
       .filter { it.outcomeDate != null }
       .map { ReleaseDate(it.outcomeDate!!, ReleaseDateType.valueOf(it.calculationDateType)) }
 
-    val sentenceDateOverrides = prisonService.getSentenceOverrides(calculationRequest.bookingId, releaseDates)
+    // Only NOMIS calcs can have overridden dates
+    val sentenceDateOverrides = emptyList<String>()
 
     val historicDates = if (featureToggles.historicSled) calculationOutcomeHistoricOverrideRepository.findByCalculationRequestId(calculationRequestId) else emptyList()
 
