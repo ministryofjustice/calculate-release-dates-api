@@ -21,22 +21,58 @@ class RecordARecallControllerIntTest(private val mockManageOffencesClient: MockM
   @Test
   fun `Find sentences that have license periods for revocation date`() {
     val result = createCalculationForRecordARecall(
-      CalculationIntTest.PRISONER_ID,
+      RECORD_A_RECALL_PRISONER_ID,
       RecordARecallRequest(revocationDate = LocalDate.of(2016, 3, 6)),
     )
 
     assertThat(result.decision).isEqualTo(RecordARecallDecision.AUTOMATED)
     assertThat(result.validationMessages).isEmpty()
-    assertThat(result.recallableSentences).hasSize(1)
-    assertThat(result.recallableSentences[0]).isEqualTo(
+    assertThat(result.automatedCalculationData!!.recallableSentences).hasSize(1)
+    assertThat(result.automatedCalculationData.recallableSentences[0]).isEqualTo(
       RecallableSentence(
         sentenceSequence = 1,
-        bookingId = CalculationIntTest.PRISONER_ID.hashCode().toLong(),
-        uuid = UUID.fromString("0e1fdbd3-f296-3c0e-8c0e-97bad6fc1509"),
+        bookingId = RECORD_A_RECALL_PRISONER_ID.hashCode().toLong(),
+        uuid = UUID.fromString("877e7ee9-77e5-3fe4-afd1-bef67d166a36"),
         sentenceCalculation = RecallSentenceCalculation(
           conditionalReleaseDate = LocalDate.of(2016, 1, 6),
           actualReleaseDate = LocalDate.of(2016, 1, 6),
           licenseExpiry = LocalDate.of(2016, 11, 6),
+        ),
+      ),
+    )
+    assertThat(result.automatedCalculationData.ineligibleSentences[0]).isEqualTo(
+      RecallableSentence(
+        sentenceSequence = 2,
+        bookingId = RECORD_A_RECALL_PRISONER_ID.hashCode().toLong(),
+        uuid = UUID.fromString("1105c0c1-3d63-3ac1-88f1-7d13caa56d7f"),
+        sentenceCalculation = RecallSentenceCalculation(
+          conditionalReleaseDate = LocalDate.of(2015, 4, 6),
+          actualReleaseDate = LocalDate.of(2016, 1, 6),
+          licenseExpiry = null,
+        ),
+      ),
+    )
+    assertThat(result.automatedCalculationData.expiredSentences[0]).isEqualTo(
+      RecallableSentence(
+        sentenceSequence = 3,
+        bookingId = RECORD_A_RECALL_PRISONER_ID.hashCode().toLong(),
+        uuid = UUID.fromString("5dd9de80-360f-3e51-8483-9ab02ee2d4b9"),
+        sentenceCalculation = RecallSentenceCalculation(
+          conditionalReleaseDate = LocalDate.of(2014, 7, 2),
+          actualReleaseDate = LocalDate.of(2014, 7, 2),
+          licenseExpiry = LocalDate.of(2014, 12, 31),
+        ),
+      ),
+    )
+    assertThat(result.automatedCalculationData.sentencesBeforeInitialRelease[0]).isEqualTo(
+      RecallableSentence(
+        sentenceSequence = 4,
+        bookingId = RECORD_A_RECALL_PRISONER_ID.hashCode().toLong(),
+        uuid = UUID.fromString("70b16cf7-0c1e-3c40-9f66-4c20115ce5fc"),
+        sentenceCalculation = RecallSentenceCalculation(
+          conditionalReleaseDate = LocalDate.of(2016, 8, 30),
+          actualReleaseDate = LocalDate.of(2016, 8, 30),
+          licenseExpiry = LocalDate.of(2017, 2, 28),
         ),
       ),
     )
@@ -46,7 +82,7 @@ class RecordARecallControllerIntTest(private val mockManageOffencesClient: MockM
   fun `Validation passes`() {
     mockManageOffencesClient.noneInPCSC(listOf("GBH", "SX03014"))
     val result = validateForRecordARecall(
-      CalculationIntTest.PRISONER_ID,
+      RECORD_A_RECALL_PRISONER_ID,
     )
 
     assertThat(result.criticalValidationMessages).isEmpty()
@@ -56,7 +92,7 @@ class RecordARecallControllerIntTest(private val mockManageOffencesClient: MockM
   @Test
   fun `No sentences for recall`() {
     val result = createCalculationForRecordARecall(
-      CalculationIntTest.PRISONER_ID,
+      RECORD_A_RECALL_PRISONER_ID,
       RecordARecallRequest(revocationDate = LocalDate.of(2022, 2, 6)),
     )
 
@@ -66,11 +102,12 @@ class RecordARecallControllerIntTest(private val mockManageOffencesClient: MockM
   @Test
   fun `Conflicting UAL`() {
     val result = createCalculationForRecordARecall(
-      CalculationIntTest.PRISONER_ID,
+      RECORD_A_RECALL_PRISONER_ID,
       RecordARecallRequest(revocationDate = LocalDate.of(2016, 2, 6)),
     )
 
     assertThat(result.decision).isEqualTo(RecordARecallDecision.CONFLICTING_ADJUSTMENTS)
+    assertThat(result.conflictingAdjustments).isEqualTo(listOf("2edb6550-ff6a-43e7-b563-d7e447b6a8be"))
   }
 
   @Test
@@ -102,12 +139,13 @@ class RecordARecallControllerIntTest(private val mockManageOffencesClient: MockM
 
     assertThat(result.decision).isEqualTo(RecordARecallDecision.AUTOMATED)
     assertThat(result.validationMessages).isEmpty()
-    assertThat(result.recallableSentences).hasSize(2)
-    val bookingIds = result.recallableSentences.map { it.bookingId }.distinct()
+    assertThat(result.automatedCalculationData!!.recallableSentences).hasSize(2)
+    val bookingIds = result.automatedCalculationData.recallableSentences.map { it.bookingId }.distinct()
     assertThat(bookingIds).hasSize(2).contains(RECALL_PRISONER_WITH_SENTENCES_ON_OLDER_BOOKING_NEW_BOOKING_ID, RECALL_PRISONER_WITH_SENTENCES_ON_OLDER_BOOKING_OLD_BOOKING_ID)
   }
 
   companion object {
+    const val RECORD_A_RECALL_PRISONER_ID = "RecARecall"
     const val RECALL_PRISONER_WITH_SENTENCES_ON_OLDER_BOOKING = "RCLLBOO1"
     val RECALL_PRISONER_WITH_SENTENCES_ON_OLDER_BOOKING_NEW_BOOKING_ID = "RCLLBOO1".hashCode().toLong()
     val RECALL_PRISONER_WITH_SENTENCES_ON_OLDER_BOOKING_OLD_BOOKING_ID = "RCLLBOO2".hashCode().toLong()
