@@ -49,6 +49,7 @@ class LatestCalculationIntTest(private val mockPrisonService: MockPrisonService)
         "From NOMIS",
         conditionalReleaseDate = LocalDate.of(2030, 1, 6),
         sentenceExpiryDate = LocalDate.of(2025, 2, 14),
+        isConditionalReleaseDateOverridden = true,
       ),
     )
     stubSentenceDetails(
