@@ -28,6 +28,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationRe
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NonFridayReleaseDay
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OffenderKeyDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
@@ -36,8 +37,9 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource.JsonTransf
 import java.io.File
 import java.time.Clock
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.ZoneId
-import java.util.UUID
+import java.util.*
 import java.util.stream.Stream
 
 class HintTextTest : SpringTestBase() {
@@ -115,15 +117,27 @@ class HintTextTest : SpringTestBase() {
     val breakdownWithHints = enrichBreakdownWithHints(
       dates = calculation.calculationResult.dates,
       calculationBreakdown = calculationBreakdown,
-      sentenceOverrideDates = calculation.calculationResult.dates.map { it.key.name },
+      nomisPrisonerCalculation = OffenderKeyDates(
+        reasonCode = "NEW",
+        calculatedAt = LocalDateTime.now(),
+        isHomeDetentionCurfewEligibilityDateOverridden = calculatedReleaseDates.dates.containsKey(ReleaseDateType.HDCED),
+        isConditionalReleaseDateOverridden = calculatedReleaseDates.dates.containsKey(ReleaseDateType.CRD),
+        isLicenceExpiryDateOverridden = calculatedReleaseDates.dates.containsKey(ReleaseDateType.LED) || calculatedReleaseDates.dates.containsKey(ReleaseDateType.SLED),
+        isSentenceExpiryDateOverridden = calculatedReleaseDates.dates.containsKey(ReleaseDateType.SED) || calculatedReleaseDates.dates.containsKey(ReleaseDateType.SLED),
+        isNonParoleDateOverridden = calculatedReleaseDates.dates.containsKey(ReleaseDateType.NPD),
+        isAutomaticReleaseDateOverridden = calculatedReleaseDates.dates.containsKey(ReleaseDateType.ARD),
+        isTopupSupervisionExpiryDateOverridden = calculatedReleaseDates.dates.containsKey(ReleaseDateType.TUSED),
+        isParoleEligibilityDateOverridden = calculatedReleaseDates.dates.containsKey(ReleaseDateType.PED),
+      ),
       booking = calculationFile.booking,
       emptyList(),
     )
 
     val actualDatesAndHints = mapToDatesAndHints(breakdownWithHints)
     val expectedDatesAndHints = jsonTransformation.loadHintTextResults(testCase)
+      .map { if (it.type in RELEASE_DATE_TYPES_REQUIRING_MANUALLY_OVERRIDDEN_HINT) it.copy(hints = listOf("Manually overridden") + it.hints) else it }
 
-    assertThat(actualDatesAndHints).isEqualTo(expectedDatesAndHints.map { it.copy(hints = listOf("Manually overridden") + it.hints) })
+    assertThat(actualDatesAndHints).isEqualTo(expectedDatesAndHints)
   }
 
   private fun createCalculatedReleaseDates(calculation: CalculationResult): CalculatedReleaseDates = CalculatedReleaseDates(
@@ -150,7 +164,7 @@ class HintTextTest : SpringTestBase() {
   private fun enrichBreakdownWithHints(
     dates: Map<ReleaseDateType, LocalDate>,
     calculationBreakdown: CalculationBreakdown,
-    sentenceOverrideDates: List<String> = emptyList(),
+    nomisPrisonerCalculation: OffenderKeyDates? = null,
     booking: Booking,
     historicOverrides: List<CalculationOutcomeHistoricOverride> = emptyList(),
   ): Map<ReleaseDateType, DetailedDate> {
@@ -169,7 +183,7 @@ class HintTextTest : SpringTestBase() {
       sentenceAndOffences = SOURCE_DATA.sentenceAndOffences,
       calculationBreakdown = calculationBreakdown,
       historicalTusedSource = booking.historicalTusedData?.historicalTusedSource,
-      sentenceDateOverrides = sentenceOverrideDates,
+      nomisPrisonerCalculation = nomisPrisonerCalculation,
       historicOverrides,
     )
   }
@@ -215,6 +229,18 @@ class HintTextTest : SpringTestBase() {
       ),
       listOf(),
       null,
+    )
+
+    private val RELEASE_DATE_TYPES_REQUIRING_MANUALLY_OVERRIDDEN_HINT = listOf<ReleaseDateType>(
+      ReleaseDateType.HDCED,
+      ReleaseDateType.CRD,
+      ReleaseDateType.LED,
+      ReleaseDateType.SED,
+      ReleaseDateType.SLED,
+      ReleaseDateType.NPD,
+      ReleaseDateType.ARD,
+      ReleaseDateType.TUSED,
+      ReleaseDateType.PED,
     )
   }
 }

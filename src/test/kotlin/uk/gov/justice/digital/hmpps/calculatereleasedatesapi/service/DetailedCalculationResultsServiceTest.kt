@@ -124,7 +124,7 @@ class DetailedCalculationResultsServiceTest {
         listOf(originalSentence),
         expectedBreakdown,
         null,
-        emptyList(),
+        null,
         emptyList(),
       ),
     ).thenReturn(enrichedReleaseDates)
@@ -152,7 +152,7 @@ class DetailedCalculationResultsServiceTest {
       listOf(originalSentence),
       expectedBreakdown,
       null,
-      emptyList(),
+      null,
       emptyList(),
     )
   }
@@ -183,7 +183,7 @@ class DetailedCalculationResultsServiceTest {
         listOf(originalSentence),
         expectedBreakdown,
         null,
-        emptyList(),
+        null,
         emptyList(),
       ),
     ).thenReturn(enrichedReleaseDates)
@@ -219,7 +219,7 @@ class DetailedCalculationResultsServiceTest {
         listOf(originalSentence),
         expectedBreakdown,
         null,
-        emptyList(),
+        null,
         emptyList(),
       ),
     ).thenReturn(enrichedReleaseDates)
@@ -277,7 +277,7 @@ class DetailedCalculationResultsServiceTest {
         listOf(originalSentence),
         null,
         null,
-        emptyList(),
+        null,
         emptyList(),
       ),
     ).thenReturn(enrichedReleaseDates)
@@ -304,7 +304,7 @@ class DetailedCalculationResultsServiceTest {
       listOf(originalSentence),
       null,
       null,
-      emptyList(),
+      null,
       emptyList(),
     )
   }
