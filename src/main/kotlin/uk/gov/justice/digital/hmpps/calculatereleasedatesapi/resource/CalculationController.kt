@@ -452,7 +452,7 @@ class CalculationController(
     bookingId: Long,
   ): NomisCalculationSummary {
     log.info("Request received to get offender key dates with overrides for $offenderSentCalculationId")
-    return offenderKeyDatesService.getNomisCalculationSummary(offenderSentCalculationId, bookingId)
+    return offenderKeyDatesService.getNomisCalculationSummary(offenderSentCalculationId)
   }
 
   @GetMapping(value = ["/release-dates/{calculationRequestId}"])

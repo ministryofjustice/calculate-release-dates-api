@@ -42,9 +42,6 @@ open class DetailedCalculationResultsService(
       .filter { it.outcomeDate != null }
       .map { ReleaseDate(it.outcomeDate!!, ReleaseDateType.valueOf(it.calculationDateType)) }
 
-    // Only NOMIS calcs can have overridden dates
-    val sentenceDateOverrides = emptyList<String>()
-
     val historicDates = if (featureToggles.historicSled) calculationOutcomeHistoricOverrideRepository.findByCalculationRequestId(calculationRequestId) else emptyList()
 
     return DetailedCalculationResults(
@@ -54,7 +51,7 @@ open class DetailedCalculationResultsService(
         sentenceAndOffences,
         calculationBreakdown,
         calculationRequest.historicalTusedSource,
-        sentenceDateOverrides,
+        null,
         historicDates,
       ),
       approvedDates(calculationRequest.approvedDatesSubmissions.firstOrNull()),

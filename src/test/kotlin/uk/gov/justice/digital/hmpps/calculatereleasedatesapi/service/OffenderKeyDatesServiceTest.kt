@@ -11,6 +11,7 @@ import org.mockito.ArgumentMatchers.anyList
 import org.mockito.Mockito.mock
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.isNull
 import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
@@ -98,7 +99,7 @@ open class OffenderKeyDatesServiceTest {
         isNull(),
         isNull(),
         isNull(),
-        anyList(),
+        eq(offenderKeyDates),
         anyList(),
       ),
     ).thenReturn(detailedDates)
@@ -190,7 +191,7 @@ open class OffenderKeyDatesServiceTest {
         isNull(),
         isNull(),
         isNull(),
-        anyList(),
+        isNull(),
         anyList(),
       ),
     ).thenReturn(detailedDates)
@@ -271,7 +272,7 @@ open class OffenderKeyDatesServiceTest {
         isNull(),
         isNull(),
         isNull(),
-        anyList(),
+        isNull(),
         anyList(),
       ),
     ).thenReturn(detailedDates)
@@ -371,7 +372,7 @@ open class OffenderKeyDatesServiceTest {
         isNull(),
         isNull(),
         isNull(),
-        anyList(),
+        isNull(),
         anyList(),
       ),
     )
@@ -417,7 +418,7 @@ open class OffenderKeyDatesServiceTest {
         isNull(),
         isNull(),
         isNull(),
-        anyList(),
+        eq(offenderKeyDates),
         anyList(),
       ),
     ).thenReturn(detailedDates)
@@ -634,7 +635,7 @@ open class OffenderKeyDatesServiceTest {
         isNull(),
         isNull(),
         isNull(),
-        anyList(),
+        isNull(),
         anyList(),
       ),
     ).thenReturn(detailedDates)
@@ -717,7 +718,7 @@ open class OffenderKeyDatesServiceTest {
         isNull(),
         isNull(),
         isNull(),
-        anyList(),
+        isNull(),
         anyList(),
       ),
     ).thenReturn(detailedDates)
