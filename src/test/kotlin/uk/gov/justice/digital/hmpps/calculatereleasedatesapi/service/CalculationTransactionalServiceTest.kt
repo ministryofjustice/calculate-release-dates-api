@@ -182,7 +182,7 @@ class CalculationTransactionalServiceTest {
     whenever(
       calculationSourceDataService.getCalculationSourceData(
         CALCULATION_REQUEST_WITH_OUTCOMES.prisonerId,
-        InactiveDataOptions.default(),
+        SourceDataLookupOptions.default(),
       ),
     ).thenReturn(
       fakeSourceData,
@@ -211,7 +211,7 @@ class CalculationTransactionalServiceTest {
     whenever(
       calculationSourceDataService.getCalculationSourceData(
         CALCULATION_REQUEST_WITH_OUTCOMES.prisonerId,
-        InactiveDataOptions.default(),
+        SourceDataLookupOptions.default(),
       ),
     ).thenReturn(
       fakeSourceData,
@@ -237,7 +237,7 @@ class CalculationTransactionalServiceTest {
     whenever(
       calculationSourceDataService.getCalculationSourceData(
         CALCULATION_REQUEST_WITH_OUTCOMES.prisonerId,
-        InactiveDataOptions.default(),
+        SourceDataLookupOptions.default(),
       ),
     ).thenReturn(
       fakeSourceData,
@@ -382,7 +382,7 @@ class CalculationTransactionalServiceTest {
     whenever(
       calculationSourceDataService.getCalculationSourceData(
         CALCULATION_REQUEST_WITH_OUTCOMES.prisonerId,
-        InactiveDataOptions.default(),
+        SourceDataLookupOptions.default(),
       ),
     ).thenReturn(
       fakeSourceData,
@@ -482,7 +482,7 @@ class CalculationTransactionalServiceTest {
     whenever(
       calculationSourceDataService.getCalculationSourceData(
         CALCULATION_REQUEST_WITH_OUTCOMES.prisonerId,
-        InactiveDataOptions.default(),
+        SourceDataLookupOptions.default(),
       ),
     ).thenReturn(
       fakeSourceData,
@@ -580,7 +580,7 @@ class CalculationTransactionalServiceTest {
     whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
     whenever(calculationRequestRepository.findByIdAndCalculationStatus(CALCULATION_REQUEST_ID, PRELIMINARY.name))
       .thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES.copy(inputData = INPUT_DATA)))
-    whenever(calculationSourceDataService.getCalculationSourceData(CALCULATION_REQUEST_WITH_OUTCOMES.prisonerId, InactiveDataOptions.default())).thenReturn(
+    whenever(calculationSourceDataService.getCalculationSourceData(CALCULATION_REQUEST_WITH_OUTCOMES.prisonerId, SourceDataLookupOptions.default())).thenReturn(
       fakeSourceData,
     )
     whenever(bookingService.getBooking(fakeSourceData)).thenReturn(BOOKING)
@@ -714,7 +714,7 @@ class CalculationTransactionalServiceTest {
         CALCULATION_REQUEST_WITH_OUTCOMES,
       ),
     )
-    whenever(calculationSourceDataService.getCalculationSourceData(anyString(), eq(InactiveDataOptions.default()), eq(emptyList()))).thenReturn(SOURCE_DATA)
+    whenever(calculationSourceDataService.getCalculationSourceData(anyString(), eq(SourceDataLookupOptions.default()), eq(emptyList()))).thenReturn(SOURCE_DATA)
     whenever(bookingService.getBooking(eq(SOURCE_DATA))).thenReturn(BOOKING)
     assertThrows<CalculationDataHasChangedError> {
       calculationTransactionalService.findCalculationResultsByCalculationReference(

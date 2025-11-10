@@ -45,7 +45,7 @@ class ThingsToDoService(
   private fun isCalculationRequired(prisonerDetails: PrisonerDetails): Boolean {
     val adjustments = adjustmentsService.getAnalysedBookingAndSentenceAdjustments(prisonerDetails.bookingId)
     val currentSourceData =
-      calculationSourceDataService.getCalculationSourceData(prisonerDetails, InactiveDataOptions.default())
+      calculationSourceDataService.getCalculationSourceData(prisonerDetails, SourceDataLookupOptions.default())
 
     if (currentSourceData.sentenceAndOffences.isEmpty()) {
       return false

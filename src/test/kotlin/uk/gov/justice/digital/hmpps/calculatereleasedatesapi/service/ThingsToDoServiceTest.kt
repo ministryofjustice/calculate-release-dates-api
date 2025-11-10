@@ -45,7 +45,7 @@ class ThingsToDoServiceTest {
 
   @BeforeEach
   fun setUp() {
-    whenever(calculationSourceDataService.getCalculationSourceData(PRISONER_DETAILS, InactiveDataOptions.default())).thenReturn(BASE_SOURCE_DATA)
+    whenever(calculationSourceDataService.getCalculationSourceData(PRISONER_DETAILS, SourceDataLookupOptions.default())).thenReturn(BASE_SOURCE_DATA)
     whenever(prisonService.getOffenderDetail(NOMS_ID)).thenReturn(PRISONER_DETAILS)
   }
 
@@ -60,7 +60,7 @@ class ThingsToDoServiceTest {
     hasPreviousCalc()
     hasNoAdjustments()
     whenever(sourceDataMapper.getSourceData(CALC_REQUEST)).thenReturn(BASE_SOURCE_DATA)
-    whenever(calculationSourceDataService.getCalculationSourceData(PRISONER_DETAILS, InactiveDataOptions.default())).thenReturn(
+    whenever(calculationSourceDataService.getCalculationSourceData(PRISONER_DETAILS, SourceDataLookupOptions.default())).thenReturn(
       BASE_SOURCE_DATA.copy(
         sentenceAndOffences = listOf(
           BASE_SENTENCE,
@@ -84,7 +84,7 @@ class ThingsToDoServiceTest {
         ),
       ),
     )
-    whenever(calculationSourceDataService.getCalculationSourceData(PRISONER_DETAILS, InactiveDataOptions.default()))
+    whenever(calculationSourceDataService.getCalculationSourceData(PRISONER_DETAILS, SourceDataLookupOptions.default()))
       .thenReturn(BASE_SOURCE_DATA.copy(sentenceAndOffences = listOf(BASE_SENTENCE)))
 
     assertThatHasACalcToDo()
@@ -102,7 +102,7 @@ class ThingsToDoServiceTest {
         ),
       ),
     )
-    whenever(calculationSourceDataService.getCalculationSourceData(PRISONER_DETAILS, InactiveDataOptions.default()))
+    whenever(calculationSourceDataService.getCalculationSourceData(PRISONER_DETAILS, SourceDataLookupOptions.default()))
       .thenReturn(
         BASE_SOURCE_DATA.copy(
           sentenceAndOffences =
@@ -128,7 +128,7 @@ class ThingsToDoServiceTest {
         ),
       ),
     )
-    whenever(calculationSourceDataService.getCalculationSourceData(PRISONER_DETAILS, InactiveDataOptions.default())).thenReturn(
+    whenever(calculationSourceDataService.getCalculationSourceData(PRISONER_DETAILS, SourceDataLookupOptions.default())).thenReturn(
       BASE_SOURCE_DATA.copy(
         sentenceAndOffences = listOf(
           BASE_SENTENCE,
@@ -153,7 +153,7 @@ class ThingsToDoServiceTest {
         ),
       ),
     )
-    whenever(calculationSourceDataService.getCalculationSourceData(PRISONER_DETAILS, InactiveDataOptions.default())).thenReturn(
+    whenever(calculationSourceDataService.getCalculationSourceData(PRISONER_DETAILS, SourceDataLookupOptions.default())).thenReturn(
       BASE_SOURCE_DATA.copy(
         sentenceAndOffences = listOf(
           BASE_SENTENCE,
@@ -178,7 +178,7 @@ class ThingsToDoServiceTest {
         ),
       ),
     )
-    whenever(calculationSourceDataService.getCalculationSourceData(PRISONER_DETAILS, InactiveDataOptions.default())).thenReturn(
+    whenever(calculationSourceDataService.getCalculationSourceData(PRISONER_DETAILS, SourceDataLookupOptions.default())).thenReturn(
       BASE_SOURCE_DATA.copy(
         sentenceAndOffences = listOf(
           BASE_SENTENCE,
@@ -202,7 +202,7 @@ class ThingsToDoServiceTest {
         ),
       ),
     )
-    whenever(calculationSourceDataService.getCalculationSourceData(PRISONER_DETAILS, InactiveDataOptions.default())).thenReturn(
+    whenever(calculationSourceDataService.getCalculationSourceData(PRISONER_DETAILS, SourceDataLookupOptions.default())).thenReturn(
       BASE_SOURCE_DATA.copy(
         sentenceAndOffences = listOf(
           BASE_SENTENCE,
@@ -225,7 +225,7 @@ class ThingsToDoServiceTest {
         ),
       ),
     )
-    whenever(calculationSourceDataService.getCalculationSourceData(PRISONER_DETAILS, InactiveDataOptions.default())).thenReturn(
+    whenever(calculationSourceDataService.getCalculationSourceData(PRISONER_DETAILS, SourceDataLookupOptions.default())).thenReturn(
       BASE_SOURCE_DATA.copy(
         sentenceAndOffences = listOf(
           BASE_SENTENCE.copy(sentenceCalculationType = SentenceCalculationType.EDS21.name),
@@ -247,7 +247,7 @@ class ThingsToDoServiceTest {
         ),
       ),
     )
-    whenever(calculationSourceDataService.getCalculationSourceData(PRISONER_DETAILS, InactiveDataOptions.default())).thenReturn(
+    whenever(calculationSourceDataService.getCalculationSourceData(PRISONER_DETAILS, SourceDataLookupOptions.default())).thenReturn(
       BASE_SOURCE_DATA.copy(
         sentenceAndOffences = listOf(
           BASE_SENTENCE.copy(sentenceDate = LocalDate.of(2025, 2, 3)),
@@ -274,7 +274,7 @@ class ThingsToDoServiceTest {
         ),
       ),
     )
-    whenever(calculationSourceDataService.getCalculationSourceData(PRISONER_DETAILS, InactiveDataOptions.default())).thenReturn(
+    whenever(calculationSourceDataService.getCalculationSourceData(PRISONER_DETAILS, SourceDataLookupOptions.default())).thenReturn(
       BASE_SOURCE_DATA.copy(
         sentenceAndOffences = listOf(
           BASE_SENTENCE.copy(
@@ -299,7 +299,7 @@ class ThingsToDoServiceTest {
         sentenceAndOffences = listOf(BASE_SENTENCE.copy(fineAmount = null)),
       ),
     )
-    whenever(calculationSourceDataService.getCalculationSourceData(PRISONER_DETAILS, InactiveDataOptions.default())).thenReturn(
+    whenever(calculationSourceDataService.getCalculationSourceData(PRISONER_DETAILS, SourceDataLookupOptions.default())).thenReturn(
       BASE_SOURCE_DATA.copy(
         sentenceAndOffences = listOf(
           BASE_SENTENCE.copy(fineAmount = BigDecimal.valueOf(10)),
@@ -319,7 +319,7 @@ class ThingsToDoServiceTest {
         sentenceAndOffences = listOf(BASE_SENTENCE.copy(fineAmount = BigDecimal.valueOf(10))),
       ),
     )
-    whenever(calculationSourceDataService.getCalculationSourceData(PRISONER_DETAILS, InactiveDataOptions.default())).thenReturn(
+    whenever(calculationSourceDataService.getCalculationSourceData(PRISONER_DETAILS, SourceDataLookupOptions.default())).thenReturn(
       BASE_SOURCE_DATA.copy(
         sentenceAndOffences = listOf(
           BASE_SENTENCE.copy(fineAmount = null),
@@ -339,7 +339,7 @@ class ThingsToDoServiceTest {
         sentenceAndOffences = listOf(BASE_SENTENCE.copy(fineAmount = BigDecimal.valueOf(10))),
       ),
     )
-    whenever(calculationSourceDataService.getCalculationSourceData(PRISONER_DETAILS, InactiveDataOptions.default())).thenReturn(
+    whenever(calculationSourceDataService.getCalculationSourceData(PRISONER_DETAILS, SourceDataLookupOptions.default())).thenReturn(
       BASE_SOURCE_DATA.copy(
         sentenceAndOffences = listOf(
           BASE_SENTENCE.copy(fineAmount = BigDecimal.valueOf(20)),
@@ -357,7 +357,7 @@ class ThingsToDoServiceTest {
     whenever(sourceDataMapper.getSourceData(CALC_REQUEST)).thenReturn(
       BASE_SOURCE_DATA.copy(returnToCustodyDate = null),
     )
-    whenever(calculationSourceDataService.getCalculationSourceData(PRISONER_DETAILS, InactiveDataOptions.default())).thenReturn(
+    whenever(calculationSourceDataService.getCalculationSourceData(PRISONER_DETAILS, SourceDataLookupOptions.default())).thenReturn(
       BASE_SOURCE_DATA.copy(returnToCustodyDate = ReturnToCustodyDate(BOOKING_ID, LocalDate.of(2001, 2, 3))),
     )
 
@@ -371,7 +371,7 @@ class ThingsToDoServiceTest {
     whenever(sourceDataMapper.getSourceData(CALC_REQUEST)).thenReturn(
       BASE_SOURCE_DATA.copy(returnToCustodyDate = ReturnToCustodyDate(BOOKING_ID, LocalDate.of(2000, 1, 2))),
     )
-    whenever(calculationSourceDataService.getCalculationSourceData(PRISONER_DETAILS, InactiveDataOptions.default())).thenReturn(
+    whenever(calculationSourceDataService.getCalculationSourceData(PRISONER_DETAILS, SourceDataLookupOptions.default())).thenReturn(
       BASE_SOURCE_DATA.copy(returnToCustodyDate = null),
     )
 
@@ -385,7 +385,7 @@ class ThingsToDoServiceTest {
     whenever(sourceDataMapper.getSourceData(CALC_REQUEST)).thenReturn(
       BASE_SOURCE_DATA.copy(returnToCustodyDate = ReturnToCustodyDate(BOOKING_ID, LocalDate.of(2000, 1, 2))),
     )
-    whenever(calculationSourceDataService.getCalculationSourceData(PRISONER_DETAILS, InactiveDataOptions.default())).thenReturn(
+    whenever(calculationSourceDataService.getCalculationSourceData(PRISONER_DETAILS, SourceDataLookupOptions.default())).thenReturn(
       BASE_SOURCE_DATA.copy(returnToCustodyDate = ReturnToCustodyDate(BOOKING_ID, LocalDate.of(2001, 2, 3))),
     )
 
@@ -435,7 +435,7 @@ class ThingsToDoServiceTest {
     whenever(sourceDataMapper.getSourceData(CALC_REQUEST)).thenReturn(
       BASE_SOURCE_DATA.copy(offenderFinePayments = emptyList()),
     )
-    whenever(calculationSourceDataService.getCalculationSourceData(PRISONER_DETAILS, InactiveDataOptions.default())).thenReturn(
+    whenever(calculationSourceDataService.getCalculationSourceData(PRISONER_DETAILS, SourceDataLookupOptions.default())).thenReturn(
       BASE_SOURCE_DATA.copy(offenderFinePayments = listOf(OffenderFinePayment(BOOKING_ID, LocalDate.of(2000, 1, 2), BigDecimal.valueOf(10)))),
     )
 
@@ -449,7 +449,7 @@ class ThingsToDoServiceTest {
     whenever(sourceDataMapper.getSourceData(CALC_REQUEST)).thenReturn(
       BASE_SOURCE_DATA.copy(offenderFinePayments = listOf(OffenderFinePayment(BOOKING_ID, LocalDate.of(2000, 1, 2), BigDecimal.valueOf(10)))),
     )
-    whenever(calculationSourceDataService.getCalculationSourceData(PRISONER_DETAILS, InactiveDataOptions.default())).thenReturn(
+    whenever(calculationSourceDataService.getCalculationSourceData(PRISONER_DETAILS, SourceDataLookupOptions.default())).thenReturn(
       BASE_SOURCE_DATA.copy(offenderFinePayments = emptyList()),
     )
 
@@ -463,7 +463,7 @@ class ThingsToDoServiceTest {
     whenever(sourceDataMapper.getSourceData(CALC_REQUEST)).thenReturn(
       BASE_SOURCE_DATA.copy(offenderFinePayments = listOf(OffenderFinePayment(BOOKING_ID, LocalDate.of(2000, 1, 2), BigDecimal.valueOf(10)))),
     )
-    whenever(calculationSourceDataService.getCalculationSourceData(PRISONER_DETAILS, InactiveDataOptions.default())).thenReturn(
+    whenever(calculationSourceDataService.getCalculationSourceData(PRISONER_DETAILS, SourceDataLookupOptions.default())).thenReturn(
       BASE_SOURCE_DATA.copy(offenderFinePayments = listOf(OffenderFinePayment(BOOKING_ID, LocalDate.of(2000, 1, 2), BigDecimal.valueOf(20)))),
     )
 
@@ -473,7 +473,7 @@ class ThingsToDoServiceTest {
   @Test
   fun `should not require a calc if there are no sentences`() {
     whenever(calculationRequestRepository.findFirstByBookingIdAndCalculationStatusOrderByCalculatedAtDesc(BOOKING_ID, "CONFIRMED")).thenReturn(Optional.empty())
-    whenever(calculationSourceDataService.getCalculationSourceData(PRISONER_DETAILS, InactiveDataOptions.default())).thenReturn(
+    whenever(calculationSourceDataService.getCalculationSourceData(PRISONER_DETAILS, SourceDataLookupOptions.default())).thenReturn(
       BASE_SOURCE_DATA.copy(sentenceAndOffences = emptyList()),
     )
 
@@ -495,7 +495,7 @@ class ThingsToDoServiceTest {
       returnToCustodyDate = null,
     )
     whenever(sourceDataMapper.getSourceData(CALC_REQUEST)).thenReturn(sourceData)
-    whenever(calculationSourceDataService.getCalculationSourceData(PRISONER_DETAILS, InactiveDataOptions.default())).thenReturn(sourceData)
+    whenever(calculationSourceDataService.getCalculationSourceData(PRISONER_DETAILS, SourceDataLookupOptions.default())).thenReturn(sourceData)
     whenever(adjustmentsService.getAnalysedBookingAndSentenceAdjustments(BOOKING_ID))
       .thenReturn(
         AnalysedBookingAndSentenceAdjustments(
@@ -531,7 +531,7 @@ class ThingsToDoServiceTest {
       returnToCustodyDate = null,
     )
     whenever(sourceDataMapper.getSourceData(CALC_REQUEST)).thenReturn(sourceData)
-    whenever(calculationSourceDataService.getCalculationSourceData(PRISONER_DETAILS, InactiveDataOptions.default())).thenReturn(sourceData)
+    whenever(calculationSourceDataService.getCalculationSourceData(PRISONER_DETAILS, SourceDataLookupOptions.default())).thenReturn(sourceData)
   }
 
   private fun assertThatHasACalcToDo() {

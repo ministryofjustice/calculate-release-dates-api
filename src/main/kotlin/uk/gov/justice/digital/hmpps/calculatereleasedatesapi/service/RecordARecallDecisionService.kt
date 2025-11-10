@@ -3,8 +3,9 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 import jakarta.persistence.EntityNotFoundException
 import org.springframework.stereotype.Service
 import org.threeten.extra.LocalDateRange
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.RECORD_A_RECALL
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AutomatedCalculationData
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExternalSentenceId
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallSentenceCalculation
@@ -13,6 +14,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecordARecall
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecordARecallDecisionResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecordARecallRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecordARecallValidationResult
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceGroup
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Term
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
@@ -63,8 +65,8 @@ class RecordARecallDecisionService(
       null
     }
 
-    val inactiveDataOptions = InactiveDataOptions.overrideToIncludeInactiveData()
-    return calculationSourceDataService.getCalculationSourceData(prisonerId, inactiveDataOptions, listOfNotNull(penultimateBooking))
+    val sourceDataLookupOptions = SourceDataLookupOptions.overrideToIncludeInactiveDataAndForceAdjustmentsApi()
+    return calculationSourceDataService.getCalculationSourceData(prisonerId, sourceDataLookupOptions, listOfNotNull(penultimateBooking))
   }
 
   fun makeRecallDecision(prisonerId: String, recordARecallRequest: RecordARecallRequest): RecordARecallDecisionResult {
@@ -84,6 +86,18 @@ class RecordARecallDecisionService(
       )
     }
 
+    val existingPeriodsOfUal = sourceData.bookingAndSentenceAdjustments.adjustmentsApiData!!
+      .filter { it.bookingId == sourceData.prisonerDetails.bookingId }
+      .filter { it.fromDate != null && it.toDate != null }
+      .map { it.id to LocalDateRange.of(it.fromDate, it.toDate) }
+    val overlappingAdjustments = existingPeriodsOfUal.filter { it.second.contains(recordARecallRequest.revocationDate) }
+    if (overlappingAdjustments.isNotEmpty()) {
+      return RecordARecallDecisionResult(
+        decision = RecordARecallDecision.CONFLICTING_ADJUSTMENTS,
+        conflictingAdjustments = overlappingAdjustments.map { it.first.toString() },
+      )
+    }
+
     val recallReason = calculationReasonRepository.findByDisplayName(RECALL_REASON)
       ?: throw EntityNotFoundException()
 
@@ -96,56 +110,56 @@ class RecordARecallDecisionService(
       calculationUserInputs = CalculationUserInputs(),
     )
 
-    val existingPeriodsOfUal = booking.adjustments.getOrEmptyList(AdjustmentType.UNLAWFULLY_AT_LARGE)
-      .filter { it.fromDate != null && it.toDate != null }
-      .map { LocalDateRange.of(it.fromDate, it.toDate) }
-    val anyOverlappingAdjustments = existingPeriodsOfUal.any { it.contains(recordARecallRequest.revocationDate) }
-    if (anyOverlappingAdjustments) {
-      return RecordARecallDecisionResult(
-        decision = RecordARecallDecision.CONFLICTING_ADJUSTMENTS,
-      )
-    }
-
     val output = calculation.calculationOutput!!
-    val sentenceGroupsReleasedBeforeRevocation = output.sentenceGroup.filter { it.to.isBeforeOrEqualTo(recordARecallRequest.revocationDate) }
-    val recallableSentenceGroups = sentenceGroupsReleasedBeforeRevocation.flatMap { it.sentences.map { sentence -> it to sentence } }
-      .filter { it.second.sentenceCalculation.licenceExpiryDate?.isAfter(recordARecallRequest.revocationDate) == true }
-      .filter { it.second.sentenceParts().none { part -> part is Term } }
+    val (sentenceGroupsReleasedBeforeRevocation, sentenceGroupsReleasedAfterRevocation) = output.sentenceGroup.partition { it.to.isBeforeOrEqualTo(recordARecallRequest.revocationDate) }
+    val sentencesAndTheirGroups = sentenceGroupsReleasedBeforeRevocation.flatMap { it.sentences.map { sentence -> it to sentence } }
+    val (eligibleSentences, ineligibleSentences) = sentencesAndTheirGroups.partition { it.second.sentenceParts().none { part -> part is Term } && it.second.sentenceCalculation.licenceExpiryDate != null }
+    val (recallableSentences, expiredSentences) = eligibleSentences.partition { it.second.sentenceCalculation.licenceExpiryDate!!.isAfter(recordARecallRequest.revocationDate) }
 
-    if (recallableSentenceGroups.isEmpty()) {
+    if (recallableSentences.isEmpty()) {
       return RecordARecallDecisionResult(
         RecordARecallDecision.NO_RECALLABLE_SENTENCES_FOUND,
       )
     }
 
-    val nomisIds = recallableSentenceGroups.flatMap { (group, sentence) ->
+    val nomisIds = output.sentences.flatMap { sentence ->
       sentence.sentenceParts().map {
         NomisSentenceId(it.externalSentenceId!!.bookingId, it.externalSentenceId!!.sentenceSequence)
       }
     }
     val mappings = nomisSyncMappingApiClient.postNomisToDpsMappingLookup(nomisIds)
 
-    val anyNonSdsSentences = recallableSentenceGroups.any { (group, sentence) -> sentence.sentenceParts().any { it !is StandardDeterminateSentence } }
+    val anyNonSdsSentences = recallableSentences.any { (_, sentence) -> sentence.sentenceParts().any { it !is StandardDeterminateSentence } }
 
     return RecordARecallDecisionResult(
       RecordARecallDecision.AUTOMATED,
-      recallableSentences = recallableSentenceGroups.flatMap { (group, sentence) ->
-        sentence.sentenceParts().map {
-          RecallableSentence(
-            sentenceSequence = it.externalSentenceId!!.sentenceSequence,
-            bookingId = it.externalSentenceId!!.bookingId,
-            uuid = findUuid(it.externalSentenceId!!, mappings),
-            sentenceCalculation = RecallSentenceCalculation(
-              conditionalReleaseDate = sentence.sentenceCalculation.adjustedDeterminateReleaseDate,
-              actualReleaseDate = group.to,
-              licenseExpiry = sentence.sentenceCalculation.licenceExpiryDate!!,
-            ),
-          )
-        }
-      },
-      eligibleRecallTypes = if (anyNonSdsSentences) listOf(Recall.RecallType.LR) else Recall.RecallType.entries,
-      calculationRequestId = calculation.calculationRequestId,
+      automatedCalculationData = AutomatedCalculationData(
+        calculationRequestId = calculation.calculationRequestId,
+        recallableSentences = toRecallableSentences(recallableSentences, mappings),
+        expiredSentences = toRecallableSentences(expiredSentences, mappings),
+        ineligibleSentences = toRecallableSentences(ineligibleSentences, mappings),
+        sentencesBeforeInitialRelease = toRecallableSentences(sentenceGroupsReleasedAfterRevocation.flatMap { it.sentences.map { sentence -> it to sentence } }, mappings),
+        eligibleRecallTypes = if (anyNonSdsSentences) listOf(Recall.RecallType.LR) else Recall.RecallType.entries,
+      ),
     )
+  }
+
+  private fun toRecallableSentences(
+    sentences: List<Pair<SentenceGroup, CalculableSentence>>,
+    mappings: List<NomisDpsSentenceMapping>,
+  ): List<RecallableSentence> = sentences.flatMap { (group, sentence) ->
+    sentence.sentenceParts().map {
+      RecallableSentence(
+        sentenceSequence = it.externalSentenceId!!.sentenceSequence,
+        bookingId = it.externalSentenceId!!.bookingId,
+        uuid = findUuid(it.externalSentenceId!!, mappings),
+        sentenceCalculation = RecallSentenceCalculation(
+          conditionalReleaseDate = sentence.sentenceCalculation.adjustedDeterminateReleaseDate,
+          actualReleaseDate = group.to,
+          licenseExpiry = sentence.sentenceCalculation.licenceExpiryDate,
+        ),
+      )
+    }
   }
 
   private fun findUuid(

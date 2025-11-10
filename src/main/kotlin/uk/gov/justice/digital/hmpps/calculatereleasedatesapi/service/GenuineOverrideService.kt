@@ -52,7 +52,7 @@ class GenuineOverrideService(
     }
     val originalRequest = getPreliminaryRequest(calculationRequestId)
 
-    val sourceData = calculationSourceDataService.getCalculationSourceData(originalRequest.prisonerId, InactiveDataOptions.default())
+    val sourceData = calculationSourceDataService.getCalculationSourceData(originalRequest.prisonerId, SourceDataLookupOptions.default())
     val booking = bookingService.getBooking(sourceData)
 
     val newRequest = saveNewRequest(booking, sourceData, originalRequest, genuineOverrideRequest)

@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SupportedValidationResponse
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.InactiveDataOptions
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.SourceDataLookupOptions
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessage
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationOrder
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationType
@@ -60,7 +60,7 @@ class ValidationController(
     log.info("Request received to validate prisonerId $prisonerId")
     return validationService.validate(
       prisonerId,
-      if (includeInactiveData == true) InactiveDataOptions.overrideToIncludeInactiveData() else InactiveDataOptions.default(),
+      if (includeInactiveData == true) SourceDataLookupOptions.overrideToIncludeInactiveData() else SourceDataLookupOptions.default(),
       calculationUserInputs ?: CalculationUserInputs(),
       ValidationOrder.allValidations(),
     )
@@ -89,7 +89,7 @@ class ValidationController(
     log.info("Request received to validate prisonerId $prisonerId")
     val result = validationService.validate(
       prisonerId,
-      InactiveDataOptions.default(),
+      SourceDataLookupOptions.default(),
       CalculationUserInputs(),
       ValidationOrder.UNSUPPORTED,
     )

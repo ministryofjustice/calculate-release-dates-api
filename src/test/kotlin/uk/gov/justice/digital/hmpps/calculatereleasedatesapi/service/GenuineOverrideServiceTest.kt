@@ -99,7 +99,7 @@ class GenuineOverrideServiceTest {
         calculationDateType = "HDCED",
       ),
     )
-    whenever(calculationSourceDataService.getCalculationSourceData(PRISONER_ID, InactiveDataOptions.default())).thenReturn(FAKE_SOURCE_DATA)
+    whenever(calculationSourceDataService.getCalculationSourceData(PRISONER_ID, SourceDataLookupOptions.default())).thenReturn(FAKE_SOURCE_DATA)
     whenever(bookingService.getBooking(FAKE_SOURCE_DATA)).thenReturn(BOOKING)
     whenever(serviceUserService.getUsername()).thenReturn("USER1")
     whenever(calculationRequestRepository.findByIdAndCalculationStatus(123L, "PRELIMINARY")).thenReturn(Optional.of(originalRequest))

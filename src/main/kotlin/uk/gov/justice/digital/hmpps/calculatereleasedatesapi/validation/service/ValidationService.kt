@@ -8,7 +8,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Calc
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.BookingService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationSourceDataService
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.InactiveDataOptions
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.SourceDataLookupOptions
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessage
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationOrder
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationUtilities
@@ -30,11 +30,11 @@ class ValidationService(
 
   fun validate(
     prisonerId: String,
-    inactiveDataOptions: InactiveDataOptions,
+    sourceDataLookupOptions: SourceDataLookupOptions,
     calculationUserInputs: CalculationUserInputs?,
     validationOrder: ValidationOrder,
   ): List<ValidationMessage> {
-    val sourceData = sourceDataService.getCalculationSourceData(prisonerId, inactiveDataOptions)
+    val sourceData = sourceDataService.getCalculationSourceData(prisonerId, sourceDataLookupOptions)
     return validate(sourceData, calculationUserInputs, validationOrder)
   }
 
@@ -77,7 +77,7 @@ class ValidationService(
   fun validateRequestedDates(dates: List<String>): List<ValidationMessage> = dateValidationService.validateDates(dates)
 
   fun validateOnlyOffenceDatesForManualEntry(prisonerId: String): List<ValidationMessage> {
-    val sourceData = sourceDataService.getCalculationSourceData(prisonerId, InactiveDataOptions.default())
+    val sourceData = sourceDataService.getCalculationSourceData(prisonerId, SourceDataLookupOptions.default())
     return sourceData.sentenceAndOffences.mapNotNull { (validators.find { it is SentenceValidator }!! as SentenceValidator).validateWithoutOffenceDate(it) }
   }
 }

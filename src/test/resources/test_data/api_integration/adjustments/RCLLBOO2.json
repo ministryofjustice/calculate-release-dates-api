@@ -1,0 +1,13 @@
+[
+  {
+    "id": "04d2e9bd-4559-4491-8253-c3eb4ecb65f4",
+    "bookingId": 1544803905,
+    "person": "default",
+    "adjustmentType": "REMAND",
+    "fromDate": "2000-04-02",
+    "toDate": "2000-04-30",
+    "days": 28,
+    "effectiveDays": 28,
+    "sentenceSequence": 1
+  }
+]
