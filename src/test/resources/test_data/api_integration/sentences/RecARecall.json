@@ -1,0 +1,111 @@
+[
+  {
+    "bookingId": -356872126,
+    "sentenceSequence": 1,
+    "sentenceStatus": "A",
+    "sentenceCategory": "2003",
+    "sentenceCalculationType": "ADIMP_ORA",
+    "sentenceTypeDescription": "Standard Determinate",
+    "sentenceDate": "2015-03-17",
+    "terms": [
+      {
+        "years": 0,
+        "months": 20,
+        "weeks": 0,
+        "days": 0
+      }
+    ],
+    "offences": [
+      {
+        "offenderChargeId": 9991,
+        "offenceStartDate": "2015-03-17",
+        "offenceCode": "GBH",
+        "offenceDescription": "Grievous bodily harm"
+      }
+    ]
+  },
+  {
+    "bookingId": -356872126,
+    "sentenceSequence": 2,
+    "lineSequence": 2,
+    "caseSequence": 1,
+    "sentenceStatus": "I",
+    "sentenceCategory": "2003",
+    "sentenceCalculationType": "A/FINE",
+    "sentenceTypeDescription": "A fine",
+    "sentenceDate": "2015-03-17",
+    "terms": [
+      {
+        "years": 0,
+        "months": 2,
+        "weeks": 0,
+        "days": 0
+      }
+    ],
+    "fineAmount": 11000000,
+    "offences": [
+      {
+        "offenderChargeId": 6091206,
+        "offenceStartDate": "2015-03-17",
+        "offenceCode": "GBH",
+        "offenceDescription": "Grievous bodily harm"
+      }
+    ]
+  },
+  {
+    "bookingId": -356872126,
+    "sentenceSequence": 3,
+    "lineSequence": 3,
+    "caseSequence": 1,
+    "sentenceStatus": "I",
+    "sentenceCategory": "2003",
+    "sentenceCalculationType": "ADIMP_ORA",
+    "sentenceTypeDescription": "Standard Determinate",
+    "sentenceDate": "2014-01-01",
+    "terms": [
+      {
+        "years": 0,
+        "months": 12,
+        "weeks": 0,
+        "days": 0
+      }
+    ],
+    "fineAmount": 11000000,
+    "offences": [
+      {
+        "offenderChargeId": 6091206,
+        "offenceStartDate": "2013-03-17",
+        "offenceCode": "GBH",
+        "offenceDescription": "Grievous bodily harm"
+      }
+    ]
+  },
+  {
+    "bookingId": -356872126,
+    "sentenceSequence": 4,
+    "lineSequence": 4,
+    "caseSequence": 1,
+    "sentenceStatus": "I",
+    "sentenceCategory": "2003",
+    "sentenceCalculationType": "ADIMP_ORA",
+    "sentenceTypeDescription": "Standard Determinate",
+    "sentenceDate": "2016-03-01",
+    "terms": [
+      {
+        "years": 0,
+        "months": 12,
+        "weeks": 0,
+        "days": 0
+      }
+    ],
+    "fineAmount": 11000000,
+    "offences": [
+      {
+        "offenderChargeId": 6091206,
+        "offenceStartDate": "2015-03-17",
+        "offenceCode": "GBH",
+        "offenceDescription": "Grievous bodily harm"
+      }
+    ]
+  }
+]
