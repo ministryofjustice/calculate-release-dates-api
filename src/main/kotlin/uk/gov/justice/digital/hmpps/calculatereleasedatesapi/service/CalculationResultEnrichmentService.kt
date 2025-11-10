@@ -90,15 +90,15 @@ class CalculationResultEnrichmentService(
   }
 
   private fun isManuallyOverriddenInNomis(type: ReleaseDateType, nomisPrisonerCalculation: OffenderKeyDates): Boolean = when (type) {
-    ReleaseDateType.HDCED -> nomisPrisonerCalculation.isHomeDetentionCurfewEligibilityDateOverridden
-    ReleaseDateType.CRD -> nomisPrisonerCalculation.isConditionalReleaseDateOverridden
-    ReleaseDateType.LED -> nomisPrisonerCalculation.isLicenceExpiryDateOverridden
-    ReleaseDateType.SED -> nomisPrisonerCalculation.isSentenceExpiryDateOverridden
-    ReleaseDateType.SLED -> nomisPrisonerCalculation.isLicenceExpiryDateOverridden || nomisPrisonerCalculation.isSentenceExpiryDateOverridden
-    ReleaseDateType.NPD -> nomisPrisonerCalculation.isNonParoleDateOverridden
-    ReleaseDateType.ARD -> nomisPrisonerCalculation.isAutomaticReleaseDateOverridden
-    ReleaseDateType.TUSED -> nomisPrisonerCalculation.isTopupSupervisionExpiryDateOverridden
-    ReleaseDateType.PED -> nomisPrisonerCalculation.isParoleEligibilityDateOverridden
+    ReleaseDateType.HDCED -> nomisPrisonerCalculation.homeDetentionCurfewEligibilityDateOverridden
+    ReleaseDateType.CRD -> nomisPrisonerCalculation.conditionalReleaseDateOverridden
+    ReleaseDateType.LED -> nomisPrisonerCalculation.licenceExpiryDateOverridden
+    ReleaseDateType.SED -> nomisPrisonerCalculation.sentenceExpiryDateOverridden
+    ReleaseDateType.SLED -> nomisPrisonerCalculation.licenceExpiryDateOverridden || nomisPrisonerCalculation.sentenceExpiryDateOverridden
+    ReleaseDateType.NPD -> nomisPrisonerCalculation.nonParoleDateOverridden
+    ReleaseDateType.ARD -> nomisPrisonerCalculation.automaticReleaseDateOverridden
+    ReleaseDateType.TUSED -> nomisPrisonerCalculation.topupSupervisionExpiryDateOverridden
+    ReleaseDateType.PED -> nomisPrisonerCalculation.paroleEligibilityDateOverridden
     else -> false
   }
 
