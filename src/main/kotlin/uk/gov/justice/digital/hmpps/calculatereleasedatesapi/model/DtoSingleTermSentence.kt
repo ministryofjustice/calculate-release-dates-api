@@ -17,7 +17,7 @@ class DtoSingleTermSentence(
   constructor(standardSentences: List<AbstractSentence>) :
     this(
       standardSentences.minOf(AbstractSentence::sentencedAt),
-      standardSentences.map(CalculableSentence::offence).filter { it.committedAt != null }.minByOrNull { it.committedAt!! } ?: standardSentences[0].offence,
+      standardSentences.map(CalculableSentence::offence).minBy { it.committedAt ?: LocalDate.MAX },
       standardSentences,
     )
 

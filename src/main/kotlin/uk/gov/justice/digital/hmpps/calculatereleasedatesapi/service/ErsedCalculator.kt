@@ -134,7 +134,7 @@ class ErsedCalculator(
   }
 
   private fun calculateErsedMinOrMax(params: Params): ReleaseDateCalculationBreakdown {
-    val isExtended = params.sentenceCalculation.extendedDeterminateParoleEligibilityDate != null
+    val isExtended = params.sentenceCalculation.extendedDeterminateParoleEligibilityDate is LocalDate
     val effectiveRelease = if (isExtended) {
       params.sentenceCalculation.extendedDeterminateParoleEligibilityDate!!
     } else {

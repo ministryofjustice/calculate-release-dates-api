@@ -25,6 +25,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.TUSED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.NoSentencesProvidedException
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.SentenceGroupNotFound
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AFineSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BotusSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
@@ -75,44 +76,46 @@ class BookingExtractionService(
 
     dates[sentence.getReleaseDateType()] = sentenceCalculation.releaseDate
 
-    if (sentenceCalculation.licenceExpiryDate != null &&
-      sentence.releaseDateTypes.getReleaseDateTypes().contains(LED)
-    ) {
-      dates[LED] = sentenceCalculation.licenceExpiryDate!!
+    if (sentence.releaseDateTypes.contains(LED)) {
+      sentenceCalculation.licenceExpiryDate?.let {
+        dates[LED] = it
+      }
     }
 
-    if (sentenceCalculation.nonParoleDate != null) {
-      dates[NPD] = sentenceCalculation.nonParoleDate!!
+    sentenceCalculation.nonParoleDate?.let {
+      dates[NPD] = it
     }
 
-    if (sentenceCalculation.topUpSupervisionDate != null) {
-      dates[TUSED] = sentenceCalculation.topUpSupervisionDate!!
+    sentenceCalculation.topUpSupervisionDate?.let {
+      dates[TUSED] = it
     }
 
     if (sentenceCalculation.homeDetentionCurfewEligibilityDate != null && !sentence.releaseDateTypes.contains(PED)) {
       if (hdcedExtractionService.releaseDateIsAfterHdced(sentenceCalculation)) {
-        dates[HDCED] = sentenceCalculation.homeDetentionCurfewEligibilityDate!!
+        sentenceCalculation.homeDetentionCurfewEligibilityDate?.let {
+          dates[HDCED] = it
+        }
       }
     }
 
-    if (sentenceCalculation.notionalConditionalReleaseDate != null) {
-      dates[NCRD] = sentenceCalculation.notionalConditionalReleaseDate!!
+    sentenceCalculation.notionalConditionalReleaseDate?.let {
+      dates[NCRD] = it
     }
 
-    if (sentenceCalculation.extendedDeterminateParoleEligibilityDate != null) {
-      dates[PED] = sentenceCalculation.extendedDeterminateParoleEligibilityDate!!
+    sentenceCalculation.extendedDeterminateParoleEligibilityDate?.let {
+      dates[PED] = it
     }
 
-    if (sentenceCalculation.earlyReleaseSchemeEligibilityDate != null) {
-      dates[ERSED] = sentenceCalculation.earlyReleaseSchemeEligibilityDate!!
+    sentenceCalculation.earlyReleaseSchemeEligibilityDate?.let {
+      dates[ERSED] = it
     }
 
-    if (sentenceCalculation.earlyTransferDate != null) {
-      dates[ETD] = sentenceCalculation.earlyTransferDate!!
+    sentenceCalculation.earlyTransferDate?.let {
+      dates[ETD] = it
     }
 
-    if (sentenceCalculation.latestTransferDate != null) {
-      dates[LTD] = sentenceCalculation.latestTransferDate!!
+    sentenceCalculation.latestTransferDate?.let {
+      dates[LTD] = it
     }
 
     if (!sentenceIsOrExclusivelyBotus) {
@@ -189,7 +192,7 @@ class BookingExtractionService(
       extractManyTopUpSuperVisionDate(sentences, latestLicenceExpiryDate)
     } else if (isTusedableDtos(sentences, offender)) {
       val latestTUSEDSentence = sentences
-        .filter { it.sentenceCalculation.topUpSupervisionDate != null }
+        .filter { it.sentenceCalculation.topUpSupervisionDate is LocalDate }
         .maxByOrNull { it.sentenceCalculation.topUpSupervisionDate!! }
       latestTUSEDSentence?.sentenceCalculation?.topUpSupervisionDate!! to latestTUSEDSentence.sentenceCalculation.breakdownByReleaseDateType[TUSED]!!
     } else {
@@ -215,9 +218,9 @@ class BookingExtractionService(
       SentenceCalculation::notionalConditionalReleaseDate,
     )
 
-    if (latestExpiryDate == latestLicenceExpiryDate &&
-      mostRecentSentenceByExpiryDate.releaseDateTypes.getReleaseDateTypes()
-        .contains(SLED)
+    if (
+      latestExpiryDate == latestLicenceExpiryDate &&
+      mostRecentSentenceByExpiryDate.releaseDateTypes.getReleaseDateTypes().contains(SLED)
     ) {
       dates[SLED] = latestExpiryDate
       breakdownByReleaseDateType[SLED] =
@@ -225,7 +228,7 @@ class BookingExtractionService(
     } else if (sentences.any { it.isDto() } && !sentences.all { it.isDto() }) {
       val latestNonDtoSentence = sentences.sortedBy { it.sentenceCalculation.releaseDate }.last { !it.isDto() }
       val latestDtoSentence = sentences.sortedBy { it.sentenceCalculation.releaseDate }.last { it.isDto() }
-      if (latestNonDtoSentence.sentenceCalculation.expiryDate.equals(latestDtoSentence.sentenceCalculation.expiryDate)) {
+      if (latestNonDtoSentence.sentenceCalculation.expiryDate == latestDtoSentence.sentenceCalculation.expiryDate) {
         dates[SLED] = latestExpiryDate
         breakdownByReleaseDateType[SLED] =
           mostRecentSentenceByExpiryDate.sentenceCalculation.breakdownByReleaseDateType[SED]!!
@@ -378,17 +381,18 @@ class BookingExtractionService(
     breakdownByReleaseDateType: MutableMap<ReleaseDateType, ReleaseDateCalculationBreakdown>,
   ) {
     val mostRecentSentenceByReleaseDate = mostRecentSentencesByReleaseDate.first { !it.isRecall() }
+
     if (concurrentOraAndNonOraDetails.isReleaseDateConditional) {
       dates[CRD] = latestReleaseDate
       // PSI Example 16 results in a situation where the latest calculated sentence has ARD associated but isReleaseDateConditional here is deemed true.
       val releaseDateType =
         if (mostRecentSentenceByReleaseDate.sentenceCalculation.breakdownByReleaseDateType.containsKey(CRD)) CRD else ARD
-      breakdownByReleaseDateType[CRD] =
-        mostRecentSentenceByReleaseDate.sentenceCalculation.breakdownByReleaseDateType[releaseDateType]!!
+      mostRecentSentenceByReleaseDate.sentenceCalculation.breakdownByReleaseDateType[releaseDateType]?.let { breakdownByReleaseDateType[CRD] = it }
     } else {
       dates[ARD] = latestReleaseDate
-      breakdownByReleaseDateType[ARD] =
-        mostRecentSentenceByReleaseDate.sentenceCalculation.breakdownByReleaseDateType[ARD]!!
+      mostRecentSentenceByReleaseDate.sentenceCalculation.breakdownByReleaseDateType[ARD]?.let {
+        breakdownByReleaseDateType[ARD] = it
+      }
     }
   }
 
@@ -452,50 +456,53 @@ class BookingExtractionService(
         SentenceCalculation::earlyReleaseSchemeEligibilityDate,
       ) { !it.sentenceCalculation.isImmediateRelease() }
 
-    if (latestEarlyReleaseSchemeEligibilitySentence != null) {
-      val sentenceGroup = sentenceGroups.find { it.contains(latestEarlyReleaseSchemeEligibilitySentence) }!!
+    if (latestEarlyReleaseSchemeEligibilitySentence == null) {
+      return false
+    }
 
-      val noAFineOrBotusReleaseAfterLatestEarlyReleaseSchemeEligibilitySentence =
+    val sentenceGroup = sentenceGroups.find { it.contains(latestEarlyReleaseSchemeEligibilitySentence) }
+      ?: throw SentenceGroupNotFound("No latestEarlyReleaseSchemeEligibilitySentence group found")
+
+    val noAFineOrBotusReleaseAfterLatestEarlyReleaseSchemeEligibilitySentence =
+      extractionService.mostRecentSentenceOrNull(
+        sentenceGroup.filter {
+          (it is AFineSentence || it is BotusSentence) &&
+            !it.sentenceCalculation.isImmediateRelease() &&
+            it.sentenceCalculation.releaseDate.isAfter(latestEarlyReleaseSchemeEligibilitySentence.sentenceCalculation.releaseDate)
+        },
+        SentenceCalculation::releaseDate,
+      ) == null
+
+    if (noAFineOrBotusReleaseAfterLatestEarlyReleaseSchemeEligibilitySentence) {
+      val earlyReleaseSchemeEligibilityDate = latestEarlyReleaseSchemeEligibilitySentence.sentenceCalculation.earlyReleaseSchemeEligibilityDate ?: return false
+      val latestAFineReleaseAfterErsed =
         extractionService.mostRecentSentenceOrNull(
           sentenceGroup.filter {
-            (it is AFineSentence || it is BotusSentence) &&
+            it is AFineSentence &&
               !it.sentenceCalculation.isImmediateRelease() &&
-              it.sentenceCalculation.releaseDate.isAfter(latestEarlyReleaseSchemeEligibilitySentence.sentenceCalculation.releaseDate)
+              it.sentenceCalculation.releaseDate.isAfter(earlyReleaseSchemeEligibilityDate)
           },
           SentenceCalculation::releaseDate,
-        ) == null
-
-      if (noAFineOrBotusReleaseAfterLatestEarlyReleaseSchemeEligibilitySentence) {
-        val latestAFineReleaseAfterErsed =
-          extractionService.mostRecentSentenceOrNull(
-            sentenceGroup.filter {
-              it is AFineSentence &&
-                !it.sentenceCalculation.isImmediateRelease() &&
-                it.sentenceCalculation.releaseDate.isAfter(latestEarlyReleaseSchemeEligibilitySentence.sentenceCalculation.earlyReleaseSchemeEligibilityDate)
-            },
-            SentenceCalculation::releaseDate,
+        )
+      if (latestAFineReleaseAfterErsed != null) {
+        breakdownByReleaseDateType[ERSED] = ReleaseDateCalculationBreakdown(
+          rules = setOf(CalculationRule.ERSED_ADJUSTED_TO_CONCURRENT_TERM),
+          releaseDate = latestAFineReleaseAfterErsed.sentenceCalculation.releaseDate,
+          unadjustedDate = earlyReleaseSchemeEligibilityDate,
+        )
+        dates[ERSED] = latestAFineReleaseAfterErsed.sentenceCalculation.releaseDate
+        return false
+      } else {
+        if (sentences.any { it.isDto() }) {
+          return calculateErsedWhereDtoIsPresent(
+            dates,
+            latestEarlyReleaseSchemeEligibilitySentence,
+            breakdownByReleaseDateType,
           )
-        if (latestAFineReleaseAfterErsed != null) {
-          breakdownByReleaseDateType[ERSED] = ReleaseDateCalculationBreakdown(
-            rules = setOf(CalculationRule.ERSED_ADJUSTED_TO_CONCURRENT_TERM),
-            releaseDate = latestAFineReleaseAfterErsed.sentenceCalculation.releaseDate,
-            unadjustedDate = latestEarlyReleaseSchemeEligibilitySentence.sentenceCalculation.earlyReleaseSchemeEligibilityDate!!,
-          )
-          dates[ERSED] = latestAFineReleaseAfterErsed.sentenceCalculation.releaseDate
-          return false
         } else {
-          if (sentences.any { it.isDto() }) {
-            return calculateErsedWhereDtoIsPresent(
-              dates,
-              latestEarlyReleaseSchemeEligibilitySentence,
-              breakdownByReleaseDateType,
-            )
-          } else {
-            breakdownByReleaseDateType[ERSED] =
-              latestEarlyReleaseSchemeEligibilitySentence.sentenceCalculation.breakdownByReleaseDateType[ERSED]!!
-            dates[ERSED] =
-              latestEarlyReleaseSchemeEligibilitySentence.sentenceCalculation.earlyReleaseSchemeEligibilityDate!!
-            return false
+          latestEarlyReleaseSchemeEligibilitySentence.sentenceCalculation.breakdownByReleaseDateType[ERSED]?.let {
+            breakdownByReleaseDateType[ERSED] = it
+            dates[ERSED] = earlyReleaseSchemeEligibilityDate
           }
         }
       }
@@ -513,25 +520,32 @@ class BookingExtractionService(
     breakdownByReleaseDateType: MutableMap<ReleaseDateType, ReleaseDateCalculationBreakdown>,
   ): Boolean {
     val releaseDate = dates[CRD] ?: dates[ARD]
-    if (dates[MTD]?.isBefore(releaseDate)!!) {
-      val ersed = latestEarlyReleaseSchemeEligibilitySentence.sentenceCalculation.earlyReleaseSchemeEligibilityDate!!
-      if (dates[MTD]?.isBefore(ersed)!!) {
-        breakdownByReleaseDateType[ERSED] =
-          latestEarlyReleaseSchemeEligibilitySentence.sentenceCalculation.breakdownByReleaseDateType[ERSED]!!
-        dates[ERSED] =
-          latestEarlyReleaseSchemeEligibilitySentence.sentenceCalculation.earlyReleaseSchemeEligibilityDate!!
-      } else {
-        breakdownByReleaseDateType[ERSED] = ReleaseDateCalculationBreakdown(
-          rules = setOf(ERSED_ADJUSTED_TO_MTD),
-          releaseDate = dates[MTD]!!,
-          unadjustedDate = ersed,
-        )
-        dates[ERSED] = dates[MTD]!!
-      }
-      return false
-    } else {
+    val mtd = dates[MTD]
+
+    if (releaseDate == null || mtd == null) {
       return true
     }
+
+    if (mtd.isBefore(releaseDate)) {
+      latestEarlyReleaseSchemeEligibilitySentence.sentenceCalculation.earlyReleaseSchemeEligibilityDate?.let { ersed ->
+        if (mtd.isBefore(ersed)) {
+          latestEarlyReleaseSchemeEligibilitySentence.sentenceCalculation.breakdownByReleaseDateType[ERSED]?.let {
+            breakdownByReleaseDateType[ERSED] = it
+            dates[ERSED] = ersed
+          }
+        } else {
+          breakdownByReleaseDateType[ERSED] = ReleaseDateCalculationBreakdown(
+            rules = setOf(ERSED_ADJUSTED_TO_MTD),
+            releaseDate = mtd,
+            unadjustedDate = ersed,
+          )
+          dates[ERSED] = mtd
+        }
+      }
+      return false
+    }
+
+    return true
   }
 
   private fun calculateMidTermDate(
@@ -601,11 +615,11 @@ class BookingExtractionService(
     val (historicTUSEDs, calculatedTUSEDs) = sentences.partition { it is BotusSentence }
 
     val latestTUSEDSentence = calculatedTUSEDs
-      .filter { it.isCalculationInitialised() && it.sentenceCalculation.topUpSupervisionDate != null }
+      .filter { it.isCalculationInitialised() && it.sentenceCalculation.topUpSupervisionDate is LocalDate }
       .maxByOrNull { it.sentenceCalculation.topUpSupervisionDate!! }
 
     val latestHistoricTUSEDSentence = historicTUSEDs
-      .filter { it.isCalculationInitialised() && it.sentenceCalculation.topUpSupervisionDate != null }
+      .filter { it.isCalculationInitialised() && it.sentenceCalculation.topUpSupervisionDate is LocalDate }
       .maxByOrNull { it.sentenceCalculation.topUpSupervisionDate!! }
 
     // Use the latest calculated TUSED, otherwise use historic TUSED
