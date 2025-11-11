@@ -78,7 +78,7 @@ class HistoricCalculationsServiceTest {
 
   @Test
   fun `Genuine override details added if CRDS calculation found in database`() {
-    val calcRequest1 = calculationRequest().copy(genuineOverrideReason = GenuineOverrideReason.TERRORISM, genuineOverrideReasonFurtherDetail = null)
+    val calcRequest1 = calculationRequest().copy(genuineOverrideReason = GenuineOverrideReason.AGGRAVATING_FACTOR_OFFENCE, genuineOverrideReasonFurtherDetail = null)
     val calcRequest2 = calcRequest1.copy(
       prisonerLocation = "KTI",
       calculationReference = UUID.randomUUID(),
@@ -96,8 +96,8 @@ class HistoricCalculationsServiceTest {
     assertThat(result[0].calculationSource).isEqualTo(CalculationSource.CRDS)
     assertThat(result[0].calculationViewConfiguration).isEqualTo(CalculationViewConfiguration(reference.toString(), 1))
     assertThat(result[0].establishment).isEqualTo("Chelmsford (HMP)")
-    assertThat(result[0].genuineOverrideReasonCode).isEqualTo(GenuineOverrideReason.TERRORISM)
-    assertThat(result[0].genuineOverrideReasonDescription).isEqualTo("Terrorism or terror-related offences")
+    assertThat(result[0].genuineOverrideReasonCode).isEqualTo(GenuineOverrideReason.AGGRAVATING_FACTOR_OFFENCE)
+    assertThat(result[0].genuineOverrideReasonDescription).isEqualTo("One or more offences have been characterised by an aggravating factor (such as terror)")
 
     assertThat(result[1].calculationSource).isEqualTo(CalculationSource.CRDS)
     assertThat(result[1].calculationViewConfiguration).isEqualTo(CalculationViewConfiguration(calcRequest2.calculationReference.toString(), 1))
