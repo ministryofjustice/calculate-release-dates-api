@@ -40,7 +40,7 @@ class GenuineOverrideIntTest(private val mockPrisonService: MockPrisonService) :
         GenuineOverrideDate(ReleaseDateType.LED, LocalDate.of(2029, 12, 13)),
         GenuineOverrideDate(ReleaseDateType.HDCED, LocalDate.of(2021, 6, 7)),
       ),
-      reason = GenuineOverrideReason.TERRORISM,
+      reason = GenuineOverrideReason.AGGRAVATING_FACTOR_OFFENCE,
       reasonFurtherDetail = null,
     )
     val response = webTestClient.post()
@@ -63,13 +63,13 @@ class GenuineOverrideIntTest(private val mockPrisonService: MockPrisonService) :
 
     assertThat(originalRequest.overridesCalculationRequestId).isNull()
     assertThat(originalRequest.overriddenByCalculationRequestId).isEqualTo(newRequest.id)
-    assertThat(originalRequest.genuineOverrideReason).isEqualTo(GenuineOverrideReason.TERRORISM)
+    assertThat(originalRequest.genuineOverrideReason).isEqualTo(GenuineOverrideReason.AGGRAVATING_FACTOR_OFFENCE)
     assertThat(originalRequest.genuineOverrideReasonFurtherDetail).isNull()
     assertThat(originalRequest.calculationStatus).isEqualTo(CalculationStatus.OVERRIDDEN.name)
 
     assertThat(newRequest.overridesCalculationRequestId).isEqualTo(originalRequest.id)
     assertThat(newRequest.overriddenByCalculationRequestId).isNull()
-    assertThat(newRequest.genuineOverrideReason).isEqualTo(GenuineOverrideReason.TERRORISM)
+    assertThat(newRequest.genuineOverrideReason).isEqualTo(GenuineOverrideReason.AGGRAVATING_FACTOR_OFFENCE)
     assertThat(newRequest.genuineOverrideReasonFurtherDetail).isNull()
     assertThat(newRequest.calculationStatus).isEqualTo(CalculationStatus.CONFIRMED.name)
 

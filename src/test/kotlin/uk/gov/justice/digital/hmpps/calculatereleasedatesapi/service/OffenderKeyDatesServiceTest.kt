@@ -583,8 +583,8 @@ open class OffenderKeyDatesServiceTest {
         null,
         LocalDate.of(2024, 1, 1),
         CalculationType.GENUINE_OVERRIDE,
-        GenuineOverrideReason.TERRORISM,
-        "Terrorism or terror-related offences",
+        GenuineOverrideReason.AGGRAVATING_FACTOR_OFFENCE,
+        "One or more offences have been characterised by an aggravating factor (such as terror)",
       ),
       listOf(
         DetailedDate(
@@ -623,7 +623,7 @@ open class OffenderKeyDatesServiceTest {
       ),
       otherReasonForCalculation = null,
       calculationType = CalculationType.GENUINE_OVERRIDE,
-      genuineOverrideReason = GenuineOverrideReason.TERRORISM,
+      genuineOverrideReason = GenuineOverrideReason.AGGRAVATING_FACTOR_OFFENCE,
       genuineOverrideReasonFurtherDetail = null,
     )
 
