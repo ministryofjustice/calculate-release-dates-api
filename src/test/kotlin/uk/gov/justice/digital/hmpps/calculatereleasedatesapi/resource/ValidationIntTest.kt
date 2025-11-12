@@ -262,6 +262,11 @@ class ValidationIntTest(private val mockManageOffencesClient: MockManageOffences
   }
 
   @Test
+  fun `Run validation on no terms`() {
+    runValidationAndCheckMessages("NO_TERM", listOf(ValidationMessage(ValidationCode.SENTENCE_HAS_NO_IMPRISONMENT_TERM, arguments = listOf("1", "1"))))
+  }
+
+  @Test
   fun `Run validation for multiple sentences consecutive to the same parent`() {
     mockManageOffencesClient.noneInPCSC(listOf("AW06005B", "HP25001", "PU86003B", "RF96105", "TM94004B"))
     runValidationAndCheckMessages(
@@ -335,6 +340,7 @@ class ValidationIntTest(private val mockManageOffencesClient: MockManageOffences
     const val REMAND_OVERLAPS_WITH_SENTENCE_PRISONER_ID = "REM-SEN"
     const val REMAND_OVERLAPS_WITH_SENTENCE_IMMEDIATE_RELEASE_PRISONER_ID = "REM-SENI"
     const val VALIDATION_PRISONER_ID = "VALIDATION"
+    const val NO_TERM_PRISONER_ID = "NO_TERM"
     const val UNSUPPORTED_SENTENCE_PRISONER_ID = "UNSUPP_SENT"
     const val UNSUPPORTED_CALC_DTO_CONSECUTIVE_TO_SENTENCE = "UNSUPPORTED_CALC_DTO_CONSECUTIVE_TO_SENTENCE"
     const val MANUAL_UNABLE_TO_DETERMINE_SHPO_RELEASE_PROVISIONS = "MANUAL_UNABLE_TO_DETERMINE_SHPO_RELEASE_PROVISIONS"
