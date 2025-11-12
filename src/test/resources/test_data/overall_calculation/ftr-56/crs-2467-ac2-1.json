@@ -16,10 +16,11 @@
           }
         },
         "sentencedAt": "2023-09-25",
+        "hasAnSDSEarlyReleaseExclusion": "VIOLENT",
         "recall": {
           "recallType": "FIXED_TERM_RECALL_56",
-          "returnToCustodyDate": "2025-11-08",
-          "revocationDate": "2025-11-05"
+          "returnToCustodyDate": "2026-01-08",
+          "revocationDate": "2026-01-07"
         }
       },
       {
