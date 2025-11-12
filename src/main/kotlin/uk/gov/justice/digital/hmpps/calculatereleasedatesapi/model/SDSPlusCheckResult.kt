@@ -87,7 +87,10 @@ class SDSPlusCheckResult(
   private fun sentencedAfterPcsc(): Boolean = sentenceAndOffence.sentenceDate.isAfterOrEqualTo(ImportantDates.PCSC_COMMENCEMENT_DATE)
 
   private fun endOfSentence(): LocalDate {
-    val term = sentenceAndOffence.terms[0]
+    val term = sentenceAndOffence.terms.firstOrNull()
+    if (term == null) {
+      return sentenceAndOffence.sentenceDate
+    }
     val duration = Period.of(term.years, term.months, term.weeks * 7 + term.days)
     return sentenceAndOffence.sentenceDate.plus(duration)
   }
