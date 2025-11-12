@@ -12,58 +12,32 @@
         },
         "duration": {
           "durationElements": {
-            "MONTHS": 36
+            "YEARS": 9,
+            "MONTHS": 3
           }
         },
-        "sentencedAt": "2021-01-14",
+        "sentencedAt": "2021-03-30",
         "recall": {
           "recallType": "FIXED_TERM_RECALL_56",
-          "returnToCustodyDate": "2024-09-03",
-          "revocationDate": "2024-08-27"
-        },
-        "identifier": "0de48d91-c0de-37d4-940a-9b1ec02eaac5"
-      },
-      {
-        "type": "StandardSentence",
-        "offence": {
-          "committedAt": "2020-10-28"
-        },
-        "duration": {
-          "durationElements": {
-            "YEARS": 5
-          }
-        },
-        "sentencedAt": "2021-01-14",
-        "recall": {
-          "recallType": "FIXED_TERM_RECALL_56",
-          "returnToCustodyDate": "2024-09-03",
-          "revocationDate": "2024-08-27"
-        },
-        "consecutiveSentenceUUIDs": [
-          "0de48d91-c0de-37d4-940a-9b1ec02eaac5"
-        ]
+          "returnToCustodyDate": "2025-08-18",
+          "revocationDate": "2025-06-22"
+        }
       }
     ],
-    "returnToCustodyDate": "2024-09-03",
+    "returnToCustodyDate": "2025-08-18",
     "adjustments": {
       "UNLAWFULLY_AT_LARGE": [
         {
-          "appliesToSentencesFrom": "2024-08-28",
-          "numberOfDays": 6,
-          "fromDate": "2024-08-28",
-          "toDate": "2024-09-02"
-        }
-      ],
-      "ADDITIONAL_DAYS_AWARDED": [
+          "appliesToSentencesFrom": "2023-10-30",
+          "numberOfDays": 3,
+          "fromDate": "2023-10-30",
+          "toDate": "2023-11-01"
+        },
         {
-          "appliesToSentencesFrom": "2025-03-24",
-          "numberOfDays": 20
-        }
-      ],
-      "RESTORATION_OF_ADDITIONAL_DAYS_AWARDED": [
-        {
-          "appliesToSentencesFrom": "2025-10-10",
-          "numberOfDays": 5
+          "appliesToSentencesFrom": "2025-06-23",
+          "numberOfDays": 56,
+          "fromDate": "2025-06-23",
+          "toDate": "2025-08-17"
         }
       ]
     }
