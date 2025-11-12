@@ -189,22 +189,33 @@ class SentenceValidator(private val validationUtilities: ValidationUtilities) : 
 
   private fun validateSingleTermDuration(sentencesAndOffence: SentenceAndOffence): List<ValidationMessage> {
     val validationMessages = mutableListOf<ValidationMessage>()
-    val hasMultipleTerms = sentencesAndOffence.terms.size > 1
-    if (hasMultipleTerms) {
-      validationMessages.add(
-        ValidationMessage(
-          ValidationCode.SENTENCE_HAS_MULTIPLE_TERMS,
-          validationUtilities.getCaseSeqAndLineSeq(sentencesAndOffence),
-        ),
-      )
-    } else {
-      val emptyImprisonmentTerm =
-        sentencesAndOffence.terms[0].days == 0 && sentencesAndOffence.terms[0].weeks == 0 && sentencesAndOffence.terms[0].months == 0 && sentencesAndOffence.terms[0].years == 0
 
-      if (emptyImprisonmentTerm) {
+    when (sentencesAndOffence.terms.size) {
+      0 -> {
         validationMessages.add(
           ValidationMessage(
-            ValidationCode.ZERO_IMPRISONMENT_TERM,
+            ValidationCode.SENTENCE_HAS_NO_IMPRISONMENT_TERM,
+            validationUtilities.getCaseSeqAndLineSeq(sentencesAndOffence),
+          ),
+        )
+      }
+      1 -> {
+        val emptyImprisonmentTerm =
+          sentencesAndOffence.terms[0].days == 0 && sentencesAndOffence.terms[0].weeks == 0 && sentencesAndOffence.terms[0].months == 0 && sentencesAndOffence.terms[0].years == 0
+
+        if (emptyImprisonmentTerm) {
+          validationMessages.add(
+            ValidationMessage(
+              ValidationCode.ZERO_IMPRISONMENT_TERM,
+              validationUtilities.getCaseSeqAndLineSeq(sentencesAndOffence),
+            ),
+          )
+        }
+      }
+      else -> {
+        validationMessages.add(
+          ValidationMessage(
+            ValidationCode.SENTENCE_HAS_MULTIPLE_TERMS,
             validationUtilities.getCaseSeqAndLineSeq(sentencesAndOffence),
           ),
         )

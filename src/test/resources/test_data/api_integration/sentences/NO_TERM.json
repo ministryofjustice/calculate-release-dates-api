@@ -1,0 +1,22 @@
+[
+  {
+    "bookingId": 1,
+    "caseSequence": 1,
+    "lineSequence": 1,
+    "sentenceSequence": 1,
+    "sentenceStatus": "A",
+    "sentenceCategory": "2003",
+    "sentenceCalculationType": "ADIMP_ORA",
+    "sentenceTypeDescription": "Standard Determinate",
+    "sentenceDate": "2015-03-17",
+    "terms": [],
+    "offences": [
+      {
+        "offenderChargeId": 9991,
+        "offenceStartDate": "2015-03-17",
+        "offenceCode": "GBH",
+        "offenceDescription": "Grievous bodily harm"
+      }
+    ]
+  }
+]
