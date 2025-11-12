@@ -12,34 +12,17 @@
         },
         "duration": {
           "durationElements": {
-            "YEARS": 9,
-            "MONTHS": 3
+            "YEARS": 13
           }
         },
-        "sentencedAt": "2021-03-30",
+        "sentencedAt": "2020-08-16",
         "recall": {
           "recallType": "FIXED_TERM_RECALL_56",
-          "returnToCustodyDate": "2025-08-18",
-          "revocationDate": "2025-06-22"
+          "returnToCustodyDate": "2026-01-19",
+          "revocationDate": "2026-01-18"
         }
       }
     ],
-    "returnToCustodyDate": "2025-08-18",
-    "adjustments": {
-      "UNLAWFULLY_AT_LARGE": [
-        {
-          "appliesToSentencesFrom": "2023-10-30",
-          "numberOfDays": 3,
-          "fromDate": "2023-10-30",
-          "toDate": "2023-11-01"
-        },
-        {
-          "appliesToSentencesFrom": "2025-06-23",
-          "numberOfDays": 56,
-          "fromDate": "2025-06-23",
-          "toDate": "2025-08-17"
-        }
-      ]
-    }
+    "returnToCustodyDate": "2026-01-19"
   }
 }
