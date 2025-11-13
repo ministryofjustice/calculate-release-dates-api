@@ -109,7 +109,7 @@ data class SentenceCalculation(
         }
         if (sentence.recallType!!.isFixedTermRecall) {
 
-          val unadjustedDate = if (allocatedEarlyRelease?.modifiesRecallReleaseDate() == true && allocatedEarlyRelease!!.additionsAppliedAfterDefaulting && unadjustedPostRecallReleaseDate!!.isBeforeOrEqualTo(allocatedTranche!!.date)) {
+          val unadjustedDate = if (allocatedEarlyRelease?.modifiesRecallReleaseDate() == true && allocatedEarlyRelease!!.additionsAppliedAfterDefaulting && unadjustedPostRecallReleaseDate!!.isBeforeOrEqualTo(allocatedTranche?.date ?: allocatedEarlyRelease!!.earliestTranche())) {
             allocatedTranche!!.date
           } else {
             unadjustedPostRecallReleaseDate
