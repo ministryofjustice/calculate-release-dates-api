@@ -14,7 +14,7 @@ services:
       - POSTGRES_DB=calculate_release_dates
 
   localstack:
-    image: localstack/localstack:0.12.9.1
+    image: localstack/localstack:0.14.3.1
     networks:
       - hmpps
     container_name: localstack
