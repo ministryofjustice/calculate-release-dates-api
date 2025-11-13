@@ -1,4 +1,4 @@
-  {
+{
   "booking": {
     "offender": {
       "reference": "ABC123",
@@ -8,21 +8,22 @@
       {
         "type": "StandardSentence",
         "offence": {
-          "committedAt": "2020-10-28"
+          "committedAt": "2026-04-30"
         },
         "duration": {
           "durationElements": {
-            "YEARS": 7
+            "YEARS": 2
           }
         },
-        "sentencedAt": "2022-11-12",
+        "sentencedAt": "2026-05-01",
         "recall": {
           "recallType": "FIXED_TERM_RECALL_56",
-          "returnToCustodyDate": "2025-12-03",
-          "revocationDate": "2025-12-02"
-        }
+          "returnToCustodyDate": "2027-04-08",
+          "revocationDate": "2027-04-08"
+        },
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
     ],
-    "returnToCustodyDate": "2025-12-03"
+    "returnToCustodyDate": "2027-04-08"
   }
 }
