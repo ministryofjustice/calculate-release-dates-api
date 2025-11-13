@@ -143,6 +143,7 @@ data class CalculationRequest(
 
   val overridesCalculationRequestId: Long? = null,
 
+  @Enumerated(value = EnumType.STRING)
   val genuineOverrideReason: GenuineOverrideReason? = null,
 
   val genuineOverrideReasonFurtherDetail: String? = null,
