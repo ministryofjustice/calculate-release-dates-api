@@ -412,7 +412,7 @@ class ManualCalculationServiceTest {
     whenever(
       calculationSourceDataService.getCalculationSourceData(
         PRISONER_ID,
-        InactiveDataOptions.default(),
+        SourceDataLookupOptions.default(),
       ),
     ).thenReturn(FAKE_SOURCE_DATA)
     whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
@@ -443,7 +443,7 @@ class ManualCalculationServiceTest {
     whenever(
       calculationSourceDataService.getCalculationSourceData(
         PRISONER_ID,
-        InactiveDataOptions.default(),
+        SourceDataLookupOptions.default(),
       ),
     ).thenReturn(FAKE_SOURCE_DATA)
     whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
@@ -479,7 +479,7 @@ class ManualCalculationServiceTest {
     whenever(
       calculationSourceDataService.getCalculationSourceData(
         PRISONER_ID,
-        InactiveDataOptions.default(),
+        SourceDataLookupOptions.default(),
       ),
     ).thenReturn(FAKE_SOURCE_DATA)
     whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
@@ -530,7 +530,7 @@ class ManualCalculationServiceTest {
     whenever(
       calculationSourceDataService.getCalculationSourceData(
         PRISONER_ID,
-        InactiveDataOptions.default(),
+        SourceDataLookupOptions.default(),
       ),
     ).thenReturn(FAKE_SOURCE_DATA)
     whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
@@ -570,7 +570,7 @@ class ManualCalculationServiceTest {
     whenever(
       calculationSourceDataService.getCalculationSourceData(
         PRISONER_ID,
-        InactiveDataOptions.default(),
+        SourceDataLookupOptions.default(),
       ),
     ).thenReturn(FAKE_SOURCE_DATA)
     whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
@@ -597,7 +597,7 @@ class ManualCalculationServiceTest {
     whenever(
       calculationSourceDataService.getCalculationSourceData(
         PRISONER_ID,
-        InactiveDataOptions.default(),
+        SourceDataLookupOptions.default(),
       ),
     ).thenReturn(FAKE_SOURCE_DATA)
     whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
@@ -634,7 +634,7 @@ class ManualCalculationServiceTest {
     whenever(
       calculationSourceDataService.getCalculationSourceData(
         PRISONER_ID,
-        InactiveDataOptions.default(),
+        SourceDataLookupOptions.default(),
       ),
     ).thenReturn(FAKE_SOURCE_DATA)
     whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
@@ -676,7 +676,7 @@ class ManualCalculationServiceTest {
     whenever(
       calculationSourceDataService.getCalculationSourceData(
         PRISONER_ID,
-        InactiveDataOptions.default(),
+        SourceDataLookupOptions.default(),
       ),
     ).thenReturn(FAKE_SOURCE_DATA)
 
@@ -715,7 +715,7 @@ class ManualCalculationServiceTest {
     whenever(
       calculationSourceDataService.getCalculationSourceData(
         PRISONER_ID,
-        InactiveDataOptions.default(),
+        SourceDataLookupOptions.default(),
       ),
     ).thenReturn(FAKE_SOURCE_DATA)
 

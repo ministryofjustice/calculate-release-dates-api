@@ -34,7 +34,7 @@ class RelevantRemandService(
     val prisoner = prisonService.getOffenderDetail(prisonerId).copy(
       bookingId = request.sentence.bookingId,
     )
-    val sourceData = filterSentencesAndAdjustmentsForRelevantRemandCalc(calculationSourceDataService.getCalculationSourceData(prisoner, InactiveDataOptions.overrideToIncludeInactiveData()), request)
+    val sourceData = filterSentencesAndAdjustmentsForRelevantRemandCalc(calculationSourceDataService.getCalculationSourceData(prisoner, SourceDataLookupOptions.overrideToIncludeInactiveData()), request)
     val calculationUserInputs = CalculationUserInputs()
 
     val validationMessages = validationService.validate(sourceData, calculationUserInputs, ValidationOrder.INVALID)

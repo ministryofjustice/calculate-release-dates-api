@@ -45,13 +45,11 @@ class GenuineOverrideReasonControllerTest {
           "$[*].code",
           containsInAnyOrder(
             // avoid renaming the codes as they will be stored against genuine overrides.
-            "ORDER_OF_IMPRISONMENT_OR_WARRANT_DOES_NOT_MATCH_TRIAL_RECORD",
-            "TERRORISM",
+            "TRIAL_RECORD_OR_BREAKDOWN_DOES_NOT_MATCH_OVERALL_SENTENCE_LENGTH",
+            "RELEASE_DATE_FROM_ANOTHER_CUSTODY_PERIOD",
             "POWER_TO_DETAIN",
             "CROSS_BORDER_SECTION_RELEASE_DATE",
-            "ADD_RELEASE_DATE_FROM_ANOTHER_BOOKING",
-            "ERS_BREACH",
-            "COURT_OF_APPEAL",
+            "AGGRAVATING_FACTOR_OFFENCE",
             "OTHER",
           ),
         ),
