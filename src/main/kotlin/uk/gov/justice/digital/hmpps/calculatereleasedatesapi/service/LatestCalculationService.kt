@@ -52,7 +52,7 @@ class LatestCalculationService(
         }
         val sentenceAndOffences = calculationRequest.sentenceAndOffences?.let { sourceDataMapper.mapSentencesAndOffences(calculationRequest) }
         val breakdown = calculationBreakdownService.getBreakdownSafely(calculationRequest).getOrNull()
-        toLatestCalculation(
+        toLatestDpsCalculation(
           calculationRequest.id,
           prisonerId,
           bookingId,
@@ -83,7 +83,7 @@ class LatestCalculationService(
     }
   }
 
-  private fun toLatestCalculation(
+  private fun toLatestDpsCalculation(
     calculationRequestId: Long,
     prisonerId: String,
     bookingId: Long,
@@ -96,7 +96,6 @@ class LatestCalculationService(
     historicalTusedSource: HistoricalTusedSource? = null,
   ): LatestCalculation {
     val dates = offenderKeyDatesService.releaseDates(prisonerCalculation)
-    val sentenceDateOverrides = prisonService.getSentenceOverrides(bookingId, dates)
     val historicDates = if (featureToggles.historicSled) calculationOutcomeHistoricOverrideRepository.findByCalculationRequestId(calculationRequestId) else emptyList()
     return LatestCalculation(
       prisonerId,
@@ -111,7 +110,7 @@ class LatestCalculationService(
         sentenceAndOffences,
         breakdown,
         historicalTusedSource,
-        sentenceDateOverrides,
+        null,
         historicDates,
       ).values.toList(),
     )
@@ -124,7 +123,6 @@ class LatestCalculationService(
     reason: String,
   ): LatestCalculation {
     val dates = offenderKeyDatesService.releaseDates(prisonerCalculation)
-    val sentenceDateOverrides = prisonService.getSentenceOverrides(bookingId, dates)
     return LatestCalculation(
       prisonerId,
       bookingId,
@@ -138,7 +136,7 @@ class LatestCalculationService(
         null,
         null,
         null,
-        sentenceDateOverrides,
+        prisonerCalculation,
         emptyList(),
       ).values.toList(),
     )

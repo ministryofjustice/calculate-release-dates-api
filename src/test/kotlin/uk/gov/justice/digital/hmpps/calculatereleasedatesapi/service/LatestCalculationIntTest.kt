@@ -49,6 +49,7 @@ class LatestCalculationIntTest(private val mockPrisonService: MockPrisonService)
         "From NOMIS",
         conditionalReleaseDate = LocalDate.of(2030, 1, 6),
         sentenceExpiryDate = LocalDate.of(2025, 2, 14),
+        conditionalReleaseDateOverridden = true,
       ),
     )
     stubSentenceDetails(
@@ -116,12 +117,6 @@ class LatestCalculationIntTest(private val mockPrisonService: MockPrisonService)
       licenceExpiryDate = LocalDate.of(2016, 11, 6),
     )
     stubKeyDates(bookingId, offenderKeyDates)
-    stubSentenceDetails(
-      bookingId,
-      sentenceDetailsStub.copy(
-        licenceExpiryOverrideDate = LocalDate.of(2016, 11, 6),
-      ),
-    )
 
     val latestCalculation = webTestClient.get()
       .uri("/calculation/default/latest")
@@ -149,7 +144,7 @@ class LatestCalculationIntTest(private val mockPrisonService: MockPrisonService)
             ReleaseDateType.SLED,
             ReleaseDateType.SLED.description,
             LocalDate.of(2016, 11, 6),
-            listOf(ReleaseDateHint("Manually overridden")),
+            emptyList(),
           ),
           DetailedDate(ReleaseDateType.CRD, ReleaseDateType.CRD.description, LocalDate.of(2016, 1, 6), emptyList()),
           DetailedDate(

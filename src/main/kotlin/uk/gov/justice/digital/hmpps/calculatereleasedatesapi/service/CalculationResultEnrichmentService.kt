@@ -8,6 +8,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.TUSED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedDate
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OffenderKeyDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateHint
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
@@ -30,7 +31,7 @@ class CalculationResultEnrichmentService(
     sentenceAndOffences: List<SentenceAndOffenceWithReleaseArrangements>?,
     calculationBreakdown: CalculationBreakdown?,
     historicalTusedSource: HistoricalTusedSource? = null,
-    sentenceDateOverrides: List<String> = listOf(),
+    nomisPrisonerCalculation: OffenderKeyDates? = null,
     historicOverrides: List<CalculationOutcomeHistoricOverride>,
   ): Map<ReleaseDateType, DetailedDate> {
     val releaseDatesMap = releaseDates.associateBy { it.type }
@@ -46,7 +47,7 @@ class CalculationResultEnrichmentService(
           releaseDatesMap,
           sentenceAndOffences,
           historicalTusedSource,
-          sentenceDateOverrides,
+          nomisPrisonerCalculation,
           historicOverrides,
         ),
       )
@@ -60,12 +61,12 @@ class CalculationResultEnrichmentService(
     releaseDates: Map<ReleaseDateType, ReleaseDate>,
     sentenceAndOffences: List<SentenceAndOffenceWithReleaseArrangements>?,
     historicalTusedSource: HistoricalTusedSource? = null,
-    sentenceDateOverrides: List<String>,
+    nomisPrisonerCalculation: OffenderKeyDates? = null,
     historicOverrides: List<CalculationOutcomeHistoricOverride>,
   ): List<ReleaseDateHint> {
     val hints = mutableListOf<ReleaseDateHint?>()
 
-    if (sentenceDateOverrides.contains(type.name)) {
+    if (nomisPrisonerCalculation != null && isManuallyOverriddenInNomis(type, nomisPrisonerCalculation)) {
       hints += ReleaseDateHint("Manually overridden")
     }
 
@@ -86,6 +87,19 @@ class CalculationResultEnrichmentService(
     hints += tusedHints(type, historicalTusedSource, calculationBreakdown)
 
     return hints.filterNotNull()
+  }
+
+  private fun isManuallyOverriddenInNomis(type: ReleaseDateType, nomisPrisonerCalculation: OffenderKeyDates): Boolean = when (type) {
+    ReleaseDateType.HDCED -> nomisPrisonerCalculation.homeDetentionCurfewEligibilityDateOverridden
+    ReleaseDateType.CRD -> nomisPrisonerCalculation.conditionalReleaseDateOverridden
+    ReleaseDateType.LED -> nomisPrisonerCalculation.licenceExpiryDateOverridden
+    ReleaseDateType.SED -> nomisPrisonerCalculation.sentenceExpiryDateOverridden
+    ReleaseDateType.SLED -> nomisPrisonerCalculation.licenceExpiryDateOverridden || nomisPrisonerCalculation.sentenceExpiryDateOverridden
+    ReleaseDateType.NPD -> nomisPrisonerCalculation.nonParoleDateOverridden
+    ReleaseDateType.ARD -> nomisPrisonerCalculation.automaticReleaseDateOverridden
+    ReleaseDateType.TUSED -> nomisPrisonerCalculation.topupSupervisionExpiryDateOverridden
+    ReleaseDateType.PED -> nomisPrisonerCalculation.paroleEligibilityDateOverridden
+    else -> false
   }
 
   private fun showSDS40Hints(
@@ -185,9 +199,11 @@ class CalculationResultEnrichmentService(
         CalculationRule.HDCED_ADJUSTED_TO_CONCURRENT_CONDITIONAL_RELEASE in hdcRules -> {
           hints += ReleaseDateHint("HDCED adjusted for the CRD of a concurrent sentence or default term")
         }
+
         CalculationRule.HDCED_ADJUSTED_TO_CONCURRENT_ACTUAL_RELEASE in hdcRules -> {
           hints += ReleaseDateHint("HDCED adjusted for the ARD of a concurrent sentence or default term")
         }
+
         CalculationRule.HDCED_ADJUSTED_TO_CONCURRENT_PRRD in hdcRules -> {
           hints += ReleaseDateHint("HDCED adjusted for the PRRD of a recall")
         }

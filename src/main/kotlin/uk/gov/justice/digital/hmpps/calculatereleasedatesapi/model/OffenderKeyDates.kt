@@ -29,4 +29,12 @@ data class OffenderKeyDates(
   val approvedParoleDate: LocalDate? = null,
   val releaseOnTemporaryLicenceDate: LocalDate? = null,
   val judiciallyImposedSentenceLength: String? = null,
+  val homeDetentionCurfewEligibilityDateOverridden: Boolean = false,
+  val conditionalReleaseDateOverridden: Boolean = false,
+  val licenceExpiryDateOverridden: Boolean = false,
+  val sentenceExpiryDateOverridden: Boolean = false,
+  val nonParoleDateOverridden: Boolean = false,
+  val automaticReleaseDateOverridden: Boolean = false,
+  val topupSupervisionExpiryDateOverridden: Boolean = false,
+  val paroleEligibilityDateOverridden: Boolean = false,
 )

@@ -23,24 +23,24 @@ class CalculationSourceDataService(
   private val adjustmentsApiClient: AdjustmentsApiClient,
 ) {
 
-  fun getCalculationSourceData(prisonerId: String, inactiveDataOptions: InactiveDataOptions, olderBookingsToInclude: List<Long> = emptyList()): CalculationSourceData {
+  fun getCalculationSourceData(prisonerId: String, sourceDataLookupOptions: SourceDataLookupOptions, olderBookingsToInclude: List<Long> = emptyList()): CalculationSourceData {
     val prisonerDetails = prisonService.getOffenderDetail(prisonerId)
-    return getCalculationSourceData(prisonerDetails, inactiveDataOptions, olderBookingsToInclude)
+    return getCalculationSourceData(prisonerDetails, sourceDataLookupOptions, olderBookingsToInclude)
   }
 
-  fun getCalculationSourceData(prisonerDetails: PrisonerDetails, inactiveDataOptions: InactiveDataOptions, olderBookingsToInclude: List<Long> = emptyList()): CalculationSourceData {
-    var data = getBookingLevelSourceData(prisonerDetails, prisonerDetails.bookingId, inactiveDataOptions)
+  fun getCalculationSourceData(prisonerDetails: PrisonerDetails, sourceDataLookupOptions: SourceDataLookupOptions, olderBookingsToInclude: List<Long> = emptyList()): CalculationSourceData {
+    var data = getBookingLevelSourceData(prisonerDetails, prisonerDetails.bookingId, sourceDataLookupOptions)
     olderBookingsToInclude.forEach {
-      data = data.appendOlderBooking(getBookingLevelSourceData(prisonerDetails, it, inactiveDataOptions, olderBooking = true))
+      data = data.appendOlderBooking(getBookingLevelSourceData(prisonerDetails, it, sourceDataLookupOptions, olderBooking = true))
     }
     return getCalculationSourceData(prisonerDetails, data)
   }
 
-  private fun getBookingLevelSourceData(prisonerDetails: PrisonerDetails, bookingId: Long, inactiveDataOptions: InactiveDataOptions, olderBooking: Boolean = false): BookingLevelSourceData {
-    val activeOnly = inactiveDataOptions.activeOnly(featureToggles.supportInactiveSentencesAndAdjustments)
+  private fun getBookingLevelSourceData(prisonerDetails: PrisonerDetails, bookingId: Long, sourceDataLookupOptions: SourceDataLookupOptions, olderBooking: Boolean = false): BookingLevelSourceData {
+    val activeOnly = sourceDataLookupOptions.activeOnly(featureToggles.supportInactiveSentencesAndAdjustments)
 
     val sentenceAndOffences = prisonService.getSentencesAndOffences(bookingId, activeOnly)
-    val adjustments = getAdjustments(prisonerDetails.offenderNo, bookingId, activeOnly, olderBooking)
+    val adjustments = getAdjustments(prisonerDetails.offenderNo, bookingId, activeOnly, olderBooking, sourceDataLookupOptions)
     val bookingHasFixedTermRecall = sentenceAndOffences.any { from(it.sentenceCalculationType).recallType?.isFixedTermRecall == true }
     val (ftrDetails, returnToCustodyDate) = prisonService.getFixedTermRecallDetails(bookingId, bookingHasFixedTermRecall)
     val bookingHasAFine = sentenceAndOffences.any { from(it.sentenceCalculationType).sentenceType == SentenceType.AFine }
@@ -77,7 +77,8 @@ class CalculationSourceDataService(
     bookingId: Long,
     activeOnly: Boolean,
     isOldBooking: Boolean,
-  ): AdjustmentsSourceData = if (featureToggles.useAdjustmentsApi) {
+    lookupOptions: SourceDataLookupOptions,
+  ): AdjustmentsSourceData = if (lookupOptions.useAdjustmentsApi(featureToggles.useAdjustmentsApi)) {
     val statuses = if (activeOnly) {
       listOf(AdjustmentDto.Status.ACTIVE)
     } else {
@@ -100,8 +101,10 @@ class CalculationSourceDataService(
  * 2. The default behaviour is defined by a feature toggle
  * 3. Some endpoints override this behaviour because they require inactive data e.g. recalls, IR
  */
-class InactiveDataOptions private constructor(
-  private val overrideToIncludeInactiveData: Boolean,
+
+data class SourceDataLookupOptions(
+  val overrideToIncludeInactiveData: Boolean = false,
+  val overrideToUseAdjustmentsApi: Boolean = false,
 ) {
 
   fun activeOnly(featureToggle: Boolean): Boolean = !includeInactive(featureToggle)
@@ -112,20 +115,16 @@ class InactiveDataOptions private constructor(
     featureToggle
   }
 
-  override fun equals(other: Any?): Boolean {
-    if (this === other) return true
-    if (javaClass != other?.javaClass) return false
-
-    other as InactiveDataOptions
-
-    return overrideToIncludeInactiveData == other.overrideToIncludeInactiveData
+  fun useAdjustmentsApi(featureToggle: Boolean): Boolean = if (overrideToUseAdjustmentsApi) {
+    true
+  } else {
+    featureToggle
   }
 
-  override fun hashCode(): Int = overrideToIncludeInactiveData.hashCode()
-
   companion object {
-    fun default(): InactiveDataOptions = InactiveDataOptions(false)
-    fun overrideToIncludeInactiveData(): InactiveDataOptions = InactiveDataOptions(true)
+    fun default(): SourceDataLookupOptions = SourceDataLookupOptions(false)
+    fun overrideToIncludeInactiveData(): SourceDataLookupOptions = SourceDataLookupOptions(true)
+    fun overrideToIncludeInactiveDataAndForceAdjustmentsApi(): SourceDataLookupOptions = SourceDataLookupOptions(true, true)
   }
 }
 data class BookingLevelSourceData(

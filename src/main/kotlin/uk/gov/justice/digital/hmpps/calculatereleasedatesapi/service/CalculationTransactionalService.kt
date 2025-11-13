@@ -75,19 +75,10 @@ class CalculationTransactionalService(
   fun calculate(
     prisonerId: String,
     calculationRequestModel: CalculationRequestModel,
-    inactiveDataOptions: InactiveDataOptions = InactiveDataOptions.default(),
-    calculationType: CalculationStatus = PRELIMINARY,
-  ): CalculatedReleaseDates {
-    val sourceData = calculationSourceDataService.getCalculationSourceData(prisonerId, inactiveDataOptions)
-    return calculate(sourceData, calculationRequestModel, calculationType)
-  }
-
-  @Transactional
-  fun calculate(
-    sourceData: CalculationSourceData,
-    calculationRequestModel: CalculationRequestModel,
+    sourceDataLookupOptions: SourceDataLookupOptions = SourceDataLookupOptions.default(),
     calculationStatus: CalculationStatus = PRELIMINARY,
   ): CalculatedReleaseDates {
+    val sourceData = calculationSourceDataService.getCalculationSourceData(prisonerId, sourceDataLookupOptions)
     val calculationUserInputs = calculationRequestModel.calculationUserInputs ?: CalculationUserInputs()
     val booking = bookingService.getBooking(sourceData)
     val reasonForCalculation = calculationReasonRepository.findById(calculationRequestModel.calculationReasonId)
@@ -126,7 +117,7 @@ class CalculationTransactionalService(
       ).orElseThrow {
         EntityNotFoundException("No preliminary calculation exists for calculationRequestId $calculationRequestId")
       }
-    val sourceData = calculationSourceDataService.getCalculationSourceData(calculationRequest.prisonerId, InactiveDataOptions.default())
+    val sourceData = calculationSourceDataService.getCalculationSourceData(calculationRequest.prisonerId, SourceDataLookupOptions.default())
     val userInput = transform(calculationRequest.calculationRequestUserInput)
     val booking = bookingService.getBooking(sourceData)
     val currentBookingJson = objectToJson(booking, objectMapper)
@@ -447,7 +438,7 @@ class CalculationTransactionalService(
     val calculationRequest = getCalculationRequestByReference(calculationReference)
     if (checkForChange) {
       log.info("Checking for change in data")
-      val sourceData = calculationSourceDataService.getCalculationSourceData(calculationRequest.prisonerId, InactiveDataOptions.default())
+      val sourceData = calculationSourceDataService.getCalculationSourceData(calculationRequest.prisonerId, SourceDataLookupOptions.default())
       val userInput = transform(calculationRequest.calculationRequestUserInput)
       val booking = bookingService.getBooking(sourceData)
 

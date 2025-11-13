@@ -5,12 +5,12 @@ import org.jlleitschuh.gradle.ktlint.tasks.KtLintFormatTask
 import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "9.1.2"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "9.1.4"
   id("org.springdoc.openapi-gradle-plugin") version "1.9.0"
-  kotlin("plugin.spring") version "2.2.20"
-  kotlin("plugin.jpa") version "2.2.20"
+  kotlin("plugin.spring") version "2.2.21"
+  kotlin("plugin.jpa") version "2.2.21"
   id("jacoco")
-  id("org.openapi.generator") version "7.16.0"
+  id("org.openapi.generator") version "7.17.0"
 }
 
 configurations {
@@ -38,7 +38,7 @@ dependencies {
   implementation("uk.gov.service.notify:notifications-java-client:5.2.1-RELEASE")
 
   // Enable kotlin reflect
-  implementation("org.jetbrains.kotlin:kotlin-reflect:2.2.20")
+  implementation("org.jetbrains.kotlin:kotlin-reflect:2.2.21")
 
   // Three Ten Date Calculations
   implementation("org.threeten:threeten-extra:1.8.0")
@@ -55,31 +55,31 @@ dependencies {
   runtimeOnly("io.jsonwebtoken:jjwt-impl:0.13.0")
   runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.13.0")
 
-  implementation("io.arrow-kt:arrow-core:2.1.2")
-  implementation("io.hypersistence:hypersistence-utils-hibernate-63:3.11.0")
+  implementation("io.arrow-kt:arrow-core:2.2.0")
+  implementation("io.hypersistence:hypersistence-utils-hibernate-63:3.12.0")
   // OpenAPI
-  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.13")
+  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.14")
 
   implementation("com.amazonaws:amazon-sqs-java-messaging-lib:2.1.4")
-  implementation("io.awspring.cloud:spring-cloud-aws-starter:3.4.0")
-  implementation("io.awspring.cloud:spring-cloud-aws-core:3.4.0")
-  implementation("io.awspring.cloud:spring-cloud-aws-sns:3.4.0")
-  implementation("io.awspring.cloud:spring-cloud-aws-sqs:3.4.0")
-  implementation("org.springframework:spring-jms:6.2.11")
+  implementation("io.awspring.cloud:spring-cloud-aws-starter:3.4.1")
+  implementation("io.awspring.cloud:spring-cloud-aws-core:3.4.1")
+  implementation("io.awspring.cloud:spring-cloud-aws-sns:3.4.1")
+  implementation("io.awspring.cloud:spring-cloud-aws-sqs:3.4.1")
+  implementation("org.springframework:spring-jms:6.2.13")
   implementation("com.google.code.gson:gson:2.13.2")
   implementation("org.apache.commons:commons-text:1.14.0")
 
   // SQS
-  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:5.5.0")
+  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:5.6.1")
 
   // Test dependencies
   testImplementation("org.wiremock:wiremock-standalone:3.13.1")
   testImplementation("org.springframework.security:spring-security-test")
   testImplementation("org.awaitility:awaitility-kotlin:4.3.0")
   testImplementation("net.javacrumbs.json-unit:json-unit-assertj:4.1.1")
-  testImplementation("io.swagger.parser.v3:swagger-parser-v2-converter:2.1.34")
+  testImplementation("io.swagger.parser.v3:swagger-parser-v2-converter:2.1.35")
   testImplementation("org.mockito:mockito-inline:5.2.0")
-  testImplementation("org.junit.jupiter:junit-jupiter:6.0.0")
+  testImplementation("org.junit.jupiter:junit-jupiter:6.0.1")
   testImplementation("org.testcontainers:postgresql:1.21.3")
   testImplementation("org.testcontainers:localstack:1.21.3")
   testImplementation("io.github.hakky54:logcaptor:2.12.1")
@@ -92,7 +92,7 @@ dependencies {
 
 jacoco {
   // You may modify the Jacoco version here
-  toolVersion = "0.8.13"
+  toolVersion = "0.8.14"
 }
 
 tasks.jacocoTestCoverageVerification {
@@ -153,6 +153,20 @@ val models = listOf(
     input = "prison-api-docs.json",
     output = "prisonapi",
     packageName = "prisonapi",
+  ),
+  // https://remand-and-sentencing-api-dev.hmpps.service.justice.gov.uk/v3/api-docs
+  ModelConfiguration(
+    name = "buildRemandAndSentencingApiModel",
+    input = "remand-and-sentencing-api-docs.json",
+    output = "remandandsentencing",
+    packageName = "remandandsentencing",
+  ),
+  // https://nomis-sync-prisoner-mapping-dev.hmpps.service.justice.gov.uk/v3/api-docs
+  ModelConfiguration(
+    name = "buildNomisSyncMappingApiModel",
+    input = "nomis-mapping-sync-api-docs.json",
+    output = "nomissyncmapping",
+    packageName = "nomissyncmapping",
   ),
 )
 

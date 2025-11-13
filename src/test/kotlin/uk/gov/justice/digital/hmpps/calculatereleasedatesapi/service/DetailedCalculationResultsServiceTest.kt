@@ -124,7 +124,7 @@ class DetailedCalculationResultsServiceTest {
         listOf(originalSentence),
         expectedBreakdown,
         null,
-        emptyList(),
+        null,
         emptyList(),
       ),
     ).thenReturn(enrichedReleaseDates)
@@ -152,7 +152,7 @@ class DetailedCalculationResultsServiceTest {
       listOf(originalSentence),
       expectedBreakdown,
       null,
-      emptyList(),
+      null,
       emptyList(),
     )
   }
@@ -167,7 +167,7 @@ class DetailedCalculationResultsServiceTest {
         CalculationOutcome(calculationRequestId = CALCULATION_REQUEST_ID, calculationDateType = "CRD", outcomeDate = LocalDate.of(2026, 6, 26)),
       ),
       calculationType = CalculationType.GENUINE_OVERRIDE,
-      genuineOverrideReason = GenuineOverrideReason.TERRORISM,
+      genuineOverrideReason = GenuineOverrideReason.AGGRAVATING_FACTOR_OFFENCE,
       genuineOverrideReasonFurtherDetail = null,
     )
 
@@ -183,14 +183,14 @@ class DetailedCalculationResultsServiceTest {
         listOf(originalSentence),
         expectedBreakdown,
         null,
-        emptyList(),
+        null,
         emptyList(),
       ),
     ).thenReturn(enrichedReleaseDates)
     whenever(calculationBreakdownService.getBreakdownSafely(any())).thenReturn(expectedBreakdown.right())
     val results = service.findDetailedCalculationResults(CALCULATION_REQUEST_ID)
-    assertThat(results.context.genuineOverrideReasonCode).isEqualTo(GenuineOverrideReason.TERRORISM)
-    assertThat(results.context.genuineOverrideReasonDescription).isEqualTo("Terrorism or terror-related offences")
+    assertThat(results.context.genuineOverrideReasonCode).isEqualTo(GenuineOverrideReason.AGGRAVATING_FACTOR_OFFENCE)
+    assertThat(results.context.genuineOverrideReasonDescription).isEqualTo("One or more offences have been characterised by an aggravating factor (such as terror)")
   }
 
   @Test
@@ -219,7 +219,7 @@ class DetailedCalculationResultsServiceTest {
         listOf(originalSentence),
         expectedBreakdown,
         null,
-        emptyList(),
+        null,
         emptyList(),
       ),
     ).thenReturn(enrichedReleaseDates)
@@ -277,7 +277,7 @@ class DetailedCalculationResultsServiceTest {
         listOf(originalSentence),
         null,
         null,
-        emptyList(),
+        null,
         emptyList(),
       ),
     ).thenReturn(enrichedReleaseDates)
@@ -304,7 +304,7 @@ class DetailedCalculationResultsServiceTest {
       listOf(originalSentence),
       null,
       null,
-      emptyList(),
+      null,
       emptyList(),
     )
   }

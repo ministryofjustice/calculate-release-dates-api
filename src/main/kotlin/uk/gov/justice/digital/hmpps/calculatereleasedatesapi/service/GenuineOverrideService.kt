@@ -16,11 +16,17 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CouldNotSaveManualEntryException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.GenuineOverrideCreatedResponse
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.GenuineOverrideDate
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.GenuineOverrideInputResponse
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.GenuineOverrideMode
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.GenuineOverrideRequest
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.PreviousGenuineOverride
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.service.DateValidationService
 import java.time.Period.ZERO
+import kotlin.jvm.optionals.getOrNull
 
 @Service
 class GenuineOverrideService(
@@ -32,13 +38,21 @@ class GenuineOverrideService(
   private val calculationOutcomeRepository: CalculationOutcomeRepository,
   private val buildProperties: BuildProperties,
   private val objectMapper: ObjectMapper,
+  private val dateValidationService: DateValidationService,
 ) {
 
   @Transactional
   fun overrideDatesForACalculation(calculationRequestId: Long, genuineOverrideRequest: GenuineOverrideRequest): GenuineOverrideCreatedResponse {
-    val originalRequest = getOriginalRequest(calculationRequestId)
+    val validationErrorsForSelectedDates = dateValidationService.validateDates(genuineOverrideRequest.dates.map { it.dateType.name })
+    if (validationErrorsForSelectedDates.isNotEmpty()) {
+      return GenuineOverrideCreatedResponse(
+        success = false,
+        validationMessages = validationErrorsForSelectedDates,
+      )
+    }
+    val originalRequest = getPreliminaryRequest(calculationRequestId)
 
-    val sourceData = calculationSourceDataService.getCalculationSourceData(originalRequest.prisonerId, InactiveDataOptions.default())
+    val sourceData = calculationSourceDataService.getCalculationSourceData(originalRequest.prisonerId, SourceDataLookupOptions.default())
     val booking = bookingService.getBooking(sourceData)
 
     val newRequest = saveNewRequest(booking, sourceData, originalRequest, genuineOverrideRequest)
@@ -50,12 +64,13 @@ class GenuineOverrideService(
     writeToNomisAndPublishEvent(booking, genuineOverrideRequest, newRequest, calculationOutcomes)
 
     return GenuineOverrideCreatedResponse(
+      success = true,
       originalCalculationRequestId = originalRequest.id,
       newCalculationRequestId = newRequest.id,
     )
   }
 
-  private fun getOriginalRequest(calculationRequestId: Long): CalculationRequest = calculationRequestRepository.findByIdAndCalculationStatus(
+  private fun getPreliminaryRequest(calculationRequestId: Long): CalculationRequest = calculationRequestRepository.findByIdAndCalculationStatus(
     calculationRequestId,
     PRELIMINARY.name,
   ).orElseThrow {
@@ -130,6 +145,37 @@ class GenuineOverrideService(
       isGenuineOverride = true,
       effectiveSentenceLength = effectiveSentenceLength,
     ) ?: throw CouldNotSaveManualEntryException("There was a problem saving the overridden dates to NOMIS")
+  }
+
+  fun inputsForCalculation(calculationRequestId: Long): GenuineOverrideInputResponse {
+    val preliminaryRequest = getPreliminaryRequest(calculationRequestId)
+    val previousConfirmedCalculation = calculationRequestRepository.findFirstByPrisonerIdAndCalculationStatusOrderByCalculatedAtDesc(prisonerId = preliminaryRequest.prisonerId, status = CalculationStatus.CONFIRMED.name).getOrNull()
+    val (mode, previousOverrideForExpressGenuineOverride) = if (
+      previousConfirmedCalculation != null &&
+      previousConfirmedCalculation.calculationType === CalculationType.GENUINE_OVERRIDE &&
+      previousConfirmedCalculation.inputData.hashCode() == preliminaryRequest.inputData.hashCode()
+    ) {
+      GenuineOverrideMode.EXPRESS to PreviousGenuineOverride(
+        calculationRequestId = previousConfirmedCalculation.id,
+        dates = mapGenuineOverrideDates(previousConfirmedCalculation),
+        reason = previousConfirmedCalculation.genuineOverrideReason!!,
+        reasonFurtherDetail = previousConfirmedCalculation.genuineOverrideReasonFurtherDetail,
+      )
+    } else {
+      GenuineOverrideMode.STANDARD to null
+    }
+    return GenuineOverrideInputResponse(
+      mode = mode,
+      calculatedDates = mapGenuineOverrideDates(preliminaryRequest),
+      previousOverrideForExpressGenuineOverride = previousOverrideForExpressGenuineOverride,
+    )
+  }
+
+  private fun mapGenuineOverrideDates(request: CalculationRequest): List<GenuineOverrideDate> = request.calculationOutcomes.filter { it.outcomeDate != null }.map {
+    GenuineOverrideDate(
+      dateType = ReleaseDateType.valueOf(it.calculationDateType),
+      date = it.outcomeDate!!,
+    )
   }
 
   private companion object {

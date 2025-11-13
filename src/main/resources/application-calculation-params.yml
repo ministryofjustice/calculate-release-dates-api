@@ -47,35 +47,35 @@ early-release-configuration:
       additions-applied-after-defaulting: true
       tranches:
         - type: SENTENCE_LENGTH
-          unit: YEARS
-          duration: 5
-          date: 2026-03-04
+          unit: DAYS
+          duration: 1701
+          date: 2026-03-31
           name: FTR_56_TRANCHE_1
 
         - type: SENTENCE_LENGTH
-          unit: YEARS
-          duration: 6
-          date: 2026-03-18
+          unit: DAYS
+          duration: 2128
+          date: 2026-04-14
           name: FTR_56_TRANCHE_2
 
         - type: SENTENCE_LENGTH
-          unit: YEARS
-          duration: 7
-          date: 2026-04-01
+          unit: DAYS
+          duration: 2576
+          date: 2026-04-21
           name: FTR_56_TRANCHE_3
 
         - type: SENTENCE_LENGTH
-          unit: YEARS
-          duration: 8
-          date: 2026-04-15
+          unit: DAYS
+          duration: 3304
+          date: 2026-04-28
           name: FTR_56_TRANCHE_4
 
         - type: SENTENCE_LENGTH
-          unit: YEARS
-          duration: 9
-          date: 2026-04-29
+          unit: DAYS
+          duration: 4438
+          date: 2026-05-05
           name: FTR_56_TRANCHE_5
 
         - type: FINAL
-          date: 2026-05-13
+          date: 2026-05-12
           name: FTR_56_TRANCHE_6

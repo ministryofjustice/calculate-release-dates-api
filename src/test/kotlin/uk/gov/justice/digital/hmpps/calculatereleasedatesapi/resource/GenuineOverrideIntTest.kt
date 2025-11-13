@@ -21,6 +21,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.GenuineOverri
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.GenuineOverrideRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource.CalculationIntTest.Companion.PRISONER_ID
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessage
 import java.time.LocalDate
 
 @Sql(scripts = ["classpath:/test_data/reset-base-data.sql", "classpath:/test_data/load-base-data.sql"])
@@ -38,11 +40,11 @@ class GenuineOverrideIntTest(private val mockPrisonService: MockPrisonService) :
         GenuineOverrideDate(ReleaseDateType.LED, LocalDate.of(2029, 12, 13)),
         GenuineOverrideDate(ReleaseDateType.HDCED, LocalDate.of(2021, 6, 7)),
       ),
-      reason = GenuineOverrideReason.TERRORISM,
+      reason = GenuineOverrideReason.AGGRAVATING_FACTOR_OFFENCE,
       reasonFurtherDetail = null,
     )
     val response = webTestClient.post()
-      .uri("/calculation/genuine-override/${preliminaryCalculation.calculationRequestId}")
+      .uri("/genuine-override/calculation/${preliminaryCalculation.calculationRequestId}")
       .accept(MediaType.APPLICATION_JSON)
       .bodyValue(request)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
@@ -52,19 +54,22 @@ class GenuineOverrideIntTest(private val mockPrisonService: MockPrisonService) :
       .expectBody(GenuineOverrideCreatedResponse::class.java)
       .returnResult().responseBody!!
 
+    assertThat(response.success).isTrue
+    assertThat(response.originalCalculationRequestId).isNotNull
+    assertThat(response.newCalculationRequestId).isNotNull
     assertThat(response.originalCalculationRequestId).isEqualTo(preliminaryCalculation.calculationRequestId)
-    val originalRequest = calculationRequestRepository.findById(response.originalCalculationRequestId).orElseThrow { fail("Couldn't load original request") }
-    val newRequest = calculationRequestRepository.findById(response.newCalculationRequestId).orElseThrow { fail("Couldn't load new request") }
+    val originalRequest = calculationRequestRepository.findById(response.originalCalculationRequestId!!).orElseThrow { fail("Couldn't load original request") }
+    val newRequest = calculationRequestRepository.findById(response.newCalculationRequestId!!).orElseThrow { fail("Couldn't load new request") }
 
     assertThat(originalRequest.overridesCalculationRequestId).isNull()
     assertThat(originalRequest.overriddenByCalculationRequestId).isEqualTo(newRequest.id)
-    assertThat(originalRequest.genuineOverrideReason).isEqualTo(GenuineOverrideReason.TERRORISM)
+    assertThat(originalRequest.genuineOverrideReason).isEqualTo(GenuineOverrideReason.AGGRAVATING_FACTOR_OFFENCE)
     assertThat(originalRequest.genuineOverrideReasonFurtherDetail).isNull()
     assertThat(originalRequest.calculationStatus).isEqualTo(CalculationStatus.OVERRIDDEN.name)
 
     assertThat(newRequest.overridesCalculationRequestId).isEqualTo(originalRequest.id)
     assertThat(newRequest.overriddenByCalculationRequestId).isNull()
-    assertThat(newRequest.genuineOverrideReason).isEqualTo(GenuineOverrideReason.TERRORISM)
+    assertThat(newRequest.genuineOverrideReason).isEqualTo(GenuineOverrideReason.AGGRAVATING_FACTOR_OFFENCE)
     assertThat(newRequest.genuineOverrideReasonFurtherDetail).isNull()
     assertThat(newRequest.calculationStatus).isEqualTo(CalculationStatus.CONFIRMED.name)
 
@@ -108,7 +113,7 @@ class GenuineOverrideIntTest(private val mockPrisonService: MockPrisonService) :
       reasonFurtherDetail = "A test reason",
     )
     val response = webTestClient.post()
-      .uri("/calculation/genuine-override/${preliminaryCalculation.calculationRequestId}")
+      .uri("/genuine-override/calculation/${preliminaryCalculation.calculationRequestId}")
       .accept(MediaType.APPLICATION_JSON)
       .bodyValue(request)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
@@ -118,9 +123,12 @@ class GenuineOverrideIntTest(private val mockPrisonService: MockPrisonService) :
       .expectBody(GenuineOverrideCreatedResponse::class.java)
       .returnResult().responseBody!!
 
+    assertThat(response.success).isTrue
+    assertThat(response.originalCalculationRequestId).isNotNull
+    assertThat(response.newCalculationRequestId).isNotNull
     assertThat(response.originalCalculationRequestId).isEqualTo(preliminaryCalculation.calculationRequestId)
-    val originalRequest = calculationRequestRepository.findById(response.originalCalculationRequestId).orElseThrow { fail("Couldn't load original request") }
-    val newRequest = calculationRequestRepository.findById(response.newCalculationRequestId).orElseThrow { fail("Couldn't load new request") }
+    val originalRequest = calculationRequestRepository.findById(response.originalCalculationRequestId!!).orElseThrow { fail("Couldn't load original request") }
+    val newRequest = calculationRequestRepository.findById(response.newCalculationRequestId!!).orElseThrow { fail("Couldn't load new request") }
 
     assertThat(originalRequest.overridesCalculationRequestId).isNull()
     assertThat(originalRequest.overriddenByCalculationRequestId).isEqualTo(newRequest.id)
@@ -136,6 +144,43 @@ class GenuineOverrideIntTest(private val mockPrisonService: MockPrisonService) :
   }
 
   @Test
+  fun `should return validation messages if the select dates are invalid`() {
+    val preliminaryCalculation = createPreliminaryCalculation(PRISONER_ID)
+    val request = GenuineOverrideRequest(
+      dates = listOf(
+        GenuineOverrideDate(ReleaseDateType.CRD, LocalDate.of(2025, 1, 2)),
+        GenuineOverrideDate(ReleaseDateType.SED, LocalDate.of(2029, 12, 13)),
+        GenuineOverrideDate(ReleaseDateType.HDCED, LocalDate.of(2021, 6, 7)),
+        GenuineOverrideDate(ReleaseDateType.HDCAD, LocalDate.of(2021, 6, 7)),
+        GenuineOverrideDate(ReleaseDateType.PRRD, LocalDate.of(2021, 6, 7)),
+      ),
+      reason = GenuineOverrideReason.OTHER,
+      reasonFurtherDetail = "A test reason",
+    )
+    val response = webTestClient.post()
+      .uri("/genuine-override/calculation/${preliminaryCalculation.calculationRequestId}")
+      .accept(MediaType.APPLICATION_JSON)
+      .bodyValue(request)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+      .exchange()
+      .expectStatus().isBadRequest
+      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectBody(GenuineOverrideCreatedResponse::class.java)
+      .returnResult().responseBody!!
+
+    assertThat(response.success).isFalse
+    assertThat(response.originalCalculationRequestId).isNull()
+    assertThat(response.newCalculationRequestId).isNull()
+    assertThat(response.validationMessages).isEqualTo(
+      listOf(
+        ValidationMessage(ValidationCode.DATES_MISSING_REQUIRED_TYPE, listOf("CRD", "SED", "LED")),
+        ValidationMessage(ValidationCode.DATES_PAIRINGS_INVALID, listOf("HDCED", "PRRD")),
+        ValidationMessage(ValidationCode.DATES_PAIRINGS_INVALID, listOf("HDCAD", "PRRD")),
+      ),
+    )
+  }
+
+  @Test
   fun `should return a 404 if the original calculation cannot be found`() {
     val request = GenuineOverrideRequest(
       dates = listOf(
@@ -145,7 +190,7 @@ class GenuineOverrideIntTest(private val mockPrisonService: MockPrisonService) :
       reasonFurtherDetail = "A test reason",
     )
     webTestClient.post()
-      .uri("/calculation/genuine-override/-1000")
+      .uri("/genuine-override/calculation/-1000")
       .accept(MediaType.APPLICATION_JSON)
       .bodyValue(request)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))

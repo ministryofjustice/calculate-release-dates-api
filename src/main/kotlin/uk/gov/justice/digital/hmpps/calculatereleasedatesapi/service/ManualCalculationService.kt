@@ -64,7 +64,7 @@ class ManualCalculationService(
     prisonerId: String,
     manualEntryRequest: ManualEntryRequest,
   ): ManualCalculationResponse {
-    val sourceData = calculationSourceDataService.getCalculationSourceData(prisonerId, InactiveDataOptions.default())
+    val sourceData = calculationSourceDataService.getCalculationSourceData(prisonerId, SourceDataLookupOptions.default())
     val calculationUserInputs = CalculationUserInputs()
     val booking = bookingService.getBooking(sourceData)
 
@@ -204,7 +204,7 @@ class ManualCalculationService(
    * Both calculations must be identical to return a positive match.
    */
   fun equivalentManualCalculationExists(prisonerId: String): Boolean {
-    val sourceData = calculationSourceDataService.getCalculationSourceData(prisonerId, InactiveDataOptions.default())
+    val sourceData = calculationSourceDataService.getCalculationSourceData(prisonerId, SourceDataLookupOptions.default())
     val currentBooking = bookingService.getBooking(sourceData)
     val previousCalculation = calculationRequestRepository
       .findLatestManualCalculation(prisonerId, CalculationStatus.CONFIRMED.name) ?: return false

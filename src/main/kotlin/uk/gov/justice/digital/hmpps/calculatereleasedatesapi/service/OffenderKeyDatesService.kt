@@ -45,8 +45,6 @@ class OffenderKeyDatesService(
     val dates = offenderKeyDatesEither.map { releaseDates(it) }
       .getOrElse { throw CrdWebException("Error in mapping/enriching release dates", HttpStatus.NOT_FOUND) }
 
-    val sentenceDateOverrides = prisonService.getSentenceOverrides(calculationRequest.bookingId, dates)
-
     val historicDates = if (featureToggles.historicSled) calculationOutcomeHistoricOverrideRepository.findByCalculationRequestId(calculationRequestId) else emptyList()
 
     val enrichedDates = runCatching {
@@ -55,7 +53,7 @@ class OffenderKeyDatesService(
         null,
         null,
         null,
-        sentenceDateOverrides,
+        null,
         historicDates,
       ).values.toList()
     }.getOrElse { throw CrdWebException("Unable to retrieve offender key dates", HttpStatus.NOT_FOUND) }
@@ -89,35 +87,7 @@ class OffenderKeyDatesService(
       null,
       null,
       null,
-      listOf(),
-      emptyList(),
-    ).values.toList()
-
-    val nomisReason =
-      prisonService.getNOMISCalcReasons().find { it.code == nomisOffenderKeyDates.reasonCode }?.description
-        ?: nomisOffenderKeyDates.reasonCode
-    return NomisCalculationSummary(
-      nomisReason,
-      nomisOffenderKeyDates.calculatedAt,
-      nomisOffenderKeyDates.comment,
-      detailsReleaseDates,
-    )
-  }
-
-  fun getNomisCalculationSummary(offenderSentCalculationId: Long, bookingId: Long): NomisCalculationSummary {
-    CalculationController.log.info("Request received to get offender key dates for $offenderSentCalculationId")
-    val nomisOffenderKeyDates = prisonService.getNOMISOffenderKeyDates(offenderSentCalculationId)
-      .getOrElse { problemMessage -> throw CrdWebException(problemMessage, HttpStatus.NOT_FOUND) }
-    val releaseDatesForSentCalculationId = releaseDates(nomisOffenderKeyDates)
-
-    val sentenceDateOverrides = prisonService.getSentenceOverrides(bookingId, releaseDatesForSentCalculationId)
-
-    val detailsReleaseDates = calculationResultEnrichmentService.addDetailToCalculationDates(
-      releaseDatesForSentCalculationId,
-      null,
-      null,
-      null,
-      sentenceDateOverrides,
+      nomisOffenderKeyDates,
       emptyList(),
     ).values.toList()
 

@@ -107,7 +107,7 @@ class BulkComparisonEventHandlerService(
     }
 
     val sourceData =
-      calculationSourceDataService.getCalculationSourceData(prisonerDetails, InactiveDataOptions.default())
+      calculationSourceDataService.getCalculationSourceData(prisonerDetails, SourceDataLookupOptions.default())
 
     val calculationUserInput = CalculationUserInputs(
       listOf(),

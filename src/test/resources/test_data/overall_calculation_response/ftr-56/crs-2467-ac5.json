@@ -1,10 +1,10 @@
 {
   "dates": {
-    "SLED": "2029-11-11",
-    "PRRD": "2026-04-15",
-    "ESED": "2029-11-11"
+    "SLED": "2029-01-19",
+    "PRRD": "2026-05-13",
+    "ESED": "2029-01-13"
   },
-  "effectiveSentenceLength": "P7Y",
+  "effectiveSentenceLength": "P8Y",
   "sdsEarlyReleaseTranche": "FTR_56_TRANCHE_4",
   "sdsEarlyReleaseAllocatedTranche": "FTR_56_TRANCHE_4"
 }

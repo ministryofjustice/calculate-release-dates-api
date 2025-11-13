@@ -7,6 +7,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.http.MediaType
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter
 import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
@@ -14,9 +15,10 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPat
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.ControllerAdvice
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.GenuineOverrideService
 
 @ActiveProfiles("test")
-@WebMvcTest(controllers = [GenuineOverrideReasonController::class])
+@WebMvcTest(controllers = [GenuineOverrideController::class])
 class GenuineOverrideReasonControllerTest {
 
   private lateinit var mvc: MockMvc
@@ -24,15 +26,18 @@ class GenuineOverrideReasonControllerTest {
   @Autowired
   private lateinit var jackson2HttpMessageConverter: MappingJackson2HttpMessageConverter
 
+  @MockitoBean
+  private lateinit var genuineOverrideService: GenuineOverrideService
+
   @Test
   fun `Test GET of the genuine override reasons`() {
     mvc = MockMvcBuilders
-      .standaloneSetup(GenuineOverrideReasonController())
+      .standaloneSetup(GenuineOverrideController(genuineOverrideService))
       .setControllerAdvice(ControllerAdvice())
       .setMessageConverters(this.jackson2HttpMessageConverter)
       .build()
 
-    mvc.perform(get("/genuine-override-reasons/").accept(MediaType.APPLICATION_JSON))
+    mvc.perform(get("/genuine-override/reasons").accept(MediaType.APPLICATION_JSON))
       .andExpect(status().isOk)
       .andExpect(content().contentType(MediaType.APPLICATION_JSON))
       .andExpect(
@@ -40,13 +45,11 @@ class GenuineOverrideReasonControllerTest {
           "$[*].code",
           containsInAnyOrder(
             // avoid renaming the codes as they will be stored against genuine overrides.
-            "ORDER_OF_IMPRISONMENT_OR_WARRANT_DOES_NOT_MATCH_TRIAL_RECORD",
-            "TERRORISM",
+            "TRIAL_RECORD_OR_BREAKDOWN_DOES_NOT_MATCH_OVERALL_SENTENCE_LENGTH",
+            "RELEASE_DATE_FROM_ANOTHER_CUSTODY_PERIOD",
             "POWER_TO_DETAIN",
             "CROSS_BORDER_SECTION_RELEASE_DATE",
-            "ADD_RELEASE_DATE_FROM_ANOTHER_BOOKING",
-            "ERS_BREACH",
-            "COURT_OF_APPEAL",
+            "AGGRAVATING_FACTOR_OFFENCE",
             "OTHER",
           ),
         ),
