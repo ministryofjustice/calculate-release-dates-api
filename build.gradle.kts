@@ -65,7 +65,7 @@ dependencies {
   implementation("io.awspring.cloud:spring-cloud-aws-core:3.4.1")
   implementation("io.awspring.cloud:spring-cloud-aws-sns:3.4.1")
   implementation("io.awspring.cloud:spring-cloud-aws-sqs:3.4.1")
-  implementation("org.springframework:spring-jms:6.2.13")
+  implementation("org.springframework:spring-jms:7.0.0")
   implementation("com.google.code.gson:gson:2.13.2")
   implementation("org.apache.commons:commons-text:1.14.0")
 
