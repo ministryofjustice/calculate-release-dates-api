@@ -102,11 +102,11 @@ class UnadjustedReleaseDate(
           throw NoValidRevocationDateException("No revocation date available")
         }
 
-        val ftr56Configuration =
-          earlyReleaseConfigurations.configurations.find { it.recallCalculation == RecallCalculationType.FTR_56 }
+        val ftr56Configuration = earlyReleaseConfigurations.configurations.find { it.recallCalculation == RecallCalculationType.FTR_56 }
         val revocationDateOrReturnToCustodyDateAfterFtr56Commencement = ftr56Configuration != null && returnToCustodyDate.isAfterOrEqualTo(ftr56Configuration.earliestTranche())
         val allocatedToFtr56Tranche = calculationTrigger.allocatedEarlyReleaseConfiguration != null && calculationTrigger.allocatedEarlyReleaseConfiguration == ftr56Configuration
-        val isUnderFourYears = sentence.durationIsLessThan(1461, ChronoUnit.DAYS) //Sentences under 4 years that were recalled before FTR_56 commencement should be treated as FTR_56 sentences which are not tranched.
+        val isUnderFourYears = sentence.durationIsLessThan(1461, ChronoUnit.DAYS) // Sentences under 4 years that were recalled before FTR_56 commencement should be treated as FTR_56 sentences which are not tranched.
+
         if (revocationDateOrReturnToCustodyDateAfterFtr56Commencement || allocatedToFtr56Tranche || isUnderFourYears) {
           calculateFixedTermRecall(returnToCustodyDate, recallType)
         } else {

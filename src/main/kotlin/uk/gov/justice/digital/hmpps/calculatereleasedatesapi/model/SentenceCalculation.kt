@@ -103,26 +103,46 @@ data class SentenceCalculation(
 
   val adjustedPostRecallReleaseDate: LocalDate?
     get() {
-      if (sentence.isRecall()) {
-        if (sentence.recallType == RecallType.STANDARD_RECALL) {
-          return expiryDate
-        }
-        if (sentence.recallType!!.isFixedTermRecall) {
 
-          val unadjustedDate = if (allocatedEarlyRelease?.modifiesRecallReleaseDate() == true && allocatedEarlyRelease!!.additionsAppliedAfterDefaulting && unadjustedPostRecallReleaseDate!!.isBeforeOrEqualTo(allocatedTranche?.date ?: allocatedEarlyRelease!!.earliestTranche())) {
-            allocatedTranche!!.date
-          } else {
-            unadjustedPostRecallReleaseDate
-          }
-          // Fixed term recalls only apply adjustments from return to custody date
-          val fixedTermRecallRelease = unadjustedDate?.plusDays(
-            adjustments.adjustmentsForFixedTermRecall(),
-          )
-          return minOf(fixedTermRecallRelease!!, expiryDate)
-        }
+      if (!sentence.isRecall()) {
+        return null
       }
-      return null
+
+      if (sentence.recallType == RecallType.STANDARD_RECALL) {
+        return expiryDate
+      }
+
+      if (sentence.recallType?.isFixedTermRecall == false) {
+        return null
+      }
+
+      val overrideWithTrancheDate = allocatedEarlyRelease?.run {
+        modifiesRecallReleaseDate() &&
+          additionsAppliedAfterDefaulting &&
+          unadjustedPostRecallReleaseDate?.isBeforeOrEqualTo(
+            allocatedTranche?.date ?: earliestTranche(),
+          ) == true
+      } ?: false
+
+      val unadjustedDate =
+        allocatedTranche?.date.takeIf { overrideWithTrancheDate } ?: unadjustedPostRecallReleaseDate
+
+      // Fixed term recalls only apply adjustments from return to custody date
+      val fixedTermRecallRelease = unadjustedDate?.plusDays(
+        adjustments.adjustmentsForFixedTermRecall(),
+      )
+      return minOf(fixedTermRecallRelease!!, expiryDate)
     }
+
+  private fun shouldOverrideWithAllocatedTranche(
+    earlyReleaseConfiguration: EarlyReleaseConfiguration?,
+    postRecallDate: LocalDate?,
+    earlyReleaseTrancheConfiguration: EarlyReleaseTrancheConfiguration?,
+  ): Boolean = earlyReleaseConfiguration?.let {
+    it.modifiesRecallReleaseDate() &&
+      it.additionsAppliedAfterDefaulting &&
+      postRecallDate?.isBeforeOrEqualTo(earlyReleaseTrancheConfiguration?.date ?: it.earliestTranche()) == true
+  } ?: false
 
   // Non Parole Date (NPD)
   var numberOfDaysToNonParoleDate: Long = 0

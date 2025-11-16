@@ -56,14 +56,15 @@ class TrancheAllocationService {
     sentences: List<CalculableSentence>,
     earlyReleaseConfig: EarlyReleaseConfiguration,
   ): List<CalculableSentence> = sentences.filter {
-    val excludedFromTranchingByBeingTooShort = earlyReleaseConfig.recallCalculation == RecallCalculationType.FTR_56 && it.durationIsLessThan(
-      1461,
-      ChronoUnit.DAYS
-    ) //Sentences under 4 years that were recalled before FTR_56 commencement should be treated as FTR_56 sentences which are not tranched.
+    val excludedFromTranchingByBeingTooShort = earlyReleaseConfig.recallCalculation == RecallCalculationType.FTR_56 &&
+      it.durationIsLessThan(
+        1461,
+        ChronoUnit.DAYS,
+      ) // Sentences under 4 years that were recalled before FTR_56 commencement should be treated as FTR_56 sentences which are not tranched.
 
     it.sentenceParts().any { sentence ->
       val isInRangeOfEarlyRelease = if (earlyReleaseConfig.modifiesRecallReleaseDate()) {
-         sentence.recall?.returnToCustodyDate?.isBefore(earlyReleaseConfig.earliestTranche()) == true && !excludedFromTranchingByBeingTooShort
+        sentence.recall?.returnToCustodyDate?.isBefore(earlyReleaseConfig.earliestTranche()) == true && !excludedFromTranchingByBeingTooShort
       } else {
         sentence.sentencedAt.isBefore(earlyReleaseConfig.earliestTranche())
       }
