@@ -122,7 +122,8 @@ data class SentenceCalculation(
       val overrideWithTrancheDate = currentAllocatedEarlyRelease !== null &&
         currentAllocatedEarlyRelease.modifiesRecallReleaseDate() &&
         currentAllocatedEarlyRelease.additionsAppliedAfterDefaulting &&
-        currentUnadjustedPostRecallReleaseDate !== null && currentUnadjustedPostRecallReleaseDate.isBeforeOrEqualTo(
+        currentUnadjustedPostRecallReleaseDate !== null &&
+        currentUnadjustedPostRecallReleaseDate.isBeforeOrEqualTo(
           allocatedTranche?.date ?: currentAllocatedEarlyRelease.earliestTranche(),
         )
 
