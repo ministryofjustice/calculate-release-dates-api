@@ -103,25 +103,39 @@ data class SentenceCalculation(
 
   val adjustedPostRecallReleaseDate: LocalDate?
     get() {
-      if (sentence.isRecall()) {
-        if (sentence.recallType == RecallType.STANDARD_RECALL) {
-          return expiryDate
-        }
-        if (sentence.recallType!!.isFixedTermRecall) {
 
-          val unadjustedDate = if (allocatedEarlyRelease?.modifiesRecallReleaseDate() == true && allocatedEarlyRelease!!.additionsAppliedAfterDefaulting && unadjustedPostRecallReleaseDate!!.isBeforeOrEqualTo(allocatedTranche!!.date)) {
-            allocatedTranche!!.date
-          } else {
-            unadjustedPostRecallReleaseDate
-          }
-          // Fixed term recalls only apply adjustments from return to custody date
-          val fixedTermRecallRelease = unadjustedDate?.plusDays(
-            adjustments.adjustmentsForFixedTermRecall(),
-          )
-          return minOf(fixedTermRecallRelease!!, expiryDate)
-        }
+      if (!sentence.isRecall()) {
+        return null
       }
-      return null
+
+      if (sentence.recallType == RecallType.STANDARD_RECALL) {
+        return expiryDate
+      }
+
+      if (sentence.recallType?.isFixedTermRecall == false) {
+        return null
+      }
+
+      val currentAllocatedEarlyRelease = allocatedEarlyRelease
+      val currentUnadjustedPostRecallReleaseDate = unadjustedPostRecallReleaseDate
+
+      val overrideWithTrancheDate = currentAllocatedEarlyRelease !== null &&
+        currentAllocatedEarlyRelease.modifiesRecallReleaseDate() &&
+        currentAllocatedEarlyRelease.additionsAppliedAfterDefaulting &&
+        currentUnadjustedPostRecallReleaseDate !== null &&
+        currentUnadjustedPostRecallReleaseDate.isBeforeOrEqualTo(
+          allocatedTranche?.date ?: currentAllocatedEarlyRelease.earliestTranche(),
+        )
+
+      val unadjustedDate =
+        allocatedTranche?.date.takeIf { overrideWithTrancheDate } ?: currentUnadjustedPostRecallReleaseDate
+
+      // Fixed term recalls only apply adjustments from return to custody date
+      val fixedTermRecallRelease = unadjustedDate?.plusDays(
+        adjustments.adjustmentsForFixedTermRecall(),
+      )
+
+      return minOf(fixedTermRecallRelease!!, expiryDate)
     }
 
   // Non Parole Date (NPD)
