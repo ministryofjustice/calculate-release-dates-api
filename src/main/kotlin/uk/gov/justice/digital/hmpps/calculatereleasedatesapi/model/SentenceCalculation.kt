@@ -134,16 +134,6 @@ data class SentenceCalculation(
       return minOf(fixedTermRecallRelease!!, expiryDate)
     }
 
-  private fun shouldOverrideWithAllocatedTranche(
-    earlyReleaseConfiguration: EarlyReleaseConfiguration?,
-    postRecallDate: LocalDate?,
-    earlyReleaseTrancheConfiguration: EarlyReleaseTrancheConfiguration?,
-  ): Boolean = earlyReleaseConfiguration?.let {
-    it.modifiesRecallReleaseDate() &&
-      it.additionsAppliedAfterDefaulting &&
-      postRecallDate?.isBeforeOrEqualTo(earlyReleaseTrancheConfiguration?.date ?: it.earliestTranche()) == true
-  } ?: false
-
   // Non Parole Date (NPD)
   var numberOfDaysToNonParoleDate: Long = 0
   var nonParoleDate: LocalDate? = null
