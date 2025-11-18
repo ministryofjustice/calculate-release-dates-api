@@ -221,7 +221,7 @@ class LatestCalculationServiceTest {
     )
     whenever(offenderKeyDatesService.releaseDates(offenderKeyDates)).thenReturn(dates)
     val detailedDates = toDetailedDates(dates)
-    whenever(calculationResultEnrichmentService.addDetailToCalculationDates(dates, null, null, null, null, emptyList())).thenReturn(detailedDates.associateBy { it.type })
+    whenever(calculationResultEnrichmentService.addDetailToCalculationDates(dates, null, null, null, null, null)).thenReturn(detailedDates.associateBy { it.type })
     whenever(calculationBreakdownService.getBreakdownSafely(any())).thenReturn(BreakdownMissingReason.UNSUPPORTED_CALCULATION_BREAKDOWN.left())
     assertThat(service.latestCalculationForPrisoner(prisonerId)).isEqualTo(
       LatestCalculation(
@@ -266,7 +266,7 @@ class LatestCalculationServiceTest {
       ReleaseDate(LocalDate.of(2025, 1, 7), ReleaseDateType.CRD),
     )
     val detailedDates = toDetailedDates(dates)
-    whenever(calculationResultEnrichmentService.addDetailToCalculationDates(dates, null, null, null, null, emptyList())).thenReturn(detailedDates.associateBy { it.type })
+    whenever(calculationResultEnrichmentService.addDetailToCalculationDates(dates, null, null, null, null, null)).thenReturn(detailedDates.associateBy { it.type })
     whenever(calculationBreakdownService.getBreakdownSafely(any())).thenReturn(BreakdownMissingReason.UNSUPPORTED_CALCULATION_BREAKDOWN.left())
     assertThat(service.latestCalculationForPrisoner(prisonerId).getOrNull()!!.reason).isEqualTo("Not entered")
   }
@@ -295,7 +295,7 @@ class LatestCalculationServiceTest {
     )
     whenever(offenderKeyDatesService.releaseDates(offenderKeyDates)).thenReturn(dates)
     val detailedDates = toDetailedDates(dates)
-    whenever(calculationResultEnrichmentService.addDetailToCalculationDates(dates, null, null, null, null, emptyList())).thenReturn(detailedDates.associateBy { it.type })
+    whenever(calculationResultEnrichmentService.addDetailToCalculationDates(dates, null, null, null, null, null)).thenReturn(detailedDates.associateBy { it.type })
     whenever(calculationBreakdownService.getBreakdownSafely(any())).thenReturn(BreakdownMissingReason.UNSUPPORTED_CALCULATION_BREAKDOWN.left())
     assertThat(service.latestCalculationForPrisoner(prisonerId)).isEqualTo(
       LatestCalculation(
@@ -335,7 +335,7 @@ class LatestCalculationServiceTest {
     )
     val detailedDates = toDetailedDates(dates)
     whenever(offenderKeyDatesService.releaseDates(offenderKeyDates)).thenReturn(dates)
-    whenever(calculationResultEnrichmentService.addDetailToCalculationDates(dates, null, null, null, null, emptyList())).thenReturn(detailedDates.associateBy { it.type })
+    whenever(calculationResultEnrichmentService.addDetailToCalculationDates(dates, null, null, null, null, null)).thenReturn(detailedDates.associateBy { it.type })
     whenever(calculationBreakdownService.getBreakdownSafely(any())).thenReturn(BreakdownMissingReason.UNSUPPORTED_CALCULATION_BREAKDOWN.left())
     assertThat(service.latestCalculationForPrisoner(prisonerId)).isEqualTo(
       LatestCalculation(
@@ -375,7 +375,7 @@ class LatestCalculationServiceTest {
     val dates = listOf(ReleaseDate(LocalDate.of(2025, 1, 1), ReleaseDateType.SED))
     whenever(offenderKeyDatesService.releaseDates(offenderKeyDates)).thenReturn(dates)
     val detailedDates = toDetailedDates(dates)
-    whenever(calculationResultEnrichmentService.addDetailToCalculationDates(dates, listOf(someSentence), expectedBreakdown, null, null, emptyList())).thenReturn(detailedDates.associateBy { it.type })
+    whenever(calculationResultEnrichmentService.addDetailToCalculationDates(dates, listOf(someSentence), expectedBreakdown, null, null, null)).thenReturn(detailedDates.associateBy { it.type })
     assertThat(service.latestCalculationForPrisoner(prisonerId)).isEqualTo(
       LatestCalculation(
         prisonerId,
@@ -413,7 +413,7 @@ class LatestCalculationServiceTest {
     val dates = listOf(ReleaseDate(LocalDate.of(2025, 1, 1), ReleaseDateType.SED))
     whenever(offenderKeyDatesService.releaseDates(offenderKeyDates)).thenReturn(dates)
     val detailedDates = toDetailedDates(dates)
-    whenever(calculationResultEnrichmentService.addDetailToCalculationDates(dates, listOf(someSentence), null, null, null, emptyList())).thenReturn(detailedDates.associateBy { it.type })
+    whenever(calculationResultEnrichmentService.addDetailToCalculationDates(dates, listOf(someSentence), null, null, null, null)).thenReturn(detailedDates.associateBy { it.type })
     assertThat(service.latestCalculationForPrisoner(prisonerId)).isEqualTo(
       LatestCalculation(
         prisonerId,
@@ -451,7 +451,7 @@ class LatestCalculationServiceTest {
     val dates = listOf(ReleaseDate(LocalDate.of(2025, 1, 1), ReleaseDateType.SED))
     whenever(offenderKeyDatesService.releaseDates(offenderKeyDates)).thenReturn(dates)
     val detailedDates = toDetailedDates(dates)
-    whenever(calculationResultEnrichmentService.addDetailToCalculationDates(dates, null, expectedBreakdown, null, null, emptyList())).thenReturn(detailedDates.associateBy { it.type })
+    whenever(calculationResultEnrichmentService.addDetailToCalculationDates(dates, null, expectedBreakdown, null, null, null)).thenReturn(detailedDates.associateBy { it.type })
     assertThat(service.latestCalculationForPrisoner(prisonerId)).isEqualTo(
       LatestCalculation(
         prisonerId,

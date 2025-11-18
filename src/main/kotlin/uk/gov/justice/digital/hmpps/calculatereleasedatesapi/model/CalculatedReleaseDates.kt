@@ -33,6 +33,7 @@ data class CalculatedReleaseDates(
   val sdsEarlyReleaseTranche: SDSEarlyReleaseTranche? = null,
   @JsonIgnore
   val calculationOutput: CalculationOutput? = null,
+  val usedPreviouslyRecordedSLED: PreviouslyRecordedSLED? = null,
 ) {
   fun toSentenceCalcDates(): SentenceCalcDates = SentenceCalcDates(
     this.dates[ReleaseDateType.SLED] ?: this.dates[ReleaseDateType.SED],

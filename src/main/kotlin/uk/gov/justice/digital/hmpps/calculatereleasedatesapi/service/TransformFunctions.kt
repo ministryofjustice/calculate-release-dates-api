@@ -481,6 +481,7 @@ fun transform(
   return CalculationRequestUserInput(
     calculateErsed = calculationUserInputs.calculateErsed,
     useOffenceIndicators = calculationUserInputs.useOffenceIndicators,
+    usePreviouslyRecordedSLEDIfFound = calculationUserInputs.usePreviouslyRecordedSLEDIfFound,
     calculationRequestSentenceUserInputs = calculationUserInputs.sentenceCalculationUserInputs.map {
       CalculationRequestSentenceUserInput(
         sentenceSequence = it.sentenceSequence,
@@ -501,6 +502,7 @@ fun transform(calculationRequestUserInput: CalculationRequestUserInput?): Calcul
   return CalculationUserInputs(
     calculateErsed = calculationRequestUserInput.calculateErsed,
     useOffenceIndicators = calculationRequestUserInput.useOffenceIndicators,
+    usePreviouslyRecordedSLEDIfFound = calculationRequestUserInput.usePreviouslyRecordedSLEDIfFound,
     sentenceCalculationUserInputs = calculationRequestUserInput.calculationRequestSentenceUserInputs.map {
       CalculationSentenceUserInput(
         sentenceSequence = it.sentenceSequence,

@@ -96,7 +96,7 @@ class LatestCalculationService(
     historicalTusedSource: HistoricalTusedSource? = null,
   ): LatestCalculation {
     val dates = offenderKeyDatesService.releaseDates(prisonerCalculation)
-    val historicDates = if (featureToggles.historicSled) calculationOutcomeHistoricOverrideRepository.findByCalculationRequestId(calculationRequestId) else emptyList()
+    val historicSledOverride = if (featureToggles.historicSled) calculationOutcomeHistoricOverrideRepository.findByCalculationRequestId(calculationRequestId) else null
     return LatestCalculation(
       prisonerId,
       bookingId,
@@ -111,7 +111,7 @@ class LatestCalculationService(
         breakdown,
         historicalTusedSource,
         null,
-        historicDates,
+        historicSledOverride,
       ).values.toList(),
     )
   }
@@ -137,7 +137,7 @@ class LatestCalculationService(
         null,
         null,
         prisonerCalculation,
-        emptyList(),
+        null,
       ).values.toList(),
     )
   }

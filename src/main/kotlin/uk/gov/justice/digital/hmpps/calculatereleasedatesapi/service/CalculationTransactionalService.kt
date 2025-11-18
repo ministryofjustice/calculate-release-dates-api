@@ -10,8 +10,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.adjustmentsapi.model.AdjustmentDto
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcome
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcomeHistoricOverride
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcomeHistoricSledOverride
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationType
@@ -32,7 +31,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedRel
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationFragments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationRequestModel
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManuallyEnteredDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
@@ -48,8 +46,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.Calculat
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.TrancheOutcomeRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationOrder
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.service.ValidationService
-import java.time.LocalDate
-import java.util.UUID
+import java.util.*
 
 @Service
 class CalculationTransactionalService(
@@ -216,22 +213,26 @@ class CalculationTransactionalService(
     val calculationResult = calculationOutput.calculationResult
     val calculationDates = calculationResult.dates.toMutableMap()
 
-    if (featureToggles.historicSled) {
-      val sledDate = calculationDates[ReleaseDateType.SLED]
-      val historicDates = sledDate?.let { historicDatesFromSled(sourceData.prisonerDetails.offenderNo, it) }
-      if (sledDate !== null && historicDates !== null) {
-        persistCalculationDatesWithHistoricOverrides(
-          sledDate,
-          calculationRequest,
-          calculationResult,
-          historicDates,
-          calculationDates,
-        )
-      } else {
-        persistCalculationDates(calculationRequest, calculationDates)
-      }
+    val sledCalculatedForCurrentSentences = calculationDates[ReleaseDateType.SLED]
+    val sledToOverrideTheCalculatedOneWith = if (featureToggles.historicSled && calculationUserInputs.usePreviouslyRecordedSLEDIfFound && sledCalculatedForCurrentSentences != null) {
+      dominantHistoricDateService.findPreviouslyRecordedSLEDThatShouldOverrideTheCalculatedSLED(sourceData.prisonerDetails.offenderNo, sledCalculatedForCurrentSentences)
     } else {
-      persistCalculationDates(calculationRequest, calculationDates)
+      null
+    }
+
+    if (sledCalculatedForCurrentSentences != null && sledToOverrideTheCalculatedOneWith != null) {
+      calculationDates[ReleaseDateType.SLED] = sledToOverrideTheCalculatedOneWith.previouslyRecordedSLEDDate
+      val overrideRecord = CalculationOutcomeHistoricSledOverride(
+        calculationRequestId = calculationRequest.id,
+        calculationOutcomeDate = sledCalculatedForCurrentSentences,
+        historicCalculationRequestId = sledToOverrideTheCalculatedOneWith.previouslyRecordedSLEDCalculationRequestId,
+        historicCalculationOutcomeDate = sledToOverrideTheCalculatedOneWith.previouslyRecordedSLEDDate,
+      )
+      calculationOutcomeHistoricOverrideRepository.save(overrideRecord)
+    }
+
+    calculationDates.forEach { (type, date) ->
+      calculationOutcomeRepository.save(transform(calculationRequest, type, date))
     }
 
     trancheOutcomeRepository.save(
@@ -260,76 +261,8 @@ class CalculationTransactionalService(
       sdsEarlyReleaseAllocatedTranche = calculationResult.sdsEarlyReleaseAllocatedTranche,
       sdsEarlyReleaseTranche = calculationResult.sdsEarlyReleaseTranche,
       calculationOutput = calculationOutput,
+      usedPreviouslyRecordedSLED = sledToOverrideTheCalculatedOneWith,
     )
-  }
-
-  fun historicDatesFromSled(
-    offenderNo: String,
-    sledDate: LocalDate?,
-  ): List<CalculationOutcome>? = sledDate?.let {
-    calculationOutcomeRepository
-      .getDominantHistoricDates(offenderNo, it)
-      .takeIf { results -> results.isNotEmpty() }
-  }
-
-  private fun persistCalculationDates(
-    calculationRequest: CalculationRequest,
-    calculationDates: Map<ReleaseDateType, LocalDate>,
-  ) = calculationDates.forEach { (type, date) ->
-    calculationOutcomeRepository.save(transform(calculationRequest, type, date))
-  }
-
-  /**
-   * Persist new outcome dates using historic outcome dates where present
-   * Create CalculationOutcomeHistoricOverride for each
-   */
-  private fun persistCalculationDatesWithHistoricOverrides(
-    sledDate: LocalDate,
-    calculationRequest: CalculationRequest,
-    calculationResult: CalculationResult,
-    historicDates: List<CalculationOutcome>,
-    calculationDates: MutableMap<ReleaseDateType, LocalDate>,
-  ) {
-    val overridesByType = dominantHistoricDateService.calculateFromSled(sledDate, historicDates)
-
-    /**
-     * Add SLED to calculation dates if historic dates include LED and SED with the same date
-     * We need to combine the two dates to a SLED in such an instance
-     */
-    overridesByType[ReleaseDateType.SLED]?.let { sledOverride ->
-      if (historicDates.none { it.calculationDateType == ReleaseDateType.SLED.name }) {
-        calculationDates[ReleaseDateType.SLED] = sledOverride
-      }
-    }
-
-    val historicOverrideIds = historicDates
-      .filter { overridesByType.containsKey(ReleaseDateType.valueOf(it.calculationDateType)) }
-      .associate { ReleaseDateType.valueOf(it.calculationDateType) to it.id }
-
-    overridesByType.forEach { (type, date) -> calculationDates[type] = date }
-
-    if (ReleaseDateType.SLED !in overridesByType) {
-      calculationDates.remove(ReleaseDateType.SLED)
-    }
-
-    val newOutcomesByType = calculationDates.map { (type, date) ->
-      val outcome = calculationOutcomeRepository.save(transform(calculationRequest, type, date))
-      ReleaseDateType.valueOf(outcome.calculationDateType) to outcome
-    }.toMap()
-
-    overridesByType.forEach { (type, historicDate) ->
-      val historicId = historicOverrideIds[type] ?: return@forEach
-      val resultDate = calculationResult.dates[type] ?: return@forEach
-      val calculationOutcome = newOutcomesByType[type] ?: return@forEach
-      val overrideRecord = CalculationOutcomeHistoricOverride(
-        calculationRequestId = calculationRequest.id,
-        calculationOutcomeDate = resultDate,
-        historicCalculationOutcomeId = historicId,
-        historicCalculationOutcomeDate = historicDate,
-        calculationOutcome = calculationOutcome,
-      )
-      calculationOutcomeHistoricOverrideRepository.save(overrideRecord)
-    }
   }
 
   fun calculateWithBreakdown(
@@ -439,7 +372,6 @@ class CalculationTransactionalService(
     if (checkForChange) {
       log.info("Checking for change in data")
       val sourceData = calculationSourceDataService.getCalculationSourceData(calculationRequest.prisonerId, SourceDataLookupOptions.default())
-      val userInput = transform(calculationRequest.calculationRequestUserInput)
       val booking = bookingService.getBooking(sourceData)
 
       if (calculationRequest.inputData.hashCode() != objectToJson(booking, objectMapper).hashCode()) {

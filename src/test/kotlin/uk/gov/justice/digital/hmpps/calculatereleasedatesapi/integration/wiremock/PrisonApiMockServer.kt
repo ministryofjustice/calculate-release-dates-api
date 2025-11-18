@@ -62,8 +62,8 @@ class PrisonApiExtension :
     val adjustments = jsonTransformation.getAllPrisonApiAdjustments()
     val defaultAdjustment = adjustments[DEFAULT]!!
 
-    val sentences = jsonTransformation.getAllSentenceAndOffencesJson()
-    val defaultSentence = sentences[DEFAULT]!!
+    val v1Sentences = jsonTransformation.getAllSentenceAndOffencesJson("1")
+    val defaultSentence = v1Sentences[DEFAULT]!!
 
     val finePayments = jsonTransformation.getAllOffenderFinePaymentsJson()
     val defaultFinePayment = finePayments[DEFAULT]!!
@@ -98,9 +98,9 @@ class PrisonApiExtension :
       }
       prisonApi.stubGetSentenceAdjustments(bookingId, adjustment)
 
-      val sentence = if (sentences.containsKey(it)) {
+      val sentence = if (v1Sentences.containsKey(it)) {
         log.info("Stubbing sentences prisonerId $it, bookingId $bookingId from file $it")
-        sentences[it]!!
+        v1Sentences[it]!!
       } else {
         log.info("Stubbing sentences prisonerId $it, bookingId $bookingId from file $DEFAULT")
         defaultSentence

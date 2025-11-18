@@ -67,7 +67,7 @@ class JsonTransformation {
   fun getAllPrisonerDetails(): Map<String, PrisonerDetails> = getAllJsonFromDir("api_integration/prisoners")
     .mapValues { mapper.readValue(it.value, PrisonerDetails::class.java) }
 
-  fun getAllSentenceAndOffencesJson(): Map<String, String> = getAllJsonFromDir("api_integration/sentences")
+  fun getAllSentenceAndOffencesJson(version: String): Map<String, String> = getAllJsonFromDir("api_integration/sentences/v$version")
 
   fun getAllPrisonApiAdjustments(): Map<String, String> = getAllJsonFromDir("api_integration/prisonapiadjustments")
 

@@ -45,7 +45,7 @@ class OffenderKeyDatesService(
     val dates = offenderKeyDatesEither.map { releaseDates(it) }
       .getOrElse { throw CrdWebException("Error in mapping/enriching release dates", HttpStatus.NOT_FOUND) }
 
-    val historicDates = if (featureToggles.historicSled) calculationOutcomeHistoricOverrideRepository.findByCalculationRequestId(calculationRequestId) else emptyList()
+    val historicSledOverride = if (featureToggles.historicSled) calculationOutcomeHistoricOverrideRepository.findByCalculationRequestId(calculationRequestId) else null
 
     val enrichedDates = runCatching {
       calculationResultEnrichmentService.addDetailToCalculationDates(
@@ -54,7 +54,7 @@ class OffenderKeyDatesService(
         null,
         null,
         null,
-        historicDates,
+        historicSledOverride,
       ).values.toList()
     }.getOrElse { throw CrdWebException("Unable to retrieve offender key dates", HttpStatus.NOT_FOUND) }
 
@@ -88,7 +88,7 @@ class OffenderKeyDatesService(
       null,
       null,
       nomisOffenderKeyDates,
-      emptyList(),
+      null,
     ).values.toList()
 
     val nomisReason =

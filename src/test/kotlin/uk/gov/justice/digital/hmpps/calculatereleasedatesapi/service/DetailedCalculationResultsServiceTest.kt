@@ -125,7 +125,7 @@ class DetailedCalculationResultsServiceTest {
         expectedBreakdown,
         null,
         null,
-        emptyList(),
+        null,
       ),
     ).thenReturn(enrichedReleaseDates)
     whenever(calculationBreakdownService.getBreakdownSafely(any())).thenReturn(expectedBreakdown.right())
@@ -153,7 +153,7 @@ class DetailedCalculationResultsServiceTest {
       expectedBreakdown,
       null,
       null,
-      emptyList(),
+      null,
     )
   }
 
@@ -184,7 +184,7 @@ class DetailedCalculationResultsServiceTest {
         expectedBreakdown,
         null,
         null,
-        emptyList(),
+        null,
       ),
     ).thenReturn(enrichedReleaseDates)
     whenever(calculationBreakdownService.getBreakdownSafely(any())).thenReturn(expectedBreakdown.right())
@@ -220,7 +220,7 @@ class DetailedCalculationResultsServiceTest {
         expectedBreakdown,
         null,
         null,
-        emptyList(),
+        null,
       ),
     ).thenReturn(enrichedReleaseDates)
     whenever(calculationBreakdownService.getBreakdownSafely(any())).thenReturn(expectedBreakdown.right())
@@ -278,7 +278,7 @@ class DetailedCalculationResultsServiceTest {
         null,
         null,
         null,
-        emptyList(),
+        null,
       ),
     ).thenReturn(enrichedReleaseDates)
     whenever(calculationBreakdownService.getBreakdownSafely(any())).thenReturn(BreakdownMissingReason.UNSUPPORTED_CALCULATION_BREAKDOWN.left())
@@ -305,7 +305,7 @@ class DetailedCalculationResultsServiceTest {
       null,
       null,
       null,
-      emptyList(),
+      null,
     )
   }
 

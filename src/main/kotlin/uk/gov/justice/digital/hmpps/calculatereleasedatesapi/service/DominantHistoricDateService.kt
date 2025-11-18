@@ -3,54 +3,27 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcome
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.PreviouslyRecordedSLED
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeRepository
 import java.time.LocalDate
 
 @Service
-class DominantHistoricDateService {
+class DominantHistoricDateService(private val calculationOutcomeRepository: CalculationOutcomeRepository) {
 
-  fun calculateFromSled(
-    sled: LocalDate,
-    dominantHistoricDates: List<CalculationOutcome>,
-  ): Map<ReleaseDateType, LocalDate> {
-    if (dominantHistoricDates.isEmpty()) {
-      return mapOf(ReleaseDateType.SLED to sled)
-    }
-
-    val historicDatesByType = dominantHistoricDates.associateBy { it.calculationDateType }
-
-    val historicSled = historicDatesByType[ReleaseDateType.SLED.name]?.outcomeDate
-    val historicLed = historicDatesByType[ReleaseDateType.LED.name]?.outcomeDate
-    val historicSed = historicDatesByType[ReleaseDateType.SED.name]?.outcomeDate
-
-    val historicSledExists = historicSled != null
-    val ledIsAfterSled = historicSledExists && historicLed != null && historicLed.isAfter(historicSled)
-    val sedIsAfterLed = historicSledExists && historicSed != null && historicLed != null && historicSed.isAfter(historicLed)
-
-    return when {
-      historicSledExists && historicSled.isBefore(sled) -> calculateDominantSled(sled)
-      historicSledExists && (ledIsAfterSled || sedIsAfterLed) -> calculateDominantLedAndSed(historicSled, historicSed, historicLed)
-      historicSledExists -> calculateDominantSled(historicSled)
-      else -> calculateDominantLedAndSed(sled, historicSed, historicLed)
-    }
+  fun findPreviouslyRecordedSLEDThatShouldOverrideTheCalculatedSLED(prisonerId: String, calculatedSLED: LocalDate): PreviouslyRecordedSLED? {
+    val dominantDates = calculationOutcomeRepository.getPotentialDatesForPreviouslyRecordedSLED(prisonerId, calculatedSLED)
+    return dominantDates
+      .groupBy { it.calculationRequestId }
+      .filter { (_, dates) -> dates.any { it.calculationDateType == ReleaseDateType.SLED.name } || hasSedAndLedWithTheSameDate(dates) }
+      .mapNotNull { (calculationRequestId, dates) ->
+        val sledOrSed = dates.find { it.calculationDateType == ReleaseDateType.SLED.name } ?: dates.find { it.calculationDateType == ReleaseDateType.SED.name }
+        sledOrSed?.let { PreviouslyRecordedSLED(it.outcomeDate!!, calculatedSLED, calculationRequestId) }
+      }.maxByOrNull { it.previouslyRecordedSLEDDate }
   }
 
-  fun calculateDominantSled(dominantSled: LocalDate): Map<ReleaseDateType, LocalDate> = mapOf(ReleaseDateType.SLED to dominantSled)
-
-  fun calculateDominantLedAndSed(
-    sled: LocalDate,
-    sed: LocalDate?,
-    led: LocalDate?,
-  ): Map<ReleaseDateType, LocalDate> = if (sed is LocalDate && led is LocalDate && sed.isEqual(led)) {
-    mapOf(ReleaseDateType.SLED to sed)
-  } else {
-    mapOf(
-      ReleaseDateType.SED to latestDate(sled, sed),
-      ReleaseDateType.LED to latestDate(sled, led),
-    )
-  }
-
-  fun latestDate(currentDate: LocalDate, historicDate: LocalDate?) = when {
-    historicDate !== null && historicDate > currentDate -> historicDate
-    else -> currentDate
+  private fun hasSedAndLedWithTheSameDate(dates: List<CalculationOutcome>): Boolean {
+    val sed = dates.find { it.calculationDateType == ReleaseDateType.SED.name }?.outcomeDate
+    val led = dates.find { it.calculationDateType == ReleaseDateType.LED.name }?.outcomeDate
+    return sed != null && led != null && sed.isEqual(led)
   }
 }

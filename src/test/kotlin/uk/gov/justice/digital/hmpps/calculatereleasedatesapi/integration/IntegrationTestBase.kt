@@ -26,6 +26,10 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedRel
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationFragments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationRequestModel
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.GenuineOverrideCreatedResponse
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.GenuineOverrideRequest
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualCalculationResponse
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualEntryRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManuallyEnteredDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecordARecallDecisionResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecordARecallRequest
@@ -83,10 +87,10 @@ open class IntegrationTestBase internal constructor() {
     roles: List<String> = listOf(),
   ): (HttpHeaders) -> Unit = jwtAuthHelper.setAuthorisation(user, roles)
 
-  protected fun createPreliminaryCalculation(prisonerId: String): CalculatedReleaseDates = webTestClient.post()
+  protected fun createPreliminaryCalculation(prisonerId: String, userInputs: CalculationUserInputs = CalculationUserInputs()): CalculatedReleaseDates = webTestClient.post()
     .uri("/calculation/$prisonerId")
     .accept(MediaType.APPLICATION_JSON)
-    .bodyValue(CalculationRequestModel(CalculationUserInputs(), 1L))
+    .bodyValue(CalculationRequestModel(userInputs, 1L))
     .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
     .exchange()
     .expectStatus().isOk
@@ -142,6 +146,28 @@ open class IntegrationTestBase internal constructor() {
     .expectStatus().isOk
     .expectHeader().contentType(MediaType.APPLICATION_JSON)
     .expectBody(object : ParameterizedTypeReference<List<PrisonApiSentenceAndOffences>>() {})
+    .returnResult().responseBody!!
+
+  protected fun createManualCalculation(prisonerId: String, request: ManualEntryRequest) = webTestClient.post()
+    .uri("/manual-calculation/$prisonerId")
+    .bodyValue(request)
+    .accept(MediaType.APPLICATION_JSON)
+    .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+    .exchange()
+    .expectStatus().isOk
+    .expectHeader().contentType(MediaType.APPLICATION_JSON)
+    .expectBody(ManualCalculationResponse::class.java)
+    .returnResult().responseBody!!
+
+  protected fun createGenuineOverride(calculationRequestIdToOverride: Long, request: GenuineOverrideRequest) = webTestClient.post()
+    .uri("/genuine-override/calculation/$calculationRequestIdToOverride")
+    .accept(MediaType.APPLICATION_JSON)
+    .bodyValue(request)
+    .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+    .exchange()
+    .expectStatus().isOk
+    .expectHeader().contentType(MediaType.APPLICATION_JSON)
+    .expectBody(GenuineOverrideCreatedResponse::class.java)
     .returnResult().responseBody!!
 
   companion object {
