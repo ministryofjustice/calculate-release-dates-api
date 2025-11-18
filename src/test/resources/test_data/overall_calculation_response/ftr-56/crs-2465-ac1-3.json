@@ -4,5 +4,7 @@
     "PRRD": "2026-07-08",
     "ESED": "2028-11-22"
   },
+  "sdsEarlyReleaseTranche": "TRANCHE_2",
+  "sdsEarlyReleaseAllocatedTranche": "TRANCHE_2",
   "effectiveSentenceLength": "P5Y"
 }

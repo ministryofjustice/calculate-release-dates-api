@@ -55,6 +55,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Sent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType.FTR
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType.FTR_14_ORA
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType.FTR_56ORA
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationSourceDataService
@@ -1560,6 +1561,49 @@ abstract class ValidationServiceTest : SpringTestBase() {
           VALID_ADJUSTMENTS,
           listOf(),
           null,
+        ),
+        USER_INPUTS,
+        ValidationOrder.allValidations(),
+      )
+
+    assertThat(result).isEqualTo(
+      listOf(
+        ValidationMessage(A_FINE_SENTENCE_CONSECUTIVE_TO),
+      ),
+    )
+  }
+
+  @Test
+  fun `FTR56 sentence consecutive to Afine`() {
+    val sentences = listOf(
+      validSdsSentence.copy(
+        sentenceSequence = 1,
+        sentenceCalculationType = FTR_56ORA.name,
+        sentenceDate = LocalDate.of(2022, 11, 3),
+        revocationDates = listOf(LocalDate.of(2026, 4, 17)),
+      ),
+      validAFineSentence.copy(
+        sentenceSequence = 2,
+        consecutiveToSequence = 1,
+        sentenceDate = LocalDate.of(2026, 5, 4),
+      ),
+    )
+    val result =
+      validationService.validate(
+        CalculationSourceData(
+          sentences.map {
+            SentenceAndOffenceWithReleaseArrangements(
+              source = it,
+              isSdsPlus = false,
+              isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+              isSDSPlusOffenceInPeriod = false,
+              hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
+            )
+          },
+          VALID_PRISONER,
+          VALID_ADJUSTMENTS,
+          listOf(),
+          ReturnToCustodyDate(BOOKING_ID, LocalDate.of(2026, 4, 17)),
         ),
         USER_INPUTS,
         ValidationOrder.allValidations(),

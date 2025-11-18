@@ -1,0 +1,65 @@
+{
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2024-05-23"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 2
+          }
+        },
+        "sentencedAt": "2024-05-23",
+        "recall": {
+          "recallType": "FIXED_TERM_RECALL_56",
+          "returnToCustodyDate": "2026-05-18",
+          "revocationDate": "2026-05-18"
+        },
+        "hasAnSDSEarlyReleaseExclusion": "NO",
+        "identifier": "0de48d91-c0de-37d4-940a-9b1ec02eaac5"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2020-10-28"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 2
+          }
+        },
+        "sentencedAt": "2024-05-23",
+        "recall": {
+          "recallType": "FIXED_TERM_RECALL_56",
+          "returnToCustodyDate": "2026-05-18",
+          "revocationDate": "2026-05-18"
+        },
+        "hasAnSDSEarlyReleaseExclusion": "NO",
+        "consecutiveSentenceUUIDs": [
+          "0de48d91-c0de-37d4-940a-9b1ec02eaac5"
+        ]
+      }
+    ],
+    "adjustments": {
+      "ADDITIONAL_DAYS_AWARDED": [
+        {
+          "appliesToSentencesFrom": "2026-06-08",
+          "numberOfDays": 10
+        }
+      ],
+      "RESTORATION_OF_ADDITIONAL_DAYS_AWARDED": [
+        {
+          "appliesToSentencesFrom": "2026-07-03",
+          "numberOfDays": 5
+        }
+      ]
+    },
+    "returnToCustodyDate": "2026-05-18"
+  }
+}
