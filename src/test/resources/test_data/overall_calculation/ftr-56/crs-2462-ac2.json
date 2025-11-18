@@ -49,13 +49,13 @@
     "adjustments": {
       "ADDITIONAL_DAYS_AWARDED": [
         {
-          "appliesToSentencesFrom": "2026-07-27",
+          "appliesToSentencesFrom": "2026-06-08",
           "numberOfDays": 10
         }
       ],
       "RESTORATION_OF_ADDITIONAL_DAYS_AWARDED": [
         {
-          "appliesToSentencesFrom": "2026-09-10",
+          "appliesToSentencesFrom": "2026-07-03",
           "numberOfDays": 5
         }
       ]

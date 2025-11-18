@@ -5,5 +5,7 @@
     "TUSED": "2027-07-01",
     "ESED": "2027-03-03"
   },
+  "sdsEarlyReleaseTranche": "TRANCHE_0",
+  "sdsEarlyReleaseAllocatedTranche": "TRANCHE_0",
   "effectiveSentenceLength": "P11M"
 }
