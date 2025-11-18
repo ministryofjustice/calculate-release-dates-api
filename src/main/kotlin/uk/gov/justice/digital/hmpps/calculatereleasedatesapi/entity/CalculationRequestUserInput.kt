@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity
 
 import jakarta.persistence.CascadeType
+import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
@@ -28,6 +29,10 @@ data class CalculationRequestUserInput(
 
   @NotNull
   var useOffenceIndicators: Boolean = false,
+
+  @NotNull
+  @Column("use_previously_recorded_sled_if_found")
+  var usePreviouslyRecordedSLEDIfFound: Boolean = false,
 
   @OneToMany(mappedBy = "calculationRequestUserInput", cascade = [CascadeType.ALL])
   val calculationRequestSentenceUserInputs: List<CalculationRequestSentenceUserInput> = ArrayList(),
