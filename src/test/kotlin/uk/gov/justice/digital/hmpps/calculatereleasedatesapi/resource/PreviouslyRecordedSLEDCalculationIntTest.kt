@@ -275,9 +275,9 @@ class PreviouslyRecordedSLEDCalculationIntTest(private val mockPrisonService: Mo
   }
 
   @Test
-  fun `Calculations using a previously recorded SLED show hint text on the SLED`() {
+  fun `Calculations using a previously recorded SLED show hint text and details on the SLED`() {
     val oldPreliminaryCalc = createPreliminaryCalculation(PRISONER_ID, CalculationUserInputs(usePreviouslyRecordedSLEDIfFound = false))
-    createConfirmCalculationForPrisoner(oldPreliminaryCalc.calculationRequestId)
+    val oldConfirmedCalc = createConfirmCalculationForPrisoner(oldPreliminaryCalc.calculationRequestId)
 
     updatedSentencesToVersion("2")
 
@@ -328,6 +328,14 @@ class PreviouslyRecordedSLEDCalculationIntTest(private val mockPrisonService: Mo
       .expectBody(DetailedCalculationResults::class.java)
       .returnResult().responseBody!!
     assertThat(detailedReleaseDatesResponse.dates[SLED]?.hints).containsExactly(ReleaseDateHint(expectedHint))
+    assertThat(detailedReleaseDatesResponse.usedPreviouslyRecordedSLED).isEqualTo(
+      PreviouslyRecordedSLED(
+        previouslyRecordedSLEDDate = LocalDate.of(2025, 9, 12),
+        calculatedDate = LocalDate.of(2025, 6, 26),
+        previouslyRecordedSLEDCalculationRequestId = oldConfirmedCalc.calculationRequestId,
+      ),
+    )
+    assertThat(detailedReleaseDatesResponse.context.usePreviouslyRecordedSLEDIfFound).isTrue
   }
 
   private fun stubKeyDates(offenderKeyDates: OffenderKeyDates) {
