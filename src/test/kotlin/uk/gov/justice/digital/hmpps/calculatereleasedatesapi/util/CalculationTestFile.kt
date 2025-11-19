@@ -13,4 +13,5 @@ data class CalculationTestFile(
   val expectedValidationException: String? = null,
   val expectedValidationMessage: String? = null,
   val featureToggles: FeatureToggles? = null,
+  val previousCalculations: List<TestPreviousCalculation>? = null,
 )
