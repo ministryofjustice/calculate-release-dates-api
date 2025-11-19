@@ -14,8 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil.Companion.overrideFeatureTogglesForTest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.calculation.CalculationExampleTests
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcome
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcomeHistoricOverride
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcomeHistoricSledOverride
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.PRELIMINARY
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
@@ -60,31 +59,23 @@ class HintTextTest : SpringTestBase() {
 
   @Test
   fun `Historic SLED date`() {
-    val historicDates = listOf(
-      CalculationOutcomeHistoricOverride(
-        id = 1,
-        calculationRequestId = 1,
-        calculationOutcomeDate = LocalDate.now(),
-        historicCalculationOutcomeId = 1,
-        historicCalculationOutcomeDate = LocalDate.now(),
-        calculationOutcome = CalculationOutcome(
-          id = 10,
-          calculationRequestId = 10,
-          outcomeDate = LocalDate.now(),
-          calculationDateType = ReleaseDateType.SLED.name,
-        ),
-      ),
+    val historicSledOverride = CalculationOutcomeHistoricSledOverride(
+      id = 1,
+      calculationRequestId = 1,
+      calculationOutcomeDate = LocalDate.now(),
+      historicCalculationRequestId = 1,
+      historicCalculationOutcomeDate = LocalDate.now(),
     )
-    runHintText("crs-2348-sled", historicDates)
+    runHintText("crs-2348-sled", historicSledOverride)
   }
 
   @ParameterizedTest
   @MethodSource(value = ["testCases"])
   fun `Test Hint Texts`(testCase: String) {
-    runHintText(testCase, emptyList())
+    runHintText(testCase, null)
   }
 
-  private fun runHintText(testCase: String, historicDates: List<CalculationOutcomeHistoricOverride>) {
+  private fun runHintText(testCase: String, historicSledOverride: CalculationOutcomeHistoricSledOverride?) {
     log.info("Running test-case $testCase")
     val calculationFile = jsonTransformation.loadCalculationTestFile("/hint-text/input-data/$testCase")
     overrideFeatureTogglesForTest(calculationFile, featureToggles)
@@ -96,7 +87,7 @@ class HintTextTest : SpringTestBase() {
       dates = calculation.calculationResult.dates,
       calculationBreakdown = calculationBreakdown,
       booking = calculationFile.booking,
-      historicOverrides = historicDates,
+      historicSledOverride = historicSledOverride,
     )
 
     val actualDatesAndHints = mapToDatesAndHints(breakdownWithHints)
@@ -130,7 +121,7 @@ class HintTextTest : SpringTestBase() {
         paroleEligibilityDateOverridden = calculatedReleaseDates.dates.containsKey(ReleaseDateType.PED),
       ),
       booking = calculationFile.booking,
-      emptyList(),
+      null,
     )
 
     val actualDatesAndHints = mapToDatesAndHints(breakdownWithHints)
@@ -166,7 +157,7 @@ class HintTextTest : SpringTestBase() {
     calculationBreakdown: CalculationBreakdown,
     nomisPrisonerCalculation: OffenderKeyDates? = null,
     booking: Booking,
-    historicOverrides: List<CalculationOutcomeHistoricOverride> = emptyList(),
+    historicSledOverride: CalculationOutcomeHistoricSledOverride? = null,
   ): Map<ReleaseDateType, DetailedDate> {
     val today: LocalDate = LocalDate.now()
     val clock = Clock.fixed(today.atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault())
@@ -184,7 +175,7 @@ class HintTextTest : SpringTestBase() {
       calculationBreakdown = calculationBreakdown,
       historicalTusedSource = booking.historicalTusedData?.historicalTusedSource,
       nomisPrisonerCalculation = nomisPrisonerCalculation,
-      historicOverrides,
+      historicSledOverride,
     )
   }
 

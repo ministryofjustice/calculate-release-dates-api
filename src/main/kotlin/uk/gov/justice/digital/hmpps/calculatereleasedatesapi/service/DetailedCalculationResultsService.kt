@@ -42,7 +42,7 @@ open class DetailedCalculationResultsService(
       .filter { it.outcomeDate != null }
       .map { ReleaseDate(it.outcomeDate!!, ReleaseDateType.valueOf(it.calculationDateType)) }
 
-    val historicDates = if (featureToggles.historicSled) calculationOutcomeHistoricOverrideRepository.findByCalculationRequestId(calculationRequestId) else emptyList()
+    val historicSledOverride = if (featureToggles.historicSled) calculationOutcomeHistoricOverrideRepository.findByCalculationRequestId(calculationRequestId) else null
 
     return DetailedCalculationResults(
       calculationContext(calculationRequestId, calculationRequest),
@@ -52,7 +52,7 @@ open class DetailedCalculationResultsService(
         calculationBreakdown,
         calculationRequest.historicalTusedSource,
         null,
-        historicDates,
+        historicSledOverride,
       ),
       approvedDates(calculationRequest.approvedDatesSubmissions.firstOrNull()),
       CalculationOriginalData(

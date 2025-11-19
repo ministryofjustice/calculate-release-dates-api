@@ -20,6 +20,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.doNothing
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.slf4j.Logger
@@ -28,8 +29,10 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ApprovedDatesSubmission
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcome
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcomeHistoricSledOverride
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequestUserInput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.CONFIRMED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.PRELIMINARY
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.APD
@@ -38,7 +41,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ESED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.HDCAD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.HDCED
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.LED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ROTL
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SLED
@@ -57,6 +59,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExternalSente
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManuallyEnteredDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.PreviouslyRecordedSLED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
@@ -86,8 +89,7 @@ import java.time.temporal.ChronoUnit.DAYS
 import java.time.temporal.ChronoUnit.MONTHS
 import java.time.temporal.ChronoUnit.WEEKS
 import java.time.temporal.ChronoUnit.YEARS
-import java.util.Optional
-import java.util.UUID
+import java.util.*
 
 @ExtendWith(MockitoExtension::class)
 class CalculationTransactionalServiceTest {
@@ -95,7 +97,7 @@ class CalculationTransactionalServiceTest {
   private val calculationOutcomeRepository = mock<CalculationOutcomeRepository>()
   private val calculationReasonRepository = mock<CalculationReasonRepository>()
   private val calculationOutcomeHistoricOverrideRepository = mock<CalculationOutcomeHistoricOverrideRepository>()
-  private val dominantHistoricDateService = DominantHistoricDateService()
+  private val dominantHistoricDateService = mock<DominantHistoricDateService>()
   private val prisonService = mock<PrisonService>()
   private val calculationSourceDataService = mock<CalculationSourceDataService>()
   private val eventService = mock<EventService>()
@@ -368,17 +370,18 @@ class CalculationTransactionalServiceTest {
   }
 
   @Test
-  fun `Calculation with historic equal LED and SED should result in single SLED outcome`() {
+  fun `Calculation with historic SLED should use the SLED and write the historic SLED override if requested by the user inputs`() {
     val requestAndOutcomes = CALCULATION_REQUEST_WITH_OUTCOMES.copy(
       calculationOutcomes = CALCULATION_REQUEST_WITH_OUTCOMES.calculationOutcomes.plus(
         CALCULATION_OUTCOME_SLED,
       ),
+      calculationRequestUserInput = CalculationRequestUserInput(usePreviouslyRecordedSLEDIfFound = true),
     )
     val calculationTransactionalService = calculationTransactionalService
-    val expectedSled = LocalDate.of(2026, 2, 2)
+    val calculatedSled = LocalDate.of(2026, 2, 2)
     whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
     whenever(calculationRequestRepository.findByIdAndCalculationStatus(any(), any()))
-      .thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES.copy(inputData = INPUT_DATA)))
+      .thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES.copy(inputData = INPUT_DATA, calculationRequestUserInput = CalculationRequestUserInput(usePreviouslyRecordedSLEDIfFound = true))))
     whenever(
       calculationSourceDataService.getCalculationSourceData(
         CALCULATION_REQUEST_WITH_OUTCOMES.prisonerId,
@@ -394,18 +397,11 @@ class CalculationTransactionalServiceTest {
     whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
     whenever(calculationRequestRepository.findById(CALCULATION_REQUEST_ID)).thenReturn(Optional.of(requestAndOutcomes))
     whenever(nomisCommentService.getNomisComment(any(), any())).thenReturn("The NOMIS Reason")
-    whenever(calculationTransactionalService.historicDatesFromSled(fakeSourceData.prisonerDetails.offenderNo, expectedSled)).thenReturn(
-      listOf(
-        CalculationOutcome(
-          calculationRequestId = 1,
-          outcomeDate = FIFTH_APRIL_2021,
-          calculationDateType = LED.name,
-        ),
-        CalculationOutcome(
-          calculationRequestId = 2,
-          outcomeDate = FIFTH_APRIL_2021,
-          calculationDateType = SED.name,
-        ),
+    whenever(dominantHistoricDateService.findPreviouslyRecordedSLEDThatShouldOverrideTheCalculatedSLED(fakeSourceData.prisonerDetails.offenderNo, calculatedSled)).thenReturn(
+      PreviouslyRecordedSLED(
+        previouslyRecordedSLEDDate = FIFTH_APRIL_2021,
+        previouslyRecordedSLEDCalculationRequestId = 99999,
+        calculatedDate = THIRD_FEB_2021,
       ),
     )
     val sledOutcome = CalculationOutcome(
@@ -459,26 +455,36 @@ class CalculationTransactionalServiceTest {
     assertEquals(
       calculation.dates,
       mapOf(
-        SLED to sledOutcome.outcomeDate,
+        SLED to FIFTH_APRIL_2021,
         CRD to crdOutcome.outcomeDate,
         HDCED to hdcedOutcome.outcomeDate,
         ESED to esedOutcome.outcomeDate,
       ),
     )
+    verify(dominantHistoricDateService).findPreviouslyRecordedSLEDThatShouldOverrideTheCalculatedSLED(fakeSourceData.prisonerDetails.offenderNo, calculatedSled)
+    verify(calculationOutcomeHistoricOverrideRepository).save(
+      CalculationOutcomeHistoricSledOverride(
+        calculationRequestId = CALCULATION_REQUEST_ID,
+        calculationOutcomeDate = calculatedSled,
+        historicCalculationRequestId = 99999,
+        historicCalculationOutcomeDate = FIFTH_APRIL_2021,
+      ),
+    )
   }
 
   @Test
-  fun `Calculation with historic LED and SED should result in separate LED and SED outcome`() {
+  fun `Calculation with historic SLED should use calculated SLED and not write the historic SLED override if rejected by the user inputs`() {
     val requestAndOutcomes = CALCULATION_REQUEST_WITH_OUTCOMES.copy(
       calculationOutcomes = CALCULATION_REQUEST_WITH_OUTCOMES.calculationOutcomes.plus(
         CALCULATION_OUTCOME_SLED,
       ),
+      calculationRequestUserInput = CalculationRequestUserInput(usePreviouslyRecordedSLEDIfFound = false),
     )
     val calculationTransactionalService = calculationTransactionalService
-    val expectedSled = LocalDate.of(2026, 2, 2)
+    val calculatedSled = LocalDate.of(2026, 2, 2)
     whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
     whenever(calculationRequestRepository.findByIdAndCalculationStatus(any(), any()))
-      .thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES.copy(inputData = INPUT_DATA)))
+      .thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES.copy(inputData = INPUT_DATA, calculationRequestUserInput = CalculationRequestUserInput(usePreviouslyRecordedSLEDIfFound = false))))
     whenever(
       calculationSourceDataService.getCalculationSourceData(
         CALCULATION_REQUEST_WITH_OUTCOMES.prisonerId,
@@ -494,31 +500,18 @@ class CalculationTransactionalServiceTest {
     whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
     whenever(calculationRequestRepository.findById(CALCULATION_REQUEST_ID)).thenReturn(Optional.of(requestAndOutcomes))
     whenever(nomisCommentService.getNomisComment(any(), any())).thenReturn("The NOMIS Reason")
-    whenever(calculationTransactionalService.historicDatesFromSled(fakeSourceData.prisonerDetails.offenderNo, expectedSled)).thenReturn(
-      listOf(
-        CalculationOutcome(
-          calculationRequestId = 1,
-          outcomeDate = FIFTH_APRIL_2021.plusYears(10),
-          calculationDateType = LED.name,
-        ),
-        CalculationOutcome(
-          calculationRequestId = 2,
-          outcomeDate = FIFTH_APRIL_2021.plusYears(8),
-          calculationDateType = SED.name,
-        ),
+    whenever(dominantHistoricDateService.findPreviouslyRecordedSLEDThatShouldOverrideTheCalculatedSLED(fakeSourceData.prisonerDetails.offenderNo, calculatedSled)).thenReturn(
+      PreviouslyRecordedSLED(
+        previouslyRecordedSLEDDate = FIFTH_APRIL_2021,
+        previouslyRecordedSLEDCalculationRequestId = 99999,
+        calculatedDate = THIRD_FEB_2021,
       ),
     )
-    val ledOutcome = CalculationOutcome(
+    val sledOutcome = CalculationOutcome(
       id = -1,
       calculationRequestId = CALCULATION_REQUEST_ID,
-      outcomeDate = FIFTH_APRIL_2021.plusYears(10),
-      calculationDateType = LED.name,
-    )
-    val sedOutcome = CalculationOutcome(
-      id = -1,
-      calculationRequestId = CALCULATION_REQUEST_ID,
-      outcomeDate = FIFTH_APRIL_2021.plusYears(8),
-      calculationDateType = SED.name,
+      outcomeDate = calculatedSled,
+      calculationDateType = SLED.name,
     )
     val crdOutcome = CalculationOutcome(
       id = -1,
@@ -541,8 +534,7 @@ class CalculationTransactionalServiceTest {
     whenever(calculationOutcomeRepository.save(crdOutcome)).thenReturn(crdOutcome)
     whenever(calculationOutcomeRepository.save(hdcedOutcome)).thenReturn(hdcedOutcome)
     whenever(calculationOutcomeRepository.save(esedOutcome)).thenReturn(esedOutcome)
-    whenever(calculationOutcomeRepository.save(ledOutcome)).thenReturn(ledOutcome)
-    whenever(calculationOutcomeRepository.save(sedOutcome)).thenReturn(sedOutcome)
+    whenever(calculationOutcomeRepository.save(sledOutcome)).thenReturn(sledOutcome)
     whenever(nomisCommentService.getNomisComment(any(), any())).thenReturn("The NOMIS Reason")
     val submission = ApprovedDatesSubmission(
       calculationRequest = CALCULATION_REQUEST,
@@ -566,13 +558,14 @@ class CalculationTransactionalServiceTest {
     assertEquals(
       calculation.dates,
       mapOf(
-        LED to ledOutcome.outcomeDate,
-        SED to sedOutcome.outcomeDate,
+        SLED to calculatedSled,
         CRD to crdOutcome.outcomeDate,
         HDCED to hdcedOutcome.outcomeDate,
         ESED to esedOutcome.outcomeDate,
       ),
     )
+    verify(dominantHistoricDateService, never()).findPreviouslyRecordedSLEDThatShouldOverrideTheCalculatedSLED(any(), any())
+    verify(calculationOutcomeHistoricOverrideRepository, never()).save(any())
   }
 
   @Test
