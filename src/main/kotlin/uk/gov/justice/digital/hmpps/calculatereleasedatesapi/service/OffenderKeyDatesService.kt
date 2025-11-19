@@ -71,6 +71,7 @@ class OffenderKeyDatesService(
         calculationRequest.calculationType,
         calculationRequest.genuineOverrideReason,
         calculationRequest.genuineOverrideReasonFurtherDetail ?: calculationRequest.genuineOverrideReason?.description,
+        calculationRequest.calculationRequestUserInput?.usePreviouslyRecordedSLEDIfFound ?: false,
       ),
       enrichedDates,
     )

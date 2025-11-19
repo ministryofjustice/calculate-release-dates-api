@@ -143,6 +143,7 @@ open class OffenderKeyDatesServiceTest {
         CalculationType.CALCULATED,
         null,
         null,
+        false,
       ),
       listOf(
         DetailedDate(
@@ -225,6 +226,7 @@ open class OffenderKeyDatesServiceTest {
         CalculationType.CALCULATED,
         null,
         null,
+        false,
       ),
       listOf(
         DetailedDate(
@@ -585,6 +587,7 @@ open class OffenderKeyDatesServiceTest {
         CalculationType.GENUINE_OVERRIDE,
         GenuineOverrideReason.AGGRAVATING_FACTOR_OFFENCE,
         "One or more offences have been characterised by an aggravating factor (such as terror)",
+        false,
       ),
       listOf(
         DetailedDate(
@@ -668,6 +671,7 @@ open class OffenderKeyDatesServiceTest {
         CalculationType.GENUINE_OVERRIDE,
         GenuineOverrideReason.OTHER,
         "Some extra detail",
+        false,
       ),
       listOf(
         DetailedDate(
