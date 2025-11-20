@@ -65,7 +65,7 @@ dependencies {
   implementation("io.awspring.cloud:spring-cloud-aws-core:3.4.1")
   implementation("io.awspring.cloud:spring-cloud-aws-sns:3.4.1")
   implementation("io.awspring.cloud:spring-cloud-aws-sqs:3.4.1")
-  implementation("org.springframework:spring-jms:6.2.13")
+  implementation("org.springframework:spring-jms:6.2.14")
   implementation("com.google.code.gson:gson:2.13.2")
   implementation("org.apache.commons:commons-text:1.14.0")
 
@@ -73,7 +73,7 @@ dependencies {
   implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:5.6.1")
 
   // Test dependencies
-  testImplementation("org.wiremock:wiremock-standalone:3.13.1")
+  testImplementation("org.wiremock:wiremock-standalone:3.13.2")
   testImplementation("org.springframework.security:spring-security-test")
   testImplementation("org.awaitility:awaitility-kotlin:4.3.0")
   testImplementation("net.javacrumbs.json-unit:json-unit-assertj:4.1.1")
