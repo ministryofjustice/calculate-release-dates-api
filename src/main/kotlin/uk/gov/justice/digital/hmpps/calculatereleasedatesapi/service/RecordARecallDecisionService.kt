@@ -160,7 +160,7 @@ class RecordARecallDecisionService(
         ),
       )
     }
-  }
+  }.distinctBy { it.uuid }
 
   private fun findUuid(
     externalSentenceId: ExternalSentenceId,

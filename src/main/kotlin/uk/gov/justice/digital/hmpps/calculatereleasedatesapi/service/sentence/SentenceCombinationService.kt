@@ -9,6 +9,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSe
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetentionAndTrainingOrderSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DtoSingleTermSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SingleTermSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SingleTermed
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
@@ -71,9 +72,11 @@ class SentenceCombinationService(
     The service created a consecutive sentence for every possible combination of offence.
      It does this in case a sentence within the chain has multiple offences, which may have different release conditions
      However here we reduce the list by any duplicated offences with the same release conditions, to improve calculation time.
+     Sentence identifier is generated from the sentence sequence and booking ID, that will give us unique sentences, then we also need unique offence based data
+     the only offence based data we have currently is SDS+ & SDS40 exclusions.
    */
   private fun collapseDuplicateConsecutiveSentences(consecutiveSentences: List<ConsecutiveSentence>): List<ConsecutiveSentence> = consecutiveSentences.distinctBy {
-    it.orderedSentences.joinToString { sentence -> "${sentence.sentencedAt}${sentence.identificationTrack}${sentence.totalDuration()}${sentence.javaClass}${sentence.recallType}" }
+    it.orderedSentences.joinToString { sentence -> "${sentence.identifier}${sentence.isSDSPlus}${sentence is StandardDeterminateSentence && sentence.hasAnSDSEarlyReleaseExclusion != SDSEarlyReleaseExclusionType.NO}" }
   }
 
   private fun getAllExtractableSentences(

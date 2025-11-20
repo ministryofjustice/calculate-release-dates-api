@@ -19,6 +19,22 @@ class RecordARecallControllerIntTest(private val mockManageOffencesClient: MockM
   lateinit var calculationRequestRepository: CalculationRequestRepository
 
   @Test
+  fun `RCLL 583`() {
+    mockManageOffencesClient.noneInPCSC(listOf("AR97001", "CE79046", "FI68002"))
+
+    val result = createCalculationForRecordARecall(
+      "RCLL-583",
+      RecordARecallRequest(revocationDate = LocalDate.of(2025, 6, 1)),
+    )
+
+    assertThat(result.decision).isEqualTo(RecordARecallDecision.AUTOMATED)
+    assertThat(result.automatedCalculationData?.recallableSentences).hasSize(3)
+    assertThat(result.automatedCalculationData?.expiredSentences).hasSize(0)
+    assertThat(result.automatedCalculationData?.ineligibleSentences).hasSize(0)
+    assertThat(result.automatedCalculationData?.sentencesBeforeInitialRelease).hasSize(0)
+  }
+
+  @Test
   fun `Find sentences that have license periods for revocation date`() {
     val result = createCalculationForRecordARecall(
       RECORD_A_RECALL_PRISONER_ID,
