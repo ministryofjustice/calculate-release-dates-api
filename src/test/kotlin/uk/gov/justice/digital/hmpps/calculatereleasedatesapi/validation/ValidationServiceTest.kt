@@ -286,7 +286,7 @@ abstract class ValidationServiceTest : SpringTestBase() {
 
     // Assert
     assertThat(result).isNotEmpty
-    assertThat(result[0].code).isEqualTo(ValidationCode.UNSUPPORTED_SUSPENDED_OFFENCE)
+    assertThat(result[0].code).isEqualTo(ValidationCode.INCORRECT_SUSPENDED_OFFENCE)
   }
 
   @ParameterizedTest
@@ -359,7 +359,9 @@ abstract class ValidationServiceTest : SpringTestBase() {
 
     // Assert
     assertThat(result).isNotEmpty
-    assertThat(result[0].code).isEqualTo(ValidationCode.UNSUPPORTED_BREACH_97)
+    assertThat(result[0].code).isEqualTo(ValidationCode.INCORRECT_OFFENCE_BREACH_97)
+    assertThat(result[0].type).isEqualTo(ValidationType.INCORRECT_OFFENCE)
+    assertThat(result[0].type.order).isEqualTo(ValidationOrder.INVALID)
   }
 
   @ParameterizedTest
@@ -394,7 +396,9 @@ abstract class ValidationServiceTest : SpringTestBase() {
 
     // Assert
     assertThat(result).isNotEmpty
-    assertThat(result[0].code).isEqualTo(ValidationCode.UNSUPPORTED_GENERIC_CONSPIRACY_OFFENCE)
+    assertThat(result[0].code).isEqualTo(ValidationCode.INCORRECT_OFFENCE_GENERIC_CONSPIRACY)
+    assertThat(result[0].type).isEqualTo(ValidationType.INCORRECT_OFFENCE)
+    assertThat(result[0].type.order).isEqualTo(ValidationOrder.INVALID)
   }
 
   @ParameterizedTest
@@ -429,7 +433,9 @@ abstract class ValidationServiceTest : SpringTestBase() {
 
     // Assert
     assertThat(result).isNotEmpty
-    assertThat(result[0].code).isEqualTo(ValidationCode.UNSUPPORTED_OFFENCE_ENCOURAGING_OR_ASSISTING)
+    assertThat(result[0].code).isEqualTo(ValidationCode.INCORRECT_OFFENCE_ENCOURAGING_OR_ASSISTING)
+    assertThat(result[0].type).isEqualTo(ValidationType.INCORRECT_OFFENCE)
+    assertThat(result[0].type.order).isEqualTo(ValidationOrder.INVALID)
   }
 
   @ParameterizedTest
