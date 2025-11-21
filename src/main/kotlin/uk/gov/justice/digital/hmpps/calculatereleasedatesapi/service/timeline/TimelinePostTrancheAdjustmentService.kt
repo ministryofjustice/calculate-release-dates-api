@@ -18,6 +18,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentDur
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isBeforeOrEqualTo
 import java.time.LocalDate
 
 @Service
@@ -85,9 +86,10 @@ class TimelinePostTrancheAdjustmentService {
     rule: CalculationRule,
   ): CalculationResult {
     val applicableRules = calculation.breakdownByReleaseDateType[releaseDateType]?.rules
+    val releaseDate = calculation.dates[releaseDateType]
 
-    if (applicableRules?.contains(rule) == true) {
-      log.info("${releaseDateType.name} before adjustment: ${calculation.dates[releaseDateType]}")
+    if (applicableRules?.contains(rule) == true && releaseDate!!.isBeforeOrEqualTo(commencementDate)) {
+      log.info("${releaseDateType.name} before adjustment: $releaseDate")
 
       return applyAdjustment(
         calculation,
