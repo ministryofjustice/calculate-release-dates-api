@@ -135,7 +135,7 @@ class BookingTimelineService(
           allSentences,
           allocatedEarlyRelease!!,
         )
-        if (allocatedTranche != null && allSentences.none { it.sentencedAt.isAfter(allocatedTranche!!.date) }) {
+        if (allocatedTranche != null) {
           latestCalculation = timelinePostTrancheAdjustmentService.applyTrancheAdjustmentLogic(
             latestCalculation,
             adjustments,
