@@ -2,10 +2,10 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation
 
 import io.swagger.v3.oas.annotations.media.Schema
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationType.CONCURRENT_CONSECUTIVE
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationType.INCORRECT_OFFENCE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationType.MANUAL_ENTRY_JOURNEY_REQUIRED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationType.SUSPENDED_OFFENCE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationType.UNSUPPORTED_CALCULATION
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationType.INCORRECT_OFFENCE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationType.UNSUPPORTED_SENTENCE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationType.VALIDATION
 

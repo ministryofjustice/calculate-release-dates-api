@@ -12,7 +12,7 @@ import kotlin.collections.forEach
 import kotlin.collections.plusAssign
 
 @Component
-class UnsupportedOffenceValidator : PreCalculationSourceDataValidator {
+class IncorrectOffenceValidator : PreCalculationSourceDataValidator {
 
   override fun validate(
     sourceData: CalculationSourceData,
@@ -28,7 +28,7 @@ class UnsupportedOffenceValidator : PreCalculationSourceDataValidator {
     return messages
   }
 
-  override fun validationOrder() = ValidationOrder.UNSUPPORTED
+  override fun validationOrder() = ValidationOrder.INVALID
 
   companion object {
     private val AFTER_97_BREACH_PROVISION_INVALID = LocalDate.of(2020, 12, 1)
