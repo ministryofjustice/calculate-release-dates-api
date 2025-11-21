@@ -46,6 +46,7 @@ enum class ValidationCode(val message: String, val validationType: ValidationTyp
   FTR_TYPE_28_DAYS_SENTENCE_LT_12_MONTHS("The sentence length is less than 12 months, so the fixed term sentence type should be 14 days."),
   FTR_TYPE_28_DAYS_AGGREGATE_LT_12_MONTHS("The aggregate sentence length for the consecutive sentences is less than 12 months, so the fixed term sentence type should be 14 days."),
   FTR_TYPE_48_DAYS_OVERLAPPING_SENTENCE("Unsupported FTR48 calculation", MANUAL_ENTRY_JOURNEY_REQUIRED),
+  FTR_TYPE_56_UNSUPPORTED_RECALL("Fixed term recall while on %s", MANUAL_ENTRY_JOURNEY_REQUIRED),
   FTR_RTC_DATE_IN_FUTURE("Return to custody date must not be in the future"),
   FTR_RTC_DATE_BEFORE_SENTENCE_DATE("Return to custody date cannot be before the sentence date"),
   FTR_RTC_DATE_BEFORE_REVOCATION_DATE("Return to custody date must not be before the revocation date"),
