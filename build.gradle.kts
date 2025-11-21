@@ -58,7 +58,7 @@ dependencies {
   implementation("io.arrow-kt:arrow-core:2.2.0")
   implementation("io.hypersistence:hypersistence-utils-hibernate-63:3.12.0")
   // OpenAPI
-  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.14")
+  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.0")
 
   implementation("com.amazonaws:amazon-sqs-java-messaging-lib:2.1.4")
   implementation("io.awspring.cloud:spring-cloud-aws-starter:3.4.1")
