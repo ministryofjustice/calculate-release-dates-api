@@ -1,7 +1,8 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.validator
 
 import org.springframework.stereotype.Component
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExternalMovementDirection
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExternalMovementReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType.FIXED_TERM_RECALL_14
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType.FIXED_TERM_RECALL_28
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType.FIXED_TERM_RECALL_56
@@ -15,7 +16,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.Validati
 import java.time.LocalDate
 
 @Component
-class FixedTermRecallValidator(private val featureToggles: FeatureToggles) : PreCalculationSourceDataValidator {
+class FixedTermRecallValidator : PreCalculationSourceDataValidator {
 
   override fun validate(sourceData: CalculationSourceData): List<ValidationMessage> {
     val ftrDetails = sourceData.fixedTermRecallDetails ?: return emptyList()
@@ -52,7 +53,36 @@ class FixedTermRecallValidator(private val featureToggles: FeatureToggles) : Pre
       validationMessages.add(ValidationMessage(ValidationCode.FTR_RTC_DATE_BEFORE_REVOCATION_DATE))
     }
 
+    if (has56DayFTRSentence) {
+      validateFtr56(sourceData)?.let { validationMessages.add(it) }
+    }
+
     return validationMessages
+  }
+
+  private fun validateFtr56(sourceData: CalculationSourceData): ValidationMessage? {
+    val lastAdmission = sourceData.movements
+      .filter { it.transformMovementDirection() == ExternalMovementDirection.IN }
+      .maxByOrNull { it.movementDate ?: LocalDate.MIN }
+      ?: return null
+
+    val lastHdcOrECSLRelease = sourceData.movements
+      .filter {
+        it.transformMovementDirection() == ExternalMovementDirection.OUT &&
+          it.movementDate != null &&
+          it.movementDate < lastAdmission.movementDate
+      }
+      .maxByOrNull { it.movementDate ?: LocalDate.MIN }
+
+    val reason = lastHdcOrECSLRelease?.transformMovementReason()
+    if (reason == ExternalMovementReason.HDC || reason == ExternalMovementReason.ECSL) {
+      return ValidationMessage(
+        ValidationCode.FTR_TYPE_56_UNSUPPORTED_RECALL,
+        listOf(reason.name),
+      )
+    }
+
+    return null
   }
 
   internal fun getFtrValidationDetails(
