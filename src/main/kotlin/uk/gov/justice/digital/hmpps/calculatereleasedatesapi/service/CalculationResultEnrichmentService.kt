@@ -276,10 +276,6 @@ class CalculationResultEnrichmentService(
     sentencesAndOffences.any { sentence -> sentence.sentenceCalculationType in dtoSentenceTypes } &&
     sentencesAndOffences.any { sentence -> sentence.sentenceCalculationType !in dtoSentenceTypes }
 
-  private fun hasHistoricOverride(
-    historicOverride: CalculationOutcomeHistoricSledOverride?,
-  ): ReleaseDateHint? = historicOverride?.let { ReleaseDateHint("SLED from a previous period of custody") }
-
   private fun sds40Hint(type: ReleaseDateType, calculationBreakdown: CalculationBreakdown): ReleaseDateHint? {
     if (calculationBreakdown.breakdownByReleaseDateType.containsKey(type)) {
       val rules = calculationBreakdown.breakdownByReleaseDateType[type]!!.rules
