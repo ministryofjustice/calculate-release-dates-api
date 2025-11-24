@@ -21,15 +21,19 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeter
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.FixedTermRecallDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ReturnToCustodyDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType.FTR_14_ORA
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.PrisonApiExternalMovement
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.FTR_48_COMMENCEMENT_DATE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.validator.FixedTerm48OverlapValidator
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.validator.FixedTermRecallValidator
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.validator.RevocationDateValidator
 import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.LocalTime
 import java.time.temporal.ChronoUnit.DAYS
 import java.time.temporal.ChronoUnit.MONTHS
 import java.time.temporal.ChronoUnit.WEEKS
@@ -43,7 +47,7 @@ class RecallValidationServiceTest {
 
   @Nested
   inner class ValidateReturnToCustodyDateTests {
-    val fixedTermRecallValidator = FixedTermRecallValidator(featureToggles)
+    val fixedTermRecallValidator = FixedTermRecallValidator()
 
     @Test
     fun `Validate return to custody date passed`() {
@@ -83,39 +87,83 @@ class RecallValidationServiceTest {
       assertThat(messages).isNotEmpty
       assertThat(messages[0].code).isEqualTo(ValidationCode.FTR_RTC_DATE_BEFORE_REVOCATION_DATE)
     }
+
+    @Test
+    fun `validate FTR56 sentence with no movements does not trigger manual journey`() {
+      val sentences = listOf(FTR_56_DAY_SENTENCE)
+      val returnToCustodyDate = LocalDate.of(2024, 2, 1)
+
+      val messages = fixedTermRecallValidator.validate(createSourceData(sentences, returnToCustodyDate, 56, emptyList()))
+      assertThat(messages).isEmpty()
+    }
+
+    @Test
+    fun `validate FTR56 sentence from ECSL or HDC triggers manually journey`() {
+      val sentences = listOf(FTR_56_DAY_SENTENCE)
+      val returnToCustodyDate = LocalDate.of(2024, 2, 1)
+
+      val hdcExternalMovements = listOf(
+        externalApiMovement,
+        externalApiMovement.copy(directionCode = "OUT", movementReasonCode = "HE", movementDate = externalApiMovement.movementDate!!.minusDays(10)),
+      )
+
+      val hdcMessages = fixedTermRecallValidator.validate(createSourceData(sentences, returnToCustodyDate, 56, hdcExternalMovements))
+      assertThat(hdcMessages).isNotEmpty()
+      assertThat(hdcMessages[0].code).isEqualTo(ValidationCode.FTR_TYPE_56_UNSUPPORTED_RECALL)
+
+      val ecslExternalMovements = listOf(
+        externalApiMovement,
+        externalApiMovement.copy(directionCode = "OUT", movementReasonCode = "ECSL", movementDate = externalApiMovement.movementDate.minusDays(10)),
+      )
+
+      val ecslMessages = fixedTermRecallValidator.validate(createSourceData(sentences, returnToCustodyDate, 56, ecslExternalMovements))
+      assertThat(ecslMessages).isNotEmpty()
+      assertThat(ecslMessages[0].code).isEqualTo(ValidationCode.FTR_TYPE_56_UNSUPPORTED_RECALL)
+    }
+
+    @Test
+    fun `validate FTR56 sentence with historic ECSL or HDC does not trigger manually journey`() {
+      val sentences = listOf(FTR_56_DAY_SENTENCE)
+      val returnToCustodyDate = LocalDate.of(2024, 2, 1)
+
+      val hdcExternalMovements = listOf(
+        externalApiMovement,
+        externalApiMovement.copy(directionCode = "OUT", movementReasonCode = "CR", movementDate = externalApiMovement.movementDate!!.minusDays(10)),
+        externalApiMovement.copy(directionCode = "OUT", movementReasonCode = "HE", movementDate = externalApiMovement.movementDate.minusDays(11)),
+      )
+
+      val hdcMessages = fixedTermRecallValidator.validate(createSourceData(sentences, returnToCustodyDate, 56, hdcExternalMovements))
+      assertThat(hdcMessages).isEmpty()
+
+      val ecslExternalMovements = listOf(
+        externalApiMovement,
+        externalApiMovement.copy(directionCode = "OUT", movementReasonCode = "CR", movementDate = externalApiMovement.movementDate.minusDays(10)),
+        externalApiMovement.copy(directionCode = "OUT", movementReasonCode = "ECSL", movementDate = externalApiMovement.movementDate.minusDays(10)),
+      )
+
+      val eclsMessages = fixedTermRecallValidator.validate(createSourceData(sentences, returnToCustodyDate, 56, ecslExternalMovements))
+      assertThat(eclsMessages).isEmpty()
+    }
+
+    @Test
+    fun `validate FTR56 sentence with ECSL or HDC prior to latest admission does not trigger manually journey`() {
+      val sentences = listOf(FTR_56_DAY_SENTENCE)
+      val returnToCustodyDate = LocalDate.of(2024, 2, 1)
+
+      val hdcExternalMovements = listOf(
+        externalApiMovement,
+        externalApiMovement.copy(directionCode = "OUT", movementReasonCode = "CR", movementDate = externalApiMovement.movementDate!!.minusDays(10)),
+        externalApiMovement.copy(directionCode = "OUT", movementReasonCode = "HE", movementDate = externalApiMovement.movementDate.plusDays(1)),
+      )
+
+      val messages = fixedTermRecallValidator.validate(createSourceData(sentences, returnToCustodyDate, 56, hdcExternalMovements))
+      assertThat(messages).isEmpty()
+    }
   }
 
   @Nested
   inner class ValidateRevocationDateTests {
     val revocationDateValidator = RevocationDateValidator()
-
-    @Test
-    fun `Validate revocation date passed`() {
-      val sentence = FTR_14_DAY_SENTENCE.copy(sentenceCalculationType = SentenceCalculationType.FTR_56ORA.name)
-
-      val messages = revocationDateValidator.validate(createSourceData(listOf(sentence)))
-
-      assertThat(messages).isEmpty()
-    }
-
-    @Test
-    fun `Validate missing revocation date for non ftr-56 passed`() {
-      val sentence = FTR_14_DAY_SENTENCE.copy(revocationDates = emptyList())
-
-      val messages = revocationDateValidator.validate(createSourceData(listOf(sentence)))
-
-      assertThat(messages).isEmpty()
-    }
-
-    @Test
-    fun `Validate revocation date missing for FTR-56`() {
-      val sentence = FTR_14_DAY_SENTENCE.copy(revocationDates = emptyList(), sentenceCalculationType = SentenceCalculationType.FTR_56ORA.name)
-
-      val messages = revocationDateValidator.validate(createSourceData(listOf(sentence)))
-
-      assertThat(messages).isNotEmpty
-      assertThat(messages[0].code).isEqualTo(ValidationCode.RECALL_MISSING_REVOCATION_DATE)
-    }
 
     @Test
     fun `Validate revocation date in future for all recall sentence types`() {
@@ -128,8 +176,8 @@ class RecallValidationServiceTest {
     }
 
     @Test
-    fun `Do not validate revocation date for non ftr-56 recalls`() {
-      val sentence = FTR_14_DAY_SENTENCE.copy(revocationDates = emptyList())
+    fun `Validate revocation date in the past for all recall sentence types`() {
+      val sentence = FTR_14_DAY_SENTENCE.copy(revocationDates = listOf(LocalDate.now().minusDays(1)))
 
       val messages = revocationDateValidator.validate(createSourceData(listOf(sentence)))
 
@@ -308,12 +356,33 @@ class RecallValidationServiceTest {
     hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
   )
 
-  private fun createSourceData(sentences: List<SentenceAndOffenceWithReleaseArrangements>, returnToCustodyDate: LocalDate? = null, recallLength: Int? = null) = CalculationSourceData(
-    prisonerDetails = mock(),
+  private fun createSourceData(
+    sentences: List<SentenceAndOffenceWithReleaseArrangements>,
+    returnToCustodyDate: LocalDate? = null,
+    recallLength: Int? = null,
+    movements: List<PrisonApiExternalMovement>? = null,
+  ) = CalculationSourceData(
+    prisonerDetails = prisonerDetails,
     sentenceAndOffences = sentences,
     bookingAndSentenceAdjustments = mock(),
-    returnToCustodyDate = if (returnToCustodyDate != null) ReturnToCustodyDate(returnToCustodyDate = returnToCustodyDate, bookingId = 1L) else null,
-    fixedTermRecallDetails = if (returnToCustodyDate != null && recallLength != null) FixedTermRecallDetails(returnToCustodyDate = returnToCustodyDate, bookingId = 1L, recallLength = recallLength) else null,
+    returnToCustodyDate = if (returnToCustodyDate != null) {
+      ReturnToCustodyDate(
+        returnToCustodyDate = returnToCustodyDate,
+        bookingId = 1L,
+      )
+    } else {
+      null
+    },
+    fixedTermRecallDetails = if (returnToCustodyDate != null && recallLength != null) {
+      FixedTermRecallDetails(
+        returnToCustodyDate = returnToCustodyDate,
+        bookingId = 1L,
+        recallLength = recallLength,
+      )
+    } else {
+      null
+    },
+    movements = movements ?: emptyList(),
   )
 
   private companion object {
@@ -349,6 +418,28 @@ class RecallValidationServiceTest {
       isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
       isSDSPlusOffenceInPeriod = false,
       hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
+    )
+
+    private val FTR_56_DAY_SENTENCE = FTR_14_DAY_SENTENCE.copy(sentenceCalculationType = SentenceCalculationType.FTR_56ORA.name)
+
+    private val prisonerDetails = PrisonerDetails(
+      bookingId = 1L,
+      offenderNo = "ABC",
+      dateOfBirth = LocalDate.of(1980, 1, 1),
+    )
+
+    private val externalApiMovement = PrisonApiExternalMovement(
+      movementReasonCode = "",
+      commentText = "",
+      movementDate = LocalDate.now(),
+      movementReason = "A",
+      movementTime = LocalTime.now(),
+      movementType = "A",
+      directionCode = "IN",
+      offenderNo = "ABC",
+      movementTypeDescription = "ASD",
+      createDateTime = LocalDateTime.now(),
+      fromAgency = "xyz",
     )
   }
 }
