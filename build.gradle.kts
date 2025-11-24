@@ -76,7 +76,7 @@ dependencies {
   testImplementation("org.wiremock:wiremock-standalone:3.13.1")
   testImplementation("org.springframework.security:spring-security-test")
   testImplementation("org.awaitility:awaitility-kotlin:4.3.0")
-  testImplementation("net.javacrumbs.json-unit:json-unit-assertj:4.1.1")
+  testImplementation("net.javacrumbs.json-unit:json-unit-assertj:5.0.0")
   testImplementation("io.swagger.parser.v3:swagger-parser-v2-converter:2.1.35")
   testImplementation("org.mockito:mockito-inline:5.2.0")
   testImplementation("org.junit.jupiter:junit-jupiter:6.0.1")
