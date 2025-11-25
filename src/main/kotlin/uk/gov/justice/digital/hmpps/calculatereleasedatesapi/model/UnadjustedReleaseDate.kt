@@ -8,11 +8,11 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.PED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.NoValidReturnToCustodyDateException
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.NoValidRevocationDateException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.sentence.SentenceAggregator
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
 import java.rmi.UnexpectedException
 import java.time.LocalDate
+import java.time.temporal.ChronoUnit
 import kotlin.math.ceil
 import kotlin.properties.Delegates
 
@@ -84,7 +84,6 @@ class UnadjustedReleaseDate(
 
   fun findRecallCalculation(): Pair<Int, LocalDate>? {
     val standardCalculation = releaseDateCalculation.numberOfDaysToSentenceExpiryDate to unadjustedExpiryDate
-    val revocationDate = sentence.recall?.revocationDate
     val returnToCustodyDate = sentence.recall?.returnToCustodyDate
     return when (val recallType = sentence.recallType) {
       RecallType.STANDARD_RECALL -> standardCalculation
@@ -97,15 +96,13 @@ class UnadjustedReleaseDate(
         if (returnToCustodyDate == null) {
           throw NoValidReturnToCustodyDateException("No return to custody date available")
         }
-        if (revocationDate == null) {
-          throw NoValidRevocationDateException("No revocation date available")
-        }
 
-        val ftr56Configuration =
-          earlyReleaseConfigurations.configurations.find { it.recallCalculation == RecallCalculationType.FTR_56 }
-        val revocationDateAfterFtr56Commencement = ftr56Configuration != null && revocationDate.isAfterOrEqualTo(ftr56Configuration.earliestTranche())
+        val ftr56Configuration = earlyReleaseConfigurations.configurations.find { it.recallCalculation == RecallCalculationType.FTR_56 }
+        val returnToCustodyDateAfterFtr56Commencement = ftr56Configuration != null && returnToCustodyDate.isAfterOrEqualTo(ftr56Configuration.earliestTranche())
         val allocatedToFtr56Tranche = calculationTrigger.allocatedEarlyReleaseConfiguration != null && calculationTrigger.allocatedEarlyReleaseConfiguration == ftr56Configuration
-        if (revocationDateAfterFtr56Commencement || allocatedToFtr56Tranche) {
+        val isUnderFourYears = sentence.durationIsLessThan(1461, ChronoUnit.DAYS) // Sentences under 4 years that were recalled before FTR_56 commencement should be treated as FTR_56 sentences which are not tranched.
+
+        if (returnToCustodyDateAfterFtr56Commencement || allocatedToFtr56Tranche || isUnderFourYears) {
           calculateFixedTermRecall(returnToCustodyDate, recallType)
         } else {
           standardCalculation

@@ -12,6 +12,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationCo
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOriginalData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedCalculationResults
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedDate
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.PreviouslyRecordedSLED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeHistoricOverrideRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
@@ -24,7 +25,6 @@ open class DetailedCalculationResultsService(
   private val sourceDataMapper: SourceDataMapper,
   private val calculationRequestRepository: CalculationRequestRepository,
   private val calculationResultEnrichmentService: CalculationResultEnrichmentService,
-  private val prisonService: PrisonService,
   private val calculationOutcomeHistoricOverrideRepository: CalculationOutcomeHistoricOverrideRepository,
   private val featureToggles: FeatureToggles,
 ) {
@@ -42,26 +42,32 @@ open class DetailedCalculationResultsService(
       .filter { it.outcomeDate != null }
       .map { ReleaseDate(it.outcomeDate!!, ReleaseDateType.valueOf(it.calculationDateType)) }
 
-    val historicDates = if (featureToggles.historicSled) calculationOutcomeHistoricOverrideRepository.findByCalculationRequestId(calculationRequestId) else emptyList()
-
+    val historicSledOverride = if (featureToggles.historicSled) calculationOutcomeHistoricOverrideRepository.findByCalculationRequestId(calculationRequestId) else null
     return DetailedCalculationResults(
-      calculationContext(calculationRequestId, calculationRequest),
-      calculationResultEnrichmentService.addDetailToCalculationDates(
+      context = calculationContext(calculationRequestId, calculationRequest),
+      dates = calculationResultEnrichmentService.addDetailToCalculationDates(
         releaseDates,
         sentenceAndOffences,
         calculationBreakdown,
         calculationRequest.historicalTusedSource,
         null,
-        historicDates,
+        historicSledOverride,
       ),
-      approvedDates(calculationRequest.approvedDatesSubmissions.firstOrNull()),
-      CalculationOriginalData(
+      approvedDates = approvedDates(calculationRequest.approvedDatesSubmissions.firstOrNull()),
+      calculationOriginalData = CalculationOriginalData(
         prisonerDetails,
         sentenceAndOffences,
       ),
-      calculationBreakdown,
-      breakdownMissingReason,
-      calculationRequest.allocatedSDSTranche?.tranche,
+      calculationBreakdown = calculationBreakdown,
+      breakdownMissingReason = breakdownMissingReason,
+      tranche = calculationRequest.allocatedSDSTranche?.tranche,
+      usedPreviouslyRecordedSLED = historicSledOverride?.let {
+        PreviouslyRecordedSLED(
+          previouslyRecordedSLEDDate = it.historicCalculationOutcomeDate,
+          calculatedDate = it.calculationOutcomeDate,
+          previouslyRecordedSLEDCalculationRequestId = it.historicCalculationRequestId,
+        )
+      },
     )
   }
 
@@ -80,6 +86,7 @@ open class DetailedCalculationResultsService(
     calculationRequest.calculationType,
     calculationRequest.genuineOverrideReason,
     calculationRequest.genuineOverrideReasonFurtherDetail ?: calculationRequest.genuineOverrideReason?.description,
+    calculationRequest.calculationRequestUserInput?.usePreviouslyRecordedSLEDIfFound ?: false,
   )
 
   private fun approvedDates(latestApprovedDatesSubmission: ApprovedDatesSubmission?): Map<ReleaseDateType, DetailedDate>? = latestApprovedDatesSubmission?.approvedDates?.associate {

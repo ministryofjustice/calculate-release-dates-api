@@ -53,14 +53,12 @@ class DetailedCalculationResultsServiceTest {
   private val sourceDataMapper = mock<SourceDataMapper>()
   private val calculationRequestRepository = mock<CalculationRequestRepository>()
   private val calculationResultEnrichmentService = mock<CalculationResultEnrichmentService>()
-  private val prisonService = mock<PrisonService>()
   private val historicOverrideRepository = mock<CalculationOutcomeHistoricOverrideRepository>()
   private val service = DetailedCalculationResultsService(
     calculationBreakdownService,
     sourceDataMapper,
     calculationRequestRepository,
     calculationResultEnrichmentService,
-    prisonService,
     historicOverrideRepository,
     FeatureToggles(historicSled = true),
   )
@@ -125,7 +123,7 @@ class DetailedCalculationResultsServiceTest {
         expectedBreakdown,
         null,
         null,
-        emptyList(),
+        null,
       ),
     ).thenReturn(enrichedReleaseDates)
     whenever(calculationBreakdownService.getBreakdownSafely(any())).thenReturn(expectedBreakdown.right())
@@ -153,7 +151,7 @@ class DetailedCalculationResultsServiceTest {
       expectedBreakdown,
       null,
       null,
-      emptyList(),
+      null,
     )
   }
 
@@ -184,7 +182,7 @@ class DetailedCalculationResultsServiceTest {
         expectedBreakdown,
         null,
         null,
-        emptyList(),
+        null,
       ),
     ).thenReturn(enrichedReleaseDates)
     whenever(calculationBreakdownService.getBreakdownSafely(any())).thenReturn(expectedBreakdown.right())
@@ -220,7 +218,7 @@ class DetailedCalculationResultsServiceTest {
         expectedBreakdown,
         null,
         null,
-        emptyList(),
+        null,
       ),
     ).thenReturn(enrichedReleaseDates)
     whenever(calculationBreakdownService.getBreakdownSafely(any())).thenReturn(expectedBreakdown.right())
@@ -278,7 +276,7 @@ class DetailedCalculationResultsServiceTest {
         null,
         null,
         null,
-        emptyList(),
+        null,
       ),
     ).thenReturn(enrichedReleaseDates)
     whenever(calculationBreakdownService.getBreakdownSafely(any())).thenReturn(BreakdownMissingReason.UNSUPPORTED_CALCULATION_BREAKDOWN.left())
@@ -305,7 +303,7 @@ class DetailedCalculationResultsServiceTest {
       null,
       null,
       null,
-      emptyList(),
+      null,
     )
   }
 
@@ -405,6 +403,7 @@ class DetailedCalculationResultsServiceTest {
     CalculationType.CALCULATED,
     null,
     null,
+    false,
   )
 
   private fun toReleaseDates(request: CalculationRequest): List<ReleaseDate> = request.calculationOutcomes

@@ -18,7 +18,7 @@
         "sentencedAt": "2022-02-02",
         "recall": {
           "recallType": "FIXED_TERM_RECALL_56",
-          "returnToCustodyDate": "2026-03-18",
+          "returnToCustodyDate": "2026-04-18",
           "revocationDate": "2026-03-11"
         },
         "hasAnSDSEarlyReleaseExclusion": "NO"
@@ -27,13 +27,13 @@
     "adjustments": {
       "UNLAWFULLY_AT_LARGE": [
         {
-          "appliesToSentencesFrom": "2026-03-12",
+          "appliesToSentencesFrom": "2026-04-12",
           "numberOfDays": 6,
-          "fromDate": "2026-03-12",
-          "toDate": "2026-03-17"
+          "fromDate": "2026-04-12",
+          "toDate": "2026-04-17"
         }
       ]
     },
-    "returnToCustodyDate": "2026-03-18"
+    "returnToCustodyDate": "2026-04-18"
   }
 }

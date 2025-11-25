@@ -100,7 +100,7 @@ open class OffenderKeyDatesServiceTest {
         isNull(),
         isNull(),
         eq(offenderKeyDates),
-        anyList(),
+        isNull(),
       ),
     ).thenReturn(detailedDates)
     whenever(prisonService.getNOMISCalcReasons()).thenReturn(
@@ -143,6 +143,7 @@ open class OffenderKeyDatesServiceTest {
         CalculationType.CALCULATED,
         null,
         null,
+        false,
       ),
       listOf(
         DetailedDate(
@@ -192,7 +193,7 @@ open class OffenderKeyDatesServiceTest {
         isNull(),
         isNull(),
         isNull(),
-        anyList(),
+        isNull(),
       ),
     ).thenReturn(detailedDates)
 
@@ -225,13 +226,14 @@ open class OffenderKeyDatesServiceTest {
         CalculationType.CALCULATED,
         null,
         null,
+        false,
       ),
       listOf(
         DetailedDate(
           ReleaseDateType.SLED,
           ReleaseDateType.SLED.description,
           LocalDate.of(2024, 1, 1),
-          listOf(ReleaseDateHint("Dominant SLED from a previous sentence")),
+          listOf(ReleaseDateHint("SLED from a previous period of custody")),
         ),
       ),
     )
@@ -240,7 +242,7 @@ open class OffenderKeyDatesServiceTest {
         ReleaseDateType.SLED,
         ReleaseDateType.SLED.description,
         LocalDate.of(2024, 1, 1),
-        listOf(ReleaseDateHint("Dominant SLED from a previous sentence")),
+        listOf(ReleaseDateHint("SLED from a previous period of custody")),
       ),
     )
     val calcRequest = CalculationRequest(
@@ -273,7 +275,7 @@ open class OffenderKeyDatesServiceTest {
         isNull(),
         isNull(),
         isNull(),
-        anyList(),
+        isNull(),
       ),
     ).thenReturn(detailedDates)
 
@@ -373,7 +375,7 @@ open class OffenderKeyDatesServiceTest {
         isNull(),
         isNull(),
         isNull(),
-        anyList(),
+        isNull(),
       ),
     )
       .thenThrow(NoSuchElementException("Error"))
@@ -419,7 +421,7 @@ open class OffenderKeyDatesServiceTest {
         isNull(),
         isNull(),
         eq(offenderKeyDates),
-        anyList(),
+        isNull(),
       ),
     ).thenReturn(detailedDates)
 
@@ -585,6 +587,7 @@ open class OffenderKeyDatesServiceTest {
         CalculationType.GENUINE_OVERRIDE,
         GenuineOverrideReason.AGGRAVATING_FACTOR_OFFENCE,
         "One or more offences have been characterised by an aggravating factor (such as terror)",
+        false,
       ),
       listOf(
         DetailedDate(
@@ -636,7 +639,7 @@ open class OffenderKeyDatesServiceTest {
         isNull(),
         isNull(),
         isNull(),
-        anyList(),
+        isNull(),
       ),
     ).thenReturn(detailedDates)
 
@@ -668,6 +671,7 @@ open class OffenderKeyDatesServiceTest {
         CalculationType.GENUINE_OVERRIDE,
         GenuineOverrideReason.OTHER,
         "Some extra detail",
+        false,
       ),
       listOf(
         DetailedDate(
@@ -719,7 +723,7 @@ open class OffenderKeyDatesServiceTest {
         isNull(),
         isNull(),
         isNull(),
-        anyList(),
+        isNull(),
       ),
     ).thenReturn(detailedDates)
 
