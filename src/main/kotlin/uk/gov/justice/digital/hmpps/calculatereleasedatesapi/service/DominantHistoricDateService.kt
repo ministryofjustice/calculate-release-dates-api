@@ -17,7 +17,13 @@ class DominantHistoricDateService(private val calculationOutcomeRepository: Calc
       .filter { (_, dates) -> dates.any { it.calculationDateType == ReleaseDateType.SLED.name } || hasSedAndLedWithTheSameDate(dates) }
       .mapNotNull { (calculationRequestId, dates) ->
         val sledOrSed = dates.find { it.calculationDateType == ReleaseDateType.SLED.name } ?: dates.find { it.calculationDateType == ReleaseDateType.SED.name }
-        sledOrSed?.let { PreviouslyRecordedSLED(it.outcomeDate!!, calculatedSLED, calculationRequestId) }
+        sledOrSed?.let {
+          PreviouslyRecordedSLED(
+            calculatedDate = calculatedSLED,
+            previouslyRecordedSLEDDate = it.outcomeDate!!,
+            previouslyRecordedSLEDCalculationRequestId = calculationRequestId,
+          )
+        }
       }.maxByOrNull { it.previouslyRecordedSLEDDate }
   }
 
