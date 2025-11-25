@@ -24,7 +24,6 @@ generic-service:
     USE_ADJUSTMENTS_API: "true"
     HISTORIC_SLED_ENABLED: "false"
     APPLY_POST_RECALL_REPEAL_RULES: "false"
-    FTR_48_MANUAL_JOURNEY: "false"
 
   serviceAccountName: calculate-release-dates-api-preprod
 
