@@ -22,7 +22,6 @@ generic-service:
     MANAGE-OFFENCES_API_URL: https://manage-offences-api-preprod.hmpps.service.justice.gov.uk
     NOMIS-SYNC-MAPPING_API_URL: https://nomis-sync-prisoner-mapping-preprod.hmpps.service.justice.gov.uk
     USE_ADJUSTMENTS_API: "true"
-    HISTORIC_SLED_ENABLED: "false"
     APPLY_POST_RECALL_REPEAL_RULES: "false"
 
   serviceAccountName: calculate-release-dates-api-preprod
