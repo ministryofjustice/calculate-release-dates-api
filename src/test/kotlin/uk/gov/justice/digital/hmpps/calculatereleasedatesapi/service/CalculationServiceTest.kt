@@ -67,9 +67,9 @@ class CalculationServiceTest {
     whenever(bookingTimelineService.calculate(anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull()))
       .thenReturn(CALCULATION_OUTPUT)
     val expectedPreviouslyRecordedSled = PreviouslyRecordedSLED(
-      LocalDate.of(2026, 6, 15),
-      previouslyRecordedSLEDCalculationRequestId = 99999,
+      previouslyRecordedSLEDDate = LocalDate.of(2026, 6, 15),
       calculatedDate = LocalDate.of(2026, 2, 2),
+      previouslyRecordedSLEDCalculationRequestId = 99999,
     )
     whenever(dominantHistoricDateService.findPreviouslyRecordedSLEDThatShouldOverrideTheCalculatedSLED(any(), any())).thenReturn(expectedPreviouslyRecordedSled)
 
@@ -113,9 +113,9 @@ class CalculationServiceTest {
     whenever(bookingTimelineService.calculate(anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull()))
       .thenReturn(CALCULATION_OUTPUT)
     val expectedPreviouslyRecordedSled = PreviouslyRecordedSLED(
-      LocalDate.of(2028, 6, 15),
-      previouslyRecordedSLEDCalculationRequestId = 99999,
+      previouslyRecordedSLEDDate = LocalDate.of(2028, 6, 15),
       calculatedDate = LocalDate.of(2026, 2, 2),
+      previouslyRecordedSLEDCalculationRequestId = 99999,
     )
     whenever(dominantHistoricDateService.findPreviouslyRecordedSLEDThatShouldOverrideTheCalculatedSLED(any(), any())).thenReturn(expectedPreviouslyRecordedSled)
 
