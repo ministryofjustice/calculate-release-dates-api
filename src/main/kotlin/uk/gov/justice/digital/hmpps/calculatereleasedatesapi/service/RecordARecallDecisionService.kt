@@ -15,7 +15,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecordARecall
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecordARecallRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecordARecallValidationResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceGroup
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Term
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.nomissyncmapping.model.NomisDpsSentenceMapping
@@ -26,6 +25,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isBeforeOrEqua
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationOrder
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.service.ValidationService
+import java.time.temporal.ChronoUnit
 import java.util.UUID
 
 @Service
@@ -129,8 +129,6 @@ class RecordARecallDecisionService(
     }
     val mappings = nomisSyncMappingApiClient.postNomisToDpsMappingLookup(nomisIds)
 
-    val anyNonSdsSentences = recallableSentences.any { (_, sentence) -> sentence.sentenceParts().any { it !is StandardDeterminateSentence } }
-
     return RecordARecallDecisionResult(
       RecordARecallDecision.AUTOMATED,
       automatedCalculationData = AutomatedCalculationData(
@@ -139,9 +137,18 @@ class RecordARecallDecisionService(
         expiredSentences = toRecallableSentences(expiredSentences, mappings),
         ineligibleSentences = toRecallableSentences(ineligibleSentences, mappings),
         sentencesBeforeInitialRelease = toRecallableSentences(sentenceGroupsReleasedAfterRevocation.flatMap { it.sentences.map { sentence -> it to sentence } }, mappings),
-        eligibleRecallTypes = if (anyNonSdsSentences) listOf(Recall.RecallType.LR) else Recall.RecallType.entries,
+        unexpectedRecallTypes = findUnexpectedRecallTypes(recallableSentences),
       ),
     )
+  }
+
+  private fun findUnexpectedRecallTypes(recallableSentences: List<Pair<SentenceGroup, CalculableSentence>>): List<Recall.RecallType> {
+    val anyOver12Months = recallableSentences.any { it.second.durationIsGreaterThanOrEqualTo(12, ChronoUnit.MONTHS) }
+    return if (anyOver12Months) {
+      listOf(Recall.RecallType.FTR_14, Recall.RecallType.FTR_HDC_14)
+    } else {
+      listOf(Recall.RecallType.FTR_28, Recall.RecallType.FTR_HDC_28)
+    }
   }
 
   private fun toRecallableSentences(
