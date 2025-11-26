@@ -20,10 +20,12 @@ interface CalculationOutcomeRepository : JpaRepository<CalculationOutcome, Long>
        SELECT co.*
         FROM calculation_outcome co
                  JOIN calculation_request cr ON co.calculation_request_id = cr.id
+                 JOIN calculation_reason r ON cr.reason_for_calculation = r.id
         WHERE cr.prisoner_id = ?1
           AND co.calculation_date_type IN ('SLED', 'LED', 'SED')
           AND co.outcome_date > ?2
           AND cr.calculation_status = 'CONFIRMED'
+          AND r.eligible_for_previously_recorded_sled = true
         ORDER BY co.calculation_date_type, co.outcome_date DESC
         """,
   )

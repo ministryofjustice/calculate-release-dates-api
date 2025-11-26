@@ -402,8 +402,8 @@ class CalculationTransactionalServiceTest {
     whenever(approvedDatesSubmissionRepository.save(any())).thenReturn(submission)
     val usedPreviouslyRecordedSLED = PreviouslyRecordedSLED(
       previouslyRecordedSLEDDate = FIFTH_APRIL_2021,
-      previouslyRecordedSLEDCalculationRequestId = 99999,
       calculatedDate = THIRD_FEB_2021,
+      previouslyRecordedSLEDCalculationRequestId = 99999,
     )
     val calculationOutput = CALCULATION_OUTPUT.copy(
       calculationResult = CALCULATION_OUTPUT.calculationResult.copy(

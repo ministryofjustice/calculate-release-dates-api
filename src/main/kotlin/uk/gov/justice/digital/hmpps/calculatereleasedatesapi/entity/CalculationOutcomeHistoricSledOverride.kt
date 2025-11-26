@@ -26,4 +26,5 @@ data class CalculationOutcomeHistoricSledOverride(
 
   @NotNull
   val historicCalculationOutcomeDate: LocalDate,
+
 )
