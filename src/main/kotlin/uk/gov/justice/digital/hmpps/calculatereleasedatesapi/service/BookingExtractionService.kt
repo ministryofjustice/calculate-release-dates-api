@@ -160,8 +160,9 @@ class BookingExtractionService(
       extractionService.mostRecentSentence(sentences, SentenceCalculation::adjustedDeterminateReleaseDate)
     val mostRecentSentenceByExpiryDate =
       extractionService.mostRecentSentence(sentences, SentenceCalculation::expiryDate)
+    val activeSentenceCalculation = mostRecentSentencesByReleaseDate.first()
 
-    val latestReleaseDate = mostRecentSentencesByReleaseDate[0].sentenceCalculation.releaseDate
+    val latestReleaseDate = activeSentenceCalculation.sentenceCalculation.releaseDate
     val latestExpiryDate = mostRecentSentenceByExpiryDate.sentenceCalculation.expiryDate
 
     val latestUnadjustedExpiryDate: LocalDate = extractionService.mostRecent(
@@ -313,14 +314,19 @@ class BookingExtractionService(
       dates[NCRD] = latestNotionalConditionalReleaseDate
     }
 
-    /** --- PED --- **/
-    extractPedForBooking(
-      latestExtendedDeterminateParoleEligibilityDate,
-      mostRecentSentenceByAdjustedDeterminateReleaseDate,
-      sentences,
-      dates,
-      breakdownByReleaseDateType,
-    )
+    /**
+     *  --- PED ---
+     *  only extract PED if active sentence does not include PED already
+     **/
+    if (activeSentenceCalculation.releaseDateTypes.contains(PED)) {
+      extractPedForBooking(
+        latestExtendedDeterminateParoleEligibilityDate,
+        mostRecentSentenceByAdjustedDeterminateReleaseDate,
+        sentences,
+        dates,
+        breakdownByReleaseDateType,
+      )
+    }
 
     /** --- ERSED --- **/
     val ersedNotApplicableDueToDtoLaterThanCrd = extractErsedAndNotApplicableDueToDtoLaterThanCrdFlag(

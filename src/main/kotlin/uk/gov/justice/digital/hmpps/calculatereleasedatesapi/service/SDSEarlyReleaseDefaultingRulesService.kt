@@ -56,12 +56,17 @@ class SDSEarlyReleaseDefaultingRulesService(
     sentences: List<CalculableSentence>,
     earlyReleaseConfiguration: EarlyReleaseConfiguration,
   ) {
+    val maxSentence = sentences.maxByOrNull { it.sentenceCalculation.releaseDateDefaultedByCommencement() }
+
+    val showPed = maxSentence?.releaseDateTypes?.contains(ReleaseDateType.PED) ?: true
+
     adjustDatesForEarlyOrStandardRelease(
       earlyReleaseResult,
       standardReleaseResult,
       allocatedTranche,
       dates,
       breakdownByReleaseDateType,
+      showPed,
     )
 
     adjustTusedForPreTrancheOneRecalls(
@@ -244,6 +249,7 @@ class SDSEarlyReleaseDefaultingRulesService(
     allocatedTranche: EarlyReleaseTrancheConfiguration?,
     dates: MutableMap<ReleaseDateType, LocalDate>,
     breakdownByReleaseDateType: MutableMap<ReleaseDateType, ReleaseDateCalculationBreakdown>,
+    showPed: Boolean,
   ) {
     if (hasAnyReleaseBeforeTrancheCommencement(earlyReleaseResult, standardReleaseResult, allocatedTranche)) {
       adjustDatesForEarlyRelease(
@@ -252,6 +258,7 @@ class SDSEarlyReleaseDefaultingRulesService(
         allocatedTranche!!,
         dates,
         breakdownByReleaseDateType,
+        showPed,
       )
     } else if (allocatedTranche != null) {
       adjustDatesForNonEarlyRelease(
@@ -259,6 +266,7 @@ class SDSEarlyReleaseDefaultingRulesService(
         standardReleaseResult,
         allocatedTranche,
         breakdownByReleaseDateType,
+        showPed,
       )
     }
   }
@@ -269,8 +277,13 @@ class SDSEarlyReleaseDefaultingRulesService(
     allocatedTranche: EarlyReleaseTrancheConfiguration,
     dates: MutableMap<ReleaseDateType, LocalDate>,
     breakdownByReleaseDateType: MutableMap<ReleaseDateType, ReleaseDateCalculationBreakdown>,
+    showPed: Boolean,
   ) {
     DATE_TYPES_TO_ADJUST_TO_COMMENCEMENT_DATE.forEach { releaseDateType ->
+      if (releaseDateType == ReleaseDateType.PED && !showPed) {
+        return@forEach
+      }
+
       determineAndApplyReleaseDate(
         ReleaseDateContext(
           releaseDateType,
@@ -289,8 +302,13 @@ class SDSEarlyReleaseDefaultingRulesService(
     standardReleaseResult: CalculationResult,
     allocatedTranche: EarlyReleaseTrancheConfiguration?,
     breakdownByReleaseDateType: MutableMap<ReleaseDateType, ReleaseDateCalculationBreakdown>,
+    showPed: Boolean,
   ) {
     DATE_TYPES_TO_ADJUST_TO_COMMENCEMENT_DATE.forEach { releaseDateType ->
+      if (releaseDateType == ReleaseDateType.PED && !showPed) {
+        return@forEach
+      }
+
       determineAndApplyReleaseRule(
         releaseDateType,
         earlyReleaseResult,
