@@ -9,6 +9,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallSentenc
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecordARecallDecision
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecordARecallRequest
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.remandandsentencing.model.Recall
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource.ValidationIntTest.Companion.VALIDATION_PRISONER_ID
 import java.time.LocalDate
@@ -92,6 +93,7 @@ class RecordARecallControllerIntTest(private val mockManageOffencesClient: MockM
         ),
       ),
     )
+    assertThat(result.automatedCalculationData.unexpectedRecallTypes).isEqualTo(listOf(Recall.RecallType.FTR_14, Recall.RecallType.FTR_HDC_14))
   }
 
   @Test
