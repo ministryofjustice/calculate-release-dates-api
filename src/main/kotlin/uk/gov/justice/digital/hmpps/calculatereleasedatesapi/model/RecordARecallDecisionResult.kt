@@ -10,17 +10,7 @@ data class RecordARecallDecisionResult(
   val validationMessages: List<ValidationMessage> = emptyList(),
   val conflictingAdjustments: List<String> = emptyList(),
   val automatedCalculationData: AutomatedCalculationData? = null,
-) {
-
-  @Deprecated("Remove ths property after frontend uses new object")
-  val calculationRequestId: Long? = automatedCalculationData?.calculationRequestId
-
-  @Deprecated("Remove ths property after frontend uses new object")
-  val recallableSentences: List<RecallableSentence> = automatedCalculationData?.recallableSentences ?: emptyList()
-
-  @Deprecated("Remove ths property after frontend uses new object")
-  val eligibleRecallTypes: List<Recall.RecallType> = automatedCalculationData?.eligibleRecallTypes ?: emptyList()
-}
+)
 
 data class AutomatedCalculationData(
   val calculationRequestId: Long,
@@ -28,7 +18,7 @@ data class AutomatedCalculationData(
   val expiredSentences: List<RecallableSentence>,
   val ineligibleSentences: List<RecallableSentence>,
   val sentencesBeforeInitialRelease: List<RecallableSentence>,
-  val eligibleRecallTypes: List<Recall.RecallType>,
+  val unexpectedRecallTypes: List<Recall.RecallType>,
 )
 
 data class RecallableSentence(
