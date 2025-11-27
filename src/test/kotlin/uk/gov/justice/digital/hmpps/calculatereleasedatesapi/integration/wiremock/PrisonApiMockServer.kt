@@ -27,6 +27,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Pris
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.prisonapi.model.PrisonPeriod
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.prisonapi.model.PrisonerInPrisonSummary
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource.JsonTransformation
+import java.time.LocalDateTime
 
 /*
     This class mocks the prison-api.
@@ -342,11 +343,11 @@ class PrisonApiMockServer : WireMockServer(WIREMOCK_PORT) {
             bookingSequence = index,
             bookingId = it,
             // Not required by CRDS.
-            entryDate = "",
+            entryDate = LocalDateTime.now(),
             prisons = emptyList(),
             transfers = emptyList(),
             movementDates = emptyList(),
-            releaseDate = "",
+            releaseDate = LocalDateTime.now(),
 
           )
         },
