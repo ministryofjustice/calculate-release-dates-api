@@ -10,4 +10,6 @@ interface CalculationReasonRepository : JpaRepository<CalculationReason, Long> {
   fun findTopByIsBulkTrue(): Optional<CalculationReason>
 
   fun findByDisplayName(display: String): CalculationReason?
+
+  fun getByUseForApprovedDatesIsTrue(): CalculationReason
 }

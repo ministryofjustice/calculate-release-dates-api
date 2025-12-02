@@ -45,7 +45,7 @@ class HistoricCalculationsServiceTest {
     val calcRequest2 = calcRequest1.copy(
       prisonerLocation = "KTI",
       calculationReference = UUID.randomUUID(),
-      reasonForCalculation = CalculationReason(id = 1, isActive = true, isOther = false, displayName = "calc reason", isBulk = false, nomisReason = null, nomisComment = null, displayRank = 1),
+      reasonForCalculation = CalculationReason(id = 1, isActive = true, isOther = false, displayName = "calc reason", isBulk = false, nomisReason = null, nomisComment = null, displayRank = 1, useForApprovedDates = false),
     )
     whenever(calculationRequestRepository.findAllByPrisonerIdAndCalculationStatus(anyString(), anyString())).thenReturn(listOf(calcRequest1, calcRequest2))
 
@@ -82,7 +82,7 @@ class HistoricCalculationsServiceTest {
     val calcRequest2 = calcRequest1.copy(
       prisonerLocation = "KTI",
       calculationReference = UUID.randomUUID(),
-      reasonForCalculation = CalculationReason(id = 1, isActive = true, isOther = false, displayName = "calc reason", isBulk = false, nomisReason = null, nomisComment = null, displayRank = 1),
+      reasonForCalculation = CalculationReason(id = 1, isActive = true, isOther = false, displayName = "calc reason", isBulk = false, nomisReason = null, nomisComment = null, displayRank = 1, useForApprovedDates = false),
       genuineOverrideReason = GenuineOverrideReason.OTHER,
       genuineOverrideReasonFurtherDetail = "Some more details",
     )

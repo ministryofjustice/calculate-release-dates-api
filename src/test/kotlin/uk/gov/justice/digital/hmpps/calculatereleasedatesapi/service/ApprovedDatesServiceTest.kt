@@ -49,7 +49,7 @@ class ApprovedDatesServiceTest {
 
   @BeforeEach
   fun setUp() {
-    whenever(calculationReasonRepository.findById(any())).thenReturn(Optional.of(APPROVED_DATES_CALC_REASON))
+    whenever(calculationReasonRepository.getByUseForApprovedDatesIsTrue()).thenReturn(APPROVED_DATES_CALC_REASON)
   }
 
   @Test
@@ -236,6 +236,7 @@ class ApprovedDatesServiceTest {
       nomisReason = "UPDATE",
       nomisComment = "Recording a non-calculated date",
       displayRank = 99,
+      useForApprovedDates = true,
     )
   }
 }
