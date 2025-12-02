@@ -316,7 +316,7 @@ class BookingExtractionService(
 
     /**
      *  --- PED ---
-     *  only extract PED if active sentence does not include PED already
+     *  only extract PED if date belongs to the active sentence
      **/
     if (activeSentenceCalculation.releaseDateTypes.contains(PED)) {
       extractPedForBooking(
