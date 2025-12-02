@@ -1,0 +1,11 @@
+package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
+
+enum class ApprovedDatesUnavailableReason {
+  NO_PREVIOUS_CALCULATION,
+  INPUTS_CHANGED_SINCE_LAST_CALCULATION,
+  PREVIOUS_CALCULATION_MANUAL,
+  PREVIOUS_CALCULATION_GENUINE_OVERRIDE,
+  VALIDATION_FAILED,
+  CALCULATION_FAILED,
+  DATES_HAVE_CHANGED,
+}

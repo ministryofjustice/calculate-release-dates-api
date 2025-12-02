@@ -148,11 +148,6 @@ class CalculationTransactionalService(
     historicalTusedSource: HistoricalTusedSource? = null,
   ): CalculatedReleaseDates {
     try {
-      val calculationType = if (approvedDates != null) {
-        CalculationType.CALCULATED
-      } else {
-        CalculationType.CALCULATED_WITH_APPROVED_DATES
-      }
       val calculation = calculate(
         booking,
         CONFIRMED,
@@ -161,7 +156,7 @@ class CalculationTransactionalService(
         userInput,
         otherReasonForCalculation,
         calculationFragments,
-        calculationType,
+        CalculationType.CALCULATED,
         historicalTusedSource,
       )
       if (!approvedDates.isNullOrEmpty()) {
