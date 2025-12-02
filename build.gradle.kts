@@ -65,7 +65,7 @@ dependencies {
   implementation("io.awspring.cloud:spring-cloud-aws-core:3.4.1")
   implementation("io.awspring.cloud:spring-cloud-aws-sns:3.4.1")
   implementation("io.awspring.cloud:spring-cloud-aws-sqs:3.4.1")
-  implementation("org.springframework:spring-jms:6.2.13")
+  implementation("org.springframework:spring-jms:7.0.0")
   implementation("com.google.code.gson:gson:2.13.2")
   implementation("org.apache.commons:commons-text:1.14.0")
 
@@ -76,7 +76,7 @@ dependencies {
   testImplementation("org.wiremock:wiremock-standalone:3.13.1")
   testImplementation("org.springframework.security:spring-security-test")
   testImplementation("org.awaitility:awaitility-kotlin:4.3.0")
-  testImplementation("net.javacrumbs.json-unit:json-unit-assertj:4.1.1")
+  testImplementation("net.javacrumbs.json-unit:json-unit-assertj:5.0.0")
   testImplementation("io.swagger.parser.v3:swagger-parser-v2-converter:2.1.35")
   testImplementation("org.mockito:mockito-inline:5.2.0")
   testImplementation("org.junit.jupiter:junit-jupiter:6.0.1")

@@ -20,7 +20,6 @@ generic-service:
     ADJUSTMENTS_API_URL: https://adjustments-api-preprod.hmpps.service.justice.gov.uk
     MANAGE-OFFENCES_API_URL: https://manage-offences-api-preprod.hmpps.service.justice.gov.uk
     NOMIS-SYNC-MAPPING_API_URL: https://nomis-sync-prisoner-mapping-preprod.hmpps.service.justice.gov.uk
-    HISTORIC_SLED_ENABLED: "false"
 
   allowlist:
     penetration-test-ip-1: 54.37.241.156/30

@@ -87,10 +87,13 @@ open class IntegrationTestBase internal constructor() {
     roles: List<String> = listOf(),
   ): (HttpHeaders) -> Unit = jwtAuthHelper.setAuthorisation(user, roles)
 
-  protected fun createPreliminaryCalculation(prisonerId: String, userInputs: CalculationUserInputs = CalculationUserInputs()): CalculatedReleaseDates = webTestClient.post()
+  protected fun createPreliminaryCalculation(
+    prisonerId: String,
+    request: CalculationRequestModel = CalculationRequestModel(calculationReasonId = 1L, calculationUserInputs = CalculationUserInputs()),
+  ): CalculatedReleaseDates = webTestClient.post()
     .uri("/calculation/$prisonerId")
     .accept(MediaType.APPLICATION_JSON)
-    .bodyValue(CalculationRequestModel(userInputs, 1L))
+    .bodyValue(request)
     .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
     .exchange()
     .expectStatus().isOk

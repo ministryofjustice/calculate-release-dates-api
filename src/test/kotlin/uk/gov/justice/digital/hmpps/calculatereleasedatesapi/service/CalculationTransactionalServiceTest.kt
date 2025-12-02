@@ -20,13 +20,11 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.doNothing
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ApprovedDatesSubmission
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcome
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcomeHistoricSledOverride
@@ -97,7 +95,6 @@ class CalculationTransactionalServiceTest {
   private val calculationOutcomeRepository = mock<CalculationOutcomeRepository>()
   private val calculationReasonRepository = mock<CalculationReasonRepository>()
   private val calculationOutcomeHistoricOverrideRepository = mock<CalculationOutcomeHistoricOverrideRepository>()
-  private val dominantHistoricDateService = mock<DominantHistoricDateService>()
   private val prisonService = mock<PrisonService>()
   private val calculationSourceDataService = mock<CalculationSourceDataService>()
   private val eventService = mock<EventService>()
@@ -131,10 +128,8 @@ class CalculationTransactionalServiceTest {
     validationService,
     serviceUserService,
     calculationConfirmationService,
-    dominantHistoricDateService,
     TEST_BUILD_PROPERTIES,
     trancheOutcomeRepository,
-    FeatureToggles(historicSled = true),
   )
 
   private val fakeSourceData = CalculationSourceData(
@@ -370,7 +365,7 @@ class CalculationTransactionalServiceTest {
   }
 
   @Test
-  fun `Calculation with historic SLED should use the SLED and write the historic SLED override if requested by the user inputs`() {
+  fun `Calculation with historic SLED should write the historic SLED override`() {
     val requestAndOutcomes = CALCULATION_REQUEST_WITH_OUTCOMES.copy(
       calculationOutcomes = CALCULATION_REQUEST_WITH_OUTCOMES.calculationOutcomes.plus(
         CALCULATION_OUTCOME_SLED,
@@ -378,7 +373,6 @@ class CalculationTransactionalServiceTest {
       calculationRequestUserInput = CalculationRequestUserInput(usePreviouslyRecordedSLEDIfFound = true),
     )
     val calculationTransactionalService = calculationTransactionalService
-    val calculatedSled = LocalDate.of(2026, 2, 2)
     whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
     whenever(calculationRequestRepository.findByIdAndCalculationStatus(any(), any()))
       .thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES.copy(inputData = INPUT_DATA, calculationRequestUserInput = CalculationRequestUserInput(usePreviouslyRecordedSLEDIfFound = true))))
@@ -397,41 +391,7 @@ class CalculationTransactionalServiceTest {
     whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
     whenever(calculationRequestRepository.findById(CALCULATION_REQUEST_ID)).thenReturn(Optional.of(requestAndOutcomes))
     whenever(nomisCommentService.getNomisComment(any(), any())).thenReturn("The NOMIS Reason")
-    whenever(dominantHistoricDateService.findPreviouslyRecordedSLEDThatShouldOverrideTheCalculatedSLED(fakeSourceData.prisonerDetails.offenderNo, calculatedSled)).thenReturn(
-      PreviouslyRecordedSLED(
-        previouslyRecordedSLEDDate = FIFTH_APRIL_2021,
-        previouslyRecordedSLEDCalculationRequestId = 99999,
-        calculatedDate = THIRD_FEB_2021,
-      ),
-    )
-    val sledOutcome = CalculationOutcome(
-      id = -1,
-      calculationRequestId = CALCULATION_REQUEST_ID,
-      outcomeDate = FIFTH_APRIL_2021,
-      calculationDateType = SLED.name,
-    )
-    val crdOutcome = CalculationOutcome(
-      id = -1,
-      calculationRequestId = CALCULATION_REQUEST_ID,
-      outcomeDate = LocalDate.of(2023, 8, 4),
-      calculationDateType = CRD.name,
-    )
-    val hdcedOutcome = CalculationOutcome(
-      id = -1,
-      calculationRequestId = CALCULATION_REQUEST_ID,
-      outcomeDate = LocalDate.of(2023, 2, 6),
-      calculationDateType = HDCED.name,
-    )
-    val esedOutcome = CalculationOutcome(
-      id = -1,
-      calculationRequestId = CALCULATION_REQUEST_ID,
-      outcomeDate = LocalDate.of(2026, 2, 2),
-      calculationDateType = ESED.name,
-    )
-    whenever(calculationOutcomeRepository.save(crdOutcome)).thenReturn(crdOutcome)
-    whenever(calculationOutcomeRepository.save(hdcedOutcome)).thenReturn(hdcedOutcome)
-    whenever(calculationOutcomeRepository.save(esedOutcome)).thenReturn(esedOutcome)
-    whenever(calculationOutcomeRepository.save(sledOutcome)).thenReturn(sledOutcome)
+
     whenever(nomisCommentService.getNomisComment(any(), any())).thenReturn("The NOMIS Reason")
     val submission = ApprovedDatesSubmission(
       calculationRequest = CALCULATION_REQUEST,
@@ -440,132 +400,33 @@ class CalculationTransactionalServiceTest {
       submittedByUsername = USERNAME,
     )
     whenever(approvedDatesSubmissionRepository.save(any())).thenReturn(submission)
-    whenever(calculationService.calculateReleaseDates(any(), any())).thenReturn(CALCULATION_OUTPUT)
-    val calculation = calculationTransactionalService.validateAndConfirmCalculation(
+    val usedPreviouslyRecordedSLED = PreviouslyRecordedSLED(
+      previouslyRecordedSLEDDate = FIFTH_APRIL_2021,
+      calculatedDate = THIRD_FEB_2021,
+      previouslyRecordedSLEDCalculationRequestId = 99999,
+    )
+    val calculationOutput = CALCULATION_OUTPUT.copy(
+      calculationResult = CALCULATION_OUTPUT.calculationResult.copy(
+        usedPreviouslyRecordedSLED = usedPreviouslyRecordedSLED,
+      ),
+    )
+    whenever(calculationService.calculateReleaseDates(any(), any())).thenReturn(calculationOutput)
+    val calculatedReleaseDates = calculationTransactionalService.validateAndConfirmCalculation(
       CALCULATION_REQUEST_ID,
       SubmitCalculationRequest(
         calculationFragments = CalculationFragments(""),
-        approvedDates = listOf(
-          ManuallyEnteredDate(ROTL, SubmittedDate(1, 1, 2020)),
-          ManuallyEnteredDate(APD, SubmittedDate(1, 2, 2020)),
-          ManuallyEnteredDate(HDCAD, SubmittedDate(1, 3, 2020)),
-        ),
+        approvedDates = emptyList(),
       ),
     )
-    assertEquals(
-      calculation.dates,
-      mapOf(
-        SLED to FIFTH_APRIL_2021,
-        CRD to crdOutcome.outcomeDate,
-        HDCED to hdcedOutcome.outcomeDate,
-        ESED to esedOutcome.outcomeDate,
-      ),
-    )
-    verify(dominantHistoricDateService).findPreviouslyRecordedSLEDThatShouldOverrideTheCalculatedSLED(fakeSourceData.prisonerDetails.offenderNo, calculatedSled)
+    assertThat(calculatedReleaseDates.usedPreviouslyRecordedSLED).isEqualTo(usedPreviouslyRecordedSLED)
     verify(calculationOutcomeHistoricOverrideRepository).save(
       CalculationOutcomeHistoricSledOverride(
         calculationRequestId = CALCULATION_REQUEST_ID,
-        calculationOutcomeDate = calculatedSled,
+        calculationOutcomeDate = THIRD_FEB_2021,
         historicCalculationRequestId = 99999,
         historicCalculationOutcomeDate = FIFTH_APRIL_2021,
       ),
     )
-  }
-
-  @Test
-  fun `Calculation with historic SLED should use calculated SLED and not write the historic SLED override if rejected by the user inputs`() {
-    val requestAndOutcomes = CALCULATION_REQUEST_WITH_OUTCOMES.copy(
-      calculationOutcomes = CALCULATION_REQUEST_WITH_OUTCOMES.calculationOutcomes.plus(
-        CALCULATION_OUTCOME_SLED,
-      ),
-      calculationRequestUserInput = CalculationRequestUserInput(usePreviouslyRecordedSLEDIfFound = false),
-    )
-    val calculationTransactionalService = calculationTransactionalService
-    val calculatedSled = LocalDate.of(2026, 2, 2)
-    whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
-    whenever(calculationRequestRepository.findByIdAndCalculationStatus(any(), any()))
-      .thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES.copy(inputData = INPUT_DATA, calculationRequestUserInput = CalculationRequestUserInput(usePreviouslyRecordedSLEDIfFound = false))))
-    whenever(
-      calculationSourceDataService.getCalculationSourceData(
-        CALCULATION_REQUEST_WITH_OUTCOMES.prisonerId,
-        SourceDataLookupOptions.default(),
-      ),
-    ).thenReturn(
-      fakeSourceData,
-    )
-    whenever(calculationRequestRepository.findById(any())).thenReturn(
-      Optional.of(requestAndOutcomes),
-    )
-    whenever(bookingService.getBooking(fakeSourceData)).thenReturn(BOOKING)
-    whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
-    whenever(calculationRequestRepository.findById(CALCULATION_REQUEST_ID)).thenReturn(Optional.of(requestAndOutcomes))
-    whenever(nomisCommentService.getNomisComment(any(), any())).thenReturn("The NOMIS Reason")
-    whenever(dominantHistoricDateService.findPreviouslyRecordedSLEDThatShouldOverrideTheCalculatedSLED(fakeSourceData.prisonerDetails.offenderNo, calculatedSled)).thenReturn(
-      PreviouslyRecordedSLED(
-        previouslyRecordedSLEDDate = FIFTH_APRIL_2021,
-        previouslyRecordedSLEDCalculationRequestId = 99999,
-        calculatedDate = THIRD_FEB_2021,
-      ),
-    )
-    val sledOutcome = CalculationOutcome(
-      id = -1,
-      calculationRequestId = CALCULATION_REQUEST_ID,
-      outcomeDate = calculatedSled,
-      calculationDateType = SLED.name,
-    )
-    val crdOutcome = CalculationOutcome(
-      id = -1,
-      calculationRequestId = CALCULATION_REQUEST_ID,
-      outcomeDate = LocalDate.of(2023, 8, 4),
-      calculationDateType = CRD.name,
-    )
-    val hdcedOutcome = CalculationOutcome(
-      id = -1,
-      calculationRequestId = CALCULATION_REQUEST_ID,
-      outcomeDate = LocalDate.of(2023, 2, 6),
-      calculationDateType = HDCED.name,
-    )
-    val esedOutcome = CalculationOutcome(
-      id = -1,
-      calculationRequestId = CALCULATION_REQUEST_ID,
-      outcomeDate = LocalDate.of(2026, 2, 2),
-      calculationDateType = ESED.name,
-    )
-    whenever(calculationOutcomeRepository.save(crdOutcome)).thenReturn(crdOutcome)
-    whenever(calculationOutcomeRepository.save(hdcedOutcome)).thenReturn(hdcedOutcome)
-    whenever(calculationOutcomeRepository.save(esedOutcome)).thenReturn(esedOutcome)
-    whenever(calculationOutcomeRepository.save(sledOutcome)).thenReturn(sledOutcome)
-    whenever(nomisCommentService.getNomisComment(any(), any())).thenReturn("The NOMIS Reason")
-    val submission = ApprovedDatesSubmission(
-      calculationRequest = CALCULATION_REQUEST,
-      prisonerId = PRISONER_ID,
-      bookingId = BOOKING_ID,
-      submittedByUsername = USERNAME,
-    )
-    whenever(approvedDatesSubmissionRepository.save(any())).thenReturn(submission)
-    whenever(calculationService.calculateReleaseDates(any(), any())).thenReturn(CALCULATION_OUTPUT)
-    val calculation = calculationTransactionalService.validateAndConfirmCalculation(
-      CALCULATION_REQUEST_ID,
-      SubmitCalculationRequest(
-        calculationFragments = CalculationFragments(""),
-        approvedDates = listOf(
-          ManuallyEnteredDate(ROTL, SubmittedDate(1, 1, 2020)),
-          ManuallyEnteredDate(APD, SubmittedDate(1, 2, 2020)),
-          ManuallyEnteredDate(HDCAD, SubmittedDate(1, 3, 2020)),
-        ),
-      ),
-    )
-    assertEquals(
-      calculation.dates,
-      mapOf(
-        SLED to calculatedSled,
-        CRD to crdOutcome.outcomeDate,
-        HDCED to hdcedOutcome.outcomeDate,
-        ESED to esedOutcome.outcomeDate,
-      ),
-    )
-    verify(dominantHistoricDateService, never()).findPreviouslyRecordedSLEDThatShouldOverrideTheCalculatedSLED(any(), any())
-    verify(calculationOutcomeHistoricOverrideRepository, never()).save(any())
   }
 
   @Test
