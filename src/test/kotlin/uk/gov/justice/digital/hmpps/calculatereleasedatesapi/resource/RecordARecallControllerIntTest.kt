@@ -129,6 +129,16 @@ class RecordARecallControllerIntTest(private val mockManageOffencesClient: MockM
   }
 
   @Test
+  fun `Editing a recall excludes UAL from the recall being edited`() {
+    val result = createCalculationForRecordARecall(
+      RECORD_A_RECALL_PRISONER_ID,
+      RecordARecallRequest(revocationDate = LocalDate.of(2016, 2, 6), recallId = UUID.fromString("e3c5888e-f8ad-48ea-8fc0-c916670f2ca1")),
+    )
+
+    assertThat(result.decision).isEqualTo(RecordARecallDecision.AUTOMATED)
+  }
+
+  @Test
   fun `Validation errors`() {
     mockManageOffencesClient.noneInPCSC(listOf("GBH", "SX03014"))
     val result = createCalculationForRecordARecall(

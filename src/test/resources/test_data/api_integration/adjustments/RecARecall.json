@@ -1,0 +1,43 @@
+[
+  {
+    "id": "a832551d-79a2-406a-8672-db1759793b55",
+    "bookingId": 1544803905,
+    "person": "default",
+    "adjustmentType": "UNLAWFULLY_AT_LARGE",
+    "fromDate": "2015-03-17",
+    "toDate": "2015-04-15",
+    "days": 29,
+    "effectiveDays": 29
+  },
+  {
+    "id": "2edb6550-ff6a-43e7-b563-d7e447b6a8be",
+    "recallId": "e3c5888e-f8ad-48ea-8fc0-c916670f2ca1",
+    "bookingId": 1544803905,
+    "person": "default",
+    "adjustmentType": "UNLAWFULLY_AT_LARGE",
+    "fromDate": "2016-02-01",
+    "toDate": "2016-02-20",
+    "days": 20,
+    "effectiveDays": 20
+  },
+  {
+    "id": "04d2e9bd-4559-4491-8253-c3eb4ecb65f4",
+    "bookingId": 1544803905,
+    "person": "default",
+    "adjustmentType": "REMAND",
+    "fromDate": "2000-04-02",
+    "toDate": "2000-04-30",
+    "days": 28,
+    "effectiveDays": 28,
+    "sentenceSequence": 1
+  },
+  {
+    "id": "0b06bfca-95e8-483a-8b4c-e68046246118",
+    "bookingId": 1544803905,
+    "person": "default",
+    "adjustmentType": "TAGGED_BAIL",
+    "days": 11,
+    "effectiveDays": 11,
+    "sentenceSequence": 1
+  }
+]
