@@ -314,14 +314,19 @@ class BookingExtractionService(
       dates[NCRD] = latestNotionalConditionalReleaseDate
     }
 
-    /** --- PED --- **/
-    extractPedForBooking(
-      latestExtendedDeterminateParoleEligibilityDate,
-      mostRecentSentenceByAdjustedDeterminateReleaseDate,
-      sentences,
-      dates,
-      breakdownByReleaseDateType,
-    )
+    /**
+     *  --- PED ---
+     *  only extract PED if date belongs to the active sentence
+     **/
+    if (activeSentenceCalculation.releaseDateTypes.contains(PED)) {
+      extractPedForBooking(
+        latestExtendedDeterminateParoleEligibilityDate,
+        mostRecentSentenceByAdjustedDeterminateReleaseDate,
+        sentences,
+        dates,
+        breakdownByReleaseDateType,
+      )
+    }
 
     /** --- ERSED --- **/
     val ersedNotApplicableDueToDtoLaterThanCrd = extractErsedAndNotApplicableDueToDtoLaterThanCrdFlag(
