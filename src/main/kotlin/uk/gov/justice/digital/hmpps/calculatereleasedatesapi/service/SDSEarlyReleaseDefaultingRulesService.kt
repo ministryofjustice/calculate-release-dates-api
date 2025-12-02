@@ -56,9 +56,8 @@ class SDSEarlyReleaseDefaultingRulesService(
     sentences: List<CalculableSentence>,
     earlyReleaseConfiguration: EarlyReleaseConfiguration,
   ) {
-    val maxSentence = sentences.maxByOrNull { it.sentenceCalculation.releaseDateDefaultedByCommencement() }
-
-    val showPed = maxSentence?.releaseDateTypes?.contains(ReleaseDateType.PED) ?: true
+    val releaseDateSentence = sentences.maxByOrNull { it.sentenceCalculation.releaseDateDefaultedByCommencement() }
+    val showPed = releaseDateSentence?.releaseDateTypes?.contains(ReleaseDateType.PED) ?: true
 
     adjustDatesForEarlyOrStandardRelease(
       earlyReleaseResult,
