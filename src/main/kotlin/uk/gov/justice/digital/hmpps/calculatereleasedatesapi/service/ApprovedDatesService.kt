@@ -1,7 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import jakarta.persistence.EntityNotFoundException
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
@@ -22,7 +21,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.Calculat
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationOrder
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.service.ValidationService
-import kotlin.jvm.optionals.getOrElse
 import kotlin.jvm.optionals.getOrNull
 
 @Service
@@ -70,7 +68,7 @@ class ApprovedDatesService(
     calculationUserInputs: CalculationUserInputs,
     latestCalculationRequest: CalculationRequest,
   ): ApprovedDatesInputResponse {
-    val approvedDatesCalculationReason = calculationReasonRepository.findById(APPROVED_DATES_CALC_REASON_ID).getOrElse { throw EntityNotFoundException("Couldn't find the calculation reason for adding approved dates") }
+    val approvedDatesCalculationReason = calculationReasonRepository.getByUseForApprovedDatesIsTrue()
     return try {
       val result = calculationTransactionalService.calculate(
         booking = booking,
@@ -104,7 +102,5 @@ class ApprovedDatesService(
 
   private companion object {
     private val log: Logger = LoggerFactory.getLogger(this::class.java)
-
-    private const val APPROVED_DATES_CALC_REASON_ID = 6L
   }
 }
