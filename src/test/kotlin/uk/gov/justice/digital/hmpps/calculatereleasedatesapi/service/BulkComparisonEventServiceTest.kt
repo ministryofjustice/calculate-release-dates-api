@@ -85,6 +85,7 @@ class BulkComparisonEventServiceTest {
     nomisReason = null,
     nomisComment = null,
     displayRank = null,
+    useForApprovedDates = false,
   )
   private val blankSentenceCalcDates = SentenceCalcDates(
     sentenceExpiryCalculatedDate = null,

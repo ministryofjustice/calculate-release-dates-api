@@ -480,7 +480,7 @@ class CalculationControllerTest {
         "A1234AB",
         CONFIRMED,
         UUID.randomUUID(),
-        CalculationReason(-1, isActive = false, isOther = false, displayName = "14 day check", isBulk = false, nomisReason = null, nomisComment = null, displayRank = null),
+        CalculationReason(-1, isActive = false, isOther = false, displayName = "14 day check", isBulk = false, nomisReason = null, nomisComment = null, displayRank = null, useForApprovedDates = false),
         null,
         LocalDate.of(2024, 1, 1),
         CalculationType.CALCULATED,
@@ -536,5 +536,5 @@ class CalculationControllerTest {
       )
   }
 
-  private val calculationReason = CalculationReason(-1, false, false, "Reason", false, null, null, null)
+  private val calculationReason = CalculationReason(-1, false, false, "Reason", false, null, null, null, false)
 }

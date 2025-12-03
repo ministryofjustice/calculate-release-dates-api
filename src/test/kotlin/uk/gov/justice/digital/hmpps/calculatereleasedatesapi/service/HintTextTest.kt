@@ -207,6 +207,7 @@ class HintTextTest : SpringTestBase() {
         nomisReason = "UPDATE",
         nomisComment = "NOMIS_COMMENT",
         null,
+        false,
       )
 
     private val SOURCE_DATA = CalculationSourceData(

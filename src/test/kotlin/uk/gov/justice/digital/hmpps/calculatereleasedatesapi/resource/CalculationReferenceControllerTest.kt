@@ -69,7 +69,7 @@ class CalculationReferenceControllerTest {
       bookingId = 123L,
       prisonerId = "ASD",
       calculationReference = UUID.randomUUID(),
-      calculationReason = CalculationReason(-1, false, false, "Reason", false, null, null, null),
+      calculationReason = CalculationReason(-1, false, false, "Reason", false, null, null, null, false),
       calculationDate = LocalDate.of(2024, 1, 1),
     )
 
