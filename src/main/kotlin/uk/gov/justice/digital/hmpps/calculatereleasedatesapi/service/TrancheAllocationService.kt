@@ -10,6 +10,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSen
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineTrackingData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isBeforeOrEqualTo
 import java.time.temporal.ChronoUnit
 import kotlin.collections.map
 
@@ -52,24 +53,40 @@ class TrancheAllocationService {
     return sentenceDurations.none { it >= tranche.duration!! }
   }
 
+  /**
+   * Sentences under 4 years that were recalled before FTR_56 commencement should be treated as FTR_56 sentences
+   * which are not subject to tranche.
+   *
+   * FTR_56 revocation date must be on or after the start of FTR_56 tranche one to be valid for tranche rules.
+   */
   private fun getSentencesForTrancheRules(
     sentences: List<CalculableSentence>,
     earlyReleaseConfig: EarlyReleaseConfiguration,
-  ): List<CalculableSentence> = sentences.filter {
-    val excludedFromTranchingByBeingTooShort = earlyReleaseConfig.recallCalculation == RecallCalculationType.FTR_56 &&
-      it.durationIsLessThan(
-        1461,
-        ChronoUnit.DAYS,
-      ) // Sentences under 4 years that were recalled before FTR_56 commencement should be treated as FTR_56 sentences which are not tranched.
-
-    it.sentenceParts().any { sentence ->
+  ): List<CalculableSentence> = sentences.filter { sentence ->
+    val excludedFromFtr56Tranche = isFtr56ExcludedForTrancheRules(sentence, earlyReleaseConfig)
+    sentence.sentenceParts().any { sentencePart ->
       val isInRangeOfEarlyRelease = if (earlyReleaseConfig.modifiesRecallReleaseDate()) {
-        sentence.recall?.returnToCustodyDate?.isBefore(earlyReleaseConfig.earliestTranche()) == true && !excludedFromTranchingByBeingTooShort
+        !excludedFromFtr56Tranche && sentencePart.recall?.returnToCustodyDate?.isBeforeOrEqualTo(earlyReleaseConfig.earliestTranche()) == true
       } else {
-        sentence.sentencedAt.isBefore(earlyReleaseConfig.earliestTranche())
+        sentencePart.sentencedAt.isBefore(earlyReleaseConfig.earliestTranche())
       }
-      isEligibleForTrancheRules(earlyReleaseConfig, sentence) && isInRangeOfEarlyRelease
+      isInRangeOfEarlyRelease && isEligibleForTrancheRules(earlyReleaseConfig, sentencePart)
     }
+  }
+
+  /**
+   * If sentence is FTR56 recall calculation type, check for exclusions:
+   * - sentence duration under 4 years
+   * - revocation date on the same date as earliest tranche (FTR56 commencement)
+   */
+  private fun isFtr56ExcludedForTrancheRules(
+    sentence: CalculableSentence,
+    earlyReleaseConfig: EarlyReleaseConfiguration,
+  ): Boolean {
+    if (earlyReleaseConfig.recallCalculation !== RecallCalculationType.FTR_56) return false
+    val isShortSentence = sentence.durationIsLessThan(1461, ChronoUnit.DAYS)
+    val isRevocationOnEarliestTranche = sentence.recall?.revocationDate == earlyReleaseConfig.earliestTranche()
+    return isShortSentence || isRevocationOnEarliestTranche
   }
 
   private fun isEligibleForTrancheRules(earlyReleaseConfiguration: EarlyReleaseConfiguration, sentence: CalculableSentence): Boolean = if (earlyReleaseConfiguration.releaseMultiplier != null) {
