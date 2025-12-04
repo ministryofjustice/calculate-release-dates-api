@@ -154,13 +154,7 @@ data class SentenceCalculation(
 
   // Parole Eligibility Date (PED). This is only used for EDS, for SDS the PED is the release date.
   val extendedDeterminateParoleEligibilityDate: LocalDate?
-    get() {
-      if (unadjustedExtendedDeterminateParoleEligibilityDate == null) {
-        return null
-      }
-      return unadjustedExtendedDeterminateParoleEligibilityDate!!
-        .plusDays(adjustments.adjustmentsForInitialRelease())
-    }
+    get() = unadjustedExtendedDeterminateParoleEligibilityDate?.plusDays(adjustments.adjustmentsForInitialRelease())
 
   val earlyReleaseSchemeEligibilityDate: LocalDate?
     get() {
