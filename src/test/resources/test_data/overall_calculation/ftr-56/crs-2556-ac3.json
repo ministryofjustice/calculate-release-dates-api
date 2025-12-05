@@ -27,7 +27,7 @@
     "adjustments": {
       "UNLAWFULLY_AT_LARGE": [
         {
-          "appliesToSentencesFrom": "2025-05-13",
+          "appliesToSentencesFrom": "2026-05-01",
           "numberOfDays": 3,
           "fromDate": "2026-05-01",
           "toDate": "2026-05-03"

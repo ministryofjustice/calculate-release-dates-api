@@ -2,8 +2,6 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.h
 
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseConfigurations
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustment
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculator
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineHandleResult
@@ -25,7 +23,6 @@ class TimelineUalAdjustmentCalculationHandler(
 
       setAdjustmentsDuringCustodialPeriod(timelineCalculationDate, timelineTrackingData, ualDays, lastDayOfUal)
       setAdjustmentsDuringLicencePeriod(timelineCalculationDate, timelineTrackingData, ualDays, lastDayOfUal)
-      setFtr56PostReturnToCustodyDateUal(timelineCalculationDate, timelineTrackingData, ual)
 
       futureData.ual -= ual
       previousUalPeriods.addAll(ual.filter { it.fromDate != null && it.toDate != null }.map { it.fromDate!! to it.toDate!! })
@@ -98,26 +95,6 @@ class TimelineUalAdjustmentCalculationHandler(
           ualAfterDeterminateRelease = ualDays,
         ),
       )
-    }
-  }
-
-  /**
-   * FTR56 recalls can be converted from standard recalls.
-   * Any UAL greater than the return to custody date needs taking into account when assigning to an FTR56 Tranche.
-   */
-  private fun setFtr56PostReturnToCustodyDateUal(
-    timelineCalculationDate: LocalDate,
-    timelineTrackingData: TimelineTrackingData,
-    ual: List<Adjustment>,
-  ) {
-    with(timelineTrackingData) {
-      val licenceSentences = currentSentenceGroup.filter { timelineCalculationDate.isBeforeOrEqualTo(it.sentenceCalculation.adjustedDeterminateReleaseDate) }
-
-      if (returnToCustodyDate != null && licenceSentences.any { it.recall?.recallType == RecallType.FIXED_TERM_RECALL_56 }) {
-        val fromDate = licenceSentences.minBy { it.recall?.returnToCustodyDate ?: LocalDate.MIN }
-        val days = ual.filter { it.fromDate?.isAfter(fromDate.recall!!.returnToCustodyDate) == true }
-        timelineCalculator.setAdjustments(licenceSentences, SentenceAdjustments(ualAfterReturnToCustodyDate = days.sumOf { it.numberOfDays }.toLong()))
-      }
     }
   }
 }

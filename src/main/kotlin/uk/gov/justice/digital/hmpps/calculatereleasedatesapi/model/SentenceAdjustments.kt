@@ -11,7 +11,6 @@ data class SentenceAdjustments(
   val ualAfterDeterminateRelease: Long = 0,
   // UAL after FTR will also be included in the above UAL after determinate release.
   val ualAfterFtr: Long = 0,
-  val ualAfterReturnToCustodyDate: Long = 0,
   val servedAdaDays: Long = 0,
   val unusedAdaDays: Long = 0,
   val unusedLicenceAdaDays: Long = 0,
