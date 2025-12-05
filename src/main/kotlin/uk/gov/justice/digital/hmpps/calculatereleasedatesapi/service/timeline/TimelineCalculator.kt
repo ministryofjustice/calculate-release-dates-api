@@ -133,7 +133,6 @@ class TimelineCalculator(
         recallRemand = existingAdjustments.recallRemand + adjustments.recallRemand,
         recallTaggedBail = existingAdjustments.recallTaggedBail + adjustments.recallTaggedBail,
         ualDuringCustody = existingAdjustments.ualDuringCustody + adjustments.ualDuringCustody,
-        ualAfterReturnToCustodyDate = existingAdjustments.ualAfterReturnToCustodyDate + adjustments.ualAfterReturnToCustodyDate,
         awardedDuringCustody = existingAdjustments.awardedDuringCustody + adjustments.awardedDuringCustody,
 
         awardedAfterDeterminateRelease = existingAdjustments.awardedAfterDeterminateRelease + adjustments.awardedAfterDeterminateRelease,
