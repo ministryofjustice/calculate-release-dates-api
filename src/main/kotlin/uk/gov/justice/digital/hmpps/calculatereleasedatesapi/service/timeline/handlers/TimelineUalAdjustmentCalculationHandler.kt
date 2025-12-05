@@ -18,11 +18,10 @@ class TimelineUalAdjustmentCalculationHandler(
   override fun handle(timelineCalculationDate: LocalDate, timelineTrackingData: TimelineTrackingData): TimelineHandleResult {
     with(timelineTrackingData) {
       val ual = futureData.ual.filter { it.appliesToSentencesFrom == timelineCalculationDate }
-      val ualDays = ual.map { it.numberOfDays }.reduceOrNull { acc, it -> acc + it }?.toLong() ?: 0L
+      val ualDays = ual.sumOf { it.numberOfDays }.toLong()
       val lastDayOfUal = ual.mapNotNull { it.toDate }.maxOrNull()
 
       setAdjustmentsDuringCustodialPeriod(timelineCalculationDate, timelineTrackingData, ualDays, lastDayOfUal)
-
       setAdjustmentsDuringLicencePeriod(timelineCalculationDate, timelineTrackingData, ualDays, lastDayOfUal)
 
       futureData.ual -= ual
@@ -55,18 +54,14 @@ class TimelineUalAdjustmentCalculationHandler(
 
       val hasFixedTermRecall =
         returnToCustodyDate != null && sentencesAfterReleaseDate.any { it.recallType?.isFixedTermRecall == true }
+
       sentencesAfterReleaseDate.filter { it.isRecall() }.forEach { sentence ->
-        val ualAfterFtr =
-          if (hasFixedTermRecall &&
-            timelineCalculationDate.isAfterOrEqualTo(returnToCustodyDate!!) &&
-            timelineCalculationDate.isBeforeOrEqualTo(
-              sentence.sentenceCalculation.releaseDate,
-            )
-          ) {
-            ualDays
-          } else {
-            0L
-          }
+        val isWithinFtrWindow = hasFixedTermRecall &&
+          timelineCalculationDate.isAfterOrEqualTo(returnToCustodyDate) &&
+          timelineCalculationDate.isBeforeOrEqualTo(sentence.sentenceCalculation.releaseDate)
+
+        val ualAfterFtr = if (isWithinFtrWindow) ualDays else 0L
+
         val sentenceCalculation = sentence.sentenceCalculation
         sentenceCalculation.adjustments = sentenceCalculation.adjustments.copy(
           ualAfterDeterminateRelease = sentenceCalculation.adjustments.ualAfterDeterminateRelease + ualDays,
