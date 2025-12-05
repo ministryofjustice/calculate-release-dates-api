@@ -125,22 +125,24 @@ class TimelineCalculator(
         )
       }
 
-      val sentenceCalculation = sentence.sentenceCalculation
-      sentenceCalculation.adjustments = sentenceCalculation.adjustments.copy(
-        remand = sentenceCalculation.adjustments.remand + adjustments.remand,
-        taggedBail = sentenceCalculation.adjustments.taggedBail + adjustments.taggedBail,
-        recallRemand = sentenceCalculation.adjustments.recallRemand + adjustments.recallRemand,
-        recallTaggedBail = sentenceCalculation.adjustments.recallTaggedBail + adjustments.recallTaggedBail,
-        ualDuringCustody = sentenceCalculation.adjustments.ualDuringCustody + adjustments.ualDuringCustody,
-        awardedDuringCustody = sentenceCalculation.adjustments.awardedDuringCustody + adjustments.awardedDuringCustody,
+      val existingAdjustments = sentence.sentenceCalculation.adjustments
 
-        awardedAfterDeterminateRelease = sentenceCalculation.adjustments.awardedAfterDeterminateRelease + adjustments.awardedAfterDeterminateRelease,
-        ualAfterDeterminateRelease = sentenceCalculation.adjustments.ualAfterDeterminateRelease + adjustments.ualAfterDeterminateRelease,
-        ualAfterFtr = sentenceCalculation.adjustments.ualAfterFtr + adjustments.ualAfterFtr,
+      sentence.sentenceCalculation.adjustments = sentence.sentenceCalculation.adjustments.copy(
+        remand = existingAdjustments.remand + adjustments.remand,
+        taggedBail = existingAdjustments.taggedBail + adjustments.taggedBail,
+        recallRemand = existingAdjustments.recallRemand + adjustments.recallRemand,
+        recallTaggedBail = existingAdjustments.recallTaggedBail + adjustments.recallTaggedBail,
+        ualDuringCustody = existingAdjustments.ualDuringCustody + adjustments.ualDuringCustody,
+        ualAfterReturnToCustodyDate = existingAdjustments.ualAfterReturnToCustodyDate + adjustments.ualAfterReturnToCustodyDate,
+        awardedDuringCustody = existingAdjustments.awardedDuringCustody + adjustments.awardedDuringCustody,
 
-        servedAdaDays = sentenceCalculation.adjustments.servedAdaDays + adjustments.servedAdaDays,
-        unusedAdaDays = sentenceCalculation.adjustments.unusedAdaDays + adjustments.unusedAdaDays,
-        unusedLicenceAdaDays = sentenceCalculation.adjustments.unusedLicenceAdaDays + adjustments.unusedLicenceAdaDays,
+        awardedAfterDeterminateRelease = existingAdjustments.awardedAfterDeterminateRelease + adjustments.awardedAfterDeterminateRelease,
+        ualAfterDeterminateRelease = existingAdjustments.ualAfterDeterminateRelease + adjustments.ualAfterDeterminateRelease,
+        ualAfterFtr = existingAdjustments.ualAfterFtr + adjustments.ualAfterFtr,
+
+        servedAdaDays = existingAdjustments.servedAdaDays + adjustments.servedAdaDays,
+        unusedAdaDays = existingAdjustments.unusedAdaDays + adjustments.unusedAdaDays,
+        unusedLicenceAdaDays = existingAdjustments.unusedLicenceAdaDays + adjustments.unusedLicenceAdaDays,
       )
     }
   }

@@ -1,0 +1,39 @@
+{
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1975-06-11"
+    },
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2024-02-01"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 4
+          }
+        },
+        "sentencedAt": "2024-02-01",
+        "recall": {
+          "recallType": "FIXED_TERM_RECALL_56",
+          "returnToCustodyDate": "2025-11-30",
+          "revocationDate": "2025-11-29"
+        },
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      }
+    ],
+    "adjustments": {
+      "UNLAWFULLY_AT_LARGE": [
+        {
+          "appliesToSentencesFrom": "2024-02-01",
+          "numberOfDays": 78,
+          "fromDate": "2025-12-14",
+          "toDate": "2026-03-01"
+        }
+      ]
+    },
+    "returnToCustodyDate": "2025-11-30"
+  }
+}

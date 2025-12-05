@@ -117,7 +117,11 @@ data class SentenceCalculation(
       }
 
       val currentAllocatedEarlyRelease = allocatedEarlyRelease
-      val currentUnadjustedPostRecallReleaseDate = unadjustedPostRecallReleaseDate
+      val currentUnadjustedPostRecallReleaseDate = if (sentence.recallType == RecallType.FIXED_TERM_RECALL_56) {
+        unadjustedPostRecallReleaseDate?.plusDays(adjustments.ualAfterReturnToCustodyDate)
+      } else {
+        unadjustedPostRecallReleaseDate
+      }
 
       val overrideWithTrancheDate = currentAllocatedEarlyRelease !== null &&
         currentAllocatedEarlyRelease.modifiesRecallReleaseDate() &&
