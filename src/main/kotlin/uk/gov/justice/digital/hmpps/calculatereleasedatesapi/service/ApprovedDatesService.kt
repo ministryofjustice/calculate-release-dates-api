@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
@@ -33,6 +34,8 @@ class ApprovedDatesService(
   private val calculationTransactionalService: CalculationTransactionalService,
   private val objectMapper: ObjectMapper,
 ) {
+
+  @Transactional
   fun inputsForPrisoner(prisonerId: String): ApprovedDatesInputResponse {
     val latestCalculationRequest = calculationRequestRepository.findFirstByPrisonerIdAndCalculationStatusOrderByCalculatedAtDesc(prisonerId, CalculationStatus.CONFIRMED.name).getOrNull()
     return if (latestCalculationRequest == null) {
@@ -49,7 +52,9 @@ class ApprovedDatesService(
   private fun handlePreviousIsCalculated(latestCalculationRequest: CalculationRequest): ApprovedDatesInputResponse {
     val sourceData = calculationSourceDataService.getCalculationSourceData(latestCalculationRequest.prisonerId, SourceDataLookupOptions.default())
     val booking = bookingService.getBooking(sourceData)
-    return if (latestCalculationRequest.inputData.hashCode() != objectToJson(booking, objectMapper).hashCode()) {
+    val currentBookingHash = objectToJson(booking, objectMapper).hashCode()
+    val latestCalculationHash = latestCalculationRequest.inputData.hashCode()
+    return if (latestCalculationHash != currentBookingHash) {
       unavailable(ApprovedDatesUnavailableReason.INPUTS_CHANGED_SINCE_LAST_CALCULATION)
     } else {
       val calculationUserInputs = CalculationUserInputs(calculateErsed = latestCalculationRequest.calculationRequestUserInput?.calculateErsed ?: false)
@@ -57,7 +62,12 @@ class ApprovedDatesService(
       if (validationMessages.isNotEmpty()) {
         unavailable(ApprovedDatesUnavailableReason.VALIDATION_FAILED)
       } else {
-        handleCalculablePrisoner(booking, sourceData, calculationUserInputs, latestCalculationRequest)
+        val inputs = handleCalculablePrisoner(booking, sourceData, calculationUserInputs, latestCalculationRequest)
+        if (inputs.approvedDatesAvailable) {
+          addPreviousApprovedDatesToInputs(booking.offender.reference, inputs, currentBookingHash)
+        } else {
+          inputs
+        }
       }
     }
   }
@@ -98,6 +108,23 @@ class ApprovedDatesService(
     val latestCalcDates = latestCalculationRequest.calculationOutcomes.mapNotNull { outcome -> outcome.outcomeDate?.let { ApprovedDate(ReleaseDateType.valueOf(outcome.calculationDateType), it) } }.toSet()
     val freshlyCalculatedDates = result.dates.mapNotNull { (type, date) -> date?.let { ApprovedDate(type, date) } }.toSet()
     return latestCalcDates != freshlyCalculatedDates
+  }
+
+  private fun addPreviousApprovedDatesToInputs(
+    prisonerId: String,
+    inputs: ApprovedDatesInputResponse,
+    currentBookingHash: Int,
+  ): ApprovedDatesInputResponse {
+    val previousRequest = calculationRequestRepository.findLatestCalculationWithApprovedDates(prisonerId)
+    return if (previousRequest != null && previousRequest.inputData.hashCode() == currentBookingHash) {
+      inputs.copy(
+        previousApprovedDates = previousRequest.approvedDatesSubmissions
+          .flatMap { it.approvedDates }
+          .map { ApprovedDate(ReleaseDateType.valueOf(it.calculationDateType), it.outcomeDate) },
+      )
+    } else {
+      inputs
+    }
   }
 
   private companion object {
