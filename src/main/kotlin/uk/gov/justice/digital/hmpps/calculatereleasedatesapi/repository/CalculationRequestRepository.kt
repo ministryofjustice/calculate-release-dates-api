@@ -52,4 +52,18 @@ interface CalculationRequestRepository : JpaRepository<CalculationRequest, Long>
     prisonerId: String,
     calculationStatus: String,
   ): CalculationRequest?
+
+  @Query(
+    """
+        SELECT cr
+        FROM CalculationRequest cr
+        JOIN FETCH cr.approvedDatesSubmissions
+        WHERE cr.prisonerId = :prisonerId
+          AND cr.calculationStatus = 'CONFIRMED'
+          AND cr.approvedDatesSubmissions IS NOT EMPTY
+        ORDER BY cr.calculatedAt DESC
+        FETCH FIRST 1 ROWS ONLY
+        """,
+  )
+  fun findLatestCalculationWithApprovedDates(prisonerId: String): CalculationRequest?
 }
