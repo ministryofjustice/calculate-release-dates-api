@@ -370,7 +370,7 @@ class DetailedCalculationResultsServiceTest {
     outcomeDate = aDate,
     calculationRequestId = CALCULATION_REQUEST_ID,
   )
-  private val calcReason = CalculationReason(-1, false, false, "Reason", false, null, null, null, false)
+  private val calcReason = CalculationReason(-1, false, false, "Reason", false, null, null, null, false, false)
   private fun calculationRequestWithOutcomes() = CalculationRequest(
     id = CALCULATION_REQUEST_ID,
     calculationReference = calculationReference,

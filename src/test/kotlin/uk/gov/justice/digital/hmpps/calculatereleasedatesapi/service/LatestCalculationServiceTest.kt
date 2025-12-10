@@ -209,7 +209,7 @@ class LatestCalculationServiceTest {
           id = 654321,
           calculationReference = calculationReference,
           calculatedAt = calculatedAt,
-          reasonForCalculation = CalculationReason(0, false, false, "Some reason", false, null, null, null, false),
+          reasonForCalculation = CalculationReason(0, false, false, "Some reason", false, null, null, null, false, false),
         ),
       ),
     )
