@@ -11,17 +11,15 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationO
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.PreviouslyRecordedSLED
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 import java.time.LocalDate
 import java.util.Optional
 
 class PreviouslyRecordedSLEDServiceTest {
 
-  private val calculationOutcomeRepository = mock<CalculationOutcomeRepository>()
   private val calculationRequestRepository = mock<CalculationRequestRepository>()
   private val sourceDataMapper = mock<SourceDataMapper>()
-  private val service: PreviouslyRecordedSLEDService = PreviouslyRecordedSLEDService(calculationOutcomeRepository, calculationRequestRepository, sourceDataMapper)
+  private val service: PreviouslyRecordedSLEDService = PreviouslyRecordedSLEDService(calculationRequestRepository, sourceDataMapper)
 
   @BeforeEach
   fun setUp() {
@@ -31,7 +29,7 @@ class PreviouslyRecordedSLEDServiceTest {
 
   @Test
   fun `should return null if no historic SLED or SED + LED exists`() {
-    whenever(calculationOutcomeRepository.getPotentialDatesForPreviouslyRecordedSLED("A1234BC", CALCULATED_SLED)).thenReturn(emptyList())
+    whenever(calculationRequestRepository.findLatestCalculationForPreviousSLED("A1234BC")).thenReturn(null)
 
     assertThat(service.findPreviouslyRecordedSLEDThatShouldOverrideTheCalculatedSLED(PRISONER_ID, CALCULATED_SLED)).isNull()
   }
@@ -41,12 +39,12 @@ class PreviouslyRecordedSLEDServiceTest {
     val outcomes = listOf(
       CalculationOutcome(
         calculationRequestId = 1L,
-        outcomeDate = LocalDate.of(2021, 1, 1),
+        outcomeDate = LocalDate.of(2021, 1, 3),
         calculationDateType = ReleaseDateType.SLED.name,
       ),
     )
-    whenever(calculationOutcomeRepository.getPotentialDatesForPreviouslyRecordedSLED("A1234BC", CALCULATED_SLED)).thenReturn(outcomes)
-    whenever(calculationRequestRepository.findById(any())).thenReturn(Optional.of(CalculationRequest(id = 1L)))
+    val calculationRequest = CalculationRequest(id = 1L, calculationOutcomes = outcomes)
+    whenever(calculationRequestRepository.findLatestCalculationForPreviousSLED("A1234BC")).thenReturn(calculationRequest)
     whenever(sourceDataMapper.mapAdjustments(any())).thenReturn(
       listOf(
         AdjustmentDto(
@@ -60,7 +58,7 @@ class PreviouslyRecordedSLEDServiceTest {
 
     assertThat(service.findPreviouslyRecordedSLEDThatShouldOverrideTheCalculatedSLED(PRISONER_ID, CALCULATED_SLED)).isEqualTo(
       PreviouslyRecordedSLED(
-        previouslyRecordedSLEDDate = LocalDate.of(2021, 1, 1),
+        previouslyRecordedSLEDDate = LocalDate.of(2021, 1, 3),
         calculatedDate = CALCULATED_SLED,
         previouslyRecordedSLEDCalculationRequestId = 1L,
       ),
@@ -68,16 +66,48 @@ class PreviouslyRecordedSLEDServiceTest {
   }
 
   @Test
+  fun `should not return a previously recorded SLED if it's the same as the calculated one`() {
+    val outcomes = listOf(
+      CalculationOutcome(
+        calculationRequestId = 1L,
+        outcomeDate = CALCULATED_SLED,
+        calculationDateType = ReleaseDateType.SLED.name,
+      ),
+    )
+    val calculationRequest = CalculationRequest(id = 1L, calculationOutcomes = outcomes)
+    whenever(calculationRequestRepository.findLatestCalculationForPreviousSLED("A1234BC")).thenReturn(calculationRequest)
+    whenever(sourceDataMapper.mapAdjustments(any())).thenReturn(emptyList())
+
+    assertThat(service.findPreviouslyRecordedSLEDThatShouldOverrideTheCalculatedSLED(PRISONER_ID, CALCULATED_SLED)).isNull()
+  }
+
+  @Test
+  fun `should not return a previously recorded SLED if it's earlier than the calculated one`() {
+    val outcomes = listOf(
+      CalculationOutcome(
+        calculationRequestId = 1L,
+        outcomeDate = CALCULATED_SLED.minusDays(1),
+        calculationDateType = ReleaseDateType.SLED.name,
+      ),
+    )
+    val calculationRequest = CalculationRequest(id = 1L, calculationOutcomes = outcomes)
+    whenever(calculationRequestRepository.findLatestCalculationForPreviousSLED("A1234BC")).thenReturn(calculationRequest)
+    whenever(sourceDataMapper.mapAdjustments(any())).thenReturn(emptyList())
+
+    assertThat(service.findPreviouslyRecordedSLEDThatShouldOverrideTheCalculatedSLED(PRISONER_ID, CALCULATED_SLED)).isNull()
+  }
+
+  @Test
   fun `should return a previously recorded SLED if a historic SLED exists and there are unused deductions but days are 0`() {
     val outcomes = listOf(
       CalculationOutcome(
         calculationRequestId = 1L,
-        outcomeDate = LocalDate.of(2021, 1, 1),
+        outcomeDate = LocalDate.of(2021, 1, 3),
         calculationDateType = ReleaseDateType.SLED.name,
       ),
     )
-    whenever(calculationOutcomeRepository.getPotentialDatesForPreviouslyRecordedSLED("A1234BC", CALCULATED_SLED)).thenReturn(outcomes)
-    whenever(calculationRequestRepository.findById(any())).thenReturn(Optional.of(CalculationRequest(id = 1L)))
+    val calculationRequest = CalculationRequest(id = 1L, calculationOutcomes = outcomes)
+    whenever(calculationRequestRepository.findLatestCalculationForPreviousSLED("A1234BC")).thenReturn(calculationRequest)
     whenever(sourceDataMapper.mapAdjustments(any())).thenReturn(
       listOf(
         AdjustmentDto(
@@ -91,7 +121,7 @@ class PreviouslyRecordedSLEDServiceTest {
 
     assertThat(service.findPreviouslyRecordedSLEDThatShouldOverrideTheCalculatedSLED(PRISONER_ID, CALCULATED_SLED)).isEqualTo(
       PreviouslyRecordedSLED(
-        previouslyRecordedSLEDDate = LocalDate.of(2021, 1, 1),
+        previouslyRecordedSLEDDate = LocalDate.of(2021, 1, 3),
         calculatedDate = CALCULATED_SLED,
         previouslyRecordedSLEDCalculationRequestId = 1L,
       ),
@@ -107,9 +137,8 @@ class PreviouslyRecordedSLEDServiceTest {
         calculationDateType = ReleaseDateType.SLED.name,
       ),
     )
-
-    whenever(calculationOutcomeRepository.getPotentialDatesForPreviouslyRecordedSLED("A1234BC", CALCULATED_SLED)).thenReturn(outcomes)
-    whenever(calculationRequestRepository.findById(any())).thenReturn(Optional.of(CalculationRequest(id = 1L)))
+    val calculationRequest = CalculationRequest(id = 1L, calculationOutcomes = outcomes)
+    whenever(calculationRequestRepository.findLatestCalculationForPreviousSLED("A1234BC")).thenReturn(calculationRequest)
     whenever(sourceDataMapper.mapAdjustments(any())).thenReturn(
       listOf(
         AdjustmentDto(
@@ -125,56 +154,26 @@ class PreviouslyRecordedSLEDServiceTest {
   }
 
   @Test
-  fun `should return the latest previously recorded SLED if multiple historic SLEDs exist`() {
-    val outcomes = listOf(
-      CalculationOutcome(
-        calculationRequestId = 1L,
-        outcomeDate = LocalDate.of(2021, 1, 1),
-        calculationDateType = ReleaseDateType.SLED.name,
-      ),
-      CalculationOutcome(
-        calculationRequestId = 2L,
-        outcomeDate = LocalDate.of(2021, 1, 2),
-        calculationDateType = ReleaseDateType.LED.name,
-      ),
-      CalculationOutcome(
-        calculationRequestId = 2L,
-        outcomeDate = LocalDate.of(2021, 1, 2),
-        calculationDateType = ReleaseDateType.SED.name,
-      ),
-    )
-
-    whenever(calculationOutcomeRepository.getPotentialDatesForPreviouslyRecordedSLED("A1234BC", CALCULATED_SLED)).thenReturn(outcomes)
-
-    assertThat(service.findPreviouslyRecordedSLEDThatShouldOverrideTheCalculatedSLED(PRISONER_ID, CALCULATED_SLED)).isEqualTo(
-      PreviouslyRecordedSLED(
-        previouslyRecordedSLEDDate = LocalDate.of(2021, 1, 2),
-        calculatedDate = CALCULATED_SLED,
-        previouslyRecordedSLEDCalculationRequestId = 2L,
-      ),
-    )
-  }
-
-  @Test
   fun `should return a previously recorded SLED if a historic SED and LED with the same date exists`() {
     val outcomes = listOf(
       CalculationOutcome(
         calculationRequestId = 1L,
-        outcomeDate = LocalDate.of(2021, 1, 1),
+        outcomeDate = LocalDate.of(2021, 1, 3),
         calculationDateType = ReleaseDateType.SED.name,
       ),
       CalculationOutcome(
         calculationRequestId = 1L,
-        outcomeDate = LocalDate.of(2021, 1, 1),
+        outcomeDate = LocalDate.of(2021, 1, 3),
         calculationDateType = ReleaseDateType.LED.name,
       ),
     )
 
-    whenever(calculationOutcomeRepository.getPotentialDatesForPreviouslyRecordedSLED("A1234BC", CALCULATED_SLED)).thenReturn(outcomes)
+    val calculationRequest = CalculationRequest(id = 1L, calculationOutcomes = outcomes)
+    whenever(calculationRequestRepository.findLatestCalculationForPreviousSLED("A1234BC")).thenReturn(calculationRequest)
 
     assertThat(service.findPreviouslyRecordedSLEDThatShouldOverrideTheCalculatedSLED(PRISONER_ID, CALCULATED_SLED)).isEqualTo(
       PreviouslyRecordedSLED(
-        previouslyRecordedSLEDDate = LocalDate.of(2021, 1, 1),
+        previouslyRecordedSLEDDate = LocalDate.of(2021, 1, 3),
         calculatedDate = CALCULATED_SLED,
         previouslyRecordedSLEDCalculationRequestId = 1L,
       ),
@@ -196,37 +195,8 @@ class PreviouslyRecordedSLEDServiceTest {
       ),
     )
 
-    whenever(calculationOutcomeRepository.getPotentialDatesForPreviouslyRecordedSLED("A1234BC", CALCULATED_SLED)).thenReturn(outcomes)
-
-    assertThat(service.findPreviouslyRecordedSLEDThatShouldOverrideTheCalculatedSLED(PRISONER_ID, CALCULATED_SLED)).isNull()
-  }
-
-  @Test
-  fun `should return null if a historic SED and LED exist with the same date but from different calculations`() {
-    val outcomes = listOf(
-      CalculationOutcome(
-        calculationRequestId = 1L,
-        outcomeDate = LocalDate.of(2021, 1, 1),
-        calculationDateType = ReleaseDateType.SED.name,
-      ),
-      CalculationOutcome(
-        calculationRequestId = 1L,
-        outcomeDate = LocalDate.of(2021, 1, 2),
-        calculationDateType = ReleaseDateType.LED.name,
-      ),
-      CalculationOutcome(
-        calculationRequestId = 2L,
-        outcomeDate = LocalDate.of(2021, 1, 2),
-        calculationDateType = ReleaseDateType.SED.name,
-      ),
-      CalculationOutcome(
-        calculationRequestId = 2L,
-        outcomeDate = LocalDate.of(2021, 1, 1),
-        calculationDateType = ReleaseDateType.LED.name,
-      ),
-    )
-
-    whenever(calculationOutcomeRepository.getPotentialDatesForPreviouslyRecordedSLED("A1234BC", CALCULATED_SLED)).thenReturn(outcomes)
+    val calculationRequest = CalculationRequest(id = 1L, calculationOutcomes = outcomes)
+    whenever(calculationRequestRepository.findLatestCalculationForPreviousSLED("A1234BC")).thenReturn(calculationRequest)
 
     assertThat(service.findPreviouslyRecordedSLEDThatShouldOverrideTheCalculatedSLED(PRISONER_ID, CALCULATED_SLED)).isNull()
   }
@@ -241,7 +211,8 @@ class PreviouslyRecordedSLEDServiceTest {
       ),
     )
 
-    whenever(calculationOutcomeRepository.getPotentialDatesForPreviouslyRecordedSLED("A1234BC", CALCULATED_SLED)).thenReturn(outcomes)
+    val calculationRequest = CalculationRequest(id = 1L, calculationOutcomes = outcomes)
+    whenever(calculationRequestRepository.findLatestCalculationForPreviousSLED("A1234BC")).thenReturn(calculationRequest)
 
     assertThat(service.findPreviouslyRecordedSLEDThatShouldOverrideTheCalculatedSLED(PRISONER_ID, CALCULATED_SLED)).isNull()
   }
@@ -256,7 +227,8 @@ class PreviouslyRecordedSLEDServiceTest {
       ),
     )
 
-    whenever(calculationOutcomeRepository.getPotentialDatesForPreviouslyRecordedSLED("A1234BC", CALCULATED_SLED)).thenReturn(outcomes)
+    val calculationRequest = CalculationRequest(id = 1L, calculationOutcomes = outcomes)
+    whenever(calculationRequestRepository.findLatestCalculationForPreviousSLED("A1234BC")).thenReturn(calculationRequest)
 
     assertThat(service.findPreviouslyRecordedSLEDThatShouldOverrideTheCalculatedSLED(PRISONER_ID, CALCULATED_SLED)).isNull()
   }

@@ -66,4 +66,18 @@ interface CalculationRequestRepository : JpaRepository<CalculationRequest, Long>
         """,
   )
   fun findLatestCalculationWithApprovedDates(prisonerId: String): CalculationRequest?
+
+  @Query(
+    """
+        SELECT cr
+        FROM CalculationRequest cr
+        JOIN FETCH cr.calculationOutcomes
+        WHERE cr.prisonerId = :prisonerId
+          AND cr.calculationStatus = 'CONFIRMED'
+          AND cr.reasonForCalculation.eligibleForPreviouslyRecordedSled = true
+        ORDER BY cr.calculatedAt DESC
+        FETCH FIRST 1 ROWS ONLY
+        """,
+  )
+  fun findLatestCalculationForPreviousSLED(prisonerId: String): CalculationRequest?
 }
