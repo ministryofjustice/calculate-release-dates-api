@@ -348,6 +348,7 @@ class ApprovedDatesServiceTest {
       nomisComment = "Recording a non-calculated date",
       displayRank = 99,
       useForApprovedDates = true,
+      eligibleForPreviouslyRecordedSled = false,
     )
   }
 }
