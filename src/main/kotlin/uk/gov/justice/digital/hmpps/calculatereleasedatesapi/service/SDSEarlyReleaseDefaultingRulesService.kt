@@ -80,6 +80,7 @@ class SDSEarlyReleaseDefaultingRulesService(
     )
 
     removeHdcedAndErsedIfMatchingRelease(dates)
+    removePedIfNotApplicable(dates, breakdownByReleaseDateType, sentences)
   }
 
   private fun createFinalCalculationResult(
@@ -175,6 +176,20 @@ class SDSEarlyReleaseDefaultingRulesService(
         if (hdcedOrErsedDate == crdOrdArd && hdcedOrErsedDate in trancheCommencementDates) {
           dates.remove(dateType)
         }
+      }
+    }
+  }
+
+  private fun removePedIfNotApplicable(
+    dates: MutableMap<ReleaseDateType, LocalDate>,
+    breakdownByReleaseDateType: MutableMap<ReleaseDateType, ReleaseDateCalculationBreakdown>,
+    sentences: List<CalculableSentence>,
+  ) {
+    if (dates.containsKey(ReleaseDateType.PED) && breakdownByReleaseDateType.containsKey(ReleaseDateType.PED)) {
+      val releaseDateSentence = sentences.maxByOrNull { it.sentenceCalculation.releaseDateDefaultedByCommencement() }
+      if (releaseDateSentence?.releaseDateTypes?.contains(ReleaseDateType.PED) == false) {
+        dates.remove(ReleaseDateType.PED)
+        breakdownByReleaseDateType.remove(ReleaseDateType.PED)
       }
     }
   }

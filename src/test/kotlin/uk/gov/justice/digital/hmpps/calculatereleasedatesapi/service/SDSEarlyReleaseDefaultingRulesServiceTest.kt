@@ -37,7 +37,7 @@ import java.time.temporal.ChronoUnit.DAYS
 import java.time.temporal.ChronoUnit.MONTHS
 import java.time.temporal.ChronoUnit.WEEKS
 import java.time.temporal.ChronoUnit.YEARS
-import java.util.*
+import java.util.UUID
 
 @ExtendWith(MockitoExtension::class)
 class SDSEarlyReleaseDefaultingRulesServiceTest {
@@ -367,7 +367,51 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
     )
   }
 
-  private fun createBookingWithSDSSentenceOfType(identificationTrack: SentenceIdentificationTrack): Booking {
+  @Test
+  fun `should correctly handle two sentences where one has a PED release date and is sentenced before the other`() {
+    val early = CalculationResult(
+      mapOf(ReleaseDateType.CRD to LocalDate.of(2024, 7, 25)),
+      emptyMap(),
+      emptyMap(),
+      Period.ofYears(5),
+      sdsEarlyReleaseTranche = SDSEarlyReleaseTranche.TRANCHE_0,
+      affectedBySds40 = true,
+    )
+
+    val standard = CalculationResult(
+      mapOf(ReleaseDateType.PED to LocalDate.of(2024, 8, 1)),
+      emptyMap(),
+      emptyMap(),
+      Period.ofYears(5),
+      sdsEarlyReleaseTranche = SDSEarlyReleaseTranche.TRANCHE_1,
+      affectedBySds40 = true,
+    )
+
+    assertThat(
+      service.applySDSEarlyReleaseRulesAndFinalizeDates(
+        early,
+        standard,
+        earlyReleaseTrancheOne,
+        createBookingWithSDSSentenceOfType(
+          SentenceIdentificationTrack.SDS,
+          listOf(ReleaseDateType.CRD, ReleaseDateType.SLED),
+        ).sentences,
+        earlyReleaseConfiguration,
+      ),
+    ).isEqualTo(
+      CalculationResult(
+        mapOf(ReleaseDateType.CRD to LocalDate.of(2024, 7, 25)),
+        mapOf(),
+        emptyMap(),
+        Period.ofYears(5),
+        sdsEarlyReleaseAllocatedTranche = SDSEarlyReleaseTranche.TRANCHE_1,
+        sdsEarlyReleaseTranche = SDSEarlyReleaseTranche.TRANCHE_1,
+        affectedBySds40 = true,
+      ),
+    )
+  }
+
+  private fun createBookingWithSDSSentenceOfType(identificationTrack: SentenceIdentificationTrack, releaseDateTypes: List<ReleaseDateType>? = null): Booking {
     val sentence = StandardDeterminateSentence(
       sentencedAt = LocalDate.of(2020, 1, 1),
       duration = Duration(mutableMapOf(DAYS to 0L, WEEKS to 0L, MONTHS to 0L, YEARS to 5L)),
@@ -379,8 +423,15 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
       hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
     )
     sentence.identificationTrack = identificationTrack
-    sentence.releaseDateTypes = ReleaseDateTypes(listOf(ReleaseDateType.CRD, ReleaseDateType.SLED), sentence, offender = mock<Offender>())
-    val date = LocalDate.of(2024, 1, 1)
+    sentence.releaseDateTypes = ReleaseDateTypes(
+      if (releaseDateTypes !== null) {
+        releaseDateTypes
+      } else {
+        listOf(ReleaseDateType.CRD, ReleaseDateType.SLED, ReleaseDateType.PED)
+      },
+      sentence,
+      offender = mock<Offender>(),
+    )
     val sentenceCalculation = SentenceCalculation(
       UnadjustedReleaseDate(
         sentence,
