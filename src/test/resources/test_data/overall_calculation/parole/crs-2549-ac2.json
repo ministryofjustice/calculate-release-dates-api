@@ -1,0 +1,45 @@
+{
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
+      {
+        "type": "SopcSentence",
+        "offence": {
+          "committedAt": "2023-05-05",
+          "offenceCode": "TH68036"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "YEARS": 2
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "YEARS": 1
+          }
+        },
+        "sentencedAt": "2023-05-05",
+        "identifier": "cce245c0-a952-390c-9f37-e0f887eca15e",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2023-11-20",
+          "offenceCode": "TH68036"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 36
+          }
+        },
+        "sentencedAt": "2023-11-20",
+        "identifier": "cce245c0-a952-390c-9f37-e0f887eca15f",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      }
+    ]
+  }
+}
