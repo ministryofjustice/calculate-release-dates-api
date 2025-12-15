@@ -117,22 +117,22 @@ data class SentenceCalculation(
       }
 
       val currentAllocatedEarlyRelease = allocatedEarlyRelease
-      val currentUnadjustedPostRecallReleaseDate = unadjustedPostRecallReleaseDate
+      val postRecallReleaseDateWithUal = unadjustedPostRecallReleaseDate?.plusDays(adjustments.ualAfterFtr)
 
       val overrideWithTrancheDate = currentAllocatedEarlyRelease !== null &&
         currentAllocatedEarlyRelease.modifiesRecallReleaseDate() &&
         currentAllocatedEarlyRelease.additionsAppliedAfterDefaulting &&
-        currentUnadjustedPostRecallReleaseDate !== null &&
-        currentUnadjustedPostRecallReleaseDate.isBeforeOrEqualTo(
+        postRecallReleaseDateWithUal !== null &&
+        postRecallReleaseDateWithUal.isBeforeOrEqualTo(
           allocatedTranche?.date ?: currentAllocatedEarlyRelease.earliestTranche(),
         )
 
-      val unadjustedDate =
-        allocatedTranche?.date.takeIf { overrideWithTrancheDate } ?: currentUnadjustedPostRecallReleaseDate
+      val ualAdjustedDate =
+        allocatedTranche?.date.takeIf { overrideWithTrancheDate } ?: postRecallReleaseDateWithUal
 
       // Fixed term recalls only apply adjustments from return to custody date
-      val fixedTermRecallRelease = unadjustedDate?.plusDays(
-        adjustments.adjustmentsForFixedTermRecall(),
+      val fixedTermRecallRelease = ualAdjustedDate?.plusDays(
+        adjustments.awardedAfterDeterminateRelease,
       )
 
       return minOf(fixedTermRecallRelease!!, expiryDate)
