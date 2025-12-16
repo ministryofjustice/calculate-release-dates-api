@@ -18,4 +18,7 @@ data class HistoricCalculation(
   val offenderSentCalculationId: Long?,
   val genuineOverrideReasonCode: GenuineOverrideReason?,
   val genuineOverrideReasonDescription: String?,
+  // TODO nullable until Prison API released to production
+  val calculatedByUsername: String?,
+  val calculatedByDisplayName: String?,
 )
