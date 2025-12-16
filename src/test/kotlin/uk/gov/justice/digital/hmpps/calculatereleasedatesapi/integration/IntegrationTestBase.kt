@@ -19,6 +19,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.contain
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.AdjustmentsApiExtension
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.BankHolidayApiExtension
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.ManageOffencesApiExtension
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.ManageUsersApiExtension
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.NomisSyncMappingApiExtension
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.OAuthExtension
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.PrisonApiExtension
@@ -57,6 +58,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Pris
   ManageOffencesApiExtension::class,
   AdjustmentsApiExtension::class,
   NomisSyncMappingApiExtension::class,
+  ManageUsersApiExtension::class,
 )
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @Import(TestBuildPropertiesConfiguration::class)

@@ -74,6 +74,8 @@ class HistoricCalculationsControllerTest {
       -1,
       genuineOverrideReasonCode = null,
       genuineOverrideReasonDescription = null,
+      calculatedByUsername = null,
+      calculatedByDisplayName = null,
     )
 
     whenever(historicCalculationsService.getHistoricCalculationsForPrisoner(anyString())).thenReturn(listOf(historicCalculation))

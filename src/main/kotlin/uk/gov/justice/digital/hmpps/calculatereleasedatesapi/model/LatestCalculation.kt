@@ -11,4 +11,7 @@ data class LatestCalculation(
   val reason: String,
   val source: CalculationSource,
   val dates: List<DetailedDate>,
+  // TODO nullable until Prison API released to production
+  val calculatedByUsername: String?,
+  val calculatedByDisplayName: String?,
 )

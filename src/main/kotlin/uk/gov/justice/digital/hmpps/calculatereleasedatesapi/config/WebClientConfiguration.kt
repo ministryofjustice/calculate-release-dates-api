@@ -23,6 +23,7 @@ class WebClientConfiguration(
   @Value("\${adjustments.api.url}") private val adjustmentsApiUrl: String,
   @Value("\${manage-offences.api.url}") private val manageOffencesApiUrl: String,
   @Value("\${nomis-sync-mapping.api.url}") private val nomisSyncMappingApiUrl: String,
+  @Value("\${manage-users.api.url}") private val manageUsersApiUrl: String,
 ) {
 
   @Bean
@@ -95,6 +96,19 @@ class WebClientConfiguration(
     oauth2Client.setDefaultClientRegistrationId("nomis-sync-mapping-api")
     return webClientBuilder
       .baseUrl(nomisSyncMappingApiUrl)
+      .apply(oauth2Client.oauth2Configuration())
+      .build()
+  }
+
+  @Bean
+  fun manageUsersApiWebClient(
+    builder: WebClient.Builder,
+    authorizedClientManager: OAuth2AuthorizedClientManager,
+  ): WebClient {
+    val oauth2Client = ServletOAuth2AuthorizedClientExchangeFilterFunction(authorizedClientManager)
+    oauth2Client.setDefaultClientRegistrationId("manage-users-api")
+    return builder
+      .baseUrl(manageUsersApiUrl)
       .apply(oauth2Client.oauth2Configuration())
       .build()
   }

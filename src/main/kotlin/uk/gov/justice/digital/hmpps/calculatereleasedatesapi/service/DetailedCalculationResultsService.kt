@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 import jakarta.persistence.EntityNotFoundException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.client.ManageUsersApiClient
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ApprovedDatesSubmission
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
@@ -27,6 +28,7 @@ open class DetailedCalculationResultsService(
   private val calculationResultEnrichmentService: CalculationResultEnrichmentService,
   private val calculationOutcomeHistoricOverrideRepository: CalculationOutcomeHistoricOverrideRepository,
   private val featureToggles: FeatureToggles,
+  private val manageUsersApiClient: ManageUsersApiClient,
 ) {
 
   @Transactional(readOnly = true)
@@ -75,18 +77,20 @@ open class DetailedCalculationResultsService(
     calculationRequestId: Long,
     calculationRequest: CalculationRequest,
   ) = CalculationContext(
-    calculationRequestId,
-    calculationRequest.bookingId,
-    calculationRequest.prisonerId,
-    CalculationStatus.valueOf(calculationRequest.calculationStatus),
-    calculationRequest.calculationReference,
-    calculationRequest.reasonForCalculation,
-    calculationRequest.otherReasonForCalculation,
-    calculationRequest.calculatedAt.toLocalDate(),
-    calculationRequest.calculationType,
-    calculationRequest.genuineOverrideReason,
-    calculationRequest.genuineOverrideReasonFurtherDetail ?: calculationRequest.genuineOverrideReason?.description,
-    calculationRequest.calculationRequestUserInput?.usePreviouslyRecordedSLEDIfFound ?: false,
+    calculationRequestId = calculationRequestId,
+    bookingId = calculationRequest.bookingId,
+    prisonerId = calculationRequest.prisonerId,
+    calculationStatus = CalculationStatus.valueOf(calculationRequest.calculationStatus),
+    calculationReference = calculationRequest.calculationReference,
+    calculationReason = calculationRequest.reasonForCalculation,
+    otherReasonDescription = calculationRequest.otherReasonForCalculation,
+    calculationDate = calculationRequest.calculatedAt.toLocalDate(),
+    calculationType = calculationRequest.calculationType,
+    genuineOverrideReasonCode = calculationRequest.genuineOverrideReason,
+    genuineOverrideReasonDescription = calculationRequest.genuineOverrideReasonFurtherDetail ?: calculationRequest.genuineOverrideReason?.description,
+    usePreviouslyRecordedSLEDIfFound = calculationRequest.calculationRequestUserInput?.usePreviouslyRecordedSLEDIfFound ?: false,
+    calculatedByUsername = calculationRequest.calculatedByUsername,
+    calculatedByDisplayName = manageUsersApiClient.getUserByUsername(calculationRequest.calculatedByUsername)?.name ?: calculationRequest.calculatedByUsername,
   )
 
   private fun approvedDates(latestApprovedDatesSubmission: ApprovedDatesSubmission?): Map<ReleaseDateType, DetailedDate>? = latestApprovedDatesSubmission?.approvedDates?.associate {

@@ -61,6 +61,10 @@ nomis-sync-mapping:
   api:
     url: http://localhost:8336
 
+manage-users:
+  api:
+    url: http://localhost:8337
+
 domain-events-sns:
   provider: localstack
 

@@ -323,7 +323,7 @@ class CalculationController(
       ApiResponse(responseCode = "404", description = "No calculation exists for this calculationRequestId"),
     ],
   )
-  fun get(
+  fun getAdjustmentsForCalculationRequest(
     @Parameter(required = true, example = "123456", description = "The calculationRequestId of the calculation")
     @PathVariable("calculationRequestId")
     calculationRequestId: Long,

@@ -19,4 +19,6 @@ data class CalculationContext(
   val genuineOverrideReasonCode: GenuineOverrideReason?,
   val genuineOverrideReasonDescription: String?,
   val usePreviouslyRecordedSLEDIfFound: Boolean,
+  val calculatedByUsername: String,
+  val calculatedByDisplayName: String,
 )
