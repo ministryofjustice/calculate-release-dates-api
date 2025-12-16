@@ -5,6 +5,7 @@ import arrow.core.right
 import io.hypersistence.utils.hibernate.type.json.internal.JacksonUtil
 import jakarta.persistence.EntityNotFoundException
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.mockito.kotlin.any
@@ -24,6 +25,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.TrancheOutco
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SDSEarlyReleaseTranche
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Agency
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BreakdownMissingReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationContext
@@ -58,6 +60,7 @@ class DetailedCalculationResultsServiceTest {
   private val calculationResultEnrichmentService = mock<CalculationResultEnrichmentService>()
   private val historicOverrideRepository = mock<CalculationOutcomeHistoricOverrideRepository>()
   private val manageUsersApiClient = mock<ManageUsersApiClient>()
+  private val prisonService = mock<PrisonService>()
   private val service = DetailedCalculationResultsService(
     calculationBreakdownService,
     sourceDataMapper,
@@ -66,8 +69,15 @@ class DetailedCalculationResultsServiceTest {
     historicOverrideRepository,
     FeatureToggles(historicSled = true),
     manageUsersApiClient,
+    prisonService,
   )
   private val objectMapper = TestUtil.objectMapper()
+
+  @BeforeEach
+  fun setUp() {
+    val agencies = listOf(Agency("BXI", "Brixton (HMP)"))
+    whenever(prisonService.getAgenciesByType("INST")).thenReturn(agencies)
+  }
 
   @Test
   fun `should throw exception if calculation not found in repo`() {
@@ -87,6 +97,7 @@ class DetailedCalculationResultsServiceTest {
         CalculationOutcome(calculationRequestId = CALCULATION_REQUEST_ID, calculationDateType = "CRD", outcomeDate = LocalDate.of(2026, 6, 26)),
       ),
       calculatedByUsername = "username",
+      prisonerLocation = "BXI",
     )
     val calculationRequestWithApprovedDates = base.copy(
       approvedDatesSubmissions = listOf(
@@ -244,6 +255,7 @@ class DetailedCalculationResultsServiceTest {
         CalculationOutcome(calculationRequestId = CALCULATION_REQUEST_ID, calculationDateType = "CRD", outcomeDate = LocalDate.of(2026, 6, 26)),
       ),
       calculatedByUsername = "username",
+      prisonerLocation = "BXI",
     )
     val calculationRequestWithApprovedDates = base.copy(
       approvedDatesSubmissions = listOf(
@@ -415,6 +427,8 @@ class DetailedCalculationResultsServiceTest {
     false,
     "username",
     "User Name",
+    "BXI",
+    "Brixton (HMP)",
   )
 
   private fun toReleaseDates(request: CalculationRequest): List<ReleaseDate> = request.calculationOutcomes

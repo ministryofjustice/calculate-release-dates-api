@@ -22,6 +22,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationT
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CrdWebException
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Agency
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationContext
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.GenuineOverrideReason
@@ -59,6 +60,8 @@ open class OffenderKeyDatesServiceTest {
       FeatureToggles(historicSled = true),
       manageUsersApiClient,
     )
+    val agencies = listOf(Agency("BXI", "Brixton (HMP)"))
+    whenever(prisonService.getAgenciesByType("INST")).thenReturn(agencies)
   }
 
   private val now = LocalDateTime.now()
@@ -215,6 +218,8 @@ open class OffenderKeyDatesServiceTest {
         false,
         "username",
         "User Name",
+        "BXI",
+        "Brixton (HMP)",
       ),
       listOf(
         DetailedDate(
@@ -256,6 +261,7 @@ open class OffenderKeyDatesServiceTest {
       otherReasonForCalculation = null,
       calculationType = CalculationType.CALCULATED,
       calculatedByUsername = "username",
+      prisonerLocation = "BXI",
     )
 
     whenever(prisonService.getOffenderKeyDates(any())).thenReturn(offenderKeyDates.right())
@@ -278,7 +284,7 @@ open class OffenderKeyDatesServiceTest {
   }
 
   @Test
-  fun `Should default to username if there is no display name available for a user`() {
+  fun `Should default to username if there is no display name available for a user and no location`() {
     val bookingId = 5636121L
     val calcRequestId = 1L
     val offenderKeyDates = OffenderKeyDates(
@@ -303,6 +309,8 @@ open class OffenderKeyDatesServiceTest {
         false,
         "username",
         "username",
+        null,
+        null,
       ),
       listOf(
         DetailedDate(
@@ -344,6 +352,7 @@ open class OffenderKeyDatesServiceTest {
       otherReasonForCalculation = null,
       calculationType = CalculationType.CALCULATED,
       calculatedByUsername = "username",
+      prisonerLocation = null,
     )
 
     whenever(prisonService.getOffenderKeyDates(any())).thenReturn(offenderKeyDates.right())
@@ -392,6 +401,8 @@ open class OffenderKeyDatesServiceTest {
         false,
         "username",
         "User Name",
+        "BXI",
+        "Brixton (HMP)",
       ),
       listOf(
         DetailedDate(
@@ -432,6 +443,7 @@ open class OffenderKeyDatesServiceTest {
       otherReasonForCalculation = null,
       calculationType = CalculationType.CALCULATED,
       calculatedByUsername = "username",
+      prisonerLocation = "BXI",
     )
 
     whenever(prisonService.getOffenderKeyDates(any())).thenReturn(offenderKeyDates.right())
@@ -763,6 +775,8 @@ open class OffenderKeyDatesServiceTest {
         false,
         "username",
         "User Name",
+        "BXI",
+        "Brixton (HMP)",
       ),
       listOf(
         DetailedDate(
@@ -806,6 +820,7 @@ open class OffenderKeyDatesServiceTest {
       genuineOverrideReason = GenuineOverrideReason.AGGRAVATING_FACTOR_OFFENCE,
       genuineOverrideReasonFurtherDetail = null,
       calculatedByUsername = "username",
+      prisonerLocation = "BXI",
     )
 
     whenever(prisonService.getOffenderKeyDates(any())).thenReturn(offenderKeyDates.right())
@@ -853,6 +868,8 @@ open class OffenderKeyDatesServiceTest {
         false,
         "username",
         "User Name",
+        "BXI",
+        "Brixton (HMP)",
       ),
       listOf(
         DetailedDate(
@@ -896,6 +913,7 @@ open class OffenderKeyDatesServiceTest {
       genuineOverrideReason = GenuineOverrideReason.OTHER,
       genuineOverrideReasonFurtherDetail = "Some extra detail",
       calculatedByUsername = "username",
+      prisonerLocation = "BXI",
     )
 
     whenever(prisonService.getOffenderKeyDates(any())).thenReturn(offenderKeyDates.right())
