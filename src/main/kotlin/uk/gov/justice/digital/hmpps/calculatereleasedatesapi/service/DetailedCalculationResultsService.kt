@@ -29,6 +29,7 @@ open class DetailedCalculationResultsService(
   private val calculationOutcomeHistoricOverrideRepository: CalculationOutcomeHistoricOverrideRepository,
   private val featureToggles: FeatureToggles,
   private val manageUsersApiClient: ManageUsersApiClient,
+  private val prisonService: PrisonService,
 ) {
 
   @Transactional(readOnly = true)
@@ -76,22 +77,31 @@ open class DetailedCalculationResultsService(
   private fun calculationContext(
     calculationRequestId: Long,
     calculationRequest: CalculationRequest,
-  ) = CalculationContext(
-    calculationRequestId = calculationRequestId,
-    bookingId = calculationRequest.bookingId,
-    prisonerId = calculationRequest.prisonerId,
-    calculationStatus = CalculationStatus.valueOf(calculationRequest.calculationStatus),
-    calculationReference = calculationRequest.calculationReference,
-    calculationReason = calculationRequest.reasonForCalculation,
-    otherReasonDescription = calculationRequest.otherReasonForCalculation,
-    calculationDate = calculationRequest.calculatedAt.toLocalDate(),
-    calculationType = calculationRequest.calculationType,
-    genuineOverrideReasonCode = calculationRequest.genuineOverrideReason,
-    genuineOverrideReasonDescription = calculationRequest.genuineOverrideReasonFurtherDetail ?: calculationRequest.genuineOverrideReason?.description,
-    usePreviouslyRecordedSLEDIfFound = calculationRequest.calculationRequestUserInput?.usePreviouslyRecordedSLEDIfFound ?: false,
-    calculatedByUsername = calculationRequest.calculatedByUsername,
-    calculatedByDisplayName = manageUsersApiClient.getUserByUsername(calculationRequest.calculatedByUsername)?.name ?: calculationRequest.calculatedByUsername,
-  )
+  ): CalculationContext {
+    val calculatedAtPrisonDescription: String? = if (calculationRequest.prisonerLocation != null) {
+      prisonService.getAgenciesByType("INST").firstOrNull { it.agencyId == calculationRequest.prisonerLocation }?.description ?: calculationRequest.prisonerLocation
+    } else {
+      null
+    }
+    return CalculationContext(
+      calculationRequestId = calculationRequestId,
+      bookingId = calculationRequest.bookingId,
+      prisonerId = calculationRequest.prisonerId,
+      calculationStatus = CalculationStatus.valueOf(calculationRequest.calculationStatus),
+      calculationReference = calculationRequest.calculationReference,
+      calculationReason = calculationRequest.reasonForCalculation,
+      otherReasonDescription = calculationRequest.otherReasonForCalculation,
+      calculationDate = calculationRequest.calculatedAt.toLocalDate(),
+      calculationType = calculationRequest.calculationType,
+      genuineOverrideReasonCode = calculationRequest.genuineOverrideReason,
+      genuineOverrideReasonDescription = calculationRequest.genuineOverrideReasonFurtherDetail ?: calculationRequest.genuineOverrideReason?.description,
+      usePreviouslyRecordedSLEDIfFound = calculationRequest.calculationRequestUserInput?.usePreviouslyRecordedSLEDIfFound ?: false,
+      calculatedByUsername = calculationRequest.calculatedByUsername,
+      calculatedByDisplayName = manageUsersApiClient.getUserByUsername(calculationRequest.calculatedByUsername)?.name ?: calculationRequest.calculatedByUsername,
+      calculatedAtPrisonId = calculationRequest.prisonerLocation,
+      calculatedAtPrisonDescription = calculatedAtPrisonDescription,
+    )
+  }
 
   private fun approvedDates(latestApprovedDatesSubmission: ApprovedDatesSubmission?): Map<ReleaseDateType, DetailedDate>? = latestApprovedDatesSubmission?.approvedDates?.associate {
     val type = ReleaseDateType.valueOf(it.calculationDateType)

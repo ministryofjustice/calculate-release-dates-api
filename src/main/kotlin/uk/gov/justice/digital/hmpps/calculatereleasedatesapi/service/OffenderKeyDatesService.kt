@@ -59,7 +59,11 @@ class OffenderKeyDatesService(
         historicSledOverride,
       ).values.toList()
     }.getOrElse { throw CrdWebException("Unable to retrieve offender key dates", HttpStatus.NOT_FOUND) }
-
+    val calculatedAtPrisonDescription: String? = if (calculationRequest.prisonerLocation != null) {
+      prisonService.getAgenciesByType("INST").firstOrNull { it.agencyId == calculationRequest.prisonerLocation }?.description ?: calculationRequest.prisonerLocation
+    } else {
+      null
+    }
     return ReleaseDatesAndCalculationContext(
       CalculationContext(
         calculationRequestId = calculationRequestId,
@@ -76,6 +80,8 @@ class OffenderKeyDatesService(
         usePreviouslyRecordedSLEDIfFound = calculationRequest.calculationRequestUserInput?.usePreviouslyRecordedSLEDIfFound ?: false,
         calculatedByUsername = calculationRequest.calculatedByUsername,
         calculatedByDisplayName = manageUsersApiClient.getUserByUsername(calculationRequest.calculatedByUsername)?.name ?: calculationRequest.calculatedByUsername,
+        calculatedAtPrisonId = calculationRequest.prisonerLocation,
+        calculatedAtPrisonDescription = calculatedAtPrisonDescription,
       ),
       enrichedDates,
     )
