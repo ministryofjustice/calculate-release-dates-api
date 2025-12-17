@@ -14,6 +14,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.isNull
 import org.mockito.kotlin.whenever
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.client.ManageUsersApiClient
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
@@ -21,6 +22,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationT
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CrdWebException
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Agency
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationContext
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.GenuineOverrideReason
@@ -30,6 +32,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OffenderKeyDa
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateHint
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDatesAndCalculationContext
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.manageusers.UserDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeHistoricOverrideRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 import java.time.LocalDate
@@ -44,6 +47,7 @@ open class OffenderKeyDatesServiceTest {
   private val prisonService: PrisonService = mock(PrisonService::class.java)
   private val calculationRequestRepository: CalculationRequestRepository = mock(CalculationRequestRepository::class.java)
   private val calculationOutcomeHistoricOverrideRepository: CalculationOutcomeHistoricOverrideRepository = mock(CalculationOutcomeHistoricOverrideRepository::class.java)
+  private val manageUsersApiClient = mock<ManageUsersApiClient>()
   private lateinit var underTest: OffenderKeyDatesService
 
   @BeforeEach
@@ -54,14 +58,17 @@ open class OffenderKeyDatesServiceTest {
       calculationRequestRepository,
       calculationOutcomeHistoricOverrideRepository,
       FeatureToggles(historicSled = true),
+      manageUsersApiClient,
     )
+    val agencies = listOf(Agency("BXI", "Brixton (HMP)"))
+    whenever(prisonService.getAgenciesByType("INST")).thenReturn(agencies)
   }
 
   private val now = LocalDateTime.now()
   val reference: UUID = UUID.randomUUID()
 
   @Test
-  fun `Test getting NomisCalculationSummary for offenderSentCalcId successfully`() {
+  fun `Test getting NomisCalculationSummary for offenderSentCalcId successfully with no username`() {
     val offenderSentCalcId = 5636121L
     val offenderKeyDates = OffenderKeyDates(
       reasonCode = "FS",
@@ -81,6 +88,71 @@ open class OffenderKeyDatesServiceTest {
           emptyList(),
         ),
       ),
+      null,
+      null,
+    )
+
+    val detailedDates = mapOf(
+      ReleaseDateType.HDCED to DetailedDate(
+        ReleaseDateType.HDCED,
+        ReleaseDateType.HDCED.description,
+        LocalDate.of(2024, 1, 1),
+        emptyList(),
+      ),
+    )
+
+    whenever(prisonService.getNOMISOffenderKeyDates(any())).thenReturn(offenderKeyDates.right())
+    whenever(
+      calculationResultEnrichmentService.addDetailToCalculationDates(
+        anyList(),
+        isNull(),
+        isNull(),
+        isNull(),
+        eq(offenderKeyDates),
+        isNull(),
+      ),
+    ).thenReturn(detailedDates)
+    whenever(prisonService.getNOMISCalcReasons()).thenReturn(
+      listOf(
+        NomisCalculationReason(
+          code = "FS",
+          description = "Further Sentence",
+        ),
+      ),
+    )
+
+    val result = underTest.getNomisCalculationSummary(offenderSentCalcId)
+
+    assertThat(result.reason).isEqualTo(expected.reason)
+    assertThat(result.calculatedAt).isEqualTo(expected.calculatedAt)
+    assertThat(result.comment).isEqualTo(expected.comment)
+    assertThat(result.releaseDates).isEqualTo(expected.releaseDates)
+  }
+
+  @Test
+  fun `Test getting NomisCalculationSummary for offenderSentCalcId successfully with a username`() {
+    val offenderSentCalcId = 5636121L
+    val offenderKeyDates = OffenderKeyDates(
+      reasonCode = "FS",
+      calculatedAt = LocalDateTime.of(2024, 2, 29, 10, 30),
+      comment = null,
+      homeDetentionCurfewEligibilityDate = LocalDate.of(2024, 1, 1),
+      calculatedByUserId = "username",
+    )
+    val expected = NomisCalculationSummary(
+      "Further Sentence",
+      LocalDateTime.of(2024, 2, 29, 10, 30),
+      null,
+      listOf(
+        DetailedDate(
+          ReleaseDateType.HDCED,
+          ReleaseDateType.HDCED.description,
+          LocalDate.of(2024, 1, 1),
+          emptyList(),
+        ),
+      ),
+      "username",
+      "User Name",
     )
 
     val detailedDates = mapOf(
@@ -144,6 +216,10 @@ open class OffenderKeyDatesServiceTest {
         null,
         null,
         false,
+        "username",
+        "User Name",
+        "BXI",
+        "Brixton (HMP)",
       ),
       listOf(
         DetailedDate(
@@ -184,6 +260,8 @@ open class OffenderKeyDatesServiceTest {
       ),
       otherReasonForCalculation = null,
       calculationType = CalculationType.CALCULATED,
+      calculatedByUsername = "username",
+      prisonerLocation = "BXI",
     )
 
     whenever(prisonService.getOffenderKeyDates(any())).thenReturn(offenderKeyDates.right())
@@ -198,6 +276,98 @@ open class OffenderKeyDatesServiceTest {
         isNull(),
       ),
     ).thenReturn(detailedDates)
+    whenever(manageUsersApiClient.getUserByUsername("username")).thenReturn(UserDetails("username", "User Name"))
+
+    val result = underTest.getKeyDatesByCalcId(calcRequestId)
+
+    assertThat(result).isEqualTo(expected)
+  }
+
+  @Test
+  fun `Should default to username if there is no display name available for a user and no location`() {
+    val bookingId = 5636121L
+    val calcRequestId = 1L
+    val offenderKeyDates = OffenderKeyDates(
+      reasonCode = "FS",
+      calculatedAt = LocalDateTime.of(2024, 2, 29, 10, 30),
+      comment = null,
+      homeDetentionCurfewEligibilityDate = LocalDate.of(2024, 1, 1),
+    )
+    val expected = ReleaseDatesAndCalculationContext(
+      CalculationContext(
+        calcRequestId,
+        bookingId,
+        "A1234AB",
+        CalculationStatus.CONFIRMED,
+        reference,
+        CalculationReason(-1, false, false, "14 day check", false, null, null, 1, false, false),
+        null,
+        LocalDate.of(2024, 1, 1),
+        CalculationType.CALCULATED,
+        null,
+        null,
+        false,
+        "username",
+        "username",
+        null,
+        null,
+      ),
+      listOf(
+        DetailedDate(
+          ReleaseDateType.HDCED,
+          ReleaseDateType.HDCED.description,
+          LocalDate.of(2024, 1, 1),
+          emptyList(),
+        ),
+      ),
+    )
+
+    val detailedDates = mapOf(
+      ReleaseDateType.HDCED to DetailedDate(
+        ReleaseDateType.HDCED,
+        ReleaseDateType.HDCED.description,
+        LocalDate.of(2024, 1, 1),
+        emptyList(),
+      ),
+    )
+    val calcRequest = CalculationRequest(
+      1,
+      reference,
+      "A1234AB",
+      bookingId,
+      CalculationStatus.CONFIRMED.name,
+      calculatedAt = LocalDateTime.of(2024, 1, 1, 0, 0),
+      reasonForCalculation = CalculationReason(
+        -1,
+        false,
+        false,
+        "14 day check",
+        false,
+        null,
+        null,
+        1,
+        useForApprovedDates = false,
+        eligibleForPreviouslyRecordedSled = false,
+      ),
+      otherReasonForCalculation = null,
+      calculationType = CalculationType.CALCULATED,
+      calculatedByUsername = "username",
+      prisonerLocation = null,
+    )
+
+    whenever(prisonService.getOffenderKeyDates(any())).thenReturn(offenderKeyDates.right())
+    whenever(calculationRequestRepository.findById(calcRequestId)).thenReturn(Optional.of(calcRequest))
+    whenever(
+      calculationResultEnrichmentService.addDetailToCalculationDates(
+        anyList(),
+        isNull(),
+        isNull(),
+        isNull(),
+        isNull(),
+        isNull(),
+      ),
+    ).thenReturn(detailedDates)
+    whenever(manageUsersApiClient.getUserByUsername("username")).thenReturn(null)
 
     val result = underTest.getKeyDatesByCalcId(calcRequestId)
 
@@ -229,6 +399,10 @@ open class OffenderKeyDatesServiceTest {
         null,
         null,
         false,
+        "username",
+        "User Name",
+        "BXI",
+        "Brixton (HMP)",
       ),
       listOf(
         DetailedDate(
@@ -268,6 +442,8 @@ open class OffenderKeyDatesServiceTest {
       ),
       otherReasonForCalculation = null,
       calculationType = CalculationType.CALCULATED,
+      calculatedByUsername = "username",
+      prisonerLocation = "BXI",
     )
 
     whenever(prisonService.getOffenderKeyDates(any())).thenReturn(offenderKeyDates.right())
@@ -282,6 +458,7 @@ open class OffenderKeyDatesServiceTest {
         isNull(),
       ),
     ).thenReturn(detailedDates)
+    whenever(manageUsersApiClient.getUserByUsername("username")).thenReturn(UserDetails("username", "User Name"))
 
     val result = underTest.getKeyDatesByCalcId(calcRequestId)
 
@@ -596,6 +773,10 @@ open class OffenderKeyDatesServiceTest {
         GenuineOverrideReason.AGGRAVATING_FACTOR_OFFENCE,
         "One or more offences have been characterised by an aggravating factor (such as terror)",
         false,
+        "username",
+        "User Name",
+        "BXI",
+        "Brixton (HMP)",
       ),
       listOf(
         DetailedDate(
@@ -638,6 +819,8 @@ open class OffenderKeyDatesServiceTest {
       calculationType = CalculationType.GENUINE_OVERRIDE,
       genuineOverrideReason = GenuineOverrideReason.AGGRAVATING_FACTOR_OFFENCE,
       genuineOverrideReasonFurtherDetail = null,
+      calculatedByUsername = "username",
+      prisonerLocation = "BXI",
     )
 
     whenever(prisonService.getOffenderKeyDates(any())).thenReturn(offenderKeyDates.right())
@@ -652,6 +835,7 @@ open class OffenderKeyDatesServiceTest {
         isNull(),
       ),
     ).thenReturn(detailedDates)
+    whenever(manageUsersApiClient.getUserByUsername("username")).thenReturn(UserDetails("username", "User Name"))
 
     val result = underTest.getKeyDatesByCalcId(calcRequestId)
 
@@ -682,6 +866,10 @@ open class OffenderKeyDatesServiceTest {
         GenuineOverrideReason.OTHER,
         "Some extra detail",
         false,
+        "username",
+        "User Name",
+        "BXI",
+        "Brixton (HMP)",
       ),
       listOf(
         DetailedDate(
@@ -724,6 +912,8 @@ open class OffenderKeyDatesServiceTest {
       calculationType = CalculationType.GENUINE_OVERRIDE,
       genuineOverrideReason = GenuineOverrideReason.OTHER,
       genuineOverrideReasonFurtherDetail = "Some extra detail",
+      calculatedByUsername = "username",
+      prisonerLocation = "BXI",
     )
 
     whenever(prisonService.getOffenderKeyDates(any())).thenReturn(offenderKeyDates.right())
@@ -738,6 +928,7 @@ open class OffenderKeyDatesServiceTest {
         isNull(),
       ),
     ).thenReturn(detailedDates)
+    whenever(manageUsersApiClient.getUserByUsername("username")).thenReturn(UserDetails("username", "User Name"))
 
     val result = underTest.getKeyDatesByCalcId(calcRequestId)
 

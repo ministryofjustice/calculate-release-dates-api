@@ -340,7 +340,7 @@ class CalculationControllerTest {
   fun `Test GET of calculation detailed results`() {
     val calculationRequestId = 9995L
     val calculatedReleaseDates = DetailedCalculationResults(
-      CalculationContext(calculationRequestId, 1, "A", CONFIRMED, UUID.randomUUID(), null, null, null, CalculationType.CALCULATED, null, null, false),
+      CalculationContext(calculationRequestId, 1, "A", CONFIRMED, UUID.randomUUID(), null, null, null, CalculationType.CALCULATED, null, null, false, "username", "User Name", "BXI", "Brixton (HMP)"),
       dates = mapOf(),
       null,
       CalculationOriginalData(
@@ -378,6 +378,8 @@ class CalculationControllerTest {
       "Other",
       CalculationSource.CRDS,
       listOf(DetailedDate(ReleaseDateType.CRD, ReleaseDateType.CRD.description, LocalDate.of(2024, 1, 1), emptyList())),
+      "username",
+      "User Name",
     )
 
     whenever(latestCalculationService.latestCalculationForPrisoner(prisonerId)).thenReturn(expected.right())
@@ -456,6 +458,8 @@ class CalculationControllerTest {
           emptyList(),
         ),
       ),
+      null,
+      null,
     )
 
     whenever(offenderKeyDatesService.getNomisCalculationSummary(any())).thenReturn(expected)
@@ -487,6 +491,10 @@ class CalculationControllerTest {
         null,
         null,
         false,
+        "username",
+        "User Name",
+        "BXI",
+        "Brixton (HMP)",
       ),
       listOf(
         DetailedDate(
