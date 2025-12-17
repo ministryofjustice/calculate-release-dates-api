@@ -7,6 +7,6 @@ data class NomisCalculationSummary(
   val calculatedAt: LocalDateTime,
   val comment: String? = null,
   val releaseDates: List<DetailedDate>,
-  val calculatedByUsername: String?,
-  val calculatedByDisplayName: String?,
+  val calculatedByUsername: String,
+  val calculatedByDisplayName: String,
 )

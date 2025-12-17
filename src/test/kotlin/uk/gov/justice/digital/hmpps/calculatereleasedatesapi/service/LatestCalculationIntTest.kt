@@ -53,6 +53,8 @@ class LatestCalculationIntTest(private val mockPrisonService: MockPrisonService,
         sentenceExpiryDate = LocalDate.of(2025, 2, 14),
         conditionalReleaseDateOverridden = true,
         calculatedByUserId = "user1",
+        calculatedByFirstName = "User",
+        calculatedByLastName = "One",
       ),
     )
     stubSentenceDetails(
@@ -120,6 +122,9 @@ class LatestCalculationIntTest(private val mockPrisonService: MockPrisonService,
       effectiveSentenceEndDate = LocalDate.of(2016, 11, 16),
       sentenceExpiryDate = LocalDate.of(2016, 11, 6),
       licenceExpiryDate = LocalDate.of(2016, 11, 6),
+      calculatedByUserId = "user1",
+      calculatedByFirstName = "User",
+      calculatedByLastName = "One",
     )
     stubKeyDates(bookingId, offenderKeyDates)
     mockManageUsersClient.withUser(UserDetails("test-client", "Test Client"))

@@ -12,13 +12,12 @@ data class HistoricCalculation(
   val calculationViewConfiguration: CalculationViewConfiguration?,
   val commentText: String?,
   val calculationType: CalculationType?,
-  val establishment: String?,
+  val establishment: String?, // this is the establishment of the booking not of when the calculation was performed.
   val calculationRequestId: Long?,
   val calculationReason: String?,
   val offenderSentCalculationId: Long?,
   val genuineOverrideReasonCode: GenuineOverrideReason?,
   val genuineOverrideReasonDescription: String?,
-  // TODO nullable until Prison API released to production
-  val calculatedByUsername: String?,
-  val calculatedByDisplayName: String?,
+  val calculatedByUsername: String,
+  val calculatedByDisplayName: String,
 )

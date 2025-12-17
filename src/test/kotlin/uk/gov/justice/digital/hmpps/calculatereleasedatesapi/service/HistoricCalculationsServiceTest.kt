@@ -107,7 +107,7 @@ class HistoricCalculationsServiceTest {
     assertThat(result[1].genuineOverrideReasonDescription).isEqualTo("Some more details")
   }
 
-  private fun sentenceCalculationSummary(comment: String): SentenceCalculationSummary = SentenceCalculationSummary(456, "123", "bob", "davies", "RNI", "Ranby (HMP)", 1, LocalDateTime.now(), 4, comment, "reason", "user")
+  private fun sentenceCalculationSummary(comment: String): SentenceCalculationSummary = SentenceCalculationSummary(456, "123", "bob", "davies", "RNI", "Ranby (HMP)", 1, LocalDateTime.now(), 4, comment, "reason", "user", "User", "One")
 
   private fun calculationRequest(): CalculationRequest = CalculationRequest(1, reference, "123", 4565, CalculationStatus.CONFIRMED.name, calculatedAt = LocalDateTime.now(), prisonerLocation = "CDI")
 }

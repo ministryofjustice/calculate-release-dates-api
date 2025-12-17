@@ -108,7 +108,7 @@ class LatestCalculationService(
       reason = reason,
       source = CalculationSource.CRDS,
       calculatedByUsername = calculatedByUsername,
-      calculatedByDisplayName = manageUsersApiClient.getUserByUsername(calculatedByUsername)?.name,
+      calculatedByDisplayName = manageUsersApiClient.getUserByUsername(calculatedByUsername)?.name ?: calculatedByUsername,
       dates = calculationResultEnrichmentService.addDetailToCalculationDates(
         dates,
         sentenceAndOffences,
@@ -136,7 +136,7 @@ class LatestCalculationService(
       reason = reason,
       source = CalculationSource.NOMIS,
       calculatedByUsername = prisonerCalculation.calculatedByUserId,
-      calculatedByDisplayName = prisonerCalculation.calculatedByUserId?.let { manageUsersApiClient.getUserByUsername(it)?.name },
+      calculatedByDisplayName = prisonerCalculation.calculatedByUserId.let { manageUsersApiClient.getUserByUsername(it)?.name } ?: prisonerCalculation.calculatedByUserId,
       dates = calculationResultEnrichmentService.addDetailToCalculationDates(
         dates,
         null,

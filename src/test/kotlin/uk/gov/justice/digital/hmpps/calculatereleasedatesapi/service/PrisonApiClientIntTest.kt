@@ -42,11 +42,11 @@ class PrisonApiClientIntTest(private val mockPrisonService: MockPrisonService) :
         .willReturn(
           aResponse()
             .withHeader("Content-Type", "application/json")
-            .withBody("""{ "reasonCode": "NEW", "calculatedAt": "2025-01-02T10:30:00" }""")
+            .withBody("""{ "reasonCode": "NEW", "calculatedAt": "2025-01-02T10:30:00", "calculatedByUserId": "username", "calculatedByFirstName": "User", "calculatedByLastName": "One" }""")
             .withStatus(200),
         ),
     )
-    assertThat(prisonApiClient.getOffenderKeyDates(bookingId)).isEqualTo(OffenderKeyDates("NEW", LocalDateTime.of(2025, 1, 2, 10, 30, 0)).right())
+    assertThat(prisonApiClient.getOffenderKeyDates(bookingId)).isEqualTo(OffenderKeyDates("NEW", LocalDateTime.of(2025, 1, 2, 10, 30, 0), calculatedByUserId = "username", calculatedByFirstName = "User", calculatedByLastName = "One").right())
   }
 
   @ParameterizedTest
@@ -128,7 +128,10 @@ class PrisonApiClientIntTest(private val mockPrisonService: MockPrisonService) :
                       "approvedParoleDate": "2018-09-27",
                       "comment": "Some Comment Text",
                       "reasonCode": "NEW",
-                      "calculatedAt": "2017-08-28T00:00:00"
+                      "calculatedAt": "2017-08-28T00:00:00",
+                      "calculatedByUserId": "username", 
+                      "calculatedByFirstName": "User", 
+                      "calculatedByLastName": "One"
                   }""",
             ),
         ),
@@ -145,6 +148,9 @@ class PrisonApiClientIntTest(private val mockPrisonService: MockPrisonService) :
     assertThat(offenderKeyDates.sentenceExpiryDate).isEqualTo(LocalDate.of(2020, 3, 24))
     assertThat(offenderKeyDates.conditionalReleaseDate).isEqualTo(LocalDate.of(2019, 5, 24))
     assertThat(offenderKeyDates.dtoPostRecallReleaseDate).isEqualTo(LocalDate.of(2020, 3, 22))
+    assertThat(offenderKeyDates.calculatedByUserId).isEqualTo("username")
+    assertThat(offenderKeyDates.calculatedByFirstName).isEqualTo("User")
+    assertThat(offenderKeyDates.calculatedByLastName).isEqualTo("One")
   }
 
   @ParameterizedTest

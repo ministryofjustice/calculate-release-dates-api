@@ -37,8 +37,7 @@ data class OffenderKeyDates(
   val automaticReleaseDateOverridden: Boolean = false,
   val topupSupervisionExpiryDateOverridden: Boolean = false,
   val paroleEligibilityDateOverridden: Boolean = false,
-  // TODO nullable only until Prison API released to prod
-  val calculatedByUserId: String? = null,
-  val calculatedByFirstName: String? = null,
-  val calculatedByLastName: String? = null,
+  val calculatedByUserId: String,
+  val calculatedByFirstName: String,
+  val calculatedByLastName: String,
 )
