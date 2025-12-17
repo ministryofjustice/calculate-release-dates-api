@@ -75,6 +75,9 @@ open class OffenderKeyDatesServiceTest {
       calculatedAt = LocalDateTime.of(2024, 2, 29, 10, 30),
       comment = null,
       homeDetentionCurfewEligibilityDate = LocalDate.of(2024, 1, 1),
+      calculatedByUserId = "user1",
+      calculatedByFirstName = "User",
+      calculatedByLastName = "One",
     )
     val expected = NomisCalculationSummary(
       "Further Sentence",
@@ -88,8 +91,8 @@ open class OffenderKeyDatesServiceTest {
           emptyList(),
         ),
       ),
-      null,
-      null,
+      "user1",
+      "user1",
     )
 
     val detailedDates = mapOf(
@@ -138,6 +141,8 @@ open class OffenderKeyDatesServiceTest {
       comment = null,
       homeDetentionCurfewEligibilityDate = LocalDate.of(2024, 1, 1),
       calculatedByUserId = "username",
+      calculatedByFirstName = "User",
+      calculatedByLastName = "One",
     )
     val expected = NomisCalculationSummary(
       "Further Sentence",
@@ -201,6 +206,9 @@ open class OffenderKeyDatesServiceTest {
       calculatedAt = LocalDateTime.of(2024, 2, 29, 10, 30),
       comment = null,
       homeDetentionCurfewEligibilityDate = LocalDate.of(2024, 1, 1),
+      calculatedByUserId = "user1",
+      calculatedByFirstName = "User",
+      calculatedByLastName = "One",
     )
     val expected = ReleaseDatesAndCalculationContext(
       CalculationContext(
@@ -292,6 +300,9 @@ open class OffenderKeyDatesServiceTest {
       calculatedAt = LocalDateTime.of(2024, 2, 29, 10, 30),
       comment = null,
       homeDetentionCurfewEligibilityDate = LocalDate.of(2024, 1, 1),
+      calculatedByUserId = "user1",
+      calculatedByFirstName = "User",
+      calculatedByLastName = "One",
     )
     val expected = ReleaseDatesAndCalculationContext(
       CalculationContext(
@@ -384,6 +395,9 @@ open class OffenderKeyDatesServiceTest {
       comment = null,
       licenceExpiryDate = LocalDate.of(2024, 1, 1),
       sentenceExpiryDate = LocalDate.of(2024, 1, 1),
+      calculatedByUserId = "user1",
+      calculatedByFirstName = "User",
+      calculatedByLastName = "One",
     )
     val expected = ReleaseDatesAndCalculationContext(
       CalculationContext(
@@ -527,6 +541,9 @@ open class OffenderKeyDatesServiceTest {
       calculatedAt = LocalDateTime.of(2024, 2, 29, 10, 30),
       comment = null,
       homeDetentionCurfewEligibilityDate = LocalDate.of(2024, 1, 1),
+      calculatedByUserId = "user1",
+      calculatedByFirstName = "User",
+      calculatedByLastName = "One",
     )
     val calcRequest = CalculationRequest(
       1,
@@ -581,6 +598,9 @@ open class OffenderKeyDatesServiceTest {
       comment = null,
       conditionalReleaseDate = LocalDate.of(2024, 1, 1),
       homeDetentionCurfewEligibilityDate = LocalDate.of(2024, 1, 2),
+      calculatedByUserId = "user1",
+      calculatedByFirstName = "User",
+      calculatedByLastName = "One",
     )
 
     val detailedDates = mapOf(
@@ -627,6 +647,9 @@ open class OffenderKeyDatesServiceTest {
       reasonCode = "FS",
       calculatedAt = LocalDateTime.of(2024, 2, 29, 10, 30),
       comment = null,
+      calculatedByUserId = "user1",
+      calculatedByFirstName = "User",
+      calculatedByLastName = "One",
     )
 
     whenever(prisonService.getNOMISOffenderKeyDates(any())).thenReturn(offenderKeyDates.right())
@@ -657,6 +680,9 @@ open class OffenderKeyDatesServiceTest {
       licenceExpiryDate = LocalDate.of(2025, 1, 1),
       reasonCode = "NEW",
       calculatedAt = now,
+      calculatedByUserId = "user1",
+      calculatedByFirstName = "User",
+      calculatedByLastName = "One",
     )
 
     val generatedDates = underTest.releaseDates(offenderKeyDates)
@@ -672,6 +698,9 @@ open class OffenderKeyDatesServiceTest {
       licenceExpiryDate = LocalDate.of(2026, 1, 1),
       reasonCode = "NEW",
       calculatedAt = now,
+      calculatedByUserId = "user1",
+      calculatedByFirstName = "User",
+      calculatedByLastName = "One",
     )
 
     val generatedDates = underTest.releaseDates(offenderKeyDates)
@@ -687,6 +716,9 @@ open class OffenderKeyDatesServiceTest {
       OffenderKeyDates(
         reasonCode = "NEW",
         calculatedAt = now,
+        calculatedByUserId = "user1",
+        calculatedByFirstName = "User",
+        calculatedByLastName = "One",
       )
 
     val generatedDates = underTest.releaseDates(offenderKeyDates)
@@ -720,6 +752,9 @@ open class OffenderKeyDatesServiceTest {
         dtoPostRecallReleaseDate = LocalDate.of(2025, 1, 19),
         reasonCode = "NEW",
         calculatedAt = now,
+        calculatedByUserId = "user1",
+        calculatedByFirstName = "User",
+        calculatedByLastName = "One",
       )
 
     val dates = listOf(
@@ -758,6 +793,9 @@ open class OffenderKeyDatesServiceTest {
       calculatedAt = LocalDateTime.of(2024, 2, 29, 10, 30),
       comment = null,
       homeDetentionCurfewEligibilityDate = LocalDate.of(2024, 1, 1),
+      calculatedByUserId = "user1",
+      calculatedByFirstName = "User",
+      calculatedByLastName = "One",
     )
     val expected = ReleaseDatesAndCalculationContext(
       CalculationContext(
@@ -851,6 +889,9 @@ open class OffenderKeyDatesServiceTest {
       calculatedAt = LocalDateTime.of(2024, 2, 29, 10, 30),
       comment = null,
       homeDetentionCurfewEligibilityDate = LocalDate.of(2024, 1, 1),
+      calculatedByUserId = "user1",
+      calculatedByFirstName = "User",
+      calculatedByLastName = "One",
     )
     val expected = ReleaseDatesAndCalculationContext(
       CalculationContext(

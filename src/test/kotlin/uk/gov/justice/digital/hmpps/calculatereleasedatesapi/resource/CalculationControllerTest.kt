@@ -458,8 +458,8 @@ class CalculationControllerTest {
           emptyList(),
         ),
       ),
-      null,
-      null,
+      "foo",
+      "bar",
     )
 
     whenever(offenderKeyDatesService.getNomisCalculationSummary(any())).thenReturn(expected)

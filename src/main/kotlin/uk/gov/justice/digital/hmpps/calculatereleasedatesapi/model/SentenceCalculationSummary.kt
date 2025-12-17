@@ -15,7 +15,6 @@ data class SentenceCalculationSummary(
   val commentText: String? = null,
   val calculationReason: String,
   val calculatedByUserId: String,
-  // TODO nullable until Prison API released to production
-  val calculatedByFirstName: String? = null,
-  val calculatedByLastName: String? = null,
+  val calculatedByFirstName: String,
+  val calculatedByLastName: String,
 )
