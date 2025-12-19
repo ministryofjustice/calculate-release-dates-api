@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.http.MediaType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.IntegrationTestBase
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.MockManageUsersClient
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.MockPrisonService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Agency
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationSource
@@ -17,11 +18,12 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NomisCalculat
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OffenderKeyDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateHint
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.manageusers.UserDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.SentenceDetail
 import java.time.LocalDate
 import java.time.LocalDateTime
 
-class LatestCalculationIntTest(private val mockPrisonService: MockPrisonService) : IntegrationTestBase() {
+class LatestCalculationIntTest(private val mockPrisonService: MockPrisonService, private val mockManageUsersClient: MockManageUsersClient) : IntegrationTestBase() {
 
   @BeforeEach
   fun setUp() {
@@ -50,6 +52,9 @@ class LatestCalculationIntTest(private val mockPrisonService: MockPrisonService)
         conditionalReleaseDate = LocalDate.of(2030, 1, 6),
         sentenceExpiryDate = LocalDate.of(2025, 2, 14),
         conditionalReleaseDateOverridden = true,
+        calculatedByUserId = "user1",
+        calculatedByFirstName = "User",
+        calculatedByLastName = "One",
       ),
     )
     stubSentenceDetails(
@@ -58,7 +63,7 @@ class LatestCalculationIntTest(private val mockPrisonService: MockPrisonService)
         conditionalReleaseOverrideDate = LocalDate.of(2030, 1, 6),
       ),
     )
-
+    mockManageUsersClient.withUser(UserDetails("user1", "User Name"))
     val latestCalculation = webTestClient.get()
       .uri("/calculation/$prisonerId/latest")
       .accept(MediaType.APPLICATION_JSON)
@@ -93,6 +98,8 @@ class LatestCalculationIntTest(private val mockPrisonService: MockPrisonService)
             ),
           ),
         ),
+        "user1",
+        "User Name",
       ),
     )
   }
@@ -115,8 +122,12 @@ class LatestCalculationIntTest(private val mockPrisonService: MockPrisonService)
       effectiveSentenceEndDate = LocalDate.of(2016, 11, 16),
       sentenceExpiryDate = LocalDate.of(2016, 11, 6),
       licenceExpiryDate = LocalDate.of(2016, 11, 6),
+      calculatedByUserId = "user1",
+      calculatedByFirstName = "User",
+      calculatedByLastName = "One",
     )
     stubKeyDates(bookingId, offenderKeyDates)
+    mockManageUsersClient.withUser(UserDetails("test-client", "Test Client"))
 
     val latestCalculation = webTestClient.get()
       .uri("/calculation/default/latest")
@@ -155,6 +166,8 @@ class LatestCalculationIntTest(private val mockPrisonService: MockPrisonService)
           ),
           DetailedDate(ReleaseDateType.TUSED, ReleaseDateType.TUSED.description, LocalDate.of(2017, 1, 6), emptyList()),
         ),
+        "test-client",
+        "Test Client",
       ),
     )
   }

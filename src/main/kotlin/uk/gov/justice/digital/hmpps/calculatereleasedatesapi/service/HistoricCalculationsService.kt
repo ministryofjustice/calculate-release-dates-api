@@ -31,6 +31,8 @@ class HistoricCalculationsService(
       val nomisComment = nomisCalculation.commentText
       var genuineOverrideReason: GenuineOverrideReason? = null
       var genuineOverrideReasonDescription: String? = null
+      val calculatedByUsername = nomisCalculation.calculatedByUserId
+      val calculatedByDisplayName = "${nomisCalculation.calculatedByFirstName} ${nomisCalculation.calculatedByLastName}"
       calculations.firstOrNull {
         nomisComment != null && nomisCalculation.commentText.contains(it.calculationReference.toString())
       }?.let {
@@ -57,6 +59,8 @@ class HistoricCalculationsService(
         offenderSentCalculationId = nomisCalculation.offenderSentCalculationId,
         genuineOverrideReasonCode = genuineOverrideReason,
         genuineOverrideReasonDescription = genuineOverrideReasonDescription,
+        calculatedByUsername = calculatedByUsername,
+        calculatedByDisplayName = calculatedByDisplayName,
       )
     }
     return historicCalculations
