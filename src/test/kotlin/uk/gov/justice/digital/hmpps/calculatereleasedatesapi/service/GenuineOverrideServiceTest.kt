@@ -387,6 +387,6 @@ class GenuineOverrideServiceTest {
       listOf(),
       null,
     )
-    private val REASON = CalculationReason(0, false, false, "Some reason", false, null, null, null)
+    private val REASON = CalculationReason(0, false, false, "Some reason", false, null, null, null, false, false)
   }
 }

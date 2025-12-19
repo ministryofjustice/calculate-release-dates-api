@@ -11,4 +11,6 @@ data class LatestCalculation(
   val reason: String,
   val source: CalculationSource,
   val dates: List<DetailedDate>,
+  val calculatedByUsername: String,
+  val calculatedByDisplayName: String,
 )

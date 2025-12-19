@@ -53,6 +53,8 @@ class CalculationReasonControllerTest {
         nomisReason = "UPDATE",
         nomisComment = "NOMIS_COMMENT",
         displayRank = 10,
+        useForApprovedDates = false,
+        eligibleForPreviouslyRecordedSled = false,
       ),
       CalculationReason(
         2,
@@ -63,6 +65,8 @@ class CalculationReasonControllerTest {
         nomisReason = "UPDATE",
         nomisComment = "NOMIS_COMMENT",
         displayRank = 20,
+        useForApprovedDates = false,
+        eligibleForPreviouslyRecordedSled = false,
       ),
       CalculationReason(
         3,
@@ -73,6 +77,8 @@ class CalculationReasonControllerTest {
         nomisReason = "UPDATE",
         nomisComment = "NOMIS_COMMENT",
         displayRank = 10,
+        useForApprovedDates = false,
+        eligibleForPreviouslyRecordedSled = false,
       ),
       CalculationReason(
         4,
@@ -83,6 +89,8 @@ class CalculationReasonControllerTest {
         nomisReason = "UPDATE",
         nomisComment = "NOMIS_COMMENT",
         displayRank = 10,
+        useForApprovedDates = false,
+        eligibleForPreviouslyRecordedSled = false,
       ),
     )
 

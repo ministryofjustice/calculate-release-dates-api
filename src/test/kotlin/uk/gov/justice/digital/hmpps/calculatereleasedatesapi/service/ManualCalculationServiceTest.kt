@@ -824,6 +824,8 @@ class ManualCalculationServiceTest {
       nomisReason = "UPDATE",
       nomisComment = "NOMIS_COMMENT",
       displayRank = null,
+      useForApprovedDates = false,
+      eligibleForPreviouslyRecordedSled = false,
     )
 
     val CALCULATION_REQUEST_WITH_OUTCOMES = CalculationRequest(

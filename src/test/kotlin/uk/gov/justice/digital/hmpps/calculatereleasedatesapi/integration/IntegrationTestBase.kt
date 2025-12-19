@@ -19,6 +19,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.contain
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.AdjustmentsApiExtension
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.BankHolidayApiExtension
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.ManageOffencesApiExtension
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.ManageUsersApiExtension
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.NomisSyncMappingApiExtension
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.OAuthExtension
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.PrisonApiExtension
@@ -57,6 +58,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Pris
   ManageOffencesApiExtension::class,
   AdjustmentsApiExtension::class,
   NomisSyncMappingApiExtension::class,
+  ManageUsersApiExtension::class,
 )
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @Import(TestBuildPropertiesConfiguration::class)
@@ -87,10 +89,13 @@ open class IntegrationTestBase internal constructor() {
     roles: List<String> = listOf(),
   ): (HttpHeaders) -> Unit = jwtAuthHelper.setAuthorisation(user, roles)
 
-  protected fun createPreliminaryCalculation(prisonerId: String, userInputs: CalculationUserInputs = CalculationUserInputs()): CalculatedReleaseDates = webTestClient.post()
+  protected fun createPreliminaryCalculation(
+    prisonerId: String,
+    request: CalculationRequestModel = CalculationRequestModel(calculationReasonId = 1L, calculationUserInputs = CalculationUserInputs()),
+  ): CalculatedReleaseDates = webTestClient.post()
     .uri("/calculation/$prisonerId")
     .accept(MediaType.APPLICATION_JSON)
-    .bodyValue(CalculationRequestModel(userInputs, 1L))
+    .bodyValue(request)
     .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
     .exchange()
     .expectStatus().isOk

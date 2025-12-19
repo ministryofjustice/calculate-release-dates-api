@@ -1,0 +1,223 @@
+{
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
+      {
+        "offence": {
+          "committedAt": "2014-08-08",
+          "offenceCode": "TH68001"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 20
+          }
+        },
+        "sentencedAt": "2014-09-12",
+        "identifier": "6ae878b6-de52-3896-85eb-84142caad5e5",
+        "recall": {
+          "recallType": "STANDARD_RECALL",
+          "revocationDate": "2017-07-19"
+        }
+      },
+      {
+        "offence": {
+          "committedAt": "2014-08-08",
+          "offenceCode": "TH68023"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 40
+          }
+        },
+        "sentencedAt": "2014-09-12",
+        "consecutiveSentenceUUIDs": [
+          "6ae878b6-de52-3896-85eb-84142caad5e5"
+        ],
+        "recall": {
+          "recallType": "STANDARD_RECALL",
+          "revocationDate": "2017-07-19"
+        }
+      },
+      {
+        "type": "ExtendedDeterminateSentence",
+        "offence": {
+          "committedAt": "2017-07-16",
+          "offenceCode": "TH68023"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "YEARS": 6
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "YEARS": 4
+          }
+        },
+        "sentencedAt": "2017-09-20",
+        "identifier": "999fe16f-a99a-3ff3-b952-d6e8374b3bc3"
+      },
+      {
+        "type": "ExtendedDeterminateSentence",
+        "offence": {
+          "committedAt": "2017-07-16",
+          "offenceCode": "TH68023"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "YEARS": 3
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "YEARS": 4
+          }
+        },
+        "sentencedAt": "2017-09-20"
+      },
+      {
+        "offence": {
+          "committedAt": "2017-06-29",
+          "offenceCode": "TH68016"
+        },
+        "duration": {
+          "durationElements": {
+            "WEEKS": 12
+          }
+        },
+        "sentencedAt": "2018-01-11"
+      },
+      {
+        "offence": {
+          "committedAt": "2017-07-07",
+          "offenceCode": "TH68020C"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 40
+          }
+        },
+        "sentencedAt": "2018-06-13",
+        "identifier": "7ceb1fea-868f-39a9-afaf-fc03d546e2d6",
+        "consecutiveSentenceUUIDs": [
+          "999fe16f-a99a-3ff3-b952-d6e8374b3bc3"
+        ]
+      },
+      {
+        "offence": {
+          "committedAt": "2023-02-09",
+          "offenceCode": "COML016"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 6
+          }
+        },
+        "sentencedAt": "2023-06-01",
+        "identifier": "cfc48443-6cf2-31e0-81b0-ffdcc5738789",
+        "consecutiveSentenceUUIDs": [
+          "7ceb1fea-868f-39a9-afaf-fc03d546e2d6"
+        ]
+      },
+      {
+        "offence": {
+          "committedAt": "2023-02-20",
+          "offenceCode": "TH68010"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 2
+          }
+        },
+        "sentencedAt": "2023-06-01",
+        "identifier": "6be4a1d4-0967-35ca-8474-5f93d79b949a",
+        "consecutiveSentenceUUIDs": [
+          "cfc48443-6cf2-31e0-81b0-ffdcc5738789"
+        ]
+      },
+      {
+        "offence": {
+          "committedAt": "2023-04-28",
+          "offenceCode": "TH68010"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 1
+          }
+        },
+        "sentencedAt": "2023-06-01",
+        "consecutiveSentenceUUIDs": [
+          "6be4a1d4-0967-35ca-8474-5f93d79b949a"
+        ]
+      },
+      {
+        "offence": {
+          "committedAt": "2023-04-21",
+          "offenceCode": "TH68010"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 1
+          }
+        },
+        "sentencedAt": "2023-06-01"
+      },
+      {
+        "offence": {
+          "committedAt": "2023-03-09",
+          "offenceCode": "TH68023"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 3,
+            "MONTHS": 7
+          }
+        },
+        "sentencedAt": "2025-06-30"
+      }
+    ],
+    "adjustments": {
+      "ADDITIONAL_DAYS_AWARDED": [
+        {
+          "appliesToSentencesFrom": "2023-11-03",
+          "numberOfDays": 4,
+          "fromDate": "2023-11-03",
+          "toDate": "2023-11-06"
+        },
+        {
+          "appliesToSentencesFrom": "2025-07-04",
+          "numberOfDays": 18,
+          "fromDate": "2025-07-04",
+          "toDate": "2025-07-21"
+        }
+      ],
+      "UNLAWFULLY_AT_LARGE": [
+        {
+          "appliesToSentencesFrom": "2023-02-09",
+          "numberOfDays": 83,
+          "fromDate": "2023-02-09",
+          "toDate": "2023-05-02"
+        }
+      ]
+    },
+    "externalMovements": [
+      {
+        "movementDate": "2017-03-10",
+        "movementReason": "CRD",
+        "direction": "OUT"
+      },
+      {
+        "movementDate": "2017-07-21",
+        "movementReason": "RECALL_ADMISSION",
+        "direction": "IN"
+      }
+    ]
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params"
+}

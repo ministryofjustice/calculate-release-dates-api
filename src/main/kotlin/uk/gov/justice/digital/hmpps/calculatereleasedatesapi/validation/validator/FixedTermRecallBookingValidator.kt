@@ -19,6 +19,10 @@ class FixedTermRecallBookingValidator : PreCalculationBookingValidator {
       it.recallType == FIXED_TERM_RECALL_14 || it.recallType == FIXED_TERM_RECALL_28
     }
 
+    if (ftrSentences.isEmpty()) {
+      return validationMessages
+    }
+
     val (ftr28Sentences, ftr14Sentences) = ftrSentences.partition { it.recallType == FIXED_TERM_RECALL_28 }
 
     val ftrSentencesUuids = ftrSentences.map { it.identifier }

@@ -340,7 +340,7 @@ class CalculationControllerTest {
   fun `Test GET of calculation detailed results`() {
     val calculationRequestId = 9995L
     val calculatedReleaseDates = DetailedCalculationResults(
-      CalculationContext(calculationRequestId, 1, "A", CONFIRMED, UUID.randomUUID(), null, null, null, CalculationType.CALCULATED, null, null, false),
+      CalculationContext(calculationRequestId, 1, "A", CONFIRMED, UUID.randomUUID(), null, null, null, CalculationType.CALCULATED, null, null, false, "username", "User Name", "BXI", "Brixton (HMP)"),
       dates = mapOf(),
       null,
       CalculationOriginalData(
@@ -378,6 +378,8 @@ class CalculationControllerTest {
       "Other",
       CalculationSource.CRDS,
       listOf(DetailedDate(ReleaseDateType.CRD, ReleaseDateType.CRD.description, LocalDate.of(2024, 1, 1), emptyList())),
+      "username",
+      "User Name",
     )
 
     whenever(latestCalculationService.latestCalculationForPrisoner(prisonerId)).thenReturn(expected.right())
@@ -456,6 +458,8 @@ class CalculationControllerTest {
           emptyList(),
         ),
       ),
+      "foo",
+      "bar",
     )
 
     whenever(offenderKeyDatesService.getNomisCalculationSummary(any())).thenReturn(expected)
@@ -480,13 +484,17 @@ class CalculationControllerTest {
         "A1234AB",
         CONFIRMED,
         UUID.randomUUID(),
-        CalculationReason(-1, isActive = false, isOther = false, displayName = "14 day check", isBulk = false, nomisReason = null, nomisComment = null, displayRank = null),
+        CalculationReason(-1, isActive = false, isOther = false, displayName = "14 day check", isBulk = false, nomisReason = null, nomisComment = null, displayRank = null, useForApprovedDates = false, eligibleForPreviouslyRecordedSled = false),
         null,
         LocalDate.of(2024, 1, 1),
         CalculationType.CALCULATED,
         null,
         null,
         false,
+        "username",
+        "User Name",
+        "BXI",
+        "Brixton (HMP)",
       ),
       listOf(
         DetailedDate(
@@ -536,5 +544,5 @@ class CalculationControllerTest {
       )
   }
 
-  private val calculationReason = CalculationReason(-1, false, false, "Reason", false, null, null, null)
+  private val calculationReason = CalculationReason(-1, false, false, "Reason", false, null, null, null, false, false)
 }

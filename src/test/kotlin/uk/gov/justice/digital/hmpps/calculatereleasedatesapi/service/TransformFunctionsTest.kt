@@ -611,7 +611,6 @@ class TransformFunctionsTest {
   }
 
   private companion object {
-    val ONE_YEAR_DURATION = Duration(mutableMapOf(DAYS to 0L, WEEKS to 0L, MONTHS to 0L, YEARS to 1L))
     val FIVE_YEAR_DURATION = Duration(mutableMapOf(DAYS to 0L, WEEKS to 0L, MONTHS to 0L, YEARS to 5L))
     val FIRST_JAN_2015: LocalDate = LocalDate.of(2015, 1, 1)
     val SECOND_JAN_2015: LocalDate = LocalDate.of(2015, 1, 2)
@@ -621,7 +620,7 @@ class TransformFunctionsTest {
     private val CALCULATION_REFERENCE: UUID = UUID.randomUUID()
     private const val CALCULATION_REQUEST_ID = 100011L
     val CALCULATION_REASON =
-      CalculationReason(-1, true, false, "Reason", false, "UPDATE", nomisComment = "NOMIS_COMMENT", null)
+      CalculationReason(-1, true, false, "Reason", false, "UPDATE", nomisComment = "NOMIS_COMMENT", null, false, false)
 
     val CALCULATION_REQUEST = CalculationRequest(
       id = CALCULATION_REQUEST_ID,

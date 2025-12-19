@@ -14,13 +14,13 @@ data class CalculationReason(
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   val id: Long = -1,
-  @NotNull
+  @param:NotNull
   @JsonIgnore
   val isActive: Boolean,
-  @NotNull
+  @param:NotNull
   val isOther: Boolean,
   val displayName: String,
-  @NotNull
+  @param:NotNull
   @JsonIgnore
   val isBulk: Boolean,
   @JsonIgnore
@@ -28,13 +28,18 @@ data class CalculationReason(
   /**
    * A shortened version (sub 40 character) of the displayName to allow the comment to be meaningful in NOMIS.
    */
-  @NotNull
+  @param:NotNull
   @JsonIgnore
   val nomisComment: String?,
   /**
    * Determines the order of the active reasons on the page, repository sorts on this field ascending.
    */
-  @NotNull
+  @param:NotNull
   @JsonIgnore
   val displayRank: Int?,
+  @param:NotNull
+  val useForApprovedDates: Boolean,
+  @param:NotNull
+  @JsonIgnore
+  val eligibleForPreviouslyRecordedSled: Boolean,
 )

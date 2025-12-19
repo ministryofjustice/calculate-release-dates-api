@@ -9,6 +9,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallSentenc
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecordARecallDecision
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecordARecallRequest
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.remandandsentencing.model.Recall
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource.ValidationIntTest.Companion.VALIDATION_PRISONER_ID
 import java.time.LocalDate
@@ -92,6 +93,7 @@ class RecordARecallControllerIntTest(private val mockManageOffencesClient: MockM
         ),
       ),
     )
+    assertThat(result.automatedCalculationData.unexpectedRecallTypes).isEqualTo(listOf(Recall.RecallType.FTR_14, Recall.RecallType.FTR_HDC_14))
   }
 
   @Test
@@ -124,6 +126,16 @@ class RecordARecallControllerIntTest(private val mockManageOffencesClient: MockM
 
     assertThat(result.decision).isEqualTo(RecordARecallDecision.CONFLICTING_ADJUSTMENTS)
     assertThat(result.conflictingAdjustments).isEqualTo(listOf("2edb6550-ff6a-43e7-b563-d7e447b6a8be"))
+  }
+
+  @Test
+  fun `Editing a recall excludes UAL from the recall being edited`() {
+    val result = createCalculationForRecordARecall(
+      RECORD_A_RECALL_PRISONER_ID,
+      RecordARecallRequest(revocationDate = LocalDate.of(2016, 2, 6), recallId = UUID.fromString("e3c5888e-f8ad-48ea-8fc0-c916670f2ca1")),
+    )
+
+    assertThat(result.decision).isEqualTo(RecordARecallDecision.AUTOMATED)
   }
 
   @Test

@@ -82,6 +82,8 @@ class NomisCommentServiceTest {
       nomisReason = "REASON",
       nomisComment = "NOMIS_COMMENT",
       displayRank = 10,
+      useForApprovedDates = false,
+      eligibleForPreviouslyRecordedSled = false,
     )
 
     private val CALCULATION_REQUEST = CalculationRequest(
