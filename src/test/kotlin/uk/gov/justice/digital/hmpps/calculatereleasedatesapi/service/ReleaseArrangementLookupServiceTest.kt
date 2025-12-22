@@ -12,6 +12,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NormalisedSentenceAndOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
@@ -22,12 +23,13 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.mana
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.manageoffencesapi.PcscMarkers
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.manageoffencesapi.SDSEarlyReleaseExclusionForOffenceCode
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.manageoffencesapi.SDSEarlyReleaseExclusionSchedulePart
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.SDSReleaseArrangementLookupService.Companion.youthOffenderCalculationTypes
 import java.time.LocalDate
 
 class ReleaseArrangementLookupServiceTest {
 
   private val mockManageOffencesService = mock<ManageOffencesService>()
-  private val sdsReleaseArrangementLookupService = SDSReleaseArrangementLookupService()
+  private val sdsReleaseArrangementLookupService = SDSReleaseArrangementLookupService(featureToggles = FeatureToggles(youthOffenderSDSEligible = false))
   private val sdsPlusReleaseArrangementLookupService = SDSPlusReleaseArrangementLookupService(mockManageOffencesService)
   private val underTest = ReleaseArrangementLookupService(sdsPlusReleaseArrangementLookupService, sdsReleaseArrangementLookupService, mockManageOffencesService)
 
@@ -350,6 +352,12 @@ class ReleaseArrangementLookupServiceTest {
     "YOI_ORA",
   )
   fun `should set an SDS exclusion for all specifically listed SDS sentence types`(type: SentenceCalculationType) {
+    val exclusion = if (youthOffenderCalculationTypes.contains(type.name)) {
+      SDSEarlyReleaseExclusionType.YOUTH_POST_COMMENCEMENT
+    } else {
+      SDSEarlyReleaseExclusionType.VIOLENT
+    }
+
     whenever(mockManageOffencesService.getSdsExclusionsForOffenceCodes(listOf(OFFENCE_CODE_NON_SDS_PLUS))).thenReturn(
       listOf(
         SDSEarlyReleaseExclusionForOffenceCode(OFFENCE_CODE_NON_SDS_PLUS, SDSEarlyReleaseExclusionSchedulePart.VIOLENT),
@@ -359,7 +367,7 @@ class ReleaseArrangementLookupServiceTest {
     val unsupportedSentence = nonSDSPlusSentenceAndOffenceFourYears.copy(sentenceCalculationType = type.name)
     val withReleaseArrangements = underTest.populateReleaseArrangements(listOf(unsupportedSentence))
     assertThat(withReleaseArrangements[0].isSDSPlus).isFalse()
-    assertThat(withReleaseArrangements[0].hasAnSDSEarlyReleaseExclusion).isEqualTo(SDSEarlyReleaseExclusionType.VIOLENT)
+    assertThat(withReleaseArrangements[0].hasAnSDSEarlyReleaseExclusion).isEqualTo(exclusion)
 
     verify(mockManageOffencesService, times(1)).getSdsExclusionsForOffenceCodes(any())
   }
@@ -367,11 +375,15 @@ class ReleaseArrangementLookupServiceTest {
   @ParameterizedTest(name = "Test for sentence type: {0}")
   @MethodSource("provideEligibleSentenceTypes")
   fun `Should set an SDS exclusion for all enumerated SDS sentence types`(type: SentenceCalculationType) {
+    val isYouthOffender = youthOffenderCalculationTypes.contains(type.name)
+    val schedulePart = if (isYouthOffender) SDSEarlyReleaseExclusionSchedulePart.NONE else SDSEarlyReleaseExclusionSchedulePart.VIOLENT
+    val exception = if (isYouthOffender) SDSEarlyReleaseExclusionType.YOUTH_POST_COMMENCEMENT else SDSEarlyReleaseExclusionType.VIOLENT
+
     whenever(mockManageOffencesService.getSdsExclusionsForOffenceCodes(listOf(OFFENCE_CODE_NON_SDS_PLUS))).thenReturn(
       listOf(
         SDSEarlyReleaseExclusionForOffenceCode(
           OFFENCE_CODE_NON_SDS_PLUS,
-          SDSEarlyReleaseExclusionSchedulePart.VIOLENT,
+          schedulePart,
         ),
       ),
     )
@@ -379,7 +391,7 @@ class ReleaseArrangementLookupServiceTest {
     val unsupportedSentence = nonSDSPlusSentenceAndOffenceFourYears.copy(sentenceCalculationType = type.name)
     val withReleaseArrangements = underTest.populateReleaseArrangements(listOf(unsupportedSentence))
     assertThat(withReleaseArrangements[0].isSDSPlus).isFalse()
-    assertThat(withReleaseArrangements[0].hasAnSDSEarlyReleaseExclusion).isEqualTo(SDSEarlyReleaseExclusionType.VIOLENT)
+    assertThat(withReleaseArrangements[0].hasAnSDSEarlyReleaseExclusion).isEqualTo(exception)
 
     verify(mockManageOffencesService, times(1)).getSdsExclusionsForOffenceCodes(any())
   }
@@ -604,6 +616,45 @@ class ReleaseArrangementLookupServiceTest {
       val returnedResult = underTest.populateReleaseArrangements(listOf(sentence))
       assertThat(returnedResult[0].isSDSPlus).describedAs("Expected isSDSPlus to be $isSDSPlus for code $offenceCode").isEqualTo(isSDSPlus)
     }
+  }
+
+  @ParameterizedTest
+  @CsvSource(
+    "SEC250",
+    "SEC250_ORA",
+    "SEC91_03",
+    "SEC91_03_ORA",
+  )
+  fun `Should mark SECTION 250 and SECTION 91 with SDSEarlyReleaseExclusionType YOUTH_OFFENDER`(sentenceType: String) {
+    val sentence = NormalisedSentenceAndOffence(
+      1,
+      1,
+      1,
+      1,
+      null,
+      "TEST",
+      "TEST",
+      sentenceType,
+      "TEST",
+      LocalDate.of(3033, 6, 28),
+      listOf(SentenceTerms(7, 0, 0, 0)),
+      OffenderOffence(
+        1,
+        LocalDate.of(2020, 4, 1),
+        null,
+        OFFENCE_CODE_NON_SDS_PLUS,
+        "TEST OFFENCE",
+      ),
+      null,
+      null,
+      null,
+      null,
+      revocationDates = emptyList(),
+    )
+
+    whenever(mockManageOffencesService.getPcscMarkersForOffenceCodes(any())).thenReturn(emptyList())
+    val returnedResult = underTest.populateReleaseArrangements(listOf(sentence))
+    assertThat(returnedResult[0].hasAnSDSEarlyReleaseExclusion).isEqualTo(SDSEarlyReleaseExclusionType.YOUTH_POST_COMMENCEMENT)
   }
 
   companion object {

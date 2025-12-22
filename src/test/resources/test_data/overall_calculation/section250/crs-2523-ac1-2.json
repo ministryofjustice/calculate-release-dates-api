@@ -1,0 +1,36 @@
+{
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2027-02-11",
+          "offenceCode": "FI68076"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 4,
+            "MONTHS": 2
+          }
+        },
+        "sentencedAt": "2027-02-11",
+        "identifier": "0b10fc4b-1920-4b74-96e0-d95369adb5e1",
+        "hasAnSDSEarlyReleaseExclusion": "YOUTH_POST_COMMENCEMENT"
+      }
+    ],
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2027-02-11",
+          "numberOfDays": 395,
+          "fromDate": "2026-01-12",
+          "toDate": "2027-02-10"
+        }
+      ]
+    }
+  }
+}
