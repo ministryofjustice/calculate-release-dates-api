@@ -1,0 +1,57 @@
+{
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "2009-01-01"
+    },
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2026-12-05",
+          "code": "TH68023"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 2
+          }
+        },
+        "identifier": "cb304745-d781-47d3-b931-4baa31551fc5",
+        "sentencedAt": "2026-12-20",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2026-12-05",
+          "code": "COML022"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 4
+          }
+        },
+        "identifier": "493019e8-36ba-442d-90d6-315ead9dcf51",
+        "consecutiveSentenceUUIDs": [
+          "cb304745-d781-47d3-b931-4baa31551fc5"
+        ],
+        "sentencedAt": "2026-12-20",
+        "isSDSPlus": true,
+        "isSDSPlusEligibleSentenceTypeLengthAndOffence": true,
+        "isSDSPlusOffenceInPeriod": true,
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      }
+    ],
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2026-12-20",
+          "numberOfDays": 150,
+          "fromDate": "2026-07-23",
+          "toDate": "2026-12-19"
+        }
+      ]
+    },
+    "params": "sds-33"
+  }
+}
