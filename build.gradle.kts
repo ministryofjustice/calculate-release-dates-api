@@ -5,12 +5,12 @@ import org.jlleitschuh.gradle.ktlint.tasks.KtLintFormatTask
 import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "9.2.0"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "9.3.0"
   id("org.springdoc.openapi-gradle-plugin") version "1.9.0"
   kotlin("plugin.spring") version "2.3.0"
   kotlin("plugin.jpa") version "2.3.0"
   id("jacoco")
-  id("org.openapi.generator") version "7.17.0"
+  id("org.openapi.generator") version "7.18.0"
 }
 
 configurations {
@@ -58,7 +58,7 @@ dependencies {
   implementation("io.arrow-kt:arrow-core:2.2.1.1")
   implementation("io.hypersistence:hypersistence-utils-hibernate-63:3.14.1")
   // OpenAPI
-  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.14")
+  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.15")
 
   implementation("com.amazonaws:amazon-sqs-java-messaging-lib:2.1.4")
   implementation("io.awspring.cloud:spring-cloud-aws-starter:3.4.2")
