@@ -965,6 +965,7 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
     assertThat(calculation.releaseDate).isEqualTo(LocalDate.of(2021, 4, 1))
     assertThat(calculation.postRecallReleaseDate).isNull()
     assertThat(calculation.validationMessages).isEmpty()
+    assertThat(calculation.unusedDeductions).isEqualTo(0)
   }
 
   @Test
@@ -1012,6 +1013,7 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
     assertThat(calculation.releaseDate).isEqualTo(LocalDate.of(2021, 2, 1))
     assertThat(calculation.postRecallReleaseDate).isNull()
     assertThat(calculation.validationMessages).isEmpty()
+    assertThat(calculation.unusedDeductions).isEqualTo(305)
   }
 
   @Test
