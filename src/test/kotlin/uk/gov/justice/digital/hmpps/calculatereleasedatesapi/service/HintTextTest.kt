@@ -119,6 +119,9 @@ class HintTextTest : SpringTestBase() {
         automaticReleaseDateOverridden = calculatedReleaseDates.dates.containsKey(ReleaseDateType.ARD),
         topupSupervisionExpiryDateOverridden = calculatedReleaseDates.dates.containsKey(ReleaseDateType.TUSED),
         paroleEligibilityDateOverridden = calculatedReleaseDates.dates.containsKey(ReleaseDateType.PED),
+        calculatedByUserId = "user1",
+        calculatedByFirstName = "User",
+        calculatedByLastName = "One",
       ),
       booking = calculationFile.booking,
       null,
@@ -207,6 +210,7 @@ class HintTextTest : SpringTestBase() {
         nomisReason = "UPDATE",
         nomisComment = "NOMIS_COMMENT",
         null,
+        false,
         false,
       )
 

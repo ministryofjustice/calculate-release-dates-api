@@ -39,4 +39,7 @@ data class CalculationReason(
   val displayRank: Int?,
   @param:NotNull
   val useForApprovedDates: Boolean,
+  @param:NotNull
+  @JsonIgnore
+  val eligibleForPreviouslyRecordedSled: Boolean,
 )
