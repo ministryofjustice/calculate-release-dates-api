@@ -15,6 +15,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Sent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.BookingAndSentenceAdjustments
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.unuseddeductions.service.UnusedDeductionsCalculationService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isBeforeOrEqualTo
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationOrder
@@ -28,6 +29,7 @@ class RelevantRemandService(
   private val validationService: ValidationService,
   private val bookingService: BookingService,
   private val calculationSourceDataService: CalculationSourceDataService,
+  private val unusedDeductionsCalculationService: UnusedDeductionsCalculationService,
 ) {
 
   fun relevantRemandCalculation(prisonerId: String, request: RelevantRemandCalculationRequest): RelevantRemandCalculationResult {
@@ -59,7 +61,7 @@ class RelevantRemandService(
     return RelevantRemandCalculationResult(
       releaseDate = releaseDate,
       postRecallReleaseDate = postRecallReleaseDate,
-
+      unusedDeductions = unusedDeductionsCalculationService.calculate(result).unusedDeductions,
     )
   }
 

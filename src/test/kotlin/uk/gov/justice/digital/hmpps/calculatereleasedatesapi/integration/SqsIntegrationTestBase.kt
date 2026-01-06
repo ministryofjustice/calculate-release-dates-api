@@ -9,8 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
 import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.context.DynamicPropertyRegistry
-import org.springframework.test.context.DynamicPropertySource
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean
 import software.amazon.awssdk.services.sqs.model.PurgeQueueRequest
 import software.amazon.awssdk.services.sqs.model.ReceiveMessageRequest
@@ -40,17 +38,6 @@ class SqsIntegrationTestBase : IntegrationTestBase() {
       bulkComparisonQueue.sqsClient.purgeQueue(PurgeQueueRequest.builder().queueUrl(bulkComparisonQueue.queueUrl).build())
       bulkComparisonQueue.sqsClient.countMessagesOnQueue(bulkComparisonQueue.queueUrl).get()
     } matches { it == 0 }
-  }
-
-  companion object {
-    private val localStackContainer = LocalStackContainer.instance
-
-    @Suppress("unused")
-    @JvmStatic
-    @DynamicPropertySource
-    fun testcontainers(registry: DynamicPropertyRegistry) {
-      localStackContainer?.also { LocalStackContainer.setLocalStackProperties(it, registry) }
-    }
   }
 
   protected fun jsonString(any: Any) = objectMapper.writeValueAsString(any) as String
