@@ -13,7 +13,6 @@ data class FeatureToggles(
   var ftr48ManualJourney: Boolean = false,
   var useERS30Calculation: Boolean = false,
   var applyPostRecallRepealRules: Boolean = false,
-  var youthOffenderSDSEligible: Boolean = true,
 ) {
 
   val externalMovementsEnabled: Boolean

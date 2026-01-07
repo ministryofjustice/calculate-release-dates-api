@@ -19,7 +19,7 @@
         },
         "sentencedAt": "2027-02-28",
         "identifier": "0b10fc4b-1920-4b74-96e0-d95369adb5e1",
-        "hasAnSDSEarlyReleaseExclusion": "YOUTH_POST_COMMENCEMENT"
+        "section250": true
       },
       {
         "type": "DetentionAndTrainingOrderSentence",
@@ -34,7 +34,7 @@
         },
         "sentencedAt": "2027-04-09",
         "identifier": "0b10fc4b-1920-4b74-96e0-d95369adb5e2",
-        "hasAnSDSEarlyReleaseExclusion": "YOUTH_POST_COMMENCEMENT"
+        "section250": true
       }
     ],
     "adjustments": {
@@ -47,5 +47,6 @@
         }
       ]
     }
-  }
+  },
+  "params": "sds-33"
 }

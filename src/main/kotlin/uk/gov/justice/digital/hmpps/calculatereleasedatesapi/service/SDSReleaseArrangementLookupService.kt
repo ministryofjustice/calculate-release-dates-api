@@ -1,7 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import org.springframework.stereotype.Service
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSPlusCheckResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffence
@@ -13,7 +12,7 @@ import java.time.LocalDate
 import java.time.Period
 
 @Service
-class SDSReleaseArrangementLookupService(private val featureToggles: FeatureToggles) {
+class SDSReleaseArrangementLookupService {
 
   private fun endOfSentence(sentence: SentenceAndOffence): LocalDate {
     val duration =
@@ -30,7 +29,6 @@ class SDSReleaseArrangementLookupService(private val featureToggles: FeatureTogg
   internal fun offenceCodesExcludingSDSPlus(checkedForSDSPlus: List<SDSPlusCheckResult>): List<String> = checkedForSDSPlus
     .filterNot { it.isSDSPlus }
     .map { it.sentenceAndOffence.offence.offenceCode }.sorted()
-
   internal fun exclusionForOffence(
     exclusionsForOffences: Map<String, SDSEarlyReleaseExclusionForOffenceCode>,
     sentenceAndOffence: SentenceAndOffence,
@@ -39,13 +37,6 @@ class SDSReleaseArrangementLookupService(private val featureToggles: FeatureTogg
     if (isSDSPlus) return SDSEarlyReleaseExclusionType.NO
     if (!SentenceCalculationType.isSDS40Eligible(sentenceAndOffence.sentenceCalculationType)) {
       return SDSEarlyReleaseExclusionType.NO
-    }
-
-    if (
-      !featureToggles.youthOffenderSDSEligible &&
-      youthOffenderCalculationTypes.contains(sentenceAndOffence.sentenceCalculationType)
-    ) {
-      return SDSEarlyReleaseExclusionType.YOUTH_POST_COMMENCEMENT
     }
 
     val offenceCode = sentenceAndOffence.offence.offenceCode
@@ -84,14 +75,5 @@ class SDSReleaseArrangementLookupService(private val featureToggles: FeatureTogg
     if (isT3) SDSEarlyReleaseExclusionType.VIOLENT_T3 else SDSEarlyReleaseExclusionType.VIOLENT
   } else {
     SDSEarlyReleaseExclusionType.NO
-  }
-
-  companion object {
-    val youthOffenderCalculationTypes = setOf(
-      SentenceCalculationType.SEC250.toString(),
-      SentenceCalculationType.SEC250_ORA.toString(),
-      SentenceCalculationType.SEC91_03.toString(),
-      SentenceCalculationType.SEC91_03_ORA.toString(),
-    )
   }
 }

@@ -20,7 +20,6 @@ enum class SDSEarlyReleaseExclusionType(
   NATIONAL_SECURITY_T3(true),
   TERRORISM_T3(true),
   MURDER_T3(true),
-  YOUTH_POST_COMMENCEMENT,
   NO,
 }
 

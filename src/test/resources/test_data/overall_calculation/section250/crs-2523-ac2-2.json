@@ -20,7 +20,7 @@
         "lineSequence": 1,
         "sentencedAt": "2027-02-28",
         "identifier": "0b10fc4b-1920-4b74-96e0-d95369adb5e1",
-        "hasAnSDSEarlyReleaseExclusion": "YOUTH_POST_COMMENCEMENT"
+        "section250": true
       },
       {
         "type": "StandardSentence",
@@ -40,11 +40,12 @@
         "isSDSPlus": true,
         "isSDSPlusEligibleSentenceTypeLengthAndOffence": true,
         "isSDSPlusOffenceInPeriod": true,
-        "hasAnSDSEarlyReleaseExclusion": "NO",
+        "section250": true,
         "consecutiveSentenceUUIDs": [
           "0b10fc4b-1920-4b74-96e0-d95369adb5e1"
         ]
       }
     ]
-  }
+  },
+  "params": "sds-33"
 }
