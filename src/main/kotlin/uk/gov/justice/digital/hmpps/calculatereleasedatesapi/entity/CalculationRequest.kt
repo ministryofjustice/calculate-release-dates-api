@@ -42,7 +42,7 @@ import java.util.UUID
 data class CalculationRequest(
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  val id: Long = -1,
+  val id: Long? = null,
 
   @NotNull
   val calculationReference: UUID = UUID.randomUUID(),
@@ -169,4 +169,6 @@ data class CalculationRequest(
   override fun toString(): String = this::class.simpleName + "(calculationReference = $calculationReference )"
 
   fun withType(calculationType: CalculationType): CalculationRequest = copy(calculationType = calculationType)
+
+  fun id(): Long = id!!
 }

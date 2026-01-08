@@ -44,7 +44,7 @@ class ComparisonService(
 ) {
 
   fun create(comparisonInput: ComparisonInput, token: String): Comparison {
-    val comparisonToCreate = transform(comparisonInput, serviceUserService.getUsername())
+    val comparisonToCreate = transform(comparisonInput, serviceUserService.getUsername(), objectMapper)
     log.info("Creating new comparison $comparisonToCreate")
     val initialComparisonCreated = comparisonRepository.save(
       comparisonToCreate,
@@ -52,9 +52,9 @@ class ComparisonService(
     log.info("500ms wait for $initialComparisonCreated")
     Thread.sleep(500)
     if (comparisonInput.prison != "all") {
-      bulkComparisonEventSenderService.processPrisonComparison(initialComparisonCreated.id, comparisonInput.prison!!, token)
+      bulkComparisonEventSenderService.processPrisonComparison(initialComparisonCreated.id(), comparisonInput.prison!!, token)
     } else {
-      bulkComparisonEventSenderService.processFullCaseLoadComparison(initialComparisonCreated.id, token)
+      bulkComparisonEventSenderService.processFullCaseLoadComparison(initialComparisonCreated.id(), token)
     }
     return initialComparisonCreated
   }
@@ -72,7 +72,7 @@ class ComparisonService(
     val comparison = comparisonRepository.findByComparisonShortReference(shortReference)
 
     if (comparison?.prison != null && prisonService.getCurrentUserPrisonsList().contains(comparison.prison)) {
-      return comparisonPersonRepository.countByComparisonId(comparison.id)
+      return comparisonPersonRepository.countByComparisonId(comparison.id())
     }
     return 0
   }
@@ -81,14 +81,14 @@ class ComparisonService(
     val comparison = comparisonRepository.findByComparisonShortReference(comparisonReference)
       ?: throw EntityNotFoundException("No comparison results exist for comparisonReference $comparisonReference ")
     return if (userIsAllowedToViewThisComparison(comparison)) {
-      val mismatches = comparisonPersonRepository.findByComparisonIdIsAndIsMatchFalse(comparison.id)
+      val mismatches = comparisonPersonRepository.findByComparisonIdIsAndIsMatchFalse(comparison.id())
 
       val releaseMismatchCalculationRequests = mismatches
         .filter { it.mismatchType == MismatchType.RELEASE_DATES_MISMATCH }
         .mapNotNull { it.calculationRequestId }
 
       val calculationOutcomes = if (releaseMismatchCalculationRequests.isNotEmpty()) {
-        calculationOutcomeRepository.findForComparisonAndReleaseDatesMismatch(comparison.id)
+        calculationOutcomeRepository.findForComparisonAndReleaseDatesMismatch(comparison.id())
       } else {
         emptyList()
       }
@@ -118,7 +118,7 @@ class ComparisonService(
       ?: throw EntityNotFoundException("No comparison results exist for comparisonReference $comparisonReference ")
     return if (userIsAllowedToViewThisComparison(comparison)) {
       val comparisonPerson =
-        comparisonPersonRepository.findByComparisonIdAndShortReference(comparison.id, comparisonPersonReference)
+        comparisonPersonRepository.findByComparisonIdAndShortReference(comparison.id(), comparisonPersonReference)
           ?: throw EntityNotFoundException("No comparison person results exist for comparisonReference $comparisonReference and comparisonPersonReference $comparisonPersonReference ")
       val hasDiscrepancyRecorded = comparisonPersonDiscrepancyRepository.existsByComparisonPerson(comparisonPerson)
       val calculatedReleaseDates =
@@ -175,7 +175,7 @@ class ComparisonService(
     val comparison = comparisonRepository.findByComparisonShortReference(comparisonReference)
       ?: throw EntityNotFoundException("Could not find comparison with reference: $comparisonReference ")
     val comparisonPerson =
-      comparisonPersonRepository.findByComparisonIdAndShortReference(comparison.id, comparisonPersonReference)
+      comparisonPersonRepository.findByComparisonIdAndShortReference(comparison.id(), comparisonPersonReference)
         ?: throw EntityNotFoundException("Could not find comparison person with reference: $comparisonPersonReference")
     if (comparisonPerson.establishment != null &&
       prisonService.getCurrentUserPrisonsList()
@@ -193,7 +193,7 @@ class ComparisonService(
     val comparison = comparisonRepository.findByComparisonShortReference(comparisonReference)
       ?: throw EntityNotFoundException("No comparison results exist for comparisonReference $comparisonReference ")
     val comparisonPerson =
-      comparisonPersonRepository.findByComparisonIdAndShortReference(comparison.id, comparisonPersonReference)
+      comparisonPersonRepository.findByComparisonIdAndShortReference(comparison.id(), comparisonPersonReference)
         ?: throw EntityNotFoundException("Could not find comparison person with reference: $comparisonPersonReference")
     if (comparison.prison != null && prisonService.getCurrentUserPrisonsList().contains(comparison.prison)) {
       return comparisonDiscrepancyService.getComparisonPersonDiscrepancy(comparison, comparisonPerson)

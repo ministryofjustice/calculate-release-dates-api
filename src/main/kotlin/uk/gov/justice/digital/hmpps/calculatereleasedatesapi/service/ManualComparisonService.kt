@@ -40,7 +40,7 @@ class ManualComparisonService(
     val initialComparisonCreated = comparisonRepository.save(
       comparisonToCreate,
     )
-    bulkComparisonEventSenderService.processManualComparison(initialComparisonCreated.id, manualComparison.prisonerIds, token)
+    bulkComparisonEventSenderService.processManualComparison(initialComparisonCreated.id(), manualComparison.prisonerIds, token)
 
     return initialComparisonCreated
   }
@@ -48,18 +48,18 @@ class ManualComparisonService(
   fun listManual(): List<ComparisonSummary> = comparisonRepository.findAllByComparisonTypeIsIn(manualComparisonTypes()).map { transform(it) }
 
   fun getCountOfPersonsInComparisonByComparisonReference(shortReference: String): Long = comparisonRepository.findByComparisonShortReference(shortReference)?.let {
-    comparisonPersonRepository.countByComparisonId(it.id)
+    comparisonPersonRepository.countByComparisonId(it.id())
   } ?: 0
 
   fun getComparisonByComparisonReference(comparisonReference: String): ComparisonOverview {
     val comparison = comparisonRepository.findByComparisonShortReference(comparisonReference) ?: throw EntityNotFoundException("No comparison results exist for comparisonReference $comparisonReference ")
-    val mismatches = comparisonPersonRepository.findByComparisonIdIsAndIsMatchFalse(comparison.id)
+    val mismatches = comparisonPersonRepository.findByComparisonIdIsAndIsMatchFalse(comparison.id())
     return transform(comparison, mismatches, objectMapper)
   }
 
   fun getComparisonPersonByShortReference(comparisonReference: String, comparisonPersonReference: String): ComparisonPersonOverview {
     val comparison = comparisonRepository.findByComparisonShortReference(comparisonReference) ?: throw EntityNotFoundException("No comparison results exist for comparisonReference $comparisonReference ")
-    val comparisonPerson = comparisonPersonRepository.findByComparisonIdAndShortReference(comparison.id, comparisonPersonReference) ?: throw EntityNotFoundException("No comparison person results exist for comparisonReference $comparisonReference and comparisonPersonReference $comparisonPersonReference ")
+    val comparisonPerson = comparisonPersonRepository.findByComparisonIdAndShortReference(comparison.id(), comparisonPersonReference) ?: throw EntityNotFoundException("No comparison person results exist for comparisonReference $comparisonReference and comparisonPersonReference $comparisonPersonReference ")
     val hasDiscrepancyRecord = comparisonPersonDiscrepancyRepository.existsByComparisonPerson(comparisonPerson)
     val calculatedReleaseDates = comparisonPerson.calculationRequestId?.let { calculationTransactionalService.findCalculationResults(it) }
     val nomisDates = objectMapper.convertValue(comparisonPerson.nomisDates, object : TypeReference<Map<ReleaseDateType, LocalDate?>>() {})
@@ -71,13 +71,13 @@ class ManualComparisonService(
 
   fun createDiscrepancy(comparisonReference: String, comparisonPersonReference: String, discrepancyInput: CreateComparisonDiscrepancyRequest): ComparisonDiscrepancySummary {
     val comparison = comparisonRepository.findByComparisonShortReference(comparisonReference) ?: throw EntityNotFoundException("No comparison results exist for comparisonReference $comparisonReference ")
-    val comparisonPerson = comparisonPersonRepository.findByComparisonIdAndShortReference(comparison.id, comparisonPersonReference) ?: throw EntityNotFoundException("No comparison person results exist for comparisonReference $comparisonReference and comparisonPersonReference $comparisonPersonReference ")
+    val comparisonPerson = comparisonPersonRepository.findByComparisonIdAndShortReference(comparison.id(), comparisonPersonReference) ?: throw EntityNotFoundException("No comparison person results exist for comparisonReference $comparisonReference and comparisonPersonReference $comparisonPersonReference ")
     return comparisonDiscrepancyService.createDiscrepancy(comparison, comparisonPerson, discrepancyInput)
   }
 
   fun getComparisonPersonDiscrepancy(comparisonReference: String, comparisonPersonReference: String): ComparisonDiscrepancySummary {
     val comparison = comparisonRepository.findByComparisonShortReference(comparisonReference) ?: throw EntityNotFoundException("No comparison results exist for comparisonReference $comparisonReference ")
-    val comparisonPerson = comparisonPersonRepository.findByComparisonIdAndShortReference(comparison.id, comparisonPersonReference) ?: throw EntityNotFoundException("No comparison person results exist for comparisonReference $comparisonReference and comparisonPersonReference $comparisonPersonReference ")
+    val comparisonPerson = comparisonPersonRepository.findByComparisonIdAndShortReference(comparison.id(), comparisonPersonReference) ?: throw EntityNotFoundException("No comparison person results exist for comparisonReference $comparisonReference and comparisonPersonReference $comparisonPersonReference ")
     return comparisonDiscrepancyService.getComparisonPersonDiscrepancy(comparison, comparisonPerson)
   }
 

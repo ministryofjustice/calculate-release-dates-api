@@ -12,6 +12,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Calcul
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CrdWebException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationContext
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationReasonDto
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NomisCalculationSummary
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OffenderKeyDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDate
@@ -71,7 +72,7 @@ class OffenderKeyDatesService(
         prisonerId = calculationRequest.prisonerId,
         calculationStatus = CalculationStatus.CONFIRMED,
         calculationReference = calculationRequest.calculationReference,
-        calculationReason = calculationRequest.reasonForCalculation,
+        calculationReason = calculationRequest.reasonForCalculation?.let { CalculationReasonDto.from(it) },
         otherReasonDescription = calculationRequest.otherReasonForCalculation,
         calculationDate = calculationRequest.calculatedAt.toLocalDate(),
         calculationType = calculationRequest.calculationType,

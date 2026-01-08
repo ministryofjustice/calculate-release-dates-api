@@ -37,7 +37,7 @@ class PrisonApiClient(
   @Qualifier("prisonApiUserAuthWebClient") private val userAuthWebClient: WebClient,
   @Qualifier("prisonApiSystemAuthWebClient") private val systemAuthWebClient: WebClient,
 ) {
-  private inline fun <reified T> typeReference() = object : ParameterizedTypeReference<T>() {}
+  private inline fun <reified T : Any> typeReference() = object : ParameterizedTypeReference<T>() {}
   private val log = LoggerFactory.getLogger(this::class.java)
 
   fun getOffenderDetail(prisonerId: String): PrisonerDetails {
@@ -123,6 +123,7 @@ class PrisonApiClient(
           .maxBackoff(Duration.ofSeconds(10))
           .doBeforeRetry { retrySignal ->
             log.warn("getCalculablePrisonerByPrison: Retrying [Attempt: ${retrySignal.totalRetries() + 1}] due to ${retrySignal.failure().message}. ")
+            retrySignal.failure().printStackTrace()
           }
           .onRetryExhaustedThrow { _, _ ->
             throw MaxRetryAchievedException("getCalculablePrisonerByPrison: Max retries - lookup failed for $establishmentId")

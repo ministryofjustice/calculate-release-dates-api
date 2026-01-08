@@ -39,7 +39,7 @@ class HistoricCalculationsService(
         establishment = agencyIdToDescriptionMap[it.prisonerLocation]?.description
         source = CalculationSource.CRDS
         calculationType = it.calculationType
-        calculationViewData = CalculationViewConfiguration(it.calculationReference.toString(), it.id)
+        calculationViewData = CalculationViewConfiguration(it.calculationReference.toString(), it.id())
         calculationRequestId = it.id
         calculationReason = it.reasonForCalculation?.displayName
         genuineOverrideReason = it.genuineOverrideReason

@@ -33,6 +33,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Senten
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AFineSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BotusSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationReasonDto
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonOverview
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetentionAndTrainingOrderSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
@@ -150,7 +151,7 @@ class TransformFunctionsTest {
         prisonerId = PRISONER_ID,
         calculationStatus = CalculationStatus.PRELIMINARY,
         calculationReference = CALCULATION_REFERENCE,
-        calculationReason = CALCULATION_REASON,
+        calculationReason = CalculationReasonDto.from(CALCULATION_REASON),
         calculationDate = LocalDate.of(2024, 1, 2),
       ),
     )
@@ -186,7 +187,7 @@ class TransformFunctionsTest {
         calculationStatus = CalculationStatus.PRELIMINARY,
         approvedDates = mapOf(ReleaseDateType.APD to LocalDate.of(2020, 3, 3)),
         calculationReference = CALCULATION_REFERENCE,
-        calculationReason = CALCULATION_REASON,
+        calculationReason = CalculationReasonDto.from(CALCULATION_REASON),
         calculationDate = LocalDate.of(2024, 1, 2),
       ),
     )
@@ -655,7 +656,7 @@ class TransformFunctionsTest {
       prisonerId = PRISONER_ID,
       calculationStatus = CalculationStatus.PRELIMINARY,
       calculationReference = UUID.randomUUID(),
-      calculationReason = CALCULATION_REASON,
+      calculationReason = CalculationReasonDto.from(CALCULATION_REASON),
       calculationDate = LocalDate.of(2024, 1, 1),
     )
 

@@ -195,6 +195,7 @@ class ManualComparisonServiceTest {
       establishment = "BMI",
     )
     val comparison = Comparison(
+      id = 99L,
       calculatedByUsername = USERNAME,
       comparisonStatus = ComparisonStatus.COMPLETED,
       comparisonType = ComparisonType.MANUAL,

@@ -19,7 +19,7 @@ data class TrancheOutcome(
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  val id: Long = -1,
+  val id: Long? = null,
 
   @NotNull
   @OneToOne(optional = false)
