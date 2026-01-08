@@ -123,7 +123,6 @@ class PrisonApiClient(
           .maxBackoff(Duration.ofSeconds(10))
           .doBeforeRetry { retrySignal ->
             log.warn("getCalculablePrisonerByPrison: Retrying [Attempt: ${retrySignal.totalRetries() + 1}] due to ${retrySignal.failure().message}. ")
-            retrySignal.failure().printStackTrace()
           }
           .onRetryExhaustedThrow { _, _ ->
             throw MaxRetryAchievedException("getCalculablePrisonerByPrison: Max retries - lookup failed for $establishmentId")
