@@ -70,16 +70,27 @@ class RecordARecallDecisionService(
   }
 
   fun makeRecallDecision(prisonerId: String, recordARecallRequest: RecordARecallRequest): RecordARecallDecisionResult {
+    println(">>>>>>>>>>>>>>>>>>>>>> IN DECISION")
+    println(">>>>>>>>>>>>>>>>>>>>>> IN DECISION")
+    println(">>>>>>>>>>>>>>>>>>>>>> IN DECISION")
+    println(">>>>>>>>>>>>>>>>>>>>>> IN DECISION")
+    println(">>>>>>>>>>>>>>>>>>>>>> IN DECISION")
     val sourceData = getSourceData(prisonerId)
     val validationMessages = validate(sourceData)
 
     if (validationMessages.criticalValidationMessages.isNotEmpty()) {
+      validationMessages.criticalValidationMessages.forEach {
+        println("${it.code} ${it.message}" )
+      }
       return RecordARecallDecisionResult(
         RecordARecallDecision.CRITICAL_ERRORS,
         validationMessages = validationMessages.criticalValidationMessages,
       )
     }
     if (validationMessages.otherValidationMessages.isNotEmpty()) {
+      validationMessages.otherValidationMessages.forEach {
+        println("${it.code} ${it.message}" )
+      }
       return RecordARecallDecisionResult(
         RecordARecallDecision.VALIDATION,
         validationMessages = validationMessages.otherValidationMessages,
