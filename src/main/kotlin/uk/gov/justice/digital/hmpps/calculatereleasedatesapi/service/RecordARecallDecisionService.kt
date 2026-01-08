@@ -98,9 +98,13 @@ class RecordARecallDecisionService(
       .filterNot { it.recallId != null && recordARecallRequest.recallId != null && it.recallId == recordARecallRequest.recallId }
       .forEach {
       println("PERIODS OF UAL")
-      println("adjustmentType: ${it.adjustmentType} FROM: ${it.fromDate} TO: ${it.toDate} DAYS: ${it.days}")
+      println("adjustmentType: ${it.adjustmentType} FROM: ${it.fromDate} TO: ${it.toDate} DAYS: ${it.days} id: ${it.id}")
+      println("revocationDate: ${recordARecallRequest.revocationDate}")
     }
     val overlappingAdjustments = existingPeriodsOfUal.filter { it.second.contains(recordARecallRequest.revocationDate) }
+    overlappingAdjustments.forEach {
+      println("overlapping adjustment ${it.first} ${it.second}")
+    }
     if (overlappingAdjustments.isNotEmpty()) {
       return RecordARecallDecisionResult(
         decision = RecordARecallDecision.CONFLICTING_ADJUSTMENTS,
