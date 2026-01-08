@@ -91,6 +91,15 @@ class RecordARecallDecisionService(
       .filter { it.fromDate != null && it.toDate != null }
       .filterNot { it.recallId != null && recordARecallRequest.recallId != null && it.recallId == recordARecallRequest.recallId }
       .map { it.id to LocalDateRange.of(it.fromDate, it.toDate) }
+
+    sourceData.bookingAndSentenceAdjustments.adjustmentsApiData!!
+      .filter { it.bookingId == sourceData.prisonerDetails.bookingId }
+      .filter { it.fromDate != null && it.toDate != null }
+      .filterNot { it.recallId != null && recordARecallRequest.recallId != null && it.recallId == recordARecallRequest.recallId }
+      .forEach {
+      println("PERIODS OF UAL")
+      println("adjustmentType: ${it.adjustmentType} FROM: ${it.fromDate} TO: ${it.toDate} DAYS: ${it.days}")
+    }
     val overlappingAdjustments = existingPeriodsOfUal.filter { it.second.contains(recordARecallRequest.revocationDate) }
     if (overlappingAdjustments.isNotEmpty()) {
       return RecordARecallDecisionResult(
