@@ -65,8 +65,32 @@ This will run the service locally. It starts the database runs manage-offences-a
 Run the following commands from the root directory of the project:
 1. docker-compose -f docker-compose-test.yml pull
 2. docker-compose -f docker-compose-test.yml up --no-start
-3. docker-compose -f docker-compose-test.yml start hmpps-auth calculate-release-dates-db prison-api
-4. ./run-local.sh
+3. docker-compose -f docker-compose-test.yml start hmpps-auth calculate-release-dates-db prison-api localstack
+
+Then you can either use ./run-local.sh which is missing a lot of required env vars or you can run via an intellij run config by specifying the following params, get the secrets from kube
+
+      <env name="AWS_REGION" value="eu-west-2" />
+      <env name="CLIENT_CREDS_CLIENT_ID" value="" />
+      <env name="CLIENT_CREDS_CLIENT_SECRET" value="" />
+      <env name="DB_NAME" value="calculate_release_dates" />
+      <env name="DB_PASS" value="calculate-release-dates" />
+      <env name="DB_SERVER" value="localhost" />
+      <env name="DB_USER" value="calculate-release-dates" />
+      <env name="dpr_password" value="dpr_password" />
+      <env name="dpr_user" value="dpr_user" />
+      <env name="DTO_FEATURE_TOGGLE" value="true" />
+      <env name="HMPPS_AUTH_URL" value="https://sign-in-dev.hmpps.service.justice.gov.uk/auth" />
+      <env name="PRISON_API_URL" value="https://prison-api-dev.prison.service.justice.gov.uk" />
+      <env name="ADJUSTMENTS_API_URL" value="https://adjustments-api-dev.hmpps.service.justice.gov.uk" />
+      <env name="MANAGE-OFFENCES_API_URL" value="https://manage-offences-api-dev.hmpps.service.justice.gov.uk" />
+      <env name="NOMIS-SYNC-MAPPING_API_URL" value="https://nomis-sync-prisoner-mapping-dev.hmpps.service.justice.gov.uk" />
+      <env name="MANAGE-USERS_API_URL" value="https://manage-users-api-dev.hmpps.service.justice.gov.uk" />
+      <env name="SDS_EARLY_RELEASE_FEATURE_TOGGLE" value="true" />
+      <env name="SERVER_PORT" value="8089" />
+      <env name="SPRING_DATASOURCE_URL" value="jdbc:postgresql://${DB_SERVER}/${DB_NAME}" />
+      <env name="SPRING_PROFILES_ACTIVE" value="stdout,dev,localstack" />
+
+You may also need to modify `src/main/resources/migration/postgres/V64__create_dpr_user_and_role.sql` to get your DB setup locally as this has a token normally replaced by gradle.
 
 # profiles
 [How we use application profile files to configure calculation variables](docs/profile.md)
