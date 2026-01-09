@@ -1,12 +1,11 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external
 
-import com.fasterxml.jackson.databind.JsonNode
 import io.swagger.v3.oas.annotations.media.Schema
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonType
 
 data class ComparisonInput(
   @Schema(description = "Criteria used in the comparison")
-  val criteria: JsonNode?,
+  val criteria: Map<String, Any>?,
 
   @Schema(description = "The prison the analysis was run against")
   val prison: String?,

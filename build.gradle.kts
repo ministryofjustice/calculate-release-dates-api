@@ -5,7 +5,7 @@ import org.jlleitschuh.gradle.ktlint.tasks.KtLintFormatTask
 import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "9.2.0"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "10.0.0"
   id("org.springdoc.openapi-gradle-plugin") version "1.9.0"
   kotlin("plugin.spring") version "2.3.0"
   kotlin("plugin.jpa") version "2.3.0"
@@ -20,8 +20,6 @@ configurations {
   }
 }
 
-ext["hibernate.version"] = "6.5.3.Final"
-
 dependencies {
 
   annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
@@ -33,6 +31,12 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
   implementation("org.springframework.boot:spring-boot-starter-actuator")
+  implementation("org.springframework.boot:spring-boot-starter-webclient")
+  implementation("org.springframework.boot:spring-boot-starter-flyway")
+  implementation("org.springframework.boot:spring-boot-jackson2")
+
+  // MoJ libraries
+  implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter:2.0.0")
 
   // GOVUK Notify:
   implementation("uk.gov.service.notify:notifications-java-client:6.0.0-RELEASE")
@@ -50,15 +54,11 @@ dependencies {
   runtimeOnly("org.flywaydb:flyway-database-postgresql")
   runtimeOnly("org.postgresql:postgresql")
 
-  // JWT
-  implementation("io.jsonwebtoken:jjwt-api:0.13.0")
-  runtimeOnly("io.jsonwebtoken:jjwt-impl:0.13.0")
-  runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.13.0")
-
   implementation("io.arrow-kt:arrow-core:2.2.1.1")
-  implementation("io.hypersistence:hypersistence-utils-hibernate-63:3.14.1")
+  implementation("io.hypersistence:hypersistence-utils-hibernate-71:3.14.1")
+
   // OpenAPI
-  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.14")
+  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.1")
 
   implementation("com.amazonaws:amazon-sqs-java-messaging-lib:2.1.4")
   implementation("io.awspring.cloud:spring-cloud-aws-starter:3.4.2")
@@ -66,15 +66,17 @@ dependencies {
   implementation("io.awspring.cloud:spring-cloud-aws-sns:3.4.2")
   implementation("io.awspring.cloud:spring-cloud-aws-sqs:3.4.2")
   implementation("org.springframework:spring-jms:7.0.2")
-  implementation("com.google.code.gson:gson:2.13.2")
   implementation("org.apache.commons:commons-text:1.15.0")
 
   // SQS
-  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:5.6.3")
+  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:6.0.0")
 
   // Test dependencies
   testImplementation("org.wiremock:wiremock-standalone:3.13.2")
   testImplementation("org.springframework.security:spring-security-test")
+  testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
+  testImplementation("org.springframework.boot:spring-boot-starter-security-test")
+  testImplementation("org.springframework.boot:spring-boot-webtestclient")
   testImplementation("org.awaitility:awaitility-kotlin:4.3.0")
   testImplementation("net.javacrumbs.json-unit:json-unit-assertj:5.1.0")
   testImplementation("io.swagger.parser.v3:swagger-parser-v2-converter:2.1.37")
@@ -86,6 +88,7 @@ dependencies {
   testImplementation("org.testcontainers:junit-jupiter:1.21.4")
   testImplementation("io.github.hakky54:logcaptor:2.12.1")
   testImplementation("org.mockito.kotlin:mockito-kotlin")
+  testImplementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter-test:2.0.0")
   testImplementation(kotlin("test"))
   if (project.hasProperty("docs")) {
     implementation("com.h2database:h2")

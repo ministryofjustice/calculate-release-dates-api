@@ -30,11 +30,11 @@ class ManageUsersApiExtension :
     manageUsersApi.start()
   }
 
-  override fun afterAll(context: ExtensionContext?) {
+  override fun afterAll(context: ExtensionContext) {
     manageUsersApi.stop()
   }
 
-  override fun beforeEach(context: ExtensionContext?) {
+  override fun beforeEach(context: ExtensionContext) {
     manageUsersApi.resetRequests()
   }
 

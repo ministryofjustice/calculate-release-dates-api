@@ -18,7 +18,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Discre
 class ComparisonPersonDiscrepancyCause(
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  val id: Long = -1,
+  val id: Long? = null,
 
   @ManyToOne
   @JoinColumn(name = "discrepancy_id", nullable = false)

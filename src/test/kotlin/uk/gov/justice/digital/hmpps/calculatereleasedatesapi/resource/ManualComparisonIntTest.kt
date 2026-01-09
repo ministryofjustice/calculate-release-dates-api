@@ -11,11 +11,11 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
 import org.springframework.test.context.jdbc.Sql
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.SqsIntegrationTestBase
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.MockManageOffencesClient
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonDto
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonPersonOverview
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualComparisonInput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.manageoffencesapi.OffencePcscMarkers
@@ -57,7 +57,7 @@ class ManualComparisonIntTest(private val mockManageOffencesClient: MockManageOf
     assertEquals(0, result.numberOfPeopleCompared)
     val comparison = comparisonRepository.findByComparisonShortReference(result.comparisonShortReference)
     assertEquals(1, comparison!!.numberOfPeopleCompared)
-    val personComparison = comparisonPersonRepository.findByComparisonIdIsAndIsMatchFalse(comparison.id)[0]
+    val personComparison = comparisonPersonRepository.findByComparisonIdIsAndIsMatchFalse(comparison.id())[0]
     assertTrue(personComparison.isValid)
     assertFalse(personComparison.isMatch)
     assertEquals("EDS", personComparison.person)
@@ -67,7 +67,7 @@ class ManualComparisonIntTest(private val mockManageOffencesClient: MockManageOf
   fun `Retrieve comparison person must return all dates`() {
     val comparison = createManualComparison(listOf("EDS"))
     val storedComparison = comparisonRepository.findByComparisonShortReference(comparison.comparisonShortReference)
-    val comparisonPerson = comparisonPersonRepository.findByComparisonIdIsAndIsMatchFalse(storedComparison!!.id)[0]
+    val comparisonPerson = comparisonPersonRepository.findByComparisonIdIsAndIsMatchFalse(storedComparison!!.id())[0]
     val result = webTestClient.get()
       .uri("/comparison/manual/{comparisonId}/mismatch/{mismatchId}", comparison.comparisonShortReference, comparisonPerson.shortReference)
       .accept(MediaType.APPLICATION_JSON)
@@ -90,7 +90,7 @@ class ManualComparisonIntTest(private val mockManageOffencesClient: MockManageOf
     assertEquals(0, result.numberOfPeopleCompared)
     val comparison = comparisonRepository.findByComparisonShortReference(result.comparisonShortReference)
     assertEquals(1, comparison!!.numberOfPeopleCompared)
-    val personComparison = comparisonPersonRepository.findByComparisonIdIsAndIsMatchFalse(comparison.id)[0]
+    val personComparison = comparisonPersonRepository.findByComparisonIdIsAndIsMatchFalse(comparison.id())[0]
     assertTrue(personComparison.isFatal)
     assertFalse(personComparison.isMatch)
     assertEquals("404 Not Found from GET http://localhost:8332/api/offenders/NOTEXIST", personComparison.fatalException)
@@ -104,13 +104,13 @@ class ManualComparisonIntTest(private val mockManageOffencesClient: MockManageOf
     assertEquals(0, result.numberOfPeopleCompared)
     val comparison = comparisonRepository.findByComparisonShortReference(result.comparisonShortReference)
     assertEquals(1, comparison!!.numberOfPeopleCompared)
-    val personComparison = comparisonPersonRepository.findByComparisonIdIsAndIsMatchFalse(comparison.id)[0]
+    val personComparison = comparisonPersonRepository.findByComparisonIdIsAndIsMatchFalse(comparison.id())[0]
     assertTrue(personComparison.isValid)
     assertFalse(personComparison.isMatch)
     assertEquals("EDS", personComparison.person)
   }
 
-  private fun createManualComparison(prisonerIds: List<String>): Comparison {
+  private fun createManualComparison(prisonerIds: List<String>): ComparisonDto {
     val request = ManualComparisonInput(prisonerIds)
     val result = webTestClient.post()
       .uri("/comparison/manual")
@@ -120,7 +120,7 @@ class ManualComparisonIntTest(private val mockManageOffencesClient: MockManageOf
       .exchange()
       .expectStatus().isOk
       .expectHeader().contentType(MediaType.APPLICATION_JSON)
-      .expectBody(Comparison::class.java)
+      .expectBody(ComparisonDto::class.java)
       .returnResult().responseBody!!
     await untilCallTo { comparisonRepository.findByComparisonShortReference(result.comparisonShortReference) } matches {
       it!!.comparisonStatus.name == ComparisonStatus.COMPLETED.name

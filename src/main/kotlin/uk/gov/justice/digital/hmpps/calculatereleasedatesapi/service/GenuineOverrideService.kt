@@ -91,7 +91,7 @@ class GenuineOverrideService(
       originalRequest.reasonForCalculation,
       objectMapper,
       originalRequest.otherReasonForCalculation,
-      version = buildProperties.version,
+      version = buildProperties.version ?: "",
     ).copy(
       calculationType = CalculationType.GENUINE_OVERRIDE,
       overridesCalculationRequestId = originalRequest.id,
@@ -120,7 +120,7 @@ class GenuineOverrideService(
       CalculationOutcome(
         calculationDateType = it.dateType.name,
         outcomeDate = it.date,
-        calculationRequestId = newRequestWithOriginalInputs.id,
+        calculationRequestId = newRequestWithOriginalInputs.id(),
       )
     },
   )
@@ -140,7 +140,7 @@ class GenuineOverrideService(
     manualCalculationService.writeToNomisAndPublishEvent(
       prisonerId = newRequest.prisonerId,
       booking = booking,
-      calculationRequestId = newRequest.id,
+      calculationRequestId = newRequest.id(),
       calculationOutcomes = calculationOutcomes,
       isGenuineOverride = true,
       effectiveSentenceLength = effectiveSentenceLength,
@@ -156,7 +156,7 @@ class GenuineOverrideService(
       previousConfirmedCalculation.inputData.hashCode() == preliminaryRequest.inputData.hashCode()
     ) {
       GenuineOverrideMode.EXPRESS to PreviousGenuineOverride(
-        calculationRequestId = previousConfirmedCalculation.id,
+        calculationRequestId = previousConfirmedCalculation.id(),
         dates = mapGenuineOverrideDates(previousConfirmedCalculation),
         reason = previousConfirmedCalculation.genuineOverrideReason!!,
         reasonFurtherDetail = previousConfirmedCalculation.genuineOverrideReasonFurtherDetail,

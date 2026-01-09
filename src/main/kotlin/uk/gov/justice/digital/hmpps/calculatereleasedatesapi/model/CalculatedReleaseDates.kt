@@ -1,7 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 
 import com.fasterxml.jackson.annotation.JsonIgnore
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.HistoricalTusedSource
@@ -25,7 +24,7 @@ data class CalculatedReleaseDates(
   val calculationType: CalculationType = CalculationType.CALCULATED,
   val approvedDates: Map<ReleaseDateType, LocalDate?>? = null,
   val calculationReference: UUID,
-  val calculationReason: CalculationReason?,
+  val calculationReason: CalculationReasonDto?,
   val otherReasonDescription: String? = null,
   val calculationDate: LocalDate?,
   val historicalTusedSource: HistoricalTusedSource? = null,

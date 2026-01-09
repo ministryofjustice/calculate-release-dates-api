@@ -55,7 +55,7 @@ class LatestCalculationService(
         val sentenceAndOffences = calculationRequest.sentenceAndOffences?.let { sourceDataMapper.mapSentencesAndOffences(calculationRequest) }
         val breakdown = calculationBreakdownService.getBreakdownSafely(calculationRequest).getOrNull()
         toLatestDpsCalculation(
-          calculationRequest.id,
+          calculationRequest.id(),
           prisonerId,
           bookingId,
           prisonerCalculation,

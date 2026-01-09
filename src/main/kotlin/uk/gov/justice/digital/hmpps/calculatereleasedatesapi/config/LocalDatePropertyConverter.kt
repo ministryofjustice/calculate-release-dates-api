@@ -7,6 +7,6 @@ import java.time.LocalDate
 
 @Component
 @ConfigurationPropertiesBinding
-class LocalDatePropertyConverter : Converter<String, LocalDate> {
+class LocalDatePropertyConverter : Converter<String, LocalDate?> {
   override fun convert(source: String): LocalDate? = if (source == "") null else LocalDate.parse(source)
 }

@@ -23,7 +23,7 @@ import java.util.UUID
 class ComparisonPerson(
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  val id: Long = -1,
+  val id: Long? = null,
 
   @NotNull
   val comparisonId: Long,

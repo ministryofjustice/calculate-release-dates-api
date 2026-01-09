@@ -27,6 +27,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ApprovedDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ApprovedDatesUnavailableReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationReasonDto
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
@@ -167,7 +168,7 @@ class ApprovedDatesServiceTest {
           bookingId = 1L,
           prisonerId = PRISONER_ID,
           calculationReference = UUID.randomUUID(),
-          calculationReason = APPROVED_DATES_CALC_REASON,
+          calculationReason = CalculationReasonDto.from(APPROVED_DATES_CALC_REASON),
           calculationDate = LocalDate.of(2024, 1, 1),
         ),
       )
@@ -191,7 +192,7 @@ class ApprovedDatesServiceTest {
       bookingId = 1L,
       prisonerId = PRISONER_ID,
       calculationReference = UUID.randomUUID(),
-      calculationReason = APPROVED_DATES_CALC_REASON,
+      calculationReason = CalculationReasonDto.from(APPROVED_DATES_CALC_REASON),
       calculationDate = LocalDate.of(2024, 1, 1),
     )
     val latestCalcRequest = MINIMAL_CALC_REQUEST.copy(
@@ -225,7 +226,7 @@ class ApprovedDatesServiceTest {
       bookingId = 1L,
       prisonerId = PRISONER_ID,
       calculationReference = UUID.randomUUID(),
-      calculationReason = APPROVED_DATES_CALC_REASON,
+      calculationReason = CalculationReasonDto.from(APPROVED_DATES_CALC_REASON),
       calculationDate = LocalDate.of(2024, 1, 1),
     )
     val latestCalcRequest = MINIMAL_CALC_REQUEST.copy(
@@ -274,7 +275,7 @@ class ApprovedDatesServiceTest {
       bookingId = 1L,
       prisonerId = PRISONER_ID,
       calculationReference = UUID.randomUUID(),
-      calculationReason = APPROVED_DATES_CALC_REASON,
+      calculationReason = CalculationReasonDto.from(APPROVED_DATES_CALC_REASON),
       calculationDate = LocalDate.of(2024, 1, 1),
     )
     val latestCalcRequest = MINIMAL_CALC_REQUEST.copy(

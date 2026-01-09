@@ -82,10 +82,10 @@ class CalculationUserInputIntTest : IntegrationTestBase() {
     val dbRequest = calculationRequestRepository.findById(confirmResponse.calculationRequestId).get()
     assertThat(dbRequest.calculationRequestUserInput).isNotNull
     assertThat(dbRequest.calculationRequestUserInput!!.calculateErsed).isTrue
-    assertThat(dbRequest.calculationRequestUserInput!!.useOffenceIndicators).isFalse
-    assertThat(dbRequest.calculationRequestUserInput!!.calculationRequestSentenceUserInputs).isNotEmpty
-    assertThat(dbRequest.calculationRequestUserInput!!.calculationRequestSentenceUserInputs[0].nomisMatches).isTrue
-    assertThat(dbRequest.calculationRequestUserInput!!.calculationRequestSentenceUserInputs[0].userChoice).isFalse
+    assertThat(dbRequest.calculationRequestUserInput.useOffenceIndicators).isFalse
+    assertThat(dbRequest.calculationRequestUserInput.calculationRequestSentenceUserInputs).isNotEmpty
+    assertThat(dbRequest.calculationRequestUserInput.calculationRequestSentenceUserInputs[0].nomisMatches).isTrue
+    assertThat(dbRequest.calculationRequestUserInput.calculationRequestSentenceUserInputs[0].userChoice).isFalse
   }
 
   @Test
@@ -123,10 +123,10 @@ class CalculationUserInputIntTest : IntegrationTestBase() {
 
     assertThat(dbRequest.calculationRequestUserInput).isNotNull
     assertThat(dbRequest.calculationRequestUserInput!!.calculateErsed).isFalse
-    assertThat(dbRequest.calculationRequestUserInput!!.useOffenceIndicators).isFalse
-    assertThat(dbRequest.calculationRequestUserInput!!.calculationRequestSentenceUserInputs).isNotEmpty
-    assertThat(dbRequest.calculationRequestUserInput!!.calculationRequestSentenceUserInputs[0].nomisMatches).isTrue
-    assertThat(dbRequest.calculationRequestUserInput!!.calculationRequestSentenceUserInputs[0].userChoice).isTrue
+    assertThat(dbRequest.calculationRequestUserInput.useOffenceIndicators).isFalse
+    assertThat(dbRequest.calculationRequestUserInput.calculationRequestSentenceUserInputs).isNotEmpty
+    assertThat(dbRequest.calculationRequestUserInput.calculationRequestSentenceUserInputs[0].nomisMatches).isTrue
+    assertThat(dbRequest.calculationRequestUserInput.calculationRequestSentenceUserInputs[0].userChoice).isTrue
   }
 
   @Test
@@ -155,7 +155,7 @@ class CalculationUserInputIntTest : IntegrationTestBase() {
 
     assertThat(dbRequest.calculationRequestUserInput).isNotNull
     assertThat(dbRequest.calculationRequestUserInput!!.calculateErsed).isFalse
-    assertThat(dbRequest.calculationRequestUserInput!!.useOffenceIndicators).isTrue
-    assertThat(dbRequest.calculationRequestUserInput!!.calculationRequestSentenceUserInputs).isEmpty()
+    assertThat(dbRequest.calculationRequestUserInput.useOffenceIndicators).isTrue
+    assertThat(dbRequest.calculationRequestUserInput.calculationRequestSentenceUserInputs).isEmpty()
   }
 }

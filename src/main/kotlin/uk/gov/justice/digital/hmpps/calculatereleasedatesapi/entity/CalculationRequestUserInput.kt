@@ -17,7 +17,7 @@ import jakarta.validation.constraints.NotNull
 data class CalculationRequestUserInput(
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  val id: Long = -1,
+  val id: Long? = null,
 
   @NotNull
   @OneToOne(optional = false)

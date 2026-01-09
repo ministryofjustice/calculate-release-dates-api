@@ -2,10 +2,9 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource
 
 import org.hamcrest.Matchers.containsInAnyOrder
 import org.junit.jupiter.api.Test
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest
 import org.springframework.http.MediaType
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter
+import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
@@ -23,8 +22,7 @@ class GenuineOverrideReasonControllerTest {
 
   private lateinit var mvc: MockMvc
 
-  @Autowired
-  private lateinit var jackson2HttpMessageConverter: MappingJackson2HttpMessageConverter
+  private val jackson2HttpMessageConverter = JacksonJsonHttpMessageConverter()
 
   @MockitoBean
   private lateinit var genuineOverrideService: GenuineOverrideService

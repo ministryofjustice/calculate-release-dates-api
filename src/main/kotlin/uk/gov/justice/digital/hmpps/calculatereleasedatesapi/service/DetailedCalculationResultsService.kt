@@ -11,6 +11,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Calcul
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationContext
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOriginalData
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationReasonDto
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedCalculationResults
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.PreviouslyRecordedSLED
@@ -89,7 +90,7 @@ open class DetailedCalculationResultsService(
       prisonerId = calculationRequest.prisonerId,
       calculationStatus = CalculationStatus.valueOf(calculationRequest.calculationStatus),
       calculationReference = calculationRequest.calculationReference,
-      calculationReason = calculationRequest.reasonForCalculation,
+      calculationReason = calculationRequest.reasonForCalculation?.let { CalculationReasonDto.from(it) },
       otherReasonDescription = calculationRequest.otherReasonForCalculation,
       calculationDate = calculationRequest.calculatedAt.toLocalDate(),
       calculationType = calculationRequest.calculationType,

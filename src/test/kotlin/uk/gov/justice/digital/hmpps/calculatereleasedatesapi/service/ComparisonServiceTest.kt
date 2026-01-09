@@ -85,7 +85,7 @@ class ComparisonServiceTest {
     val outputComparison = aComparison()
     whenever(comparisonRepository.save(any())).thenReturn(outputComparison)
 
-    val comparisonInput = ComparisonInput(JsonNodeFactory.instance.objectNode(), prison = "ABC")
+    val comparisonInput = ComparisonInput(emptyMap(), prison = "ABC")
     val comparison = comparisonService.create(comparisonInput, "")
     assertEquals(outputComparison, comparison)
   }
@@ -197,7 +197,7 @@ class ComparisonServiceTest {
     val comparison = aComparison()
     val comparisonPerson1 = aComparisonPerson(
       1,
-      comparison.id,
+      comparison.id(),
       1,
       "person 1",
       establishment = "BMI",
@@ -214,7 +214,7 @@ class ComparisonServiceTest {
     )
     val comparisonPerson2 = aComparisonPerson(
       2,
-      comparison.id,
+      comparison.id(),
       2,
       "person 2",
       establishment = "BMI",
@@ -226,14 +226,14 @@ class ComparisonServiceTest {
     )
     val comparisonPerson3 = aComparisonPerson(
       3,
-      comparison.id,
+      comparison.id(),
       3,
       "person 3",
       establishment = "AYI",
     )
     val comparisonPerson4 = aComparisonPerson(
       4,
-      comparison.id,
+      comparison.id(),
       4,
       "person 4",
       establishment = "BMI",
@@ -246,7 +246,7 @@ class ComparisonServiceTest {
 
     val comparisonPerson5 = aComparisonPerson(
       5,
-      comparison.id,
+      comparison.id(),
       5,
       "person 5",
       establishment = "BMI",
@@ -264,7 +264,7 @@ class ComparisonServiceTest {
 
     val comparisonPerson6 = aComparisonPerson(
       6,
-      comparison.id,
+      comparison.id(),
       6,
       "person 6",
       establishment = "DAI",
@@ -276,7 +276,7 @@ class ComparisonServiceTest {
     )
     val comparisonPerson7 = aComparisonPerson(
       7,
-      comparison.id,
+      comparison.id(),
       7,
       "person 7",
       establishment = "AYI",
@@ -308,7 +308,7 @@ class ComparisonServiceTest {
     whenever(
       comparisonRepository.findByComparisonShortReference("ABCD1234"),
     ).thenReturn(comparison)
-    whenever(comparisonPersonRepository.findByComparisonIdIsAndIsMatchFalse(comparison.id)).thenReturn(comparisonPersons)
+    whenever(comparisonPersonRepository.findByComparisonIdIsAndIsMatchFalse(comparison.id())).thenReturn(comparisonPersons)
 
     whenever(calculationOutcomeRepository.findForComparisonAndReleaseDatesMismatch(any())).thenReturn(
       calculationOutcomes,
@@ -340,7 +340,7 @@ class ComparisonServiceTest {
     val comparison = aComparison()
     val comparisonPerson1 = aComparisonPerson(
       1,
-      comparison.id,
+      comparison.id(),
       1,
       "person 1",
     )
@@ -356,7 +356,7 @@ class ComparisonServiceTest {
     )
     val comparisonPerson2 = aComparisonPerson(
       2,
-      comparison.id,
+      comparison.id(),
       2,
       "person 2",
     )
@@ -367,13 +367,13 @@ class ComparisonServiceTest {
     )
     val comparisonPerson3 = aComparisonPerson(
       3,
-      comparison.id,
+      comparison.id(),
       3,
       "person 3",
     )
     val comparisonPerson4 = aComparisonPerson(
       4,
-      comparison.id,
+      comparison.id(),
       4,
       "person 4",
     )
@@ -385,7 +385,7 @@ class ComparisonServiceTest {
 
     val comparisonPerson5 = aComparisonPerson(
       5,
-      comparison.id,
+      comparison.id(),
       5,
       "person 5",
     )
@@ -402,7 +402,7 @@ class ComparisonServiceTest {
 
     val comparisonPerson6 = aComparisonPerson(
       6,
-      comparison.id,
+      comparison.id(),
       6,
       "person 6",
     )
@@ -413,7 +413,7 @@ class ComparisonServiceTest {
     )
     val comparisonPerson7 = aComparisonPerson(
       7,
-      comparison.id,
+      comparison.id(),
       7,
       "person 7",
     )
@@ -444,7 +444,7 @@ class ComparisonServiceTest {
     whenever(
       comparisonRepository.findByComparisonShortReference("ABCD1234"),
     ).thenReturn(comparison)
-    whenever(comparisonPersonRepository.findByComparisonIdIsAndIsMatchFalse(comparison.id)).thenReturn(comparisonPersons)
+    whenever(comparisonPersonRepository.findByComparisonIdIsAndIsMatchFalse(comparison.id())).thenReturn(comparisonPersons)
 
     whenever(calculationOutcomeRepository.findForComparisonAndReleaseDatesMismatch(any())).thenReturn(
       calculationOutcomes,
@@ -468,7 +468,7 @@ class ComparisonServiceTest {
     val comparison = aComparison()
     val comparisonPerson = aComparisonPerson(
       54,
-      comparison.id,
+      comparison.id(),
       8923,
       USERNAME,
       establishment = "ABC",
@@ -497,7 +497,7 @@ class ComparisonServiceTest {
       comparisonRepository.findByComparisonShortReference(comparison.comparisonShortReference),
     ).thenReturn(comparison)
     whenever(
-      comparisonPersonRepository.findByComparisonIdAndShortReference(comparison.id, comparisonPerson.shortReference),
+      comparisonPersonRepository.findByComparisonIdAndShortReference(comparison.id(), comparisonPerson.shortReference),
     ).thenReturn(comparisonPerson)
 
     whenever(prisonService.getCurrentUserPrisonsList()).thenReturn(listOf("ABC"))
@@ -566,6 +566,7 @@ class ComparisonServiceTest {
       establishment = "BMI",
     )
     val comparison = Comparison(
+      id = 99L,
       calculatedByUsername = ManualComparisonServiceTest.USERNAME,
       comparisonStatus = ComparisonStatus.COMPLETED,
       comparisonType = ComparisonType.ESTABLISHMENT_FULL,

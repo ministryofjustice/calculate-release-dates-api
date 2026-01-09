@@ -29,7 +29,7 @@ class PreviouslyRecordedSLEDService(
         PreviouslyRecordedSLED(
           calculatedDate = calculatedSLED,
           previouslyRecordedSLEDDate = sledOrSed,
-          previouslyRecordedSLEDCalculationRequestId = latestCalculationForPreviousSLED.id,
+          previouslyRecordedSLEDCalculationRequestId = latestCalculationForPreviousSLED.id(),
         )
       } else {
         null

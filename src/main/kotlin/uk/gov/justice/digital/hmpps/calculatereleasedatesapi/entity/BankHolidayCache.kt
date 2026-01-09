@@ -18,7 +18,7 @@ import java.time.LocalDateTime
 data class BankHolidayCache(
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  val id: Long = -1,
+  val id: Long? = null,
 
   @NotNull
   @Column(columnDefinition = "jsonb")

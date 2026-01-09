@@ -13,8 +13,8 @@ import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.test.context.ActiveProfiles
@@ -44,6 +44,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBr
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationContext
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationFragments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOriginalData
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationReasonDto
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationRequestModel
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationSource
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
@@ -130,7 +131,7 @@ class CalculationControllerTest {
       bookingId = bookingId,
       prisonerId = prisonerId,
       calculationReference = UUID.randomUUID(),
-      calculationReason = calculationReason,
+      calculationReason = CalculationReasonDto.from(calculationReason),
       calculationDate = LocalDate.of(2024, 1, 1),
     )
 
@@ -167,7 +168,7 @@ class CalculationControllerTest {
       bookingId = bookingId,
       prisonerId = prisonerId,
       calculationReference = UUID.randomUUID(),
-      calculationReason = calculationReason,
+      calculationReason = CalculationReasonDto.from(calculationReason),
       calculationDate = LocalDate.of(2024, 1, 1),
     )
     val calculationRequestModel = CalculationRequestModel(CalculationUserInputs(), calculationReasonId = -1L)
@@ -205,7 +206,7 @@ class CalculationControllerTest {
       bookingId = bookingId,
       prisonerId = prisonerId,
       calculationReference = UUID.randomUUID(),
-      calculationReason = calculationReason,
+      calculationReason = CalculationReasonDto.from(calculationReason),
       calculationDate = LocalDate.of(2024, 1, 1),
     )
     whenever(
@@ -274,7 +275,7 @@ class CalculationControllerTest {
       bookingId = 123L,
       prisonerId = "ASD",
       calculationReference = UUID.randomUUID(),
-      calculationReason = calculationReason,
+      calculationReason = CalculationReasonDto.from(calculationReason),
       calculationDate = LocalDate.of(2024, 1, 1),
     )
 
@@ -304,7 +305,7 @@ class CalculationControllerTest {
       prisonerId = "ASD",
       approvedDates = mapOf(ReleaseDateType.APD to LocalDate.of(2020, 3, 3)),
       calculationReference = UUID.randomUUID(),
-      calculationReason = calculationReason,
+      calculationReason = CalculationReasonDto.from(calculationReason),
       calculationDate = LocalDate.of(2024, 1, 1),
     )
     whenever(calculationTransactionalService.findCalculationResults(calculationRequestId)).thenReturn(
@@ -484,7 +485,7 @@ class CalculationControllerTest {
         "A1234AB",
         CONFIRMED,
         UUID.randomUUID(),
-        CalculationReason(-1, isActive = false, isOther = false, displayName = "14 day check", isBulk = false, nomisReason = null, nomisComment = null, displayRank = null, useForApprovedDates = false, eligibleForPreviouslyRecordedSled = false),
+        CalculationReasonDto(-1, isOther = false, displayName = "14 day check", useForApprovedDates = false),
         null,
         LocalDate.of(2024, 1, 1),
         CalculationType.CALCULATED,

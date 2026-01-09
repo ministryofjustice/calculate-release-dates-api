@@ -17,7 +17,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.Validati
 data class CalculationRequestManualReason(
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  val id: Long = -1,
+  val id: Long? = null,
 
   @JoinColumn(name = "calculationRequestId")
   @ManyToOne

@@ -17,7 +17,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.UserInputType
 data class CalculationRequestSentenceUserInput(
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  val id: Long = -1,
+  val id: Long? = null,
   @NotNull
   @ManyToOne(optional = false)
   @JoinColumn(name = "calculationRequestUserInputId", nullable = false, updatable = false)

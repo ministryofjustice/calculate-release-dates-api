@@ -17,6 +17,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.SpringT
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOutput
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationReasonDto
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource.JsonTransformation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationTransactionalService
@@ -133,7 +134,7 @@ abstract class CalculationExampleTests : SpringTestBase() {
           "",
           PRELIMINARY,
           calculationReference = UUID.randomUUID(),
-          calculationReason = CALCULATION_REASON,
+          calculationReason = CalculationReasonDto.from(CALCULATION_REASON),
           calculationDate = LocalDate.of(2024, 1, 1),
         ),
         calculationTestFile.userInputs,

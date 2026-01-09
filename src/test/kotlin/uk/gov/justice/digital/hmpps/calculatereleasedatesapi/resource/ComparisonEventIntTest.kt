@@ -17,7 +17,6 @@ import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.MediaType
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean
 import org.springframework.test.context.jdbc.Sql
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonPerson
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonType
@@ -30,6 +29,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremoc
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.MockPrisonService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Agency
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonDiscrepancySummary
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonDto
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonOverview
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonPersonOverview
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonSummary
@@ -89,7 +89,7 @@ class ComparisonEventIntTest(private val mockManageOffencesClient: MockManageOff
     val completedComparison = getComparison(result.comparisonShortReference)
     assertEquals(4, completedComparison.numberOfPeopleCompared)
     val comparison = comparisonRepository.findByComparisonShortReference(result.comparisonShortReference)
-    val personComparison = comparisonPersonRepository.findByComparisonId(comparison!!.id).find { it.person == "default" }!!
+    val personComparison = comparisonPersonRepository.findByComparisonId(comparison!!.id()).find { it.person == "default" }!!
     assertTrue(personComparison.isValid)
     assertTrue(personComparison.isMatch)
     assertEquals("default", personComparison.person)
@@ -107,7 +107,7 @@ class ComparisonEventIntTest(private val mockManageOffencesClient: MockManageOff
     val completedComparison = getComparison(result.comparisonShortReference)
     assertEquals(4, completedComparison.numberOfPeopleCompared)
     val comparison = comparisonRepository.findByComparisonShortReference(result.comparisonShortReference)
-    val personComparison = comparisonPersonRepository.findByComparisonId(comparison!!.id).find { it.person == "default" }!!
+    val personComparison = comparisonPersonRepository.findByComparisonId(comparison!!.id()).find { it.person == "default" }!!
     assertFalse(personComparison.isValid)
     assertFalse(personComparison.isMatch)
     assertTrue(personComparison.isFatal)
@@ -160,7 +160,7 @@ class ComparisonEventIntTest(private val mockManageOffencesClient: MockManageOff
   fun `Retrieve comparison person must return all dates`() {
     val comparison = createComparison("PRIS")
     val storedComparison = comparisonRepository.findByComparisonShortReference(comparison.comparisonShortReference)
-    val comparisonPerson = comparisonPersonRepository.findByComparisonIdIsAndIsMatchFalse(storedComparison!!.id).find { it.person == "EDS" }!!
+    val comparisonPerson = comparisonPersonRepository.findByComparisonIdIsAndIsMatchFalse(storedComparison!!.id()).find { it.person == "EDS" }!!
     val result = webTestClient.get()
       .uri("/comparison/{comparisonId}/mismatch/{mismatchId}", comparison.comparisonShortReference, comparisonPerson.shortReference)
       .accept(MediaType.APPLICATION_JSON)
@@ -179,7 +179,7 @@ class ComparisonEventIntTest(private val mockManageOffencesClient: MockManageOff
   fun `Retrieve comparison person discrepancy should return discrepancy summary`() {
     val comparison = createComparison("PRIS")
     val storedComparison = comparisonRepository.findByComparisonShortReference(comparison.comparisonShortReference)
-    val comparisonPerson = comparisonPersonRepository.findByComparisonIdIsAndIsMatchFalse(storedComparison!!.id)[0]
+    val comparisonPerson = comparisonPersonRepository.findByComparisonIdIsAndIsMatchFalse(storedComparison!!.id())[0]
 
     val createdDiscrepancy = createComparisonPersonDiscrepancy(comparison, comparisonPerson)
 
@@ -221,8 +221,8 @@ class ComparisonEventIntTest(private val mockManageOffencesClient: MockManageOff
     .expectBody(ComparisonOverview::class.java)
     .returnResult().responseBody!!
 
-  private fun createComparison(prisonId: String, comparisonType: ComparisonType = ComparisonType.ESTABLISHMENT_FULL, completeStatus: ComparisonStatus = ComparisonStatus.COMPLETED): Comparison {
-    val request = ComparisonInput(objectMapper.createObjectNode(), prisonId, comparisonType)
+  private fun createComparison(prisonId: String, comparisonType: ComparisonType = ComparisonType.ESTABLISHMENT_FULL, completeStatus: ComparisonStatus = ComparisonStatus.COMPLETED): ComparisonDto {
+    val request = ComparisonInput(emptyMap(), prisonId, comparisonType)
     val result = webTestClient.post()
       .uri("/comparison")
       .accept(MediaType.APPLICATION_JSON)
@@ -231,7 +231,7 @@ class ComparisonEventIntTest(private val mockManageOffencesClient: MockManageOff
       .exchange()
       .expectStatus().isOk
       .expectHeader().contentType(MediaType.APPLICATION_JSON)
-      .expectBody(Comparison::class.java)
+      .expectBody(ComparisonDto::class.java)
       .returnResult().responseBody!!
     await untilCallTo { getComparison(result.comparisonShortReference) } matches {
       it!!.comparisonStatus.name == completeStatus.name
@@ -239,7 +239,7 @@ class ComparisonEventIntTest(private val mockManageOffencesClient: MockManageOff
     return result
   }
 
-  private fun createComparisonPersonDiscrepancy(comparison: Comparison, comparisonPerson: ComparisonPerson): ComparisonDiscrepancySummary {
+  private fun createComparisonPersonDiscrepancy(comparison: ComparisonDto, comparisonPerson: ComparisonPerson): ComparisonDiscrepancySummary {
     val discrepancyCauses = listOf(DiscrepancyCause(DiscrepancyCategory.PED, DiscrepancySubCategory.DATE_NOT_CALCULATED))
     val request = CreateComparisonDiscrepancyRequest(DiscrepancyImpact.POTENTIAL_UNLAWFUL_DETENTION, discrepancyCauses, "detail", DiscrepancyPriority.HIGH_RISK, "action")
     val result = webTestClient.post()

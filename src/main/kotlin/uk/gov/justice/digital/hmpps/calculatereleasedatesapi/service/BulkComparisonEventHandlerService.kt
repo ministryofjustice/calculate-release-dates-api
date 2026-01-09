@@ -65,7 +65,7 @@ class BulkComparisonEventHandlerService(
       return
     }
     if (comparison.comparisonStatus == ComparisonStatus.PROCESSING) {
-      val count = comparisonPersonRepository.countByComparisonId(comparisonId = comparison.id)
+      val count = comparisonPersonRepository.countByComparisonId(comparisonId = comparison.id())
       comparison.numberOfPeopleCompared = count
       if (comparison.numberOfPeopleCompared >= comparison.numberOfPeopleExpected) {
         comparison.comparisonStatus = ComparisonStatus.COMPLETED
@@ -84,7 +84,7 @@ class BulkComparisonEventHandlerService(
       EntityNotFoundException("The bulk calculation reason was not found.")
     }
 
-    val existingPerson = comparisonPersonRepository.findByComparisonIdAndPerson(comparison.id, personId)
+    val existingPerson = comparisonPersonRepository.findByComparisonIdAndPerson(comparison.id(), personId)
     if (existingPerson.isNotEmpty()) {
       // Already processed and this is a retry from timeout.
       return
@@ -173,7 +173,7 @@ class BulkComparisonEventHandlerService(
 
     comparisonPersonRepository.save(
       ComparisonPerson(
-        comparisonId = comparison.id,
+        comparisonId = comparison.id(),
         person = personId,
         lastName = WordUtils.capitalizeFully(sourceData.prisonerDetails.lastName),
         latestBookingId = sourceData.prisonerDetails.bookingId,
@@ -216,7 +216,7 @@ class BulkComparisonEventHandlerService(
     )
     comparisonPersonRepository.save(
       ComparisonPerson(
-        comparisonId = comparison.id,
+        comparisonId = comparison.id(),
         person = personId,
         lastName = WordUtils.capitalizeFully(sourceData?.prisonerDetails?.lastName),
         latestBookingId = sourceData?.prisonerDetails?.bookingId ?: -1L,

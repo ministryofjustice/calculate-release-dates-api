@@ -25,7 +25,7 @@ class Comparison(
   @JsonIgnore
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  val id: Long = -1,
+  val id: Long? = null,
 
   @JsonIgnore
   @NotNull
@@ -65,4 +65,6 @@ class Comparison(
   val numberOfMismatches: Long = 0,
 ) {
   override fun toString(): String = "Comparison(id=$id, comparisonReference=$comparisonReference, comparisonShortReference='$comparisonShortReference', criteria=$criteria, prison=$prison, comparisonType=$comparisonType, calculatedAt=$calculatedAt, calculatedByUsername='$calculatedByUsername')"
+
+  fun id(): Long = id!!
 }

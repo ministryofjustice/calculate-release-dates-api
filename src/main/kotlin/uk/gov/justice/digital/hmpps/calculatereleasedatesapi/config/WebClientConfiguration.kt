@@ -3,17 +3,13 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.http.HttpHeaders
-import org.springframework.security.oauth2.client.AuthorizedClientServiceOAuth2AuthorizedClientManager
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClientProviderBuilder
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository
-import org.springframework.security.oauth2.client.web.reactive.function.client.ServletOAuth2AuthorizedClientExchangeFilterFunction
-import org.springframework.web.reactive.function.client.ClientRequest
-import org.springframework.web.reactive.function.client.ExchangeFilterFunction
-import org.springframework.web.reactive.function.client.ExchangeFunction
+import org.springframework.web.context.annotation.RequestScope
 import org.springframework.web.reactive.function.client.WebClient
+import uk.gov.justice.hmpps.kotlin.auth.authorisedWebClient
+import uk.gov.justice.hmpps.kotlin.auth.usernameAwareTokenRequestOAuth2AuthorizedClientManager
 
 @Configuration
 class WebClientConfiguration(
@@ -27,103 +23,56 @@ class WebClientConfiguration(
 ) {
 
   @Bean
-  fun prisonApiUserAuthWebClient(webClientBuilder: WebClient.Builder): WebClient = webClientBuilder
-    .baseUrl(prisonApiUri)
-    .filter(addAuthHeaderFilterFunction())
-    .build()
+  @RequestScope
+  fun prisonApiUserAuthWebClient(
+    clientRegistrationRepository: ClientRegistrationRepository,
+    oAuth2AuthorizedClientService: OAuth2AuthorizedClientService,
+    builder: WebClient.Builder,
+  ): WebClient = builder.authorisedWebClient(
+    usernameAwareTokenRequestOAuth2AuthorizedClientManager(
+      clientRegistrationRepository,
+      oAuth2AuthorizedClientService,
+    ),
+    registrationId = "prison-api",
+    url = prisonApiUri,
+  )
 
   @Bean
   fun prisonApiSystemAuthWebClient(
     builder: WebClient.Builder,
     authorizedClientManager: OAuth2AuthorizedClientManager,
-  ): WebClient {
-    val oauth2Client = ServletOAuth2AuthorizedClientExchangeFilterFunction(authorizedClientManager)
-    oauth2Client.setDefaultClientRegistrationId("prison-api")
-    return builder
-      .baseUrl(prisonApiUri)
-      .apply(oauth2Client.oauth2Configuration())
-      .build()
-  }
-
-  private fun addAuthHeaderFilterFunction(): ExchangeFilterFunction = ExchangeFilterFunction { request: ClientRequest, next: ExchangeFunction ->
-    val filtered = ClientRequest.from(request)
-      .header(HttpHeaders.AUTHORIZATION, UserContext.getAuthToken())
-      .build()
-    next.exchange(filtered)
-  }
+  ): WebClient = builder.authorisedWebClient(authorizedClientManager, registrationId = "prison-api", url = prisonApiUri)
 
   @Bean
-  fun prisonApiHealthWebClient(webClientBuilder: WebClient.Builder): WebClient = webClientBuilder.baseUrl(prisonApiUri).build()
+  fun prisonApiHealthWebClient(builder: WebClient.Builder): WebClient = builder.baseUrl(prisonApiUri).build()
 
   @Bean
-  fun oauthApiHealthWebClient(webClientBuilder: WebClient.Builder): WebClient = webClientBuilder.baseUrl(oauthApiUrl).build()
+  fun oauthApiHealthWebClient(builder: WebClient.Builder): WebClient = builder.baseUrl(oauthApiUrl).build()
 
   @Bean
-  fun bankHolidayApiWebClient(webClientBuilder: WebClient.Builder): WebClient = webClientBuilder.baseUrl(bankHolidayApiUrl).build()
+  fun bankHolidayApiWebClient(builder: WebClient.Builder): WebClient = builder.baseUrl(bankHolidayApiUrl).build()
 
   @Bean
   fun adjustmentsApiWebClient(
-    webClientBuilder: WebClient.Builder,
+    builder: WebClient.Builder,
     authorizedClientManager: OAuth2AuthorizedClientManager,
-  ): WebClient {
-    val oauth2Client = ServletOAuth2AuthorizedClientExchangeFilterFunction(authorizedClientManager)
-    oauth2Client.setDefaultClientRegistrationId("adjustments-api")
-    return webClientBuilder
-      .baseUrl(adjustmentsApiUrl)
-      .apply(oauth2Client.oauth2Configuration())
-      .build()
-  }
+  ) = builder.authorisedWebClient(authorizedClientManager, registrationId = "adjustments-api", url = adjustmentsApiUrl)
 
   @Bean
   fun manageOffencesApiWebClient(
     builder: WebClient.Builder,
     authorizedClientManager: OAuth2AuthorizedClientManager,
-  ): WebClient {
-    val oauth2Client = ServletOAuth2AuthorizedClientExchangeFilterFunction(authorizedClientManager)
-    oauth2Client.setDefaultClientRegistrationId("manage-offences-api")
-    return builder
-      .baseUrl(manageOffencesApiUrl)
-      .apply(oauth2Client.oauth2Configuration())
-      .build()
-  }
+  ) = builder.authorisedWebClient(authorizedClientManager, registrationId = "manage-offences-api", url = manageOffencesApiUrl)
 
   @Bean
   fun nomisSyncMappingApiWebClient(
-    webClientBuilder: WebClient.Builder,
+    builder: WebClient.Builder,
     authorizedClientManager: OAuth2AuthorizedClientManager,
-  ): WebClient {
-    val oauth2Client = ServletOAuth2AuthorizedClientExchangeFilterFunction(authorizedClientManager)
-    oauth2Client.setDefaultClientRegistrationId("nomis-sync-mapping-api")
-    return webClientBuilder
-      .baseUrl(nomisSyncMappingApiUrl)
-      .apply(oauth2Client.oauth2Configuration())
-      .build()
-  }
+  ) = builder.authorisedWebClient(authorizedClientManager, registrationId = "nomis-sync-mapping-api", url = nomisSyncMappingApiUrl)
 
   @Bean
   fun manageUsersApiWebClient(
     builder: WebClient.Builder,
     authorizedClientManager: OAuth2AuthorizedClientManager,
-  ): WebClient {
-    val oauth2Client = ServletOAuth2AuthorizedClientExchangeFilterFunction(authorizedClientManager)
-    oauth2Client.setDefaultClientRegistrationId("manage-users-api")
-    return builder
-      .baseUrl(manageUsersApiUrl)
-      .apply(oauth2Client.oauth2Configuration())
-      .build()
-  }
-
-  @Bean
-  fun authorizedClientManager(
-    clientRegistrationRepository: ClientRegistrationRepository?,
-    oAuth2AuthorizedClientService: OAuth2AuthorizedClientService?,
-  ): OAuth2AuthorizedClientManager? {
-    val authorizedClientProvider = OAuth2AuthorizedClientProviderBuilder.builder().clientCredentials().build()
-    val authorizedClientManager = AuthorizedClientServiceOAuth2AuthorizedClientManager(
-      clientRegistrationRepository,
-      oAuth2AuthorizedClientService,
-    )
-    authorizedClientManager.setAuthorizedClientProvider(authorizedClientProvider)
-    return authorizedClientManager
-  }
+  ): WebClient = builder.authorisedWebClient(authorizedClientManager, registrationId = "manage-users-api", url = manageUsersApiUrl)
 }

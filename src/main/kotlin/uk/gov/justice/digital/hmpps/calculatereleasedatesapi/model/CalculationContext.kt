@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
 import java.time.LocalDate
@@ -12,7 +11,7 @@ data class CalculationContext(
   val prisonerId: String,
   val calculationStatus: CalculationStatus,
   val calculationReference: UUID,
-  val calculationReason: CalculationReason?,
+  val calculationReason: CalculationReasonDto?,
   val otherReasonDescription: String?,
   val calculationDate: LocalDate?,
   val calculationType: CalculationType,

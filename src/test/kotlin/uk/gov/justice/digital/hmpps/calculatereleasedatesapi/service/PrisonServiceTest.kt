@@ -320,7 +320,6 @@ class PrisonServiceTest {
 
     val firstPage = RestResponsePage<CalculablePrisoner>(
       content = emptyList(),
-      pageable = mock(),
       totalElements = 2,
       size = 1,
       number = 0,
@@ -328,7 +327,6 @@ class PrisonServiceTest {
 
     val secondPage = RestResponsePage<CalculablePrisoner>(
       content = emptyList(),
-      pageable = mock(),
       totalElements = 2,
       size = 1,
       number = 1,

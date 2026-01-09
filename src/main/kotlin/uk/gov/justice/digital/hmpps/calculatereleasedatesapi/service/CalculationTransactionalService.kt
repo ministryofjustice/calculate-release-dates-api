@@ -28,6 +28,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationFragments
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationReasonDto
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationRequestModel
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManuallyEnteredDate
@@ -196,7 +197,7 @@ class CalculationTransactionalService(
         calculationFragments,
         calculationType,
         historicalTusedSource,
-        buildProperties.version,
+        buildProperties.version ?: "",
       ),
     )
 
@@ -218,7 +219,7 @@ class CalculationTransactionalService(
 
     calculationOutput.calculationResult.usedPreviouslyRecordedSLED?.let {
       val overrideRecord = CalculationOutcomeHistoricSledOverride(
-        calculationRequestId = calculationRequest.id,
+        calculationRequestId = calculationRequest.id(),
         calculationOutcomeDate = it.calculatedDate,
         historicCalculationRequestId = it.previouslyRecordedSLEDCalculationRequestId,
         historicCalculationOutcomeDate = it.previouslyRecordedSLEDDate,
@@ -232,11 +233,11 @@ class CalculationTransactionalService(
       prisonerId = sourceData.prisonerDetails.offenderNo,
       bookingId = sourceData.prisonerDetails.bookingId,
       calculationFragments = calculationFragments,
-      calculationRequestId = calculationRequest.id,
+      calculationRequestId = calculationRequest.id(),
       calculationStatus = calculationStatus,
       approvedDates = null,
       calculationReference = calculationRequest.calculationReference,
-      calculationReason = reasonForCalculation,
+      calculationReason = reasonForCalculation?.let { CalculationReasonDto.from(it) },
       otherReasonDescription = otherCalculationReason,
       calculationDate = calculationRequest.calculatedAt.toLocalDate(),
       historicalTusedSource = calculationResult.historicalTusedSource,
@@ -380,7 +381,7 @@ class CalculationTransactionalService(
         objectMapper,
         otherReasonForCalculation,
         calculationUserInputs,
-        version = buildProperties.version,
+        version = buildProperties.version ?: "",
       ),
     )
   }
