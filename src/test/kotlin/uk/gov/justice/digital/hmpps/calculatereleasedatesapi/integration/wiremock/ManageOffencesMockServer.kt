@@ -41,11 +41,11 @@ class ManageOffencesApiExtension :
     manageOffencesApi.stubToreraOffenceCodes()
   }
 
-  override fun afterAll(context: ExtensionContext?) {
+  override fun afterAll(context: ExtensionContext) {
     manageOffencesApi.stop()
   }
 
-  override fun beforeEach(context: ExtensionContext?) {
+  override fun beforeEach(context: ExtensionContext) {
     manageOffencesApi.resetRequests()
   }
 

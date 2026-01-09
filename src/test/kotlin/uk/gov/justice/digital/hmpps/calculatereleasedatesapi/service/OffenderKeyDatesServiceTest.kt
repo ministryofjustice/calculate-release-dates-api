@@ -24,6 +24,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CrdWebException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Agency
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationContext
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationReasonDto
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.GenuineOverrideReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NomisCalculationReason
@@ -217,7 +218,7 @@ open class OffenderKeyDatesServiceTest {
         "A1234AB",
         CalculationStatus.CONFIRMED,
         reference,
-        CalculationReason(-1, false, false, "14 day check", false, null, null, 1, false, false),
+        CalculationReasonDto(-1, isOther = false, displayName = "14 day check", useForApprovedDates = false),
         null,
         LocalDate.of(2024, 1, 1),
         CalculationType.CALCULATED,
@@ -311,7 +312,7 @@ open class OffenderKeyDatesServiceTest {
         "A1234AB",
         CalculationStatus.CONFIRMED,
         reference,
-        CalculationReason(-1, false, false, "14 day check", false, null, null, 1, false, false),
+        CalculationReasonDto(-1, isOther = false, displayName = "14 day check", useForApprovedDates = false),
         null,
         LocalDate.of(2024, 1, 1),
         CalculationType.CALCULATED,
@@ -406,7 +407,7 @@ open class OffenderKeyDatesServiceTest {
         "A1234AB",
         CalculationStatus.CONFIRMED,
         reference,
-        CalculationReason(-1, false, false, "SLED test", false, null, null, 1, false, false),
+        CalculationReasonDto(-1, isOther = false, displayName = "SLED test", useForApprovedDates = false),
         null,
         LocalDate.of(2024, 1, 1),
         CalculationType.CALCULATED,
@@ -804,7 +805,7 @@ open class OffenderKeyDatesServiceTest {
         "A1234AB",
         CalculationStatus.CONFIRMED,
         reference,
-        CalculationReason(-1, false, false, "14 day check", false, null, null, 1, false, false),
+        CalculationReasonDto(-1, isOther = false, displayName = "14 day check", useForApprovedDates = false),
         null,
         LocalDate.of(2024, 1, 1),
         CalculationType.GENUINE_OVERRIDE,
@@ -900,7 +901,7 @@ open class OffenderKeyDatesServiceTest {
         "A1234AB",
         CalculationStatus.CONFIRMED,
         reference,
-        CalculationReason(-1, false, false, "14 day check", false, null, null, 1, false, false),
+        CalculationReasonDto(-1, isOther = false, displayName = "14 day check", useForApprovedDates = false),
         null,
         LocalDate.of(2024, 1, 1),
         CalculationType.GENUINE_OVERRIDE,

@@ -30,6 +30,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BreakdownMiss
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationContext
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOriginalData
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationReasonDto
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedCalculationResults
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.GenuineOverrideReason
@@ -418,7 +419,7 @@ class DetailedCalculationResultsServiceTest {
     PRISONER_ID,
     CalculationStatus.CONFIRMED,
     calculationReference,
-    calcReason,
+    CalculationReasonDto.from(calcReason),
     "foo",
     LocalDate.of(2021, 1, 1),
     CalculationType.CALCULATED,

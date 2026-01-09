@@ -7,8 +7,6 @@ spring:
 
   jackson:
     date-format: "yyyy-MM-dd HH:mm:ss"
-    serialization:
-      WRITE_DATES_AS_TIMESTAMPS: false
 
   datasource:
     url: 'jdbc:postgresql://localhost:5432/calculate_release_dates'

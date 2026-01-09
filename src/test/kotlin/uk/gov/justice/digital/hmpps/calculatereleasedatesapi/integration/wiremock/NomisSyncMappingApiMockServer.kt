@@ -39,11 +39,11 @@ class NomisSyncMappingApiExtension :
     nomisSyncMappingApiMockServer.stubPostNomisMapping()
   }
 
-  override fun afterAll(context: ExtensionContext?) {
+  override fun afterAll(context: ExtensionContext) {
     nomisSyncMappingApiMockServer.stop()
   }
 
-  override fun beforeEach(context: ExtensionContext?) {
+  override fun beforeEach(context: ExtensionContext) {
     nomisSyncMappingApiMockServer.resetRequests()
   }
 }

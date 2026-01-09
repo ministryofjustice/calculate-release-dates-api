@@ -684,7 +684,7 @@ class ManualCalculationServiceTest {
       inputData = objectToJson(BOOKING, objectMapper),
       calculationOutcomes = listOf(
         CalculationOutcome(
-          calculationRequestId = CALCULATION_REQUEST_WITH_OUTCOMES.id,
+          calculationRequestId = CALCULATION_REQUEST_WITH_OUTCOMES.id(),
           outcomeDate = LocalDate.now(),
           calculationDateType = "PED",
         ),
@@ -723,7 +723,7 @@ class ManualCalculationServiceTest {
       inputData = objectToJson(BOOKING, objectMapper),
       calculationOutcomes = listOf(
         CalculationOutcome(
-          calculationRequestId = CALCULATION_REQUEST_WITH_OUTCOMES.id,
+          calculationRequestId = CALCULATION_REQUEST_WITH_OUTCOMES.id(),
           outcomeDate = LocalDate.now(),
           calculationDateType = "PED",
         ),
@@ -742,7 +742,7 @@ class ManualCalculationServiceTest {
       inputData = objectToJson(BOOKING.copy(returnToCustodyDate = LocalDate.now()), objectMapper),
       calculationOutcomes = listOf(
         CalculationOutcome(
-          calculationRequestId = CALCULATION_REQUEST_WITH_OUTCOMES.id,
+          calculationRequestId = CALCULATION_REQUEST_WITH_OUTCOMES.id(),
           outcomeDate = LocalDate.now(),
           calculationDateType = "PED",
         ),

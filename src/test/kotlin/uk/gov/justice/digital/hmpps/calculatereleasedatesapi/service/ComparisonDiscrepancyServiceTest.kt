@@ -50,7 +50,7 @@ class ComparisonDiscrepancyServiceTest {
   fun `Creates a comparison person discrepancy`() {
     val comparison = aComparison()
     val comparisonPerson = aComparisonPerson(
-      comparison.id,
+      comparison.id(),
       USERNAME,
     )
 
@@ -98,7 +98,7 @@ class ComparisonDiscrepancyServiceTest {
   fun `Sets superseded id on an existing discrepancy when creating a new discrepancy`() {
     val comparison = aComparison()
     val comparisonPerson = aComparisonPerson(
-      comparison.id,
+      comparison.id(),
       ComparisonServiceTest.USERNAME,
     )
 
