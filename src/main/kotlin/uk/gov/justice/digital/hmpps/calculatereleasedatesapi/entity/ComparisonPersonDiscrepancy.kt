@@ -18,7 +18,7 @@ import java.time.LocalDateTime
 class ComparisonPersonDiscrepancy(
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  val id: Long = -1,
+  val id: Long? = null,
 
   @NotNull
   @ManyToOne

@@ -7,9 +7,9 @@ import org.junit.jupiter.api.Test
 import org.mockito.Mockito
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest
 import org.springframework.http.MediaType
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter
+import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
@@ -43,15 +43,14 @@ class ComparisonControllerTest {
   @Autowired
   private lateinit var objectMapper: ObjectMapper
 
-  @Autowired
-  private lateinit var jackson2HttpMessageConverter: MappingJackson2HttpMessageConverter
+  private val jackson2HttpMessageConverter = JacksonJsonHttpMessageConverter()
 
   @BeforeEach
   fun reset() {
     Mockito.reset(comparisonService)
 
     mvc = MockMvcBuilders
-      .standaloneSetup(ComparisonController(comparisonService))
+      .standaloneSetup(ComparisonController(comparisonService, objectMapper))
       .setControllerAdvice(ControllerAdvice())
       .setMessageConverters(this.jackson2HttpMessageConverter)
       .build()
@@ -59,7 +58,7 @@ class ComparisonControllerTest {
 
   @Test
   fun `Test POST for creation of comparison`() {
-    val comparisonInput = ComparisonInput(objectMapper.createObjectNode(), "ABC")
+    val comparisonInput = ComparisonInput(emptyMap(), "ABC")
 
     whenever(comparisonService.create(comparisonInput, "Bearer token")).thenReturn(
       Comparison(

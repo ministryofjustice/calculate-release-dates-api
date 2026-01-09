@@ -51,6 +51,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationFragments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOutput
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationReasonDto
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExternalSentenceId
@@ -709,7 +710,7 @@ class CalculationTransactionalServiceTest {
       prisonerId = PRISONER_ID,
       calculationStatus = CONFIRMED,
       calculationReference = CALCULATION_REFERENCE,
-      calculationReason = CALCULATION_REASON,
+      calculationReason = CalculationReasonDto.from(CALCULATION_REASON),
       calculationDate = LocalDate.now(),
     )
 
