@@ -3,13 +3,13 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.http.HttpHeaders
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService
-import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository
-import org.springframework.web.context.annotation.RequestScope
+import org.springframework.web.reactive.function.client.ClientRequest
+import org.springframework.web.reactive.function.client.ExchangeFilterFunction
+import org.springframework.web.reactive.function.client.ExchangeFunction
 import org.springframework.web.reactive.function.client.WebClient
 import uk.gov.justice.hmpps.kotlin.auth.authorisedWebClient
-import uk.gov.justice.hmpps.kotlin.auth.usernameAwareTokenRequestOAuth2AuthorizedClientManager
 
 @Configuration
 class WebClientConfiguration(
@@ -22,20 +22,23 @@ class WebClientConfiguration(
   @Value("\${manage-users.api.url}") private val manageUsersApiUrl: String,
 ) {
 
+  /*
+    TODO This works because we are calling the API with the clients token rather than a system token the UI should be changed to
+     use a system token with a username and then we can switch to usernameAwareTokenRequestOAuth2AuthorizedClientManager as per
+     https://github.com/ministryofjustice/hmpps-kotlin-lib/blob/main/test-app/src/main/kotlin/uk/gov/justice/digital/hmpps/testapp/config/WebClientConfiguration.kt
+   */
   @Bean
-  @RequestScope
-  fun prisonApiUserAuthWebClient(
-    clientRegistrationRepository: ClientRegistrationRepository,
-    oAuth2AuthorizedClientService: OAuth2AuthorizedClientService,
-    builder: WebClient.Builder,
-  ): WebClient = builder.authorisedWebClient(
-    usernameAwareTokenRequestOAuth2AuthorizedClientManager(
-      clientRegistrationRepository,
-      oAuth2AuthorizedClientService,
-    ),
-    registrationId = "prison-api",
-    url = prisonApiUri,
-  )
+  fun prisonApiUserAuthWebClient(webClientBuilder: WebClient.Builder): WebClient = webClientBuilder
+    .baseUrl(prisonApiUri)
+    .filter(addAuthHeaderFilterFunction())
+    .build()
+
+  private fun addAuthHeaderFilterFunction(): ExchangeFilterFunction = ExchangeFilterFunction { request: ClientRequest, next: ExchangeFunction ->
+    val filtered = ClientRequest.from(request)
+      .header(HttpHeaders.AUTHORIZATION, UserContext.getAuthToken())
+      .build()
+    next.exchange(filtered)
+  }
 
   @Bean
   fun prisonApiSystemAuthWebClient(
