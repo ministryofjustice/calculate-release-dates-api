@@ -1,0 +1,9 @@
+{
+  "dates": {
+    "SLED": "2030-03-01",
+    "CRD": "2028-03-01",
+    "ESED": "2030-03-01",
+    "HDCED": "2027-09-01"
+  },
+  "effectiveSentenceLength": "P3Y"
+}
