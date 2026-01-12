@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.adjustmentsapi.model.AdjustmentDto
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentsSourceData
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOutput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.UnusedDeductionCalculationResponse
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.BookingService
@@ -41,6 +42,11 @@ class UnusedDeductionsCalculationService(
 
     val booking = bookingService.getBooking(sourceData)
     val result = calculationService.calculateReleaseDates(booking, calculationUserInputs)
+
+    return calculate(result)
+  }
+
+  fun calculate(result: CalculationOutput): UnusedDeductionCalculationResponse {
     val sentences = result.sentenceGroup.last().sentences
     val releaseDateTypes = listOf(ReleaseDateType.CRD, ReleaseDateType.ARD, ReleaseDateType.MTD)
     val calculationResult = result.calculationResult
@@ -65,7 +71,6 @@ class UnusedDeductionsCalculationService(
     } else {
       0
     }
-
-    return UnusedDeductionCalculationResponse(unusedDeductions, validationMessages)
+    return UnusedDeductionCalculationResponse(unusedDeductions, emptyList())
   }
 }

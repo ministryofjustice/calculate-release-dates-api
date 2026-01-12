@@ -7,9 +7,9 @@ import org.junit.jupiter.api.Test
 import org.mockito.Mockito.reset
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest
 import org.springframework.http.MediaType.APPLICATION_JSON
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter
+import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
@@ -35,8 +35,7 @@ class WorkingDayControllerTest {
   @Autowired
   private lateinit var mapper: ObjectMapper
 
-  @Autowired
-  private lateinit var jackson2HttpMessageConverter: MappingJackson2HttpMessageConverter
+  private val jackson2HttpMessageConverter = JacksonJsonHttpMessageConverter()
 
   @BeforeEach
   fun reset() {

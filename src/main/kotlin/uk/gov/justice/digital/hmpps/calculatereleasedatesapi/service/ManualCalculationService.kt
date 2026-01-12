@@ -91,7 +91,7 @@ class ManualCalculationService(
       reasonForCalculation,
       objectMapper,
       manualEntryRequest.otherReasonDescription,
-      version = buildProperties.version,
+      version = buildProperties.version ?: "",
     ).withType(type)
 
     return try {
@@ -112,13 +112,13 @@ class ManualCalculationService(
         writeToNomisAndPublishEvent(
           prisonerId = prisonerId,
           booking = booking,
-          calculationRequestId = savedCalculationRequest.id,
+          calculationRequestId = savedCalculationRequest.id(),
           calculationOutcomes = calculationOutcomes,
           isGenuineOverride = false,
           effectiveSentenceLength = effectiveSentenceLength,
         )
           ?: throw CouldNotSaveManualEntryException("There was a problem saving the dates")
-      ManualCalculationResponse(enteredDates, savedCalculationRequest.id)
+      ManualCalculationResponse(enteredDates, savedCalculationRequest.id())
     } catch (ex: Exception) {
       calculationRequestRepository.save(
         transform(
@@ -129,10 +129,10 @@ class ManualCalculationService(
           reasonForCalculation,
           objectMapper,
           manualEntryRequest.otherReasonDescription,
-          version = buildProperties.version,
+          version = buildProperties.version ?: "",
         ),
       )
-      ManualCalculationResponse(emptyMap(), calculationRequest.id)
+      ManualCalculationResponse(emptyMap(), calculationRequest.id())
     }
   }
 

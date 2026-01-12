@@ -19,7 +19,7 @@ import java.time.LocalDateTime
 data class ApprovedDatesSubmission(
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  val id: Long = -1,
+  val id: Long? = null,
   @NotNull
   @ManyToOne(optional = false)
   @JoinColumn(name = "calculationRequestId", nullable = false, updatable = false)

@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 
-import com.fasterxml.jackson.databind.JsonNode
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessage
 
 data class ComparisonMismatchSummary(
@@ -11,7 +10,7 @@ data class ComparisonMismatchSummary(
   val validationMessages: List<ValidationMessage>,
   val shortReference: String,
   val misMatchType: MismatchType,
-  val sdsSentencesIdentified: JsonNode,
+  val sdsSentencesIdentified: List<SentenceAndOffenceWithReleaseArrangements>,
   val establishment: String?,
   val fatalException: String?,
 )

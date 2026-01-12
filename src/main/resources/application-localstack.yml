@@ -6,3 +6,15 @@ domain-events-sqs:
 
 domain-events-sns:
   provider: localstack
+
+hmpps.sqs:
+  reactiveApi: true
+  provider: localstack
+  queues:
+    bulkcomparison:
+      queueName: "bulkcomparison"
+      dlqName: "bulkcomparison-dlq"
+      dlqMaxReceiveCount: 3
+      visibilityTimeout: 120
+
+bulk.calculation.process: true

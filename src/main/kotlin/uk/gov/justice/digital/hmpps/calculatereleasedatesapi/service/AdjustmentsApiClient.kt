@@ -10,7 +10,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.adjustmentsapi.mode
 
 @Service
 class AdjustmentsApiClient(@Qualifier("adjustmentsApiWebClient") private val webClient: WebClient) {
-  private inline fun <reified T> typeReference() = object : ParameterizedTypeReference<T>() {}
+  private inline fun <reified T : Any> typeReference() = object : ParameterizedTypeReference<T>() {}
   private val log = LoggerFactory.getLogger(this::class.java)
 
   fun getAdjustmentsByPerson(prisonerId: String, statuses: List<AdjustmentDto.Status>, currentPeriodOfCustody: Boolean = true): List<AdjustmentDto> {
@@ -20,7 +20,7 @@ class AdjustmentsApiClient(@Qualifier("adjustmentsApiWebClient") private val web
         builder.path("/adjustments")
         builder.queryParam("currentPeriodOfCustody", currentPeriodOfCustody)
         builder.queryParam("person", prisonerId)
-        builder.queryParam("status", statuses.map { it.toString() })
+        builder.queryParam("status", *statuses.map { it.toString() }.toTypedArray())
         builder.build()
       }
       .retrieve()
