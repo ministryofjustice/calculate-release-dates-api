@@ -1,0 +1,52 @@
+{
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2027-02-28",
+          "offenceCode": "TH68023"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 5,
+            "MONTHS": 4
+          }
+        },
+        "sentencedAt": "2027-02-28",
+        "identifier": "0b10fc4b-1920-4b74-96e0-d95369adb5e1",
+        "section250": true
+      },
+      {
+        "type": "DetentionAndTrainingOrderSentence",
+        "offence": {
+          "committedAt": "2027-04-09",
+          "offenceCode": "OF61102"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 6
+          }
+        },
+        "sentencedAt": "2027-04-09",
+        "identifier": "0b10fc4b-1920-4b74-96e0-d95369adb5e2",
+        "section250": true
+      }
+    ],
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2027-02-28",
+          "numberOfDays": 223,
+          "fromDate": "2026-07-20",
+          "toDate": "2027-02-27"
+        }
+      ]
+    }
+  },
+  "params": "sds-33"
+}
