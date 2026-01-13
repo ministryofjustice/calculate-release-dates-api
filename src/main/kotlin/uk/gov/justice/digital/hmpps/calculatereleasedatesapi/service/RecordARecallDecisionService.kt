@@ -3,10 +3,14 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 import jakarta.persistence.EntityNotFoundException
 import org.springframework.stereotype.Service
 import org.threeten.extra.LocalDateRange
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.RECORD_A_RECALL
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AutomatedCalculationData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExternalMovement
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExternalMovementDirection
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExternalMovementReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExternalSentenceId
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallSentenceCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallableSentence
@@ -15,6 +19,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecordARecall
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecordARecallRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecordARecallValidationResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceGroup
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Term
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.nomissyncmapping.model.NomisDpsSentenceMapping
@@ -25,6 +30,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isBeforeOrEqua
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationOrder
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.service.ValidationService
+import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 import java.util.UUID
 
@@ -37,6 +43,7 @@ class RecordARecallDecisionService(
   private val validationService: ValidationService,
   private val bookingService: BookingService,
   private val nomisSyncMappingApiClient: NomisSyncMappingApiClient,
+  private val featureToggles: FeatureToggles,
 ) {
 
   fun validate(prisonerId: String): RecordARecallValidationResult {
@@ -149,19 +156,71 @@ class RecordARecallDecisionService(
         expiredSentences = toRecallableSentences(expiredSentences, mappings),
         ineligibleSentences = toRecallableSentences(ineligibleSentences, mappings),
         sentencesBeforeInitialRelease = toRecallableSentences(sentenceGroupsReleasedAfterRevocation.flatMap { it.sentences.map { sentence -> it to sentence } }, mappings),
-        unexpectedRecallTypes = findUnexpectedRecallTypes(recallableSentences),
+        unexpectedRecallTypes = findUnexpectedRecallTypes(recallableSentences, booking.externalMovements, recordARecallRequest.revocationDate),
       ),
     )
   }
 
-  private fun findUnexpectedRecallTypes(recallableSentences: List<Pair<SentenceGroup, CalculableSentence>>): List<Recall.RecallType> {
-    val anyOver12Months = recallableSentences.any { it.second.durationIsGreaterThanOrEqualTo(12, ChronoUnit.MONTHS) }
-    return if (anyOver12Months) {
-      listOf(Recall.RecallType.FTR_14, Recall.RecallType.FTR_HDC_14)
+  private fun findUnexpectedRecallTypes(
+    recallableSentences: List<Pair<SentenceGroup, CalculableSentence>>,
+    externalMovements: List<ExternalMovement>,
+    revocationDate: LocalDate,
+  ): List<Recall.RecallType> {
+    val expectedRecallTypes = if (featureToggles.recordARecallFtr56Rules) {
+      findExpectedRecallTypesForFtr56(recallableSentences, externalMovements, revocationDate)
     } else {
-      listOf(Recall.RecallType.FTR_28, Recall.RecallType.FTR_HDC_28)
+      findExpectedRecallTypesForFtr(recallableSentences, externalMovements, revocationDate)
+    }
+    return Recall.RecallType.entries.filterNot { expectedRecallTypes.contains(it) }
+  }
+
+  private fun findExpectedRecallTypesForFtr56(
+    recallableSentences: List<Pair<SentenceGroup, CalculableSentence>>,
+    externalMovements: List<ExternalMovement>,
+    revocationDate: LocalDate,
+  ): List<Recall.RecallType> {
+    val onlyYouthSentences = recallableSentences.all { it.second.sentenceParts().all { sentence -> sentence is StandardDeterminateSentence && sentence.section250 } }
+    if (onlyYouthSentences) {
+      return findExpectedRecallTypesForFtr(recallableSentences, externalMovements, revocationDate)
+    } else {
+      val latestReleaseIsHdcAndRevocationBeforeCrd = isLatestReleaseIsHdcAndRevocationBeforeCrd(externalMovements, recallableSentences, revocationDate)
+      return if (latestReleaseIsHdcAndRevocationBeforeCrd) {
+        listOf(Recall.RecallType.FTR_56, Recall.RecallType.IN_HDC, Recall.RecallType.CUR_HDC)
+      } else {
+        listOf(Recall.RecallType.FTR_56, Recall.RecallType.LR)
+      }
     }
   }
+
+  private fun findExpectedRecallTypesForFtr(
+    recallableSentences: List<Pair<SentenceGroup, CalculableSentence>>,
+    externalMovements: List<ExternalMovement>,
+    revocationDate: LocalDate,
+  ): List<Recall.RecallType> {
+    val latestReleaseIsHdcAndRevocationBeforeCrd = isLatestReleaseIsHdcAndRevocationBeforeCrd(externalMovements, recallableSentences, revocationDate)
+    val any12MonthsOrOver = isAny12MonthsOrOver(recallableSentences)
+    return if (latestReleaseIsHdcAndRevocationBeforeCrd) {
+      if (any12MonthsOrOver) {
+        listOf(Recall.RecallType.FTR_HDC_28, Recall.RecallType.IN_HDC, Recall.RecallType.CUR_HDC)
+      } else {
+        listOf(Recall.RecallType.FTR_HDC_14, Recall.RecallType.IN_HDC, Recall.RecallType.CUR_HDC)
+      }
+    } else {
+      if (any12MonthsOrOver) {
+        listOf(Recall.RecallType.FTR_28, Recall.RecallType.LR)
+      } else {
+        listOf(Recall.RecallType.FTR_14)
+      }
+    }
+  }
+  private fun isLatestReleaseIsHdcAndRevocationBeforeCrd(externalMovements: List<ExternalMovement>, recallableSentences: List<Pair<SentenceGroup, CalculableSentence>>, revocationDate: LocalDate): Boolean {
+    val latestReleaseIsHdc = externalMovements.lastOrNull { it.direction == ExternalMovementDirection.OUT }?.movementReason == ExternalMovementReason.HDC
+    val latestCrd = recallableSentences.maxOf { it.second.sentenceCalculation.adjustedDeterminateReleaseDate }
+    val revocationDateIsBeforeCrd = revocationDate.isBefore(latestCrd)
+    return latestReleaseIsHdc && revocationDateIsBeforeCrd
+  }
+
+  private fun isAny12MonthsOrOver(recallableSentences: List<Pair<SentenceGroup, CalculableSentence>>) = recallableSentences.any { it.second.durationIsGreaterThanOrEqualTo(12, ChronoUnit.MONTHS) }
 
   private fun toRecallableSentences(
     sentences: List<Pair<SentenceGroup, CalculableSentence>>,
