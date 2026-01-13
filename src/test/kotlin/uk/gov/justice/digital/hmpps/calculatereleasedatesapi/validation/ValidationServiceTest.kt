@@ -4,6 +4,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
 import org.mockito.Mockito.mock
@@ -18,6 +19,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Adjust
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.UNLAWFULLY_AT_LARGE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SDSEarlyReleaseTranche
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.SpringTestBase
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.ManageOffencesApiExtension
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.OAuthExtension
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentsSourceData
@@ -32,7 +35,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Recall
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType.FIXED_TERM_RECALL_14
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType.FIXED_TERM_RECALL_28
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType.STANDARD_RECALL
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
@@ -112,9 +114,9 @@ import java.time.temporal.ChronoUnit.WEEKS
 import java.time.temporal.ChronoUnit.YEARS
 import java.util.UUID
 
-// @Profile("tests")
 @ActiveProfiles("calculation-params")
-abstract class ValidationServiceTest : SpringTestBase() {
+@ExtendWith(OAuthExtension::class, ManageOffencesApiExtension::class)
+class ValidationServiceTest : SpringTestBase() {
 
   @MockitoBean
   private lateinit var sourceDataService: CalculationSourceDataService
@@ -486,6 +488,27 @@ abstract class ValidationServiceTest : SpringTestBase() {
           )
         },
         fixedTermRecallDetails = FTR_DETAILS_NO_RTC,
+      ),
+      USER_INPUTS,
+      ValidationOrder.allValidations(),
+    )
+    assertThat(result).isEqualTo(listOf(ValidationMessage(FTR_NO_RETURN_TO_CUSTODY_DATE)))
+  }
+
+  @Test
+  fun `Fixed Term Recall with no FTR details should fail`() {
+    val result = validationService.validate(
+      VALID_FTR_SOURCE_DATA.copy(
+        sentenceAndOffences = listOf(FTR_14_DAY_SENTENCE).map {
+          SentenceAndOffenceWithReleaseArrangements(
+            source = it,
+            isSdsPlus = false,
+            isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+            isSDSPlusOffenceInPeriod = false,
+            hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
+          )
+        },
+        fixedTermRecallDetails = null,
       ),
       USER_INPUTS,
       ValidationOrder.allValidations(),
@@ -2710,7 +2733,24 @@ abstract class ValidationServiceTest : SpringTestBase() {
 
   @Test
   fun `Test that a validation error is generated for sentences with missing offence dates when validating for manual entry`() {
-    whenever(sourceDataService.getCalculationSourceData(eq(PRISONER_ID), any(), any())).thenReturn(CalculationSourceData(listOf(), mock(), mock(), mock(), mock(), mock()))
+    whenever(sourceDataService.getCalculationSourceData(eq(PRISONER_ID), any(), any())).thenReturn(
+      CalculationSourceData(
+        listOf(
+          SentenceAndOffenceWithReleaseArrangements(
+            source = sentenceWithMissingOffenceDates,
+            isSdsPlus = true,
+            isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+            isSDSPlusOffenceInPeriod = false,
+            hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
+          ),
+        ),
+        mock(),
+        mock(),
+        mock(),
+        mock(),
+        mock(),
+      ),
+    )
 
     val result = validationService.validateOnlyOffenceDatesForManualEntry(PRISONER_ID)
     assertThat(result).containsExactly(ValidationMessage(ValidationCode.OFFENCE_MISSING_DATE, listOf("1", "2")))
@@ -3555,21 +3595,6 @@ abstract class ValidationServiceTest : SpringTestBase() {
       caseSequence = CASE_SEQUENCE,
       recall = Recall(FIXED_TERM_RECALL_28),
       isSDSPlus = true,
-      hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
-    )
-
-    private val LR_ORA = StandardDeterminateSentence(
-      sentencedAt = LocalDate.of(2024, 1, 10),
-      duration = Duration(mapOf(MONTHS to 18L)),
-      offence = Offence(
-        committedAt = LocalDate.of(2023, 10, 10),
-        offenceCode = OFFENCE_CODE,
-      ),
-      identifier = UUID.nameUUIDFromBytes(("$COMPANION_BOOKING_ID-$SEQUENCE").toByteArray()),
-      lineSequence = LINE_SEQUENCE,
-      caseSequence = CASE_SEQUENCE,
-      recall = Recall(STANDARD_RECALL),
-      isSDSPlus = false,
       hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
     )
 

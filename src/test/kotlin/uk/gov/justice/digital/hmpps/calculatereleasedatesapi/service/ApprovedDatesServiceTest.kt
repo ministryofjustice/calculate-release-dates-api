@@ -122,7 +122,7 @@ class ApprovedDatesServiceTest {
     whenever(calculationRequestRepository.findFirstByPrisonerIdAndCalculationStatusOrderByCalculatedAtDesc(PRISONER_ID, "CONFIRMED")).thenReturn(Optional.of(MINIMAL_CALC_REQUEST))
     whenever(calculationSourceDataService.getCalculationSourceData(eq(PRISONER_ID), any(), any())).thenReturn(MINIMAL_SOURCE_DATA)
     whenever(bookingService.getBooking(any())).thenReturn(MINIMAL_BOOKING)
-    whenever(validationService.validate(any(), any(), any())).thenReturn(listOf(ValidationMessage(ValidationCode.OFFENCE_MISSING_DATE)))
+    whenever(validationService.validate(any(), any(), any())).thenReturn(listOf(ValidationMessage(ValidationCode.OFFENCE_MISSING_DATE, listOf("1", "2"))))
 
     val response = service.inputsForPrisoner(PRISONER_ID)
 

@@ -48,9 +48,9 @@ class PrisonService(
   ): Pair<FixedTermRecallDetails?, ReturnToCustodyDate?> {
     if (!bookingHasFixedTermRecall) return Pair(null, null)
     return try {
-      val ftrDetails = prisonApiClient.getFixedTermRecallDetails(bookingId)
-      val returnToCustodyDate = transform(ftrDetails)
-      ftrDetails to returnToCustodyDate
+      prisonApiClient.getFixedTermRecallDetails(bookingId)
+        ?.let { it to transform(it) }
+        ?: (null to null)
     } catch (ex: DecodingException) {
       throw NoValidReturnToCustodyDateException("No valid Return To Custody Date found for bookingId $bookingId")
     }

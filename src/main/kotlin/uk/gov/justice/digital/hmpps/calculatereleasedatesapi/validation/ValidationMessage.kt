@@ -6,9 +6,7 @@ import io.swagger.v3.oas.annotations.media.Schema
 data class ValidationMessage(
   val code: ValidationCode,
   val arguments: List<String> = listOf(),
-) {
-  val message
-    get() = String.format(code.message, *arguments.toTypedArray())
-  val type
-    get() = code.validationType
-}
+  val message: String = String.format(code.message, *arguments.toTypedArray()),
+  val type: ValidationType = code.validationType,
+  val calculationUnsupported: Boolean = code.validationType.isUnsupported(),
+)
