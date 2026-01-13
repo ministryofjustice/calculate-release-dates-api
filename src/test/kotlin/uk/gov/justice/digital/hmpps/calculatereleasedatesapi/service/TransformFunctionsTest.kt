@@ -33,6 +33,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Senten
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AFineSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BotusSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationReasonDto
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonOverview
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetentionAndTrainingOrderSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
@@ -150,7 +151,7 @@ class TransformFunctionsTest {
         prisonerId = PRISONER_ID,
         calculationStatus = CalculationStatus.PRELIMINARY,
         calculationReference = CALCULATION_REFERENCE,
-        calculationReason = CALCULATION_REASON,
+        calculationReason = CalculationReasonDto.from(CALCULATION_REASON),
         calculationDate = LocalDate.of(2024, 1, 2),
       ),
     )
@@ -186,7 +187,7 @@ class TransformFunctionsTest {
         calculationStatus = CalculationStatus.PRELIMINARY,
         approvedDates = mapOf(ReleaseDateType.APD to LocalDate.of(2020, 3, 3)),
         calculationReference = CALCULATION_REFERENCE,
-        calculationReason = CALCULATION_REASON,
+        calculationReason = CalculationReasonDto.from(CALCULATION_REASON),
         calculationDate = LocalDate.of(2024, 1, 2),
       ),
     )
@@ -611,7 +612,6 @@ class TransformFunctionsTest {
   }
 
   private companion object {
-    val ONE_YEAR_DURATION = Duration(mutableMapOf(DAYS to 0L, WEEKS to 0L, MONTHS to 0L, YEARS to 1L))
     val FIVE_YEAR_DURATION = Duration(mutableMapOf(DAYS to 0L, WEEKS to 0L, MONTHS to 0L, YEARS to 5L))
     val FIRST_JAN_2015: LocalDate = LocalDate.of(2015, 1, 1)
     val SECOND_JAN_2015: LocalDate = LocalDate.of(2015, 1, 2)
@@ -621,7 +621,7 @@ class TransformFunctionsTest {
     private val CALCULATION_REFERENCE: UUID = UUID.randomUUID()
     private const val CALCULATION_REQUEST_ID = 100011L
     val CALCULATION_REASON =
-      CalculationReason(-1, true, false, "Reason", false, "UPDATE", nomisComment = "NOMIS_COMMENT", null, false)
+      CalculationReason(-1, true, false, "Reason", false, "UPDATE", nomisComment = "NOMIS_COMMENT", null, false, false)
 
     val CALCULATION_REQUEST = CalculationRequest(
       id = CALCULATION_REQUEST_ID,
@@ -656,7 +656,7 @@ class TransformFunctionsTest {
       prisonerId = PRISONER_ID,
       calculationStatus = CalculationStatus.PRELIMINARY,
       calculationReference = UUID.randomUUID(),
-      calculationReason = CALCULATION_REASON,
+      calculationReason = CalculationReasonDto.from(CALCULATION_REASON),
       calculationDate = LocalDate.of(2024, 1, 1),
     )
 

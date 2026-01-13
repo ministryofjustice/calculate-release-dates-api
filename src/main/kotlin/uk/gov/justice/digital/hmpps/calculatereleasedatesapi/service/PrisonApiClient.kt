@@ -9,6 +9,7 @@ import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.reactive.function.client.WebClientResponseException
 import reactor.core.publisher.Mono
 import reactor.util.retry.Retry
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Agency
@@ -37,7 +38,7 @@ class PrisonApiClient(
   @Qualifier("prisonApiUserAuthWebClient") private val userAuthWebClient: WebClient,
   @Qualifier("prisonApiSystemAuthWebClient") private val systemAuthWebClient: WebClient,
 ) {
-  private inline fun <reified T> typeReference() = object : ParameterizedTypeReference<T>() {}
+  private inline fun <reified T : Any> typeReference() = object : ParameterizedTypeReference<T>() {}
   private val log = LoggerFactory.getLogger(this::class.java)
 
   fun getOffenderDetail(prisonerId: String): PrisonerDetails {
@@ -73,13 +74,14 @@ class PrisonApiClient(
       .block()!!
   }
 
-  fun getFixedTermRecallDetails(bookingId: Long): FixedTermRecallDetails {
+  fun getFixedTermRecallDetails(bookingId: Long): FixedTermRecallDetails? {
     log.info("Requesting return to fixed term recall details for bookingId $bookingId")
     return systemAuthWebClient.get()
       .uri("/api/bookings/$bookingId/fixed-term-recall")
       .retrieve()
       .bodyToMono(typeReference<FixedTermRecallDetails>())
-      .block()!!
+      .onErrorResume(WebClientResponseException.NotFound::class.java) { _ -> Mono.empty() }
+      .block()
   }
 
   fun postReleaseDates(bookingId: Long, updateOffenderDates: UpdateOffenderDates) {

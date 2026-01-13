@@ -82,19 +82,19 @@ class GenuineOverrideServiceTest {
     val calculationOutcomes = listOf(
       CalculationOutcome(
         id = 1,
-        calculationRequestId = newRequest.id,
+        calculationRequestId = newRequest.id(),
         outcomeDate = LocalDate.of(2025, 1, 2),
         calculationDateType = "SED",
       ),
       CalculationOutcome(
         id = 2,
-        calculationRequestId = newRequest.id,
+        calculationRequestId = newRequest.id(),
         outcomeDate = LocalDate.of(2029, 12, 13),
         calculationDateType = "LED",
       ),
       CalculationOutcome(
         id = 3,
-        calculationRequestId = newRequest.id,
+        calculationRequestId = newRequest.id(),
         outcomeDate = LocalDate.of(2021, 6, 7),
         calculationDateType = "HDCED",
       ),
@@ -103,7 +103,7 @@ class GenuineOverrideServiceTest {
     whenever(bookingService.getBooking(FAKE_SOURCE_DATA)).thenReturn(BOOKING)
     whenever(serviceUserService.getUsername()).thenReturn("USER1")
     whenever(calculationRequestRepository.findByIdAndCalculationStatus(123L, "PRELIMINARY")).thenReturn(Optional.of(originalRequest))
-    whenever(calculationRequestRepository.save(argThat { request -> request?.id == -1L })).thenReturn(newRequest)
+    whenever(calculationRequestRepository.save(argThat { request -> request?.id == null })).thenReturn(newRequest)
     whenever(calculationRequestRepository.save(argThat { request -> request?.id == 123L })).thenReturn(originalRequest)
     whenever(manualCalculationService.calculateEffectiveSentenceLength(BOOKING, LocalDate.of(2025, 1, 2))).thenReturn(Period.ZERO)
     whenever(calculationOutcomeRepository.saveAll<CalculationOutcome>(any())).thenReturn(calculationOutcomes)
@@ -125,7 +125,7 @@ class GenuineOverrideServiceTest {
     verify(manualCalculationService).writeToNomisAndPublishEvent(
       PRISONER_ID,
       BOOKING,
-      newRequest.id,
+      newRequest.id(),
       calculationOutcomes,
       true,
       Period.ZERO,
@@ -387,6 +387,6 @@ class GenuineOverrideServiceTest {
       listOf(),
       null,
     )
-    private val REASON = CalculationReason(0, false, false, "Some reason", false, null, null, null, false)
+    private val REASON = CalculationReason(0, false, false, "Some reason", false, null, null, null, false, false)
   }
 }

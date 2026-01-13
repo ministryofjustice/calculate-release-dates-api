@@ -63,7 +63,7 @@ class PrisonServiceTest {
   fun `should get calculation history for an offender`() {
     val prisonId = "G0127UG"
     val agencyDescription = "Cookham Wood (HMP)"
-    val sentenceCalculationSummary = SentenceCalculationSummary(47, prisonId, "first name", "last name", "CKI", agencyDescription, 28, LocalDateTime.now(), 4, "comment", "Lodged warrant", "user")
+    val sentenceCalculationSummary = SentenceCalculationSummary(47, prisonId, "first name", "last name", "CKI", agencyDescription, 28, LocalDateTime.now(), 4, "comment", "Lodged warrant", "user", calculatedByFirstName = "User", calculatedByLastName = "One")
     whenever(prisonApiClient.getCalculationsForAPrisonerId(prisonId)).thenReturn(listOf(sentenceCalculationSummary))
 
     val history = prisonService.getCalculationsForAPrisonerId(prisonId)
@@ -86,7 +86,7 @@ class PrisonServiceTest {
   @Test
   fun `should get offender key dates`() {
     val bookingId = 123456L
-    val expected = OffenderKeyDates(reasonCode = "NEW", calculatedAt = LocalDateTime.now())
+    val expected = OffenderKeyDates(reasonCode = "NEW", calculatedAt = LocalDateTime.now(), calculatedByUserId = "username", calculatedByFirstName = "User", calculatedByLastName = "One")
     whenever(prisonApiClient.getOffenderKeyDates(bookingId)).thenReturn(expected.right())
     val keyDates = prisonService.getOffenderKeyDates(bookingId)
     assertThat(keyDates).isEqualTo(expected.right())
@@ -104,7 +104,7 @@ class PrisonServiceTest {
   @Test
   fun `should get offender key dates by using offender sent calc id`() {
     val offenderSentCalcId = 123456L
-    val expected = OffenderKeyDates(reasonCode = "NEW", calculatedAt = LocalDateTime.now())
+    val expected = OffenderKeyDates(reasonCode = "NEW", calculatedAt = LocalDateTime.now(), calculatedByUserId = "username", calculatedByFirstName = "User", calculatedByLastName = "One")
     whenever(prisonApiClient.getNOMISOffenderKeyDates(offenderSentCalcId)).thenReturn(expected.right())
     val keyDates = prisonService.getNOMISOffenderKeyDates(offenderSentCalcId)
     assertThat(keyDates).isEqualTo(expected.right())
@@ -320,7 +320,6 @@ class PrisonServiceTest {
 
     val firstPage = RestResponsePage<CalculablePrisoner>(
       content = emptyList(),
-      pageable = mock(),
       totalElements = 2,
       size = 1,
       number = 0,
@@ -328,7 +327,6 @@ class PrisonServiceTest {
 
     val secondPage = RestResponsePage<CalculablePrisoner>(
       content = emptyList(),
-      pageable = mock(),
       totalElements = 2,
       size = 1,
       number = 1,

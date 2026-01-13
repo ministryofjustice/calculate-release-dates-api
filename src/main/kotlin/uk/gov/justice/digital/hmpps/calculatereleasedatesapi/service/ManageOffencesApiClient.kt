@@ -14,7 +14,7 @@ import java.time.Duration
 
 @Service
 class ManageOffencesApiClient(@Qualifier("manageOffencesApiWebClient") private val webClient: WebClient) {
-  private inline fun <reified T> typeReference() = object : ParameterizedTypeReference<T>() {}
+  private inline fun <reified T : Any> typeReference() = object : ParameterizedTypeReference<T>() {}
   private val log = LoggerFactory.getLogger(this::class.java)
 
   fun getPCSCMarkersForOffences(offenceCodes: List<String>): List<OffencePcscMarkers> {

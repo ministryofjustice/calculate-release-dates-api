@@ -13,7 +13,7 @@ import java.time.LocalDate
 data class CalculationOutcomeHistoricSledOverride(
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  val id: Long = -1,
+  val id: Long? = null,
 
   @NotNull
   val calculationRequestId: Long,

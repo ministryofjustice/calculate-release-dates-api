@@ -12,8 +12,6 @@ spring:
 
   jackson:
     date-format: "yyyy-MM-dd HH:mm:ss"
-    serialization:
-      WRITE_DATES_AS_TIMESTAMPS: false
 
   profiles:
     include:
@@ -46,6 +44,12 @@ spring:
             authorization-grant-type: client_credentials
             scope: read,write
           nomis-sync-mapping-api:
+            provider: hmpps-auth
+            client-id: ${client.creds.client.id}
+            client-secret: ${client.creds.client.secret}
+            authorization-grant-type: client_credentials
+            scope: read,write
+          manage-users-api:
             provider: hmpps-auth
             client-id: ${client.creds.client.id}
             client-secret: ${client.creds.client.secret}

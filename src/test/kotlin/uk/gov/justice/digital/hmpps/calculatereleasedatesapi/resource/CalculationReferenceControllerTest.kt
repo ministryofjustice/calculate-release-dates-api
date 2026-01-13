@@ -11,8 +11,8 @@ import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest
 import org.springframework.http.MediaType
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
@@ -24,9 +24,9 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.ControllerAdvice
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationReasonDto
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationTransactionalService
 import java.time.LocalDate
 import java.util.UUID
@@ -69,7 +69,7 @@ class CalculationReferenceControllerTest {
       bookingId = 123L,
       prisonerId = "ASD",
       calculationReference = UUID.randomUUID(),
-      calculationReason = CalculationReason(-1, false, false, "Reason", false, null, null, null, false),
+      calculationReason = CalculationReasonDto(-1, false, "Reason", false),
       calculationDate = LocalDate.of(2024, 1, 1),
     )
 

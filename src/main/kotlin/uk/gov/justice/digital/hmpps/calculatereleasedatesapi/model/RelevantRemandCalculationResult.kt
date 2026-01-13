@@ -7,4 +7,5 @@ data class RelevantRemandCalculationResult(
   val releaseDate: LocalDate? = null,
   val postRecallReleaseDate: LocalDate? = null,
   val validationMessages: List<ValidationMessage> = emptyList(),
+  val unusedDeductions: Long? = null,
 )

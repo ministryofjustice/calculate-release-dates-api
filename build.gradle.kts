@@ -5,12 +5,12 @@ import org.jlleitschuh.gradle.ktlint.tasks.KtLintFormatTask
 import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "9.1.4"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "10.0.0"
   id("org.springdoc.openapi-gradle-plugin") version "1.9.0"
-  kotlin("plugin.spring") version "2.2.21"
-  kotlin("plugin.jpa") version "2.2.21"
+  kotlin("plugin.spring") version "2.3.0"
+  kotlin("plugin.jpa") version "2.3.0"
   id("jacoco")
-  id("org.openapi.generator") version "7.17.0"
+  id("org.openapi.generator") version "7.18.0"
 }
 
 configurations {
@@ -19,8 +19,6 @@ configurations {
     exclude(group = "logback-classic")
   }
 }
-
-ext["hibernate.version"] = "6.5.3.Final"
 
 dependencies {
 
@@ -33,12 +31,18 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
   implementation("org.springframework.boot:spring-boot-starter-actuator")
+  implementation("org.springframework.boot:spring-boot-starter-webclient")
+  implementation("org.springframework.boot:spring-boot-starter-flyway")
+  implementation("org.springframework.boot:spring-boot-jackson2")
+
+  // MoJ libraries
+  implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter:2.0.0")
 
   // GOVUK Notify:
-  implementation("uk.gov.service.notify:notifications-java-client:5.2.1-RELEASE")
+  implementation("uk.gov.service.notify:notifications-java-client:6.0.0-RELEASE")
 
   // Enable kotlin reflect
-  implementation("org.jetbrains.kotlin:kotlin-reflect:2.2.21")
+  implementation("org.jetbrains.kotlin:kotlin-reflect:2.3.0")
 
   // Three Ten Date Calculations
   implementation("org.threeten:threeten-extra:1.8.0")
@@ -50,40 +54,41 @@ dependencies {
   runtimeOnly("org.flywaydb:flyway-database-postgresql")
   runtimeOnly("org.postgresql:postgresql")
 
-  // JWT
-  implementation("io.jsonwebtoken:jjwt-api:0.13.0")
-  runtimeOnly("io.jsonwebtoken:jjwt-impl:0.13.0")
-  runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.13.0")
+  implementation("io.arrow-kt:arrow-core:2.2.1.1")
+  implementation("io.hypersistence:hypersistence-utils-hibernate-71:3.14.1")
 
-  implementation("io.arrow-kt:arrow-core:2.2.0")
-  implementation("io.hypersistence:hypersistence-utils-hibernate-63:3.12.0")
   // OpenAPI
-  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.14")
+  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.1")
 
   implementation("com.amazonaws:amazon-sqs-java-messaging-lib:2.1.4")
-  implementation("io.awspring.cloud:spring-cloud-aws-starter:3.4.1")
-  implementation("io.awspring.cloud:spring-cloud-aws-core:3.4.1")
-  implementation("io.awspring.cloud:spring-cloud-aws-sns:3.4.1")
-  implementation("io.awspring.cloud:spring-cloud-aws-sqs:3.4.1")
-  implementation("org.springframework:spring-jms:7.0.0")
-  implementation("com.google.code.gson:gson:2.13.2")
-  implementation("org.apache.commons:commons-text:1.14.0")
+  implementation("io.awspring.cloud:spring-cloud-aws-starter:3.4.2")
+  implementation("io.awspring.cloud:spring-cloud-aws-core:3.4.2")
+  implementation("io.awspring.cloud:spring-cloud-aws-sns:3.4.2")
+  implementation("io.awspring.cloud:spring-cloud-aws-sqs:3.4.2")
+  implementation("org.springframework:spring-jms:7.0.2")
+  implementation("org.apache.commons:commons-text:1.15.0")
 
   // SQS
-  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:5.6.1")
+  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:6.0.0")
 
   // Test dependencies
-  testImplementation("org.wiremock:wiremock-standalone:3.13.1")
+  testImplementation("org.wiremock:wiremock-standalone:3.13.2")
   testImplementation("org.springframework.security:spring-security-test")
+  testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
+  testImplementation("org.springframework.boot:spring-boot-starter-security-test")
+  testImplementation("org.springframework.boot:spring-boot-webtestclient")
   testImplementation("org.awaitility:awaitility-kotlin:4.3.0")
-  testImplementation("net.javacrumbs.json-unit:json-unit-assertj:5.0.0")
-  testImplementation("io.swagger.parser.v3:swagger-parser-v2-converter:2.1.35")
+  testImplementation("net.javacrumbs.json-unit:json-unit-assertj:5.1.0")
+  testImplementation("io.swagger.parser.v3:swagger-parser-v2-converter:2.1.37")
   testImplementation("org.mockito:mockito-inline:5.2.0")
-  testImplementation("org.junit.jupiter:junit-jupiter:6.0.1")
-  testImplementation("org.testcontainers:postgresql:1.21.3")
-  testImplementation("org.testcontainers:localstack:1.21.3")
+  testImplementation("org.junit.jupiter:junit-jupiter:6.0.2")
+  testImplementation("org.testcontainers:testcontainers:2.0.3")
+  testImplementation("org.testcontainers:localstack:1.21.4")
+  testImplementation("org.testcontainers:postgresql:1.21.4")
+  testImplementation("org.testcontainers:junit-jupiter:1.21.4")
   testImplementation("io.github.hakky54:logcaptor:2.12.1")
   testImplementation("org.mockito.kotlin:mockito-kotlin")
+  testImplementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter-test:2.0.0")
   testImplementation(kotlin("test"))
   if (project.hasProperty("docs")) {
     implementation("com.h2database:h2")

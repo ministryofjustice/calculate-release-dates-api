@@ -5,6 +5,7 @@ import arrow.core.right
 import io.hypersistence.utils.hibernate.type.json.internal.JacksonUtil
 import jakarta.persistence.EntityNotFoundException
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.mockito.kotlin.any
@@ -12,6 +13,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.client.ManageUsersApiClient
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ApprovedDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ApprovedDatesSubmission
@@ -23,10 +25,12 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.TrancheOutco
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SDSEarlyReleaseTranche
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Agency
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BreakdownMissingReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationContext
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOriginalData
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationReasonDto
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedCalculationResults
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.GenuineOverrideReason
@@ -40,12 +44,14 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Sent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.manageusers.UserDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeHistoricOverrideRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.util.*
+import java.util.Optional
+import java.util.UUID
 
 class DetailedCalculationResultsServiceTest {
 
@@ -54,6 +60,8 @@ class DetailedCalculationResultsServiceTest {
   private val calculationRequestRepository = mock<CalculationRequestRepository>()
   private val calculationResultEnrichmentService = mock<CalculationResultEnrichmentService>()
   private val historicOverrideRepository = mock<CalculationOutcomeHistoricOverrideRepository>()
+  private val manageUsersApiClient = mock<ManageUsersApiClient>()
+  private val prisonService = mock<PrisonService>()
   private val service = DetailedCalculationResultsService(
     calculationBreakdownService,
     sourceDataMapper,
@@ -61,8 +69,16 @@ class DetailedCalculationResultsServiceTest {
     calculationResultEnrichmentService,
     historicOverrideRepository,
     FeatureToggles(historicSled = true),
+    manageUsersApiClient,
+    prisonService,
   )
   private val objectMapper = TestUtil.objectMapper()
+
+  @BeforeEach
+  fun setUp() {
+    val agencies = listOf(Agency("BXI", "Brixton (HMP)"))
+    whenever(prisonService.getAgenciesByType("INST")).thenReturn(agencies)
+  }
 
   @Test
   fun `should throw exception if calculation not found in repo`() {
@@ -81,6 +97,8 @@ class DetailedCalculationResultsServiceTest {
       calculationOutcomes = listOf(
         CalculationOutcome(calculationRequestId = CALCULATION_REQUEST_ID, calculationDateType = "CRD", outcomeDate = LocalDate.of(2026, 6, 26)),
       ),
+      calculatedByUsername = "username",
+      prisonerLocation = "BXI",
     )
     val calculationRequestWithApprovedDates = base.copy(
       approvedDatesSubmissions = listOf(
@@ -127,6 +145,7 @@ class DetailedCalculationResultsServiceTest {
       ),
     ).thenReturn(enrichedReleaseDates)
     whenever(calculationBreakdownService.getBreakdownSafely(any())).thenReturn(expectedBreakdown.right())
+    whenever(manageUsersApiClient.getUserByUsername("username")).thenReturn(UserDetails("username", "User Name"))
     val results = service.findDetailedCalculationResults(CALCULATION_REQUEST_ID)
     assertThat(results).isEqualTo(
       DetailedCalculationResults(
@@ -236,6 +255,8 @@ class DetailedCalculationResultsServiceTest {
       calculationOutcomes = listOf(
         CalculationOutcome(calculationRequestId = CALCULATION_REQUEST_ID, calculationDateType = "CRD", outcomeDate = LocalDate.of(2026, 6, 26)),
       ),
+      calculatedByUsername = "username",
+      prisonerLocation = "BXI",
     )
     val calculationRequestWithApprovedDates = base.copy(
       approvedDatesSubmissions = listOf(
@@ -280,6 +301,7 @@ class DetailedCalculationResultsServiceTest {
       ),
     ).thenReturn(enrichedReleaseDates)
     whenever(calculationBreakdownService.getBreakdownSafely(any())).thenReturn(BreakdownMissingReason.UNSUPPORTED_CALCULATION_BREAKDOWN.left())
+    whenever(manageUsersApiClient.getUserByUsername("username")).thenReturn(UserDetails("username", "User Name"))
     val results = service.findDetailedCalculationResults(CALCULATION_REQUEST_ID)
     assertThat(results).isEqualTo(
       DetailedCalculationResults(
@@ -370,7 +392,7 @@ class DetailedCalculationResultsServiceTest {
     outcomeDate = aDate,
     calculationRequestId = CALCULATION_REQUEST_ID,
   )
-  private val calcReason = CalculationReason(-1, false, false, "Reason", false, null, null, null, false)
+  private val calcReason = CalculationReason(-1, false, false, "Reason", false, null, null, null, false, false)
   private fun calculationRequestWithOutcomes() = CalculationRequest(
     id = CALCULATION_REQUEST_ID,
     calculationReference = calculationReference,
@@ -397,13 +419,17 @@ class DetailedCalculationResultsServiceTest {
     PRISONER_ID,
     CalculationStatus.CONFIRMED,
     calculationReference,
-    calcReason,
+    CalculationReasonDto.from(calcReason),
     "foo",
     LocalDate.of(2021, 1, 1),
     CalculationType.CALCULATED,
     null,
     null,
     false,
+    "username",
+    "User Name",
+    "BXI",
+    "Brixton (HMP)",
   )
 
   private fun toReleaseDates(request: CalculationRequest): List<ReleaseDate> = request.calculationOutcomes

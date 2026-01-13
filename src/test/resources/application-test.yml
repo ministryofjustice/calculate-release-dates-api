@@ -7,8 +7,6 @@ spring:
 
   jackson:
     date-format: "yyyy-MM-dd HH:mm:ss"
-    serialization:
-      WRITE_DATES_AS_TIMESTAMPS: false
 
   datasource:
     url: 'jdbc:postgresql://localhost:5432/calculate_release_dates'
@@ -60,6 +58,10 @@ manage-offences:
 nomis-sync-mapping:
   api:
     url: http://localhost:8336
+
+manage-users:
+  api:
+    url: http://localhost:8337
 
 domain-events-sns:
   provider: localstack

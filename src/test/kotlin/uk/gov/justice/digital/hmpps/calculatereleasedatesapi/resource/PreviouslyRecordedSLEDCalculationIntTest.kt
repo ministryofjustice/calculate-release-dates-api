@@ -313,6 +313,9 @@ class PreviouslyRecordedSLEDCalculationIntTest(private val mockPrisonService: Mo
         reasonCode = "NEW",
         calculatedAt = LocalDateTime.now(),
         comment = "Stub calc for ${confirmedCalcWithOverride.calculationReference}",
+        calculatedByUserId = "user1",
+        calculatedByFirstName = "User",
+        calculatedByLastName = "One",
       ),
     )
 
@@ -439,6 +442,52 @@ class PreviouslyRecordedSLEDCalculationIntTest(private val mockPrisonService: Mo
       ),
     )
     assertThat(detailedReleaseDatesResponse.context.usePreviouslyRecordedSLEDIfFound).isTrue
+  }
+
+  @Test
+  fun `Use the most recent two day check rather than the latest SLED date`() {
+    val originalCalculatedSLED = LocalDate.of(2025, 9, 12)
+
+    // GO has the later SLED but was performed before the regular calculation
+    val goPreliminaryCalc = createPreliminaryCalculation(PRISONER_ID, CalculationRequestModel(calculationUserInputs = CalculationUserInputs(usePreviouslyRecordedSLEDIfFound = true), calculationReasonId = TWO_DAY_CHECK_REASON_ID))
+    createGenuineOverride(
+      goPreliminaryCalc.calculationRequestId,
+      GenuineOverrideRequest(
+        dates = listOf(
+          GenuineOverrideDate(ReleaseDateType.SED, originalCalculatedSLED.plusDays(1)),
+          GenuineOverrideDate(ReleaseDateType.LED, originalCalculatedSLED.plusDays(1)),
+        ),
+        reason = GenuineOverrideReason.AGGRAVATING_FACTOR_OFFENCE,
+        reasonFurtherDetail = null,
+      ),
+    )
+
+    val oldPreliminaryCalc = createPreliminaryCalculation(PRISONER_ID, CalculationRequestModel(calculationUserInputs = CalculationUserInputs(usePreviouslyRecordedSLEDIfFound = false), calculationReasonId = TWO_DAY_CHECK_REASON_ID))
+    val oldConfirmedCalc = createConfirmCalculationForPrisoner(oldPreliminaryCalc.calculationRequestId)
+    assertDates(
+      "original",
+      oldConfirmedCalc.dates,
+      originalCalculatedSLED,
+      LocalDate.of(2025, 3, 28),
+      LocalDate.of(2026, 3, 28),
+    )
+    updatedSentencesToVersion("2")
+
+    val prelimWithPreviouslyRecordedSLED = createPreliminaryCalculation(PRISONER_ID, CalculationRequestModel(calculationUserInputs = CalculationUserInputs(usePreviouslyRecordedSLEDIfFound = true), calculationReasonId = INITIAL_CALC_REASON_ID))
+    assertDates(
+      "prelim using previously recorded SLED",
+      prelimWithPreviouslyRecordedSLED.dates,
+      originalCalculatedSLED,
+      LocalDate.of(2025, 5, 24),
+      LocalDate.of(2026, 5, 24),
+    )
+    assertThat(prelimWithPreviouslyRecordedSLED.usedPreviouslyRecordedSLED).describedAs("prelim calc with previously recorded SLED").isEqualTo(
+      PreviouslyRecordedSLED(
+        previouslyRecordedSLEDDate = originalCalculatedSLED,
+        calculatedDate = LocalDate.of(2025, 6, 26),
+        previouslyRecordedSLEDCalculationRequestId = oldConfirmedCalc.calculationRequestId,
+      ),
+    )
   }
 
   private fun assertDates(calcDescription: String, dates: Map<ReleaseDateType, LocalDate?>, expectedSled: LocalDate, expectedCrd: LocalDate, expectedTused: LocalDate?) {

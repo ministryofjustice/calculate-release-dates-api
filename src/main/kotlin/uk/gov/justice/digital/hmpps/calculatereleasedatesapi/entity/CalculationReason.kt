@@ -13,7 +13,7 @@ import jakarta.validation.constraints.NotNull
 data class CalculationReason(
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  val id: Long = -1,
+  val id: Long? = null,
   @param:NotNull
   @JsonIgnore
   val isActive: Boolean,
@@ -39,4 +39,7 @@ data class CalculationReason(
   val displayRank: Int?,
   @param:NotNull
   val useForApprovedDates: Boolean,
+  @param:NotNull
+  @JsonIgnore
+  val eligibleForPreviouslyRecordedSled: Boolean,
 )

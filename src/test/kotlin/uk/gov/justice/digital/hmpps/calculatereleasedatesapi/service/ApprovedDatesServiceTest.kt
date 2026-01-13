@@ -12,6 +12,8 @@ import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ApprovedDates
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ApprovedDatesSubmission
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcome
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
@@ -19,11 +21,13 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationT
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.PRELIMINARY
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentsSourceData
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ApprovedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ApprovedDatesInputResponse.Companion.available
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ApprovedDatesInputResponse.Companion.unavailable
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ApprovedDatesUnavailableReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationReasonDto
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
@@ -45,7 +49,15 @@ class ApprovedDatesServiceTest {
   private val calculationTransactionalService: CalculationTransactionalService = mock()
   private val objectMapper: ObjectMapper = TestUtil.objectMapper()
 
-  private val service = ApprovedDatesService(calculationRequestRepository, calculationSourceDataService, bookingService, validationService, calculationReasonRepository, calculationTransactionalService, objectMapper)
+  private val service = ApprovedDatesService(
+    calculationRequestRepository,
+    calculationSourceDataService,
+    bookingService,
+    validationService,
+    calculationReasonRepository,
+    calculationTransactionalService,
+    objectMapper,
+  )
 
   @BeforeEach
   fun setUp() {
@@ -110,7 +122,7 @@ class ApprovedDatesServiceTest {
     whenever(calculationRequestRepository.findFirstByPrisonerIdAndCalculationStatusOrderByCalculatedAtDesc(PRISONER_ID, "CONFIRMED")).thenReturn(Optional.of(MINIMAL_CALC_REQUEST))
     whenever(calculationSourceDataService.getCalculationSourceData(eq(PRISONER_ID), any(), any())).thenReturn(MINIMAL_SOURCE_DATA)
     whenever(bookingService.getBooking(any())).thenReturn(MINIMAL_BOOKING)
-    whenever(validationService.validate(any(), any(), any())).thenReturn(listOf(ValidationMessage(ValidationCode.OFFENCE_MISSING_DATE)))
+    whenever(validationService.validate(any(), any(), any())).thenReturn(listOf(ValidationMessage(ValidationCode.OFFENCE_MISSING_DATE, listOf("1", "2"))))
 
     val response = service.inputsForPrisoner(PRISONER_ID)
 
@@ -156,7 +168,7 @@ class ApprovedDatesServiceTest {
           bookingId = 1L,
           prisonerId = PRISONER_ID,
           calculationReference = UUID.randomUUID(),
-          calculationReason = APPROVED_DATES_CALC_REASON,
+          calculationReason = CalculationReasonDto.from(APPROVED_DATES_CALC_REASON),
           calculationDate = LocalDate.of(2024, 1, 1),
         ),
       )
@@ -167,7 +179,7 @@ class ApprovedDatesServiceTest {
   }
 
   @Test
-  fun `inputs should return available if the calculation produces the sames dates as the previous calculation`() {
+  fun `inputs should return available if the calculation produces the sames dates as the previous calculation (no previously approved dates)`() {
     val calculatedReleaseDates = CalculatedReleaseDates(
       calculationRequestId = 9991L,
       dates = mapOf(
@@ -180,7 +192,7 @@ class ApprovedDatesServiceTest {
       bookingId = 1L,
       prisonerId = PRISONER_ID,
       calculationReference = UUID.randomUUID(),
-      calculationReason = APPROVED_DATES_CALC_REASON,
+      calculationReason = CalculationReasonDto.from(APPROVED_DATES_CALC_REASON),
       calculationDate = LocalDate.of(2024, 1, 1),
     )
     val latestCalcRequest = MINIMAL_CALC_REQUEST.copy(
@@ -196,10 +208,110 @@ class ApprovedDatesServiceTest {
     whenever(validationService.validate(any(), any(), any())).thenReturn(emptyList())
     whenever(calculationTransactionalService.calculate(any(), any(), any(), any(), any(), anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull()))
       .thenReturn(calculatedReleaseDates)
+    whenever(calculationRequestRepository.findLatestCalculationWithApprovedDates(PRISONER_ID)).thenReturn(null)
 
     val response = service.inputsForPrisoner(PRISONER_ID)
 
     assertThat(response).isEqualTo(available(calculatedReleaseDates))
+  }
+
+  @Test
+  fun `available inputs should return the previously entered dates if the hash is the same`() {
+    val calculatedReleaseDates = CalculatedReleaseDates(
+      calculationRequestId = 9991L,
+      dates = mapOf(
+        ReleaseDateType.LED to LocalDate.of(2030, 12, 12),
+      ),
+      calculationStatus = PRELIMINARY,
+      bookingId = 1L,
+      prisonerId = PRISONER_ID,
+      calculationReference = UUID.randomUUID(),
+      calculationReason = CalculationReasonDto.from(APPROVED_DATES_CALC_REASON),
+      calculationDate = LocalDate.of(2024, 1, 1),
+    )
+    val latestCalcRequest = MINIMAL_CALC_REQUEST.copy(
+      calculationOutcomes = listOf(
+        CalculationOutcome(id = 2, calculationRequestId = 1, calculationDateType = ReleaseDateType.LED.name, outcomeDate = LocalDate.of(2030, 12, 12)),
+      ),
+    )
+    whenever(calculationRequestRepository.findFirstByPrisonerIdAndCalculationStatusOrderByCalculatedAtDesc(PRISONER_ID, "CONFIRMED")).thenReturn(Optional.of(latestCalcRequest))
+    whenever(calculationSourceDataService.getCalculationSourceData(eq(PRISONER_ID), any(), any())).thenReturn(MINIMAL_SOURCE_DATA)
+    whenever(bookingService.getBooking(any())).thenReturn(MINIMAL_BOOKING)
+    whenever(validationService.validate(any(), any(), any())).thenReturn(emptyList())
+    whenever(calculationTransactionalService.calculate(any(), any(), any(), any(), any(), anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull()))
+      .thenReturn(calculatedReleaseDates)
+    val previousWithApprovedDates = latestCalcRequest.copy(
+      id = 3,
+      approvedDatesSubmissions = listOf(
+        ApprovedDatesSubmission(
+          calculationRequest = latestCalcRequest,
+          approvedDates = listOf(
+            ApprovedDates(
+              calculationDateType = "APD",
+              outcomeDate = LocalDate.of(2000, 1, 2),
+            ),
+          ),
+          prisonerId = PRISONER_ID,
+          bookingId = 1L,
+          submittedByUsername = "user1",
+        ),
+      ),
+    )
+    whenever(calculationRequestRepository.findLatestCalculationWithApprovedDates(PRISONER_ID)).thenReturn(previousWithApprovedDates)
+
+    val response = service.inputsForPrisoner(PRISONER_ID)
+
+    assertThat(response).isEqualTo(available(calculatedReleaseDates).copy(previousApprovedDates = listOf(ApprovedDate(ReleaseDateType.APD, LocalDate.of(2000, 1, 2)))))
+  }
+
+  @Test
+  fun `available inputs should not return the previously entered dates if the hash is has changed`() {
+    val calculatedReleaseDates = CalculatedReleaseDates(
+      calculationRequestId = 9991L,
+      dates = mapOf(
+        ReleaseDateType.LED to LocalDate.of(2030, 12, 12),
+      ),
+      calculationStatus = PRELIMINARY,
+      bookingId = 1L,
+      prisonerId = PRISONER_ID,
+      calculationReference = UUID.randomUUID(),
+      calculationReason = CalculationReasonDto.from(APPROVED_DATES_CALC_REASON),
+      calculationDate = LocalDate.of(2024, 1, 1),
+    )
+    val latestCalcRequest = MINIMAL_CALC_REQUEST.copy(
+      calculationOutcomes = listOf(
+        CalculationOutcome(id = 2, calculationRequestId = 1, calculationDateType = ReleaseDateType.LED.name, outcomeDate = LocalDate.of(2030, 12, 12)),
+      ),
+    )
+    whenever(calculationRequestRepository.findFirstByPrisonerIdAndCalculationStatusOrderByCalculatedAtDesc(PRISONER_ID, "CONFIRMED")).thenReturn(Optional.of(latestCalcRequest))
+    whenever(calculationSourceDataService.getCalculationSourceData(eq(PRISONER_ID), any(), any())).thenReturn(MINIMAL_SOURCE_DATA)
+    whenever(bookingService.getBooking(any())).thenReturn(MINIMAL_BOOKING)
+    whenever(validationService.validate(any(), any(), any())).thenReturn(emptyList())
+    whenever(calculationTransactionalService.calculate(any(), any(), any(), any(), any(), anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull()))
+      .thenReturn(calculatedReleaseDates)
+    val previousWithApprovedDates = latestCalcRequest.copy(
+      id = 3,
+      inputData = objectToJson(MINIMAL_BOOKING.copy(returnToCustodyDate = LocalDate.now()), TestUtil.objectMapper()),
+      approvedDatesSubmissions = listOf(
+        ApprovedDatesSubmission(
+          calculationRequest = latestCalcRequest,
+          approvedDates = listOf(
+            ApprovedDates(
+              calculationDateType = "APD",
+              outcomeDate = LocalDate.of(2000, 1, 2),
+            ),
+          ),
+          prisonerId = PRISONER_ID,
+          bookingId = 1L,
+          submittedByUsername = "user1",
+        ),
+      ),
+    )
+    whenever(calculationRequestRepository.findLatestCalculationWithApprovedDates(PRISONER_ID)).thenReturn(previousWithApprovedDates)
+
+    val response = service.inputsForPrisoner(PRISONER_ID)
+
+    assertThat(response).isEqualTo(available(calculatedReleaseDates).copy(previousApprovedDates = emptyList()))
   }
 
   companion object {
@@ -237,6 +349,7 @@ class ApprovedDatesServiceTest {
       nomisComment = "Recording a non-calculated date",
       displayRank = 99,
       useForApprovedDates = true,
+      eligibleForPreviouslyRecordedSled = false,
     )
   }
 }

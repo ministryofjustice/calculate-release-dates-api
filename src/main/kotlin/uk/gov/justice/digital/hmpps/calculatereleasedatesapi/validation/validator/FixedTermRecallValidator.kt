@@ -19,6 +19,10 @@ import java.time.LocalDate
 class FixedTermRecallValidator : PreCalculationSourceDataValidator {
 
   override fun validate(sourceData: CalculationSourceData): List<ValidationMessage> {
+    val fixedTermRecallSentences = sourceData.sentenceAndOffences.filter { from(it.sentenceCalculationType).recallType?.isFixedTermRecall == true }
+    if (fixedTermRecallSentences.isNotEmpty() && (sourceData.fixedTermRecallDetails == null || sourceData.returnToCustodyDate == null)) {
+      return mutableListOf(ValidationMessage(ValidationCode.FTR_NO_RETURN_TO_CUSTODY_DATE))
+    }
     val ftrDetails = sourceData.fixedTermRecallDetails ?: return emptyList()
     val ftrValidationDetails = getFtrValidationDetails(
       ftrDetails,
@@ -34,8 +38,6 @@ class FixedTermRecallValidator : PreCalculationSourceDataValidator {
       else -> mutableListOf()
     }
 
-    val fixedTermRecallSentences =
-      sourceData.sentenceAndOffences.filter { from(it.sentenceCalculationType).recallType?.isFixedTermRecall == true }
     if (fixedTermRecallSentences.any { it.sentenceDate.isAfter(sourceData.returnToCustodyDate!!.returnToCustodyDate) }) {
       validationMessages.add(ValidationMessage(ValidationCode.FTR_RTC_DATE_BEFORE_SENTENCE_DATE))
     }

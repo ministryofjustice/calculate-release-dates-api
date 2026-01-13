@@ -1,11 +1,13 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
+import org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTestClient
 import org.springframework.context.annotation.Import
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpHeaders
@@ -14,11 +16,14 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.DynamicPropertyRegistry
 import org.springframework.test.context.DynamicPropertySource
 import org.springframework.test.web.reactive.server.WebTestClient
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.helpers.JwtAuthHelper
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.container.PostgresContainer
+import org.testcontainers.containers.PostgreSQLContainer
+import org.testcontainers.containers.localstack.LocalStackContainer
+import org.testcontainers.containers.localstack.LocalStackContainer.Service
+import org.testcontainers.utility.DockerImageName
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.AdjustmentsApiExtension
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.BankHolidayApiExtension
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.ManageOffencesApiExtension
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.ManageUsersApiExtension
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.NomisSyncMappingApiExtension
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.OAuthExtension
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.PrisonApiExtension
@@ -36,6 +41,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecordARecall
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecordARecallValidationResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmitCalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSentenceAndOffences
+import uk.gov.justice.hmpps.test.kotlin.auth.JwtAuthorisationHelper
 
 /*
 ** The abstract parent class for integration tests.
@@ -57,10 +63,12 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Pris
   ManageOffencesApiExtension::class,
   AdjustmentsApiExtension::class,
   NomisSyncMappingApiExtension::class,
+  ManageUsersApiExtension::class,
 )
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @Import(TestBuildPropertiesConfiguration::class)
 @ActiveProfiles("test")
+@AutoConfigureWebTestClient
 open class IntegrationTestBase internal constructor() {
 
   @Value("\${spring.datasource.url}")
@@ -72,12 +80,11 @@ open class IntegrationTestBase internal constructor() {
   @Value("\${spring.datasource.password}")
   lateinit var dbPassword: String
 
-  @Suppress("SpringJavaInjectionPointsAutowiringInspection")
   @Autowired
   lateinit var webTestClient: WebTestClient
 
   @Autowired
-  lateinit var jwtAuthHelper: JwtAuthHelper
+  lateinit var jwtAuthHelper: JwtAuthorisationHelper
 
   @Autowired
   lateinit var objectMapper: ObjectMapper
@@ -85,7 +92,7 @@ open class IntegrationTestBase internal constructor() {
   internal fun setAuthorisation(
     user: String = "test-client",
     roles: List<String> = listOf(),
-  ): (HttpHeaders) -> Unit = jwtAuthHelper.setAuthorisation(user, roles)
+  ): (HttpHeaders) -> Unit = jwtAuthHelper.setAuthorisationHeader(clientId = "calculate-release-dates-admin", username = user, roles = roles)
 
   protected fun createPreliminaryCalculation(
     prisonerId: String,
@@ -174,21 +181,43 @@ open class IntegrationTestBase internal constructor() {
     .returnResult().responseBody!!
 
   companion object {
-    private val pgContainer = PostgresContainer.instance
+    @JvmStatic
+    private val localStackContainer: LocalStackContainer =
+      LocalStackContainer(DockerImageName.parse("localstack/localstack"))
+        .apply {
+          withEnv("DEFAULT_REGION", "eu-west-2")
+          withServices(Service.SNS, Service.SQS)
+        }
+
+    @JvmStatic
+    private val postgresContainer = PostgreSQLContainer<Nothing>("postgres:18")
+      .apply {
+        withUsername("court_data_ingestion")
+        withPassword("court_data_ingestion")
+        withDatabaseName("court_data_ingestion")
+        withReuse(true)
+      }
+
+    @BeforeAll
+    @JvmStatic
+    fun startContainers() {
+      localStackContainer.start()
+      postgresContainer.start()
+    }
 
     @JvmStatic
     @DynamicPropertySource
     fun properties(registry: DynamicPropertyRegistry) {
-      pgContainer?.run {
-        registry.add("spring.datasource.url", pgContainer::getJdbcUrl)
-        registry.add("spring.datasource.username", pgContainer::getUsername)
-        registry.add("spring.datasource.password", pgContainer::getPassword)
-        registry.add("spring.flyway.url", pgContainer::getJdbcUrl)
-        registry.add("spring.flyway.user", pgContainer::getUsername)
-        registry.add("spring.flyway.password", pgContainer::getPassword)
-      }
+      registry.add("hmpps.sqs.localstackUrl") { localStackContainer.getEndpointOverride(Service.SNS).toString() }
+      registry.add("hmpps.sqs.region") { localStackContainer.region }
+      registry.add("spring.datasource.url") { postgresContainer.jdbcUrl }
+      registry.add("spring.datasource.username") { postgresContainer.username }
+      registry.add("spring.datasource.password") { postgresContainer.password }
+      registry.add("spring.flyway.url") { postgresContainer.jdbcUrl }
+      registry.add("spring.flyway.user") { postgresContainer.username }
+      registry.add("spring.flyway.password") { postgresContainer.password }
 
-      System.setProperty("aws.region", "eu-west-2")
+      System.setProperty("aws.region", localStackContainer.region)
     }
   }
 }

@@ -97,8 +97,19 @@ class RecordARecallDecisionService(
       .filter { it.bookingId == sourceData.prisonerDetails.bookingId }
       .filter { it.fromDate != null && it.toDate != null }
       .filterNot { it.recallId != null && recordARecallRequest.recallId != null && it.recallId == recordARecallRequest.recallId }
-      .map { it.id to LocalDateRange.of(it.fromDate, it.toDate) }
-    val overlappingAdjustments = existingPeriodsOfUal.filter { it.second.contains(recordARecallRequest.revocationDate) }
+      .map { it.id to LocalDateRange.ofClosed(it.fromDate, it.toDate) }
+
+    val revPlusOne = recordARecallRequest.revocationDate.plusDays(1)
+    val rtcMinusOne = recordARecallRequest.returnToCustodyDate?.minusDays(1)
+
+    val overlappingAdjustments = existingPeriodsOfUal.filter { (_, adjustmentRange) ->
+      val overlapsRevocation = adjustmentRange.contains(revPlusOne)
+      val overlapsReturnToCustody = rtcMinusOne != null && adjustmentRange.contains(rtcMinusOne)
+      val fullyWithinRecallPeriod = rtcMinusOne != null && adjustmentRange.isAfter(revPlusOne) && adjustmentRange.isBefore(rtcMinusOne)
+
+      overlapsRevocation || overlapsReturnToCustody || fullyWithinRecallPeriod
+    }
+
     if (overlappingAdjustments.isNotEmpty()) {
       return RecordARecallDecisionResult(
         decision = RecordARecallDecision.CONFLICTING_ADJUSTMENTS,

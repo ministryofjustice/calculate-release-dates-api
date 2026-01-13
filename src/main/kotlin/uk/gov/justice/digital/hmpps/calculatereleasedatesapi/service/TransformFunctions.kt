@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
+import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.JsonNodeFactory
@@ -66,6 +67,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedRel
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationFragments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOutput
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationReasonDto
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationSentenceUserInput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonDiscrepancySummary
@@ -521,7 +523,7 @@ fun transform(
   releaseDateType: ReleaseDateType,
   date: LocalDate,
 ): CalculationOutcome = CalculationOutcome(
-  calculationRequestId = calculationRequest.id,
+  calculationRequestId = calculationRequest.id(),
   outcomeDate = date,
   calculationDateType = releaseDateType.name,
 )
@@ -531,7 +533,7 @@ fun transform(calculationRequest: CalculationRequest): CalculatedReleaseDates = 
     { ReleaseDateType.valueOf(it.calculationDateType) },
     { it.outcomeDate },
   ).toMutableMap(),
-  calculationRequestId = calculationRequest.id,
+  calculationRequestId = calculationRequest.id(),
   calculationFragments = if (calculationRequest.breakdownHtml != null) CalculationFragments(calculationRequest.breakdownHtml) else null,
   bookingId = calculationRequest.bookingId,
   prisonerId = calculationRequest.prisonerId,
@@ -539,7 +541,7 @@ fun transform(calculationRequest: CalculationRequest): CalculatedReleaseDates = 
   calculationType = calculationRequest.calculationType,
   approvedDates = transform(calculationRequest.approvedDatesSubmissions.firstOrNull()),
   calculationReference = calculationRequest.calculationReference,
-  calculationReason = calculationRequest.reasonForCalculation,
+  calculationReason = calculationRequest.reasonForCalculation?.let { CalculationReasonDto.from(it) },
   otherReasonDescription = calculationRequest.otherReasonForCalculation,
   calculationDate = calculationRequest.calculatedAt.toLocalDate(),
 )
@@ -693,13 +695,13 @@ fun transform(
     return CalculationOutcome(
       calculationDateType = manuallyEnteredDate.dateType.name,
       outcomeDate = manuallyEnteredDate.date.toLocalDate(),
-      calculationRequestId = calculationRequest.id,
+      calculationRequestId = calculationRequest.id(),
     )
   }
   return CalculationOutcome(
     calculationDateType = manuallyEnteredDate.dateType.name,
     outcomeDate = null,
-    calculationRequestId = calculationRequest.id,
+    calculationRequestId = calculationRequest.id(),
   )
 }
 
@@ -740,8 +742,9 @@ fun transform(dates: Map<ReleaseDateType, LocalDate?>?, effectiveSentenceLength:
 fun transform(
   comparison: ComparisonInput,
   username: String,
+  objectMapper: ObjectMapper,
 ): Comparison = Comparison(
-  criteria = comparison.criteria ?: JsonNodeFactory.instance.objectNode(),
+  criteria = comparison.criteria?.let { objectMapper.valueToTree(it) } ?: JsonNodeFactory.instance.objectNode(),
   comparisonType = comparison.comparisonType,
   prison = comparison.prison,
   calculatedAt = LocalDateTime.now(),
@@ -800,7 +803,7 @@ internal fun transform(comparisonPerson: ComparisonPerson, objectMapper: ObjectM
   transform(comparisonPerson.validationMessages, objectMapper),
   comparisonPerson.shortReference,
   comparisonPerson.mismatchType,
-  comparisonPerson.sdsPlusSentencesIdentified,
+  if (comparisonPerson.sdsPlusSentencesIdentified.isEmpty) emptyList() else objectMapper.convertValue(comparisonPerson.sdsPlusSentencesIdentified, object : TypeReference<List<SentenceAndOffenceWithReleaseArrangements>>() {}),
   comparisonPerson.establishment,
   comparisonPerson.fatalException,
 )

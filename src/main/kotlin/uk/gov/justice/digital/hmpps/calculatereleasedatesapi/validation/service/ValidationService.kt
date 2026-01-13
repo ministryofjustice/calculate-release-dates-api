@@ -49,26 +49,41 @@ class ValidationService(
     var booking: Booking? = null
     var calculationOutput: CalculationOutput? = null
     var messages: List<ValidationMessage> = emptyList()
+    var calculationFailure: Exception? = null
+
     orders.forEach { order ->
       val validatorsForThisOrder = validators.filter { it.validationOrder() == order }
 
       val preCalculationSourceDataValidators =
         validatorsForThisOrder.filterIsInstance<PreCalculationSourceDataValidator>()
-      messages = preCalculationSourceDataValidators.map { it.validate(sortedSourceData) }.flatten()
+      messages = preCalculationSourceDataValidators.flatMap { it.validate(sortedSourceData) }
       if (messages.isNotEmpty()) return messages
 
       booking = booking ?: bookingService.getBooking(sourceData)
       val preCalculationBookingValidators = validatorsForThisOrder.filterIsInstance<PreCalculationBookingValidator>()
-      messages = preCalculationBookingValidators.map { it.validate(booking) }.flatten()
+      messages = preCalculationBookingValidators.flatMap { it.validate(booking) }
       if (messages.isNotEmpty()) return messages
 
-      calculationOutput = calculationOutput ?: calculationService.calculateReleaseDates(
-        booking,
-        calculationUserInputs ?: CalculationUserInputs(),
-      )
-      val postCalculationValidators = validatorsForThisOrder.filterIsInstance<PostCalculationValidator>()
-      messages = postCalculationValidators.map { it.validate(calculationOutput, booking) }.flatten()
-      if (messages.isNotEmpty()) return messages
+      try {
+        calculationOutput = calculationOutput ?: calculationService.calculateReleaseDates(
+          booking,
+          calculationUserInputs ?: CalculationUserInputs(),
+        )
+        calculationFailure = null
+      } catch (e: Exception) {
+        // we do not want to return an error on calculation failure if we validate against the failure in a higher order.
+        calculationFailure = e
+      }
+      if (calculationOutput != null) {
+        val postCalculationValidators = validatorsForThisOrder.filterIsInstance<PostCalculationValidator>()
+        messages = postCalculationValidators.flatMap { it.validate(calculationOutput, booking) }
+        if (messages.isNotEmpty()) return messages
+      }
+    }
+
+    if (messages.isEmpty() && calculationFailure != null) {
+      // if there is a calculation error that wasn't handled by a subsequent validator then throw it now
+      throw calculationFailure
     }
 
     return messages

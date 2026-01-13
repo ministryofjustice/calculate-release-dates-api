@@ -45,10 +45,10 @@ class CalculationServiceTest {
 
   private val sentenceIdentificationService = mock<SentenceIdentificationService>()
   private val bookingTimelineService = mock<BookingTimelineService>(lenient = false)
-  private val dominantHistoricDateService = mock<DominantHistoricDateService>()
+  private val previouslyRecordedSLEDService = mock<PreviouslyRecordedSLEDService>()
   private val featureToggles = FeatureToggles(historicSled = true)
 
-  private val service = CalculationService(sentenceIdentificationService, bookingTimelineService, featureToggles, dominantHistoricDateService)
+  private val service = CalculationService(sentenceIdentificationService, bookingTimelineService, featureToggles, previouslyRecordedSLEDService)
 
   @Test
   fun `should skip checking for dominant historic dates if user requested it not to be used`() {
@@ -59,7 +59,7 @@ class CalculationServiceTest {
 
     assertThat(result).isEqualTo(CALCULATION_OUTPUT)
 
-    verify(dominantHistoricDateService, never()).findPreviouslyRecordedSLEDThatShouldOverrideTheCalculatedSLED(any(), any())
+    verify(previouslyRecordedSLEDService, never()).findPreviouslyRecordedSLEDThatShouldOverrideTheCalculatedSLED(any(), any())
   }
 
   @Test
@@ -71,7 +71,7 @@ class CalculationServiceTest {
       calculatedDate = LocalDate.of(2026, 2, 2),
       previouslyRecordedSLEDCalculationRequestId = 99999,
     )
-    whenever(dominantHistoricDateService.findPreviouslyRecordedSLEDThatShouldOverrideTheCalculatedSLED(any(), any())).thenReturn(expectedPreviouslyRecordedSled)
+    whenever(previouslyRecordedSLEDService.findPreviouslyRecordedSLEDThatShouldOverrideTheCalculatedSLED(any(), any())).thenReturn(expectedPreviouslyRecordedSled)
 
     val result = service.calculateReleaseDates(BOOKING, CalculationUserInputs(usePreviouslyRecordedSLEDIfFound = true))
 
@@ -105,7 +105,7 @@ class CalculationServiceTest {
       ),
     )
 
-    verify(dominantHistoricDateService).findPreviouslyRecordedSLEDThatShouldOverrideTheCalculatedSLED(any(), any())
+    verify(previouslyRecordedSLEDService).findPreviouslyRecordedSLEDThatShouldOverrideTheCalculatedSLED(any(), any())
   }
 
   @Test
@@ -117,7 +117,7 @@ class CalculationServiceTest {
       calculatedDate = LocalDate.of(2026, 2, 2),
       previouslyRecordedSLEDCalculationRequestId = 99999,
     )
-    whenever(dominantHistoricDateService.findPreviouslyRecordedSLEDThatShouldOverrideTheCalculatedSLED(any(), any())).thenReturn(expectedPreviouslyRecordedSled)
+    whenever(previouslyRecordedSLEDService.findPreviouslyRecordedSLEDThatShouldOverrideTheCalculatedSLED(any(), any())).thenReturn(expectedPreviouslyRecordedSled)
 
     val result = service.calculateReleaseDates(BOOKING, CalculationUserInputs(usePreviouslyRecordedSLEDIfFound = true))
 
@@ -145,20 +145,20 @@ class CalculationServiceTest {
       ),
     )
 
-    verify(dominantHistoricDateService).findPreviouslyRecordedSLEDThatShouldOverrideTheCalculatedSLED(any(), any())
+    verify(previouslyRecordedSLEDService).findPreviouslyRecordedSLEDThatShouldOverrideTheCalculatedSLED(any(), any())
   }
 
   @Test
   fun `should handle no dominant historic SLED even if user requested it`() {
     whenever(bookingTimelineService.calculate(anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull()))
       .thenReturn(CALCULATION_OUTPUT)
-    whenever(dominantHistoricDateService.findPreviouslyRecordedSLEDThatShouldOverrideTheCalculatedSLED(any(), any())).thenReturn(null)
+    whenever(previouslyRecordedSLEDService.findPreviouslyRecordedSLEDThatShouldOverrideTheCalculatedSLED(any(), any())).thenReturn(null)
 
     val result = service.calculateReleaseDates(BOOKING, CalculationUserInputs(usePreviouslyRecordedSLEDIfFound = true))
 
     assertThat(result).isEqualTo(CALCULATION_OUTPUT)
 
-    verify(dominantHistoricDateService).findPreviouslyRecordedSLEDThatShouldOverrideTheCalculatedSLED(any(), any())
+    verify(previouslyRecordedSLEDService).findPreviouslyRecordedSLEDThatShouldOverrideTheCalculatedSLED(any(), any())
   }
 
   companion object {

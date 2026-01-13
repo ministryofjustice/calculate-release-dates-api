@@ -23,6 +23,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentsSo
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationReasonDto
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedDate
@@ -119,6 +120,9 @@ class HintTextTest : SpringTestBase() {
         automaticReleaseDateOverridden = calculatedReleaseDates.dates.containsKey(ReleaseDateType.ARD),
         topupSupervisionExpiryDateOverridden = calculatedReleaseDates.dates.containsKey(ReleaseDateType.TUSED),
         paroleEligibilityDateOverridden = calculatedReleaseDates.dates.containsKey(ReleaseDateType.PED),
+        calculatedByUserId = "user1",
+        calculatedByFirstName = "User",
+        calculatedByLastName = "One",
       ),
       booking = calculationFile.booking,
       null,
@@ -138,7 +142,7 @@ class HintTextTest : SpringTestBase() {
     prisonerId = "",
     calculationStatus = PRELIMINARY,
     calculationReference = UUID.randomUUID(),
-    calculationReason = CALCULATION_REASON,
+    calculationReason = CalculationReasonDto.from(CALCULATION_REASON),
     calculationDate = LocalDate.of(2024, 1, 1),
   )
 
@@ -207,6 +211,7 @@ class HintTextTest : SpringTestBase() {
         nomisReason = "UPDATE",
         nomisComment = "NOMIS_COMMENT",
         null,
+        false,
         false,
       )
 

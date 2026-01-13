@@ -126,10 +126,38 @@ class RecordARecallControllerIntTest(private val mockManageOffencesClient: MockM
   }
 
   @Test
-  fun `Conflicting UAL`() {
+  fun `Conflicting UAL on end boundary`() {
     val result = createCalculationForRecordARecall(
       RECORD_A_RECALL_PRISONER_ID,
-      RecordARecallRequest(revocationDate = LocalDate.of(2016, 2, 6)),
+      RecordARecallRequest(revocationDate = LocalDate.of(2016, 2, 19)),
+    )
+
+    assertThat(result.decision).isEqualTo(RecordARecallDecision.CONFLICTING_ADJUSTMENTS)
+    assertThat(result.conflictingAdjustments).isEqualTo(listOf("2edb6550-ff6a-43e7-b563-d7e447b6a8be"))
+  }
+
+  @Test
+  fun `Conflicting UAL on start boundary`() {
+    val result = createCalculationForRecordARecall(
+      RECORD_A_RECALL_PRISONER_ID,
+      RecordARecallRequest(
+        revocationDate = LocalDate.of(2016, 1, 1),
+        returnToCustodyDate = LocalDate.of(2016, 2, 2),
+      ),
+    )
+
+    assertThat(result.decision).isEqualTo(RecordARecallDecision.CONFLICTING_ADJUSTMENTS)
+    assertThat(result.conflictingAdjustments).isEqualTo(listOf("2edb6550-ff6a-43e7-b563-d7e447b6a8be"))
+  }
+
+  @Test
+  fun `Conflicting UAL - revocation-date before and return-to-custody after the UAL`() {
+    val result = createCalculationForRecordARecall(
+      RECORD_A_RECALL_PRISONER_ID,
+      RecordARecallRequest(
+        revocationDate = LocalDate.of(2016, 1, 1),
+        returnToCustodyDate = LocalDate.of(2016, 3, 2),
+      ),
     )
 
     assertThat(result.decision).isEqualTo(RecordARecallDecision.CONFLICTING_ADJUSTMENTS)

@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.reactive.function.client.WebClientResponseException
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.client.ManageUsersApiClient
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.HistoricalTusedSource
@@ -29,6 +30,7 @@ class LatestCalculationService(
   private val calculationOutcomeHistoricOverrideRepository: CalculationOutcomeHistoricOverrideRepository,
   private val sourceDataMapper: SourceDataMapper,
   private val featureToggles: FeatureToggles,
+  private val manageUsersApiClient: ManageUsersApiClient,
 ) {
 
   @Transactional(readOnly = true)
@@ -53,16 +55,16 @@ class LatestCalculationService(
         val sentenceAndOffences = calculationRequest.sentenceAndOffences?.let { sourceDataMapper.mapSentencesAndOffences(calculationRequest) }
         val breakdown = calculationBreakdownService.getBreakdownSafely(calculationRequest).getOrNull()
         toLatestDpsCalculation(
-          calculationRequest.id,
+          calculationRequest.id(),
           prisonerId,
           bookingId,
-          calculationRequest.id,
           prisonerCalculation,
           calculationRequest.reasonForCalculation?.displayName ?: "Not entered",
           location,
           sentenceAndOffences,
           breakdown,
           calculationRequest.historicalTusedSource,
+          calculationRequest.calculatedByUsername,
         )
       }
     }
@@ -87,25 +89,27 @@ class LatestCalculationService(
     calculationRequestId: Long,
     prisonerId: String,
     bookingId: Long,
-    calculationReference: Long?,
     prisonerCalculation: OffenderKeyDates,
     reason: String,
     location: String?,
     sentenceAndOffences: List<SentenceAndOffenceWithReleaseArrangements>?,
     breakdown: CalculationBreakdown?,
     historicalTusedSource: HistoricalTusedSource? = null,
+    calculatedByUsername: String,
   ): LatestCalculation {
     val dates = offenderKeyDatesService.releaseDates(prisonerCalculation)
     val historicSledOverride = if (featureToggles.historicSled) calculationOutcomeHistoricOverrideRepository.findByCalculationRequestId(calculationRequestId) else null
     return LatestCalculation(
-      prisonerId,
-      bookingId,
-      prisonerCalculation.calculatedAt,
-      calculationReference,
-      location,
-      reason,
-      CalculationSource.CRDS,
-      calculationResultEnrichmentService.addDetailToCalculationDates(
+      prisonerId = prisonerId,
+      bookingId = bookingId,
+      calculatedAt = prisonerCalculation.calculatedAt,
+      calculationRequestId = calculationRequestId,
+      establishment = location,
+      reason = reason,
+      source = CalculationSource.CRDS,
+      calculatedByUsername = calculatedByUsername,
+      calculatedByDisplayName = manageUsersApiClient.getUserByUsername(calculatedByUsername)?.name ?: calculatedByUsername,
+      dates = calculationResultEnrichmentService.addDetailToCalculationDates(
         dates,
         sentenceAndOffences,
         breakdown,
@@ -124,14 +128,16 @@ class LatestCalculationService(
   ): LatestCalculation {
     val dates = offenderKeyDatesService.releaseDates(prisonerCalculation)
     return LatestCalculation(
-      prisonerId,
-      bookingId,
-      prisonerCalculation.calculatedAt,
-      null,
-      null,
-      reason,
-      CalculationSource.NOMIS,
-      calculationResultEnrichmentService.addDetailToCalculationDates(
+      prisonerId = prisonerId,
+      bookingId = bookingId,
+      calculatedAt = prisonerCalculation.calculatedAt,
+      calculationRequestId = null,
+      establishment = null,
+      reason = reason,
+      source = CalculationSource.NOMIS,
+      calculatedByUsername = prisonerCalculation.calculatedByUserId,
+      calculatedByDisplayName = prisonerCalculation.calculatedByUserId.let { manageUsersApiClient.getUserByUsername(it)?.name } ?: prisonerCalculation.calculatedByUserId,
+      dates = calculationResultEnrichmentService.addDetailToCalculationDates(
         dates,
         null,
         null,

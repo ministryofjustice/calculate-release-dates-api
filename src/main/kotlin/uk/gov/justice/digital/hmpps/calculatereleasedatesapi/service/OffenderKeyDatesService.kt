@@ -6,11 +6,13 @@ import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.client.ManageUsersApiClient
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CrdWebException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationContext
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationReasonDto
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NomisCalculationSummary
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OffenderKeyDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDate
@@ -27,6 +29,7 @@ class OffenderKeyDatesService(
   private val calculationRequestRepository: CalculationRequestRepository,
   private val calculationOutcomeHistoricOverrideRepository: CalculationOutcomeHistoricOverrideRepository,
   private val featureToggles: FeatureToggles,
+  private val manageUsersApiClient: ManageUsersApiClient,
 ) {
 
   fun getKeyDatesByCalcId(calculationRequestId: Long): ReleaseDatesAndCalculationContext {
@@ -57,21 +60,29 @@ class OffenderKeyDatesService(
         historicSledOverride,
       ).values.toList()
     }.getOrElse { throw CrdWebException("Unable to retrieve offender key dates", HttpStatus.NOT_FOUND) }
-
+    val calculatedAtPrisonDescription: String? = if (calculationRequest.prisonerLocation != null) {
+      prisonService.getAgenciesByType("INST").firstOrNull { it.agencyId == calculationRequest.prisonerLocation }?.description ?: calculationRequest.prisonerLocation
+    } else {
+      null
+    }
     return ReleaseDatesAndCalculationContext(
       CalculationContext(
-        calculationRequestId,
-        calculationRequest.bookingId,
-        calculationRequest.prisonerId,
-        CalculationStatus.CONFIRMED,
-        calculationRequest.calculationReference,
-        calculationRequest.reasonForCalculation,
-        calculationRequest.otherReasonForCalculation,
-        calculationRequest.calculatedAt.toLocalDate(),
-        calculationRequest.calculationType,
-        calculationRequest.genuineOverrideReason,
-        calculationRequest.genuineOverrideReasonFurtherDetail ?: calculationRequest.genuineOverrideReason?.description,
-        calculationRequest.calculationRequestUserInput?.usePreviouslyRecordedSLEDIfFound ?: false,
+        calculationRequestId = calculationRequestId,
+        bookingId = calculationRequest.bookingId,
+        prisonerId = calculationRequest.prisonerId,
+        calculationStatus = CalculationStatus.CONFIRMED,
+        calculationReference = calculationRequest.calculationReference,
+        calculationReason = calculationRequest.reasonForCalculation?.let { CalculationReasonDto.from(it) },
+        otherReasonDescription = calculationRequest.otherReasonForCalculation,
+        calculationDate = calculationRequest.calculatedAt.toLocalDate(),
+        calculationType = calculationRequest.calculationType,
+        genuineOverrideReasonCode = calculationRequest.genuineOverrideReason,
+        genuineOverrideReasonDescription = calculationRequest.genuineOverrideReasonFurtherDetail ?: calculationRequest.genuineOverrideReason?.description,
+        usePreviouslyRecordedSLEDIfFound = calculationRequest.calculationRequestUserInput?.usePreviouslyRecordedSLEDIfFound ?: false,
+        calculatedByUsername = calculationRequest.calculatedByUsername,
+        calculatedByDisplayName = manageUsersApiClient.getUserByUsername(calculationRequest.calculatedByUsername)?.name ?: calculationRequest.calculatedByUsername,
+        calculatedAtPrisonId = calculationRequest.prisonerLocation,
+        calculatedAtPrisonDescription = calculatedAtPrisonDescription,
       ),
       enrichedDates,
     )
@@ -96,10 +107,12 @@ class OffenderKeyDatesService(
       prisonService.getNOMISCalcReasons().find { it.code == nomisOffenderKeyDates.reasonCode }?.description
         ?: nomisOffenderKeyDates.reasonCode
     return NomisCalculationSummary(
-      nomisReason,
-      nomisOffenderKeyDates.calculatedAt,
-      nomisOffenderKeyDates.comment,
-      detailsReleaseDates,
+      reason = nomisReason,
+      calculatedAt = nomisOffenderKeyDates.calculatedAt,
+      comment = nomisOffenderKeyDates.comment,
+      releaseDates = detailsReleaseDates,
+      calculatedByUsername = nomisOffenderKeyDates.calculatedByUserId,
+      calculatedByDisplayName = nomisOffenderKeyDates.calculatedByUserId?.let { manageUsersApiClient.getUserByUsername(it)?.name } ?: nomisOffenderKeyDates.calculatedByUserId,
     )
   }
 

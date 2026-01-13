@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 import jakarta.persistence.EntityNotFoundException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.client.ManageUsersApiClient
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ApprovedDatesSubmission
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
@@ -10,6 +11,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Calcul
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationContext
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOriginalData
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationReasonDto
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedCalculationResults
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.PreviouslyRecordedSLED
@@ -27,6 +29,8 @@ open class DetailedCalculationResultsService(
   private val calculationResultEnrichmentService: CalculationResultEnrichmentService,
   private val calculationOutcomeHistoricOverrideRepository: CalculationOutcomeHistoricOverrideRepository,
   private val featureToggles: FeatureToggles,
+  private val manageUsersApiClient: ManageUsersApiClient,
+  private val prisonService: PrisonService,
 ) {
 
   @Transactional(readOnly = true)
@@ -74,20 +78,31 @@ open class DetailedCalculationResultsService(
   private fun calculationContext(
     calculationRequestId: Long,
     calculationRequest: CalculationRequest,
-  ) = CalculationContext(
-    calculationRequestId,
-    calculationRequest.bookingId,
-    calculationRequest.prisonerId,
-    CalculationStatus.valueOf(calculationRequest.calculationStatus),
-    calculationRequest.calculationReference,
-    calculationRequest.reasonForCalculation,
-    calculationRequest.otherReasonForCalculation,
-    calculationRequest.calculatedAt.toLocalDate(),
-    calculationRequest.calculationType,
-    calculationRequest.genuineOverrideReason,
-    calculationRequest.genuineOverrideReasonFurtherDetail ?: calculationRequest.genuineOverrideReason?.description,
-    calculationRequest.calculationRequestUserInput?.usePreviouslyRecordedSLEDIfFound ?: false,
-  )
+  ): CalculationContext {
+    val calculatedAtPrisonDescription: String? = if (calculationRequest.prisonerLocation != null) {
+      prisonService.getAgenciesByType("INST").firstOrNull { it.agencyId == calculationRequest.prisonerLocation }?.description ?: calculationRequest.prisonerLocation
+    } else {
+      null
+    }
+    return CalculationContext(
+      calculationRequestId = calculationRequestId,
+      bookingId = calculationRequest.bookingId,
+      prisonerId = calculationRequest.prisonerId,
+      calculationStatus = CalculationStatus.valueOf(calculationRequest.calculationStatus),
+      calculationReference = calculationRequest.calculationReference,
+      calculationReason = calculationRequest.reasonForCalculation?.let { CalculationReasonDto.from(it) },
+      otherReasonDescription = calculationRequest.otherReasonForCalculation,
+      calculationDate = calculationRequest.calculatedAt.toLocalDate(),
+      calculationType = calculationRequest.calculationType,
+      genuineOverrideReasonCode = calculationRequest.genuineOverrideReason,
+      genuineOverrideReasonDescription = calculationRequest.genuineOverrideReasonFurtherDetail ?: calculationRequest.genuineOverrideReason?.description,
+      usePreviouslyRecordedSLEDIfFound = calculationRequest.calculationRequestUserInput?.usePreviouslyRecordedSLEDIfFound ?: false,
+      calculatedByUsername = calculationRequest.calculatedByUsername,
+      calculatedByDisplayName = manageUsersApiClient.getUserByUsername(calculationRequest.calculatedByUsername)?.name ?: calculationRequest.calculatedByUsername,
+      calculatedAtPrisonId = calculationRequest.prisonerLocation,
+      calculatedAtPrisonDescription = calculatedAtPrisonDescription,
+    )
+  }
 
   private fun approvedDates(latestApprovedDatesSubmission: ApprovedDatesSubmission?): Map<ReleaseDateType, DetailedDate>? = latestApprovedDatesSubmission?.approvedDates?.associate {
     val type = ReleaseDateType.valueOf(it.calculationDateType)
