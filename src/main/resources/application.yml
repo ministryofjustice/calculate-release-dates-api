@@ -172,3 +172,4 @@ feature-toggles:
   ftr48ManualJourney: ${FTR_48_MANUAL_JOURNEY:false}
   useERS30Calculation: ${USE_ERS30_CALCULATION:false}
   applyPostRecallRepealRules: ${APPLY_POST_RECALL_REPEAL_RULES:false}
+  recordARecallFtr56Rules: ${RECORD_A_RECALL_FTR_56_RULES:false}
