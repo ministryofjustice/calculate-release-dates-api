@@ -164,6 +164,7 @@ class ToreraValidationServiceTest {
       caseSequence = caseSequence,
       caseReference = null,
       fineAmount = null,
+      courtId = null,
       courtDescription = null,
       courtTypeCode = null,
       consecutiveToSequence = null,

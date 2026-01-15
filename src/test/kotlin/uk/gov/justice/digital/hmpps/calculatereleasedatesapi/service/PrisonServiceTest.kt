@@ -21,7 +21,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOf
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculationSummary
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSentenceAndOffences
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.SentenceDetail
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.prisonapi.model.CalculablePrisoner
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -143,6 +142,7 @@ class PrisonServiceTest {
         LocalDate.now(),
         offence = offence1,
         caseReference = null,
+        courtId = null,
         courtDescription = null,
         courtTypeCode = null,
         fineAmount = null,
@@ -162,6 +162,7 @@ class PrisonServiceTest {
         LocalDate.now(),
         offence = offence2,
         caseReference = null,
+        courtId = null,
         courtDescription = null,
         courtTypeCode = null,
         fineAmount = null,
@@ -330,59 +331,6 @@ class PrisonServiceTest {
       totalElements = 2,
       size = 1,
       number = 1,
-    )
-
-    private val sentenceDetailsStub = SentenceDetail(
-      sentenceExpiryDate = null,
-      automaticReleaseDate = null,
-      conditionalReleaseDate = null,
-      nonParoleDate = null,
-      postRecallReleaseDate = null,
-      licenceExpiryDate = null,
-      homeDetentionCurfewEligibilityDate = null,
-      paroleEligibilityDate = null,
-      homeDetentionCurfewActualDate = null,
-      actualParoleDate = null,
-      releaseOnTemporaryLicenceDate = null,
-      earlyRemovalSchemeEligibilityDate = null,
-      earlyTermDate = null,
-      midTermDate = null,
-      lateTermDate = null,
-      topupSupervisionExpiryDate = LocalDate.of(2017, 1, 6),
-      tariffDate = null,
-      dtoPostRecallReleaseDate = null,
-      tariffEarlyRemovalSchemeEligibilityDate = null,
-      effectiveSentenceEndDate = LocalDate.of(2016, 11, 16),
-      bookingId = 123,
-      sentenceStartDate = LocalDate.of(2016, 11, 6),
-      additionalDaysAwarded = 0,
-      automaticReleaseOverrideDate = null,
-      conditionalReleaseOverrideDate = null,
-      nonParoleOverrideDate = null,
-      postRecallReleaseOverrideDate = null,
-      dtoPostRecallReleaseDateOverride = null,
-      nonDtoReleaseDate = null,
-      sentenceExpiryCalculatedDate = null,
-      sentenceExpiryOverrideDate = null,
-      licenceExpiryCalculatedDate = null,
-      licenceExpiryOverrideDate = null,
-      paroleEligibilityCalculatedDate = null,
-      paroleEligibilityOverrideDate = null,
-      topupSupervisionExpiryCalculatedDate = null,
-      topupSupervisionExpiryOverrideDate = null,
-      homeDetentionCurfewEligibilityCalculatedDate = null,
-      homeDetentionCurfewEligibilityOverrideDate = null,
-      nonDtoReleaseDateType = "CRD",
-      confirmedReleaseDate = null,
-      releaseDate = null,
-      etdOverrideDate = null,
-      etdCalculatedDate = null,
-      mtdOverrideDate = null,
-      mtdCalculatedDate = null,
-      ltdOverrideDate = null,
-      ltdCalculatedDate = null,
-      topupSupervisionStartDate = null,
-      homeDetentionCurfewEndDate = null,
     )
   }
 }

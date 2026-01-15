@@ -146,6 +146,7 @@ class ValidationServiceTest : SpringTestBase() {
     ),
     caseReference = null,
     fineAmount = null,
+    courtId = null,
     courtDescription = null,
     courtTypeCode = null,
     consecutiveToSequence = null,
@@ -173,6 +174,7 @@ class ValidationServiceTest : SpringTestBase() {
     ),
     caseReference = null,
     fineAmount = null,
+    courtId = null,
     courtDescription = null,
     courtTypeCode = null,
     consecutiveToSequence = null,
@@ -2779,6 +2781,7 @@ class ValidationServiceTest : SpringTestBase() {
       ),
       caseReference = null,
       fineAmount = null,
+      courtId = null,
       courtDescription = null,
       courtTypeCode = null,
       consecutiveToSequence = 3,
@@ -2816,6 +2819,7 @@ class ValidationServiceTest : SpringTestBase() {
       ),
       caseReference = null,
       fineAmount = null,
+      courtId = null,
       courtDescription = null,
       courtTypeCode = null,
       consecutiveToSequence = 1,
@@ -3479,6 +3483,30 @@ class ValidationServiceTest : SpringTestBase() {
     assertThat(result).isEmpty()
   }
 
+  @Test
+  fun `repatriated prisoners should be unsupported`() {
+    val sentenceWithRepatriatedCourtId = SentenceAndOffenceWithReleaseArrangements(
+      source = validSdsSentence.copy(courtId = "FORGN"),
+      isSdsPlus = false,
+      isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+      isSDSPlusOffenceInPeriod = false,
+      hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
+    )
+
+    val result = validationService.validate(
+      CalculationSourceData(
+        listOf(sentenceWithRepatriatedCourtId),
+        VALID_PRISONER,
+        VALID_ADJUSTMENTS,
+        listOf(),
+        null,
+      ),
+      USER_INPUTS,
+      ValidationOrder.allValidations(),
+    )
+    assertThat(result).containsExactly(ValidationMessage(ValidationCode.REPATRIATED_PRISONER))
+  }
+
   companion object {
     val FIRST_MAY_2018: LocalDate = LocalDate.of(2018, 5, 1)
     val FIRST_MAY_2021: LocalDate = LocalDate.of(2021, 5, 1)
@@ -3534,6 +3562,7 @@ class ValidationServiceTest : SpringTestBase() {
       ),
       caseReference = null,
       fineAmount = null,
+      courtId = null,
       courtDescription = null,
       consecutiveToSequence = null,
       revocationDates = listOf(LocalDate.of(2021, 1, 1)),
@@ -3560,6 +3589,7 @@ class ValidationServiceTest : SpringTestBase() {
       ),
       caseReference = null,
       fineAmount = null,
+      courtId = null,
       courtDescription = null,
       courtTypeCode = null,
       consecutiveToSequence = null,

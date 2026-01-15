@@ -116,6 +116,7 @@ class ErsedEligibilityServiceTest {
       offence = OffenderOffence(1L, LocalDate.of(2015, 1, 1), null, code, "description", listOf("A")),
       caseReference = null,
       fineAmount = null,
+      courtId = null,
       courtDescription = null,
       courtTypeCode = null,
       consecutiveToSequence = null,
