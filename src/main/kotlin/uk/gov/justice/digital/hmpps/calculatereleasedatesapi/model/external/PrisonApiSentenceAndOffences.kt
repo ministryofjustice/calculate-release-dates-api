@@ -19,6 +19,7 @@ data class PrisonApiSentenceAndOffences(
   val terms: List<SentenceTerms> = emptyList(),
   val offences: List<OffenderOffence> = emptyList(),
   val caseReference: String? = null,
+  val courtId: String? = null,
   val courtDescription: String? = null,
   val courtTypeCode: String? = null,
   val fineAmount: BigDecimal? = null,

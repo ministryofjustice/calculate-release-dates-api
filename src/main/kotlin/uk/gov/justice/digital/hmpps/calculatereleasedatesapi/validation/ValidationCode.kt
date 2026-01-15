@@ -135,6 +135,7 @@ enum class ValidationCode(val message: String, val validationType: ValidationTyp
   BROKEN_CONSECUTIVE_CHAINS("You cannot have a sentence consecutive to an inactive sentence."),
   RECALL_MISSING_REVOCATION_DATE("An active recall sentence is present with no associated court event with a \"Recall to prison\" court outcome"),
   COURT_MARTIAL_WITH_SDS_PLUS("The calculation includes an SDS+ from a military court", MANUAL_ENTRY_JOURNEY_REQUIRED),
+  REPATRIATED_PRISONER("The calculation includes a case from a foreign court", MANUAL_ENTRY_JOURNEY_REQUIRED),
   CONSECUTIVE_TO_SENTENCE_IMPOSED_AFTER("Court case %s NOMIS line number %s cannot be consecutive to a sentence that has a later date"),
   REVOCATION_DATE_IN_THE_FUTURE("Revocation date must not be in the future"),
 }

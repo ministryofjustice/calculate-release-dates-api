@@ -39,6 +39,7 @@ class PrisonApiDataVersions {
           terms = listOf(SentenceTerms(years, months, weeks, days)),
           offence = offence,
           caseReference = null,
+          courtId = null,
           courtDescription = null,
           courtTypeCode = null,
           fineAmount = 0.toBigDecimal(),
