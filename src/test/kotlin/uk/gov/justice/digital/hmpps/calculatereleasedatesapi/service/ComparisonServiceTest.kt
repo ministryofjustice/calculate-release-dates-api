@@ -539,6 +539,7 @@ class ComparisonServiceTest {
       sentenceTypeDescription = "ADMIP",
       offence = OffenderOffence(1L, LocalDate.of(2015, 1, 1), null, "ADIMP_ORA", "description", listOf("A")),
       caseReference = null,
+      courtId = null,
       courtDescription = null,
       courtTypeCode = null,
       fineAmount = null,

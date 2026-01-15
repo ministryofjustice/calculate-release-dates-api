@@ -597,6 +597,7 @@ class ThingsToDoServiceTest {
       ),
       offence = BASE_OFFENCE,
       caseReference = null,
+      courtId = null,
       courtDescription = null,
       courtTypeCode = null,
       fineAmount = null,
