@@ -14,14 +14,20 @@ import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonPerson
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentsSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NormalisedSentenceAndOffence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.SentenceCalcDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationReasonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonPersonRepository
@@ -31,7 +37,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.eligibility
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.service.ValidationService
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.util.*
+import java.util.Optional
+import java.util.UUID
 
 class BulkComparisonEventServiceTest {
   private val prisonService: PrisonService = mock()
@@ -217,5 +224,125 @@ class BulkComparisonEventServiceTest {
     verify(validationService).validate(any(), calculationInputsCaptor.capture(), any())
     assertThat(calculationInputsCaptor.firstValue.calculateErsed).isTrue()
     verify(ersedEligibilityService).sentenceIsEligible(bookingId)
+  }
+
+  @Test
+  fun `should mark the comparison person with indeterminate sentences`() {
+    val prisonerDetails = PrisonerDetails(
+      bookingId = bookingId,
+      offenderNo = body.personId,
+      dateOfBirth = LocalDate.of(1982, 6, 15),
+      firstName = "Zimmy",
+      lastName = "Cnys",
+      sentenceDetail = blankSentenceCalcDates.copy(earlyRemovalSchemeEligibilityDate = LocalDate.of(2025, 1, 1)),
+    )
+    whenever(comparisonRepository.findById(1L)).thenReturn(Optional.of(comparison))
+    whenever(calculationReasonRepository.findTopByIsBulkTrue()).thenReturn(Optional.of(calculationReason))
+    whenever(comparisonPersonRepository.findByComparisonIdAndPerson(body.comparisonId, body.personId)).thenReturn(emptyList())
+    whenever(prisonService.getOffenderDetail(body.personId)).thenReturn(prisonerDetails)
+    whenever(calculationSourceDataService.getCalculationSourceData(same(prisonerDetails), any(), any())).thenReturn(
+      CalculationSourceData(
+        listOf(
+          SentenceAndOffenceWithReleaseArrangements(
+            source = BASE_DETERMINATE_SENTENCE.copy(sentenceCalculationType = SentenceCalculationType.TWENTY.name),
+            isSdsPlus = false,
+            isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+            isSDSPlusOffenceInPeriod = false,
+            hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
+          ),
+          SentenceAndOffenceWithReleaseArrangements(
+            source = BASE_DETERMINATE_SENTENCE,
+            isSdsPlus = false,
+            isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+            isSDSPlusOffenceInPeriod = false,
+            hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
+          ),
+        ),
+        prisonerDetails,
+        AdjustmentsSourceData(adjustmentsApiData = emptyList()),
+        emptyList(),
+        null,
+      ),
+    )
+    whenever(validationService.validate(any(), any(), any()))
+      .thenReturn(emptyList())
+    whenever(bookingService.getBooking(any())).thenReturn(mock())
+    whenever(calculationTransactionalService.calculate(any(), any(), any(), any(), any(), isNull(), isNull(), any(), isNull(), any()))
+      .thenReturn(CalculatedReleaseDates(emptyMap(), 1L, 1L, "ASD", CalculationStatus.BULK, calculationReference = UUID.randomUUID(), calculationReason = null, calculationDate = LocalDate.now(), calculationOutput = null))
+    whenever(ersedEligibilityService.sentenceIsEligible(bookingId)).thenReturn(ErsedEligibility(true))
+
+    service.handleBulkComparisonMessage(InternalMessage(body))
+
+    val comparisonPerson = argumentCaptor<ComparisonPerson>()
+    verify(comparisonPersonRepository).save(comparisonPerson.capture())
+    assertThat(comparisonPerson.firstValue.hasIndeterminateSentences).isTrue
+  }
+
+  @Test
+  fun `should mark the comparison person with no indeterminate sentences`() {
+    val prisonerDetails = PrisonerDetails(
+      bookingId = bookingId,
+      offenderNo = body.personId,
+      dateOfBirth = LocalDate.of(1982, 6, 15),
+      firstName = "Zimmy",
+      lastName = "Cnys",
+      sentenceDetail = blankSentenceCalcDates.copy(earlyRemovalSchemeEligibilityDate = LocalDate.of(2025, 1, 1)),
+    )
+    whenever(comparisonRepository.findById(1L)).thenReturn(Optional.of(comparison))
+    whenever(calculationReasonRepository.findTopByIsBulkTrue()).thenReturn(Optional.of(calculationReason))
+    whenever(comparisonPersonRepository.findByComparisonIdAndPerson(body.comparisonId, body.personId)).thenReturn(emptyList())
+    whenever(prisonService.getOffenderDetail(body.personId)).thenReturn(prisonerDetails)
+    whenever(calculationSourceDataService.getCalculationSourceData(same(prisonerDetails), any(), any())).thenReturn(
+      CalculationSourceData(
+        listOf(
+          SentenceAndOffenceWithReleaseArrangements(
+            source = BASE_DETERMINATE_SENTENCE,
+            isSdsPlus = false,
+            isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+            isSDSPlusOffenceInPeriod = false,
+            hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
+          ),
+        ),
+        prisonerDetails,
+        AdjustmentsSourceData(adjustmentsApiData = emptyList()),
+        emptyList(),
+        null,
+      ),
+    )
+    whenever(validationService.validate(any(), any(), any()))
+      .thenReturn(emptyList())
+    whenever(bookingService.getBooking(any())).thenReturn(mock())
+    whenever(calculationTransactionalService.calculate(any(), any(), any(), any(), any(), isNull(), isNull(), any(), isNull(), any()))
+      .thenReturn(CalculatedReleaseDates(emptyMap(), 1L, 1L, "ASD", CalculationStatus.BULK, calculationReference = UUID.randomUUID(), calculationReason = null, calculationDate = LocalDate.now(), calculationOutput = null))
+    whenever(ersedEligibilityService.sentenceIsEligible(bookingId)).thenReturn(ErsedEligibility(true))
+
+    service.handleBulkComparisonMessage(InternalMessage(body))
+
+    val comparisonPerson = argumentCaptor<ComparisonPerson>()
+    verify(comparisonPersonRepository).save(comparisonPerson.capture())
+    assertThat(comparisonPerson.firstValue.hasIndeterminateSentences).isFalse
+  }
+
+  companion object {
+    private val BASE_DETERMINATE_SENTENCE = NormalisedSentenceAndOffence(
+      bookingId = 999L,
+      sentenceSequence = 1,
+      lineSequence = 1,
+      caseSequence = 1,
+      sentenceDate = LocalDate.of(2022, 1, 1),
+      sentenceStatus = "IMP",
+      sentenceCategory = "CAT",
+      sentenceCalculationType = SentenceCalculationType.ADIMP.name,
+      sentenceTypeDescription = "ADMIP",
+      terms = emptyList(),
+      offence = OffenderOffence(1L, LocalDate.of(2015, 1, 1), null, "ADIMP_ORA", "description", listOf("A")),
+      caseReference = null,
+      fineAmount = null,
+      courtId = null,
+      courtDescription = null,
+      courtTypeCode = null,
+      consecutiveToSequence = null,
+      revocationDates = emptyList(),
+    )
   }
 }
