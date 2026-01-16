@@ -87,4 +87,6 @@ class ComparisonPerson(
   var establishment: String?,
 
   var fatalException: String? = null,
+
+  var hasIndeterminateSentences: Boolean?,
 )

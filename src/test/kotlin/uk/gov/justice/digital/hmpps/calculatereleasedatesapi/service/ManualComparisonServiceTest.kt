@@ -194,6 +194,7 @@ class ManualComparisonServiceTest {
       breakdownByReleaseDateType = emptyObjectNode,
       sdsPlusSentencesIdentified = objectMapper.valueToTree(listOf(sdsPlusSentence)),
       establishment = "BMI",
+      hasIndeterminateSentences = false,
     )
     val comparison = Comparison(
       id = 99L,

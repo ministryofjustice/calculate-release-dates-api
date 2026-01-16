@@ -216,6 +216,7 @@ class ComparisonDiscrepancyServiceTest {
       breakdownByReleaseDateType = emptyObjectNode,
       sdsPlusSentencesIdentified = emptyObjectNode,
       establishment = "BMI",
+      hasIndeterminateSentences = false,
     )
   }
 
