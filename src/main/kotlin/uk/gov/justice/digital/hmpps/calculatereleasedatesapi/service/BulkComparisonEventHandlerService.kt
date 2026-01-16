@@ -20,6 +20,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Mismatch
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.MismatchType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.SentenceCalcDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationReasonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonPersonRepository
@@ -193,6 +194,7 @@ class BulkComparisonEventHandlerService(
         isActiveSexOffender = validationResult.booking?.offender?.isActiveSexOffender ?: false,
         sdsPlusSentencesIdentified = objectMapper.valueToTree(sdsPlusSentenceAndOffences),
         establishment = establishmentValue,
+        hasIndeterminateSentences = sourceData.sentenceAndOffences.any { SentenceCalculationType.isIndeterminate(it.sentenceCalculationType) },
       ),
     )
   }
@@ -235,6 +237,7 @@ class BulkComparisonEventHandlerService(
         sdsPlusSentencesIdentified = objectMapper.createObjectNode(),
         establishment = establishmentValue,
         fatalException = trimmedException,
+        hasIndeterminateSentences = sourceData?.sentenceAndOffences?.any { SentenceCalculationType.isIndeterminate(it.sentenceCalculationType) },
       ),
     )
   }

@@ -609,6 +609,7 @@ class TransformFunctionsTest {
       calculationRequestId = 1,
       sdsPlusSentencesIdentified = objectMapper.createObjectNode(),
       establishment = "ABC",
+      hasIndeterminateSentences = false,
     )
     return comparisonPerson
   }
