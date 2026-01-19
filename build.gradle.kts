@@ -10,7 +10,7 @@ plugins {
   kotlin("plugin.spring") version "2.3.0"
   kotlin("plugin.jpa") version "2.3.0"
   id("jacoco")
-  id("org.openapi.generator") version "7.18.0"
+  id("org.openapi.generator") version "7.19.0"
 }
 
 configurations {
@@ -86,7 +86,7 @@ dependencies {
   testImplementation("org.testcontainers:localstack:1.21.4")
   testImplementation("org.testcontainers:postgresql:1.21.4")
   testImplementation("org.testcontainers:junit-jupiter:1.21.4")
-  testImplementation("io.github.hakky54:logcaptor:2.12.1")
+  testImplementation("io.github.hakky54:logcaptor:2.12.2")
   testImplementation("org.mockito.kotlin:mockito-kotlin")
   testImplementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter-test:2.0.0")
   testImplementation(kotlin("test"))
