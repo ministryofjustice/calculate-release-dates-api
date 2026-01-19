@@ -14,7 +14,7 @@
 
 AUTH_HOST="https://sign-in-dev.hmpps.service.justice.gov.uk"
 
-read -r user secret < <(echo $(kubectl -n calculate-release-dates-dev get secret calculate-release-dates -o json | jq '.data[] |= @base64d' | jq -r '.data.SYSTEM_CLIENT_ID, .data.SYSTEM_CLIENT_SECRET'))
+read -r user secret < <(echo $(kubectl -n calculate-release-dates-dev get secret calculate-release-dates-client-creds -o json | jq '.data[] |= @base64d' | jq -r '.data.CLIENT_CREDS_CLIENT_ID, .data.CLIENT_CREDS_CLIENT_SECRET'))
 
 BASIC_AUTH="$(echo -n $user:$secret | base64)"
 TOKEN_RESPONSE=$(curl -s -k -d "" -X POST "$AUTH_HOST/auth/oauth/token?grant_type=client_credentials" -H "Authorization: Basic $BASIC_AUTH")
