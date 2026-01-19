@@ -24,6 +24,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Offe
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.UpdateOffenderDates
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.AgencySwitch
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.AgencySwitchAgency
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.PrisonApiExternalMovement
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.SentenceDetail
@@ -156,6 +158,7 @@ class PrisonApiClient(
           log.error(errorMsg)
           Mono.just(errorMsg.left())
         }
+
         else -> {
           val errorMsg = "Booking ($bookingId) could not be loaded for an unknown reason. Status ${response.statusCode().value()}"
           log.error(errorMsg)
@@ -223,5 +226,39 @@ class PrisonApiClient(
       .retrieve()
       .bodyToMono(PrisonerInPrisonSummary::class.java)
       .block()!!
+  }
+
+  fun getAgenciesWithSwitchOn(agencySwitch: AgencySwitch): List<AgencySwitchAgency> {
+    log.info("Requesting agencies with switch: $agencySwitch")
+    return systemAuthWebClient.get()
+      .uri("/api/agency-switches/$agencySwitch")
+      .retrieve()
+      .bodyToMono(typeReference<List<AgencySwitchAgency>>())
+      .block()!!
+  }
+
+  fun turnSwitchOnForAgency(agencyId: String, agencySwitch: AgencySwitch): Boolean {
+    log.info("Switching on $agencySwitch for $agencyId")
+    return systemAuthWebClient.post()
+      .uri("/api/agency-switches/$agencySwitch/agency/$agencyId")
+      .exchangeToMono { response ->
+        when (response.statusCode()) {
+          HttpStatus.CREATED -> Mono.just(true)
+          HttpStatus.CONFLICT -> Mono.just(true) // it was already switched on
+          else -> Mono.just(false)
+        }
+      }.block()!!
+  }
+
+  fun turnSwitchOffForAgency(agencyId: String, agencySwitch: AgencySwitch): Boolean {
+    log.info("Switching off $agencySwitch for $agencyId")
+    return systemAuthWebClient.delete()
+      .uri("/api/agency-switches/$agencySwitch/agency/$agencyId")
+      .exchangeToMono { response ->
+        when (response.statusCode()) {
+          HttpStatus.NO_CONTENT -> Mono.just(true)
+          else -> Mono.just(false)
+        }
+      }.block()!!
   }
 }
