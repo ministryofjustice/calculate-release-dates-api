@@ -124,12 +124,11 @@ class TusedCalculator(private val featureToggles: FeatureToggles) {
 
   fun amendTusedInlineWithPostSupervisionRepeal(
     tused: LocalDate,
-  ): LocalDate? =
-    if (featureToggles.applyPostRecallRepealRules) {
-      null
-    } else {
-      tused
-    }
+  ): LocalDate? = if (featureToggles.applyPostRecallRepealRules) {
+    null
+  } else {
+    tused
+  }
 
   fun updateBotusSentenceTused(botusSentence: BotusSentence) {
     if (botusSentence.latestTusedDate == null || featureToggles.applyPostRecallRepealRules) {
