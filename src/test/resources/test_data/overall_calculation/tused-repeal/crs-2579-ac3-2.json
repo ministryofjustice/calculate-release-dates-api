@@ -8,7 +8,8 @@
       {
         "type": "StandardSentence",
         "offence": {
-          "committedAt": "2025-02-11"
+          "committedAt": "2025-02-12",
+          "offenceCode": "CJ03524"
         },
         "duration": {
           "durationElements": {
@@ -16,13 +17,13 @@
           }
         },
         "sentencedAt": "2025-02-12",
-        "identifier": "28120a3e-4eda-432c-8bff-3ddcafe3b90b",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "hasAnSDSEarlyReleaseExclusion": "NO",
+        "section250": true
       },
       {
         "type": "BotusSentence",
         "offence": {
-          "committedAt": "2025-08-06",
+          "committedAt": "2025-08-07",
           "offenceCode": "TH68036"
         },
         "duration": {
@@ -30,13 +31,15 @@
             "DAYS": 14
           }
         },
-        "sentencedAt": "2025-08-07",
-        "identifier": "48e79e3f-fb29-461a-bcca-6a033799ee03",
-        "hasAnSDSEarlyReleaseExclusion": "VIOLENT"
+        "sentencedAt": "2025-08-07"
       }
     ],
     "adjustments": {}
   },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params",
   "featureToggles": {
     "applyPostRecallRepealRules": true
   }

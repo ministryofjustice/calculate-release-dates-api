@@ -1,9 +1,8 @@
 {
   "dates": {
-    "SLED": "2026-03-04",
     "CRD": "2025-11-16",
+    "SLED": "2026-03-04",
     "HDCED": "2025-10-12",
-    "TUSED": "2026-03-23",
     "ESED": "2026-03-04"
   },
   "effectiveSentenceLength": "P6M"

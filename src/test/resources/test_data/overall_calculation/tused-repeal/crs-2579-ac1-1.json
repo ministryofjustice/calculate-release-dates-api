@@ -6,26 +6,21 @@
     },
     "sentences": [
       {
-        "type": "BotusSentence",
+        "type": "DetentionAndTrainingOrderSentence",
         "offence": {
-          "committedAt": "2025-09-02",
+          "committedAt": "2026-05-02",
           "offenceCode": "CJ03524"
         },
         "duration": {
           "durationElements": {
-            "DAYS": 5
+            "MONTHS":  11
           }
         },
-        "sentencedAt": "2025-09-02",
-        "latestTusedDate": "2026-07-29",
-        "latestTusedSource": "CRDS"
+        "sentencedAt": "2026-05-02",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
       }
     ],
-    "adjustments": {},
-    "historicalTusedData": {
-      "tused": "2026-07-29",
-      "historicalTusedSource": "CRDS"
-    }
+    "adjustments": {}
   },
   "userInputs": {
     "useOffenceIndicators": true

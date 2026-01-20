@@ -6,23 +6,27 @@
     },
     "sentences": [
       {
-        "type": "DetentionAndTrainingOrderSentence",
+        "type": "StandardSentence",
         "offence": {
-          "committedAt": "2025-05-01",
-          "offenceCode": "TH68036"
+          "committedAt": "2024-06-04",
+          "offenceCode": "CJ03524"
         },
         "duration": {
           "durationElements": {
-            "MONTHS": 11
+            "MONTHS": 18
           }
         },
-        "sentencedAt": "2026-05-02",
-        "identifier": "48e79e3f-fb29-461a-bcca-6a033799ee03",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "sentencedAt": "2024-06-04",
+        "hasAnSDSEarlyReleaseExclusion": "SEXUAL",
+        "section250": true
       }
     ],
     "adjustments": {}
   },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params",
   "featureToggles": {
     "applyPostRecallRepealRules": true
   }

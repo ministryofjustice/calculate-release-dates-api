@@ -6,10 +6,10 @@
     },
     "sentences": [
       {
-        "type": "StandardDeterminate",
+        "type": "StandardDeterminateSentence",
         "offence": {
-          "committedAt": "2025-09-04",
-          "offenceCode": "TH68036"
+          "committedAt": "2025-09-05",
+          "offenceCode": "CJ03524"
         },
         "duration": {
           "durationElements": {
@@ -17,12 +17,15 @@
           }
         },
         "sentencedAt": "2025-09-05",
-        "identifier": "48e79e3f-fb29-461a-bcca-6a033799ee03",
         "hasAnSDSEarlyReleaseExclusion": "NO"
       }
     ],
     "adjustments": {}
   },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params",
   "featureToggles": {
     "applyPostRecallRepealRules": true
   }
