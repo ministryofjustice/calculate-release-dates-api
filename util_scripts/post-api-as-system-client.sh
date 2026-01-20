@@ -25,6 +25,6 @@ if [[ $? -ne 0 ]]; then
   exit 1
 fi
 
-curl -s -X GET --location "$1" -H "Authorization: Bearer $TOKEN" -H "Accept: application/json" | jq .
+curl -s -X POST --location "$1" -H "Authorization: Bearer $TOKEN" -H "Accept: application/json" | jq .
 
 # End
