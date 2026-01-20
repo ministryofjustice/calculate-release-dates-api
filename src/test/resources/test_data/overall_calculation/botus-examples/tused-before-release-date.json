@@ -28,5 +28,9 @@
       "tused": "2024-05-14",
       "historicalTusedSource": "NOMIS_OVERRIDDEN"
     }
+  },
+  "params": "calculation-params",
+  "featureToggles": {
+    "applyPostRecallRepealRules": true
   }
 }

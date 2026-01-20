@@ -125,7 +125,7 @@ class BookingExtractionService(
       sentence.latestTusedDate != null &&
       sentenceCalculation.expiryDate.isBefore(sentence.latestTusedDate)
     ) {
-      dates[TUSED] = tusedCalculator.getHistoricTused(sentence.latestTusedDate!!)
+      dates[TUSED] = sentence.latestTusedDate!!
       historicalTusedSource = sentence.latestTusedSource!!
     }
 
