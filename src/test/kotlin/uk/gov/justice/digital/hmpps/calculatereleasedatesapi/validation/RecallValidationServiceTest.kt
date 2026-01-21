@@ -79,16 +79,6 @@ class RecallValidationServiceTest {
     }
 
     @Test
-    fun `Validate return to custody before revocation for FTR-56 fails`() {
-      val sentence = FTR_14_DAY_SENTENCE.copy(sentenceCalculationType = SentenceCalculationType.FTR_56ORA.name)
-
-      val messages = fixedTermRecallValidator.validate(createSourceData(listOf(sentence), LocalDate.of(2023, 12, 1), 14))
-
-      assertThat(messages).isNotEmpty
-      assertThat(messages[0].code).isEqualTo(ValidationCode.FTR_RTC_DATE_BEFORE_REVOCATION_DATE)
-    }
-
-    @Test
     fun `validate FTR56 sentence with no movements does not trigger manual journey`() {
       val sentences = listOf(FTR_56_DAY_SENTENCE)
       val returnToCustodyDate = LocalDate.of(2024, 2, 1)

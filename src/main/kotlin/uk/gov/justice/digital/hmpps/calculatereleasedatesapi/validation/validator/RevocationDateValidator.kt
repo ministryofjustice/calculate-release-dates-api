@@ -14,12 +14,16 @@ class RevocationDateValidator : PreCalculationSourceDataValidator {
 
   override fun validate(sourceData: CalculationSourceData): List<ValidationMessage> {
     val recallSentences = sourceData.sentenceAndOffences.filter { from(it.sentenceCalculationType).recallType != null }
-
-    val revocationDate = sourceData.findLatestRevocationDate()
-
     if (recallSentences.isNotEmpty()) {
-      if (revocationDate == null && recallSentences.any { from(it.sentenceCalculationType).recallType == FIXED_TERM_RECALL_56 }) {
-        return listOf(ValidationMessage(ValidationCode.RECALL_MISSING_REVOCATION_DATE))
+      val revocationDate = sourceData.findLatestRevocationDate()
+      val has56DayFTRSentence = recallSentences.any { from(it.sentenceCalculationType).recallType == FIXED_TERM_RECALL_56 }
+      if (has56DayFTRSentence) {
+        if (revocationDate == null) {
+          return listOf(ValidationMessage(ValidationCode.RECALL_MISSING_REVOCATION_DATE))
+        }
+        if (sourceData.returnToCustodyDate != null && revocationDate.isAfter(sourceData.returnToCustodyDate.returnToCustodyDate)) {
+          return listOf(ValidationMessage(ValidationCode.FTR_RTC_DATE_BEFORE_REVOCATION_DATE))
+        }
       }
       if (revocationDate != null && revocationDate.isAfter(LocalDate.now())) {
         return listOf(ValidationMessage(ValidationCode.REVOCATION_DATE_IN_THE_FUTURE))

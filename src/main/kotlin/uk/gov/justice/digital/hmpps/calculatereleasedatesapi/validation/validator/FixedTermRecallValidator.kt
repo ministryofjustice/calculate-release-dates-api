@@ -50,11 +50,6 @@ class FixedTermRecallValidator : PreCalculationSourceDataValidator {
       validationMessages.add(ValidationMessage(ValidationCode.FTR_RTC_DATE_IN_FUTURE))
     }
 
-    val revocationDate = sourceData.findLatestRevocationDate()
-    if (has56DayFTRSentence && revocationDate!!.isAfter(sourceData.returnToCustodyDate!!.returnToCustodyDate)) {
-      validationMessages.add(ValidationMessage(ValidationCode.FTR_RTC_DATE_BEFORE_REVOCATION_DATE))
-    }
-
     if (has56DayFTRSentence) {
       validateFtr56(sourceData)?.let { validationMessages.add(it) }
     }
