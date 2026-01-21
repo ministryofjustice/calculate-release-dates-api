@@ -3507,6 +3507,52 @@ class ValidationServiceTest : SpringTestBase() {
     assertThat(result).containsExactly(ValidationMessage(ValidationCode.REPATRIATED_PRISONER))
   }
 
+  @Test
+  fun `Test recall with no revocation date should fail`() {
+    val result = validationService.validate(
+      VALID_FTR_SOURCE_DATA.copy(
+        sentenceAndOffences = listOf(FTR_56_DAY_SENTENCE).map {
+          SentenceAndOffenceWithReleaseArrangements(
+            source = it.copy(revocationDates = emptyList()),
+            isSdsPlus = false,
+            isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+            isSDSPlusOffenceInPeriod = false,
+            hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
+          )
+        },
+        returnToCustodyDate = ReturnToCustodyDate(BOOKING_ID, FTR_DETAILS_56.returnToCustodyDate),
+        fixedTermRecallDetails = FTR_DETAILS_56,
+      ),
+      USER_INPUTS,
+      ValidationOrder.allValidations(),
+    )
+    assertThat(result).isEqualTo(listOf(ValidationMessage(ValidationCode.RECALL_MISSING_REVOCATION_DATE)))
+  }
+
+  @Test
+  fun `FTRs should not have an RTC before revocation date`() {
+    val revocationDate = LocalDate.of(2025, 1, 2)
+    val returnToCustodyDate = LocalDate.of(2025, 1, 1)
+    val result = validationService.validate(
+      VALID_FTR_SOURCE_DATA.copy(
+        sentenceAndOffences = listOf(FTR_56_DAY_SENTENCE).map {
+          SentenceAndOffenceWithReleaseArrangements(
+            source = it.copy(revocationDates = listOf(revocationDate)),
+            isSdsPlus = false,
+            isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+            isSDSPlusOffenceInPeriod = false,
+            hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
+          )
+        },
+        returnToCustodyDate = ReturnToCustodyDate(BOOKING_ID, returnToCustodyDate),
+        fixedTermRecallDetails = FTR_DETAILS_56.copy(returnToCustodyDate = returnToCustodyDate),
+      ),
+      USER_INPUTS,
+      ValidationOrder.allValidations(),
+    )
+    assertThat(result).isEqualTo(listOf(ValidationMessage(ValidationCode.FTR_RTC_DATE_BEFORE_REVOCATION_DATE)))
+  }
+
   companion object {
     val FIRST_MAY_2018: LocalDate = LocalDate.of(2018, 5, 1)
     val FIRST_MAY_2021: LocalDate = LocalDate.of(2021, 5, 1)
@@ -3538,6 +3584,7 @@ class ValidationServiceTest : SpringTestBase() {
     private val RETURN_TO_CUSTODY_DATE = LocalDate.of(2022, 3, 15)
     private val FTR_DETAILS_14 = FixedTermRecallDetails(BOOKING_ID, RETURN_TO_CUSTODY_DATE, 14)
     private val FTR_DETAILS_28 = FixedTermRecallDetails(BOOKING_ID, RETURN_TO_CUSTODY_DATE, 28)
+    private val FTR_DETAILS_56 = FixedTermRecallDetails(BOOKING_ID, RETURN_TO_CUSTODY_DATE, 56)
     private val FTR_DETAILS_NO_RTC = mock(FixedTermRecallDetails::class.java)
     private val FTR_14_DAY_SENTENCE = NormalisedSentenceAndOffence(
       bookingId = 1L,
@@ -3577,6 +3624,34 @@ class ValidationServiceTest : SpringTestBase() {
         SentenceTerms(5, 0, 0, 0, SentenceTerms.IMPRISONMENT_TERM_CODE),
       ),
       sentenceCalculationType = FTR.name,
+      sentenceCategory = "2003",
+      sentenceStatus = "a",
+      sentenceTypeDescription = "This is a sentence type",
+      offence = OffenderOffence(
+        1,
+        LocalDate.of(2015, 4, 1),
+        null,
+        "A123456",
+        "TEST OFFENCE 2",
+      ),
+      caseReference = null,
+      fineAmount = null,
+      courtId = null,
+      courtDescription = null,
+      courtTypeCode = null,
+      consecutiveToSequence = null,
+      revocationDates = listOf(LocalDate.of(2021, 1, 1)),
+    )
+    private val FTR_56_DAY_SENTENCE = NormalisedSentenceAndOffence(
+      bookingId = 1L,
+      sentenceSequence = 7,
+      lineSequence = LINE_SEQ,
+      caseSequence = CASE_SEQ,
+      sentenceDate = FIRST_MAY_2018,
+      terms = listOf(
+        SentenceTerms(5, 0, 0, 0, SentenceTerms.IMPRISONMENT_TERM_CODE),
+      ),
+      sentenceCalculationType = FTR_56ORA.name,
       sentenceCategory = "2003",
       sentenceStatus = "a",
       sentenceTypeDescription = "This is a sentence type",
