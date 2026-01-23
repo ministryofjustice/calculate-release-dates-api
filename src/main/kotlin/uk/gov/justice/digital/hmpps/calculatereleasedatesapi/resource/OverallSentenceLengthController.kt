@@ -26,7 +26,7 @@ class OverallSentenceLengthController(
 
   @PostMapping
   @ResponseBody
-  @PreAuthorize("hasAnyRole('CALCULATE_RELEASE_DATES__CALCULATE_RW', 'CALCULATE_RELEASE_DATES__CALCULATE_RO')")
+  @PreAuthorize("hasAnyRole('CALCULATE_RELEASE_DATES__CALCULATE_RW', 'CALCULATE_RELEASE_DATES__CALCULATE_RO', 'CALCULATE_RELEASE_DATES__CALCULATE__RW', 'CALCULATE_RELEASE_DATES__CALCULATE__RO')")
   @Operation(
     summary = "Find overall sentence length comparison",
     description = "Compares the sentence durations to an overall sentence length",
