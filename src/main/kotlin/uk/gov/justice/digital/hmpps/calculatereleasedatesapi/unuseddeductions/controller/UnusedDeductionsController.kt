@@ -27,7 +27,7 @@ class UnusedDeductionsController(
 ) {
 
   @PostMapping(value = ["/{prisonerId}/calculation"])
-  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")
+  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR', 'CALCULATE_RELEASE_DATES__CALCULATE__RW', 'CALCULATE_RELEASE_DATES__CALCULATE__RO')")
   @ResponseBody
   @Operation(
     summary = "Calculate unused deductions.",

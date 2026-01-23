@@ -33,7 +33,7 @@ class ValidationController(
   private val validationService: ValidationService,
 ) {
   @PostMapping(value = ["/{prisonerId}/full-validation"])
-  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")
+  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR', 'CALCULATE_RELEASE_DATES__CALCULATE__RW', 'CALCULATE_RELEASE_DATES__CALCULATE__RO')")
   @ResponseBody
   @Operation(
     summary = "Validates that the data for the given prisoner in NOMIS can be used to calculate a release date",
@@ -67,7 +67,7 @@ class ValidationController(
   }
 
   @GetMapping(value = ["/{prisonerId}/supported-validation"])
-  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")
+  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR', 'CALCULATE_RELEASE_DATES__CALCULATE__RW', 'CALCULATE_RELEASE_DATES__CALCULATE__RO')")
   @ResponseBody
   @Operation(
     summary = "Validates that the sentences for the given prisoner in NOMIS can be used to calculate a release date",
@@ -106,7 +106,7 @@ class ValidationController(
   }
 
   @GetMapping(value = ["/{prisonerId}/manual-entry-validation"])
-  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")
+  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR', 'CALCULATE_RELEASE_DATES__CALCULATE__RW', 'CALCULATE_RELEASE_DATES__CALCULATE__RO')")
   @ResponseBody
   @Operation(
     summary = "Validates that the sentences for the given prisoner in NOMIS are ok adequate to record a manual date against for unsupported types",
@@ -131,7 +131,7 @@ class ValidationController(
   }
 
   @GetMapping(value = ["/manual-entry-dates-validation"])
-  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")
+  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR', 'CALCULATE_RELEASE_DATES__CALCULATE__RW', 'CALCULATE_RELEASE_DATES__CALCULATE__RO')")
   @ResponseBody
   @Operation(
     summary = "Validates that requested calculation dates are valid",

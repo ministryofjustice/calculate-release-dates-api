@@ -25,7 +25,7 @@ class SourceDataProxyController(
   val adjustmentsService: AdjustmentsService,
 ) {
   @GetMapping(value = ["/sentence-and-offence-information/{bookingId}"])
-  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")
+  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR', 'CALCULATE_RELEASE_DATES__CALCULATE__RW', 'CALCULATE_RELEASE_DATES__CALCULATE__RO')")
   @ResponseBody
   @Operation(
     summary = "Get sentence and offence information",
@@ -41,10 +41,10 @@ class SourceDataProxyController(
   fun getSentencesAndOffences(@PathVariable bookingId: Long): List<AnalysedSentenceAndOffence> = sentenceAndOffenceService.getSentencesAndOffences(bookingId)
 
   @GetMapping(value = ["/booking-and-sentence-adjustments/{bookingId}"])
-  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")
+  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR', 'CALCULATE_RELEASE_DATES__CALCULATE__RW', 'CALCULATE_RELEASE_DATES__CALCULATE__RO')")
   @ResponseBody
   @Operation(
-    summary = "Get booking and sentence adjusments",
+    summary = "Get booking and sentence adjustments",
     description = "This endpoint will return a response model which shows booking and sentence adjustments. It will notify if there are new adjustments since last calculation",
   )
   @ApiResponses(
@@ -57,7 +57,7 @@ class SourceDataProxyController(
   fun getBookingAndSentenceAdjustments(@PathVariable bookingId: Long): AnalysedBookingAndSentenceAdjustments = adjustmentsService.getAnalysedBookingAndSentenceAdjustments(bookingId)
 
   @GetMapping(value = ["/adjustments/{prisonerId}"])
-  @PreAuthorize("hasAnyRole('VIEW_PRISONER_DATA', 'RELEASE_DATES_CALCULATOR')")
+  @PreAuthorize("hasAnyRole('VIEW_PRISONER_DATA', 'RELEASE_DATES_CALCULATOR', 'CALCULATE_RELEASE_DATES__CALCULATE__RW', 'CALCULATE_RELEASE_DATES__CALCULATE__RO')")
   @ResponseBody
   @Operation(
     summary = "Get adjustments",

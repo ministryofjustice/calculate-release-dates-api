@@ -36,7 +36,7 @@ class ManualComparisonController(
 ) {
 
   @PostMapping
-  @PreAuthorize("hasAnyRole('ROLE_RELEASE_DATE_MANUAL_COMPARER')")
+  @PreAuthorize("hasAnyRole('ROLE_RELEASE_DATE_MANUAL_COMPARER', 'CALCULATE_RELEASE_DATES__ADMIN__RW')")
   @Operation(
     summary = "Create a record of a new manual calculation ",
     description = "This endpoint will create a new manual comparison and return the new manual comparison object",
@@ -59,7 +59,7 @@ class ManualComparisonController(
   }
 
   @GetMapping
-  @PreAuthorize("hasAnyRole('ROLE_RELEASE_DATE_MANUAL_COMPARER')")
+  @PreAuthorize("hasAnyRole('ROLE_RELEASE_DATE_MANUAL_COMPARER', 'CALCULATE_RELEASE_DATES__ADMIN__RW', 'CALCULATE_RELEASE_DATES__ADMIN__RO')")
   @ResponseBody
   @Operation(
     summary = "List all comparisons which were performed manually",
@@ -78,7 +78,7 @@ class ManualComparisonController(
   }
 
   @GetMapping(value = ["{comparisonReference}/count"])
-  @PreAuthorize("hasAnyRole('ROLE_RELEASE_DATE_MANUAL_COMPARER')")
+  @PreAuthorize("hasAnyRole('ROLE_RELEASE_DATE_MANUAL_COMPARER', 'CALCULATE_RELEASE_DATES__ADMIN__RW', 'CALCULATE_RELEASE_DATES__ADMIN__RO')")
   @ResponseBody
   @Operation(
     summary = "Returns a count of the number of people compared for a particular caseload",
@@ -101,7 +101,7 @@ class ManualComparisonController(
   }
 
   @GetMapping(value = ["{comparisonReference}"])
-  @PreAuthorize("hasAnyRole('ROLE_RELEASE_DATE_MANUAL_COMPARER')")
+  @PreAuthorize("hasAnyRole('ROLE_RELEASE_DATE_MANUAL_COMPARER', 'CALCULATE_RELEASE_DATES__ADMIN__RW', 'CALCULATE_RELEASE_DATES__ADMIN__RO')")
   @ResponseBody
   @Operation(
     summary = "Returns the people for a particular caseload",
@@ -124,7 +124,7 @@ class ManualComparisonController(
   }
 
   @GetMapping(value = ["{comparisonReference}/mismatch/{mismatchReference}"])
-  @PreAuthorize("hasAnyRole('ROLE_RELEASE_DATE_MANUAL_COMPARER')")
+  @PreAuthorize("hasAnyRole('ROLE_RELEASE_DATE_MANUAL_COMPARER', 'CALCULATE_RELEASE_DATES__ADMIN__RW', 'CALCULATE_RELEASE_DATES__ADMIN__RO')")
   @ResponseBody
   @Operation(
     summary = "Returns the mismatch for a particular comparison",
@@ -147,7 +147,7 @@ class ManualComparisonController(
   ): ComparisonPersonOverview = manualComparisonService.getComparisonPersonByShortReference(comparisonReference, mismatchReference)
 
   @PostMapping(value = ["{comparisonReference}/mismatch/{mismatchReference}/discrepancy"])
-  @PreAuthorize("hasAnyRole('ROLE_RELEASE_DATE_MANUAL_COMPARER')")
+  @PreAuthorize("hasAnyRole('ROLE_RELEASE_DATE_MANUAL_COMPARER', 'CALCULATE_RELEASE_DATES__ADMIN__RW')")
   @Operation(
     summary = "Create a comparison person discrepancy record",
     description = "This endpoint will create a new comparison person discrepancy and return a summary of it",
@@ -172,7 +172,7 @@ class ManualComparisonController(
   ): ComparisonDiscrepancySummary = manualComparisonService.createDiscrepancy(comparisonReference, mismatchReference, discrepancyInput)
 
   @GetMapping(value = ["{comparisonReference}/mismatch/{mismatchReference}/discrepancy"])
-  @PreAuthorize("hasAnyRole('ROLE_RELEASE_DATE_MANUAL_COMPARER')")
+  @PreAuthorize("hasAnyRole('ROLE_RELEASE_DATE_MANUAL_COMPARER', 'CALCULATE_RELEASE_DATES__ADMIN__RW', 'CALCULATE_RELEASE_DATES__ADMIN__RO')")
   @Operation(
     summary = "Returns the latest discrepancy record for a comparison person",
     description = "This endpoint returns the mismatch discrepancy for a particular mismatch",

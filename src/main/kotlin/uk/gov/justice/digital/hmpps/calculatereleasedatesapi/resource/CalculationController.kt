@@ -54,7 +54,7 @@ class CalculationController(
   private val offenderKeyDatesService: OffenderKeyDatesService,
 ) {
   @PostMapping(value = ["/{prisonerId}"])
-  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")
+  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR', 'CALCULATE_RELEASE_DATES__CALCULATE__RW', 'CALCULATE_RELEASE_DATES__CALCULATE__RO')")
   @ResponseBody
   @Operation(
     summary = "Calculate release dates for a prisoner - preliminary calculation, this does not publish to NOMIS",
@@ -81,7 +81,7 @@ class CalculationController(
   }
 
   @PostMapping(value = ["/confirm/{calculationRequestId}"])
-  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")
+  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR', 'CALCULATE_RELEASE_DATES__CALCULATE__RW')")
   @ResponseBody
   @Operation(
     summary = "Calculate release dates and persist the results for a prisoners latest booking",
@@ -113,7 +113,7 @@ class CalculationController(
   }
 
   @GetMapping(value = ["/results/{prisonerId}/{bookingId}"])
-  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")
+  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR', 'CALCULATE_RELEASE_DATES__CALCULATE__RW', 'CALCULATE_RELEASE_DATES__CALCULATE__RO')")
   @ResponseBody
   @Operation(
     summary = "Get confirmed release dates for a prisoner's specific booking",
@@ -140,7 +140,7 @@ class CalculationController(
   }
 
   @GetMapping(value = ["/results/{calculationRequestId}"])
-  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")
+  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR', 'CALCULATE_RELEASE_DATES__CALCULATE__RW', 'CALCULATE_RELEASE_DATES__CALCULATE__RO')")
   @ResponseBody
   @Operation(
     summary = "Get release dates for a calculationRequestId",
@@ -164,7 +164,7 @@ class CalculationController(
   }
 
   @GetMapping(value = ["/detailed-results/{calculationRequestId}"])
-  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")
+  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR', 'CALCULATE_RELEASE_DATES__CALCULATE__RW', 'CALCULATE_RELEASE_DATES__CALCULATE__RO')")
   @ResponseBody
   @Operation(
     summary = "Get release dates for a calculationRequestId with additional details",
@@ -188,7 +188,7 @@ class CalculationController(
   }
 
   @GetMapping(value = ["/breakdown/{calculationRequestId}"])
-  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR', 'CALCULATE_RELEASE_DATES__RECALL__CALCULATE__RW')")
+  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR', 'CALCULATE_RELEASE_DATES__RECALL__CALCULATE__RW', 'CALCULATE_RELEASE_DATES__CALCULATE__RW', 'CALCULATE_RELEASE_DATES__CALCULATE__RO')")
   @ResponseBody
   @Operation(
     summary = "Get breakdown for a calculationRequestId",
@@ -212,7 +212,7 @@ class CalculationController(
   }
 
   @GetMapping(value = ["/sentence-and-offences/{calculationRequestId}"])
-  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR', 'CALCULATE_RELEASE_DATES__RECALL__CALCULATE__RW')")
+  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR', 'CALCULATE_RELEASE_DATES__RECALL__CALCULATE__RW', 'CALCULATE_RELEASE_DATES__CALCULATE__RW', 'CALCULATE_RELEASE_DATES__CALCULATE__RO')")
   @ResponseBody
   @Operation(
     summary = "Get sentences and offences for a calculationRequestId",
@@ -236,7 +236,7 @@ class CalculationController(
   }
 
   @GetMapping(value = ["/prisoner-details/{calculationRequestId}"])
-  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")
+  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR', 'CALCULATE_RELEASE_DATES__CALCULATE__RW', 'CALCULATE_RELEASE_DATES__CALCULATE__RO')")
   @ResponseBody
   @Operation(
     summary = "Get prisoner details for a calculationRequestId",
@@ -260,7 +260,7 @@ class CalculationController(
   }
 
   @GetMapping(value = ["/return-to-custody/{calculationRequestId}"])
-  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")
+  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR', 'CALCULATE_RELEASE_DATES__CALCULATE__RW', 'CALCULATE_RELEASE_DATES__CALCULATE__RO')")
   @ResponseBody
   @Operation(
     summary = "Get return to custody date for a calculationRequestId",
@@ -285,7 +285,7 @@ class CalculationController(
   }
 
   @GetMapping(value = ["/calculation-user-input/{calculationRequestId}"])
-  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")
+  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR', 'CALCULATE_RELEASE_DATES__CALCULATE__RW', 'CALCULATE_RELEASE_DATES__CALCULATE__RO')")
   @ResponseBody
   @Operation(
     summary = "Get user input for a calculationRequestId",
@@ -309,7 +309,7 @@ class CalculationController(
   }
 
   @GetMapping(value = ["/adjustments/{calculationRequestId}"])
-  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")
+  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR', 'CALCULATE_RELEASE_DATES__CALCULATE__RW', 'CALCULATE_RELEASE_DATES__CALCULATE__RO')")
   @ResponseBody
   @Operation(
     summary = "Get adjustments for a calculationRequestId",
@@ -334,7 +334,7 @@ class CalculationController(
 
   // TODO remove params and GET mapping above once adjustments API integration is live.
   @GetMapping(value = ["/adjustments/{calculationRequestId}"], params = ["adjustments-api"])
-  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")
+  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR', 'CALCULATE_RELEASE_DATES__CALCULATE__RW', 'CALCULATE_RELEASE_DATES__CALCULATE__RO')")
   @ResponseBody
   @Operation(
     summary = "Get adjustments for a calculationRequestId",
@@ -358,7 +358,7 @@ class CalculationController(
   }
 
   @PostMapping(value = ["/relevant-remand/{prisonerId}"])
-  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")
+  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR', 'CALCULATE_RELEASE_DATES__CALCULATE__RW', 'CALCULATE_RELEASE_DATES__CALCULATE__RO')")
   @ResponseBody
   @Operation(
     summary = "Calculate a release date at a point in time for the relevant remand tool.",
@@ -381,7 +381,7 @@ class CalculationController(
   ): RelevantRemandCalculationResult = relevantRemandService.relevantRemandCalculation(prisonerId, relevantRemandCalculationRequest)
 
   @GetMapping(value = ["/{prisonerId}/latest"])
-  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR', 'CALCULATE_RELEASE_DATES__RECALL__CALCULATE__RW')")
+  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR', 'CALCULATE_RELEASE_DATES__RECALL__CALCULATE__RW', 'CALCULATE_RELEASE_DATES__CALCULATE__RW', 'CALCULATE_RELEASE_DATES__CALCULATE__RO')")
   @ResponseBody
   @Operation(
     summary = "Get latest release dates for a prisoner",
@@ -406,7 +406,7 @@ class CalculationController(
   }
 
   @GetMapping(value = ["/nomis-calculation-summary/{offenderSentCalculationId}"])
-  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")
+  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR', 'CALCULATE_RELEASE_DATES__CALCULATE__RW', 'CALCULATE_RELEASE_DATES__CALCULATE__RO')")
   @ResponseBody
   @Operation(
     summary = "Get Nomis calculation summary with release dates for a offenderSentCalculationId",
@@ -430,7 +430,7 @@ class CalculationController(
   }
 
   @GetMapping(value = ["/release-dates/{calculationRequestId}"])
-  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")
+  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR', 'CALCULATE_RELEASE_DATES__CALCULATE__RW', 'CALCULATE_RELEASE_DATES__CALCULATE__RO')")
   @ResponseBody
   @Operation(
     summary = "Get release dates summary for a calculation request id",

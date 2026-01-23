@@ -27,7 +27,7 @@ class ManualCalculationController(
   private val manualCalculationService: ManualCalculationService,
 ) {
   @GetMapping(value = ["/{bookingId}/has-indeterminate-sentences"])
-  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")
+  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR', 'CALCULATE_RELEASE_DATES__CALCULATE__RW', 'CALCULATE_RELEASE_DATES__CALCULATE__RO')")
   @ResponseBody
   @Operation(
     summary = "Determine if a booking has any indeterminate sentences",
@@ -50,7 +50,7 @@ class ManualCalculationController(
   }
 
   @GetMapping(value = ["/{bookingId}/has-recall-sentences"])
-  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")
+  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR', 'CALCULATE_RELEASE_DATES__CALCULATE__RW', 'CALCULATE_RELEASE_DATES__CALCULATE__RO')")
   @ResponseBody
   @Operation(
     summary = "Determine if a booking has any recall sentences",
@@ -73,7 +73,7 @@ class ManualCalculationController(
   }
 
   @PostMapping(value = ["/{prisonerId}"])
-  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")
+  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR', 'CALCULATE_RELEASE_DATES__CALCULATE__RW')")
   @ResponseBody
   @Operation(
     summary = "Store a manual calculation",
@@ -92,7 +92,7 @@ class ManualCalculationController(
   ): ManualCalculationResponse = manualCalculationService.storeManualCalculation(prisonerId, manualEntryRequest)
 
   @GetMapping(value = ["/{prisonerId}/has-existing-calculation"])
-  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")
+  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR', 'CALCULATE_RELEASE_DATES__CALCULATE__RW', 'CALCULATE_RELEASE_DATES__CALCULATE__RO')")
   @ResponseBody
   @Operation(
     summary = "Check if booking has existing up to date manual calculation",

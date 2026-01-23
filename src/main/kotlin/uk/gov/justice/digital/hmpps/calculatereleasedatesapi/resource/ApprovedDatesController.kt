@@ -20,7 +20,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ApprovedDat
 class ApprovedDatesController(private val approvedDatesService: ApprovedDatesService) {
 
   @GetMapping(value = ["/{prisonerId}/inputs"])
-  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")
+  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR', 'CALCULATE_RELEASE_DATES__CALCULATE__RW')")
   @ResponseBody
   @Operation(
     summary = "Get the inputs required for adding approved dates for a prisoner",

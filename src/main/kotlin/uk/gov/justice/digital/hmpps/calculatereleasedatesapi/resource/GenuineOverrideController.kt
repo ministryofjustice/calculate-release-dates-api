@@ -29,7 +29,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.GenuineOver
 class GenuineOverrideController(private val genuineOverrideService: GenuineOverrideService) {
 
   @GetMapping("/reasons")
-  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")
+  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR', 'CALCULATE_RELEASE_DATES__CALCULATE__RW', 'CALCULATE_RELEASE_DATES__CALCULATE__RO')")
   @ResponseBody
   @Operation(
     summary = "Get the reasons for overriding dates",
@@ -45,7 +45,7 @@ class GenuineOverrideController(private val genuineOverrideService: GenuineOverr
   fun getGenuineOverrideReasons(): List<GenuineOverrideReasonResponse> = GenuineOverrideReason.entries.map { it.toResponse() }
 
   @PostMapping(value = ["/calculation/{calculationRequestId}"])
-  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")
+  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR', 'CALCULATE_RELEASE_DATES__CALCULATE__RW')")
   @ResponseBody
   @Operation(
     summary = "Override the dates for a given calculation",
@@ -79,7 +79,7 @@ class GenuineOverrideController(private val genuineOverrideService: GenuineOverr
   }
 
   @GetMapping(value = ["/calculation/{calculationRequestId}/inputs"])
-  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")
+  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR', 'CALCULATE_RELEASE_DATES__CALCULATE__RW', 'CALCULATE_RELEASE_DATES__CALCULATE__RO')")
   @ResponseBody
   @Operation(
     summary = "Get the inputs for a genuine override based on a preliminary calculation",
