@@ -66,7 +66,8 @@ class TrancheAllocationService {
   ): List<CalculableSentence> {
     val maxFtr56RevocationDate = sentences
       .filter { it.recallType == RecallType.FIXED_TERM_RECALL_56 }
-      .maxBy { it.recall?.revocationDate ?: LocalDate.MIN }.recall?.revocationDate ?: LocalDate.MIN
+      .maxByOrNull { it.recall!!.revocationDate!! }
+      ?.recall?.revocationDate ?: LocalDate.MIN
 
     return sentences.filter { sentence ->
       val excludedFromFtr56Tranche = isFtr56ExcludedForTrancheRules(sentence, maxFtr56RevocationDate, earlyReleaseConfig)
