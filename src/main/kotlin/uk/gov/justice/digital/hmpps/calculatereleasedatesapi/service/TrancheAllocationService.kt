@@ -8,11 +8,11 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AFineSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineTrackingData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isBeforeOrEqualTo
 import java.time.temporal.ChronoUnit
-import kotlin.collections.map
 
 @Service
 class TrancheAllocationService {
@@ -78,6 +78,7 @@ class TrancheAllocationService {
    * If sentence is FTR56 recall calculation type, check for exclusions:
    * - sentence duration under 4 years
    * - revocation date on the same date as earliest tranche (FTR56 commencement)
+   * - FTR56 sentence has already expired before the earliest tranche date
    */
   private fun isFtr56ExcludedForTrancheRules(
     sentence: CalculableSentence,
@@ -86,7 +87,8 @@ class TrancheAllocationService {
     if (earlyReleaseConfig.recallCalculation !== RecallCalculationType.FTR_56) return false
     val isShortSentence = sentence.durationIsLessThan(1461, ChronoUnit.DAYS)
     val isRevocationOnEarliestTranche = sentence.recall?.revocationDate == earlyReleaseConfig.earliestTranche()
-    return isShortSentence || isRevocationOnEarliestTranche
+    val ftr56SentenceHasExpired = sentence.recall?.recallType == RecallType.FIXED_TERM_RECALL_56 && sentence.sentenceCalculation.adjustedExpiryDate.isBefore(earlyReleaseConfig.earliestTranche())
+    return isShortSentence || isRevocationOnEarliestTranche || ftr56SentenceHasExpired
   }
 
   private fun isEligibleForTrancheRules(earlyReleaseConfiguration: EarlyReleaseConfiguration, sentence: CalculableSentence): Boolean = if (earlyReleaseConfiguration.releaseMultiplier != null) {
