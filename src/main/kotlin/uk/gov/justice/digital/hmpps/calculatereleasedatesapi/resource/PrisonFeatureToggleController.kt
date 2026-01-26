@@ -29,7 +29,7 @@ class PrisonFeatureToggleController(
 ) {
 
   @GetMapping(value = ["/nomis-calc-disabled"])
-  @PreAuthorize("hasAnyRole('ROLE_RELEASE_DATES_CALCULATOR')")
+  @PreAuthorize("hasAnyRole('ROLE_RELEASE_DATES_CALCULATOR', 'CALCULATE_RELEASE_DATES__ADMIN__RW', 'CALCULATE_RELEASE_DATES__ADMIN__RO')")
   @ResponseBody
   @Operation(
     summary = "Checks which prisons currently have NOMIS calc disabled",
@@ -44,7 +44,7 @@ class PrisonFeatureToggleController(
   fun getNomisCalcDisabled(): List<Agency> = agencySwitchService.getAgenciesWithSwitchOn(AgencySwitch.SENTENCE_CALC)
 
   @PostMapping(value = ["/nomis-calc-disabled"])
-  @PreAuthorize("hasAnyRole('ROLE_RELEASE_DATES_CALCULATOR')")
+  @PreAuthorize("hasAnyRole('ROLE_RELEASE_DATES_CALCULATOR', 'CALCULATE_RELEASE_DATES__ADMIN__RW')")
   @ResponseBody
   @Operation(
     summary = "Add or remove the SENTENCE_CALC agency switch so that it matches the prisons in CRDS config",
