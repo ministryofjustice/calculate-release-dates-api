@@ -23,7 +23,6 @@ generic-service:
     NOMIS-SYNC-MAPPING_API_URL: https://nomis-sync-prisoner-mapping-dev.hmpps.service.justice.gov.uk
     MANAGE-USERS_API_URL: https://manage-users-api-dev.hmpps.service.justice.gov.uk
     APPLY_POST_RECALL_REPEAL_RULES: "true"
-    RECORD_A_RECALL_FTR_56_RULES: "true"
     PRISONS_WITH_NOMIS_CALC_DISABLED: "KMI,PNI"
 
   # Switches off the allow list in the DEV env only.
