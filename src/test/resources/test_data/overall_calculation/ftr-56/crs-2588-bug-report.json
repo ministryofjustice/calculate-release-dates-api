@@ -1,0 +1,95 @@
+{
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
+      {
+        "offence": {
+          "committedAt": "2016-10-15",
+          "offenceCode": "OF61016"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 8
+          }
+        },
+        "sentencedAt": "2016-12-12",
+        "recall": {
+          "recallType": "FIXED_TERM_RECALL_56",
+          "revocationDate": "2024-11-07",
+          "returnToCustodyDate": "2024-11-23"
+        },
+        "hasAnSDSEarlyReleaseExclusion": "VIOLENT"
+      },
+      {
+        "offence": {
+          "committedAt": "2021-05-20",
+          "offenceCode": "MD71526"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 5
+          }
+        },
+        "sentencedAt": "2021-08-05",
+        "recall": {
+          "recallType": "FIXED_TERM_RECALL_56",
+          "revocationDate": "2024-11-07",
+          "returnToCustodyDate": "2024-11-23"
+        }
+      }
+    ],
+    "adjustments": {
+      "ADDITIONAL_DAYS_AWARDED": [
+        {
+          "appliesToSentencesFrom": "2024-04-09",
+          "numberOfDays": 36,
+          "fromDate": "2024-04-09",
+          "toDate": "2024-05-14"
+        }
+      ],
+      "UNLAWFULLY_AT_LARGE": [
+        {
+          "appliesToSentencesFrom": "2024-11-08",
+          "numberOfDays": 15,
+          "fromDate": "2024-11-08",
+          "toDate": "2024-11-22"
+        }
+      ]
+    },
+    "returnToCustodyDate": "2024-11-23",
+    "fixedTermRecallDetails": {
+      "bookingId": 2702447,
+      "returnToCustodyDate": "2024-11-23",
+      "recallLength": 56
+    },
+    "externalMovements": [
+      {
+        "movementDate": "2020-12-04",
+        "movementReason": "CRD",
+        "direction": "OUT"
+      },
+      {
+        "movementDate": "2021-05-22",
+        "movementReason": "REMAND",
+        "direction": "IN"
+      },
+      {
+        "movementDate": "2024-10-16",
+        "movementReason": "RECALL_RELEASE",
+        "direction": "OUT"
+      },
+      {
+        "movementDate": "2024-11-25",
+        "movementReason": "RECALL_ADMISSION",
+        "direction": "IN"
+      }
+    ]
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params"
+}

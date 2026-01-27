@@ -22,6 +22,7 @@ data class TimelineTrackingData(
   val releasedSentenceGroups: MutableList<SentenceGroup> = emptyList<SentenceGroup>().toMutableList(),
   val currentSentenceGroup: MutableList<CalculableSentence> = emptyList<CalculableSentence>().toMutableList(),
   val licenceSentences: MutableList<CalculableSentence> = emptyList<CalculableSentence>().toMutableList(),
+  val expiredLicenceSentences: MutableList<CalculableSentence> = emptyList<CalculableSentence>().toMutableList(),
 
   val previousUalPeriods: MutableList<Pair<LocalDate, LocalDate>> = mutableListOf(),
 
