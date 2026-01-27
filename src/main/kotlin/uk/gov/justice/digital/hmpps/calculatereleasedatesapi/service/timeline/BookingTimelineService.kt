@@ -204,9 +204,9 @@ class BookingTimelineService(
         latestCalculation = timelineCalculator.getLatestCalculation(releasedSentenceGroups.map { it.sentences }, offender, returnToCustodyDate)
       }
       if (licenceSentences.isNotEmpty()) {
-        licenceSentences.removeIf {
-          date.isAfter(it.sentenceCalculation.licenceExpiryAtInitialRelease)
-        }
+        val sentencesThatHaveExpired = licenceSentences.filter { date.isAfter(it.sentenceCalculation.licenceExpiryAtInitialRelease) }
+        licenceSentences.removeAll(sentencesThatHaveExpired)
+        expiredLicenceSentences.addAll(sentencesThatHaveExpired)
       }
     }
   }
