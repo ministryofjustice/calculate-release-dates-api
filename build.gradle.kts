@@ -5,7 +5,7 @@ import org.jlleitschuh.gradle.ktlint.tasks.KtLintFormatTask
 import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "10.0.1"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "10.0.2"
   id("org.springdoc.openapi-gradle-plugin") version "1.9.0"
   kotlin("plugin.spring") version "2.3.0"
   kotlin("plugin.jpa") version "2.3.0"
@@ -55,7 +55,7 @@ dependencies {
   runtimeOnly("org.postgresql:postgresql")
 
   implementation("io.arrow-kt:arrow-core:2.2.1.1")
-  implementation("io.hypersistence:hypersistence-utils-hibernate-71:3.14.1")
+  implementation("io.hypersistence:hypersistence-utils-hibernate-71:3.15.1")
 
   // OpenAPI
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.1")
