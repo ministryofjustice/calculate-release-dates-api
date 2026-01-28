@@ -827,6 +827,7 @@ class ManualCalculationServiceTest {
       displayRank = null,
       useForApprovedDates = false,
       eligibleForPreviouslyRecordedSled = false,
+      requiresFurtherDetail = false,
     )
 
     val CALCULATION_REQUEST_WITH_OUTCOMES = CalculationRequest(

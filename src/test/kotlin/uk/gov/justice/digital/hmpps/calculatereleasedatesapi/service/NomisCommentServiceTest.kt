@@ -17,7 +17,7 @@ class NomisCommentServiceTest {
   @Test
   fun `Tests for comments produced on the regular route`() {
     assertEquals(
-      "{NOMIS_COMMENT} using the Calculate Release Dates service. The calculation ID is: The calculation ID is: 219db65e-d7b7-4c70-9239-98babff7bcd5",
+      "{NOMIS_COMMENT} using the Calculate Release Dates service. The calculation ID is: 219db65e-d7b7-4c70-9239-98babff7bcd5",
       nomisCommentService.getNomisComment(CALCULATION_REQUEST, approvedDates = null),
       "If the default comment is selected the reason is captured in the NOMIS comment",
     )
@@ -29,6 +29,20 @@ class NomisCommentServiceTest {
         approvedDates = listOf(ManuallyEnteredDate(ReleaseDateType.CRD, SubmittedDate(1, 1, 2023))),
       ),
       "If the calculation had manually entered dates this is captured in the NOMIS comment",
+    )
+  }
+
+  @Test
+  fun `If the further detail flag is set use the normal NOMIS comment unless it's also OTHER`() {
+    val reasonRequiringFurtherDetailButNotOther = CALCULATION_REASON.copy(requiresFurtherDetail = true, isOther = false)
+    val reasonRequiringFurtherDetailAndIsOther = CALCULATION_REASON.copy(requiresFurtherDetail = true, isOther = true)
+    assertEquals(
+      "{NOMIS_COMMENT} using the Calculate Release Dates service. The calculation ID is: 219db65e-d7b7-4c70-9239-98babff7bcd5",
+      nomisCommentService.getNomisComment(CALCULATION_REQUEST.copy(reasonForCalculation = reasonRequiringFurtherDetailButNotOther), approvedDates = null),
+    )
+    assertEquals(
+      "Calculated using the Calculate Release Dates service. The calculation ID is: 219db65e-d7b7-4c70-9239-98babff7bcd5",
+      nomisCommentService.getNomisComment(CALCULATION_REQUEST.copy(reasonForCalculation = reasonRequiringFurtherDetailAndIsOther), approvedDates = null),
     )
   }
 
@@ -84,6 +98,7 @@ class NomisCommentServiceTest {
       displayRank = 10,
       useForApprovedDates = false,
       eligibleForPreviouslyRecordedSled = false,
+      requiresFurtherDetail = false,
     )
 
     private val CALCULATION_REQUEST = CalculationRequest(
