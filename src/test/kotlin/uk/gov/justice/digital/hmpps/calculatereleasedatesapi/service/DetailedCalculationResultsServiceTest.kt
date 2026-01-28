@@ -162,6 +162,7 @@ class DetailedCalculationResultsServiceTest {
         expectedBreakdown,
         null,
         SDSEarlyReleaseTranche.TRANCHE_1,
+        SDSEarlyReleaseTranche.FTR_56_TRANCHE_1,
       ),
     )
     verify(calculationResultEnrichmentService).addDetailToCalculationDates(
@@ -171,6 +172,59 @@ class DetailedCalculationResultsServiceTest {
       null,
       null,
       null,
+    )
+  }
+
+  @Test
+  fun `should return tranche details for SDS40 and FTR56`() {
+    val base = calculationRequestWithOutcomes().copy(
+      prisonerDetails = objectToJson(prisonerDetails, objectMapper),
+      sentenceAndOffences = objectToJson(listOf(originalSentence), objectMapper),
+      adjustments = objectToJson(adjustments, objectMapper),
+      calculationOutcomes = listOf(
+        CalculationOutcome(calculationRequestId = CALCULATION_REQUEST_ID, calculationDateType = "CRD", outcomeDate = LocalDate.of(2026, 6, 26)),
+      ),
+      calculatedByUsername = "username",
+      prisonerLocation = "BXI",
+    )
+    val calculationRequestWithTranches = base.copy(
+      allocatedSDSTranche = TrancheOutcome(
+        calculationRequest = base,
+        tranche = SDSEarlyReleaseTranche.TRANCHE_2,
+        allocatedTranche = SDSEarlyReleaseTranche.TRANCHE_2,
+        ftr56Tranche = SDSEarlyReleaseTranche.FTR_56_TRANCHE_4,
+      ),
+    )
+    val enrichedReleaseDates = mapOf(ReleaseDateType.CRD to DetailedDate(ReleaseDateType.CRD, ReleaseDateType.CRD.description, LocalDate.of(2026, 6, 26), emptyList()))
+    val expectedBreakdown = CalculationBreakdown(emptyList(), null, mapOf(ReleaseDateType.CRD to ReleaseDateCalculationBreakdown(emptySet())), mapOf(ReleaseDateType.PRRD to LocalDate.of(2026, 6, 27)))
+    whenever(calculationRequestRepository.findById(CALCULATION_REQUEST_ID)).thenReturn(Optional.of(calculationRequestWithTranches))
+    whenever(sourceDataMapper.mapSentencesAndOffences(calculationRequestWithTranches)).thenReturn(listOf(originalSentence))
+    whenever(sourceDataMapper.mapPrisonerDetails(calculationRequestWithTranches)).thenReturn(prisonerDetails)
+    whenever(sourceDataMapper.mapBookingAndSentenceAdjustments(calculationRequestWithTranches)).thenReturn(adjustments)
+    whenever(
+      calculationResultEnrichmentService.addDetailToCalculationDates(
+        toReleaseDates(calculationRequestWithTranches),
+        listOf(originalSentence),
+        expectedBreakdown,
+        null,
+        null,
+        null,
+      ),
+    ).thenReturn(enrichedReleaseDates)
+    whenever(calculationBreakdownService.getBreakdownSafely(any())).thenReturn(expectedBreakdown.right())
+    whenever(manageUsersApiClient.getUserByUsername("username")).thenReturn(UserDetails("username", "User Name"))
+    val results = service.findDetailedCalculationResults(CALCULATION_REQUEST_ID)
+    assertThat(results).isEqualTo(
+      DetailedCalculationResults(
+        context = expectedCalcContext,
+        dates = enrichedReleaseDates,
+        approvedDates = null,
+        calculationOriginalData = CalculationOriginalData(prisonerDetails, listOf(originalSentence)),
+        calculationBreakdown = expectedBreakdown,
+        breakdownMissingReason = null,
+        sds40Tranche = SDSEarlyReleaseTranche.TRANCHE_2,
+        ftr56Tranche = SDSEarlyReleaseTranche.FTR_56_TRANCHE_4,
+      ),
     )
   }
 

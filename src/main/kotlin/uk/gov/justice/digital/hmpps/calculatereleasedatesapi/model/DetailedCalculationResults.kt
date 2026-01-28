@@ -10,6 +10,7 @@ data class DetailedCalculationResults(
   val calculationOriginalData: CalculationOriginalData,
   val calculationBreakdown: CalculationBreakdown?,
   val breakdownMissingReason: BreakdownMissingReason? = null,
-  val tranche: SDSEarlyReleaseTranche? = null,
+  val sds40Tranche: SDSEarlyReleaseTranche? = null,
+  val ftr56Tranche: SDSEarlyReleaseTranche? = null,
   val usedPreviouslyRecordedSLED: PreviouslyRecordedSLED? = null,
 )
