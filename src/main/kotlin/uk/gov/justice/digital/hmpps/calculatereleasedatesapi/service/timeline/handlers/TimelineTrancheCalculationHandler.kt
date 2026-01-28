@@ -39,6 +39,7 @@ class TimelineTrancheCalculationHandler(
         if (allocated != null && allocated.date.isAfterOrEqualTo(timelineCalculationDate)) {
           allocatedTranche = allocated
           allocatedEarlyRelease = earlyReleaseConfiguration
+          if (allocated.name != null) trancheAllocationByCategory[allocated.name.category] = allocated.name
         }
       }
 
@@ -98,6 +99,4 @@ class TimelineTrancheCalculationHandler(
       return false
     }
   }
-
-  private fun getPotentialEarlyReleaseSentences(allSentences: List<CalculableSentence>, earlyReleaseConfiguration: EarlyReleaseConfiguration): List<CalculableSentence> = allSentences.filter { sentence -> sentence.sentenceParts().any { earlyReleaseConfiguration.matchesFilter(it) } }
 }

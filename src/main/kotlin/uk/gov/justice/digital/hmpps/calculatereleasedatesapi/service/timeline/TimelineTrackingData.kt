@@ -2,6 +2,8 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline
 
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseTrancheConfiguration
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SDSEarlyReleaseTranche
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SDSEarlyReleaseTrancheCategory
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOptions
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
@@ -19,10 +21,10 @@ data class TimelineTrackingData(
   val options: CalculationOptions,
   val externalMovements: List<ExternalMovement>,
 
-  val releasedSentenceGroups: MutableList<SentenceGroup> = emptyList<SentenceGroup>().toMutableList(),
-  val currentSentenceGroup: MutableList<CalculableSentence> = emptyList<CalculableSentence>().toMutableList(),
-  val licenceSentences: MutableList<CalculableSentence> = emptyList<CalculableSentence>().toMutableList(),
-  val expiredLicenceSentences: MutableList<CalculableSentence> = emptyList<CalculableSentence>().toMutableList(),
+  val releasedSentenceGroups: MutableList<SentenceGroup> = mutableListOf(),
+  val currentSentenceGroup: MutableList<CalculableSentence> = mutableListOf(),
+  val licenceSentences: MutableList<CalculableSentence> = mutableListOf(),
+  val expiredLicenceSentences: MutableList<CalculableSentence> = mutableListOf(),
 
   val previousUalPeriods: MutableList<Pair<LocalDate, LocalDate>> = mutableListOf(),
 
@@ -32,6 +34,7 @@ data class TimelineTrackingData(
 
   var allocatedEarlyRelease: EarlyReleaseConfiguration? = null,
   var allocatedTranche: EarlyReleaseTrancheConfiguration? = null,
+  val trancheAllocationByCategory: MutableMap<SDSEarlyReleaseTrancheCategory, SDSEarlyReleaseTranche> = mutableMapOf(),
 ) {
 
   lateinit var latestCalculation: CalculationResult

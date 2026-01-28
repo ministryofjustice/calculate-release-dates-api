@@ -5,6 +5,10 @@
     "ESED": "2030-06-29"
   },
   "effectiveSentenceLength": "P9Y3M",
-  "sdsEarlyReleaseTranche": "FTR_56_TRANCHE_5",
-  "sdsEarlyReleaseAllocatedTranche": "FTR_56_TRANCHE_5"
+  "sdsEarlyReleaseTranche": "TRANCHE_2",
+  "sdsEarlyReleaseAllocatedTranche": "TRANCHE_2",
+  "trancheAllocationByCategory": {
+    "SDS40": "TRANCHE_2",
+    "FTR56": "FTR_56_TRANCHE_5"
+  }
 }

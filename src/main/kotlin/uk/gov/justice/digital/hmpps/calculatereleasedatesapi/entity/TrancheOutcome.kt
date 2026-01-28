@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity
 
+import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.EnumType
 import jakarta.persistence.Enumerated
@@ -33,6 +34,10 @@ data class TrancheOutcome(
   @NotNull
   @Enumerated(value = EnumType.STRING)
   val tranche: SDSEarlyReleaseTranche,
+
+  @Enumerated(value = EnumType.STRING)
+  @Column("ftr_56_tranche")
+  val ftr56Tranche: SDSEarlyReleaseTranche?,
 
   @NotNull
   val affectedBySds40: Boolean = false,

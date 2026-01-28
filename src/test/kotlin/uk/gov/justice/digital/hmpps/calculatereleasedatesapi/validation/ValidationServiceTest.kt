@@ -18,6 +18,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.SDS40Tranche
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.REMAND
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.UNLAWFULLY_AT_LARGE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SDSEarlyReleaseTranche
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SDSEarlyReleaseTrancheCategory
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.SpringTestBase
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.ManageOffencesApiExtension
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.OAuthExtension
@@ -2898,7 +2899,7 @@ class ValidationServiceTest : SpringTestBase() {
           emptyMap(),
           emptyMap(),
           Period.of(6, 0, 0),
-          sdsEarlyReleaseTranche = SDSEarlyReleaseTranche.TRANCHE_2,
+          trancheAllocationByCategory = mapOf(SDSEarlyReleaseTrancheCategory.SDS40 to SDSEarlyReleaseTranche.TRANCHE_2),
         ),
       ),
       workingBooking,
@@ -2941,7 +2942,7 @@ class ValidationServiceTest : SpringTestBase() {
           emptyMap(),
           emptyMap(),
           Period.of(6, 0, 0),
-          sdsEarlyReleaseTranche = SDSEarlyReleaseTranche.TRANCHE_2,
+          trancheAllocationByCategory = mapOf(SDSEarlyReleaseTrancheCategory.SDS40 to SDSEarlyReleaseTranche.TRANCHE_2),
         ),
       ),
       workingBooking,

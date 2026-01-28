@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.SDS40TrancheConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SDSEarlyReleaseTranche
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SDSEarlyReleaseTrancheCategory
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOutput
@@ -29,7 +30,7 @@ class SHPOContaingSx03OffencesValidator(private val trancheConfiguration: SDS40T
       .ifEmpty { return emptyList() }
       .let { shpoList ->
         if (
-          calculationOutput.calculationResult.sdsEarlyReleaseTranche != SDSEarlyReleaseTranche.TRANCHE_0 ||
+          calculationOutput.calculationResult.trancheAllocationByCategory[SDSEarlyReleaseTrancheCategory.SDS40] != SDSEarlyReleaseTranche.TRANCHE_0 ||
           shpoList.any { it.sentencedAt.isAfterOrEqualTo(trancheConfiguration.trancheOneCommencementDate) }
         ) {
           log.info("Unable to determine release provision for SHPO SX03 offence for ${booking.bookingId}")

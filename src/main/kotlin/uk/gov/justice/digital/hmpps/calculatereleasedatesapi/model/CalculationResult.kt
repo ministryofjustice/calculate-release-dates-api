@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.HistoricalTusedSource
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SDSEarlyReleaseTranche
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SDSEarlyReleaseTrancheCategory
 import java.time.LocalDate
 import java.time.Period
 
@@ -18,4 +19,5 @@ data class CalculationResult(
   val affectedBySds40: Boolean = false,
   val showSds40Hints: Boolean = true,
   val usedPreviouslyRecordedSLED: PreviouslyRecordedSLED? = null,
+  val trancheAllocationByCategory: Map<SDSEarlyReleaseTrancheCategory, SDSEarlyReleaseTranche> = emptyMap(),
 )

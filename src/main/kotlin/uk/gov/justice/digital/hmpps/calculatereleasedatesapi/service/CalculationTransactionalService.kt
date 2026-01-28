@@ -19,6 +19,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Calcul
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.ERROR
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.PRELIMINARY
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.HistoricalTusedSource
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SDSEarlyReleaseTranche
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SDSEarlyReleaseTrancheCategory
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.BreakdownChangedSinceLastCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CalculationDataHasChangedError
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CrdWebException
@@ -208,12 +210,14 @@ class CalculationTransactionalService(
       calculationOutcomeRepository.save(transform(calculationRequest, type, date))
     }
 
+    val sds40TrancheName = calculationResult.trancheAllocationByCategory[SDSEarlyReleaseTrancheCategory.SDS40] ?: SDSEarlyReleaseTranche.TRANCHE_0
     trancheOutcomeRepository.save(
       TrancheOutcome(
         calculationRequest = calculationRequest,
-        allocatedTranche = calculationResult.sdsEarlyReleaseAllocatedTranche,
-        tranche = calculationResult.sdsEarlyReleaseTranche,
+        allocatedTranche = sds40TrancheName,
+        tranche = sds40TrancheName,
         affectedBySds40 = calculationResult.affectedBySds40,
+        ftr56Tranche = calculationResult.trancheAllocationByCategory[SDSEarlyReleaseTrancheCategory.FTR56] ?: SDSEarlyReleaseTranche.FTR_56_TRANCHE_0,
       ),
     )
 
@@ -241,8 +245,6 @@ class CalculationTransactionalService(
       otherReasonDescription = otherCalculationReason,
       calculationDate = calculationRequest.calculatedAt.toLocalDate(),
       historicalTusedSource = calculationResult.historicalTusedSource,
-      sdsEarlyReleaseAllocatedTranche = calculationResult.sdsEarlyReleaseAllocatedTranche,
-      sdsEarlyReleaseTranche = calculationResult.sdsEarlyReleaseTranche,
       calculationOutput = calculationOutput,
       usedPreviouslyRecordedSLED = calculationOutput.calculationResult.usedPreviouslyRecordedSLED,
     )
