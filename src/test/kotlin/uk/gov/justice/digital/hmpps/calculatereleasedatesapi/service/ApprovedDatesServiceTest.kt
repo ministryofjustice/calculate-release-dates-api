@@ -350,6 +350,7 @@ class ApprovedDatesServiceTest {
       displayRank = 99,
       useForApprovedDates = true,
       eligibleForPreviouslyRecordedSled = false,
+      requiresFurtherDetail = false,
     )
   }
 }

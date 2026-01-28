@@ -33,6 +33,20 @@ class NomisCommentServiceTest {
   }
 
   @Test
+  fun `If the further detail flag is set use the normal NOMIS comment unless it's also OTHER`() {
+    val reasonRequiringFurtherDetailButNotOther = CALCULATION_REASON.copy(requiresFurtherDetail = true, isOther = false)
+    val reasonRequiringFurtherDetailAndIsOther = CALCULATION_REASON.copy(requiresFurtherDetail = true, isOther = true)
+    assertEquals(
+      "{NOMIS_COMMENT} using the Calculate Release Dates service. The calculation ID is: The calculation ID is: 219db65e-d7b7-4c70-9239-98babff7bcd5",
+      nomisCommentService.getNomisComment(CALCULATION_REQUEST.copy(reasonForCalculation = reasonRequiringFurtherDetailButNotOther), approvedDates = null),
+    )
+    assertEquals(
+      "Calculated using the Calculate Release Dates service. The calculation ID is: 219db65e-d7b7-4c70-9239-98babff7bcd5",
+      nomisCommentService.getNomisComment(CALCULATION_REQUEST.copy(reasonForCalculation = reasonRequiringFurtherDetailAndIsOther), approvedDates = null),
+    )
+  }
+
+  @Test
   fun `If the other reason flag is set it is handled correctly`() {
     assertEquals(
       "Calculated using the Calculate Release Dates service. The calculation ID is: 219db65e-d7b7-4c70-9239-98babff7bcd5",
@@ -84,6 +98,7 @@ class NomisCommentServiceTest {
       displayRank = 10,
       useForApprovedDates = false,
       eligibleForPreviouslyRecordedSled = false,
+      requiresFurtherDetail = false,
     )
 
     private val CALCULATION_REQUEST = CalculationRequest(
