@@ -64,7 +64,8 @@ open class DetailedCalculationResultsService(
       ),
       calculationBreakdown = calculationBreakdown,
       breakdownMissingReason = breakdownMissingReason,
-      tranche = calculationRequest.allocatedSDSTranche?.tranche,
+      sds40Tranche = calculationRequest.allocatedSDSTranche?.tranche,
+      ftr56Tranche = calculationRequest.allocatedSDSTranche?.ftr56Tranche,
       usedPreviouslyRecordedSLED = historicSledOverride?.let {
         PreviouslyRecordedSLED(
           previouslyRecordedSLEDDate = it.historicCalculationOutcomeDate,
