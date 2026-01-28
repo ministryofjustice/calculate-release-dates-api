@@ -43,7 +43,6 @@ class SDSEarlyReleaseDefaultingRulesService(
       breakdownByReleaseDateType,
       earlyReleaseResult,
       standardReleaseResult,
-      allocatedTranche,
     )
   }
 
@@ -88,15 +87,12 @@ class SDSEarlyReleaseDefaultingRulesService(
     breakdownByReleaseDateType: Map<ReleaseDateType, ReleaseDateCalculationBreakdown>,
     earlyReleaseResult: CalculationResult,
     standardReleaseResult: CalculationResult,
-    allocatedTranche: EarlyReleaseTrancheConfiguration?,
   ): CalculationResult = CalculationResult(
     dates = dates,
     breakdownByReleaseDateType = breakdownByReleaseDateType,
     otherDates = earlyReleaseResult.otherDates,
     effectiveSentenceLength = earlyReleaseResult.effectiveSentenceLength,
     affectedBySds40 = (dates != standardReleaseResult.dates) || standardReleaseResult.affectedBySds40,
-    sdsEarlyReleaseAllocatedTranche = allocatedTranche?.name ?: SDSEarlyReleaseTranche.TRANCHE_0,
-    sdsEarlyReleaseTranche = allocatedTranche?.name ?: SDSEarlyReleaseTranche.TRANCHE_0,
   )
 
   private fun getArdOrCrd(
