@@ -112,6 +112,12 @@ abstract class CalculationExampleTests : SpringTestBase() {
           calculatedReleaseDates.calculationResult.sdsEarlyReleaseTranche,
         )
       }
+      if (bookingData.second.contains("trancheAllocationByCategory")) {
+        assertEquals(
+          result.trancheAllocationByCategory,
+          calculatedReleaseDates.calculationResult.trancheAllocationByCategory,
+        )
+      }
     }
   }
 
