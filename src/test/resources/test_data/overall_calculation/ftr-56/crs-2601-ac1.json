@@ -1,0 +1,151 @@
+{
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
+      {
+        "offence": {
+          "committedAt": "2019-11-26",
+          "offenceCode": "TH68023"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 1
+          }
+        },
+        "sentencedAt": "2020-12-21",
+        "recall": {
+          "recallType": "FIXED_TERM_RECALL_56",
+          "revocationDate": "2025-04-09",
+          "returnToCustodyDate": "2025-04-10"
+        }
+      },
+      {
+        "offence": {
+          "committedAt": "2022-12-26",
+          "offenceCode": "TH68036"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 40
+          }
+        },
+        "sentencedAt": "2023-01-24",
+        "recall": {
+          "recallType": "FIXED_TERM_RECALL_56",
+          "revocationDate": "2025-04-09",
+          "returnToCustodyDate": "2025-04-10"
+        }
+      },
+      {
+        "offence": {
+          "committedAt": "2022-12-26",
+          "offenceCode": "TH68013A"
+        },
+        "duration": {
+          "durationElements": {
+            "WEEKS": 24
+          }
+        },
+        "sentencedAt": "2023-01-24",
+        "recall": {
+          "recallType": "FIXED_TERM_RECALL_56",
+          "revocationDate": "2025-04-09",
+          "returnToCustodyDate": "2025-04-10"
+        }
+      },
+      {
+        "offence": {
+          "committedAt": "2022-12-26",
+          "offenceCode": "TH68026A"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 3
+          }
+        },
+        "sentencedAt": "2023-01-24",
+        "recall": {
+          "recallType": "FIXED_TERM_RECALL_56",
+          "revocationDate": "2025-04-09",
+          "returnToCustodyDate": "2025-04-10"
+        }
+      },
+      {
+        "offence": {
+          "committedAt": "2018-05-20",
+          "offenceCode": "TH68023"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 54
+          }
+        },
+        "sentencedAt": "2020-12-21",
+        "recall": {
+          "recallType": "FIXED_TERM_RECALL_56",
+          "revocationDate": "2025-04-09",
+          "returnToCustodyDate": "2025-04-10"
+        },
+        "hasAnSDSEarlyReleaseExclusion": "VIOLENT"
+      },
+      {
+        "offence": {
+          "committedAt": "2025-04-04",
+          "offenceCode": "MD71210"
+        },
+        "duration": {
+          "durationElements": {
+            "WEEKS": 4
+          }
+        },
+        "sentencedAt": "2025-10-16"
+      }
+    ],
+    "adjustments": {
+      "RECALL_REMAND": [
+        {
+          "appliesToSentencesFrom": "2020-12-21",
+          "numberOfDays": 390,
+          "fromDate": "2019-11-27",
+          "toDate": "2020-12-20"
+        },
+        {
+          "appliesToSentencesFrom": "2023-01-24",
+          "numberOfDays": 8,
+          "fromDate": "2022-12-27",
+          "toDate": "2023-01-03"
+        }
+      ]
+    },
+    "returnToCustodyDate": "2025-04-10",
+    "fixedTermRecallDetails": {
+      "bookingId": 2814613,
+      "returnToCustodyDate": "2025-04-10",
+      "recallLength": 56
+    },
+    "externalMovements": [
+      {
+        "movementDate": "2022-08-26",
+        "movementReason": "CRD",
+        "direction": "OUT"
+      },
+      {
+        "movementDate": "2022-12-27",
+        "movementReason": "REMAND",
+        "direction": "IN"
+      },
+      {
+        "movementDate": "2025-04-10",
+        "movementReason": "RECALL_ADMISSION",
+        "direction": "IN"
+      }
+    ]
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params"
+}
