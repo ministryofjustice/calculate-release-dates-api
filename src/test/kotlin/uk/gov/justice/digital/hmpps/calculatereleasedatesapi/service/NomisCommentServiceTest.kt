@@ -99,6 +99,7 @@ class NomisCommentServiceTest {
       useForApprovedDates = false,
       eligibleForPreviouslyRecordedSled = false,
       requiresFurtherDetail = false,
+      furtherDetailDescription = null,
     )
 
     private val CALCULATION_REQUEST = CalculationRequest(

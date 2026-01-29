@@ -55,6 +55,7 @@ class CalculationReasonControllerTest {
         useForApprovedDates = false,
         eligibleForPreviouslyRecordedSled = false,
         requiresFurtherDetail = false,
+        furtherDetailDescription = null,
       ),
       CalculationReason(
         2,
@@ -68,6 +69,7 @@ class CalculationReasonControllerTest {
         useForApprovedDates = false,
         eligibleForPreviouslyRecordedSled = false,
         requiresFurtherDetail = false,
+        furtherDetailDescription = null,
       ),
       CalculationReason(
         3,
@@ -80,7 +82,8 @@ class CalculationReasonControllerTest {
         displayRank = 10,
         useForApprovedDates = false,
         eligibleForPreviouslyRecordedSled = false,
-        requiresFurtherDetail = false,
+        requiresFurtherDetail = true,
+        furtherDetailDescription = "the reason for the calculation",
       ),
       CalculationReason(
         4,
@@ -94,6 +97,7 @@ class CalculationReasonControllerTest {
         useForApprovedDates = false,
         eligibleForPreviouslyRecordedSled = false,
         requiresFurtherDetail = false,
+        furtherDetailDescription = null,
       ),
     )
 

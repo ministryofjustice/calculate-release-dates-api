@@ -624,7 +624,7 @@ class TransformFunctionsTest {
     private val CALCULATION_REFERENCE: UUID = UUID.randomUUID()
     private const val CALCULATION_REQUEST_ID = 100011L
     val CALCULATION_REASON =
-      CalculationReason(-1, true, false, "Reason", false, "UPDATE", nomisComment = "NOMIS_COMMENT", null, false, false, false)
+      CalculationReason(-1, true, false, "Reason", false, "UPDATE", nomisComment = "NOMIS_COMMENT", null, false, false, false, null)
 
     val CALCULATION_REQUEST = CalculationRequest(
       id = CALCULATION_REQUEST_ID,

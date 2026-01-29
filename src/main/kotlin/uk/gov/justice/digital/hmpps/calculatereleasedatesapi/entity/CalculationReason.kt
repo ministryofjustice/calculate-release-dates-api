@@ -44,4 +44,5 @@ data class CalculationReason(
   val eligibleForPreviouslyRecordedSled: Boolean,
   @param:NotNull
   val requiresFurtherDetail: Boolean,
+  val furtherDetailDescription: String?,
 )
