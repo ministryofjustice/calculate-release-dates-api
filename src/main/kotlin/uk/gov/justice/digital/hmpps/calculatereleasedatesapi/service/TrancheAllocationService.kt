@@ -160,9 +160,8 @@ class TrancheAllocationService {
      * - revocation date on the same date as earliest tranche (FTR56 commencement)
      */
     private fun isFtr56ExcludedForTrancheRules(sentence: CalculableSentence, earlyReleaseConfig: EarlyReleaseConfiguration): Boolean {
-      val isShortSentence = sentence.durationIsLessThan(1461, ChronoUnit.DAYS)
       val isRevocationOnEarliestTranche = sentence.recall?.revocationDate == earlyReleaseConfig.earliestTranche()
-      return isShortSentence || isRevocationOnEarliestTranche
+      return isRevocationOnEarliestTranche
     }
   }
 }

@@ -13,7 +13,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.sentence.Se
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
 import java.rmi.UnexpectedException
 import java.time.LocalDate
-import java.time.temporal.ChronoUnit
 import kotlin.math.ceil
 import kotlin.properties.Delegates
 
@@ -105,9 +104,8 @@ class UnadjustedReleaseDate(
         val ftr56Configuration = earlyReleaseConfigurations.configurations.find { it.recallCalculation == RecallCalculationType.FTR_56 }
         val revocationDateOrReturnToCustodyDateAfterFtr56Commencement = ftr56Configuration != null && returnToCustodyDate.isAfterOrEqualTo(ftr56Configuration.earliestTranche())
         val allocatedToFtr56Tranche = calculationTrigger.allocatedEarlyReleaseConfiguration != null && calculationTrigger.allocatedEarlyReleaseConfiguration == ftr56Configuration
-        val isUnderFourYears = sentence.durationIsLessThan(1461, ChronoUnit.DAYS) // Sentences under 4 years that were recalled before FTR_56 commencement should be treated as FTR_56 sentences which are not tranched.
 
-        if (revocationDateOrReturnToCustodyDateAfterFtr56Commencement || allocatedToFtr56Tranche || isUnderFourYears) {
+        if (revocationDateOrReturnToCustodyDateAfterFtr56Commencement || allocatedToFtr56Tranche) {
           calculateFixedTermRecall(returnToCustodyDate, recallType)
         } else {
           standardCalculation
