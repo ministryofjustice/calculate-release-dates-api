@@ -23,7 +23,7 @@ class HistoricCalculationsService(
     val calculations = calculationRequestRepository.findAllByPrisonerIdAndCalculationStatus(prisonerId, CONFIRMED.name)
     val nomisCalculations = prisonService.getCalculationsForAPrisonerId(prisonerId)
     val agencyIdToDescriptionMap = prisonService.getAgenciesByType("INST").associateBy { it.agencyId }
-    val uniqueUsers: List<String> = nomisCalculations.map { it.calculatedByUserId }
+    val uniqueUsers: List<String> = nomisCalculations.mapNotNull { it.calculatedByUserId?.uppercase() }
     val userDetails = manageUsersApiClient.getUsersByUsernames(uniqueUsers)
     val historicCalculations = nomisCalculations.map { nomisCalculation ->
       var source = CalculationSource.NOMIS
@@ -36,8 +36,8 @@ class HistoricCalculationsService(
       var genuineOverrideReason: GenuineOverrideReason? = null
       var genuineOverrideReasonDescription: String? = null
       val calculatedByUsername = nomisCalculation.calculatedByUserId
-      val userDetail = userDetails?.get(nomisCalculation.calculatedByUserId)
-      val calculatedByDisplayName = "${userDetail?.firstName ?: ""} ${userDetail?.lastName ?: ""}"
+      val userDetail = userDetails?.get(nomisCalculation.calculatedByUserId?.uppercase())
+      val calculatedByDisplayName = listOfNotNull(userDetail?.firstName, userDetail?.lastName).joinToString(" ")
       calculations.firstOrNull {
         nomisComment != null && nomisCalculation.commentText.contains(it.calculationReference.toString())
       }?.let {

@@ -40,7 +40,7 @@ class HistoricCalculationsServiceTest {
   val reference: UUID = UUID.randomUUID()
 
   private val usersDetails = mapOf(
-    "user" to PrisonUserBasicDetails(
+    "USER" to PrisonUserBasicDetails(
       username = "CRD_TEST_USER",
       firstName = "Crd",
       lastName = "Test User",
@@ -50,7 +50,7 @@ class HistoricCalculationsServiceTest {
       userId = 67890,
       name = "Crd Test User",
     ),
-    "user1" to PrisonUserBasicDetails(
+    "USER1" to PrisonUserBasicDetails(
       username = "CRD_TEST_USER",
       firstName = "Crd",
       lastName = "Test User 1",
