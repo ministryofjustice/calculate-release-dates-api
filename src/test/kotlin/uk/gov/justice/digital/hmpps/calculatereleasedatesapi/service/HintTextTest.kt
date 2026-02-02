@@ -213,6 +213,8 @@ class HintTextTest : SpringTestBase() {
         null,
         false,
         false,
+        false,
+        null,
       )
 
     private val SOURCE_DATA = CalculationSourceData(

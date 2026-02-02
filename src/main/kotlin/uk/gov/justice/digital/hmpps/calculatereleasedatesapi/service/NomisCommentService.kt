@@ -48,7 +48,7 @@ class NomisCommentService {
 
   private companion object {
     private const val DEFAULT_COMMENT =
-      "{%s} using the Calculate Release Dates service. The calculation ID is: The calculation ID is: %s"
+      "{%s} using the Calculate Release Dates service. The calculation ID is: %s"
     private const val OTHER_COMMENT = "Calculated using the Calculate Release Dates service. The calculation ID is: %s"
     private const val MANUAL_ENTERED_DATES_COMMENT =
       "{%s} using the Calculate Release Dates service with manually entered dates. The calculation ID is: %s"

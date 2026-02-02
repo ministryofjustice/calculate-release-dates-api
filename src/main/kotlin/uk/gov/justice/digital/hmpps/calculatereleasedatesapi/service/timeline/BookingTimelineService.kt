@@ -13,6 +13,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Adjust
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.TAGGED_BAIL
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.UNLAWFULLY_AT_LARGE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SDSEarlyReleaseTranche
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SDSEarlyReleaseTrancheCategory
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AbstractSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
@@ -121,9 +122,6 @@ class BookingTimelineService(
           releasedSentenceGroups.map { it.sentences },
           offender,
           returnToCustodyDate,
-        ).copy(
-          sdsEarlyReleaseAllocatedTranche = allocatedTranche?.let { SDSEarlyReleaseTranche.fromDate(it.date, earlyReleaseConfigurations) } ?: SDSEarlyReleaseTranche.TRANCHE_0,
-          sdsEarlyReleaseTranche = allocatedTranche?.let { SDSEarlyReleaseTranche.fromDate(it.date, earlyReleaseConfigurations) } ?: SDSEarlyReleaseTranche.TRANCHE_0,
         )
 
       if (beforeTrancheCalculation != null) {
@@ -144,10 +142,15 @@ class BookingTimelineService(
         }
       }
 
+      val sds40TrancheName = timelineTrackingData.trancheAllocationByCategory[SDSEarlyReleaseTrancheCategory.SDS40] ?: SDSEarlyReleaseTranche.TRANCHE_0
       return CalculationOutput(
         releasedSentenceGroups.flatMap { it.sentences },
         releasedSentenceGroups,
-        latestCalculation,
+        latestCalculation.copy(
+          trancheAllocationByCategory = timelineTrackingData.trancheAllocationByCategory,
+          sdsEarlyReleaseTranche = sds40TrancheName,
+          sdsEarlyReleaseAllocatedTranche = sds40TrancheName,
+        ),
       )
     }
   }
@@ -204,9 +207,9 @@ class BookingTimelineService(
         latestCalculation = timelineCalculator.getLatestCalculation(releasedSentenceGroups.map { it.sentences }, offender, returnToCustodyDate)
       }
       if (licenceSentences.isNotEmpty()) {
-        licenceSentences.removeIf {
-          date.isAfter(it.sentenceCalculation.licenceExpiryAtInitialRelease)
-        }
+        val sentencesThatHaveExpired = licenceSentences.filter { date.isAfter(it.sentenceCalculation.licenceExpiryAtInitialRelease) }
+        licenceSentences.removeAll(sentencesThatHaveExpired)
+        expiredLicenceSentences.addAll(sentencesThatHaveExpired)
       }
     }
   }

@@ -38,8 +38,10 @@ data class EarlyReleaseConfiguration(
 
   fun earliestTranche() = tranches.minOf { it.date }
 
-  fun sentencesWithReleaseAfterTrancheCommencement(sentences: List<CalculableSentence>, earlyReleaseTrancheConfiguration: EarlyReleaseTrancheConfiguration? = null): List<CalculableSentence> = sentences.filter {
-    releaseDateConsidered(it.sentenceCalculation).isAfter(earlyReleaseTrancheConfiguration?.date ?: earliestTranche())
+  fun isEligibleForTrancheRules(sentence: CalculableSentence): Boolean = if (this.releaseMultiplier != null) {
+    this.releaseMultiplier.keys.contains(sentence.identificationTrack)
+  } else {
+    sentence.sentenceParts().any { this.matchesFilter(it) }
   }
 
   fun releaseDateConsidered(

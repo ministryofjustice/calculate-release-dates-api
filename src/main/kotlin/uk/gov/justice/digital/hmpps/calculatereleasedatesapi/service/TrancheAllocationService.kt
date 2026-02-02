@@ -2,9 +2,9 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseConfiguration
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseSentenceFilter
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseTrancheConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseTrancheType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.RecallCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AFineSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
@@ -12,16 +12,18 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineTrackingData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isBeforeOrEqualTo
-import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 
 @Service
 class TrancheAllocationService {
 
   fun allocateTranche(timelineTrackingData: TimelineTrackingData, earlyReleaseConfig: EarlyReleaseConfiguration): EarlyReleaseTrancheConfiguration? {
-    val sentencesWithReleaseAfterTrancheCommencement = earlyReleaseConfig.sentencesWithReleaseAfterTrancheCommencement(timelineTrackingData.currentSentenceGroup + timelineTrackingData.licenceSentences)
-    val sentencesConsideredForTrancheRules = getSentencesForTrancheRules(sentencesWithReleaseAfterTrancheCommencement, earlyReleaseConfig)
-    if (sentencesConsideredForTrancheRules.isEmpty()) {
+    val trancheSelectionStrategy = if (earlyReleaseConfig.filter == EarlyReleaseSentenceFilter.FTR_56) {
+      FTR56TrancheSelectionStrategy
+    } else {
+      SDSTrancheSelectionStrategy
+    }
+    if (!trancheSelectionStrategy.hasSentencesThatMightApplyToTheTranche(timelineTrackingData, earlyReleaseConfig)) {
       return null
     }
 
@@ -30,8 +32,7 @@ class TrancheAllocationService {
       return null
     }
 
-    val allSentences = timelineTrackingData.licenceSentences + timelineTrackingData.currentSentenceGroup
-    return findTranche(earlyReleaseConfig, allSentences)
+    return findTranche(earlyReleaseConfig, trancheSelectionStrategy.sentencesToMatchOnSentenceLength(timelineTrackingData, earlyReleaseConfig))
   }
 
   private fun findTranche(
@@ -54,65 +55,12 @@ class TrancheAllocationService {
     return sentenceDurations.none { it >= tranche.duration!! }
   }
 
-  /**
-   * Sentences under 4 years that were recalled before FTR_56 commencement should be treated as FTR_56 sentences
-   * which are not subject to tranche.
-   *
-   * FTR_56 revocation date must be on or after the start of FTR_56 tranche one to be valid for tranche rules.
-   */
-  private fun getSentencesForTrancheRules(
-    sentences: List<CalculableSentence>,
-    earlyReleaseConfig: EarlyReleaseConfiguration,
-  ): List<CalculableSentence> {
-    val maxFtr56RevocationDate = sentences
-      .filter { it.recallType == RecallType.FIXED_TERM_RECALL_56 }
-      .maxByOrNull { it.recall!!.revocationDate!! }
-      ?.recall?.revocationDate ?: LocalDate.MIN
-
-    return sentences.filter { sentence ->
-      val excludedFromFtr56Tranche = isFtr56ExcludedForTrancheRules(sentence, maxFtr56RevocationDate, earlyReleaseConfig)
-      sentence.sentenceParts().any { sentencePart ->
-        val isInRangeOfEarlyRelease = if (earlyReleaseConfig.modifiesRecallReleaseDate()) {
-          !excludedFromFtr56Tranche && sentencePart.recall?.returnToCustodyDate?.isBeforeOrEqualTo(earlyReleaseConfig.earliestTranche()) == true
-        } else {
-          sentencePart.sentencedAt.isBefore(earlyReleaseConfig.earliestTranche())
-        }
-        isInRangeOfEarlyRelease && isEligibleForTrancheRules(earlyReleaseConfig, sentencePart)
-      }
-    }
-  }
-
-  /**
-   * If sentence is FTR56 recall calculation type, check for exclusions:
-   * - sentence duration under 4 years
-   * - revocation date on the same date as earliest tranche (FTR56 commencement)
-   * - FTR56 sentence has SLED (adjusted expiry date) before latest revocation date
-   */
-  private fun isFtr56ExcludedForTrancheRules(
-    sentence: CalculableSentence,
-    latestRevocationDate: LocalDate,
-    earlyReleaseConfig: EarlyReleaseConfiguration,
-  ): Boolean {
-    if (earlyReleaseConfig.recallCalculation !== RecallCalculationType.FTR_56) return false
-    val isShortSentence = sentence.durationIsLessThan(1461, ChronoUnit.DAYS)
-    val isRevocationOnEarliestTranche = sentence.recall?.revocationDate == earlyReleaseConfig.earliestTranche()
-    val ftr56SentenceHasExpired = sentence.sentenceCalculation.adjustedExpiryDate.isBefore(latestRevocationDate)
-
-    return isShortSentence || isRevocationOnEarliestTranche || ftr56SentenceHasExpired
-  }
-
-  private fun isEligibleForTrancheRules(earlyReleaseConfiguration: EarlyReleaseConfiguration, sentence: CalculableSentence): Boolean = if (earlyReleaseConfiguration.releaseMultiplier != null) {
-    earlyReleaseConfiguration.releaseMultiplier.keys.contains(sentence.identificationTrack)
-  } else {
-    sentence.sentenceParts().any { earlyReleaseConfiguration.matchesFilter(it) }
-  }
-
   private fun filterAndMapSentencesForNotIncludedTypesByDuration(
     sentenceToFilter: CalculableSentence,
     earlyReleaseConfiguration: EarlyReleaseConfiguration,
     unit: ChronoUnit,
   ): Long {
-    return if (sentenceToFilter is ConsecutiveSentence && filterOnSentenceExpiryDates(sentenceToFilter, earlyReleaseConfiguration)) {
+    return if (sentenceToFilter is ConsecutiveSentence) {
       val filteredSentences = sentenceToFilter.orderedSentences
         .filter { filterOnType(it) && filterOnSentenceDate(it, earlyReleaseConfiguration) }
 
@@ -130,7 +78,7 @@ class TrancheAllocationService {
         0
       }
     } else {
-      if (filterOnType(sentenceToFilter) && filterOnSentenceDate(sentenceToFilter, earlyReleaseConfiguration) && filterOnSentenceExpiryDates(sentenceToFilter, earlyReleaseConfiguration)) {
+      if (filterOnType(sentenceToFilter) && filterOnSentenceDate(sentenceToFilter, earlyReleaseConfiguration)) {
         unit.between(
           sentenceToFilter.sentencedAt,
           sentenceToFilter.sentencedAt.plus(sentenceToFilter.getLengthInDays().toLong(), ChronoUnit.DAYS).plusDays(1),
@@ -145,5 +93,75 @@ class TrancheAllocationService {
 
   private fun filterOnSentenceDate(sentence: CalculableSentence, earlyReleaseConfiguration: EarlyReleaseConfiguration): Boolean = sentence.sentencedAt.isBefore(earlyReleaseConfiguration.earliestTranche())
 
-  private fun filterOnSentenceExpiryDates(sentence: CalculableSentence, earlyReleaseConfiguration: EarlyReleaseConfiguration): Boolean = sentence.sentenceCalculation.adjustedExpiryDate.isAfterOrEqualTo(earlyReleaseConfiguration.earliestTranche())
+  private sealed interface TrancheSelectionStrategy {
+    fun hasSentencesThatMightApplyToTheTranche(timelineTrackingData: TimelineTrackingData, earlyReleaseConfig: EarlyReleaseConfiguration): Boolean
+    fun sentencesToMatchOnSentenceLength(timelineTrackingData: TimelineTrackingData, earlyReleaseConfig: EarlyReleaseConfiguration): List<CalculableSentence>
+  }
+
+  private object SDSTrancheSelectionStrategy : TrancheSelectionStrategy {
+    override fun hasSentencesThatMightApplyToTheTranche(
+      timelineTrackingData: TimelineTrackingData,
+      earlyReleaseConfig: EarlyReleaseConfiguration,
+    ): Boolean {
+      val sentencesWithReleaseAfterTrancheCommencement = (timelineTrackingData.currentSentenceGroup + timelineTrackingData.licenceSentences).filter {
+        earlyReleaseConfig.releaseDateConsidered(it.sentenceCalculation).isAfter(earlyReleaseConfig.earliestTranche())
+      }
+      return sentencesWithReleaseAfterTrancheCommencement.filter { sentence ->
+        sentence.sentenceParts().any { sentencePart ->
+          val isInRangeOfEarlyRelease = sentencePart.sentencedAt.isBefore(earlyReleaseConfig.earliestTranche())
+          isInRangeOfEarlyRelease && earlyReleaseConfig.isEligibleForTrancheRules(sentencePart)
+        }
+      }.isNotEmpty()
+    }
+
+    override fun sentencesToMatchOnSentenceLength(
+      timelineTrackingData: TimelineTrackingData,
+      earlyReleaseConfig: EarlyReleaseConfiguration,
+    ): List<CalculableSentence> = (timelineTrackingData.licenceSentences + timelineTrackingData.currentSentenceGroup)
+      .filter { filterOnSentenceExpiryDates(it, earlyReleaseConfig) }
+
+    private fun filterOnSentenceExpiryDates(sentence: CalculableSentence, earlyReleaseConfiguration: EarlyReleaseConfiguration): Boolean = sentence.sentenceCalculation.adjustedExpiryDate.isAfterOrEqualTo(earlyReleaseConfiguration.earliestTranche())
+  }
+
+  private object FTR56TrancheSelectionStrategy : TrancheSelectionStrategy {
+    override fun hasSentencesThatMightApplyToTheTranche(
+      timelineTrackingData: TimelineTrackingData,
+      earlyReleaseConfig: EarlyReleaseConfiguration,
+    ): Boolean = sentencesConsideredForFTR56TrancheCommencement(timelineTrackingData, earlyReleaseConfig).isNotEmpty()
+
+    override fun sentencesToMatchOnSentenceLength(
+      timelineTrackingData: TimelineTrackingData,
+      earlyReleaseConfig: EarlyReleaseConfiguration,
+    ) = sentencesConsideredForFTR56TrancheCommencement(timelineTrackingData, earlyReleaseConfig)
+
+    private fun sentencesConsideredForFTR56TrancheCommencement(timelineTrackingData: TimelineTrackingData, earlyReleaseConfig: EarlyReleaseConfiguration): List<CalculableSentence> {
+      val allFtr56Sentences = (timelineTrackingData.currentSentenceGroup + timelineTrackingData.licenceSentences + timelineTrackingData.expiredLicenceSentences)
+        .filter { it.recallType == RecallType.FIXED_TERM_RECALL_56 }
+      val maxRevocationDate = allFtr56Sentences
+        .mapNotNull { it.recall?.revocationDate }.maxOrNull()
+      if (maxRevocationDate == null) {
+        // there were no recalls
+        return emptyList()
+      }
+      return allFtr56Sentences
+        .filter { ftr56Sentence -> ftr56Sentence.sentenceCalculation.adjustedExpiryDate.isAfter(maxRevocationDate) }
+        .filter { sentenceExpiringAfterLatestRevocationDate -> !isFtr56ExcludedForTrancheRules(sentenceExpiringAfterLatestRevocationDate, earlyReleaseConfig) }
+        .filter { sentenceNotExcludedFromTranchingRules ->
+          sentenceNotExcludedFromTranchingRules.sentenceParts().any { sentencePart ->
+            val isInRangeOfEarlyRelease = sentencePart.recall?.returnToCustodyDate?.isBeforeOrEqualTo(earlyReleaseConfig.earliestTranche()) == true
+            isInRangeOfEarlyRelease && earlyReleaseConfig.isEligibleForTrancheRules(sentencePart)
+          }
+        }
+    }
+
+    /**
+     * If sentence is FTR56 recall calculation type, check for exclusions:
+     * - sentence duration under 4 years
+     * - revocation date on the same date as earliest tranche (FTR56 commencement)
+     */
+    private fun isFtr56ExcludedForTrancheRules(sentence: CalculableSentence, earlyReleaseConfig: EarlyReleaseConfiguration): Boolean {
+      val isRevocationOnEarliestTranche = sentence.recall?.revocationDate == earlyReleaseConfig.earliestTranche()
+      return isRevocationOnEarliestTranche
+    }
+  }
 }

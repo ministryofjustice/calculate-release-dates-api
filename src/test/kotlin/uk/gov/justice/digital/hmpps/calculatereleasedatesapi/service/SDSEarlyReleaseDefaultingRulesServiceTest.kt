@@ -79,7 +79,6 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
       ),
       emptyMap(),
       Period.ofYears(5),
-      sdsEarlyReleaseTranche = SDSEarlyReleaseTranche.TRANCHE_0,
     )
 
     val standard = CalculationResult(
@@ -91,7 +90,6 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
       ),
       emptyMap(),
       Period.ofYears(5),
-      sdsEarlyReleaseTranche = SDSEarlyReleaseTranche.TRANCHE_0,
     )
 
     assertThat(
@@ -112,8 +110,6 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
         ),
         emptyMap(),
         Period.ofYears(5),
-        sdsEarlyReleaseTranche = SDSEarlyReleaseTranche.TRANCHE_1,
-        sdsEarlyReleaseAllocatedTranche = SDSEarlyReleaseTranche.TRANCHE_1,
         affectedBySds40 = false,
       ),
     )
@@ -130,7 +126,6 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
       ),
       emptyMap(),
       Period.ofYears(5),
-      sdsEarlyReleaseTranche = SDSEarlyReleaseTranche.TRANCHE_1,
     )
 
     val testOffender = Offender("a", LocalDate.of(1980, 1, 1), true)
@@ -160,16 +155,6 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
     )
 
     sentence.sentenceCalculation = sentenceCalculation
-    val recallBooking = Booking(
-      testOffender,
-      listOf(
-        sentence,
-      ),
-      Adjustments(),
-      null,
-      null,
-      123,
-    )
 
     val resultDates = mutableMapOf<ReleaseDateType, LocalDate>(ReleaseDateType.TUSED to earlyTused)
     val resultBreakdown = mutableMapOf<ReleaseDateType, ReleaseDateCalculationBreakdown>()
@@ -196,7 +181,6 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
       ),
       emptyMap(),
       Period.ofYears(5),
-      sdsEarlyReleaseTranche = SDSEarlyReleaseTranche.TRANCHE_1,
     )
 
     val testOffender = Offender("a", LocalDate.of(1980, 1, 1), true)
@@ -226,16 +210,6 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
     )
 
     sentence.sentenceCalculation = sentenceCalculation
-    val recallBooking = Booking(
-      testOffender,
-      listOf(
-        sentence,
-      ),
-      Adjustments(),
-      null,
-      null,
-      123,
-    )
 
     val resultDates = mutableMapOf<ReleaseDateType, LocalDate>(ReleaseDateType.TUSED to earlyTused)
     val resultBreakdown = mutableMapOf<ReleaseDateType, ReleaseDateCalculationBreakdown>()
@@ -264,7 +238,6 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
       emptyMap(),
       emptyMap(),
       Period.ofYears(5),
-      sdsEarlyReleaseTranche = SDSEarlyReleaseTranche.TRANCHE_0,
       affectedBySds40 = true,
     )
 
@@ -273,7 +246,6 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
       emptyMap(),
       emptyMap(),
       Period.ofYears(5),
-      sdsEarlyReleaseTranche = SDSEarlyReleaseTranche.TRANCHE_1,
       affectedBySds40 = true,
     )
 
@@ -297,8 +269,6 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
         ),
         emptyMap(),
         Period.ofYears(5),
-        sdsEarlyReleaseAllocatedTranche = SDSEarlyReleaseTranche.TRANCHE_1,
-        sdsEarlyReleaseTranche = SDSEarlyReleaseTranche.TRANCHE_1,
         affectedBySds40 = true,
       ),
     )
@@ -317,7 +287,6 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
       emptyMap(),
       emptyMap(),
       Period.ofYears(5),
-      sdsEarlyReleaseTranche = SDSEarlyReleaseTranche.TRANCHE_1,
       affectedBySds40 = true,
     )
 
@@ -331,7 +300,6 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
       emptyMap(),
       emptyMap(),
       Period.ofYears(5),
-      sdsEarlyReleaseTranche = SDSEarlyReleaseTranche.TRANCHE_1,
       affectedBySds40 = true,
     )
 
@@ -360,8 +328,6 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
         ),
         emptyMap(),
         Period.ofYears(5),
-        sdsEarlyReleaseAllocatedTranche = SDSEarlyReleaseTranche.TRANCHE_1,
-        sdsEarlyReleaseTranche = SDSEarlyReleaseTranche.TRANCHE_1,
         affectedBySds40 = true,
       ),
     )
@@ -374,7 +340,6 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
       emptyMap(),
       emptyMap(),
       Period.ofYears(5),
-      sdsEarlyReleaseTranche = SDSEarlyReleaseTranche.TRANCHE_0,
       affectedBySds40 = true,
     )
 
@@ -383,7 +348,6 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
       emptyMap(),
       emptyMap(),
       Period.ofYears(5),
-      sdsEarlyReleaseTranche = SDSEarlyReleaseTranche.TRANCHE_1,
       affectedBySds40 = true,
     )
 
@@ -404,8 +368,6 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
         mapOf(),
         emptyMap(),
         Period.ofYears(5),
-        sdsEarlyReleaseAllocatedTranche = SDSEarlyReleaseTranche.TRANCHE_1,
-        sdsEarlyReleaseTranche = SDSEarlyReleaseTranche.TRANCHE_1,
         affectedBySds40 = true,
       ),
     )

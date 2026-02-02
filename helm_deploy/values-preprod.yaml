@@ -21,7 +21,6 @@ generic-service:
     MANAGE-OFFENCES_API_URL: https://manage-offences-api-preprod.hmpps.service.justice.gov.uk
     NOMIS-SYNC-MAPPING_API_URL: https://nomis-sync-prisoner-mapping-preprod.hmpps.service.justice.gov.uk
     MANAGE-USERS_API_URL: https://manage-users-api-preprod.hmpps.service.justice.gov.uk
-    RECORD_A_RECALL_FTR_56_RULES: "true"
 
   allowlist:
     penetration-test-ip-1: 54.37.241.156/30

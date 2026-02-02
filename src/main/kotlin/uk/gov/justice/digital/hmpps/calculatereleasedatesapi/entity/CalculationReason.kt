@@ -42,4 +42,7 @@ data class CalculationReason(
   @param:NotNull
   @JsonIgnore
   val eligibleForPreviouslyRecordedSled: Boolean,
+  @param:NotNull
+  val requiresFurtherDetail: Boolean,
+  val furtherDetailDescription: String?,
 )

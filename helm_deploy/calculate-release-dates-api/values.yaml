@@ -36,6 +36,7 @@ generic-service:
     EXTERNAL_MOVEMENTS_SDS_40_FEATURE_TOGGLE: "true"
     EXTERNAL_MOVEMENTS_ADJUSTMENTS_FEATURE_TOGGLE: "true"
     PRISONS_WITH_NOMIS_CALC_DISABLED: "PNI"
+    RECORD_A_RECALL_FTR_56_RULES: "false"
 
   # Pre-existing kubernetes secrets to load as environment variables in the deployment.
   # namespace_secrets:
