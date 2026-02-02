@@ -24,10 +24,9 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Agency
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CaseLoad
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NomisCalculationReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSentenceAndOffences
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.prisonapi.model.PrisonPeriod
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.prisonapi.model.PrisonerInPrisonSummary
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.PrisonPeriod
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.PrisonerInPrisonSummary
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource.JsonTransformation
-import java.time.LocalDateTime
 
 /*
     This class mocks the prison-api.
@@ -342,13 +341,6 @@ class PrisonApiMockServer : WireMockServer(WIREMOCK_PORT) {
             bookNumber = "ABC" + it,
             bookingSequence = index,
             bookingId = it,
-            // Not required by CRDS.
-            entryDate = LocalDateTime.now(),
-            prisons = emptyList(),
-            transfers = emptyList(),
-            movementDates = emptyList(),
-            releaseDate = LocalDateTime.now(),
-
           )
         },
       ),
