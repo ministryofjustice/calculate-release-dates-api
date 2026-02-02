@@ -1,7 +1,5 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi
 
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.prisonapi.model.PrisonPeriod
-
 data class PrisonerInPrisonSummary(
 
   /* Prisoner Identifier */
