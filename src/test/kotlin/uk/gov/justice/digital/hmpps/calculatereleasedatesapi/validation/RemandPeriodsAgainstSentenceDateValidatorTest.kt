@@ -50,7 +50,6 @@ class RemandPeriodsAgainstSentenceDateValidatorTest {
 
     assertThat(validationResult).isNotEmpty()
     assertThat(validationResult[0]).isEqualTo(ValidationMessage(ValidationCode.REMAND_ON_OR_AFTER_SENTENCE_DATE, listOf(testSentence.caseSequence.toString(), testSentence.lineSequence.toString())))
-
   }
 
   @Test
