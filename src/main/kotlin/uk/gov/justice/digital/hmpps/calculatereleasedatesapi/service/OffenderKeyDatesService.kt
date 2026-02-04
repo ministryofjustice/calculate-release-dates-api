@@ -76,6 +76,7 @@ class OffenderKeyDatesService(
         otherReasonDescription = calculationRequest.otherReasonForCalculation,
         calculationDate = calculationRequest.calculatedAt.toLocalDate(),
         calculationType = calculationRequest.calculationType,
+        overridesCalculationRequestId = calculationRequest.overridesCalculationRequestId,
         genuineOverrideReasonCode = calculationRequest.genuineOverrideReason,
         genuineOverrideReasonDescription = calculationRequest.genuineOverrideReasonFurtherDetail ?: calculationRequest.genuineOverrideReason?.description,
         usePreviouslyRecordedSLEDIfFound = calculationRequest.calculationRequestUserInput?.usePreviouslyRecordedSLEDIfFound ?: false,
