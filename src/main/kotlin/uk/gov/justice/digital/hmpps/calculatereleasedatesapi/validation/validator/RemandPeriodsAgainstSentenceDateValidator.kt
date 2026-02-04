@@ -28,6 +28,7 @@ class RemandPeriodsAgainstSentenceDateValidator(private val validationUtilities:
           }.map {
             RemandPeriodToValidate(
               it.sentenceSequence,
+              it.bookingId,
               it.fromDate!!,
               it.toDate!!,
             )
@@ -40,6 +41,7 @@ class RemandPeriodsAgainstSentenceDateValidator(private val validationUtilities:
           }.map {
             RemandPeriodToValidate(
               it.sentenceSequence!!,
+              it.bookingId,
               it.fromDate!!,
               it.toDate!!,
             )
@@ -49,10 +51,10 @@ class RemandPeriodsAgainstSentenceDateValidator(private val validationUtilities:
 
     val validationMessages = mutableListOf<ValidationMessage>()
 
-    val sentenceMap = sourceData.sentenceAndOffences.associateBy { it.sentenceSequence }
+    val sentenceMap = sourceData.sentenceAndOffences.associateBy { "${it.sentenceSequence}${it.bookingId}" }
 
     remandPeriods.forEach { remandPeriod ->
-      val sentence = sentenceMap[remandPeriod.sentenceSequence]
+      val sentence = sentenceMap["${remandPeriod.sentenceSequence}${remandPeriod.bookingId}"]
       if (sentence != null) {
         val sentenceDate = sentence.sentenceDate
 
@@ -77,6 +79,7 @@ class RemandPeriodsAgainstSentenceDateValidator(private val validationUtilities:
 }
 data class RemandPeriodToValidate(
   val sentenceSequence: Int,
+  val bookingId: Long?,
   val fromDate: LocalDate,
   val toDate: LocalDate,
 )
