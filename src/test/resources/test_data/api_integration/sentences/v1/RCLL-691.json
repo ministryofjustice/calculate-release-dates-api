@@ -1,0 +1,55 @@
+[
+  {
+    "bookingId": -1537838734,
+    "sentenceSequence": 1,
+    "caseSequence": 1,
+    "sentenceStatus": "A",
+    "sentenceCategory": "2020",
+    "sentenceCalculationType": "ADIMP_ORA",
+    "sentenceTypeDescription": "Standard Determinate",
+    "sentenceDate": "2021-01-01",
+    "terms": [
+      {
+        "years": 5,
+        "months": 0,
+        "weeks": 0,
+        "days": 0
+      }
+    ],
+    "offences": [
+      {
+        "offenderChargeId": 9991,
+        "offenceStartDate": "2015-03-17",
+        "offenceCode": "GBH",
+        "offenceDescription": "Grievous bodily harm"
+      }
+    ]
+  },
+
+  {
+    "bookingId": -1537838734,
+    "sentenceSequence": 2,
+    "caseSequence": 1,
+    "sentenceStatus": "A",
+    "sentenceCategory": "2020",
+    "sentenceCalculationType": "ADIMP_ORA",
+    "sentenceTypeDescription": "Standard Determinate",
+    "sentenceDate": "2021-01-01",
+    "terms": [
+      {
+        "years": 4,
+        "months": 0,
+        "weeks": 0,
+        "days": 0
+      }
+    ],
+    "offences": [
+      {
+        "offenderChargeId": 9991,
+        "offenceStartDate": "2015-03-17",
+        "offenceCode": "GBH",
+        "offenceDescription": "Grievous bodily harm"
+      }
+    ]
+  }
+]

@@ -133,7 +133,7 @@ class RecordARecallDecisionService(
     val (sentenceGroupsReleasedBeforeRevocation, sentenceGroupsReleasedAfterRevocation) = output.sentenceGroup.partition { it.to.isBeforeOrEqualTo(recordARecallRequest.revocationDate) }
     val sentencesAndTheirGroups = sentenceGroupsReleasedBeforeRevocation.flatMap { it.sentences.map { sentence -> it to sentence } }
     val (eligibleSentences, ineligibleSentences) = sentencesAndTheirGroups.partition { it.second.sentenceParts().none { part -> part is Term } && it.second.sentenceCalculation.licenceExpiryDate != null }
-    val (recallableSentences, expiredSentences) = eligibleSentences.partition { it.second.sentenceCalculation.licenceExpiryDate!!.isAfter(recordARecallRequest.revocationDate) }
+    val (recallableSentences, expiredSentences) = recallExpiredSentencesOnSameCaseAsRecallableSentences(eligibleSentences, recordARecallRequest.revocationDate)
 
     if (recallableSentences.isEmpty()) {
       return RecordARecallDecisionResult(
@@ -159,6 +159,27 @@ class RecordARecallDecisionService(
         unexpectedRecallTypes = findUnexpectedRecallTypes(recallableSentences, booking.externalMovements, recordARecallRequest.revocationDate),
       ),
     )
+  }
+
+  private fun recallExpiredSentencesOnSameCaseAsRecallableSentences(
+    sentences: List<Pair<SentenceGroup, CalculableSentence>>,
+    revocationDate: LocalDate,
+  ): Pair<List<Pair<SentenceGroup, CalculableSentence>>, List<Pair<SentenceGroup, CalculableSentence>>> {
+    val (recallableSentences, expiredSentences) = sentences.partition { it.second.sentenceCalculation.licenceExpiryDate!!.isAfter(revocationDate) }
+
+    val recallableCases = recallableSentences.flatMap {
+      it.second.sentenceParts().map { sentence ->
+        NomisCaseId(sentence.externalSentenceId!!.bookingId, sentence.caseSequence!!)
+      }
+    }
+
+    val expiredSentencesToBeRecalled = expiredSentences.filter {
+      it.second.sentenceParts().any { sentence ->
+        recallableCases.contains(NomisCaseId(sentence.externalSentenceId!!.bookingId, sentence.caseSequence!!))
+      }
+    }
+
+    return (recallableSentences + expiredSentencesToBeRecalled) to expiredSentences.filterNot { expiredSentencesToBeRecalled.contains(it) }
   }
 
   private fun findUnexpectedRecallTypes(
@@ -274,4 +295,9 @@ class RecordARecallDecisionService(
       ValidationCode.REMAND_ON_OR_AFTER_SENTENCE_DATE,
     )
   }
+
+  private data class NomisCaseId(
+    val bookingId: Long,
+    val caseSequence: Int,
+  )
 }
