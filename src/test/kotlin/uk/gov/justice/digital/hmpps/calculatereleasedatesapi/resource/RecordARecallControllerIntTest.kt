@@ -276,6 +276,20 @@ class RecordARecallControllerIntTest(private val mockManageOffencesClient: MockM
       assertThat(result.automatedCalculationData!!.unexpectedRecallTypes).isEqualTo(listOf(Recall.RecallType.FTR_14, Recall.RecallType.FTR_56, Recall.RecallType.FTR_HDC_14, Recall.RecallType.FTR_HDC_28, Recall.RecallType.CUR_HDC, Recall.RecallType.IN_HDC))
     }
 
+    @Test
+    fun `Expired sentences on same case as recallable sentences should also be recalled`() {
+      val result = createCalculationForRecordARecall(
+        "RCLL-691",
+        RecordARecallRequest(revocationDate = LocalDate.of(2025, 6, 1)),
+      )
+
+      assertThat(result.decision).isEqualTo(RecordARecallDecision.AUTOMATED)
+      assertThat(result.automatedCalculationData!!.recallableSentences.size).isEqualTo(2)
+      assertThat(result.automatedCalculationData.recallableSentences[0].sentenceCalculation.licenseExpiry).isEqualTo(LocalDate.of(2025, 12, 31))
+      // This sentence is recallable even though the license has expired, because its on the same case as the one above.
+      assertThat(result.automatedCalculationData.recallableSentences[1].sentenceCalculation.licenseExpiry).isEqualTo(LocalDate.of(2024, 12, 31))
+    }
+
     @Nested
     inner class UnexpectedFtr56RecallTypes {
       @BeforeEach

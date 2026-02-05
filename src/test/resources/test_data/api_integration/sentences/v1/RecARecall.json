@@ -2,6 +2,7 @@
   {
     "bookingId": -356872126,
     "sentenceSequence": 1,
+    "caseSequence": 1,
     "sentenceStatus": "A",
     "sentenceCategory": "2003",
     "sentenceCalculationType": "ADIMP_ORA",
@@ -56,7 +57,7 @@
     "bookingId": -356872126,
     "sentenceSequence": 3,
     "lineSequence": 3,
-    "caseSequence": 1,
+    "caseSequence": 2,
     "sentenceStatus": "I",
     "sentenceCategory": "2003",
     "sentenceCalculationType": "ADIMP_ORA",
