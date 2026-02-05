@@ -10,6 +10,7 @@ import org.mockito.Mockito.mock
 import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.eq
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ApprovedDates
@@ -17,6 +18,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ApprovedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcome
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequestUserInput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.PRELIMINARY
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
@@ -28,6 +30,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ApprovedDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationReasonDto
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
@@ -215,8 +218,15 @@ class ApprovedDatesServiceTest {
     assertThat(response).isEqualTo(available(calculatedReleaseDates))
   }
 
-  @Test
-  fun `available inputs should return the previously entered dates if the hash is the same`() {
+  @ParameterizedTest
+  @CsvSource(
+    value = [
+      "true,false,false",
+      "false,true,false",
+      "false,false,true",
+    ],
+  )
+  fun `available inputs should calculate using the original inputs and return the previously entered dates if the hash is the same`(calculateErsed: Boolean, useOffenceIndicators: Boolean, usePreviouslyRecordedSLEDIfFound: Boolean) {
     val calculatedReleaseDates = CalculatedReleaseDates(
       calculationRequestId = 9991L,
       dates = mapOf(
@@ -232,6 +242,11 @@ class ApprovedDatesServiceTest {
     val latestCalcRequest = MINIMAL_CALC_REQUEST.copy(
       calculationOutcomes = listOf(
         CalculationOutcome(id = 2, calculationRequestId = 1, calculationDateType = ReleaseDateType.LED.name, outcomeDate = LocalDate.of(2030, 12, 12)),
+      ),
+      calculationRequestUserInput = CalculationRequestUserInput(
+        calculateErsed = calculateErsed,
+        useOffenceIndicators = useOffenceIndicators,
+        usePreviouslyRecordedSLEDIfFound = usePreviouslyRecordedSLEDIfFound,
       ),
     )
     whenever(calculationRequestRepository.findFirstByPrisonerIdAndCalculationStatusOrderByCalculatedAtDesc(PRISONER_ID, "CONFIRMED")).thenReturn(Optional.of(latestCalcRequest))
@@ -262,6 +277,13 @@ class ApprovedDatesServiceTest {
     val response = service.inputsForPrisoner(PRISONER_ID)
 
     assertThat(response).isEqualTo(available(calculatedReleaseDates).copy(previousApprovedDates = listOf(ApprovedDate(ReleaseDateType.APD, LocalDate.of(2000, 1, 2)))))
+
+    val expectedInputs = CalculationUserInputs(
+      calculateErsed = calculateErsed,
+      useOffenceIndicators = useOffenceIndicators,
+      usePreviouslyRecordedSLEDIfFound = usePreviouslyRecordedSLEDIfFound,
+    )
+    verify(calculationTransactionalService).calculate(any(), any(), any(), any(), eq(expectedInputs), anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull())
   }
 
   @Test
