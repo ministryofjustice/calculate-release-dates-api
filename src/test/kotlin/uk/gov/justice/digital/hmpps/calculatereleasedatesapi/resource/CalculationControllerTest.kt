@@ -341,7 +341,25 @@ class CalculationControllerTest {
   fun `Test GET of calculation detailed results`() {
     val calculationRequestId = 9995L
     val calculatedReleaseDates = DetailedCalculationResults(
-      CalculationContext(calculationRequestId, 1, "A", CONFIRMED, UUID.randomUUID(), null, null, null, CalculationType.CALCULATED, null, null, false, "username", "User Name", "BXI", "Brixton (HMP)"),
+      CalculationContext(
+        calculationRequestId,
+        1,
+        "A",
+        CONFIRMED,
+        UUID.randomUUID(),
+        null,
+        null,
+        null,
+        CalculationType.CALCULATED,
+        null,
+        null,
+        null,
+        false,
+        "username",
+        "User Name",
+        "BXI",
+        "Brixton (HMP)",
+      ),
       dates = mapOf(),
       null,
       CalculationOriginalData(
@@ -489,6 +507,7 @@ class CalculationControllerTest {
         null,
         LocalDate.of(2024, 1, 1),
         CalculationType.CALCULATED,
+        null,
         null,
         null,
         false,

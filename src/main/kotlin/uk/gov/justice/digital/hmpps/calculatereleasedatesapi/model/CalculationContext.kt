@@ -3,7 +3,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
 import java.time.LocalDate
-import java.util.*
+import java.util.UUID
 
 data class CalculationContext(
   val calculationRequestId: Long,
@@ -15,6 +15,7 @@ data class CalculationContext(
   val otherReasonDescription: String?,
   val calculationDate: LocalDate?,
   val calculationType: CalculationType,
+  val overridesCalculationRequestId: Long?,
   val genuineOverrideReasonCode: GenuineOverrideReason?,
   val genuineOverrideReasonDescription: String?,
   val usePreviouslyRecordedSLEDIfFound: Boolean,

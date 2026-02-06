@@ -480,6 +480,7 @@ class DetailedCalculationResultsServiceTest {
     CalculationType.CALCULATED,
     null,
     null,
+    null,
     false,
     "username",
     "User Name",
