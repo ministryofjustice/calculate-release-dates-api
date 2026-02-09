@@ -108,7 +108,7 @@ data class SentenceCalculation(
         return null
       }
 
-      if (sentence.recallType == RecallType.STANDARD_RECALL) {
+      if (unadjustedReleaseDate.isStandardRecallCalculation == true) {
         return expiryDate
       }
 
