@@ -36,13 +36,16 @@ class UnadjustedReleaseDate(
     private set
   var unadjustedPostRecallReleaseDate: LocalDate? = null
     private set
+  var isStandardRecallCalculation: Boolean? = null
+    private set
 
   private fun recalculate() {
     releaseDateCalculation = calculateReleaseDate(this::multiplier)
     historicReleaseDateCalculation = calculateReleaseDate(this::historicMultiplier)
     val recallCalculation = findRecallCalculation()
-    numberOfDaysToPostRecallReleaseDate = recallCalculation?.first
-    unadjustedPostRecallReleaseDate = recallCalculation?.second
+    numberOfDaysToPostRecallReleaseDate = recallCalculation?.numberOfDaysToPostRecallReleaseDate
+    unadjustedPostRecallReleaseDate = recallCalculation?.unadjustedPostRecallReleaseDate
+    isStandardRecallCalculation = recallCalculation?.isStandardRecallCalculation
   }
 
   val unadjustedExpiryDate: LocalDate
@@ -81,12 +84,16 @@ class UnadjustedReleaseDate(
     sentence,
   )
 
-  fun findRecallCalculation(): Pair<Int, LocalDate>? {
+  fun findRecallCalculation(): RecallCalculationResult? {
     val standardCalculation = releaseDateCalculation.numberOfDaysToSentenceExpiryDate to unadjustedExpiryDate
     val revocationDate = sentence.recall?.revocationDate
     val returnToCustodyDate = sentence.recall?.returnToCustodyDate
     return when (val recallType = sentence.recallType) {
-      RecallType.STANDARD_RECALL -> standardCalculation
+      RecallType.STANDARD_RECALL -> RecallCalculationResult(
+        standardCalculation.first,
+        standardCalculation.second,
+        true,
+      )
 
       RecallType.FIXED_TERM_RECALL_14,
       RecallType.FIXED_TERM_RECALL_28,
@@ -108,7 +115,11 @@ class UnadjustedReleaseDate(
         if (revocationDateOrReturnToCustodyDateAfterFtr56Commencement || allocatedToFtr56Tranche) {
           calculateFixedTermRecall(returnToCustodyDate, recallType)
         } else {
-          standardCalculation
+          RecallCalculationResult(
+            standardCalculation.first,
+            standardCalculation.second,
+            true,
+          )
         }
       }
 
@@ -119,14 +130,18 @@ class UnadjustedReleaseDate(
     }
   }
 
-  private fun calculateFixedTermRecall(returnToCustodyDate: LocalDate?, recallType: RecallType): Pair<Int, LocalDate> {
+  private fun calculateFixedTermRecall(returnToCustodyDate: LocalDate?, recallType: RecallType): RecallCalculationResult {
     if (returnToCustodyDate == null) {
       throw NoValidReturnToCustodyDateException("No return to custody date available")
     }
     val days = recallType.lengthInDays!!
-    return days to returnToCustodyDate
-      .plusDays(days.toLong())
-      .minusDays(1)
+    return RecallCalculationResult(
+      days,
+      returnToCustodyDate
+        .plusDays(days.toLong())
+        .minusDays(1),
+      false,
+    )
   }
 
   private fun multiplierForSentence(
@@ -324,4 +339,11 @@ data class CalculationTrigger(
   val timelineCalculationDate: LocalDate,
   val allocatedEarlyReleaseConfiguration: EarlyReleaseConfiguration? = null,
   val allocatedTranche: EarlyReleaseTrancheConfiguration? = null,
+)
+
+data class RecallCalculationResult(
+
+  val numberOfDaysToPostRecallReleaseDate: Int,
+  val unadjustedPostRecallReleaseDate: LocalDate,
+  val isStandardRecallCalculation: Boolean,
 )

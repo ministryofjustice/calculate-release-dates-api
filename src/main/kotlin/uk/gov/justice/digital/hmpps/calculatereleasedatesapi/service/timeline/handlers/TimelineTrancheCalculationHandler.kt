@@ -77,7 +77,11 @@ class TimelineTrancheCalculationHandler(
     timelineTrackingData: TimelineTrackingData,
     timelineCalculationDate: LocalDate,
     earlyReleaseConfiguration: EarlyReleaseConfiguration,
-  ): List<CalculableSentence> = (timelineTrackingData.currentSentenceGroup + timelineTrackingData.licenceSentences).filter { earlyReleaseConfiguration.releaseDateConsidered(it.sentenceCalculation).isAfter(timelineCalculationDate) }
+  ): List<CalculableSentence> = (timelineTrackingData.currentSentenceGroup + timelineTrackingData.licenceSentences).filter {
+    earlyReleaseConfiguration.releaseDateConsidered(
+      it.sentenceCalculation,
+    ).isAfter(timelineCalculationDate)
+  }
     .filter { sentence -> sentence.sentenceParts().any { earlyReleaseConfiguration.matchesFilter(it) } }
 
   fun isPersonConsideredOutOfCustodyAtTrancheCommencement(timelineCalculationDate: LocalDate, earlyReleaseConfiguration: EarlyReleaseConfiguration, timelineTrackingData: TimelineTrackingData): Boolean {
