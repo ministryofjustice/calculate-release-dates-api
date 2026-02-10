@@ -23,7 +23,7 @@ class HistoricCalculationsService(
     val calculations = calculationRequestRepository.findAllByPrisonerIdAndCalculationStatus(prisonerId, CONFIRMED.name)
     val nomisCalculations = prisonService.getCalculationsForAPrisonerId(prisonerId)
     val agencyIdToDescriptionMap = prisonService.getAgenciesByType("INST").associateBy { it.agencyId }
-    val uniqueUsers: List<String> = nomisCalculations.mapNotNull { it.calculatedByUserId?.uppercase() }
+    val uniqueUsers: Set<String> = nomisCalculations.mapNotNull { it.calculatedByUserId?.uppercase() }.toSet()
     val userDetails = manageUsersApiClient.getUsersByUsernames(uniqueUsers)
     val historicCalculations = nomisCalculations.map { nomisCalculation ->
       var source = CalculationSource.NOMIS

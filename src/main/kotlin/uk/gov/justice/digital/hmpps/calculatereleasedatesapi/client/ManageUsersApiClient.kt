@@ -31,7 +31,7 @@ class ManageUsersApiClient(@param:Qualifier("manageUsersApiWebClient") private v
     }
     .block()
 
-  fun getUsersByUsernames(usernames: List<String>): Map<String, PrisonUserBasicDetails>? = manageUsersApiWebClient
+  fun getUsersByUsernames(usernames: Set<String>): Map<String, PrisonUserBasicDetails>? = manageUsersApiWebClient
     .post()
     .uri("/prisonusers/find-by-usernames")
     .bodyValue(usernames) // Pass the list of usernames as the body
