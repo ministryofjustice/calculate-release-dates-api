@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.client.ManageUsersApiClient
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.CONFIRMED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationSource
@@ -14,6 +15,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.Calculat
 class HistoricCalculationsService(
   private val prisonService: PrisonService,
   private val calculationRequestRepository: CalculationRequestRepository,
+  private val manageUsersApiClient: ManageUsersApiClient,
 ) {
 
   @Transactional(readOnly = true)
@@ -21,6 +23,8 @@ class HistoricCalculationsService(
     val calculations = calculationRequestRepository.findAllByPrisonerIdAndCalculationStatus(prisonerId, CONFIRMED.name)
     val nomisCalculations = prisonService.getCalculationsForAPrisonerId(prisonerId)
     val agencyIdToDescriptionMap = prisonService.getAgenciesByType("INST").associateBy { it.agencyId }
+    val uniqueUsers: Set<String> = nomisCalculations.mapNotNull { it.calculatedByUserId?.uppercase() }.toSet()
+    val userDetails = manageUsersApiClient.getUsersByUsernames(uniqueUsers)
     val historicCalculations = nomisCalculations.map { nomisCalculation ->
       var source = CalculationSource.NOMIS
       var calculationViewData: CalculationViewConfiguration? = null
@@ -32,7 +36,8 @@ class HistoricCalculationsService(
       var genuineOverrideReason: GenuineOverrideReason? = null
       var genuineOverrideReasonDescription: String? = null
       val calculatedByUsername = nomisCalculation.calculatedByUserId
-      val calculatedByDisplayName = "${nomisCalculation.calculatedByFirstName} ${nomisCalculation.calculatedByLastName}"
+      val userDetail = userDetails?.get(nomisCalculation.calculatedByUserId?.uppercase())
+      val calculatedByDisplayName = listOfNotNull(userDetail?.firstName, userDetail?.lastName).joinToString(" ")
       calculations.firstOrNull {
         nomisComment != null && nomisCalculation.commentText.contains(it.calculationReference.toString())
       }?.let {
