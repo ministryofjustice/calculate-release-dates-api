@@ -4,8 +4,8 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import org.mockito.ArgumentMatchers.anyList
 import org.mockito.ArgumentMatchers.anyString
+import org.mockito.ArgumentMatchers.anySet
 import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
@@ -98,7 +98,7 @@ class HistoricCalculationsServiceTest {
   fun `Test source set to NOMIS if calculation not found in database`() {
     whenever(calculationRequestRepository.findAllByPrisonerIdAndCalculationStatus(anyString(), anyString())).thenReturn(listOf(calculationRequest()))
     whenever(prisonService.getCalculationsForAPrisonerId(anyString())).thenReturn(listOf(sentenceCalculationSummary("comment")))
-    whenever(manageUsersApiClient.getUsersByUsernames(anyList())).thenReturn(usersDetails)
+    whenever(manageUsersApiClient.getUsersByUsernames(anySet())).thenReturn(usersDetails)
     val result = underTest.getHistoricCalculationsForPrisoner("123")
     assertThat(result).hasSize(1)
     assertThat(result[0].calculatedByDisplayName).isEqualTo("Crd Test User")
@@ -122,7 +122,7 @@ class HistoricCalculationsServiceTest {
     val sentenceCalculationSummary1 = sentenceCalculationSummary("comment $reference")
     val sentenceCalculationSummary2 = sentenceCalculationSummary1.copy(bookingId = 3, commentText = "comment: ${calcRequest2.calculationReference}", calculatedByUserId = "user1")
     whenever(prisonService.getCalculationsForAPrisonerId(anyString())).thenReturn(listOf(sentenceCalculationSummary1, sentenceCalculationSummary2))
-    whenever(manageUsersApiClient.getUsersByUsernames(anyList())).thenReturn(usersDetails)
+    whenever(manageUsersApiClient.getUsersByUsernames(anySet())).thenReturn(usersDetails)
     val result = underTest.getHistoricCalculationsForPrisoner("123")
     assertThat(result).hasSize(2)
     assertThat(result[0].calculatedByDisplayName).isEqualTo("Crd Test User")
