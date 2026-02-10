@@ -173,6 +173,13 @@ val models = listOf(
     output = "nomissyncmapping",
     packageName = "nomissyncmapping",
   ),
+  // https://manage-users-api-dev.hmpps.service.justice.gov.uk/v3/api-docs
+  ModelConfiguration(
+    name = "buildManageUsersApiModel",
+    input = "manage-users-api-docs.json",
+    output = "manageusersapi",
+    packageName = "manageusersapi",
+  ),
 )
 
 tasks {
