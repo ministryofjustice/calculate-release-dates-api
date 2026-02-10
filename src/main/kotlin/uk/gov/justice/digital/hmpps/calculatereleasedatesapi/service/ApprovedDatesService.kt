@@ -57,7 +57,7 @@ class ApprovedDatesService(
     return if (latestCalculationHash != currentBookingHash) {
       unavailable(ApprovedDatesUnavailableReason.INPUTS_CHANGED_SINCE_LAST_CALCULATION)
     } else {
-      val calculationUserInputs = CalculationUserInputs(calculateErsed = latestCalculationRequest.calculationRequestUserInput?.calculateErsed ?: false)
+      val calculationUserInputs = transform(latestCalculationRequest.calculationRequestUserInput)
       val validationMessages = validationService.validate(sourceData, calculationUserInputs, ValidationOrder.INVALID)
       if (validationMessages.isNotEmpty()) {
         unavailable(ApprovedDatesUnavailableReason.VALIDATION_FAILED)
