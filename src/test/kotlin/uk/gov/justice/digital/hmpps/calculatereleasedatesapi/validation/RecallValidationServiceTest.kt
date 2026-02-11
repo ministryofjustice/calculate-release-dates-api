@@ -250,6 +250,68 @@ class RecallValidationServiceTest {
     }
   }
 
+  @Nested
+  @DisplayName("validateFtrDoNotConflict")
+  inner class ValidateFtrDoNotConflictTests {
+    val fixedTermRecallValidator = FixedTermRecallValidator()
+
+    @Test
+    fun `Mixed FTR28 and FTR56 sentences return an error`() {
+      val result = fixedTermRecallValidator.validate(
+        createSourceData(
+          listOf(FTR_28_DAY_SENTENCE, FTR_56_DAY_SENTENCE),
+          LocalDate.of(2024, 12, 20),
+          20,
+          null,
+        ),
+      )
+
+      assertEquals(ValidationCode.FTR_SENTENCES_CONFLICT_WITH_EACH_OTHER, result.first().code)
+    }
+
+    @Test
+    fun `Mixed FTR28 and FTR14 sentences return an error`() {
+      val result = fixedTermRecallValidator.validate(
+        createSourceData(
+          listOf(FTR_14_DAY_SENTENCE, FTR_28_DAY_SENTENCE),
+          LocalDate.of(2024, 12, 20),
+          20,
+          null,
+        ),
+      )
+
+      assertEquals(ValidationCode.FTR_SENTENCES_CONFLICT_WITH_EACH_OTHER, result.first().code)
+    }
+
+    @Test
+    fun `Mixed FTR14 and FTR56 sentences return an error`() {
+      val result = fixedTermRecallValidator.validate(
+        createSourceData(
+          listOf(FTR_14_DAY_SENTENCE, FTR_56_DAY_SENTENCE),
+          LocalDate.of(2024, 12, 20),
+          20,
+          null,
+        ),
+      )
+
+      assertEquals(ValidationCode.FTR_SENTENCES_CONFLICT_WITH_EACH_OTHER, result.first().code)
+    }
+
+    @Test
+    fun `Mixed FTR sentences return an error`() {
+      val result = fixedTermRecallValidator.validate(
+        createSourceData(
+          listOf(FTR_14_DAY_SENTENCE, FTR_28_DAY_SENTENCE, FTR_56_DAY_SENTENCE),
+          LocalDate.of(2024, 12, 20),
+          20,
+          null,
+        ),
+      )
+
+      assertEquals(ValidationCode.FTR_SENTENCES_CONFLICT_WITH_EACH_OTHER, result.first().code)
+    }
+  }
+
   private fun createConsecutiveFTRSentence(
     sentenceDate: LocalDate,
     firstSentenceLengthMonths: Long,
@@ -287,7 +349,7 @@ class RecallValidationServiceTest {
     return ConsecutiveSentence(listOf(consecutiveSentencePartOne, consecutiveSentencePartTwo))
   }
 
-  private fun createSingleFTRSentence(sentenceDate: LocalDate, months: Long, recallRevocationDate: LocalDate?) = StandardDeterminateSentence(
+  private fun createSingleFTRSentence(sentenceDate: LocalDate, months: Long, recallRevocationDate: LocalDate?, recallType: RecallType = RecallType.FIXED_TERM_RECALL_28) = StandardDeterminateSentence(
     sentencedAt = sentenceDate,
     duration = Duration(mutableMapOf(DAYS to 0L, WEEKS to 0L, MONTHS to months, YEARS to 0L)),
     offence = Offence(
@@ -297,7 +359,7 @@ class RecallValidationServiceTest {
     identifier = UUID.randomUUID(),
     lineSequence = 1,
     caseSequence = 1,
-    recall = Recall(RecallType.FIXED_TERM_RECALL_28, revocationDate = recallRevocationDate),
+    recall = Recall(recallType, revocationDate = recallRevocationDate),
     isSDSPlus = false,
     hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
   )
@@ -368,6 +430,8 @@ class RecallValidationServiceTest {
     )
 
     private val FTR_56_DAY_SENTENCE = FTR_14_DAY_SENTENCE.copy(sentenceCalculationType = SentenceCalculationType.FTR_56ORA.name)
+
+    private val FTR_28_DAY_SENTENCE = FTR_14_DAY_SENTENCE.copy(sentenceCalculationType = SentenceCalculationType.FTRSCH15_ORA.name)
 
     private val prisonerDetails = PrisonerDetails(
       bookingId = 1L,
