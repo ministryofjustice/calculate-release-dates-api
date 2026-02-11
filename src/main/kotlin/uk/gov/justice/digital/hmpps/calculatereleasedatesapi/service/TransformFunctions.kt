@@ -283,7 +283,7 @@ private fun transform(term: SentenceTerms): Duration = Duration(
   ),
 )
 
-private fun generateUUIDForSentence(bookingId: Long, sequence: Int) = UUID.nameUUIDFromBytes(("$bookingId-$sequence").toByteArray())
+fun generateUUIDForSentence(bookingId: Long, sequence: Int): UUID = UUID.nameUUIDFromBytes(("$bookingId-$sequence").toByteArray())
 
 fun transform(prisonerDetails: PrisonerDetails): Offender = Offender(
   dateOfBirth = prisonerDetails.dateOfBirth,

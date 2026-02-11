@@ -1,0 +1,48 @@
+{
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
+      {
+        "offence": {
+          "committedAt": "2020-01-01",
+          "offenceCode": "DS14067"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 4
+          }
+        },
+        "sentencedAt": "2024-02-01",
+        "identifier": "c1de11aa-e45f-3f76-ac92-83a08b759c72"
+      }
+    ],
+    "adjustments": {
+      "UNLAWFULLY_AT_LARGE": [
+        {
+          "appliesToSentencesFrom": "2024-08-02",
+          "numberOfDays": 19,
+          "fromDate": "2024-08-02",
+          "toDate": "2024-08-20"
+        }
+      ],
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2024-02-01",
+          "numberOfDays": 30,
+          "fromDate": "2024-01-01",
+          "toDate": "2024-01-30"
+        }
+      ]
+    }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params",
+  "featureToggles": {
+    "storeSentenceLevelDates": true
+  }
+}

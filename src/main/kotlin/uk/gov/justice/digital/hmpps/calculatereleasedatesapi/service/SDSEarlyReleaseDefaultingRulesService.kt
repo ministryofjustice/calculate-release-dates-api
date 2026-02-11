@@ -93,6 +93,7 @@ class SDSEarlyReleaseDefaultingRulesService(
     otherDates = earlyReleaseResult.otherDates,
     effectiveSentenceLength = earlyReleaseResult.effectiveSentenceLength,
     affectedBySds40 = (dates != standardReleaseResult.dates) || standardReleaseResult.affectedBySds40,
+    sentencesImpactingFinalReleaseDate = if (dates != standardReleaseResult.dates) earlyReleaseResult.sentencesImpactingFinalReleaseDate else standardReleaseResult.sentencesImpactingFinalReleaseDate,
   )
 
   private fun getArdOrCrd(
