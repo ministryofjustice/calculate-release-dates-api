@@ -349,7 +349,7 @@ class RecallValidationServiceTest {
     return ConsecutiveSentence(listOf(consecutiveSentencePartOne, consecutiveSentencePartTwo))
   }
 
-  private fun createSingleFTRSentence(sentenceDate: LocalDate, months: Long, recallRevocationDate: LocalDate?, recallType: RecallType = RecallType.FIXED_TERM_RECALL_28) = StandardDeterminateSentence(
+  private fun createSingleFTRSentence(sentenceDate: LocalDate, months: Long, recallRevocationDate: LocalDate?) = StandardDeterminateSentence(
     sentencedAt = sentenceDate,
     duration = Duration(mutableMapOf(DAYS to 0L, WEEKS to 0L, MONTHS to months, YEARS to 0L)),
     offence = Offence(
@@ -359,7 +359,7 @@ class RecallValidationServiceTest {
     identifier = UUID.randomUUID(),
     lineSequence = 1,
     caseSequence = 1,
-    recall = Recall(recallType, revocationDate = recallRevocationDate),
+    recall = Recall(RecallType.FIXED_TERM_RECALL_28, revocationDate = recallRevocationDate),
     isSDSPlus = false,
     hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
   )
