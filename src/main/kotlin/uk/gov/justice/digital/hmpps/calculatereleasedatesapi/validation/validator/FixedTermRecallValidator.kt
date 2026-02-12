@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.validat
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType.FIXED_TERM_RECALL_14
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType.FIXED_TERM_RECALL_28
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType.FIXED_TERM_RECALL_56
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.FixedTermRecallDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffence
@@ -25,11 +26,12 @@ class FixedTermRecallValidator : PreCalculationSourceDataValidator {
       ftrDetails,
       sourceData.sentenceAndOffences,
     )
-    val (recallLength, has14DayFTRSentence, has28DayFTRSentence) = ftrValidationDetails
+    val (recallLength, has14DayFTRSentence, has28DayFTRSentence, has56DayFTRSentence) = ftrValidationDetails
+    val ftrInstanceCount = listOf(has14DayFTRSentence, has28DayFTRSentence, has56DayFTRSentence).count { it }
 
     val validationMessages = when {
       sourceData.returnToCustodyDate == null -> mutableListOf(ValidationMessage(ValidationCode.FTR_NO_RETURN_TO_CUSTODY_DATE))
-      has14DayFTRSentence && has28DayFTRSentence -> mutableListOf(ValidationMessage(ValidationCode.FTR_SENTENCES_CONFLICT_WITH_EACH_OTHER))
+      ftrInstanceCount > 1 -> mutableListOf(ValidationMessage(ValidationCode.FTR_SENTENCES_CONFLICT_WITH_EACH_OTHER)) // unique instances
       has14DayFTRSentence && recallLength == 28 -> mutableListOf(ValidationMessage(ValidationCode.FTR_TYPE_14_DAYS_BUT_LENGTH_IS_28))
       has28DayFTRSentence && recallLength == 14 -> mutableListOf(ValidationMessage(ValidationCode.FTR_TYPE_28_DAYS_BUT_LENGTH_IS_14))
       else -> mutableListOf()
@@ -58,7 +60,8 @@ class FixedTermRecallValidator : PreCalculationSourceDataValidator {
     val bookingsSentenceTypes = sentencesAndOffences.mapNotNull { from(it.sentenceCalculationType).recallType }
     val has14DayFTRSentence = bookingsSentenceTypes.contains(FIXED_TERM_RECALL_14)
     val has28DayFTRSentence = bookingsSentenceTypes.contains(FIXED_TERM_RECALL_28)
-    return FtrValidationDetails(recallLength, has14DayFTRSentence, has28DayFTRSentence)
+    val has56DayFTRSentence = bookingsSentenceTypes.contains(FIXED_TERM_RECALL_56)
+    return FtrValidationDetails(recallLength, has14DayFTRSentence, has28DayFTRSentence, has56DayFTRSentence)
   }
 
   override fun validationOrder() = ValidationOrder.INVALID
@@ -68,4 +71,5 @@ data class FtrValidationDetails(
   val recallLength: Int,
   val has14DayFTRSentence: Boolean,
   val has28DayFTRSentence: Boolean,
+  val has56DayFTRSentence: Boolean,
 )
