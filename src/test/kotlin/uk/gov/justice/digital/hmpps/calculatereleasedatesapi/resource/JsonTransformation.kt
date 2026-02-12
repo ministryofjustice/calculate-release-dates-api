@@ -52,6 +52,11 @@ class JsonTransformation {
     return mapper.readValue(json, CalculationBreakdown::class.java)
   }
 
+  fun loadExpectedSentenceLevelDates(testData: String): AllExpectedSentenceLevelDates {
+    val json = getJsonTest("$testData.json", "sentence_level_calculation_response")
+    return mapper.readValue(json, AllExpectedSentenceLevelDates::class.java)
+  }
+
   fun loadHintTextBooking(testCase: String): Pair<Booking, CalculationUserInputs> {
     val json = getJsonTest("$testCase.json", "hint-text/input-data")
     val jsonTree = mapper.readTree(json)

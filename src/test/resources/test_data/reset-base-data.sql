@@ -8,6 +8,8 @@ DELETE From approved_dates_submission;
 DELETE FROM calculation_outcome;
 DELETE FROM calculation_request_sentence_user_input;
 DELETE FROM calculation_request_user_input;
+DELETE FROM calculation_request_sentence_outcome;
+DELETE FROM calculation_request_sentence;
 DELETE FROM tranche_outcome;
 DELETE FROM calculation_request_manual_reason;
 DELETE FROM calculation_outcome_historic_sled_override;

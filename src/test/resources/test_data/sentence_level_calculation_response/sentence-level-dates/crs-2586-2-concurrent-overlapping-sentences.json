@@ -1,0 +1,22 @@
+{
+  "sentenceLevelDates": [
+    {
+      "identifier": "118f3f35-30ea-3029-b92e-bea226d51393",
+      "impactsFinalReleaseDate": false,
+      "dates": {
+        "SLED": "2025-12-21",
+        "CRD": "2024-06-21",
+        "HDCED": "2023-12-25"
+      }
+    },
+    {
+      "identifier": "710a37d8-aac7-306b-a0f6-bc391925f3ff",
+      "impactsFinalReleaseDate": true,
+      "dates": {
+        "SLED": "2028-09-20",
+        "CRD": "2027-05-21",
+        "PED": "2026-01-19"
+      }
+    }
+  ]
+}

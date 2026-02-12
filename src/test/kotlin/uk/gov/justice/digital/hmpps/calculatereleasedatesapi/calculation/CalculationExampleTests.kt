@@ -18,6 +18,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedRel
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOutput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationReasonDto
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource.ExpectedSentenceLevelDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource.JsonTransformation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationTransactionalService
@@ -119,6 +120,24 @@ abstract class CalculationExampleTests : SpringTestBase() {
         )
       }
     }
+  }
+  protected fun `Test Sentence Level Dates Example`(
+    example: String,
+  ) {
+    log.info("Testing sentence level dates example $example")
+    val calculationTestFile = jsonTransformation.loadCalculationTestFile("overall_calculation/$example")
+    overrideFeatureTogglesForTest(calculationTestFile, featureToggles)
+    val calculatedReleaseDates = calculationService
+      .calculateReleaseDates(calculationTestFile.booking, calculationTestFile.userInputs)
+    val expected = jsonTransformation.loadExpectedSentenceLevelDates(example)
+    val actual = calculatedReleaseDates.sentenceLevelDates.map {
+      ExpectedSentenceLevelDates(
+        identifier = it.sentence.identifier.toString(),
+        impactsFinalReleaseDate = it.impactsFinalReleaseDate,
+        dates = it.dates,
+      )
+    }
+    assertThat(actual).containsExactlyInAnyOrderElementsOf(expected.sentenceLevelDates)
   }
 
   fun `Test UX Example Breakdowns`(

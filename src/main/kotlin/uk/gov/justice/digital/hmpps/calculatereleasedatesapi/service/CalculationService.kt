@@ -19,6 +19,7 @@ class CalculationService(
   private val bookingTimelineService: BookingTimelineService,
   private val featureToggles: FeatureToggles,
   private val previouslyRecordedSLEDService: PreviouslyRecordedSLEDService,
+  private val sentenceLevelDatesService: SentenceLevelDatesService,
 ) {
 
   fun calculateReleaseDates(
@@ -31,7 +32,10 @@ class CalculationService(
       sentenceIdentificationService.identify(sentence, booking.offender)
     }
 
-    val calculatedReleaseDates = bookingTimelineService.calculate(booking.sentences, booking.adjustments, booking.offender, booking.returnToCustodyDate, options, booking.externalMovements)
+    var calculatedReleaseDates = bookingTimelineService.calculate(booking.sentences, booking.adjustments, booking.offender, booking.returnToCustodyDate, options, booking.externalMovements)
+    if (featureToggles.storeSentenceLevelDates) {
+      calculatedReleaseDates = calculatedReleaseDates.copy(sentenceLevelDates = sentenceLevelDatesService.extractSentenceLevelDates(calculatedReleaseDates))
+    }
     val sledCalculatedForCurrentSentences = calculatedReleaseDates.calculationResult.dates[ReleaseDateType.SLED]
     val sledToOverrideTheCalculatedOneWith = if (featureToggles.historicSled && calculationUserInputs.usePreviouslyRecordedSLEDIfFound && sledCalculatedForCurrentSentences != null) {
       previouslyRecordedSLEDService.findPreviouslyRecordedSLEDThatShouldOverrideTheCalculatedSLED(booking.offender.reference, sledCalculatedForCurrentSentences)

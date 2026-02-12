@@ -46,9 +46,10 @@ class CalculationServiceTest {
   private val sentenceIdentificationService = mock<SentenceIdentificationService>()
   private val bookingTimelineService = mock<BookingTimelineService>(lenient = false)
   private val previouslyRecordedSLEDService = mock<PreviouslyRecordedSLEDService>()
+  private val sentenceLevelDatesService = mock<SentenceLevelDatesService>()
   private val featureToggles = FeatureToggles(historicSled = true)
 
-  private val service = CalculationService(sentenceIdentificationService, bookingTimelineService, featureToggles, previouslyRecordedSLEDService)
+  private val service = CalculationService(sentenceIdentificationService, bookingTimelineService, featureToggles, previouslyRecordedSLEDService, sentenceLevelDatesService)
 
   @Test
   fun `should skip checking for dominant historic dates if user requested it not to be used`() {

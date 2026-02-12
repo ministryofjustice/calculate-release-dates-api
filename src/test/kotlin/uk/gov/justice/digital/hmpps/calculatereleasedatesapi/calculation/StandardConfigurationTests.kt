@@ -26,6 +26,14 @@ class StandardConfigurationTests : CalculationExampleTests() {
     `Test UX Example Breakdowns`(example)
   }
 
+  @ParameterizedTest
+  @MethodSource(value = ["sentenceLevelDatesTestCaseSource"])
+  fun `Test sentence level dates with standard configuration`(
+    example: String,
+  ) {
+    `Test Sentence Level Dates Example`(example)
+  }
+
   companion object {
     val log: Logger = LoggerFactory.getLogger(this::class.java)
     const val TEST_CONFIGURATION = "calculation-params"
@@ -39,6 +47,12 @@ class StandardConfigurationTests : CalculationExampleTests() {
     @JvmStatic
     fun breakdownTestCaseSource(): Stream<Arguments> {
       val dir = File(object {}.javaClass.getResource("/test_data/calculation_breakdown_response").file)
+      return getTestCasesFromDir(dir, listOf(), TEST_CONFIGURATION)
+    }
+
+    @JvmStatic
+    fun sentenceLevelDatesTestCaseSource(): Stream<Arguments> {
+      val dir = File(object {}.javaClass.getResource("/test_data/sentence_level_calculation_response").file)
       return getTestCasesFromDir(dir, listOf(), TEST_CONFIGURATION)
     }
   }

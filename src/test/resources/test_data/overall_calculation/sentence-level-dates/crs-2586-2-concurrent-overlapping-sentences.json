@@ -1,0 +1,57 @@
+{
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
+      {
+        "offence": {
+          "committedAt": "2023-01-01",
+          "offenceCode": "HF46001"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 3
+          }
+        },
+        "sentencedAt": "2023-01-01",
+        "identifier": "118f3f35-30ea-3029-b92e-bea226d51393"
+      },
+      {
+        "type": "ExtendedDeterminateSentence",
+        "offence": {
+          "committedAt": "2023-01-02",
+          "offenceCode": "DP53002"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "YEARS": 4
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "MONTHS": 16
+          }
+        },
+        "sentencedAt": "2023-06-01",
+        "identifier": "710a37d8-aac7-306b-a0f6-bc391925f3ff"
+      }
+    ],
+    "adjustments": {
+      "TAGGED_BAIL": [
+        {
+          "appliesToSentencesFrom": "2023-01-01",
+          "numberOfDays": 10
+        }
+      ]
+    }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params",
+  "featureToggles": {
+    "storeSentenceLevelDates": true
+  }
+}

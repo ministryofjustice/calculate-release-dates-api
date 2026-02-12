@@ -25,6 +25,7 @@ import org.mockito.kotlin.whenever
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ApprovedDatesSubmission
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcome
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcomeHistoricSledOverride
@@ -88,7 +89,8 @@ import java.time.temporal.ChronoUnit.DAYS
 import java.time.temporal.ChronoUnit.MONTHS
 import java.time.temporal.ChronoUnit.WEEKS
 import java.time.temporal.ChronoUnit.YEARS
-import java.util.*
+import java.util.Optional
+import java.util.UUID
 
 @ExtendWith(MockitoExtension::class)
 class CalculationTransactionalServiceTest {
@@ -116,6 +118,7 @@ class CalculationTransactionalServiceTest {
   )
   private val sourceDataMapper = mock<SourceDataMapper>()
   private val calculationService = mock<CalculationService>()
+  private val sentenceLevelDatesService = mock<SentenceLevelDatesService>()
   private val calculationTransactionalService = CalculationTransactionalService(
     calculationRequestRepository,
     calculationOutcomeRepository,
@@ -131,6 +134,8 @@ class CalculationTransactionalServiceTest {
     calculationConfirmationService,
     TEST_BUILD_PROPERTIES,
     trancheOutcomeRepository,
+    FeatureToggles(storeSentenceLevelDates = true),
+    sentenceLevelDatesService,
   )
 
   private val fakeSourceData = CalculationSourceData(

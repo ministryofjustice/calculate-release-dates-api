@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.calculation
 
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
@@ -18,6 +19,11 @@ class Sds50Tests : CalculationExampleTests() {
     example: String,
   ) {
     `Test Example`(example)
+  }
+
+  @Test
+  fun `run one`() {
+    `Test Example`("custom-examples/crs-1997-ac4-hdc-eds-consec-sds")
   }
 
   @ParameterizedTest

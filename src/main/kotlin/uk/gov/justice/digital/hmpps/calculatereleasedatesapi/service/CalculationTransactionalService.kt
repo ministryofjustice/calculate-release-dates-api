@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.adjustmentsapi.model.AdjustmentDto
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcomeHistoricSledOverride
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
@@ -47,7 +48,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.Calculat
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.TrancheOutcomeRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationOrder
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.service.ValidationService
-import java.util.*
+import java.util.UUID
 
 @Service
 class CalculationTransactionalService(
@@ -65,6 +66,8 @@ class CalculationTransactionalService(
   private val calculationConfirmationService: CalculationConfirmationService,
   private val buildProperties: BuildProperties,
   private val trancheOutcomeRepository: TrancheOutcomeRepository,
+  private val featureToggles: FeatureToggles,
+  private val sentenceLevelDatesService: SentenceLevelDatesService,
 ) {
 
   @Transactional
@@ -229,6 +232,10 @@ class CalculationTransactionalService(
         historicCalculationOutcomeDate = it.previouslyRecordedSLEDDate,
       )
       calculationOutcomeHistoricOverrideRepository.save(overrideRecord)
+    }
+
+    if (featureToggles.storeSentenceLevelDates) {
+      sentenceLevelDatesService.storeSentenceLevelDates(calculationOutput.sentenceLevelDates, sourceData, calculationRequest)
     }
 
     return CalculatedReleaseDates(

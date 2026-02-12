@@ -14,6 +14,7 @@ data class FeatureToggles(
   var useERS30Calculation: Boolean = false,
   var applyPostRecallRepealRules: Boolean = false,
   var recordARecallFtr56Rules: Boolean = false,
+  var storeSentenceLevelDates: Boolean = false,
 ) {
 
   val externalMovementsEnabled: Boolean
