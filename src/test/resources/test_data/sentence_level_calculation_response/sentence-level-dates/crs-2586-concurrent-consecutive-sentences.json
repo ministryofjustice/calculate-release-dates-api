@@ -1,0 +1,32 @@
+{
+  "sentenceLevelDates": [
+    {
+      "identifier": "21806ce8-df28-3c60-b461-bb9739b2240b",
+      "impactsFinalReleaseDate": false,
+      "dates": {
+        "SLED": "2023-04-04",
+        "CRD": "2022-09-04",
+        "TUSED": "2023-09-04",
+        "HDCED": "2022-05-22"
+      }
+    },
+    {
+      "identifier": "9553e81f-6d4f-34bf-ab7e-a6e793009a0e",
+      "impactsFinalReleaseDate": true,
+      "dates": {
+        "SLED": "2027-06-30",
+        "CRD": "2024-05-06",
+        "HDCED": "2023-11-09"
+      }
+    },
+    {
+      "identifier": "8686af20-d6b6-3d16-a202-25c3964cdc5f",
+      "impactsFinalReleaseDate": true,
+      "dates": {
+        "SLED": "2027-06-30",
+        "CRD": "2024-05-06",
+        "HDCED": "2023-11-09"
+      }
+    }
+  ]
+}

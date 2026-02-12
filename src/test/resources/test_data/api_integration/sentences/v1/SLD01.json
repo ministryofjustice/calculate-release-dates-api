@@ -1,0 +1,120 @@
+[
+  {
+    "terms": [
+      {
+        "code": "IMP",
+        "days": 0,
+        "weeks": 0,
+        "years": 2,
+        "months": 0
+      }
+    ],
+    "offences": [{
+      "indicators": [
+        "99"
+      ],
+      "offenceCode": "FI68002",
+      "offenceEndDate": null,
+      "offenceStartDate": "2020-01-02",
+      "offenderChargeId": 3944752,
+      "offenceDescription": "Acquire / purchase firearm without a certificate"
+    }],
+    "bookingId": 78983244,
+    "isSDSPlus": false,
+    "fineAmount": null,
+    "caseSequence": 1,
+    "lineSequence": 1,
+    "sentenceDate": "2024-01-01",
+    "caseReference": null,
+    "courtTypeCode": "CO",
+    "sentenceStatus": "A",
+    "revocationDates": [],
+    "courtDescription": "Aberdare County Court",
+    "sentenceCategory": "2020",
+    "sentenceSequence": 1,
+    "consecutiveToSequence": null,
+    "sentenceCalculationType": "ADIMP_ORA",
+    "sentenceTypeDescription": "ORA Sentencing Code Standard Determinate Sentence",
+    "isSDSPlusOffenceInPeriod": false,
+    "hasAnSDSEarlyReleaseExclusion": "NO",
+    "isSDSPlusEligibleSentenceTypeLengthAndOffence": false
+  },
+  {
+    "terms": [
+      {
+        "code": "IMP",
+        "days": 0,
+        "weeks": 1,
+        "years": 0,
+        "months": 0
+      }
+    ],
+    "offences": [{
+      "indicators": [
+        "99"
+      ],
+      "offenceCode": "CE79046",
+      "offenceEndDate": null,
+      "offenceStartDate": "2020-01-01",
+      "offenderChargeId": 3944753,
+      "offenceDescription": "Fraudulently evade a prohibition / restriction on the export of goods - other than controlled drug"
+    }],
+    "bookingId": 78983244,
+    "isSDSPlus": false,
+    "fineAmount": null,
+    "caseSequence": 1,
+    "lineSequence": 2,
+    "sentenceDate": "2024-01-01",
+    "caseReference": null,
+    "courtTypeCode": "CO",
+    "sentenceStatus": "A",
+    "revocationDates": [],
+    "courtDescription": "Aberdare County Court",
+    "sentenceCategory": "2020",
+    "sentenceSequence": 2,
+    "consecutiveToSequence": 1,
+    "sentenceCalculationType": "ADIMP_ORA",
+    "sentenceTypeDescription": "ORA Sentencing Code Standard Determinate Sentence",
+    "isSDSPlusOffenceInPeriod": false,
+    "hasAnSDSEarlyReleaseExclusion": "NO",
+    "isSDSPlusEligibleSentenceTypeLengthAndOffence": false
+  },
+  {
+    "terms": [
+      {
+        "code": "IMP",
+        "days": 0,
+        "weeks": 1,
+        "years": 0,
+        "months": 0
+      }
+    ],
+    "offences": [{
+      "indicators": [],
+      "offenceCode": "AR97001",
+      "offenceEndDate": null,
+      "offenceStartDate": "2020-01-01",
+      "offenderChargeId": 3944754,
+      "offenceDescription": "Obtain registration as an architect by a false / fraudulent representation / declaration"
+    }],
+    "bookingId": 78983244,
+    "isSDSPlus": false,
+    "fineAmount": null,
+    "caseSequence": 1,
+    "lineSequence": 3,
+    "sentenceDate": "2024-01-01",
+    "caseReference": null,
+    "courtTypeCode": "CO",
+    "sentenceStatus": "A",
+    "revocationDates": [],
+    "courtDescription": "Aberdare County Court",
+    "sentenceCategory": "2020",
+    "sentenceSequence": 3,
+    "consecutiveToSequence": null,
+    "sentenceCalculationType": "ADIMP_ORA",
+    "sentenceTypeDescription": "ORA Sentencing Code Standard Determinate Sentence",
+    "isSDSPlusOffenceInPeriod": false,
+    "hasAnSDSEarlyReleaseExclusion": "NO",
+    "isSDSPlusEligibleSentenceTypeLengthAndOffence": false
+  }
+]

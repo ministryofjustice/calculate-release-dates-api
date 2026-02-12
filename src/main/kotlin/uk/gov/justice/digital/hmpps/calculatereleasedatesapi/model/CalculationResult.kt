@@ -20,4 +20,5 @@ data class CalculationResult(
   val showSds40Hints: Boolean = true,
   val usedPreviouslyRecordedSLED: PreviouslyRecordedSLED? = null,
   val trancheAllocationByCategory: Map<SDSEarlyReleaseTrancheCategory, SDSEarlyReleaseTranche> = emptyMap(),
+  val sentencesImpactingFinalReleaseDate: List<AbstractSentence> = emptyList(),
 )

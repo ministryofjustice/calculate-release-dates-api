@@ -1,0 +1,60 @@
+{
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
+      {
+        "offence": {
+          "committedAt": "2020-01-01",
+          "offenceCode": "SF75097"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 14
+          }
+        },
+        "sentencedAt": "2022-02-05",
+        "identifier": "21806ce8-df28-3c60-b461-bb9739b2240b"
+      },
+      {
+        "offence": {
+          "committedAt": "2021-09-01",
+          "offenceCode": "WA15086"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 3
+          }
+        },
+        "sentencedAt": "2022-04-01",
+        "identifier": "9553e81f-6d4f-34bf-ab7e-a6e793009a0e"
+      },
+      {
+        "offence": {
+          "committedAt": "2019-01-12",
+          "offenceCode": "DR91023"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 5
+          }
+        },
+        "sentencedAt": "2022-04-05",
+        "identifier": "8686af20-d6b6-3d16-a202-25c3964cdc5f",
+        "consecutiveSentenceUUIDs": [
+          "9553e81f-6d4f-34bf-ab7e-a6e793009a0e"
+        ]
+      }
+    ],
+    "adjustments": {}
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params",
+  "featureToggles": {
+    "storeSentenceLevelDates": true
+  }
+}
