@@ -63,7 +63,7 @@ dependencies {
   implementation("com.amazonaws:amazon-sqs-java-messaging-lib:2.1.4")
   implementation("io.awspring.cloud:spring-cloud-aws-starter:3.4.2")
   implementation("io.awspring.cloud:spring-cloud-aws-core:3.4.2")
-  implementation("io.awspring.cloud:spring-cloud-aws-sns:3.4.2")
+  implementation("io.awspring.cloud:spring-cloud-aws-sns:4.0.0")
   implementation("io.awspring.cloud:spring-cloud-aws-sqs:3.4.2")
   implementation("org.springframework:spring-jms:7.0.3")
   implementation("org.apache.commons:commons-text:1.15.0")
