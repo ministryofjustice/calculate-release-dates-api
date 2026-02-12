@@ -31,7 +31,7 @@ enum class ValidationCode(val message: String, val validationType: ValidationTyp
   EDS18_EDS21_EDSU18_SENTENCE_TYPE_INCORRECT("The sentence type for court case %s NOMIS line reference %s is invalid for the sentence date entered."),
   EDS_LICENCE_TERM_LESS_THAN_ONE_YEAR("Court case %s NOMIS line reference %s must have a licence term of at least one year."),
   EDS_LICENCE_TERM_MORE_THAN_EIGHT_YEARS("Court case %s NOMIS line reference %s must have a licence term that does not exceed 8 years."),
-  FTR_SENTENCES_CONFLICT_WITH_EACH_OTHER("This calculation must have either a 14 or a 28 day fixed term recall sentence type."),
+  FTR_SENTENCES_CONFLICT_WITH_EACH_OTHER("The fixed term recalls in this calculation must all be the same, either 14, 28 or 56 days."),
   FTR_TYPE_14_DAYS_BUT_LENGTH_IS_28("You cannot have 28 days recall for a 14 day fixed term recall sentence type."),
   FTR_TYPE_28_DAYS_BUT_LENGTH_IS_14("You cannot have 14 days recall for a 28 day fixed term recall sentence type."),
   FTR_14_DAYS_SENTENCE_GE_12_MONTHS("The sentence length is 12 months or more, so the fixed term recall should be 28 days."),
