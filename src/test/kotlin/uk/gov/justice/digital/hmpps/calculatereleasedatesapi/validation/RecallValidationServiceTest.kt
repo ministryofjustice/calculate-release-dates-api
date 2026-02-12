@@ -250,6 +250,68 @@ class RecallValidationServiceTest {
     }
   }
 
+  @Nested
+  @DisplayName("validateFtrDoNotConflict")
+  inner class ValidateFtrDoNotConflictTests {
+    val fixedTermRecallValidator = FixedTermRecallValidator()
+
+    @Test
+    fun `Mixed FTR28 and FTR56 sentences return an error`() {
+      val result = fixedTermRecallValidator.validate(
+        createSourceData(
+          listOf(FTR_28_DAY_SENTENCE, FTR_56_DAY_SENTENCE),
+          LocalDate.of(2024, 12, 20),
+          20,
+          null,
+        ),
+      )
+
+      assertEquals(ValidationCode.FTR_SENTENCES_CONFLICT_WITH_EACH_OTHER, result.first().code)
+    }
+
+    @Test
+    fun `Mixed FTR28 and FTR14 sentences return an error`() {
+      val result = fixedTermRecallValidator.validate(
+        createSourceData(
+          listOf(FTR_14_DAY_SENTENCE, FTR_28_DAY_SENTENCE),
+          LocalDate.of(2024, 12, 20),
+          20,
+          null,
+        ),
+      )
+
+      assertEquals(ValidationCode.FTR_SENTENCES_CONFLICT_WITH_EACH_OTHER, result.first().code)
+    }
+
+    @Test
+    fun `Mixed FTR14 and FTR56 sentences return an error`() {
+      val result = fixedTermRecallValidator.validate(
+        createSourceData(
+          listOf(FTR_14_DAY_SENTENCE, FTR_56_DAY_SENTENCE),
+          LocalDate.of(2024, 12, 20),
+          20,
+          null,
+        ),
+      )
+
+      assertEquals(ValidationCode.FTR_SENTENCES_CONFLICT_WITH_EACH_OTHER, result.first().code)
+    }
+
+    @Test
+    fun `Mixed FTR sentences return an error`() {
+      val result = fixedTermRecallValidator.validate(
+        createSourceData(
+          listOf(FTR_14_DAY_SENTENCE, FTR_28_DAY_SENTENCE, FTR_56_DAY_SENTENCE),
+          LocalDate.of(2024, 12, 20),
+          20,
+          null,
+        ),
+      )
+
+      assertEquals(ValidationCode.FTR_SENTENCES_CONFLICT_WITH_EACH_OTHER, result.first().code)
+    }
+  }
+
   private fun createConsecutiveFTRSentence(
     sentenceDate: LocalDate,
     firstSentenceLengthMonths: Long,
@@ -368,6 +430,8 @@ class RecallValidationServiceTest {
     )
 
     private val FTR_56_DAY_SENTENCE = FTR_14_DAY_SENTENCE.copy(sentenceCalculationType = SentenceCalculationType.FTR_56ORA.name)
+
+    private val FTR_28_DAY_SENTENCE = FTR_14_DAY_SENTENCE.copy(sentenceCalculationType = SentenceCalculationType.FTRSCH15_ORA.name)
 
     private val prisonerDetails = PrisonerDetails(
       bookingId = 1L,
