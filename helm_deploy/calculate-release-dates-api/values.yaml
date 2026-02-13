@@ -38,6 +38,7 @@ generic-service:
     PRISONS_WITH_NOMIS_CALC_DISABLED: "PNI"
     RECORD_A_RECALL_FTR_56_RULES: "false"
     USE_ADJUSTMENTS_API: "true"
+    STORE_SENTECE_LEVEL_DATES: "false"
 
   # Pre-existing kubernetes secrets to load as environment variables in the deployment.
   # namespace_secrets:

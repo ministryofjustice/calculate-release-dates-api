@@ -7,8 +7,8 @@ import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 plugins {
   id("uk.gov.justice.hmpps.gradle-spring-boot") version "10.0.3"
   id("org.springdoc.openapi-gradle-plugin") version "1.9.0"
-  kotlin("plugin.spring") version "2.3.0"
-  kotlin("plugin.jpa") version "2.3.0"
+  kotlin("plugin.spring") version "2.3.10"
+  kotlin("plugin.jpa") version "2.3.10"
   id("jacoco")
   id("org.openapi.generator") version "7.19.0"
 }
@@ -33,7 +33,6 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-actuator")
   implementation("org.springframework.boot:spring-boot-starter-webclient")
   implementation("org.springframework.boot:spring-boot-starter-flyway")
-  implementation("org.springframework.boot:spring-boot-jackson2")
 
   // MoJ libraries
   implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter:2.0.0")
@@ -42,7 +41,7 @@ dependencies {
   implementation("uk.gov.service.notify:notifications-java-client:6.0.0-RELEASE")
 
   // Enable kotlin reflect
-  implementation("org.jetbrains.kotlin:kotlin-reflect:2.3.0")
+  implementation("org.jetbrains.kotlin:kotlin-reflect:2.3.10")
 
   // Three Ten Date Calculations
   implementation("org.threeten:threeten-extra:1.8.0")
@@ -55,21 +54,21 @@ dependencies {
   runtimeOnly("org.postgresql:postgresql")
 
   implementation("io.arrow-kt:arrow-core:2.2.1.1")
-  implementation("io.hypersistence:hypersistence-utils-hibernate-71:3.15.1")
+  implementation("io.hypersistence:hypersistence-utils-hibernate-71:3.15.2")
 
   // OpenAPI
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.1")
 
   implementation("com.amazonaws:amazon-sqs-java-messaging-lib:2.1.4")
-  implementation("io.awspring.cloud:spring-cloud-aws-starter:3.4.2")
-  implementation("io.awspring.cloud:spring-cloud-aws-core:3.4.2")
-  implementation("io.awspring.cloud:spring-cloud-aws-sns:3.4.2")
-  implementation("io.awspring.cloud:spring-cloud-aws-sqs:3.4.2")
-  implementation("org.springframework:spring-jms:7.0.3")
+  implementation("io.awspring.cloud:spring-cloud-aws-starter:4.0.0")
+  implementation("io.awspring.cloud:spring-cloud-aws-core:4.0.0")
+  implementation("io.awspring.cloud:spring-cloud-aws-sns:4.0.0")
+  implementation("io.awspring.cloud:spring-cloud-aws-sqs:4.0.0")
+  implementation("org.springframework:spring-jms:7.0.4")
   implementation("org.apache.commons:commons-text:1.15.0")
 
   // SQS
-  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:6.0.1")
+  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:7.0.0")
 
   // Test dependencies
   testImplementation("org.wiremock:wiremock-standalone:3.13.2")

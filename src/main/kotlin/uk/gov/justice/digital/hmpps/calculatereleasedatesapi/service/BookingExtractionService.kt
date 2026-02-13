@@ -26,6 +26,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.NoSentencesProvidedException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AFineSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AbstractSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BotusSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
@@ -45,7 +46,6 @@ class BookingExtractionService(
   val hdcedExtractionService: HdcedExtractionService,
   val extractionService: SentencesExtractionService,
   val fixedTermRecallsService: FixedTermRecallsService,
-  val tusedCalculator: TusedCalculator,
 ) {
 
   fun extract(
@@ -137,6 +137,7 @@ class BookingExtractionService(
       false,
       historicalTusedSource,
       affectedBySds40 = isAffectedBySds40(sentence),
+      sentencesImpactingFinalReleaseDate = sentence.sentenceParts(),
     )
   }
 
@@ -151,6 +152,7 @@ class BookingExtractionService(
   ): CalculationResult {
     val dates: MutableMap<ReleaseDateType, LocalDate> = mutableMapOf()
     val otherDates: MutableMap<ReleaseDateType, LocalDate> = mutableMapOf()
+    val sentencesImpactingFinalReleaseDate = mutableListOf<AbstractSentence>()
     val breakdownByReleaseDateType: MutableMap<ReleaseDateType, ReleaseDateCalculationBreakdown> = mutableMapOf()
     val earliestSentenceDate = sentences.minOf { it.sentencedAt }
 
@@ -265,6 +267,7 @@ class BookingExtractionService(
         val latestDtoSentence = sentences.sortedBy { it.sentenceCalculation.releaseDate }.last { it.isDto() }
         val type = if (concurrentOraAndNonOraDetails.isReleaseDateConditional) CRD else ARD
         dates[type] = latestNonDtoSentence.sentenceCalculation.releaseDate
+        sentencesImpactingFinalReleaseDate += latestNonDtoSentence.sentenceParts()
         val midTermDate = calculateMidTermDate(
           latestDtoSentence,
           type,
@@ -287,13 +290,15 @@ class BookingExtractionService(
         dates,
         latestReleaseDate,
         breakdownByReleaseDateType,
+        sentencesImpactingFinalReleaseDate,
       )
     }
 
-    val latestPostRecallReleaseDate =
-      extractionService.mostRecentOrNull(sentences, SentenceCalculation::adjustedPostRecallReleaseDate)
-    if (latestPostRecallReleaseDate != null) {
-      otherDates[PRRD] = latestPostRecallReleaseDate
+    val latestPostRecallReleaseDateSentence =
+      extractionService.mostRecentSentenceOrNull(sentences, SentenceCalculation::adjustedPostRecallReleaseDate)
+    if (latestPostRecallReleaseDateSentence != null && latestPostRecallReleaseDateSentence.sentenceCalculation.adjustedPostRecallReleaseDate != null) {
+      otherDates[PRRD] = latestPostRecallReleaseDateSentence.sentenceCalculation.adjustedPostRecallReleaseDate!!
+      sentencesImpactingFinalReleaseDate += latestPostRecallReleaseDateSentence.sentenceParts()
     }
 
     if (latestNonParoleDate != null) {
@@ -370,6 +375,7 @@ class BookingExtractionService(
       effectiveSentenceLength,
       ersedNotApplicableDueToDtoLaterThanCrd,
       affectedBySds40 = isAnyRelevantSentenceAffectedBySds40,
+      sentencesImpactingFinalReleaseDate = sentencesImpactingFinalReleaseDate,
     )
   }
 
@@ -382,8 +388,10 @@ class BookingExtractionService(
     dates: MutableMap<ReleaseDateType, LocalDate>,
     latestReleaseDate: LocalDate,
     breakdownByReleaseDateType: MutableMap<ReleaseDateType, ReleaseDateCalculationBreakdown>,
+    sentencesImpactingFinalReleaseDate: MutableList<AbstractSentence>,
   ) {
     val mostRecentSentenceByReleaseDate = mostRecentSentencesByReleaseDate.first { !it.isRecall() }
+    sentencesImpactingFinalReleaseDate += mostRecentSentenceByReleaseDate.sentenceParts()
     if (concurrentOraAndNonOraDetails.isReleaseDateConditional) {
       dates[CRD] = latestReleaseDate
       // PSI Example 16 results in a situation where the latest calculated sentence has ARD associated but isReleaseDateConditional here is deemed true.
