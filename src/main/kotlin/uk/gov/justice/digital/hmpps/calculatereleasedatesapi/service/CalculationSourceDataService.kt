@@ -55,7 +55,7 @@ class CalculationSourceDataService(
   }
 
   private fun getCalculationSourceData(prisonerDetails: PrisonerDetails, bookingLevelSourceData: BookingLevelSourceData): CalculationSourceData {
-    val bookingHasBotus = bookingLevelSourceData.sentenceAndOffences.any { from(it.sentenceCalculationType).sentenceType == SentenceType.Botus }
+    val bookingHasBotus = !featureToggles.applyPostRecallRepealRules && bookingLevelSourceData.sentenceAndOffences.any { from(it.sentenceCalculationType).sentenceType == SentenceType.Botus }
     val tusedData = if (bookingHasBotus) prisonService.getLatestTusedDataForBotus(prisonerDetails.offenderNo).getOrNull() else null
     val historicalTusedData = tusedData?.let { botusTusedService.identifyTused(it) }
     val externalMovements = prisonService.getExternalMovements(bookingLevelSourceData.sentenceAndOffences, prisonerDetails.offenderNo)
