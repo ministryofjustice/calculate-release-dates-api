@@ -6,7 +6,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 data class FeatureToggles(
   var supportInactiveSentencesAndAdjustments: Boolean = false,
   var useAdjustmentsApi: Boolean = false,
-  var concurrentConsecutiveSentencesEnabled: Boolean = false,
   var externalMovementsSds40: Boolean = false,
   var externalMovementsAdjustmentSharing: Boolean = false,
   var historicSled: Boolean = false,
