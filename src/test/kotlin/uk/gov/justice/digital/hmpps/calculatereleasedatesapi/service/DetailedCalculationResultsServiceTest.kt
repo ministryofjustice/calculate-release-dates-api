@@ -68,7 +68,7 @@ class DetailedCalculationResultsServiceTest {
     calculationRequestRepository,
     calculationResultEnrichmentService,
     historicOverrideRepository,
-    FeatureToggles(historicSled = true),
+    FeatureToggles(),
     manageUsersApiClient,
     prisonService,
   )

@@ -8,16 +8,8 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.mock
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOutput
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Recall
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.FixedTermRecallDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
@@ -27,23 +19,12 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Sent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType.FTR_14_ORA
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.PrisonApiExternalMovement
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.FTR_48_COMMENCEMENT_DATE
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.validator.FixedTerm48OverlapValidator
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.validator.FixedTermRecallValidator
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.validator.RevocationDateValidator
 import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.LocalTime
-import java.time.temporal.ChronoUnit.DAYS
-import java.time.temporal.ChronoUnit.MONTHS
-import java.time.temporal.ChronoUnit.WEEKS
-import java.time.temporal.ChronoUnit.YEARS
-import java.util.UUID
 
 @ExtendWith(MockitoExtension::class)
 class RecallValidationServiceTest {
-
-  private val featureToggles = FeatureToggles(ftr48ManualJourney = true)
 
   @Nested
   inner class ValidateReturnToCustodyDateTests {
@@ -132,125 +113,6 @@ class RecallValidationServiceTest {
   }
 
   @Nested
-  @DisplayName("validateFtrFortyOverlap")
-  inner class ValidateFtrFortyOverlapTests {
-    val fixedTerm48OverlapValidator = FixedTerm48OverlapValidator(featureToggles)
-
-    @Test
-    fun `returns validation message when all sentences matches all conditions`() {
-      val sentence24Months = createSingleFTRSentence(SENTENCE_DATE_BEFORE_COMMENCEMENT, 24L, null)
-      val calculationOutput = listOf(sentence24Months)
-
-      val result = fixedTerm48OverlapValidator.validate(CalculationOutput(calculationOutput, emptyList(), mock()), mock())
-
-      assertEquals(1, result.size)
-      assertEquals(ValidationCode.FTR_TYPE_48_DAYS_OVERLAPPING_SENTENCE, result.first().code)
-    }
-
-    @Test
-    fun `returns validation message when aggregate sentence matches all conditions`() {
-      val consecutiveSentence = createConsecutiveFTRSentence(SENTENCE_DATE_BEFORE_COMMENCEMENT, 24L, 23L)
-
-      val calculationOutput = listOf(consecutiveSentence)
-
-      val result = fixedTerm48OverlapValidator.validate(CalculationOutput(calculationOutput, emptyList(), mock()), mock())
-
-      assertEquals(1, result.size)
-      assertEquals(ValidationCode.FTR_TYPE_48_DAYS_OVERLAPPING_SENTENCE, result.first().code)
-    }
-
-    @Test
-    fun `returns validation message when aggregate duration is 12 months or more`() {
-      val consecutiveSentence = createConsecutiveFTRSentence(SENTENCE_DATE_BEFORE_COMMENCEMENT, 6L, 6L)
-      val calculationOutput = listOf(consecutiveSentence)
-
-      val result = fixedTerm48OverlapValidator.validate(CalculationOutput(calculationOutput, emptyList(), mock()), mock())
-
-      assertEquals(1, result.size)
-      assertEquals(ValidationCode.FTR_TYPE_48_DAYS_OVERLAPPING_SENTENCE, result.first().code)
-    }
-
-    @Test
-    fun `returns empty list when duration is less than 12 months`() {
-      val sentence11Months = createSingleFTRSentence(SENTENCE_DATE_BEFORE_COMMENCEMENT, 11L, null)
-      val calculationOutput = listOf(sentence11Months)
-
-      val result = fixedTerm48OverlapValidator.validate(CalculationOutput(calculationOutput, emptyList(), mock()), mock())
-      assertThat(result).isEmpty()
-    }
-
-    @Test
-    fun `returns empty list when aggregate duration is less than 12 months`() {
-      val consecutiveSentence = createConsecutiveFTRSentence(SENTENCE_DATE_BEFORE_COMMENCEMENT, 6L, 5L)
-      val calculationOutput = listOf(consecutiveSentence)
-
-      val result = fixedTerm48OverlapValidator.validate(CalculationOutput(calculationOutput, emptyList(), mock()), mock())
-
-      assertThat(result).isEmpty()
-    }
-
-    @Test
-    fun `returns empty list when aggregate duration is 48 months or more`() {
-      val consecutiveSentence = createConsecutiveFTRSentence(SENTENCE_DATE_BEFORE_COMMENCEMENT, 24L, 24L)
-      val calculationOutput = listOf(consecutiveSentence)
-
-      val result = fixedTerm48OverlapValidator.validate(CalculationOutput(calculationOutput, emptyList(), mock()), mock())
-
-      assertThat(result).isEmpty()
-    }
-
-    @Test
-    fun `returns empty list when sentence is after FTR 48 commencement date`() {
-      val sentence18Months = createSingleFTRSentence(FTR_48_COMMENCEMENT_DATE.plusDays(1), 18L, null)
-      val calculationOutput = listOf(sentence18Months)
-
-      val result = fixedTerm48OverlapValidator.validate(CalculationOutput(calculationOutput, emptyList(), mock()), mock())
-
-      assertThat(result).isEmpty()
-    }
-
-    @Test
-    fun `returns empty list when sentence is on FTR 48 commencement date`() {
-      val sentence18Months = createSingleFTRSentence(FTR_48_COMMENCEMENT_DATE, 18L, null)
-      val calculationOutput = listOf(sentence18Months)
-
-      val result = fixedTerm48OverlapValidator.validate(CalculationOutput(calculationOutput, emptyList(), mock()), mock())
-
-      assertThat(result).isEmpty()
-    }
-
-    @Test
-    fun `return empty list where recall revocation date is after FTR 48 commencement date`() {
-      val sentence27Months = createSingleFTRSentence(LocalDate.of(2024, 12, 20), 27L, LocalDate.of(2025, 10, 1))
-      val calculationOutput = listOf(sentence27Months)
-
-      val result = fixedTerm48OverlapValidator.validate(CalculationOutput(calculationOutput, emptyList(), mock()), mock())
-
-      assertThat(result).isEmpty()
-    }
-
-    @Test
-    fun `returns validation message when recall revocation date is before 2025-09-02`() {
-      val sentence20Months = createSingleFTRSentence(LocalDate.of(2024, 12, 20), 20L, LocalDate.of(2025, 8, 1))
-      val calculationOutput = listOf(sentence20Months)
-
-      val result = fixedTerm48OverlapValidator.validate(CalculationOutput(calculationOutput, emptyList(), mock()), mock())
-
-      assertEquals(ValidationCode.FTR_TYPE_48_DAYS_OVERLAPPING_SENTENCE, result.first().code)
-    }
-
-    @Test
-    fun `returns validation message where no revocation date is present and sentence is before 2025-09-02`() {
-      val sentence20Months = createSingleFTRSentence(LocalDate.of(2024, 12, 20), 20L, null)
-      val calculationOutput = listOf(sentence20Months)
-
-      val result = fixedTerm48OverlapValidator.validate(CalculationOutput(calculationOutput, emptyList(), mock()), mock())
-
-      assertEquals(ValidationCode.FTR_TYPE_48_DAYS_OVERLAPPING_SENTENCE, result.first().code)
-    }
-  }
-
-  @Nested
   @DisplayName("validateFtrDoNotConflict")
   inner class ValidateFtrDoNotConflictTests {
     val fixedTermRecallValidator = FixedTermRecallValidator()
@@ -312,58 +174,6 @@ class RecallValidationServiceTest {
     }
   }
 
-  private fun createConsecutiveFTRSentence(
-    sentenceDate: LocalDate,
-    firstSentenceLengthMonths: Long,
-    secondSentenceLengthMonths: Long,
-  ): ConsecutiveSentence {
-    val consecutiveSentencePartOne = StandardDeterminateSentence(
-      sentencedAt = sentenceDate,
-      duration = Duration(mutableMapOf(DAYS to 0L, WEEKS to 0L, MONTHS to firstSentenceLengthMonths, YEARS to 0L)),
-      offence = Offence(
-        committedAt = sentenceDate,
-        offenceCode = "PL96003",
-      ),
-      identifier = UUID.randomUUID(),
-      lineSequence = 1,
-      caseSequence = 1,
-      recall = Recall(RecallType.FIXED_TERM_RECALL_28),
-      isSDSPlus = false,
-      hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
-    )
-    val consecutiveSentencePartTwo = StandardDeterminateSentence(
-      sentencedAt = sentenceDate,
-      duration = Duration(mutableMapOf(DAYS to 0L, WEEKS to 0L, MONTHS to secondSentenceLengthMonths, YEARS to 0L)),
-      offence = Offence(
-        committedAt = sentenceDate,
-        offenceCode = "PL96003",
-      ),
-      identifier = UUID.randomUUID(),
-      lineSequence = 2,
-      caseSequence = 1,
-      recall = Recall(RecallType.FIXED_TERM_RECALL_28),
-      isSDSPlus = false,
-      hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
-      consecutiveSentenceUUIDs = listOf(consecutiveSentencePartOne.identifier),
-    )
-    return ConsecutiveSentence(listOf(consecutiveSentencePartOne, consecutiveSentencePartTwo))
-  }
-
-  private fun createSingleFTRSentence(sentenceDate: LocalDate, months: Long, recallRevocationDate: LocalDate?) = StandardDeterminateSentence(
-    sentencedAt = sentenceDate,
-    duration = Duration(mutableMapOf(DAYS to 0L, WEEKS to 0L, MONTHS to months, YEARS to 0L)),
-    offence = Offence(
-      committedAt = sentenceDate,
-      offenceCode = "PL96003",
-    ),
-    identifier = UUID.randomUUID(),
-    lineSequence = 1,
-    caseSequence = 1,
-    recall = Recall(RecallType.FIXED_TERM_RECALL_28, revocationDate = recallRevocationDate),
-    isSDSPlus = false,
-    hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
-  )
-
   private fun createSourceData(
     sentences: List<SentenceAndOffenceWithReleaseArrangements>,
     returnToCustodyDate: LocalDate? = null,
@@ -394,8 +204,6 @@ class RecallValidationServiceTest {
   )
 
   private companion object {
-    val SENTENCE_DATE_BEFORE_COMMENCEMENT: LocalDate = LocalDate.of(2015, 1, 1)
-
     private val FTR_14_DAY_SENTENCE = SentenceAndOffenceWithReleaseArrangements(
       bookingId = 1L,
       sentenceSequence = 7,
@@ -437,20 +245,6 @@ class RecallValidationServiceTest {
       bookingId = 1L,
       offenderNo = "ABC",
       dateOfBirth = LocalDate.of(1980, 1, 1),
-    )
-
-    private val externalApiMovement = PrisonApiExternalMovement(
-      movementReasonCode = "",
-      commentText = "",
-      movementDate = LocalDate.now(),
-      movementReason = "A",
-      movementTime = LocalTime.now(),
-      movementType = "A",
-      directionCode = "IN",
-      offenderNo = "ABC",
-      movementTypeDescription = "ASD",
-      createDateTime = LocalDateTime.now(),
-      fromAgency = "xyz",
     )
   }
 }

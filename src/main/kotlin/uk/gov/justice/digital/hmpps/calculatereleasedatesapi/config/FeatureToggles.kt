@@ -8,8 +8,6 @@ data class FeatureToggles(
   var useAdjustmentsApi: Boolean = false,
   var externalMovementsSds40: Boolean = false,
   var externalMovementsAdjustmentSharing: Boolean = false,
-  var historicSled: Boolean = false,
-  var ftr48ManualJourney: Boolean = false,
   var applyPostRecallRepealRules: Boolean = false,
   var recordARecallFtr56Rules: Boolean = false,
   var storeSentenceLevelDates: Boolean = false,
