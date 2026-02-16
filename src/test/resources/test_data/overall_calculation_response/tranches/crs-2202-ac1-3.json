@@ -5,5 +5,6 @@
     "TUSED": "2026-02-13",
     "ESED": "2025-12-02"
   },
-  "effectiveSentenceLength": "P1Y6M"
+  "effectiveSentenceLength": "P1Y6M",
+  "affectedBySds40": true
 }
