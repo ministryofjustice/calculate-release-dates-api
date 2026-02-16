@@ -51,8 +51,5 @@
     "returnToCustodyDate": "2025-03-10"
   },
   "assertSds40": true,
-  "expectedValidationException": "UNSUPPORTED_SDS40_RECALL_SENTENCE_TYPE",
-  "featureToggles": {
-    "ftr48ManualJourney": false
-  }
+  "expectedValidationException": "UNSUPPORTED_SDS40_RECALL_SENTENCE_TYPE"
 }

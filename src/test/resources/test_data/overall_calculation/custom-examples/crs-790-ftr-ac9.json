@@ -45,8 +45,5 @@
     "adjustments": {},
     "returnToCustodyDate": "2021-12-28"
   },
-  "params": "sds-50",
-  "featureToggles": {
-    "ftr48ManualJourney": false
-  }
+  "params": "sds-50"
 }

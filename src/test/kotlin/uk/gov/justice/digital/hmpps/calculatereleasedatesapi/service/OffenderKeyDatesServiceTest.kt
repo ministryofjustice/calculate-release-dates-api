@@ -58,7 +58,7 @@ open class OffenderKeyDatesServiceTest {
       calculationResultEnrichmentService,
       calculationRequestRepository,
       calculationOutcomeHistoricOverrideRepository,
-      FeatureToggles(historicSled = true),
+      FeatureToggles(),
       manageUsersApiClient,
     )
     val agencies = listOf(Agency("BXI", "Brixton (HMP)"))

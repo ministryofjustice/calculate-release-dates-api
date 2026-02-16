@@ -42,7 +42,7 @@ class TestUtil private constructor() {
       if (calculationTestFile.featureToggles != null) {
         overwriteProperties(featureToggles, calculationTestFile.featureToggles)
       } else {
-        overwriteProperties(featureToggles, FeatureToggles(ftr48ManualJourney = true))
+        overwriteProperties(featureToggles, FeatureToggles())
       }
     }
 

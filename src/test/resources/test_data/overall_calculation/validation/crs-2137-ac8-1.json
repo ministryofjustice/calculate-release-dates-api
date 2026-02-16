@@ -60,8 +60,5 @@
       "returnToCustodyDate": "2025-11-10",
       "recallLength": 28
     }
-  },
-  "featureToggles": {
-    "ftr48ManualJourney": false
   }
 }
