@@ -70,7 +70,6 @@ feature-toggles:
   support-inactive-sentences-and-adjustments: false
   externalMovementsSds40: true
   externalMovementsAdjustmentSharing: true
-  historicSled: true
   applyPostRecallRepealRules: false
 
 hdced4:
