@@ -52,8 +52,5 @@
       "recallLength": 28
     }
   },
-  "expectedValidationException": "FTR_TYPE_28_DAYS_SENTENCE_GAP_LT_14_DAYS",
-  "featureToggles": {
-    "ftr48ManualJourney": false
-  }
+  "expectedValidationException": "FTR_TYPE_28_DAYS_SENTENCE_GAP_LT_14_DAYS"
 }

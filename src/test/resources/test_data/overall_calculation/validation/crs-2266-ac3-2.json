@@ -37,8 +37,5 @@
     },
     "returnToCustodyDate": "2025-01-15"
   },
-  "expectedValidationException": "UNABLE_TO_DETERMINE_SHPO_RELEASE_PROVISIONS",
-  "featureToggles": {
-    "ftr48ManualJourney": false
-  }
+  "expectedValidationException": "UNABLE_TO_DETERMINE_SHPO_RELEASE_PROVISIONS"
 }

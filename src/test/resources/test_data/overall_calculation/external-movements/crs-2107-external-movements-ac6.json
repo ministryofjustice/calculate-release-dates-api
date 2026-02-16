@@ -108,7 +108,6 @@
     ]
   },
   "featureToggles": {
-    "ftr48ManualJourney": false,
     "externalMovementsSds40": true,
     "externalMovementsAdjustmentSharing": true
   }

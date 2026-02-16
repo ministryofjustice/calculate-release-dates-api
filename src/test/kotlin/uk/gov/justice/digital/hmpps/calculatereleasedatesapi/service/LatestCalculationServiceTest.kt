@@ -59,7 +59,7 @@ class LatestCalculationServiceTest {
     calculationBreakdownService,
     historicOverrideRepository,
     sourceDataMapper,
-    FeatureToggles(historicSled = true),
+    FeatureToggles(),
     manageUsersApiClient,
   )
   private val objectMapper = TestUtil.objectMapper()
