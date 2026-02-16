@@ -21,7 +21,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmittedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 import java.time.LocalDate
 
-@SpringBootTest(webEnvironment = RANDOM_PORT, properties = ["feature-toggles.use-adjustments-api=true", "feature-toggles.historic-sled=true", "feature-toggles.apply-post-recall-repeal-rules=false"])
+@SpringBootTest(webEnvironment = RANDOM_PORT, properties = ["feature-toggles.use-adjustments-api=true", "feature-toggles.apply-post-recall-repeal-rules=false"])
 @Sql(scripts = ["classpath:/test_data/reset-base-data.sql"])
 class ApprovedDatesGetInputsIntTest : IntegrationTestBase() {
   @Autowired

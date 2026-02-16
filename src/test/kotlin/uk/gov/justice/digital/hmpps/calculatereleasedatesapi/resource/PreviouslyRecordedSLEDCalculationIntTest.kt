@@ -39,7 +39,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.Calculat
 import java.time.LocalDate
 import java.time.LocalDateTime
 
-@SpringBootTest(webEnvironment = RANDOM_PORT, properties = ["feature-toggles.use-adjustments-api=true", "feature-toggles.historic-sled=true", "feature-toggles.apply-post-recall-repeal-rules=false"])
+@SpringBootTest(webEnvironment = RANDOM_PORT, properties = ["feature-toggles.use-adjustments-api=true", "feature-toggles.apply-post-recall-repeal-rules=false"])
 @Sql(scripts = ["classpath:/test_data/reset-base-data.sql"])
 class PreviouslyRecordedSLEDCalculationIntTest(private val mockPrisonService: MockPrisonService) : IntegrationTestBase() {
   @Autowired

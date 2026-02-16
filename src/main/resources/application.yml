@@ -168,7 +168,6 @@ feature-toggles:
   externalMovementsSds40: ${EXTERNAL_MOVEMENTS_SDS_40_FEATURE_TOGGLE:false}
   externalMovementsAdjustmentSharing: ${EXTERNAL_MOVEMENTS_ADJUSTMENTS_FEATURE_TOGGLE:false}
   useAdjustmentsApi: ${USE_ADJUSTMENTS_API:false}
-  historicSled: ${HISTORIC_SLED_ENABLED:false}
   ftr48ManualJourney: ${FTR_48_MANUAL_JOURNEY:false}
   applyPostRecallRepealRules: ${APPLY_POST_RECALL_REPEAL_RULES:false}
   recordARecallFtr56Rules: ${RECORD_A_RECALL_FTR_56_RULES:false}

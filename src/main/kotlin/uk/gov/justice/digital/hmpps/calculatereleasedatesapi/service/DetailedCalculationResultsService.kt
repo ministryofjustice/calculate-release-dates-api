@@ -46,7 +46,7 @@ open class DetailedCalculationResultsService(
       .filter { it.outcomeDate != null }
       .map { ReleaseDate(it.outcomeDate!!, ReleaseDateType.valueOf(it.calculationDateType)) }
 
-    val historicSledOverride = if (featureToggles.historicSled) calculationOutcomeHistoricOverrideRepository.findByCalculationRequestId(calculationRequestId) else null
+    val historicSledOverride = calculationOutcomeHistoricOverrideRepository.findByCalculationRequestId(calculationRequestId)
     return DetailedCalculationResults(
       context = calculationContext(calculationRequestId, calculationRequest),
       dates = calculationResultEnrichmentService.addDetailToCalculationDates(

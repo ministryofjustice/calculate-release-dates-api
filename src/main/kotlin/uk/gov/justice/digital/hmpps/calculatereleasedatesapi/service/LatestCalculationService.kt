@@ -98,7 +98,7 @@ class LatestCalculationService(
     calculatedByUsername: String,
   ): LatestCalculation {
     val dates = offenderKeyDatesService.releaseDates(prisonerCalculation)
-    val historicSledOverride = if (featureToggles.historicSled) calculationOutcomeHistoricOverrideRepository.findByCalculationRequestId(calculationRequestId) else null
+    val historicSledOverride = calculationOutcomeHistoricOverrideRepository.findByCalculationRequestId(calculationRequestId)
     return LatestCalculation(
       prisonerId = prisonerId,
       bookingId = bookingId,
