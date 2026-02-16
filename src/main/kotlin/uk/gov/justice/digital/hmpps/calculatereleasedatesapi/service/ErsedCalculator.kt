@@ -4,7 +4,6 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.ErsedConfiguration
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentDuration
@@ -22,18 +21,11 @@ import kotlin.math.ceil
 @Service
 class ErsedCalculator(
   private val ersedConfiguration: ErsedConfiguration,
-  private val featureToggles: FeatureToggles,
 ) {
 
   fun generateEarlyReleaseSchemeEligibilityDateBreakdown(sentence: CalculableSentence, sentenceCalculation: SentenceCalculation) {
     if (isSentenceEligible(sentence)) {
-      if (featureToggles.useERS30Calculation) {
-        log.info("Including ERS30 and ERS50 in ERSED calculation")
-        calculateUsingBothERS30AndERS50(sentence, sentenceCalculation)
-      } else {
-        log.info("Using only ERS50 in ERSED calculation")
-        calculateUsingERS50Only(sentence, sentenceCalculation)
-      }
+      calculateUsingBothERS30AndERS50(sentence, sentenceCalculation)
     }
   }
 
@@ -81,17 +73,6 @@ class ErsedCalculator(
   private fun isConsecutiveSentenceWithSentencesBeforeAndAfterCommencement(sentence: CalculableSentence): Boolean = (sentence is ConsecutiveSentence) && sentence.hasSentencesBeforeAndAfter(ImportantDates.ERS30_COMMENCEMENT_DATE)
 
   private fun isSentencedOnOrAfterCommencement(sentence: CalculableSentence): Boolean = sentence.sentencedAt.isAfterOrEqualTo(ImportantDates.ERS30_COMMENCEMENT_DATE)
-
-  private fun calculateUsingERS50Only(sentence: CalculableSentence, sentenceCalculation: SentenceCalculation) {
-    val params = Params(
-      sentence = sentence,
-      sentenceCalculation = sentenceCalculation,
-      maxPeriodUnit = ersedConfiguration.ers50MaxPeriodUnit,
-      maxPeriodAmount = ersedConfiguration.ers50MaxPeriodAmount,
-      releasePoint = ersedConfiguration.ers50ReleasePoint,
-    )
-    sentenceCalculation.breakdownByReleaseDateType[ReleaseDateType.ERSED] = calculate(params).breakdown
-  }
 
   private fun isSentenceEligible(sentence: CalculableSentence): Boolean = when {
     sentence.isRecall() -> false

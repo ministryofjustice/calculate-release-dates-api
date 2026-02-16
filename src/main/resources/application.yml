@@ -170,7 +170,6 @@ feature-toggles:
   useAdjustmentsApi: ${USE_ADJUSTMENTS_API:false}
   historicSled: ${HISTORIC_SLED_ENABLED:false}
   ftr48ManualJourney: ${FTR_48_MANUAL_JOURNEY:false}
-  useERS30Calculation: ${USE_ERS30_CALCULATION:false}
   applyPostRecallRepealRules: ${APPLY_POST_RECALL_REPEAL_RULES:false}
   recordARecallFtr56Rules: ${RECORD_A_RECALL_FTR_56_RULES:false}
   storeSentenceLevelDates: ${STORE_SENTECE_LEVEL_DATES:false}

@@ -11,7 +11,6 @@ data class FeatureToggles(
   var externalMovementsAdjustmentSharing: Boolean = false,
   var historicSled: Boolean = false,
   var ftr48ManualJourney: Boolean = false,
-  var useERS30Calculation: Boolean = false,
   var applyPostRecallRepealRules: Boolean = false,
   var recordARecallFtr56Rules: Boolean = false,
   var storeSentenceLevelDates: Boolean = false,
