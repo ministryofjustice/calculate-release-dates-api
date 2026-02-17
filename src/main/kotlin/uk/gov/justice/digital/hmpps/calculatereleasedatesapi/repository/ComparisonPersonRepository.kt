@@ -19,14 +19,13 @@ interface ComparisonPersonRepository : JpaRepository<ComparisonPerson, Long> {
     """
       SELECT cr
             FROM CalculationRequest cr
-            JOIN cr.reasonForCalculation reason
             JOIN ComparisonPerson cp ON cp.calculationRequestId = cr.id
             JOIN Comparison comparison ON cp.comparisonId = comparison.id
       WHERE comparison.comparisonShortReference = :comparisonShortReference
        AND cp.shortReference = :shortReference
   """,
   )
-  fun getJsonForBulkComparison(comparisonShortReference: String, shortReference: String): CalculationRequest?
+  fun getCalculationRequestFromComparisonPerson(comparisonShortReference: String, shortReference: String): CalculationRequest?
 
   fun findByComparisonId(comparisonId: Long): List<ComparisonPerson>
 }

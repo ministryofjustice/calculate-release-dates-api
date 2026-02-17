@@ -19,7 +19,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonPer
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonSummary
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CreateComparisonDiscrepancyRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.MismatchType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.PersonComparisonJson
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.PersonComparisonInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ComparisonInput
@@ -41,6 +41,8 @@ class ComparisonService(
   private val objectMapper: ObjectMapper,
   private val comparisonDiscrepancyService: ComparisonDiscrepancyService,
   private val bulkComparisonEventSenderService: BulkComparisonEventSenderService,
+  private val sourceDataMapper: SourceDataMapper,
+  private val bookingService: BookingService,
 ) {
 
   fun create(comparisonInput: ComparisonInput, token: String): Comparison {
@@ -202,11 +204,17 @@ class ComparisonService(
     throw CrdWebException("Forbidden", HttpStatus.FORBIDDEN, 403.toString())
   }
 
-  fun getComparisonPersonJson(comparisonShortReference: String, shortReference: String): PersonComparisonJson {
-    val comparison = comparisonPersonRepository.getJsonForBulkComparison(comparisonShortReference, shortReference)
-      ?: throw EntityNotFoundException("Could not find person comparison with comparisonShortReference $comparisonShortReference and shortReference $shortReference")
+  fun getPersonComparisonInputs(comparisonShortReference: String, shortReference: String): PersonComparisonInputs {
+    val calculationRequestForComparisonPerson = comparisonPersonRepository.getCalculationRequestFromComparisonPerson(comparisonShortReference, shortReference)
+      ?: throw EntityNotFoundException("Could not find calculation request from comparison with comparisonShortReference $comparisonShortReference and person shortReference $shortReference")
 
-    return PersonComparisonJson(comparison.inputData, comparison.sentenceAndOffences, comparison.adjustments)
+    val sourceData = sourceDataMapper.getSourceData(calculationRequestForComparisonPerson)
+    val booking = bookingService.getBooking(sourceData)
+    return PersonComparisonInputs(
+      booking,
+      sourceDataMapper.mapSentencesAndOffences(calculationRequestForComparisonPerson),
+      sourceDataMapper.mapAdjustments(calculationRequestForComparisonPerson),
+    )
   }
 
   private fun establishmentAndReleaseDateComparator(

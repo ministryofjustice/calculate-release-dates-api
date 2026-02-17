@@ -23,11 +23,15 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Compar
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.DiscrepancyImpact
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.DiscrepancyPriority
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonDiscrepancySummary
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonSummary
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CreateComparisonDiscrepancyRequest
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.PersonComparisonInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ComparisonInput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ComparisonService
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.UUID
 
@@ -152,5 +156,34 @@ class ComparisonControllerTest {
       .andReturn()
 
     assertThat(result.response.contentAsString).contains("""{"impact":"POTENTIAL_UNLAWFUL_DETENTION","causes":[],"detail":"detail","priority":"HIGH_RISK","action":"action"}""")
+  }
+
+  @Test
+  fun `Test get comparison person discrepancy input data`() {
+    val comparisonReference = "ABCD1234"
+    val comparisonPersonReference = "DFADSE4343"
+    whenever(comparisonService.getPersonComparisonInputs(comparisonReference, comparisonPersonReference)).thenReturn(
+      PersonComparisonInputs(
+        Booking(
+          offender = Offender(
+            reference = "A1234BC",
+            dateOfBirth = LocalDate.of(1980, 1, 1),
+          ),
+          sentences = emptyList(),
+        ),
+        emptyList(),
+        emptyList(),
+      ),
+    )
+
+    val result = mvc.perform(
+      MockMvcRequestBuilders.get("/comparison/$comparisonReference/mismatch/$comparisonPersonReference/input-data")
+        .accept(MediaType.APPLICATION_JSON),
+    )
+      .andExpect(MockMvcResultMatchers.status().isOk)
+      .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+      .andReturn()
+
+    assertThat(result.response.contentAsString).isEqualTo("""{"inputData":{"offender":{"reference":"A1234BC","dateOfBirth":"1980-01-01","isActiveSexOffender":false},"sentences":[],"adjustments":{},"returnToCustodyDate":null,"fixedTermRecallDetails":null,"bookingId":-1,"historicalTusedData":null,"externalMovements":[]},"sentenceAndOffences":[],"adjustments":[]}""")
   }
 }
