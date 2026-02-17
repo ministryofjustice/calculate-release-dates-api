@@ -135,15 +135,15 @@ class ThingsToDoService(
   ): Boolean = previous.fineAmount != current.fineAmount
 
   private fun haveAdjustmentsChanged(previousSourceData: CalculationSourceData, currentSourceData: CalculationSourceData, prisonerDetails: PrisonerDetails): Boolean {
-    val previousAdjustments = normaliseAdjustments(previousSourceData, prisonerDetails)
-    val currentAdjustments = normaliseAdjustments(currentSourceData, prisonerDetails)
-    return previousAdjustments != currentAdjustments
+    val setOfPreviousAdjustments = normaliseAdjustments(previousSourceData, prisonerDetails)
+    val setOfCurrentAdjustments = normaliseAdjustments(currentSourceData, prisonerDetails)
+    return setOfPreviousAdjustments != setOfCurrentAdjustments
   }
 
   private fun normaliseAdjustments(
     sourceData: CalculationSourceData,
     prisonerDetails: PrisonerDetails,
-  ): List<ComparableAdjustment> = sourceData.bookingAndSentenceAdjustments
+  ): Set<ComparableAdjustment> = sourceData.bookingAndSentenceAdjustments
     .fold({ it.upgrade(prisonerDetails) }, { it })
     .filter { it.status == AdjustmentDto.Status.ACTIVE }
     .map { adjustmentDto ->
@@ -154,13 +154,13 @@ class ThingsToDoService(
         numberOfDays = adjustmentDto.days,
         sentenceSequence = adjustmentDto.sentenceSequence,
       )
-    }
+    }.toSet()
 
   private fun returnToCustodyDateHasChanged(previousSourceData: CalculationSourceData, currentSourceData: CalculationSourceData): Boolean = previousSourceData.returnToCustodyDate != currentSourceData.returnToCustodyDate
 
   private fun finePaymentsHaveChanged(previousSourceData: CalculationSourceData, currentSourceData: CalculationSourceData): Boolean = previousSourceData.offenderFinePayments != currentSourceData.offenderFinePayments
 
-  private data class ComparableAdjustment(
+  data class ComparableAdjustment(
     val type: AdjustmentDto.AdjustmentType,
     val fromDate: LocalDate?,
     val toDate: LocalDate?,

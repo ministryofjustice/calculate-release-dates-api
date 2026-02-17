@@ -484,7 +484,7 @@ class ThingsToDoServiceTest {
   }
 
   @Test
-  fun `should handle recall remand adjustments if they previously came from prison API`() {
+  fun `should handle recall remand and tagged bail adjustments if they previously came from prison API and also order should not matter`() {
     hasPreviousCalc()
     val previousSourceData = CalculationSourceData(
       sentenceAndOffences = listOf(
@@ -504,6 +504,14 @@ class ThingsToDoServiceTest {
               active = true,
               sentenceSequence = 1,
             ),
+            SentenceAdjustment(
+              type = SentenceAdjustmentType.RECALL_SENTENCE_TAGGED_BAIL,
+              numberOfDays = 22,
+              fromDate = LocalDate.of(2016, 1, 2),
+              toDate = LocalDate.of(2016, 1, 20),
+              active = true,
+              sentenceSequence = 1,
+            ),
           ),
         ),
       ),
@@ -513,6 +521,15 @@ class ThingsToDoServiceTest {
     val currentSourceData = previousSourceData.copy(
       bookingAndSentenceAdjustments = AdjustmentsSourceData(
         adjustmentsApiData = listOf(
+          AdjustmentDto(
+            person = PRISONER_DETAILS.offenderNo,
+            adjustmentType = AdjustmentDto.AdjustmentType.TAGGED_BAIL,
+            days = 22,
+            fromDate = LocalDate.of(2016, 1, 2),
+            toDate = LocalDate.of(2016, 1, 20),
+            status = AdjustmentDto.Status.ACTIVE,
+            sentenceSequence = 1,
+          ),
           AdjustmentDto(
             person = PRISONER_DETAILS.offenderNo,
             adjustmentType = AdjustmentDto.AdjustmentType.REMAND,
