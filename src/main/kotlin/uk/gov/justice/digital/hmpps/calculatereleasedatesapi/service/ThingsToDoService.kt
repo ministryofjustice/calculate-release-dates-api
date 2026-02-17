@@ -1,19 +1,18 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.adjustmentsapi.model.AdjustmentDto
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ToDoType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AnalysedBookingAndSentenceAdjustmentAnalysisResult
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AnalysedBookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ThingsToDo
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
+import java.time.LocalDate
 
 @Service
 class ThingsToDoService(
-  private val adjustmentsService: AdjustmentsService,
   private val prisonService: PrisonService,
   private val calculationRequestRepository: CalculationRequestRepository,
   private val sourceDataMapper: SourceDataMapper,
@@ -43,7 +42,6 @@ class ThingsToDoService(
    * - If any data between the previous and current booking has changed, a calculation is required.
    */
   private fun isCalculationRequired(prisonerDetails: PrisonerDetails): Boolean {
-    val adjustments = adjustmentsService.getAnalysedBookingAndSentenceAdjustments(prisonerDetails.bookingId)
     val currentSourceData =
       calculationSourceDataService.getCalculationSourceData(prisonerDetails, SourceDataLookupOptions.default())
 
@@ -63,8 +61,7 @@ class ThingsToDoService(
     val previousSourceData = sourceDataMapper.getSourceData(latestConfirmedCalculation.get())
 
     return hasNewOrUpdatedSentences(previousSourceData, currentSourceData) ||
-      hasNewBookingAdjustments(adjustments) ||
-      hasNewSentenceAdjustments(adjustments) ||
+      haveAdjustmentsChanged(previousSourceData, currentSourceData, prisonerDetails) ||
       returnToCustodyDateHasChanged(previousSourceData, currentSourceData) ||
       finePaymentsHaveChanged(previousSourceData, currentSourceData)
   }
@@ -137,15 +134,37 @@ class ThingsToDoService(
     current: SentenceAndOffenceWithReleaseArrangements,
   ): Boolean = previous.fineAmount != current.fineAmount
 
-  private fun hasNewBookingAdjustments(adjustments: AnalysedBookingAndSentenceAdjustments): Boolean = adjustments.bookingAdjustments.any {
-    it.analysisResult == AnalysedBookingAndSentenceAdjustmentAnalysisResult.NEW
+  private fun haveAdjustmentsChanged(previousSourceData: CalculationSourceData, currentSourceData: CalculationSourceData, prisonerDetails: PrisonerDetails): Boolean {
+    val previousAdjustments = normaliseAdjustments(previousSourceData, prisonerDetails)
+    val currentAdjustments = normaliseAdjustments(currentSourceData, prisonerDetails)
+    return previousAdjustments != currentAdjustments
   }
 
-  private fun hasNewSentenceAdjustments(adjustments: AnalysedBookingAndSentenceAdjustments): Boolean = adjustments.sentenceAdjustments.any {
-    it.analysisResult == AnalysedBookingAndSentenceAdjustmentAnalysisResult.NEW
-  }
+  private fun normaliseAdjustments(
+    sourceData: CalculationSourceData,
+    prisonerDetails: PrisonerDetails,
+  ): List<ComparableAdjustment> = sourceData.bookingAndSentenceAdjustments
+    .fold({ it.upgrade(prisonerDetails) }, { it })
+    .filter { it.status == AdjustmentDto.Status.ACTIVE }
+    .map { adjustmentDto ->
+      ComparableAdjustment(
+        type = adjustmentDto.adjustmentType,
+        fromDate = adjustmentDto.fromDate,
+        toDate = adjustmentDto.toDate,
+        numberOfDays = adjustmentDto.days,
+        sentenceSequence = adjustmentDto.sentenceSequence,
+      )
+    }
 
   private fun returnToCustodyDateHasChanged(previousSourceData: CalculationSourceData, currentSourceData: CalculationSourceData): Boolean = previousSourceData.returnToCustodyDate != currentSourceData.returnToCustodyDate
 
   private fun finePaymentsHaveChanged(previousSourceData: CalculationSourceData, currentSourceData: CalculationSourceData): Boolean = previousSourceData.offenderFinePayments != currentSourceData.offenderFinePayments
+
+  private data class ComparableAdjustment(
+    val type: AdjustmentDto.AdjustmentType,
+    val fromDate: LocalDate?,
+    val toDate: LocalDate?,
+    val numberOfDays: Int?,
+    val sentenceSequence: Int?,
+  )
 }
