@@ -14,7 +14,9 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.adjustmentsapi.model.AdjustmentDto
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcome
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonPerson
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonPersonDiscrepancy
@@ -28,16 +30,22 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Discre
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.DiscrepancySubCategory
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CrdWebException
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentsSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Agency
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonDiscrepancySummary
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonPersonOverview
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CreateComparisonDiscrepancyRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DiscrepancyCause
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.MismatchType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.PersonComparisonInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ComparisonInput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeRepository
@@ -61,6 +69,8 @@ class ComparisonServiceTest {
   private val calculationTransactionalService = mock<CalculationTransactionalService>()
   private val comparisonDiscrepancyService = mock<ComparisonDiscrepancyService>()
   private val bulkComparisonEventSenderService = mock<BulkComparisonEventSenderService>()
+  private val sourceDataMapper = mock<SourceDataMapper>()
+  private val bookingService = mock<BookingService>()
 
   private val comparisonService = ComparisonService(
     calculationOutcomeRepository,
@@ -73,6 +83,8 @@ class ComparisonServiceTest {
     objectMapper,
     comparisonDiscrepancyService,
     bulkComparisonEventSenderService,
+    sourceDataMapper,
+    bookingService,
   )
 
   @BeforeEach
@@ -600,6 +612,41 @@ class ComparisonServiceTest {
         fatalException = person.fatalException,
       ),
     )
+  }
+
+  @Test
+  fun `get comparison inputs`() {
+    val calculationRequest = CalculationRequest()
+    val booking = Booking(
+      offender = Offender(
+        reference = "A1234BC",
+        dateOfBirth = LocalDate.of(1981, 1, 1),
+      ),
+      sentences = emptyList(),
+    )
+    val sourceData = CalculationSourceData(
+      sentenceAndOffences = emptyList(),
+      prisonerDetails = PrisonerDetails(
+        bookingId = 1L,
+        offenderNo = "A1234BC",
+        dateOfBirth = LocalDate.of(1981, 1, 1),
+      ),
+      bookingAndSentenceAdjustments = AdjustmentsSourceData(adjustmentsApiData = emptyList()),
+      returnToCustodyDate = null,
+    )
+    val adjustments = emptyList<AdjustmentDto>()
+    val sentencesAndOffences = emptyList<SentenceAndOffenceWithReleaseArrangements>()
+
+    whenever(comparisonPersonRepository.getCalculationRequestFromComparisonPerson("ABCD1234", "FOO"))
+      .thenReturn(calculationRequest)
+
+    whenever(sourceDataMapper.getSourceData(calculationRequest)).thenReturn(sourceData)
+    whenever(sourceDataMapper.mapAdjustments(calculationRequest)).thenReturn(adjustments)
+    whenever(sourceDataMapper.mapSentencesAndOffences(calculationRequest)).thenReturn(sentencesAndOffences)
+    whenever(bookingService.getBooking(any())).thenReturn(booking)
+
+    val result = comparisonService.getPersonComparisonInputs("ABCD1234", "FOO")
+    assertThat(result).isEqualTo(PersonComparisonInputs(booking, sentencesAndOffences, adjustments))
   }
 
   private fun aComparison() = Comparison(

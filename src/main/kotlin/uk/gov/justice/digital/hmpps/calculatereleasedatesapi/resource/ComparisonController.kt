@@ -26,7 +26,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonOve
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonPersonOverview
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonSummary
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CreateComparisonDiscrepancyRequest
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.PersonComparisonJson
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.PersonComparisonInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ComparisonInput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ComparisonService
 
@@ -151,12 +151,12 @@ class ComparisonController(
     mismatchReference: String,
   ): ComparisonPersonOverview = comparisonService.getComparisonPersonByShortReference(comparisonReference, mismatchReference)
 
-  @GetMapping("/{comparisonReference}/mismatch/{mismatchReference}/json")
+  @GetMapping("/{comparisonReference}/mismatch/{mismatchReference}/input-data")
   @PreAuthorize("hasAnyRole('ROLE_RELEASE_DATE_COMPARER', 'CALCULATE_RELEASE_DATES__ADMIN__RW', 'CALCULATE_RELEASE_DATES__ADMIN__RO')")
   @ResponseBody
   @Operation(
-    summary = "Returns JSON data for a particular comparison",
-    description = "This endpoint returns JSON data mismatch for a particular comparison",
+    summary = "Get input data for a particular comparison",
+    description = "Looks up the calculation request for the comparison and persons calculation and returns the input data",
   )
   @ApiResponses(
     value = [
@@ -171,7 +171,7 @@ class ComparisonController(
     comparisonReference: String,
     @Parameter(required = true, example = "A1B2C3D4", description = "The short reference of the mismatch")
     @PathVariable("mismatchReference") mismatchReference: String,
-  ): PersonComparisonJson = comparisonService.getComparisonPersonJson(comparisonReference, mismatchReference)
+  ): PersonComparisonInputs = comparisonService.getPersonComparisonInputs(comparisonReference, mismatchReference)
 
   @PostMapping(value = ["{comparisonReference}/mismatch/{mismatchReference}/discrepancy"])
   @PreAuthorize("hasAnyRole('ROLE_RELEASE_DATE_COMPARER', 'CALCULATE_RELEASE_DATES__ADMIN__RW')")
