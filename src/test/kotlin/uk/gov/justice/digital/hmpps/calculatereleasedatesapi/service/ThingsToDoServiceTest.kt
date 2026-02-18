@@ -15,6 +15,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentsSo
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ThingsToDo
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustment
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderFinePayment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
@@ -484,7 +486,7 @@ class ThingsToDoServiceTest {
   }
 
   @Test
-  fun `should handle recall remand adjustments if they previously came from prison API`() {
+  fun `should handle recall remand and tagged bail adjustments if they previously came from prison API and also order should not matter`() {
     hasPreviousCalc()
     val previousSourceData = CalculationSourceData(
       sentenceAndOffences = listOf(
@@ -504,6 +506,14 @@ class ThingsToDoServiceTest {
               active = true,
               sentenceSequence = 1,
             ),
+            SentenceAdjustment(
+              type = SentenceAdjustmentType.RECALL_SENTENCE_TAGGED_BAIL,
+              numberOfDays = 22,
+              fromDate = LocalDate.of(2016, 1, 2),
+              toDate = LocalDate.of(2016, 1, 20),
+              active = true,
+              sentenceSequence = 1,
+            ),
           ),
         ),
       ),
@@ -515,10 +525,83 @@ class ThingsToDoServiceTest {
         adjustmentsApiData = listOf(
           AdjustmentDto(
             person = PRISONER_DETAILS.offenderNo,
+            adjustmentType = AdjustmentDto.AdjustmentType.TAGGED_BAIL,
+            days = 22,
+            fromDate = LocalDate.of(2016, 1, 2),
+            toDate = LocalDate.of(2016, 1, 20),
+            status = AdjustmentDto.Status.ACTIVE,
+            sentenceSequence = 1,
+          ),
+          AdjustmentDto(
+            person = PRISONER_DETAILS.offenderNo,
             adjustmentType = AdjustmentDto.AdjustmentType.REMAND,
             days = 10,
             fromDate = LocalDate.of(2015, 1, 2),
             toDate = LocalDate.of(2015, 1, 20),
+            status = AdjustmentDto.Status.ACTIVE,
+            sentenceSequence = 1,
+          ),
+        ),
+      ),
+    )
+    whenever(sourceDataMapper.getSourceData(CALC_REQUEST)).thenReturn(previousSourceData)
+    whenever(calculationSourceDataService.getCalculationSourceData(PRISONER_DETAILS, SourceDataLookupOptions.default())).thenReturn(currentSourceData)
+
+    assertThatHasNothingToDo()
+  }
+
+  @Test
+  fun `should handle the NOMIS adjustments having no to date, treat the same if the from date and number of days are the same`() {
+    hasPreviousCalc()
+    val previousSourceData = CalculationSourceData(
+      sentenceAndOffences = listOf(
+        BASE_SENTENCE,
+        BASE_SENTENCE.copy(sentenceSequence = 2, lineSequence = 2),
+      ),
+      prisonerDetails = PRISONER_DETAILS,
+      bookingAndSentenceAdjustments = AdjustmentsSourceData(
+        prisonApiData = BookingAndSentenceAdjustments(
+          bookingAdjustments = listOf(
+            BookingAdjustment(
+              type = BookingAdjustmentType.ADDITIONAL_DAYS_AWARDED,
+              numberOfDays = 10,
+              fromDate = LocalDate.of(2015, 1, 2),
+              toDate = null,
+              active = true,
+            ),
+          ),
+          sentenceAdjustments = listOf(
+            SentenceAdjustment(
+              type = SentenceAdjustmentType.REMAND,
+              numberOfDays = 20,
+              fromDate = LocalDate.of(2015, 2, 3),
+              toDate = null,
+              active = true,
+              sentenceSequence = 1,
+            ),
+          ),
+        ),
+      ),
+      offenderFinePayments = emptyList(),
+      returnToCustodyDate = null,
+    )
+    val currentSourceData = previousSourceData.copy(
+      bookingAndSentenceAdjustments = AdjustmentsSourceData(
+        adjustmentsApiData = listOf(
+          AdjustmentDto(
+            person = PRISONER_DETAILS.offenderNo,
+            adjustmentType = AdjustmentDto.AdjustmentType.ADDITIONAL_DAYS_AWARDED,
+            days = 10,
+            fromDate = LocalDate.of(2015, 1, 2),
+            toDate = LocalDate.of(2015, 1, 11),
+            status = AdjustmentDto.Status.ACTIVE,
+          ),
+          AdjustmentDto(
+            person = PRISONER_DETAILS.offenderNo,
+            adjustmentType = AdjustmentDto.AdjustmentType.REMAND,
+            days = 20,
+            fromDate = LocalDate.of(2015, 2, 3),
+            toDate = LocalDate.of(2015, 2, 22),
             status = AdjustmentDto.Status.ACTIVE,
             sentenceSequence = 1,
           ),
@@ -692,17 +775,14 @@ class ThingsToDoServiceTest {
       return Stream.of(
         Arguments.of(baseAdjustment, baseAdjustment.copy(days = 1)),
         Arguments.of(baseAdjustment, baseAdjustment.copy(fromDate = LocalDate.of(2025, 9, 6))),
-        Arguments.of(baseAdjustment, baseAdjustment.copy(toDate = LocalDate.of(2025, 9, 6))),
         Arguments.of(baseAdjustment, baseAdjustment.copy(adjustmentType = AdjustmentDto.AdjustmentType.ADDITIONAL_DAYS_AWARDED)),
         Arguments.of(baseAdjustment, baseAdjustment.copy(sentenceSequence = 1)),
         Arguments.of(baseAdjustment.copy(days = 1), baseAdjustment),
         Arguments.of(baseAdjustment.copy(fromDate = LocalDate.of(2025, 9, 6)), baseAdjustment),
-        Arguments.of(baseAdjustment.copy(toDate = LocalDate.of(2025, 9, 6)), baseAdjustment),
         Arguments.of(baseAdjustment.copy(adjustmentType = AdjustmentDto.AdjustmentType.ADDITIONAL_DAYS_AWARDED), baseAdjustment),
         Arguments.of(baseAdjustment.copy(sentenceSequence = 1), baseAdjustment),
         Arguments.of(baseAdjustment.copy(days = 1), baseAdjustment.copy(days = 2)),
         Arguments.of(baseAdjustment.copy(fromDate = LocalDate.of(2025, 9, 6)), baseAdjustment.copy(fromDate = LocalDate.of(2026, 9, 6))),
-        Arguments.of(baseAdjustment.copy(toDate = LocalDate.of(2025, 9, 6)), baseAdjustment.copy(toDate = LocalDate.of(2026, 9, 6))),
         Arguments.of(baseAdjustment.copy(adjustmentType = AdjustmentDto.AdjustmentType.ADDITIONAL_DAYS_AWARDED), baseAdjustment.copy(adjustmentType = AdjustmentDto.AdjustmentType.REMAND)),
         Arguments.of(baseAdjustment.copy(sentenceSequence = 1), baseAdjustment.copy(sentenceSequence = 2)),
       )
