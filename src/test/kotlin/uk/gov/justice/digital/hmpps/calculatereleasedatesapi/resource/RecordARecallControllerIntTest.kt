@@ -27,185 +27,228 @@ class RecordARecallControllerIntTest(private val mockManageOffencesClient: MockM
   @MockitoSpyBean
   lateinit var featureToggles: FeatureToggles
 
-  @Test
-  fun `RCLL 583`() {
-    mockManageOffencesClient.noneInPCSC(listOf("AR97001", "CE79046", "FI68002"))
+  @Nested
+  inner class AutomatedRecallsTests {
+    @Test
+    fun `RCLL 583`() {
+      mockManageOffencesClient.noneInPCSC(listOf("AR97001", "CE79046", "FI68002"))
 
-    val result = createCalculationForRecordARecall(
-      "RCLL-583",
-      RecordARecallRequest(revocationDate = LocalDate.of(2025, 6, 1)),
-    )
+      val result = createCalculationForRecordARecall(
+        "RCLL-583",
+        RecordARecallRequest(revocationDate = LocalDate.of(2025, 6, 1)),
+      )
 
-    assertThat(result.decision).isEqualTo(RecordARecallDecision.AUTOMATED)
-    assertThat(result.automatedCalculationData?.recallableSentences).hasSize(3)
-    assertThat(result.automatedCalculationData?.expiredSentences).hasSize(0)
-    assertThat(result.automatedCalculationData?.ineligibleSentences).hasSize(0)
-    assertThat(result.automatedCalculationData?.sentencesBeforeInitialRelease).hasSize(0)
-  }
+      assertThat(result.decision).isEqualTo(RecordARecallDecision.AUTOMATED)
+      assertThat(result.automatedCalculationData?.recallableSentences).hasSize(3)
+      assertThat(result.automatedCalculationData?.expiredSentences).hasSize(0)
+      assertThat(result.automatedCalculationData?.ineligibleSentences).hasSize(0)
+      assertThat(result.automatedCalculationData?.sentencesBeforeInitialRelease).hasSize(0)
+    }
 
-  @Test
-  fun `Find sentences that have license periods for revocation date`() {
-    val result = createCalculationForRecordARecall(
-      RECORD_A_RECALL_PRISONER_ID,
-      RecordARecallRequest(revocationDate = LocalDate.of(2016, 3, 6)),
-    )
+    @Test
+    fun `Find sentences that have license periods for revocation date`() {
+      val result = createCalculationForRecordARecall(
+        RECORD_A_RECALL_PRISONER_ID,
+        RecordARecallRequest(revocationDate = LocalDate.of(2016, 3, 6)),
+      )
 
-    assertThat(result.decision).isEqualTo(RecordARecallDecision.AUTOMATED)
-    assertThat(result.validationMessages).isEmpty()
-    assertThat(result.automatedCalculationData!!.recallableSentences).hasSize(1)
-    assertThat(result.automatedCalculationData.recallableSentences[0]).isEqualTo(
-      RecallableSentence(
-        sentenceSequence = 1,
-        bookingId = RECORD_A_RECALL_PRISONER_ID.hashCode().toLong(),
-        uuid = UUID.fromString("877e7ee9-77e5-3fe4-afd1-bef67d166a36"),
-        sentenceCalculation = RecallSentenceCalculation(
-          conditionalReleaseDate = LocalDate.of(2016, 1, 6),
-          actualReleaseDate = LocalDate.of(2016, 1, 6),
-          licenseExpiry = LocalDate.of(2016, 11, 6),
+      assertThat(result.decision).isEqualTo(RecordARecallDecision.AUTOMATED)
+      assertThat(result.validationMessages).isEmpty()
+      assertThat(result.automatedCalculationData!!.recallableSentences).hasSize(1)
+      assertThat(result.automatedCalculationData.recallableSentences[0]).isEqualTo(
+        RecallableSentence(
+          sentenceSequence = 1,
+          bookingId = RECORD_A_RECALL_PRISONER_ID.hashCode().toLong(),
+          uuid = UUID.fromString("877e7ee9-77e5-3fe4-afd1-bef67d166a36"),
+          sentenceCalculation = RecallSentenceCalculation(
+            conditionalReleaseDate = LocalDate.of(2016, 1, 6),
+            actualReleaseDate = LocalDate.of(2016, 1, 6),
+            licenseExpiry = LocalDate.of(2016, 11, 6),
+          ),
         ),
-      ),
-    )
-    assertThat(result.automatedCalculationData.ineligibleSentences[0]).isEqualTo(
-      RecallableSentence(
-        sentenceSequence = 2,
-        bookingId = RECORD_A_RECALL_PRISONER_ID.hashCode().toLong(),
-        uuid = UUID.fromString("1105c0c1-3d63-3ac1-88f1-7d13caa56d7f"),
-        sentenceCalculation = RecallSentenceCalculation(
-          conditionalReleaseDate = LocalDate.of(2015, 4, 6),
-          actualReleaseDate = LocalDate.of(2016, 1, 6),
-          licenseExpiry = null,
+      )
+      assertThat(result.automatedCalculationData.ineligibleSentences[0]).isEqualTo(
+        RecallableSentence(
+          sentenceSequence = 2,
+          bookingId = RECORD_A_RECALL_PRISONER_ID.hashCode().toLong(),
+          uuid = UUID.fromString("1105c0c1-3d63-3ac1-88f1-7d13caa56d7f"),
+          sentenceCalculation = RecallSentenceCalculation(
+            conditionalReleaseDate = LocalDate.of(2015, 4, 6),
+            actualReleaseDate = LocalDate.of(2016, 1, 6),
+            licenseExpiry = null,
+          ),
         ),
-      ),
-    )
-    assertThat(result.automatedCalculationData.expiredSentences[0]).isEqualTo(
-      RecallableSentence(
-        sentenceSequence = 3,
-        bookingId = RECORD_A_RECALL_PRISONER_ID.hashCode().toLong(),
-        uuid = UUID.fromString("5dd9de80-360f-3e51-8483-9ab02ee2d4b9"),
-        sentenceCalculation = RecallSentenceCalculation(
-          conditionalReleaseDate = LocalDate.of(2014, 7, 2),
-          actualReleaseDate = LocalDate.of(2014, 7, 2),
-          licenseExpiry = LocalDate.of(2014, 12, 31),
+      )
+      assertThat(result.automatedCalculationData.expiredSentences[0]).isEqualTo(
+        RecallableSentence(
+          sentenceSequence = 3,
+          bookingId = RECORD_A_RECALL_PRISONER_ID.hashCode().toLong(),
+          uuid = UUID.fromString("5dd9de80-360f-3e51-8483-9ab02ee2d4b9"),
+          sentenceCalculation = RecallSentenceCalculation(
+            conditionalReleaseDate = LocalDate.of(2014, 7, 2),
+            actualReleaseDate = LocalDate.of(2014, 7, 2),
+            licenseExpiry = LocalDate.of(2014, 12, 31),
+          ),
         ),
-      ),
-    )
-    assertThat(result.automatedCalculationData.sentencesBeforeInitialRelease[0]).isEqualTo(
-      RecallableSentence(
-        sentenceSequence = 4,
-        bookingId = RECORD_A_RECALL_PRISONER_ID.hashCode().toLong(),
-        uuid = UUID.fromString("70b16cf7-0c1e-3c40-9f66-4c20115ce5fc"),
-        sentenceCalculation = RecallSentenceCalculation(
-          conditionalReleaseDate = LocalDate.of(2016, 8, 30),
-          actualReleaseDate = LocalDate.of(2016, 8, 30),
-          licenseExpiry = LocalDate.of(2017, 2, 28),
+      )
+      assertThat(result.automatedCalculationData.sentencesBeforeInitialRelease[0]).isEqualTo(
+        RecallableSentence(
+          sentenceSequence = 4,
+          bookingId = RECORD_A_RECALL_PRISONER_ID.hashCode().toLong(),
+          uuid = UUID.fromString("70b16cf7-0c1e-3c40-9f66-4c20115ce5fc"),
+          sentenceCalculation = RecallSentenceCalculation(
+            conditionalReleaseDate = LocalDate.of(2016, 8, 30),
+            actualReleaseDate = LocalDate.of(2016, 8, 30),
+            licenseExpiry = LocalDate.of(2017, 2, 28),
+          ),
         ),
-      ),
-    )
-    assertThat(result.automatedCalculationData.unexpectedRecallTypes).isEqualTo(listOf(Recall.RecallType.FTR_14, Recall.RecallType.FTR_56, Recall.RecallType.FTR_HDC_14, Recall.RecallType.FTR_HDC_28, Recall.RecallType.CUR_HDC, Recall.RecallType.IN_HDC))
+      )
+      assertThat(result.automatedCalculationData.unexpectedRecallTypes).isEqualTo(
+        listOf(
+          Recall.RecallType.FTR_14,
+          Recall.RecallType.FTR_56,
+          Recall.RecallType.FTR_HDC_14,
+          Recall.RecallType.FTR_HDC_28,
+          Recall.RecallType.CUR_HDC,
+          Recall.RecallType.IN_HDC,
+        ),
+      )
+    }
+
+    @Test
+    fun `Expired sentences on same case as recallable sentences should also be recalled`() {
+      val result = createCalculationForRecordARecall(
+        "RCLL-691",
+        RecordARecallRequest(revocationDate = LocalDate.of(2025, 6, 1)),
+      )
+
+      assertThat(result.decision).isEqualTo(RecordARecallDecision.AUTOMATED)
+      assertThat(result.automatedCalculationData!!.recallableSentences.size).isEqualTo(2)
+      assertThat(result.automatedCalculationData.recallableSentences[0].sentenceCalculation.licenseExpiry).isEqualTo(
+        LocalDate.of(2025, 12, 31),
+      )
+      // This sentence is recallable even though the license has expired, because its on the same case as the one above.
+      assertThat(result.automatedCalculationData.recallableSentences[1].sentenceCalculation.licenseExpiry).isEqualTo(
+        LocalDate.of(2024, 12, 31),
+      )
+
+      @Test
+      fun `Calculation across multiple bookings`() {
+        val result = createCalculationForRecordARecall(
+          RECALL_PRISONER_WITH_SENTENCES_ON_OLDER_BOOKING,
+          RecordARecallRequest(revocationDate = LocalDate.of(2025, 7, 6)),
+        )
+
+        assertThat(result.decision).isEqualTo(RecordARecallDecision.AUTOMATED)
+        assertThat(result.validationMessages).isEmpty()
+        assertThat(result.automatedCalculationData!!.recallableSentences).hasSize(2)
+        val bookingIds = result.automatedCalculationData.recallableSentences.map { it.bookingId }.distinct()
+        assertThat(bookingIds).hasSize(2).contains(
+          RECALL_PRISONER_WITH_SENTENCES_ON_OLDER_BOOKING_NEW_BOOKING_ID,
+          RECALL_PRISONER_WITH_SENTENCES_ON_OLDER_BOOKING_OLD_BOOKING_ID,
+        )
+      }
+    }
   }
 
-  @Test
-  fun `Validation passes`() {
-    mockManageOffencesClient.noneInPCSC(listOf("GBH", "SX03014"))
-    val result = validateForRecordARecall(
-      RECORD_A_RECALL_PRISONER_ID,
-    )
+  @Nested
+  inner class NonAutomatedRecallDecisionTests {
 
-    assertThat(result.criticalValidationMessages).isEmpty()
-    assertThat(result.otherValidationMessages).isEmpty()
-  }
+    @Test
+    fun `No sentences for recall`() {
+      val result = createCalculationForRecordARecall(
+        RECORD_A_RECALL_PRISONER_ID,
+        RecordARecallRequest(revocationDate = LocalDate.of(2022, 2, 6)),
+      )
 
-  @Test
-  fun `No sentences for recall`() {
-    val result = createCalculationForRecordARecall(
-      RECORD_A_RECALL_PRISONER_ID,
-      RecordARecallRequest(revocationDate = LocalDate.of(2022, 2, 6)),
-    )
+      assertThat(result.decision).isEqualTo(RecordARecallDecision.NO_RECALLABLE_SENTENCES_FOUND)
+    }
 
-    assertThat(result.decision).isEqualTo(RecordARecallDecision.NO_RECALLABLE_SENTENCES_FOUND)
-  }
+    @Test
+    fun `Conflicting UAL on end boundary`() {
+      val result = createCalculationForRecordARecall(
+        RECORD_A_RECALL_PRISONER_ID,
+        RecordARecallRequest(revocationDate = LocalDate.of(2016, 2, 19)),
+      )
 
-  @Test
-  fun `Conflicting UAL on end boundary`() {
-    val result = createCalculationForRecordARecall(
-      RECORD_A_RECALL_PRISONER_ID,
-      RecordARecallRequest(revocationDate = LocalDate.of(2016, 2, 19)),
-    )
+      assertThat(result.decision).isEqualTo(RecordARecallDecision.CONFLICTING_ADJUSTMENTS)
+      assertThat(result.conflictingAdjustments).isEqualTo(listOf("2edb6550-ff6a-43e7-b563-d7e447b6a8be"))
+    }
 
-    assertThat(result.decision).isEqualTo(RecordARecallDecision.CONFLICTING_ADJUSTMENTS)
-    assertThat(result.conflictingAdjustments).isEqualTo(listOf("2edb6550-ff6a-43e7-b563-d7e447b6a8be"))
-  }
+    @Test
+    fun `Conflicting UAL on start boundary`() {
+      val result = createCalculationForRecordARecall(
+        RECORD_A_RECALL_PRISONER_ID,
+        RecordARecallRequest(
+          revocationDate = LocalDate.of(2016, 1, 1),
+          returnToCustodyDate = LocalDate.of(2016, 2, 2),
+        ),
+      )
 
-  @Test
-  fun `Conflicting UAL on start boundary`() {
-    val result = createCalculationForRecordARecall(
-      RECORD_A_RECALL_PRISONER_ID,
-      RecordARecallRequest(
-        revocationDate = LocalDate.of(2016, 1, 1),
-        returnToCustodyDate = LocalDate.of(2016, 2, 2),
-      ),
-    )
+      assertThat(result.decision).isEqualTo(RecordARecallDecision.CONFLICTING_ADJUSTMENTS)
+      assertThat(result.conflictingAdjustments).isEqualTo(listOf("2edb6550-ff6a-43e7-b563-d7e447b6a8be"))
+    }
 
-    assertThat(result.decision).isEqualTo(RecordARecallDecision.CONFLICTING_ADJUSTMENTS)
-    assertThat(result.conflictingAdjustments).isEqualTo(listOf("2edb6550-ff6a-43e7-b563-d7e447b6a8be"))
-  }
+    @Test
+    fun `Conflicting UAL - revocation-date before and return-to-custody after the UAL`() {
+      val result = createCalculationForRecordARecall(
+        RECORD_A_RECALL_PRISONER_ID,
+        RecordARecallRequest(
+          revocationDate = LocalDate.of(2016, 1, 1),
+          returnToCustodyDate = LocalDate.of(2016, 3, 2),
+        ),
+      )
 
-  @Test
-  fun `Conflicting UAL - revocation-date before and return-to-custody after the UAL`() {
-    val result = createCalculationForRecordARecall(
-      RECORD_A_RECALL_PRISONER_ID,
-      RecordARecallRequest(
-        revocationDate = LocalDate.of(2016, 1, 1),
-        returnToCustodyDate = LocalDate.of(2016, 3, 2),
-      ),
-    )
+      assertThat(result.decision).isEqualTo(RecordARecallDecision.CONFLICTING_ADJUSTMENTS)
+      assertThat(result.conflictingAdjustments).isEqualTo(listOf("2edb6550-ff6a-43e7-b563-d7e447b6a8be"))
+    }
 
-    assertThat(result.decision).isEqualTo(RecordARecallDecision.CONFLICTING_ADJUSTMENTS)
-    assertThat(result.conflictingAdjustments).isEqualTo(listOf("2edb6550-ff6a-43e7-b563-d7e447b6a8be"))
-  }
+    @Test
+    fun `Editing a recall excludes UAL from the recall being edited`() {
+      val result = createCalculationForRecordARecall(
+        RECORD_A_RECALL_PRISONER_ID,
+        RecordARecallRequest(
+          revocationDate = LocalDate.of(2016, 2, 6),
+          recallId = UUID.fromString("e3c5888e-f8ad-48ea-8fc0-c916670f2ca1"),
+        ),
+      )
 
-  @Test
-  fun `Editing a recall excludes UAL from the recall being edited`() {
-    val result = createCalculationForRecordARecall(
-      RECORD_A_RECALL_PRISONER_ID,
-      RecordARecallRequest(revocationDate = LocalDate.of(2016, 2, 6), recallId = UUID.fromString("e3c5888e-f8ad-48ea-8fc0-c916670f2ca1")),
-    )
+      assertThat(result.decision).isEqualTo(RecordARecallDecision.AUTOMATED)
 
-    assertThat(result.decision).isEqualTo(RecordARecallDecision.AUTOMATED)
-  }
+      @Test
+      fun `Validation passes`() {
+        mockManageOffencesClient.noneInPCSC(listOf("GBH", "SX03014"))
+        val result = validateForRecordARecall(
+          RECORD_A_RECALL_PRISONER_ID,
+        )
 
-  @Test
-  fun `Validation errors`() {
-    mockManageOffencesClient.noneInPCSC(listOf("GBH", "SX03014"))
-    val result = createCalculationForRecordARecall(
-      VALIDATION_PRISONER_ID,
-      RecordARecallRequest(revocationDate = LocalDate.of(2016, 2, 6)),
-    )
+        assertThat(result.criticalValidationMessages).isEmpty()
+        assertThat(result.otherValidationMessages).isEmpty()
+      }
+    }
 
-    assertThat(result.decision).isEqualTo(RecordARecallDecision.CRITICAL_ERRORS)
-    assertThat(result.validationMessages).isNotEmpty()
-  }
+    @Test
+    fun `Validation errors`() {
+      mockManageOffencesClient.noneInPCSC(listOf("GBH", "SX03014"))
+      val result = createCalculationForRecordARecall(
+        VALIDATION_PRISONER_ID,
+        RecordARecallRequest(revocationDate = LocalDate.of(2016, 2, 6)),
+      )
 
-  @Test
-  fun `Validation errors from validation endpoint`() {
-    mockManageOffencesClient.noneInPCSC(listOf("GBH", "SX03014"))
-    val result = validateForRecordARecall(
-      VALIDATION_PRISONER_ID,
-    )
+      assertThat(result.decision).isEqualTo(RecordARecallDecision.CRITICAL_ERRORS)
+      assertThat(result.validationMessages).isNotEmpty()
+    }
 
-    assertThat(result.criticalValidationMessages).isNotEmpty()
-    assertThat(result.otherValidationMessages).isNotEmpty()
-  }
+    @Test
+    fun `Validation errors from validation endpoint`() {
+      mockManageOffencesClient.noneInPCSC(listOf("GBH", "SX03014"))
+      val result = validateForRecordARecall(
+        VALIDATION_PRISONER_ID,
+      )
 
-  @Test
-  fun `Calculation across multiple bookings`() {
-    val result = createCalculationForRecordARecall(RECALL_PRISONER_WITH_SENTENCES_ON_OLDER_BOOKING, RecordARecallRequest(revocationDate = LocalDate.of(2025, 7, 6)))
-
-    assertThat(result.decision).isEqualTo(RecordARecallDecision.AUTOMATED)
-    assertThat(result.validationMessages).isEmpty()
-    assertThat(result.automatedCalculationData!!.recallableSentences).hasSize(2)
-    val bookingIds = result.automatedCalculationData.recallableSentences.map { it.bookingId }.distinct()
-    assertThat(bookingIds).hasSize(2).contains(RECALL_PRISONER_WITH_SENTENCES_ON_OLDER_BOOKING_NEW_BOOKING_ID, RECALL_PRISONER_WITH_SENTENCES_ON_OLDER_BOOKING_OLD_BOOKING_ID)
+      assertThat(result.criticalValidationMessages).isNotEmpty()
+      assertThat(result.otherValidationMessages).isNotEmpty()
+    }
   }
 
   @Nested
@@ -218,7 +261,17 @@ class RecordARecallControllerIntTest(private val mockManageOffencesClient: MockM
       )
 
       assertThat(result.decision).isEqualTo(RecordARecallDecision.AUTOMATED)
-      assertThat(result.automatedCalculationData!!.unexpectedRecallTypes).isEqualTo(listOf(Recall.RecallType.LR, Recall.RecallType.FTR_28, Recall.RecallType.FTR_56, Recall.RecallType.FTR_HDC_14, Recall.RecallType.FTR_HDC_28, Recall.RecallType.CUR_HDC, Recall.RecallType.IN_HDC))
+      assertThat(result.automatedCalculationData!!.unexpectedRecallTypes).isEqualTo(
+        listOf(
+          Recall.RecallType.LR,
+          Recall.RecallType.FTR_28,
+          Recall.RecallType.FTR_56,
+          Recall.RecallType.FTR_HDC_14,
+          Recall.RecallType.FTR_HDC_28,
+          Recall.RecallType.CUR_HDC,
+          Recall.RecallType.IN_HDC,
+        ),
+      )
     }
 
     @Test
@@ -229,7 +282,16 @@ class RecordARecallControllerIntTest(private val mockManageOffencesClient: MockM
       )
 
       assertThat(result.decision).isEqualTo(RecordARecallDecision.AUTOMATED)
-      assertThat(result.automatedCalculationData!!.unexpectedRecallTypes).isEqualTo(listOf(Recall.RecallType.FTR_14, Recall.RecallType.FTR_56, Recall.RecallType.FTR_HDC_14, Recall.RecallType.FTR_HDC_28, Recall.RecallType.CUR_HDC, Recall.RecallType.IN_HDC))
+      assertThat(result.automatedCalculationData!!.unexpectedRecallTypes).isEqualTo(
+        listOf(
+          Recall.RecallType.FTR_14,
+          Recall.RecallType.FTR_56,
+          Recall.RecallType.FTR_HDC_14,
+          Recall.RecallType.FTR_HDC_28,
+          Recall.RecallType.CUR_HDC,
+          Recall.RecallType.IN_HDC,
+        ),
+      )
     }
 
     @Test
@@ -240,7 +302,15 @@ class RecordARecallControllerIntTest(private val mockManageOffencesClient: MockM
       )
 
       assertThat(result.decision).isEqualTo(RecordARecallDecision.AUTOMATED)
-      assertThat(result.automatedCalculationData!!.unexpectedRecallTypes).isEqualTo(listOf(Recall.RecallType.LR, Recall.RecallType.FTR_14, Recall.RecallType.FTR_28, Recall.RecallType.FTR_56, Recall.RecallType.FTR_HDC_28))
+      assertThat(result.automatedCalculationData!!.unexpectedRecallTypes).isEqualTo(
+        listOf(
+          Recall.RecallType.LR,
+          Recall.RecallType.FTR_14,
+          Recall.RecallType.FTR_28,
+          Recall.RecallType.FTR_56,
+          Recall.RecallType.FTR_HDC_28,
+        ),
+      )
     }
 
     @Test
@@ -251,7 +321,15 @@ class RecordARecallControllerIntTest(private val mockManageOffencesClient: MockM
       )
 
       assertThat(result.decision).isEqualTo(RecordARecallDecision.AUTOMATED)
-      assertThat(result.automatedCalculationData!!.unexpectedRecallTypes).isEqualTo(listOf(Recall.RecallType.LR, Recall.RecallType.FTR_14, Recall.RecallType.FTR_28, Recall.RecallType.FTR_56, Recall.RecallType.FTR_HDC_14))
+      assertThat(result.automatedCalculationData!!.unexpectedRecallTypes).isEqualTo(
+        listOf(
+          Recall.RecallType.LR,
+          Recall.RecallType.FTR_14,
+          Recall.RecallType.FTR_28,
+          Recall.RecallType.FTR_56,
+          Recall.RecallType.FTR_HDC_14,
+        ),
+      )
     }
 
     @Test
@@ -262,7 +340,17 @@ class RecordARecallControllerIntTest(private val mockManageOffencesClient: MockM
       )
 
       assertThat(result.decision).isEqualTo(RecordARecallDecision.AUTOMATED)
-      assertThat(result.automatedCalculationData!!.unexpectedRecallTypes).isEqualTo(listOf(Recall.RecallType.LR, Recall.RecallType.FTR_28, Recall.RecallType.FTR_56, Recall.RecallType.FTR_HDC_14, Recall.RecallType.FTR_HDC_28, Recall.RecallType.CUR_HDC, Recall.RecallType.IN_HDC))
+      assertThat(result.automatedCalculationData!!.unexpectedRecallTypes).isEqualTo(
+        listOf(
+          Recall.RecallType.LR,
+          Recall.RecallType.FTR_28,
+          Recall.RecallType.FTR_56,
+          Recall.RecallType.FTR_HDC_14,
+          Recall.RecallType.FTR_HDC_28,
+          Recall.RecallType.CUR_HDC,
+          Recall.RecallType.IN_HDC,
+        ),
+      )
     }
 
     @Test
@@ -273,73 +361,103 @@ class RecordARecallControllerIntTest(private val mockManageOffencesClient: MockM
       )
 
       assertThat(result.decision).isEqualTo(RecordARecallDecision.AUTOMATED)
-      assertThat(result.automatedCalculationData!!.unexpectedRecallTypes).isEqualTo(listOf(Recall.RecallType.FTR_14, Recall.RecallType.FTR_56, Recall.RecallType.FTR_HDC_14, Recall.RecallType.FTR_HDC_28, Recall.RecallType.CUR_HDC, Recall.RecallType.IN_HDC))
+      assertThat(result.automatedCalculationData!!.unexpectedRecallTypes).isEqualTo(
+        listOf(
+          Recall.RecallType.FTR_14,
+          Recall.RecallType.FTR_56,
+          Recall.RecallType.FTR_HDC_14,
+          Recall.RecallType.FTR_HDC_28,
+          Recall.RecallType.CUR_HDC,
+          Recall.RecallType.IN_HDC,
+        ),
+      )
+    }
+  }
+
+  @Nested
+  inner class UnexpectedFtr56RecallTypes {
+    @BeforeEach
+    fun beforeEachFtr56Test() {
+      whenever(featureToggles.recordARecallFtr56Rules).thenReturn(true)
     }
 
     @Test
-    fun `Expired sentences on same case as recallable sentences should also be recalled`() {
+    fun `Test unexpected recall types for SDS Adult sentences non HDC release`() {
       val result = createCalculationForRecordARecall(
-        "RCLL-691",
-        RecordARecallRequest(revocationDate = LocalDate.of(2025, 6, 1)),
+        "RCLL-562-Adult",
+        RecordARecallRequest(revocationDate = LocalDate.of(2024, 6, 1)),
       )
 
       assertThat(result.decision).isEqualTo(RecordARecallDecision.AUTOMATED)
-      assertThat(result.automatedCalculationData!!.recallableSentences.size).isEqualTo(2)
-      assertThat(result.automatedCalculationData.recallableSentences[0].sentenceCalculation.licenseExpiry).isEqualTo(LocalDate.of(2025, 12, 31))
-      // This sentence is recallable even though the license has expired, because its on the same case as the one above.
-      assertThat(result.automatedCalculationData.recallableSentences[1].sentenceCalculation.licenseExpiry).isEqualTo(LocalDate.of(2024, 12, 31))
+      assertThat(result.automatedCalculationData!!.unexpectedRecallTypes).isEqualTo(
+        listOf(
+          Recall.RecallType.FTR_14,
+          Recall.RecallType.FTR_28,
+          Recall.RecallType.FTR_HDC_14,
+          Recall.RecallType.FTR_HDC_28,
+          Recall.RecallType.CUR_HDC,
+          Recall.RecallType.IN_HDC,
+        ),
+      )
     }
 
-    @Nested
-    inner class UnexpectedFtr56RecallTypes {
-      @BeforeEach
-      fun beforeEachFtr56Test() {
-        whenever(featureToggles.recordARecallFtr56Rules).thenReturn(true)
-      }
+    @Test
+    fun `Test unexpected recall types for SDS Youth sentences non HDC release`() {
+      val result = createCalculationForRecordARecall(
+        "RCLL-562-Youth",
+        RecordARecallRequest(revocationDate = LocalDate.of(2024, 6, 1)),
+      )
 
-      @Test
-      fun `Test unexpected recall types for SDS Adult sentences non HDC release`() {
-        val result = createCalculationForRecordARecall(
-          "RCLL-562-Adult",
-          RecordARecallRequest(revocationDate = LocalDate.of(2024, 6, 1)),
-        )
+      assertThat(result.decision).isEqualTo(RecordARecallDecision.AUTOMATED)
+      assertThat(result.automatedCalculationData!!.unexpectedRecallTypes).isEqualTo(
+        listOf(
+          Recall.RecallType.LR,
+          Recall.RecallType.FTR_28,
+          Recall.RecallType.FTR_56,
+          Recall.RecallType.FTR_HDC_14,
+          Recall.RecallType.FTR_HDC_28,
+          Recall.RecallType.CUR_HDC,
+          Recall.RecallType.IN_HDC,
+        ),
+      )
+    }
 
-        assertThat(result.decision).isEqualTo(RecordARecallDecision.AUTOMATED)
-        assertThat(result.automatedCalculationData!!.unexpectedRecallTypes).isEqualTo(listOf(Recall.RecallType.FTR_14, Recall.RecallType.FTR_28, Recall.RecallType.FTR_HDC_14, Recall.RecallType.FTR_HDC_28, Recall.RecallType.CUR_HDC, Recall.RecallType.IN_HDC))
-      }
+    @Test
+    fun `Test unexpected recall types for SDS Adult sentences HDC release`() {
+      val result = createCalculationForRecordARecall(
+        "RCLL-562-Adult-HDC",
+        RecordARecallRequest(revocationDate = LocalDate.of(2024, 3, 2)),
+      )
 
-      @Test
-      fun `Test unexpected recall types for SDS Youth sentences non HDC release`() {
-        val result = createCalculationForRecordARecall(
-          "RCLL-562-Youth",
-          RecordARecallRequest(revocationDate = LocalDate.of(2024, 6, 1)),
-        )
+      assertThat(result.decision).isEqualTo(RecordARecallDecision.AUTOMATED)
+      assertThat(result.automatedCalculationData!!.unexpectedRecallTypes).isEqualTo(
+        listOf(
+          Recall.RecallType.LR,
+          Recall.RecallType.FTR_14,
+          Recall.RecallType.FTR_28,
+          Recall.RecallType.FTR_HDC_14,
+          Recall.RecallType.FTR_HDC_28,
+        ),
+      )
+    }
 
-        assertThat(result.decision).isEqualTo(RecordARecallDecision.AUTOMATED)
-        assertThat(result.automatedCalculationData!!.unexpectedRecallTypes).isEqualTo(listOf(Recall.RecallType.LR, Recall.RecallType.FTR_28, Recall.RecallType.FTR_56, Recall.RecallType.FTR_HDC_14, Recall.RecallType.FTR_HDC_28, Recall.RecallType.CUR_HDC, Recall.RecallType.IN_HDC))
-      }
+    @Test
+    fun `Test unexpected recall types for SDS Youth sentences HDC release`() {
+      val result = createCalculationForRecordARecall(
+        "RCLL-562-Youth-HDC",
+        RecordARecallRequest(revocationDate = LocalDate.of(2024, 3, 2)),
+      )
 
-      @Test
-      fun `Test unexpected recall types for SDS Adult sentences HDC release`() {
-        val result = createCalculationForRecordARecall(
-          "RCLL-562-Adult-HDC",
-          RecordARecallRequest(revocationDate = LocalDate.of(2024, 3, 2)),
-        )
-
-        assertThat(result.decision).isEqualTo(RecordARecallDecision.AUTOMATED)
-        assertThat(result.automatedCalculationData!!.unexpectedRecallTypes).isEqualTo(listOf(Recall.RecallType.LR, Recall.RecallType.FTR_14, Recall.RecallType.FTR_28, Recall.RecallType.FTR_HDC_14, Recall.RecallType.FTR_HDC_28))
-      }
-
-      @Test
-      fun `Test unexpected recall types for SDS Youth sentences HDC release`() {
-        val result = createCalculationForRecordARecall(
-          "RCLL-562-Youth-HDC",
-          RecordARecallRequest(revocationDate = LocalDate.of(2024, 3, 2)),
-        )
-
-        assertThat(result.decision).isEqualTo(RecordARecallDecision.AUTOMATED)
-        assertThat(result.automatedCalculationData!!.unexpectedRecallTypes).isEqualTo(listOf(Recall.RecallType.LR, Recall.RecallType.FTR_14, Recall.RecallType.FTR_28, Recall.RecallType.FTR_56, Recall.RecallType.FTR_HDC_28))
-      }
+      assertThat(result.decision).isEqualTo(RecordARecallDecision.AUTOMATED)
+      assertThat(result.automatedCalculationData!!.unexpectedRecallTypes).isEqualTo(
+        listOf(
+          Recall.RecallType.LR,
+          Recall.RecallType.FTR_14,
+          Recall.RecallType.FTR_28,
+          Recall.RecallType.FTR_56,
+          Recall.RecallType.FTR_HDC_28,
+        ),
+      )
     }
   }
 
