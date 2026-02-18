@@ -14,6 +14,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Offe
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ReturnToCustodyDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType.Companion.from
+import java.time.LocalDate
 
 @Service
 class CalculationSourceDataService(
@@ -31,15 +32,21 @@ class CalculationSourceDataService(
   fun getCalculationSourceData(prisonerDetails: PrisonerDetails, sourceDataLookupOptions: SourceDataLookupOptions, olderBookingsToInclude: List<Long> = emptyList()): CalculationSourceData {
     var data = getBookingLevelSourceData(prisonerDetails, prisonerDetails.bookingId, sourceDataLookupOptions)
     olderBookingsToInclude.forEach {
-      data = data.appendOlderBooking(getBookingLevelSourceData(prisonerDetails, it, sourceDataLookupOptions, olderBooking = true))
+      data = data.appendOlderBooking(getBookingLevelSourceData(prisonerDetails, it, sourceDataLookupOptions, olderBooking = true, newerBookingSentences = data.sentenceAndOffences.map { DistinctSentenceData(it) }))
     }
     return getCalculationSourceData(prisonerDetails, data)
   }
 
-  private fun getBookingLevelSourceData(prisonerDetails: PrisonerDetails, bookingId: Long, sourceDataLookupOptions: SourceDataLookupOptions, olderBooking: Boolean = false): BookingLevelSourceData {
+  private fun getBookingLevelSourceData(
+    prisonerDetails: PrisonerDetails,
+    bookingId: Long,
+    sourceDataLookupOptions: SourceDataLookupOptions,
+    olderBooking: Boolean = false,
+    newerBookingSentences: List<DistinctSentenceData> = emptyList(),
+  ): BookingLevelSourceData {
     val activeOnly = sourceDataLookupOptions.activeOnly(featureToggles.supportInactiveSentencesAndAdjustments)
 
-    val sentenceAndOffences = prisonService.getSentencesAndOffences(bookingId, activeOnly)
+    val sentenceAndOffences = removeDuplicatedSentencesFromOlderBooking(prisonService.getSentencesAndOffences(bookingId, activeOnly), olderBooking, newerBookingSentences)
     val adjustments = getAdjustments(prisonerDetails.offenderNo, bookingId, activeOnly, olderBooking, sourceDataLookupOptions)
     val bookingHasFixedTermRecall = sentenceAndOffences.any { from(it.sentenceCalculationType).recallType?.isFixedTermRecall == true }
     val (ftrDetails, returnToCustodyDate) = prisonService.getFixedTermRecallDetails(bookingId, bookingHasFixedTermRecall)
@@ -52,6 +59,21 @@ class CalculationSourceDataService(
       returnToCustodyDate,
       ftrDetails,
     )
+  }
+
+  /**
+   * When loading data from an older booking remove all sentences in a given court case where there is duplicated sentence on a newer booking.
+   */
+  private fun removeDuplicatedSentencesFromOlderBooking(
+    olderBookingSentences: List<SentenceAndOffenceWithReleaseArrangements>,
+    olderBooking: Boolean,
+    newerBookingSentences: List<DistinctSentenceData>,
+  ): List<SentenceAndOffenceWithReleaseArrangements> {
+    if (olderBooking) {
+      val caseSequencesWithDuplicates = olderBookingSentences.filter { newerBookingSentences.contains(DistinctSentenceData(it)) }.map { it.caseSequence }.distinct()
+      return olderBookingSentences.filterNot { caseSequencesWithDuplicates.contains(it.caseSequence) }
+    }
+    return olderBookingSentences
   }
 
   private fun getCalculationSourceData(prisonerDetails: PrisonerDetails, bookingLevelSourceData: BookingLevelSourceData): CalculationSourceData {
@@ -127,6 +149,21 @@ data class SourceDataLookupOptions(
     fun overrideToIncludeInactiveDataAndForceAdjustmentsApi(): SourceDataLookupOptions = SourceDataLookupOptions(true, true)
   }
 }
+
+data class DistinctSentenceData(
+  val sentenceDate: LocalDate,
+  val offenceStartDate: LocalDate?,
+  val offenceEndDate: LocalDate? = null,
+  val offenceCode: String,
+) {
+  constructor(sentence: SentenceAndOffenceWithReleaseArrangements) : this(
+    sentenceDate = sentence.sentenceDate,
+    offenceStartDate = sentence.offence.offenceStartDate,
+    offenceEndDate = sentence.offence.offenceEndDate,
+    offenceCode = sentence.offence.offenceCode,
+  )
+}
+
 data class BookingLevelSourceData(
   val sentenceAndOffences: List<SentenceAndOffenceWithReleaseArrangements>,
   val adjustments: AdjustmentsSourceData,

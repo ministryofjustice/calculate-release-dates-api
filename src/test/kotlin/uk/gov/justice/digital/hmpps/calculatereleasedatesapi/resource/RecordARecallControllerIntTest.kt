@@ -131,23 +131,43 @@ class RecordARecallControllerIntTest(private val mockManageOffencesClient: MockM
       assertThat(result.automatedCalculationData.recallableSentences[1].sentenceCalculation.licenseExpiry).isEqualTo(
         LocalDate.of(2024, 12, 31),
       )
+    }
 
-      @Test
-      fun `Calculation across multiple bookings`() {
-        val result = createCalculationForRecordARecall(
-          RECALL_PRISONER_WITH_SENTENCES_ON_OLDER_BOOKING,
-          RecordARecallRequest(revocationDate = LocalDate.of(2025, 7, 6)),
-        )
+    @Test
+    fun `Calculation across multiple bookings`() {
+      val result = createCalculationForRecordARecall(
+        RECALL_PRISONER_WITH_SENTENCES_ON_OLDER_BOOKING,
+        RecordARecallRequest(revocationDate = LocalDate.of(2025, 7, 6)),
+      )
 
-        assertThat(result.decision).isEqualTo(RecordARecallDecision.AUTOMATED)
-        assertThat(result.validationMessages).isEmpty()
-        assertThat(result.automatedCalculationData!!.recallableSentences).hasSize(2)
-        val bookingIds = result.automatedCalculationData.recallableSentences.map { it.bookingId }.distinct()
-        assertThat(bookingIds).hasSize(2).contains(
-          RECALL_PRISONER_WITH_SENTENCES_ON_OLDER_BOOKING_NEW_BOOKING_ID,
-          RECALL_PRISONER_WITH_SENTENCES_ON_OLDER_BOOKING_OLD_BOOKING_ID,
-        )
-      }
+      assertThat(result.decision).isEqualTo(RecordARecallDecision.AUTOMATED)
+      assertThat(result.validationMessages).isEmpty()
+      assertThat(result.automatedCalculationData!!.recallableSentences).hasSize(2)
+      val bookingIds = result.automatedCalculationData.recallableSentences.map { it.bookingId }.distinct()
+      assertThat(bookingIds).hasSize(2).contains(
+        RECALL_PRISONER_WITH_SENTENCES_ON_OLDER_BOOKING_NEW_BOOKING_ID,
+        RECALL_PRISONER_WITH_SENTENCES_ON_OLDER_BOOKING_OLD_BOOKING_ID,
+      )
+    }
+
+    @Test
+    fun `RCLL-700 Calculation across multiple bookings with the same sentences on both bookings should be de-duplicated`() {
+      mockManageOffencesClient.noneInPCSC(listOf("GBH", "TH68001"))
+
+      val result = createCalculationForRecordARecall(
+        "RCLL-700-1",
+        RecordARecallRequest(revocationDate = LocalDate.of(2025, 8, 6)),
+      )
+
+      println(result.validationMessages)
+
+      assertThat(result.decision).isEqualTo(RecordARecallDecision.AUTOMATED)
+      assertThat(result.validationMessages).isEmpty()
+      assertThat(result.automatedCalculationData!!.recallableSentences).hasSize(2)
+
+      val sentencesFromOlderBooking = result.automatedCalculationData.recallableSentences.filter { it.bookingId == "RCLL-700-2".hashCode().toLong() }
+      assertThat(sentencesFromOlderBooking.size).isEqualTo(1)
+      assertThat(sentencesFromOlderBooking[0].sentenceSequence).isEqualTo(3)
     }
   }
 
