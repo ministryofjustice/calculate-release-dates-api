@@ -150,7 +150,6 @@ class ThingsToDoService(
       ComparableAdjustment(
         type = adjustmentDto.adjustmentType,
         fromDate = adjustmentDto.fromDate,
-        toDate = adjustmentDto.toDate,
         numberOfDays = adjustmentDto.days,
         sentenceSequence = adjustmentDto.sentenceSequence,
       )
@@ -160,10 +159,9 @@ class ThingsToDoService(
 
   private fun finePaymentsHaveChanged(previousSourceData: CalculationSourceData, currentSourceData: CalculationSourceData): Boolean = previousSourceData.offenderFinePayments != currentSourceData.offenderFinePayments
 
-  data class ComparableAdjustment(
+  private data class ComparableAdjustment(
     val type: AdjustmentDto.AdjustmentType,
     val fromDate: LocalDate?,
-    val toDate: LocalDate?,
     val numberOfDays: Int?,
     val sentenceSequence: Int?,
   )
