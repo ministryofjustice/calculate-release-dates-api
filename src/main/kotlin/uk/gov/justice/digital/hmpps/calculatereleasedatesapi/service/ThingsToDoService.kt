@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.adjustmentsapi.model.AdjustmentDto
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
@@ -21,9 +22,12 @@ class ThingsToDoService(
 
   fun getToDoList(prisonerId: String): ThingsToDo {
     val offenderDetails = prisonService.getOffenderDetail(prisonerId)
-    val thingsToDo = if (isCalculationRequired(offenderDetails)) {
+    val check = isCalculationRequired(offenderDetails)
+    val thingsToDo = if (check.isCalculationRequired) {
+      logger.info("Calculation required for ${offenderDetails.offenderNo} because ${check.reason}")
       listOf(ToDoType.CALCULATION_REQUIRED)
     } else {
+      logger.info("Calculation not required for ${offenderDetails.offenderNo} because ${check.reason}")
       emptyList()
     }
 
@@ -41,12 +45,12 @@ class ThingsToDoService(
    * - If no calculations exist, a calculation is required.
    * - If any data between the previous and current booking has changed, a calculation is required.
    */
-  private fun isCalculationRequired(prisonerDetails: PrisonerDetails): Boolean {
+  private fun isCalculationRequired(prisonerDetails: PrisonerDetails): CalculationCheckResult {
     val currentSourceData =
       calculationSourceDataService.getCalculationSourceData(prisonerDetails, SourceDataLookupOptions.default())
 
     if (currentSourceData.sentenceAndOffences.isEmpty()) {
-      return false
+      return CalculationCheckResult(false, "No sentences and offences on booking")
     }
 
     val latestConfirmedCalculation = calculationRequestRepository.findFirstByBookingIdAndCalculationStatusOrderByCalculatedAtDesc(
@@ -55,15 +59,24 @@ class ThingsToDoService(
     )
 
     if (!latestConfirmedCalculation.isPresent) {
-      return true
+      return CalculationCheckResult(true, "No previous calculation found")
     }
 
     val previousSourceData = sourceDataMapper.getSourceData(latestConfirmedCalculation.get())
 
-    return hasNewOrUpdatedSentences(previousSourceData, currentSourceData) ||
-      haveAdjustmentsChanged(previousSourceData, currentSourceData, prisonerDetails) ||
-      returnToCustodyDateHasChanged(previousSourceData, currentSourceData) ||
-      finePaymentsHaveChanged(previousSourceData, currentSourceData)
+    if (hasNewOrUpdatedSentences(previousSourceData, currentSourceData)) {
+      return CalculationCheckResult(true, "Has new or updated sentences")
+    }
+    if (haveAdjustmentsChanged(previousSourceData, currentSourceData, prisonerDetails)) {
+      return CalculationCheckResult(true, "Adjustments have changed")
+    }
+    if (returnToCustodyDateHasChanged(previousSourceData, currentSourceData)) {
+      return CalculationCheckResult(true, "Return to custody date has changed")
+    }
+    if (finePaymentsHaveChanged(previousSourceData, currentSourceData)) {
+      return CalculationCheckResult(true, "Fine payments have changed")
+    }
+    return CalculationCheckResult(false, "Nothing has changed since the previous calculation")
   }
 
   private fun hasNewOrUpdatedSentences(previousSourceData: CalculationSourceData, currentSourceData: CalculationSourceData): Boolean = areThereAnyDifferencesInSentencesAndOffences(
@@ -165,4 +178,10 @@ class ThingsToDoService(
     val numberOfDays: Int?,
     val sentenceSequence: Int?,
   )
+
+  private data class CalculationCheckResult(val isCalculationRequired: Boolean, val reason: String)
+
+  companion object {
+    private val logger = LoggerFactory.getLogger(ThingsToDoService::class.java)
+  }
 }
