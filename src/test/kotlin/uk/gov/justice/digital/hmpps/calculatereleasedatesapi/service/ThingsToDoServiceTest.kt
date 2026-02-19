@@ -438,7 +438,7 @@ class ThingsToDoServiceTest {
 
   @ParameterizedTest
   @MethodSource("changedAdjustments")
-  fun `should require a calc if the adjustments have changed`(previous: AdjustmentDto, current: AdjustmentDto) {
+  fun `should require a calc if the adjustments have changed`(expectThingsToDo: Boolean, previous: AdjustmentDto, current: AdjustmentDto) {
     hasPreviousCalc()
     val previousSourceData = CalculationSourceData(
       sentenceAndOffences = listOf(
@@ -454,7 +454,11 @@ class ThingsToDoServiceTest {
     whenever(sourceDataMapper.getSourceData(CALC_REQUEST)).thenReturn(previousSourceData)
     whenever(calculationSourceDataService.getCalculationSourceData(PRISONER_DETAILS, SourceDataLookupOptions.default())).thenReturn(currentSourceData)
 
-    assertThatHasACalcToDo()
+    if (expectThingsToDo) {
+      assertThatHasACalcToDo()
+    } else {
+      assertThatHasNothingToDo()
+    }
   }
 
   @Test
@@ -526,7 +530,7 @@ class ThingsToDoServiceTest {
           AdjustmentDto(
             person = PRISONER_DETAILS.offenderNo,
             adjustmentType = AdjustmentDto.AdjustmentType.TAGGED_BAIL,
-            days = 22,
+            effectiveDays = 22,
             fromDate = LocalDate.of(2016, 1, 2),
             toDate = LocalDate.of(2016, 1, 20),
             status = AdjustmentDto.Status.ACTIVE,
@@ -535,7 +539,7 @@ class ThingsToDoServiceTest {
           AdjustmentDto(
             person = PRISONER_DETAILS.offenderNo,
             adjustmentType = AdjustmentDto.AdjustmentType.REMAND,
-            days = 10,
+            effectiveDays = 10,
             fromDate = LocalDate.of(2015, 1, 2),
             toDate = LocalDate.of(2015, 1, 20),
             status = AdjustmentDto.Status.ACTIVE,
@@ -591,7 +595,7 @@ class ThingsToDoServiceTest {
           AdjustmentDto(
             person = PRISONER_DETAILS.offenderNo,
             adjustmentType = AdjustmentDto.AdjustmentType.ADDITIONAL_DAYS_AWARDED,
-            days = 10,
+            effectiveDays = 10,
             fromDate = LocalDate.of(2015, 1, 2),
             toDate = LocalDate.of(2015, 1, 11),
             status = AdjustmentDto.Status.ACTIVE,
@@ -599,7 +603,7 @@ class ThingsToDoServiceTest {
           AdjustmentDto(
             person = PRISONER_DETAILS.offenderNo,
             adjustmentType = AdjustmentDto.AdjustmentType.REMAND,
-            days = 20,
+            effectiveDays = 20,
             fromDate = LocalDate.of(2015, 2, 3),
             toDate = LocalDate.of(2015, 2, 22),
             status = AdjustmentDto.Status.ACTIVE,
@@ -773,18 +777,23 @@ class ThingsToDoServiceTest {
         status = AdjustmentDto.Status.ACTIVE,
       )
       return Stream.of(
-        Arguments.of(baseAdjustment, baseAdjustment.copy(days = 1)),
-        Arguments.of(baseAdjustment, baseAdjustment.copy(fromDate = LocalDate.of(2025, 9, 6))),
-        Arguments.of(baseAdjustment, baseAdjustment.copy(adjustmentType = AdjustmentDto.AdjustmentType.ADDITIONAL_DAYS_AWARDED)),
-        Arguments.of(baseAdjustment, baseAdjustment.copy(sentenceSequence = 1)),
-        Arguments.of(baseAdjustment.copy(days = 1), baseAdjustment),
-        Arguments.of(baseAdjustment.copy(fromDate = LocalDate.of(2025, 9, 6)), baseAdjustment),
-        Arguments.of(baseAdjustment.copy(adjustmentType = AdjustmentDto.AdjustmentType.ADDITIONAL_DAYS_AWARDED), baseAdjustment),
-        Arguments.of(baseAdjustment.copy(sentenceSequence = 1), baseAdjustment),
-        Arguments.of(baseAdjustment.copy(days = 1), baseAdjustment.copy(days = 2)),
-        Arguments.of(baseAdjustment.copy(fromDate = LocalDate.of(2025, 9, 6)), baseAdjustment.copy(fromDate = LocalDate.of(2026, 9, 6))),
-        Arguments.of(baseAdjustment.copy(adjustmentType = AdjustmentDto.AdjustmentType.ADDITIONAL_DAYS_AWARDED), baseAdjustment.copy(adjustmentType = AdjustmentDto.AdjustmentType.REMAND)),
-        Arguments.of(baseAdjustment.copy(sentenceSequence = 1), baseAdjustment.copy(sentenceSequence = 2)),
+        // expect something to do
+        Arguments.of(true, baseAdjustment, baseAdjustment.copy(effectiveDays = 1)),
+        Arguments.of(true, baseAdjustment, baseAdjustment.copy(fromDate = LocalDate.of(2025, 9, 6))),
+        Arguments.of(true, baseAdjustment, baseAdjustment.copy(adjustmentType = AdjustmentDto.AdjustmentType.ADDITIONAL_DAYS_AWARDED)),
+        Arguments.of(true, baseAdjustment, baseAdjustment.copy(sentenceSequence = 1)),
+        Arguments.of(true, baseAdjustment.copy(effectiveDays = 1), baseAdjustment),
+        Arguments.of(true, baseAdjustment.copy(fromDate = LocalDate.of(2025, 9, 6)), baseAdjustment),
+        Arguments.of(true, baseAdjustment.copy(adjustmentType = AdjustmentDto.AdjustmentType.ADDITIONAL_DAYS_AWARDED), baseAdjustment),
+        Arguments.of(true, baseAdjustment.copy(sentenceSequence = 1), baseAdjustment),
+        Arguments.of(true, baseAdjustment.copy(effectiveDays = 1), baseAdjustment.copy(effectiveDays = 2)),
+        Arguments.of(true, baseAdjustment.copy(fromDate = LocalDate.of(2025, 9, 6)), baseAdjustment.copy(fromDate = LocalDate.of(2026, 9, 6))),
+        Arguments.of(true, baseAdjustment.copy(adjustmentType = AdjustmentDto.AdjustmentType.ADDITIONAL_DAYS_AWARDED), baseAdjustment.copy(adjustmentType = AdjustmentDto.AdjustmentType.REMAND)),
+        Arguments.of(true, baseAdjustment.copy(sentenceSequence = 1), baseAdjustment.copy(sentenceSequence = 2)),
+        // expect nothing to do
+        Arguments.of(false, baseAdjustment.copy(days = 1), baseAdjustment.copy(days = 2)),
+        Arguments.of(false, baseAdjustment.copy(toDate = LocalDate.of(2025, 6, 7)), baseAdjustment.copy(toDate = LocalDate.of(2025, 7, 6))),
+        Arguments.of(false, baseAdjustment.copy(sentenceSequence = null), baseAdjustment.copy(sentenceSequence = null)),
       )
     }
   }

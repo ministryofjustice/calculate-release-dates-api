@@ -165,7 +165,7 @@ class ThingsToDoService(
       ComparableAdjustment(
         type = adjustmentDto.adjustmentType,
         fromDate = adjustmentDto.fromDate,
-        numberOfDays = adjustmentDto.days,
+        numberOfDays = adjustmentDto.effectiveDays,
         sentenceSequence = adjustmentDto.sentenceSequence,
       )
     }.toSet()
