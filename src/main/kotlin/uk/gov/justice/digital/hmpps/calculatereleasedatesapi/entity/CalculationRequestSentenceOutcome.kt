@@ -1,6 +1,8 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity
 
 import jakarta.persistence.Entity
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
@@ -17,6 +19,7 @@ data class CalculationRequestSentenceOutcome(
 
   val calculationRequestSentenceId: Long,
 
+  @Enumerated(EnumType.STRING)
   val calculationDateType: ReleaseDateType,
 
   val outcomeDate: LocalDate,
