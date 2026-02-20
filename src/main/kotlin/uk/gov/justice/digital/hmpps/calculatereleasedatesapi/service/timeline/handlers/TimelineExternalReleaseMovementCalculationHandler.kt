@@ -23,16 +23,15 @@ class TimelineExternalReleaseMovementCalculationHandler(
       val thisExternalMovement = externalMovements.find { it.movementDate == timelineCalculationDate }!!
       val nextExternalMovement = externalMovements.firstOrNull { it.movementDate > timelineCalculationDate }
 
-      if (featureToggles.externalMovementsSds40) {
-        outOfPrisonStatus = OutOfPrisonStatus(
-          thisExternalMovement,
-          nextExternalMovement,
-        )
-      }
+      outOfPrisonStatus = OutOfPrisonStatus(
+        thisExternalMovement,
+        nextExternalMovement,
+      )
 
-      val ersRemovalShouldCountAsCustody = thisExternalMovement.movementReason == ExternalMovementReason.ERS && (nextExternalMovement?.movementReason == ExternalMovementReason.FAILED_ERS_REMOVAL || timelineCalculationDate.isAfterOrEqualTo(ImportantDates.ERS_STOP_CLOCK_COMMENCEMENT))
+      val ersRemovalShouldCountAsCustody =
+        thisExternalMovement.movementReason == ExternalMovementReason.ERS && (nextExternalMovement?.movementReason == ExternalMovementReason.FAILED_ERS_REMOVAL || timelineCalculationDate.isAfterOrEqualTo(ImportantDates.ERS_STOP_CLOCK_COMMENCEMENT))
 
-      if (featureToggles.externalMovementsAdjustmentSharing && !ersRemovalShouldCountAsCustody) {
+      if (!ersRemovalShouldCountAsCustody) {
         if (currentSentenceGroup.isNotEmpty()) {
           latestRelease = timelineCalculationDate to latestRelease.second
         }

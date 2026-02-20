@@ -58,6 +58,5 @@
       "recallLength": 14
     }
   },
-  "assertSds40": true,
-  "expectedValidationException": "UNSUPPORTED_SDS40_RECALL_SENTENCE_TYPE"
+  "assertSds40": true
 }

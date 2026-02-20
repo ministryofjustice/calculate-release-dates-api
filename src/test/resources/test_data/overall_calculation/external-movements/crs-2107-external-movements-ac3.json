@@ -109,9 +109,5 @@
   "userInputs": {
     "calculateErsed": true,
     "useOffenceIndicators": true
-  },
-  "featureToggles": {
-    "externalMovementsSds40": true,
-    "externalMovementsAdjustmentSharing": true
   }
 }

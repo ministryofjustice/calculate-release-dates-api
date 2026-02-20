@@ -51,13 +51,12 @@
       ],
       "RECALL_REMAND": [
         {
-          "appliesToSentencesFrom": "2024-06-23",
+          "appliesToSentencesFrom": "2024-07-13",
           "numberOfDays": 20,
           "fromDate": "2024-06-23",
           "toDate": "2024-07-12"
         }
       ]
     }
-  },
-  "expectedValidationException": "UNSUPPORTED_SDS40_RECALL_SENTENCE_TYPE"
+  }
 }

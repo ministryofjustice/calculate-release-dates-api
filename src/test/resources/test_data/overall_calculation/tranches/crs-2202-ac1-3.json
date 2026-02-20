@@ -50,6 +50,5 @@
     "adjustments": {},
     "returnToCustodyDate": "2025-03-10"
   },
-  "assertSds40": true,
-  "expectedValidationException": "UNSUPPORTED_SDS40_RECALL_SENTENCE_TYPE"
+  "assertSds40": true
 }

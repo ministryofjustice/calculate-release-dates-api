@@ -55,9 +55,5 @@
         "direction": "OUT"
       }
     ]
-  },
-  "featureToggles": {
-    "externalMovementsSds40": true,
-    "externalMovementsAdjustmentSharing": true
   }
 }

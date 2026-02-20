@@ -61,6 +61,5 @@
       }
     ],
     "adjustments": {}
-  },
-  "expectedValidationException": "UNSUPPORTED_SDS40_RECALL_SENTENCE_TYPE"
+  }
 }

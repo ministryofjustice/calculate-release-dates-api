@@ -82,10 +82,5 @@
     "useOffenceIndicators": true,
     "calculateErsed": true
   },
-  "params": "calculation-params",
-  "featureToggles": {
-    "externalMovementsSds40": true,
-    "externalMovementsAdjustmentSharing": true,
-    "externalMovementsEnabled": true
-  }
+  "params": "calculation-params"
 }

@@ -89,20 +89,19 @@
         {
           "appliesToSentencesFrom": "2024-12-02",
           "numberOfDays": 5,
-          "fromDate": "2024-12-02",
-          "toDate": "2024-12-06"
+          "fromDate": "2024-12-19",
+          "toDate": "2024-12-23"
         }
       ],
       "RECALL_REMAND": [
         {
-          "appliesToSentencesFrom": "2024-04-18",
+          "appliesToSentencesFrom": "2024-05-03",
           "numberOfDays": 15,
           "fromDate": "2024-04-18",
           "toDate": "2024-05-02"
         }
       ]
     },
-    "returnToCustodyDate": "2024-12-07"
-  },
-  "expectedValidationException": "UNSUPPORTED_SDS40_RECALL_SENTENCE_TYPE"
+    "returnToCustodyDate": "2024-12-24"
+  }
 }

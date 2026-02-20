@@ -1,0 +1,10 @@
+{
+  "dates": {
+    "SLED": "2025-05-23",
+    "PRRD": "2025-05-23",
+    "TUSED": "2025-11-03",
+    "ESED": "2025-06-12"
+  },
+  "effectiveSentenceLength": "P11M",
+  "sdsEarlyReleaseTranche": "TRANCHE_1"
+}
