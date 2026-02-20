@@ -6,15 +6,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 data class FeatureToggles(
   var supportInactiveSentencesAndAdjustments: Boolean = false,
   var useAdjustmentsApi: Boolean = false,
-  var externalMovementsSds40: Boolean = false,
-  var externalMovementsAdjustmentSharing: Boolean = false,
   var applyPostRecallRepealRules: Boolean = false,
   var recordARecallFtr56Rules: Boolean = false,
   var storeSentenceLevelDates: Boolean = false,
-) {
-
-  val externalMovementsEnabled: Boolean
-    get() {
-      return externalMovementsSds40 || externalMovementsAdjustmentSharing
-    }
-}
+)

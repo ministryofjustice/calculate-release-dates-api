@@ -6,6 +6,7 @@
     "ESED": "2024-12-15"
   },
   "effectiveSentenceLength": "P5M29D",
-  "sdsEarlyReleaseTranche": "TRANCHE_0",
-  "sdsEarlyReleaseAllocatedTranche": "TRANCHE_0"
+  "sdsEarlyReleaseTranche": "TRANCHE_1",
+  "sdsEarlyReleaseAllocatedTranche": "TRANCHE_1",
+  "affectedBySds40": true
 }

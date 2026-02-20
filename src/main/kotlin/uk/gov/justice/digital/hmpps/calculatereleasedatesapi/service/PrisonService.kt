@@ -33,11 +33,9 @@ class PrisonService(
     sentenceAndOffences: List<SentenceAndOffenceWithReleaseArrangements>,
     prisonerId: String,
   ): List<PrisonApiExternalMovement> {
-    if (featureToggles.externalMovementsEnabled) {
-      val earliestSentenceDate = sentenceAndOffences.minOfOrNull { it.sentenceDate }
-      if (earliestSentenceDate != null) {
-        return prisonApiClient.getExternalMovements(prisonerId, earliestSentenceDate)
-      }
+    val earliestSentenceDate = sentenceAndOffences.minOfOrNull { it.sentenceDate }
+    if (earliestSentenceDate != null) {
+      return prisonApiClient.getExternalMovements(prisonerId, earliestSentenceDate)
     }
     return emptyList()
   }
