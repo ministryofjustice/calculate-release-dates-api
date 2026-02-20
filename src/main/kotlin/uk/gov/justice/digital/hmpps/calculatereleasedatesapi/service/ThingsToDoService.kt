@@ -22,7 +22,7 @@ class ThingsToDoService(
 
   fun getToDoList(prisonerId: String): ThingsToDo {
     val offenderDetails = prisonService.getOffenderDetail(prisonerId)
-    val check = isCalculationRequired(offenderDetails)
+    val check = checkIfCalculationIsRequired(offenderDetails)
     val thingsToDo = if (check.isCalculationRequired) {
       logger.info("Calculation required for ${offenderDetails.offenderNo} because ${check.reason}")
       listOf(ToDoType.CALCULATION_REQUIRED)
@@ -45,12 +45,12 @@ class ThingsToDoService(
    * - If no calculations exist, a calculation is required.
    * - If any data between the previous and current booking has changed, a calculation is required.
    */
-  private fun isCalculationRequired(prisonerDetails: PrisonerDetails): CalculationCheckResult {
+  private fun checkIfCalculationIsRequired(prisonerDetails: PrisonerDetails): CalculationCheckResult {
     val currentSourceData =
       calculationSourceDataService.getCalculationSourceData(prisonerDetails, SourceDataLookupOptions.default())
 
     if (currentSourceData.sentenceAndOffences.isEmpty()) {
-      return CalculationCheckResult(false, "No sentences and offences on booking")
+      return CalculationCheckResult(false, "no sentences and offences on booking")
     }
 
     val latestConfirmedCalculation = calculationRequestRepository.findFirstByBookingIdAndCalculationStatusOrderByCalculatedAtDesc(
@@ -59,24 +59,25 @@ class ThingsToDoService(
     )
 
     if (!latestConfirmedCalculation.isPresent) {
-      return CalculationCheckResult(true, "No previous calculation found")
+      return CalculationCheckResult(true, "no previous calculation found")
     }
 
     val previousSourceData = sourceDataMapper.getSourceData(latestConfirmedCalculation.get())
 
     if (hasNewOrUpdatedSentences(previousSourceData, currentSourceData)) {
-      return CalculationCheckResult(true, "Has new or updated sentences")
+      return CalculationCheckResult(true, "has new or updated sentences")
     }
-    if (haveAdjustmentsChanged(previousSourceData, currentSourceData, prisonerDetails)) {
-      return CalculationCheckResult(true, "Adjustments have changed")
+    val adjustmentsCheck = checkIfAdjustmentsHaveChanged(previousSourceData, currentSourceData, prisonerDetails)
+    if (adjustmentsCheck.haveAdjustmentsChanged) {
+      return CalculationCheckResult(true, "adjustments have changed (${adjustmentsCheck.diff})")
     }
     if (returnToCustodyDateHasChanged(previousSourceData, currentSourceData)) {
-      return CalculationCheckResult(true, "Return to custody date has changed")
+      return CalculationCheckResult(true, "return to custody date has changed")
     }
     if (finePaymentsHaveChanged(previousSourceData, currentSourceData)) {
-      return CalculationCheckResult(true, "Fine payments have changed")
+      return CalculationCheckResult(true, "fine payments have changed")
     }
-    return CalculationCheckResult(false, "Nothing has changed since the previous calculation")
+    return CalculationCheckResult(false, "nothing has changed since the previous calculation")
   }
 
   private fun hasNewOrUpdatedSentences(previousSourceData: CalculationSourceData, currentSourceData: CalculationSourceData): Boolean = areThereAnyDifferencesInSentencesAndOffences(
@@ -147,10 +148,11 @@ class ThingsToDoService(
     current: SentenceAndOffenceWithReleaseArrangements,
   ): Boolean = previous.fineAmount != current.fineAmount
 
-  private fun haveAdjustmentsChanged(previousSourceData: CalculationSourceData, currentSourceData: CalculationSourceData, prisonerDetails: PrisonerDetails): Boolean {
+  private fun checkIfAdjustmentsHaveChanged(previousSourceData: CalculationSourceData, currentSourceData: CalculationSourceData, prisonerDetails: PrisonerDetails): AdjustmentCheckResult {
     val setOfPreviousAdjustments = normaliseAdjustments(previousSourceData, prisonerDetails)
     val setOfCurrentAdjustments = normaliseAdjustments(currentSourceData, prisonerDetails)
-    return setOfPreviousAdjustments != setOfCurrentAdjustments
+    val haveAdjustmentsChanged = setOfPreviousAdjustments != setOfCurrentAdjustments
+    return AdjustmentCheckResult(haveAdjustmentsChanged, "prev only: ${setOfPreviousAdjustments - setOfCurrentAdjustments}, current only: ${setOfCurrentAdjustments - setOfPreviousAdjustments}")
   }
 
   private fun normaliseAdjustments(
@@ -163,7 +165,7 @@ class ThingsToDoService(
       ComparableAdjustment(
         type = adjustmentDto.adjustmentType,
         fromDate = adjustmentDto.fromDate,
-        numberOfDays = adjustmentDto.days,
+        numberOfDays = adjustmentDto.effectiveDays,
         sentenceSequence = adjustmentDto.sentenceSequence,
       )
     }.toSet()
@@ -180,6 +182,7 @@ class ThingsToDoService(
   )
 
   private data class CalculationCheckResult(val isCalculationRequired: Boolean, val reason: String)
+  private data class AdjustmentCheckResult(val haveAdjustmentsChanged: Boolean, val diff: String)
 
   companion object {
     private val logger = LoggerFactory.getLogger(ThingsToDoService::class.java)

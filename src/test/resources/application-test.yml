@@ -68,8 +68,6 @@ domain-events-sns:
 
 feature-toggles:
   support-inactive-sentences-and-adjustments: false
-  externalMovementsSds40: true
-  externalMovementsAdjustmentSharing: true
   applyPostRecallRepealRules: false
 
 hdced4:

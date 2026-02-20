@@ -74,9 +74,5 @@
         "direction": "IN"
       }
     ]
-  },
-  "featureToggles": {
-    "externalMovementsSds40": true,
-    "externalMovementsAdjustmentSharing": true
   }
 }
