@@ -1,17 +1,26 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
+import io.hypersistence.utils.hibernate.type.json.internal.JacksonUtil
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.adjustmentsapi.model.AdjustmentDto
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentsSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffencesWithSDSPlus
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustment
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiDataVersions
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSentenceAndOffences
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustment
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.BookingAndSentenceAdjustments
 import java.time.LocalDate
 
 class SourceDataMapperTest {
@@ -264,5 +273,144 @@ class SourceDataMapperTest {
 
     val sentencesAndOffences = sourceDataMapper.mapSentencesAndOffences(calculationRequest)
     assertThat(sentencesAndOffences).isEqualTo(listOf(expected))
+  }
+
+  @Test
+  fun `should map adjustments v0`() {
+    val adjustments = BookingAndSentenceAdjustments(
+      bookingAdjustments = listOf(
+        BookingAdjustment(
+          type = BookingAdjustmentType.ADDITIONAL_DAYS_AWARDED,
+          numberOfDays = 10,
+          fromDate = LocalDate.of(2015, 1, 2),
+          toDate = LocalDate.of(2015, 12, 31),
+          active = true,
+        ),
+      ),
+      sentenceAdjustments = listOf(
+        SentenceAdjustment(
+          type = SentenceAdjustmentType.RECALL_SENTENCE_REMAND,
+          numberOfDays = 20,
+          fromDate = LocalDate.of(2015, 2, 3),
+          toDate = LocalDate.of(2015, 2, 28),
+          active = true,
+          sentenceSequence = 1,
+        ),
+      ),
+    )
+    val calculationRequest = CalculationRequest(
+      adjustments = objectToJson(adjustments, objectMapper),
+      adjustmentsVersion = 0,
+      prisonerDetails = objectToJson(
+        PrisonerDetails(
+          bookingId = 1,
+          offenderNo = "A1234BC",
+          dateOfBirth = LocalDate.of(1990, 1, 1),
+        ),
+        objectMapper,
+      ),
+      prisonerDetailsVersion = 0,
+      sentenceAndOffences = JacksonUtil.toJsonNode("[]"),
+      sentenceAndOffencesVersion = 3,
+    )
+
+    // for old adjustments APIs
+    assertThat(sourceDataMapper.mapBookingAndSentenceAdjustments(calculationRequest)).isEqualTo(adjustments)
+    // for new APIs
+    val adjustmentDtos = listOf(
+      AdjustmentDto(
+        person = "A1234BC",
+        adjustmentType = AdjustmentDto.AdjustmentType.ADDITIONAL_DAYS_AWARDED,
+        effectiveDays = 10,
+        days = 10,
+        fromDate = LocalDate.of(2015, 1, 2),
+        toDate = LocalDate.of(2015, 12, 31),
+        status = AdjustmentDto.Status.ACTIVE,
+        bookingId = 1,
+      ),
+      AdjustmentDto(
+        person = "A1234BC",
+        adjustmentType = AdjustmentDto.AdjustmentType.REMAND,
+        effectiveDays = 20,
+        days = 20,
+        fromDate = LocalDate.of(2015, 2, 3),
+        toDate = LocalDate.of(2015, 2, 28),
+        status = AdjustmentDto.Status.ACTIVE,
+        sentenceSequence = 1,
+        bookingId = 1,
+      ),
+    )
+    assertThat(sourceDataMapper.mapAdjustments(calculationRequest)).containsExactlyInAnyOrderElementsOf(adjustmentDtos)
+    assertThat(sourceDataMapper.getSourceData(calculationRequest).bookingAndSentenceAdjustments).isEqualTo(AdjustmentsSourceData(adjustmentsApiData = adjustmentDtos))
+  }
+
+  @Test
+  fun `should map adjustments v1`() {
+    val adjustments = listOf(
+      AdjustmentDto(
+        person = "A1234BC",
+        adjustmentType = AdjustmentDto.AdjustmentType.ADDITIONAL_DAYS_AWARDED,
+        effectiveDays = 10,
+        days = 10,
+        fromDate = LocalDate.of(2015, 1, 2),
+        toDate = LocalDate.of(2015, 12, 31),
+        status = AdjustmentDto.Status.ACTIVE,
+        bookingId = 1,
+      ),
+      AdjustmentDto(
+        person = "A1234BC",
+        adjustmentType = AdjustmentDto.AdjustmentType.REMAND,
+        effectiveDays = 20,
+        days = 20,
+        fromDate = LocalDate.of(2015, 2, 3),
+        toDate = LocalDate.of(2015, 2, 28),
+        status = AdjustmentDto.Status.ACTIVE,
+        sentenceSequence = 1,
+        bookingId = 1,
+      ),
+    )
+    val calculationRequest = CalculationRequest(
+      adjustments = objectToJson(adjustments, objectMapper),
+      adjustmentsVersion = 1,
+      prisonerDetails = objectToJson(
+        PrisonerDetails(
+          bookingId = 1,
+          offenderNo = "A1234BC",
+          dateOfBirth = LocalDate.of(1990, 1, 1),
+        ),
+        objectMapper,
+      ),
+      prisonerDetailsVersion = 0,
+      sentenceAndOffences = JacksonUtil.toJsonNode("[]"),
+      sentenceAndOffencesVersion = 3,
+    )
+
+    // for old adjustments APIs
+    assertThat(sourceDataMapper.mapBookingAndSentenceAdjustments(calculationRequest)).isEqualTo(
+      BookingAndSentenceAdjustments(
+        bookingAdjustments = listOf(
+          BookingAdjustment(
+            type = BookingAdjustmentType.ADDITIONAL_DAYS_AWARDED,
+            numberOfDays = 10,
+            fromDate = LocalDate.of(2015, 1, 2),
+            toDate = LocalDate.of(2015, 12, 31),
+            active = true,
+          ),
+        ),
+        sentenceAdjustments = listOf(
+          SentenceAdjustment(
+            type = SentenceAdjustmentType.REMAND, // adjustments API doesn't have recall remand so is mapped back to just REMAND
+            numberOfDays = 20,
+            fromDate = LocalDate.of(2015, 2, 3),
+            toDate = LocalDate.of(2015, 2, 28),
+            active = true,
+            sentenceSequence = 1,
+          ),
+        ),
+      ),
+    )
+    // for new APIs
+    assertThat(sourceDataMapper.mapAdjustments(calculationRequest)).isEqualTo(adjustments)
+    assertThat(sourceDataMapper.getSourceData(calculationRequest).bookingAndSentenceAdjustments).isEqualTo(AdjustmentsSourceData(adjustmentsApiData = adjustments))
   }
 }
