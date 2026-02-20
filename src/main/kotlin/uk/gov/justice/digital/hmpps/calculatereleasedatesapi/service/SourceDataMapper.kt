@@ -25,19 +25,19 @@ class SourceDataMapper(private val objectMapper: ObjectMapper) {
   fun getSourceData(calculationRequest: CalculationRequest): CalculationSourceData {
     val sentenceAndOffences = calculationRequest.sentenceAndOffences?.let { mapSentencesAndOffences(calculationRequest) }
     val prisonerDetails = calculationRequest.prisonerDetails?.let { mapPrisonerDetails(calculationRequest) }
-    val bookingAndSentenceAdjustments = calculationRequest.adjustments?.let { mapBookingAndSentenceAdjustments(calculationRequest) }
+    val adjustmentsDtos = calculationRequest.adjustments?.let { mapAdjustments(calculationRequest) }
     val returnToCustodyDate = calculationRequest.returnToCustodyDate?.let { mapReturnToCustodyDate(calculationRequest) }
     val finePayments = calculationRequest.offenderFinePayments?. let { mapOffenderFinePayment(calculationRequest) } ?: emptyList()
     val historicalTusedData = mapHistoricalTusedData(calculationRequest)
     val externalMovements = calculationRequest.externalMovements?.let { mapPrisonApiExternalMovement(calculationRequest) } ?: emptyList()
 
-    if (sentenceAndOffences == null || prisonerDetails == null || bookingAndSentenceAdjustments == null) {
+    if (sentenceAndOffences == null || prisonerDetails == null || adjustmentsDtos == null) {
       throw SourceDataMissingException("Source data is missing from calculation ${calculationRequest.id}")
     }
     return CalculationSourceData(
       sentenceAndOffences,
       prisonerDetails,
-      AdjustmentsSourceData(prisonApiData = bookingAndSentenceAdjustments),
+      AdjustmentsSourceData(adjustmentsApiData = adjustmentsDtos),
       finePayments,
       returnToCustodyDate,
       null, // TODO CRS-2486 Store fixed term recall details to db.
