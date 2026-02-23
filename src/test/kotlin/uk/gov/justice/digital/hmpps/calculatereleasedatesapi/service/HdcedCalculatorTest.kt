@@ -31,10 +31,10 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAdjus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.UnadjustedReleaseDate
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ReleaseMultiplier.Companion.toIntReleaseDays
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
-import kotlin.math.ceil
 
 @ExtendWith(MockitoExtension::class)
 class HdcedCalculatorTest {
@@ -114,10 +114,10 @@ class HdcedCalculatorTest {
   )
   fun `minimum custodial period handles different release points`(
     sentenceLength: Int,
-    releasePointMultiplier: Double,
+    releasePointMultiplier: BigDecimal,
     hasHDCED: Boolean,
   ) {
-    val numberOfDaysToDeterminateRelease = ceil(sentenceLength.toDouble() * releasePointMultiplier).toInt()
+    val numberOfDaysToDeterminateRelease = BigDecimal.valueOf(sentenceLength.toLong()).multiply(releasePointMultiplier).toIntReleaseDays()
     val sentencedAt = LocalDate.of(2020, 1, 1)
     val duration = Duration(mapOf(ChronoUnit.DAYS to sentenceLength.toLong()))
     val offence = Offence(LocalDate.of(2020, 1, 1))
@@ -221,11 +221,11 @@ class HdcedCalculatorTest {
   )
   fun `below midpoint calculation should handle different release points`(
     sentenceLength: Int,
-    releasePointMultiplier: Double,
+    releasePointMultiplier: BigDecimal,
     expectedHDCED: LocalDate,
     expectedNumberOfDaysToHDCED: Long,
   ) {
-    val numberOfDaysToDeterminateRelease = ceil(sentenceLength.toDouble() * releasePointMultiplier).toInt()
+    val numberOfDaysToDeterminateRelease = BigDecimal.valueOf(sentenceLength.toLong()).multiply(releasePointMultiplier).toIntReleaseDays()
     val sentencedAt = LocalDate.of(2020, 1, 1)
     val duration = Duration(mapOf(ChronoUnit.DAYS to sentenceLength.toLong()))
     val offence = Offence(LocalDate.of(2020, 1, 1))

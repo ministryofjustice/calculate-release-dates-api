@@ -152,7 +152,7 @@ class HdcedCalculator(
   private fun calculateHdcedUnderMidpoint(input: HdcedCalculationInput): HdcedCalculationResult {
     val halfTheCustodialPeriodButAtLeastTheMinimumHDCEDPeriod = max(
       hdcedConfiguration.custodialPeriodBelowMidpointMinimumDeductionDays,
-      input.custodialPeriodDecimal.multiply(ReleaseMultiplier.ONE_HALF.value).toLongReleaseDays(),
+      ReleaseMultiplier.ONE_HALF.applyTo(input.custodialPeriodDecimal),
     )
 
     val daysWithOnlyUalAdded = halfTheCustodialPeriodButAtLeastTheMinimumHDCEDPeriod.minus(input.deductedDays).plus(input.ualToAdd)

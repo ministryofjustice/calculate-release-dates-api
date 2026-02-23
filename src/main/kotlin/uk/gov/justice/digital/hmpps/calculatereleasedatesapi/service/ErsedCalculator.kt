@@ -12,11 +12,12 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSe
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ReleaseMultiplier.Companion.toLongReleaseDays
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.hasSentencesBeforeAndAfter
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
+import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
-import kotlin.math.ceil
 
 @Service
 class ErsedCalculator(
@@ -39,7 +40,7 @@ class ErsedCalculator(
           sentenceCalculation = sentenceCalculation,
           maxPeriodUnit = ersedConfiguration.ers50MaxPeriodUnit,
           maxPeriodAmount = ersedConfiguration.ers50MaxPeriodAmount,
-          releasePoint = ersedConfiguration.ers50ReleasePoint,
+          releaseMultiplier = ersedConfiguration.ers50ReleasePoint.value,
         ),
       )
     }
@@ -49,7 +50,7 @@ class ErsedCalculator(
         sentenceCalculation = sentenceCalculation,
         maxPeriodUnit = ersedConfiguration.ers30MaxPeriodUnit,
         maxPeriodAmount = ersedConfiguration.ers30MaxPeriodAmount,
-        releasePoint = ersedConfiguration.ers30ReleasePoint,
+        releaseMultiplier = ersedConfiguration.ers30ReleasePoint.value,
       ),
     )
 
@@ -88,7 +89,7 @@ class ErsedCalculator(
     val sentenceCalculation: SentenceCalculation,
     val maxPeriodUnit: ChronoUnit,
     val maxPeriodAmount: Long,
-    val releasePoint: Double,
+    val releaseMultiplier: BigDecimal,
   )
 
   private data class Result(val breakdown: ReleaseDateCalculationBreakdown, val adjustedDateExcludingAwarded: LocalDate)
@@ -142,7 +143,7 @@ class ErsedCalculator(
 
     val daysUntilRelease = ChronoUnit.DAYS.between(params.sentence.sentencedAt, unadjustedEffectiveRelease).plus(1).toInt()
     val unadjustedMinimumErsed = params.sentence.sentencedAt
-      .plusDays(ceil(daysUntilRelease * params.releasePoint).toLong())
+      .plusDays(BigDecimal.valueOf(daysUntilRelease.toLong()).multiply(params.releaseMultiplier).toLongReleaseDays())
     val minimumEffectiveErsed = unadjustedMinimumErsed
       .plusDays(params.sentenceCalculation.adjustments.adjustmentsForInitialRelease())
 
