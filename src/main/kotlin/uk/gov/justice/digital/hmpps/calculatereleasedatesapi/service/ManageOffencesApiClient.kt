@@ -13,7 +13,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.mana
 import java.time.Duration
 
 @Service
-class ManageOffencesApiClient(@Qualifier("manageOffencesApiWebClient") private val webClient: WebClient) {
+class ManageOffencesApiClient(@param:Qualifier("manageOffencesApiWebClient") private val webClient: WebClient) {
   private inline fun <reified T : Any> typeReference() = object : ParameterizedTypeReference<T>() {}
   private val log = LoggerFactory.getLogger(this::class.java)
 

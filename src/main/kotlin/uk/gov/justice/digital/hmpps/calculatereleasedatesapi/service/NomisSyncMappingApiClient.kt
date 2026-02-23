@@ -9,7 +9,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.nomissyncmapping.mo
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.nomissyncmapping.model.NomisSentenceId
 
 @Service
-class NomisSyncMappingApiClient(@Qualifier("nomisSyncMappingApiWebClient") private val webClient: WebClient) {
+class NomisSyncMappingApiClient(@param:Qualifier("nomisSyncMappingApiWebClient") private val webClient: WebClient) {
   private inline fun <reified T : Any> typeReference() = object : ParameterizedTypeReference<T>() {}
   private val log = LoggerFactory.getLogger(this::class.java)
 

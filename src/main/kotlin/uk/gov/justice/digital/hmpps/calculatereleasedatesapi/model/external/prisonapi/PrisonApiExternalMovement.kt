@@ -33,7 +33,7 @@ data class PrisonApiExternalMovement(
       "D1", "D2" -> ExternalMovementReason.DTO
       "PD" -> ExternalMovementReason.RECALL_RELEASE
 
-      "L" -> ExternalMovementReason.RECALL_ADMISSION
+      "L", "24" -> ExternalMovementReason.RECALL_ADMISSION
       "I", "W", "25" -> ExternalMovementReason.SENTENCE
       "V", "N" -> ExternalMovementReason.REMAND
       "B" -> ExternalMovementReason.HDC_RECALL
