@@ -8,7 +8,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Senten
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ReleaseMultiplier
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
-import kotlin.math.roundToLong
 
 /**
  * This interface is used for any sentence that can be used to calculated release dates.
@@ -58,7 +57,7 @@ interface CalculableSentence {
 
   @JsonIgnore
   fun getHalfSentenceDate(): LocalDate {
-    val days = (getLengthInDays().toDouble() / 2).roundToLong()
+    val days = ReleaseMultiplier.ONE_HALF.applyTo(getLengthInDays())
     return this.sentencedAt.plusDays(days)
   }
 
@@ -79,15 +78,19 @@ interface CalculableSentence {
     isRecall() -> {
       ReleaseDateType.PRRD
     }
+
     releaseDateTypes.getReleaseDateTypes().contains(ReleaseDateType.PED) && this.sentenceCalculation.extendedDeterminateParoleEligibilityDate == null -> {
       ReleaseDateType.PED
     }
+
     sentenceCalculation.isReleaseDateConditional -> {
       ReleaseDateType.CRD
     }
+
     releaseDateTypes.contains(ReleaseDateType.MTD) -> {
       ReleaseDateType.MTD
     }
+
     else -> {
       ReleaseDateType.ARD
     }
@@ -157,6 +160,7 @@ interface CalculableSentence {
     is DetentionAndTrainingOrderSentence -> {
       this.duration
     }
+
     is BotusSentence -> {
       this.duration
     }

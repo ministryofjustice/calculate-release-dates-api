@@ -11,10 +11,10 @@ hdced:
 ersed:
   ers-50-max-period-amount: 544
   ers-50-max-period-unit: DAYS
-  ers-50-release-point: 0.5
+  ers-50-release-point: ONE_HALF
   ers-30-max-period-amount: 4
   ers-30-max-period-unit: YEARS
-  ers-30-release-point: 0.3
+  ers-30-release-point: THIRTY_PERCENT
 
 sds-40-early-release-tranches:
   tranche-one-date: 2024-09-10
