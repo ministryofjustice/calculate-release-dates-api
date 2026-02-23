@@ -584,10 +584,35 @@ class TransformFunctionsTest {
     )
     assertThat(transform(dtoRelease)!!.movementReason).isEqualTo(ExternalMovementReason.DTO)
 
-    val unkownType = hdcRelease.copy(
+    val unknownType = hdcRelease.copy(
       movementReasonCode = "THISISNOTATHING",
     )
-    assertThat(transform(unkownType)).isNull()
+    assertThat(transform(unknownType)).isNull()
+  }
+
+  @Test
+  fun `Transform external movement with CRD and RECALL_ADMISSION resulting from 'Recall from Intermittent Custody'`() {
+    val prisonApiExternalMovement = PrisonApiExternalMovement(
+      movementReasonCode = "CR",
+      commentText = "",
+      movementDate = LocalDate.now(),
+      movementReason = "CRD",
+      movementTime = LocalTime.now(),
+      movementType = "A",
+      directionCode = "OUT",
+      offenderNo = "ASD",
+      movementTypeDescription = "ASD",
+      createDateTime = LocalDateTime.now(),
+      fromAgency = "bbc",
+    )
+
+    val admission = prisonApiExternalMovement.copy(
+      movementType = "ADM",
+      directionCode = "IN",
+      movementReasonCode = "24",
+    )
+
+    assertThat(transform(admission)!!.movementReason).isEqualTo(ExternalMovementReason.RECALL_ADMISSION)
   }
 
   private fun getComparisonPerson(validationMessages: List<ValidationMessage>? = emptyList()): ComparisonPerson {

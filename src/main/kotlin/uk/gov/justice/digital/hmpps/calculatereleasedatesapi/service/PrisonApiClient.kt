@@ -37,8 +37,8 @@ import java.time.LocalDate
 
 @Service
 class PrisonApiClient(
-  @Qualifier("prisonApiUserAuthWebClient") private val userAuthWebClient: WebClient,
-  @Qualifier("prisonApiSystemAuthWebClient") private val systemAuthWebClient: WebClient,
+  @param:Qualifier("prisonApiUserAuthWebClient") private val userAuthWebClient: WebClient,
+  @param:Qualifier("prisonApiSystemAuthWebClient") private val systemAuthWebClient: WebClient,
 ) {
   private inline fun <reified T : Any> typeReference() = object : ParameterizedTypeReference<T>() {}
   private val log = LoggerFactory.getLogger(this::class.java)

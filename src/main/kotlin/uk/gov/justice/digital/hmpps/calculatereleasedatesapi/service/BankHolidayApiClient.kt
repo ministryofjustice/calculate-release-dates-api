@@ -7,7 +7,7 @@ import org.springframework.web.reactive.function.client.WebClient
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BankHolidays
 
 @Service
-class BankHolidayApiClient(@Qualifier("bankHolidayApiWebClient") private val webClient: WebClient) {
+class BankHolidayApiClient(@param:Qualifier("bankHolidayApiWebClient") private val webClient: WebClient) {
   private inline fun <reified T : Any> typeReference() = object : ParameterizedTypeReference<T>() {}
 
   fun getBankHolidays(): BankHolidays = webClient.get()
