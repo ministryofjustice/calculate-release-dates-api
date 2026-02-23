@@ -1,5 +1,5 @@
 release-point-multipliers:
-  earlyReleasePoint: 0.45
+  earlyReleasePoint: FORTY_FIVE_PERCENT
 
 sds-40-early-release-tranches:
   tranche-one-date: 2024-09-10

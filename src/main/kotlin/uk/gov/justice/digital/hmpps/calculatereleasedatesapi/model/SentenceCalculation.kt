@@ -4,6 +4,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseTrancheConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isBeforeOrEqualTo
+import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import kotlin.math.abs
@@ -21,7 +22,7 @@ data class SentenceCalculation(
 
   val releaseDateCalculation: ReleaseDateCalculation get() = unadjustedReleaseDate.releaseDateCalculation
   val numberOfDaysToSentenceExpiryDate: Int get() = releaseDateCalculation.numberOfDaysToSentenceExpiryDate
-  val numberOfDaysToDeterminateReleaseDateDouble: Double get() = releaseDateCalculation.numberOfDaysToDeterminateReleaseDateDouble
+  val numberOfDaysToDeterminateReleaseDateDecimal: BigDecimal get() = releaseDateCalculation.numberOfDaysToDeterminateReleaseDateDecimal
   val numberOfDaysToDeterminateReleaseDate: Int get() = releaseDateCalculation.numberOfDaysToDeterminateReleaseDate
   val unadjustedExpiryDate get() = unadjustedReleaseDate.unadjustedExpiryDate
   val unadjustedDeterminateReleaseDate get() = unadjustedReleaseDate.unadjustedDeterminateReleaseDate

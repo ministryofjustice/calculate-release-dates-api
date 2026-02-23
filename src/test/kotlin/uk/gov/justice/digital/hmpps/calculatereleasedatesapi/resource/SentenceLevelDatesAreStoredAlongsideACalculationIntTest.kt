@@ -2,7 +2,6 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource
 
 import com.fasterxml.jackson.core.type.TypeReference
 import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.within
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -24,6 +23,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NomisCalculat
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestSentenceOutcomeRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestSentenceRepository
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ReleaseMultiplier
 import java.time.LocalDate
 
 @SpringBootTest(webEnvironment = RANDOM_PORT, properties = ["feature-toggles.use-adjustments-api=true", "feature-toggles.store-sentence-level-dates=true", "feature-toggles.apply-post-recall-repeal-rules=false"])
@@ -73,7 +73,7 @@ class SentenceLevelDatesAreStoredAlongsideACalculationIntTest(private val mockPr
     val (firstEntity, firstSentenceAndAdjustments) = withExtractedSentencesAndAdjustments.find { it.second.first.sentenceSequence == 1 }!!
     assertThat(firstSentenceAndAdjustments.second).hasSize(1)
     assertThat(firstEntity.impactsFinalReleaseDate).isTrue
-    assertThat(firstEntity.releaseMultiplier).isEqualTo(0.5, within(0.01))
+    assertThat(firstEntity.releaseMultiplier).isEqualTo(ReleaseMultiplier.ONE_HALF)
     val firstDates = calculationRequestSentenceOutcomeRepository.findByCalculationRequestSentenceId(firstEntity.id!!)
     assertThat(firstDates).hasSize(3)
     assertThat(firstDates.find { it.calculationDateType == SLED }?.outcomeDate).isEqualTo(LocalDate.of(2025, 11, 30))
@@ -83,7 +83,7 @@ class SentenceLevelDatesAreStoredAlongsideACalculationIntTest(private val mockPr
     val (secondEntity, secondSentenceAndAdjustments) = withExtractedSentencesAndAdjustments.find { it.second.first.sentenceSequence == 2 }!!
     assertThat(secondSentenceAndAdjustments.second).hasSize(1)
     assertThat(secondEntity.impactsFinalReleaseDate).isTrue
-    assertThat(secondEntity.releaseMultiplier).isEqualTo(0.5, within(0.01))
+    assertThat(secondEntity.releaseMultiplier).isEqualTo(ReleaseMultiplier.ONE_HALF)
     val secondDates = calculationRequestSentenceOutcomeRepository.findByCalculationRequestSentenceId(secondEntity.id!!)
     assertThat(secondDates).hasSize(3)
     assertThat(secondDates.find { it.calculationDateType == SLED }?.outcomeDate).isEqualTo(LocalDate.of(2025, 11, 30))
@@ -93,7 +93,7 @@ class SentenceLevelDatesAreStoredAlongsideACalculationIntTest(private val mockPr
     val (thirdEntity, thirdSentenceAndAdjustments) = withExtractedSentencesAndAdjustments.find { it.second.first.sentenceSequence == 3 }!!
     assertThat(thirdSentenceAndAdjustments.second).isEmpty()
     assertThat(thirdEntity.impactsFinalReleaseDate).isFalse
-    assertThat(thirdEntity.releaseMultiplier).isEqualTo(0.5, within(0.01))
+    assertThat(thirdEntity.releaseMultiplier).isEqualTo(ReleaseMultiplier.ONE_HALF)
     val thirdDates = calculationRequestSentenceOutcomeRepository.findByCalculationRequestSentenceId(thirdEntity.id!!)
     assertThat(thirdDates).hasSize(3)
     assertThat(thirdDates.find { it.calculationDateType == SLED }?.outcomeDate).isEqualTo(LocalDate.of(2024, 1, 1))

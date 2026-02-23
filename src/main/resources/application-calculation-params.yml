@@ -22,13 +22,12 @@ sds-40-early-release-tranches:
   tranche-three-date: 2024-12-16
 
 release-point-multipliers:
-  earlyReleasePoint: 0.4
+  earlyReleasePoint: FORTY_PERCENT
 
 early-release-configuration:
   configurations:
     - release-multiplier:
-        SDS:
-          numerator: ${release-point-multipliers.earlyReleasePoint}
+        SDS: ${release-point-multipliers.earlyReleasePoint}
       filter: SDS_40_EXCLUSIONS
       tranches:
         - type: SENTENCE_LENGTH

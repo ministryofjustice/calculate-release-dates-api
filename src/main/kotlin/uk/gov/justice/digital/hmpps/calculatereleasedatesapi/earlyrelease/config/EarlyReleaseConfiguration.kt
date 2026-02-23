@@ -8,6 +8,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ReleaseMultiplier
 import java.time.LocalDate
 
 @ConfigurationProperties(prefix = "early-release-configuration")
@@ -16,7 +17,7 @@ data class EarlyReleaseConfigurations(
 )
 
 data class EarlyReleaseConfiguration(
-  val releaseMultiplier: Map<SentenceIdentificationTrack, EarlyReleaseMultiplier>? = null,
+  val releaseMultiplier: Map<SentenceIdentificationTrack, ReleaseMultiplier>? = null,
   val recallCalculation: RecallCalculationType? = null,
   val filter: EarlyReleaseSentenceFilter,
   val additionsAppliedAfterDefaulting: Boolean = false,
@@ -53,18 +54,6 @@ data class EarlyReleaseConfiguration(
   }
 
   fun modifiesRecallReleaseDate(): Boolean = releaseMultiplier == null
-}
-
-/*
-  Early release multiplier defined as fraction.
-   e.g. 1/3 1/2
-   or if a decimal, denominator is 1 e.g 0.4/1 = 0.4
- */
-data class EarlyReleaseMultiplier(
-  val numerator: Double,
-  val denominator: Double = 1.toDouble(),
-) {
-  fun toDouble(): Double = numerator.div(denominator)
 }
 
 enum class RecallCalculationType {

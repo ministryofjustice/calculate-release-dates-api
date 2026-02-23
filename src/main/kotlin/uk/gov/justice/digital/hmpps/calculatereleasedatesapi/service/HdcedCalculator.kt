@@ -15,10 +15,11 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.HDC_365_COMMENCEMENT_DATE
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ReleaseMultiplier.Companion.toLongReleaseDays
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.hasSentencesBeforeAndAfter
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
+import java.math.BigDecimal
 import java.time.LocalDate
-import kotlin.math.ceil
 import kotlin.math.max
 
 @Service
@@ -59,7 +60,7 @@ class HdcedCalculator(
   fun hasSdsPlus(sentence: CalculableSentence): Boolean = sentence.sentenceParts().any { it.isSDSPlusEligibleSentenceTypeLengthAndOffence }
 
   private data class HdcedCalculationInput(
-    val custodialPeriodDouble: Double,
+    val custodialPeriodDecimal: BigDecimal,
     val custodialPeriod: Int,
     val dateHdcAppliesFrom: LocalDate,
     val deductedDays: Long,
@@ -82,7 +83,7 @@ class HdcedCalculator(
   )
 
   fun calculateHdced(sentence: CalculableSentence, sentenceCalculation: SentenceCalculation) {
-    val custodialPeriod = sentenceCalculation.numberOfDaysToDeterminateReleaseDateDouble
+    val custodialPeriod = sentenceCalculation.numberOfDaysToDeterminateReleaseDateDecimal
 
     // If adjustments make the CRD before sentence date plus 14 days (i.e. a large REMAND days)
     // then we don't need a HDCED date.
@@ -96,12 +97,12 @@ class HdcedCalculator(
   }
 
   private fun calculateHdced(sentenceCalculation: SentenceCalculation, sentence: CalculableSentence) {
-    val custodialPeriodDouble = sentenceCalculation.numberOfDaysToDeterminateReleaseDateDouble
+    val custodialPeriodDecimal = sentenceCalculation.numberOfDaysToDeterminateReleaseDateDecimal
     val custodialPeriod = sentenceCalculation.numberOfDaysToDeterminateReleaseDate
     val dateHdcAppliesFrom = sentence.sentencedAt
     val hdc180Result = calculateHdced(
       HdcedCalculationInput(
-        custodialPeriodDouble = custodialPeriodDouble,
+        custodialPeriodDecimal = custodialPeriodDecimal,
         custodialPeriod = custodialPeriod,
         dateHdcAppliesFrom = dateHdcAppliesFrom,
         deductedDays = sentenceCalculation.adjustments.deductions,
@@ -117,7 +118,7 @@ class HdcedCalculator(
     )
     val hdc365Result = calculateHdced(
       HdcedCalculationInput(
-        custodialPeriodDouble = custodialPeriodDouble,
+        custodialPeriodDecimal = custodialPeriodDecimal,
         custodialPeriod = custodialPeriod,
         dateHdcAppliesFrom = dateHdcAppliesFrom,
         deductedDays = sentenceCalculation.adjustments.deductions,
@@ -142,7 +143,7 @@ class HdcedCalculator(
     }
   }
 
-  private fun calculateHdced(input: HdcedCalculationInput): HdcedCalculationResult = if (input.custodialPeriodDouble < input.custodialPeriodMidPointDays) {
+  private fun calculateHdced(input: HdcedCalculationInput): HdcedCalculationResult = if (input.custodialPeriodDecimal.toLongReleaseDays() < input.custodialPeriodMidPointDays) {
     calculateHdcedUnderMidpoint(input)
   } else {
     calculateHdcedOverMidpoint(input)
@@ -151,7 +152,7 @@ class HdcedCalculator(
   private fun calculateHdcedUnderMidpoint(input: HdcedCalculationInput): HdcedCalculationResult {
     val halfTheCustodialPeriodButAtLeastTheMinimumHDCEDPeriod = max(
       hdcedConfiguration.custodialPeriodBelowMidpointMinimumDeductionDays,
-      ceil(input.custodialPeriodDouble.div(HALF)).toLong(),
+      input.custodialPeriodDecimal.multiply(ReleaseMultiplier.ONE_HALF.value).toLongReleaseDays(),
     )
 
     val daysWithOnlyUalAdded = halfTheCustodialPeriodButAtLeastTheMinimumHDCEDPeriod.minus(input.deductedDays).plus(input.ualToAdd)
@@ -249,7 +250,7 @@ class HdcedCalculator(
     sentence: CalculableSentence,
   ) = sentenceCalculation.adjustedDeterminateReleaseDate.isBefore(sentence.sentencedAt.plusDays(hdcedConfiguration.minimumDaysOnHdc))
 
-  private fun unadjustedReleasePointIsLessThanMinimumCustodialPeriod(custodialPeriod: Double) = custodialPeriod < hdcedConfiguration.minimumCustodialPeriodDays
+  private fun unadjustedReleasePointIsLessThanMinimumCustodialPeriod(custodialPeriod: BigDecimal) = custodialPeriod.toLongReleaseDays() < hdcedConfiguration.minimumCustodialPeriodDays
 
   private fun noHdced(sentenceCalculation: SentenceCalculation) {
     sentenceCalculation.homeDetentionCurfewEligibilityDate = null
@@ -277,6 +278,5 @@ class HdcedCalculator(
 
   companion object {
     val log: Logger = LoggerFactory.getLogger(this::class.java)
-    private const val HALF = 2L
   }
 }
