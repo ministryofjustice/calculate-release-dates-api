@@ -74,7 +74,7 @@ hdced4:
   hdc4-commencement-date: 2025-01-01
 
 release-point-multipliers:
-  earlyReleasePoint: 0.4
+  earlyReleasePoint: FORTY_PERCENT
 
 sds-early-release-tranches:
   tranche-one-date: 2024-09-10
