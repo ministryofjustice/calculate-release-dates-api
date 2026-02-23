@@ -17,7 +17,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqual
 import java.math.BigDecimal
 import java.rmi.UnexpectedException
 import java.time.LocalDate
-import kotlin.math.ceil
 import kotlin.properties.Delegates
 
 class UnadjustedReleaseDate(
@@ -216,8 +215,7 @@ class UnadjustedReleaseDate(
       (sentence is ExtendedDeterminateSentence || sentence is SopcSentence)
     ) {
       val pedMultiplier = determinePedMultiplier(sentence.identificationTrack)
-      numberOfDaysToParoleEligibilityDate =
-        ceil(numberOfDaysToReleaseDate.toDouble().times(pedMultiplier)).toLong()
+      numberOfDaysToParoleEligibilityDate = pedMultiplier.applyTo(numberOfDaysToReleaseDate)
     }
 
     return ReleaseDateCalculation(
@@ -304,7 +302,7 @@ class UnadjustedReleaseDate(
 
     val daysInFirstCustodialDuration =
       SentenceAggregator().getDaysInGroup(releaseStartDate, sentencesOfFirstType) { it.custodialDuration() }
-    var daysToPed = ceil(daysInFirstCustodialDuration.times(firstSentenceMultiplier)).toLong()
+    var daysToPed = firstSentenceMultiplier.applyTo(daysInFirstCustodialDuration)
     val notionalPed = releaseStartDate
       .plusDays(daysToPed)
       .minusDays(1)
@@ -312,17 +310,17 @@ class UnadjustedReleaseDate(
       val otherSentenceMultiplier = determinePedMultiplier(sentencesOfOtherType[0].identificationTrack)
       val daysInOtherCustodialDuration =
         SentenceAggregator().getDaysInGroup(notionalPed, sentencesOfOtherType) { it.custodialDuration() }
-      daysToPed += ceil(daysInOtherCustodialDuration.times(otherSentenceMultiplier)).toLong()
+      daysToPed += otherSentenceMultiplier.applyTo(daysInOtherCustodialDuration)
     }
     return daysToRelease + daysToPed
   }
 
-  private fun determinePedMultiplier(identification: SentenceIdentificationTrack): Double = when (identification) {
+  private fun determinePedMultiplier(identification: SentenceIdentificationTrack): ReleaseMultiplier = when (identification) {
     SentenceIdentificationTrack.SOPC_PED_AT_TWO_THIRDS,
     SentenceIdentificationTrack.EDS_DISCRETIONARY_RELEASE,
-    -> 2 / 3.toDouble()
+    -> ReleaseMultiplier.TWO_THIRDS
 
-    SentenceIdentificationTrack.SOPC_PED_AT_HALFWAY -> 1 / 2.toDouble()
+    SentenceIdentificationTrack.SOPC_PED_AT_HALFWAY -> ReleaseMultiplier.ONE_HALF
     else -> throw UnsupportedOperationException("Unknown identification for a PED calculation $identification")
   }
 }
