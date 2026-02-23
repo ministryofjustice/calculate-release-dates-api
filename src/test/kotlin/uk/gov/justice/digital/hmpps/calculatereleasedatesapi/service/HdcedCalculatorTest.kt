@@ -31,6 +31,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAdjus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.UnadjustedReleaseDate
+import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 import kotlin.math.ceil
@@ -571,7 +572,7 @@ class HdcedCalculatorTest {
     sentence.releaseDateTypes = ReleaseDateTypes(listOf(ReleaseDateType.CRD, ReleaseDateType.SLED), sentence, mock())
     val releaseDateCalculation = ReleaseDateCalculation(
       numberOfDaysToSED,
-      numberOfDaysToDeterminateReleaseDate.toDouble(),
+      BigDecimal.valueOf(numberOfDaysToDeterminateReleaseDate.toLong()),
       numberOfDaysToDeterminateReleaseDate,
       null,
     )

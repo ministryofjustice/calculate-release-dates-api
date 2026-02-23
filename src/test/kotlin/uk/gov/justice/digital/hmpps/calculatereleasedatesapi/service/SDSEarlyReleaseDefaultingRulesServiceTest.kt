@@ -60,7 +60,7 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
     testTrancheThreeCommencementDate,
   )
 
-  private val earlyReleaseConfiguration = trancheConfiguration.getSds40EarlyReleaseConfig(0.4)
+  private val earlyReleaseConfiguration = trancheConfiguration.getSds40EarlyReleaseConfig(ReleaseMultiplier.FORTY_PERCENT)
 
   private val service = SDSEarlyReleaseDefaultingRulesService(EarlyReleaseConfigurations(listOf(earlyReleaseConfiguration)))
 

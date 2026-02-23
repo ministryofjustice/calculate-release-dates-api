@@ -5,6 +5,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ReleaseMultiplier
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 import kotlin.math.roundToLong
@@ -185,6 +186,6 @@ interface CalculableSentence {
   @JsonIgnore
   fun isAffectedBySds40EarlyRelease(): Boolean = this.sentenceParts().any {
     it.identificationTrack == SentenceIdentificationTrack.SDS &&
-      this.sentenceCalculation.unadjustedReleaseDate.multiplier(it) == 0.4
+      this.sentenceCalculation.unadjustedReleaseDate.multiplier(it) == ReleaseMultiplier.FORTY_PERCENT
   }
 }

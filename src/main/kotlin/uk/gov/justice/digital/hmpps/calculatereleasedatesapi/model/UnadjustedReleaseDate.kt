@@ -9,8 +9,12 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.NoValidReturnToCustodyDateException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.NoValidRevocationDateException
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ReleaseMultiplier
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ReleaseMultiplier.Companion.toIntReleaseDays
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ReleaseMultiplier.Companion.toLongReleaseDays
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.sentence.SentenceAggregator
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
+import java.math.BigDecimal
 import java.rmi.UnexpectedException
 import java.time.LocalDate
 import kotlin.math.ceil
@@ -65,19 +69,19 @@ class UnadjustedReleaseDate(
         .minusDays(1)
     }
 
-  private fun calculateReleaseDate(findMultiplierBySentence: (sentence: CalculableSentence) -> Double): ReleaseDateCalculation = if (sentence is ConsecutiveSentence) {
+  private fun calculateReleaseDate(findMultiplierBySentence: (sentence: CalculableSentence) -> ReleaseMultiplier): ReleaseDateCalculation = if (sentence is ConsecutiveSentence) {
     getConsecutiveRelease(findMultiplierBySentence)
   } else {
     getSingleSentenceRelease(findMultiplierBySentence)
   }
 
-  fun multiplier(sentence: CalculableSentence): Double = multiplierForSentence(
+  fun multiplier(sentence: CalculableSentence): ReleaseMultiplier = multiplierForSentence(
     calculationTrigger.timelineCalculationDate,
     calculationTrigger.allocatedTranche?.date,
     sentence,
   )
 
-  fun historicMultiplier(sentence: CalculableSentence) = multiplierForSentence(
+  fun historicMultiplier(sentence: CalculableSentence): ReleaseMultiplier = multiplierForSentence(
     earlyReleaseConfigurations.configurations.minOfOrNull { it.earliestTranche() }?.minusDays(1)
       ?: calculationTrigger.timelineCalculationDate,
     null,
@@ -148,7 +152,7 @@ class UnadjustedReleaseDate(
     timelineCalculationDate: LocalDate,
     allocatedTrancheDate: LocalDate?,
     sentence: CalculableSentence,
-  ): Double = if (sentence.identificationTrack.isMultiplierFixed()) {
+  ): ReleaseMultiplier = if (sentence.identificationTrack.isMultiplierFixed()) {
     sentence.identificationTrack.fixedMultiplier()
   } else {
     sdsReleaseMultiplier(sentence, timelineCalculationDate, allocatedTrancheDate)
@@ -158,7 +162,7 @@ class UnadjustedReleaseDate(
     sentence: CalculableSentence,
     timelineCalculationDate: LocalDate,
     allocatedTrancheDate: LocalDate?,
-  ): Double {
+  ): ReleaseMultiplier {
     if (sentence is StandardDeterminateSentence) {
       val latestEarlyReleaseConfig =
         earlyReleaseConfigurations.configurations
@@ -181,9 +185,9 @@ class UnadjustedReleaseDate(
     return defaultSDSReleaseMultiplier(sentence)
   }
 
-  private fun defaultSDSReleaseMultiplier(sentence: CalculableSentence): Double = when (sentence.identificationTrack) {
-    SentenceIdentificationTrack.SDS -> 0.5
-    SentenceIdentificationTrack.SDS_PLUS -> 2.toDouble().div(3)
+  private fun defaultSDSReleaseMultiplier(sentence: CalculableSentence): ReleaseMultiplier = when (sentence.identificationTrack) {
+    SentenceIdentificationTrack.SDS -> ReleaseMultiplier.ONE_HALF
+    SentenceIdentificationTrack.SDS_PLUS -> ReleaseMultiplier.TWO_THIRDS
     else -> throw UnexpectedException("Unknown default release multipler.")
   }
 
@@ -191,20 +195,22 @@ class UnadjustedReleaseDate(
     earlyReleaseConfig: EarlyReleaseConfiguration,
     timelineCalculationDate: LocalDate,
     sentence: StandardDeterminateSentence,
-  ): Double {
+  ): ReleaseMultiplier {
     val sds40Tranche3 = earlyReleaseConfig.tranches.find { it.type == EarlyReleaseTrancheType.SDS_40_TRANCHE_3 }
     if (sds40Tranche3 != null && timelineCalculationDate.isAfterOrEqualTo(sds40Tranche3.date) && sentence.hasAnSDSEarlyReleaseExclusion.trancheThreeExclusion) {
       return defaultSDSReleaseMultiplier(sentence)
     }
-    return earlyReleaseConfig.releaseMultiplier!![sentence.identificationTrack]!!.toDouble()
+    return earlyReleaseConfig.releaseMultiplier!![sentence.identificationTrack]!!
   }
 
-  private fun getSingleSentenceRelease(findMultiplierBySentence: (sentence: CalculableSentence) -> Double): ReleaseDateCalculation {
+  private fun getSingleSentenceRelease(findMultiplierBySentence: (sentence: CalculableSentence) -> ReleaseMultiplier): ReleaseDateCalculation {
     var numberOfDaysToParoleEligibilityDate: Long? = null
     val custodialDuration = sentence.custodialDuration()
-    val numberOfDaysToReleaseDateDouble =
-      custodialDuration.getLengthInDays(sentence.sentencedAt).times(findMultiplierBySentence(sentence))
-    val numberOfDaysToReleaseDate: Int = ceil(numberOfDaysToReleaseDateDouble).toInt()
+    val custodialDays = custodialDuration.getLengthInDays(sentence.sentencedAt).toLong()
+    val multiplier = findMultiplierBySentence(sentence)
+    val numberOfDaysToReleaseDateDecimal = BigDecimal.valueOf(custodialDays).times(multiplier.value)
+
+    val numberOfDaysToReleaseDate: Int = numberOfDaysToReleaseDateDecimal.toIntReleaseDays()
     if (sentence.releaseDateTypes.getReleaseDateTypes()
         .contains(PED) &&
       (sentence is ExtendedDeterminateSentence || sentence is SopcSentence)
@@ -216,13 +222,13 @@ class UnadjustedReleaseDate(
 
     return ReleaseDateCalculation(
       sentence.getLengthInDays(),
-      numberOfDaysToReleaseDateDouble,
+      numberOfDaysToReleaseDateDecimal,
       numberOfDaysToReleaseDate,
       numberOfDaysToParoleEligibilityDate,
     )
   }
 
-  private fun getConsecutiveRelease(findMultiplierBySentence: (sentence: CalculableSentence) -> Double): ReleaseDateCalculation {
+  private fun getConsecutiveRelease(findMultiplierBySentence: (sentence: CalculableSentence) -> ReleaseMultiplier): ReleaseDateCalculation {
     sentence as ConsecutiveSentence
     val daysToExpiry =
       SentenceAggregator().getDaysInGroup(sentence.sentencedAt, sentence.orderedSentences) { it.totalDuration() }
@@ -231,7 +237,7 @@ class UnadjustedReleaseDate(
         IndexedSentenceWithReleasePointMultiplier(
           sentence.orderedSentences.indexOf(it),
           it,
-          findMultiplierBySentence(it),
+          findMultiplierBySentence(it).value,
         )
       }
       .partition { (it.sentence is ExtendedDeterminateSentence && !it.sentence.automaticRelease) || it.sentence is SopcSentence }
@@ -262,7 +268,7 @@ class UnadjustedReleaseDate(
         }
 
         val multiplier = sentencesWithMultipliers[0].multiplier
-        val daysToReleaseInThisGroup = ceil(daysInThisCustodialDuration.toDouble().times(multiplier)).toLong()
+        val daysToReleaseInThisGroup = BigDecimal.valueOf(daysInThisCustodialDuration.toLong()).times(multiplier).toLongReleaseDays()
 
         notionalCrd = releaseStartDate
           .plusDays(daysToReleaseInThisGroup)
@@ -278,7 +284,7 @@ class UnadjustedReleaseDate(
 
     return ReleaseDateCalculation(
       daysToExpiry,
-      daysToRelease.toDouble(),
+      BigDecimal.valueOf(daysToRelease.toLong()),
       daysToRelease,
       numberOfDaysToParoleEligibilityDate,
     )
@@ -324,12 +330,12 @@ class UnadjustedReleaseDate(
 private data class IndexedSentenceWithReleasePointMultiplier(
   val index: Int,
   val sentence: CalculableSentence,
-  val multiplier: Double,
+  val multiplier: BigDecimal,
 )
 
 data class ReleaseDateCalculation(
   val numberOfDaysToSentenceExpiryDate: Int,
-  val numberOfDaysToDeterminateReleaseDateDouble: Double,
+  val numberOfDaysToDeterminateReleaseDateDecimal: BigDecimal,
   val numberOfDaysToDeterminateReleaseDate: Int,
   val numberOfDaysToParoleEligibilityDate: Long?,
 )
