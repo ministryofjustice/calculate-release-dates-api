@@ -195,6 +195,7 @@ class ManualComparisonServiceTest {
       sdsPlusSentencesIdentified = objectMapper.valueToTree(listOf(sdsPlusSentence)),
       establishment = "BMI",
       hasIndeterminateSentences = false,
+      calculationRequestId = 99L,
     )
     val comparison = Comparison(
       id = 99L,
@@ -226,6 +227,7 @@ class ManualComparisonServiceTest {
         breakdownByReleaseDateType = emptyMap(),
         sdsSentencesIdentified = listOf(sdsPlusSentence),
         fatalException = person.fatalException,
+        calculationRequestId = 99L,
       ),
     )
   }
