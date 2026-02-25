@@ -47,6 +47,12 @@ class RecordARecallDecisionService(
 ) {
 
   fun validate(prisonerId: String): RecordARecallValidationResult {
+    val sourceDataForLatestBooking = getSourceDataForLatestBooking(prisonerId)
+    val validationResult = validate(sourceDataForLatestBooking)
+    if (validationResult.criticalValidationMessages.isNotEmpty()) {
+      return validationResult.copy(hasCriticalErrorsOnLatestBooking = true)
+    }
+
     val sourceData = getSourceData(prisonerId)
     return validate(sourceData)
   }
@@ -60,6 +66,11 @@ class RecordARecallDecisionService(
       otherValidationMessages = otherValidationMessages,
       earliestSentenceDate = sourceData.sentenceAndOffences.minOf { it.sentenceDate },
     )
+  }
+
+  private fun getSourceDataForLatestBooking(prisonerId: String): CalculationSourceData {
+    val sourceDataLookupOptions = SourceDataLookupOptions.overrideToIncludeInactiveDataAndForceAdjustmentsApi()
+    return calculationSourceDataService.getCalculationSourceData(prisonerId, sourceDataLookupOptions)
   }
 
   private fun getSourceData(prisonerId: String): CalculationSourceData {

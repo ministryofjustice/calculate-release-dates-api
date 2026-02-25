@@ -7,4 +7,5 @@ data class RecordARecallValidationResult(
   val criticalValidationMessages: List<ValidationMessage>,
   val otherValidationMessages: List<ValidationMessage>,
   val earliestSentenceDate: LocalDate,
+  val hasCriticalErrorsOnLatestBooking: Boolean = false,
 )
