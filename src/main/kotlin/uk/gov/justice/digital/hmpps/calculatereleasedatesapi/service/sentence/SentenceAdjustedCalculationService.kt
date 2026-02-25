@@ -27,13 +27,13 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalcu
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ErsedCalculator
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.HdcedCalculator
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ReleaseMultiplier
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.TusedCalculator
+import java.math.RoundingMode
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit.DAYS
 import java.time.temporal.ChronoUnit.MONTHS
 import kotlin.collections.set
-import kotlin.math.ceil
-import kotlin.math.floor
 
 @Service
 class SentenceAdjustedCalculationService(
@@ -193,7 +193,7 @@ class SentenceAdjustedCalculationService(
           .map { (it as StandardDeterminateSentence).duration }
           .reduce { acc, duration -> acc.appendAll(duration.durationElements) }
           .getLengthInDays(sentence.sentencedAt)
-      val adjustment = floor(lengthOfOraSentences.toDouble().div(TWO)).toLong()
+      val adjustment = ReleaseMultiplier.ONE_HALF.applyTo(lengthOfOraSentences, RoundingMode.FLOOR)
       sentenceCalculation.licenceExpiryDate =
         sentenceCalculation.adjustedDeterminateReleaseDate
           .plusDays(adjustment)
@@ -222,7 +222,7 @@ class SentenceAdjustedCalculationService(
         )
     } else {
       sentenceCalculation.numberOfDaysToLicenceExpiryDate =
-        ceil(sentenceCalculation.numberOfDaysToSentenceExpiryDate.toDouble().times(THREE).div(FOUR)).toLong()
+        ReleaseMultiplier.THREE_QUARTERS.applyTo(sentenceCalculation.numberOfDaysToSentenceExpiryDate)
           .plus(sentenceCalculation.numberOfDaysToAddToLicenceExpiryDate)
           .plus(sentenceCalculation.adjustments.adjustmentsForInitialReleaseWithoutAwarded())
       sentenceCalculation.licenceExpiryDate = sentence.sentencedAt.plusDays(
@@ -235,9 +235,8 @@ class SentenceAdjustedCalculationService(
     sentenceCalculation: SentenceCalculation,
     sentence: CalculableSentence,
   ) {
-    sentenceCalculation.numberOfDaysToNonParoleDate =
-      ceil(sentenceCalculation.numberOfDaysToSentenceExpiryDate.toDouble().times(TWO).div(THREE)).toLong()
-        .plus(sentenceCalculation.adjustments.adjustmentsForInitialReleaseWithoutAwarded())
+    sentenceCalculation.numberOfDaysToNonParoleDate = ReleaseMultiplier.TWO_THIRDS.applyTo(sentenceCalculation.numberOfDaysToSentenceExpiryDate)
+      .plus(sentenceCalculation.adjustments.adjustmentsForInitialReleaseWithoutAwarded())
     sentenceCalculation.nonParoleDate = sentence.sentencedAt.plusDays(
       sentenceCalculation.numberOfDaysToNonParoleDate,
     ).minusDays(ONE)
@@ -284,8 +283,7 @@ class SentenceAdjustedCalculationService(
         .reduce { acc, duration -> acc.appendAll(duration.durationElements) }
         .getLengthInDays(sentence.sentencedAt)
 
-      sentenceCalculation.numberOfDaysToNotionalConditionalReleaseDate =
-        ceil(daysOfNewStyleSentences.toDouble().div(TWO)).toLong()
+      sentenceCalculation.numberOfDaysToNotionalConditionalReleaseDate = ReleaseMultiplier.ONE_HALF.applyTo(daysOfNewStyleSentences)
 
       val unAdjustedNotionalConditionalReleaseDate = sentence.sentencedAt
         .plusDays(sentenceCalculation.numberOfDaysToNotionalConditionalReleaseDate)
@@ -297,8 +295,7 @@ class SentenceAdjustedCalculationService(
 
       val dayAfterNotionalConditionalReleaseDate =
         sentenceCalculation.notionalConditionalReleaseDate!!.plusDays(ONE)
-      sentenceCalculation.numberOfDaysToNonParoleDate =
-        ceil(daysOfOldStyleSentences.toDouble().times(TWO).div(THREE)).toLong()
+      sentenceCalculation.numberOfDaysToNonParoleDate = ReleaseMultiplier.TWO_THIRDS.applyTo(daysOfOldStyleSentences)
       sentenceCalculation.nonParoleDate = dayAfterNotionalConditionalReleaseDate
         .plusDays(sentenceCalculation.numberOfDaysToNonParoleDate)
         .minusDays(ONE)
@@ -307,10 +304,6 @@ class SentenceAdjustedCalculationService(
 
   companion object {
     private const val ONE = 1L
-    private const val TWO = 2L
-    private const val THREE = 3L
-    private const val FOUR = 4L
-    private const val YEAR_IN_DAYS = 365
     val log: Logger = LoggerFactory.getLogger(this::class.java)
   }
 }
