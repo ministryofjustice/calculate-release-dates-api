@@ -52,8 +52,8 @@ class RecordARecallDecisionService(
     if (validationResult.criticalValidationMessages.isNotEmpty()) {
       return validationResult.copy(hasCriticalErrorsOnLatestBooking = true)
     }
-
-    val sourceData = getSourceData(prisonerId)
+    val penultimateBookingId = getPenultimateBookingId(prisonerId) ?: return validationResult
+    val sourceData = getSourceData(prisonerId, penultimateBookingId)
     return validate(sourceData)
   }
 
@@ -73,35 +73,45 @@ class RecordARecallDecisionService(
     return calculationSourceDataService.getCalculationSourceData(prisonerId, sourceDataLookupOptions)
   }
 
-  private fun getSourceData(prisonerId: String): CalculationSourceData {
+  private fun getSourceData(prisonerId: String, penultimateBookingId: Long?): CalculationSourceData {
+    val sourceDataLookupOptions = SourceDataLookupOptions.overrideToIncludeInactiveDataAndForceAdjustmentsApi()
+    return calculationSourceDataService.getCalculationSourceData(prisonerId, sourceDataLookupOptions, listOfNotNull(penultimateBookingId))
+  }
+
+  private fun getPenultimateBookingId(prisonerId: String): Long? {
     val inPrisonSummary = prisonService.getPrisonerInPrisonSummary(prisonerId)
-    val bookings = inPrisonSummary.prisonPeriod?.map { it.bookingId to it.bookingSequence }?.distinct()?.sortedByDescending { it.second }?.map { it.first }
+    val bookings = inPrisonSummary.prisonPeriod?.map { it.bookingId to it.bookingSequence }?.distinct()
+      ?.sortedByDescending { it.second }?.map { it.first }
 
     val penultimateBooking = if (bookings != null && bookings.size > 1) {
       bookings[bookings.size - 2]
     } else {
       null
     }
-
-    val sourceDataLookupOptions = SourceDataLookupOptions.overrideToIncludeInactiveDataAndForceAdjustmentsApi()
-    return calculationSourceDataService.getCalculationSourceData(prisonerId, sourceDataLookupOptions, listOfNotNull(penultimateBooking))
+    return penultimateBooking
   }
 
   fun makeRecallDecision(prisonerId: String, recordARecallRequest: RecordARecallRequest): RecordARecallDecisionResult {
-    val sourceData = getSourceData(prisonerId)
-    val validationMessages = validate(sourceData)
-
-    if (validationMessages.criticalValidationMessages.isNotEmpty()) {
+    val sourceDataForLatestBooking = getSourceDataForLatestBooking(prisonerId)
+    val latestBookingValidation = validate(sourceDataForLatestBooking)
+    if (latestBookingValidation.criticalValidationMessages.isNotEmpty()) {
       return RecordARecallDecisionResult(
         RecordARecallDecision.CRITICAL_ERRORS,
-        validationMessages = validationMessages.criticalValidationMessages,
+        validationMessages = latestBookingValidation.criticalValidationMessages,
       )
     }
-    if (validationMessages.otherValidationMessages.isNotEmpty()) {
-      return RecordARecallDecisionResult(
-        RecordARecallDecision.VALIDATION,
-        validationMessages = validationMessages.otherValidationMessages,
-      )
+    val penultimateBookingId = getPenultimateBookingId(prisonerId)
+    val sourceData = if (penultimateBookingId != null) getSourceData(prisonerId, penultimateBookingId) else sourceDataForLatestBooking
+
+    if (penultimateBookingId != null) {
+      val bothBookingsValidation = validate(sourceData)
+
+      if (bothBookingsValidation.criticalValidationMessages.isNotEmpty() || bothBookingsValidation.otherValidationMessages.isNotEmpty()) {
+        return RecordARecallDecisionResult(
+          RecordARecallDecision.VALIDATION,
+          validationMessages = bothBookingsValidation.otherValidationMessages.plus(bothBookingsValidation.criticalValidationMessages),
+        )
+      }
     }
 
     val existingPeriodsOfUal = sourceData.bookingAndSentenceAdjustments.adjustmentsApiData!!
