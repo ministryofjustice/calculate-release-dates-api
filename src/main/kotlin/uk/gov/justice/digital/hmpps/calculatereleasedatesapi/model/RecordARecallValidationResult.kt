@@ -11,24 +11,22 @@ data class RecordARecallValidationResult(
   val earliestSentenceDate: LocalDate,
 ) {
   companion object {
-    fun fromLatest(result: RecallInterimValidationResult): RecordARecallValidationResult =
-      RecordARecallValidationResult(
-        latestCriticalMessages = result.criticalMessages,
-        latestOtherMessages = result.otherMessages,
-        earliestSentenceDate = result.earliestSentenceDate,
-      )
+    fun fromLatest(result: RecallInterimValidationResult): RecordARecallValidationResult = RecordARecallValidationResult(
+      latestCriticalMessages = result.criticalMessages,
+      latestOtherMessages = result.otherMessages,
+      earliestSentenceDate = result.earliestSentenceDate,
+    )
 
     fun fromLatestAndPenultimate(
       latest: RecallInterimValidationResult,
-      penultimate: RecallInterimValidationResult
-    ): RecordARecallValidationResult =
-      RecordARecallValidationResult(
-        latestCriticalMessages = latest.criticalMessages,
-        latestOtherMessages = latest.otherMessages,
-        penultimateCriticalMessages = penultimate.criticalMessages,
-        penultimateOtherMessages = penultimate.otherMessages,
-        earliestSentenceDate = minOf(penultimate.earliestSentenceDate, latest.earliestSentenceDate),
-      )
+      penultimate: RecallInterimValidationResult,
+    ): RecordARecallValidationResult = RecordARecallValidationResult(
+      latestCriticalMessages = latest.criticalMessages,
+      latestOtherMessages = latest.otherMessages,
+      penultimateCriticalMessages = penultimate.criticalMessages,
+      penultimateOtherMessages = penultimate.otherMessages,
+      earliestSentenceDate = minOf(penultimate.earliestSentenceDate, latest.earliestSentenceDate),
+    )
   }
 }
 
