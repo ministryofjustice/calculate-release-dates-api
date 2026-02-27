@@ -180,13 +180,10 @@ class RecordARecallDecisionService(
     )
 
     val output = calculation.calculationOutput!!
-    val (sentenceGroupsReleasedBeforeRevocation, sentenceGroupsReleasedAfterRevocation) =
-      output.sentenceGroup.partition { it.to.isBeforeOrEqualTo(recordARecallRequest.revocationDate) }
+    val (sentenceGroupsReleasedBeforeRevocation, sentenceGroupsReleasedAfterRevocation) = output.sentenceGroup.partition { it.to.isBeforeOrEqualTo(recordARecallRequest.revocationDate) }
     val sentencesAndTheirGroups = sentenceGroupsReleasedBeforeRevocation.flatMap { it.sentences.map { sentence -> it to sentence } }
-    val (eligibleSentences, ineligibleSentences) =
-      sentencesAndTheirGroups.partition { it.second.sentenceParts().none { part -> part is Term } && it.second.sentenceCalculation.licenceExpiryDate != null }
-    val (recallableSentences, expiredSentences) =
-      recallExpiredSentencesOnSameCaseAsRecallableSentences(eligibleSentences, recordARecallRequest.revocationDate)
+    val (eligibleSentences, ineligibleSentences) = sentencesAndTheirGroups.partition { it.second.sentenceParts().none { part -> part is Term } && it.second.sentenceCalculation.licenceExpiryDate != null }
+    val (recallableSentences, expiredSentences) = recallExpiredSentencesOnSameCaseAsRecallableSentences(eligibleSentences, recordARecallRequest.revocationDate)
 
     if (recallableSentences.isEmpty()) {
       return RecordARecallDecisionResult(
@@ -208,10 +205,7 @@ class RecordARecallDecisionService(
         recallableSentences = toRecallableSentences(recallableSentences, mappings),
         expiredSentences = toRecallableSentences(expiredSentences, mappings),
         ineligibleSentences = toRecallableSentences(ineligibleSentences, mappings),
-        sentencesBeforeInitialRelease = toRecallableSentences(
-          sentenceGroupsReleasedAfterRevocation.flatMap { it.sentences.map { sentence -> it to sentence } },
-          mappings,
-        ),
+        sentencesBeforeInitialRelease = toRecallableSentences(sentenceGroupsReleasedAfterRevocation.flatMap { it.sentences.map { sentence -> it to sentence } }, mappings),
         unexpectedRecallTypes = findUnexpectedRecallTypes(recallableSentences, booking.externalMovements, recordARecallRequest.revocationDate),
       ),
     )

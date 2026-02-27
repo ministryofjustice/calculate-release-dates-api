@@ -242,8 +242,10 @@ class RecordARecallControllerIntTest(private val mockManageOffencesClient: MockM
           RECORD_A_RECALL_PRISONER_ID,
         )
 
-        assertThat(result.criticalValidationMessages).isEmpty()
-        assertThat(result.otherValidationMessages).isEmpty()
+        assertThat(result.latestCriticalMessages).isEmpty()
+        assertThat(result.penultimateCriticalMessages).isEmpty()
+        assertThat(result.latestOtherMessages).isEmpty()
+        assertThat(result.penultimateOtherMessages).isEmpty()
       }
     }
 
@@ -266,8 +268,10 @@ class RecordARecallControllerIntTest(private val mockManageOffencesClient: MockM
         VALIDATION_PRISONER_ID,
       )
 
-      assertThat(result.criticalValidationMessages).isNotEmpty()
-      assertThat(result.otherValidationMessages).isNotEmpty()
+      assertThat(result.latestCriticalMessages).isNotEmpty()
+      assertThat(result.latestOtherMessages).isNotEmpty()
+      assertThat(result.penultimateCriticalMessages).isNotEmpty()
+      assertThat(result.penultimateOtherMessages).isNotEmpty()
     }
   }
 
