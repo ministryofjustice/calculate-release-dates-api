@@ -109,7 +109,6 @@ class RecordARecallDecisionServiceTest {
 
     @Test
     fun `validate sets penultimateOtherMessages when only penultimate booking has other errors`() {
-
       val inPrisonSummary = mock(PrisonerInPrisonSummary::class.java)
       val latest = mock(PrisonPeriod::class.java).apply {
         whenever(bookingId).thenReturn(LATEST_BOOKING_ID)
