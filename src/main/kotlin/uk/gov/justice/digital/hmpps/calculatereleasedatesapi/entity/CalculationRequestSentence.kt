@@ -26,10 +26,6 @@ data class CalculationRequestSentence(
   @Column(columnDefinition = "jsonb", name = "input_sentence_data_json")
   val inputSentenceData: JsonNode,
 
-  @Type(value = JsonType::class)
-  @Column(columnDefinition = "jsonb", name = "sentence_adjustments_json")
-  val sentenceAdjustments: JsonNode,
-
   val impactsFinalReleaseDate: Boolean,
 
   @Enumerated(EnumType.STRING)
