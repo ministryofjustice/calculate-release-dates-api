@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource
 
-import com.fasterxml.jackson.core.type.TypeReference
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -8,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
 import org.springframework.test.context.jdbc.Sql
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.adjustmentsapi.model.AdjustmentDto
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.CRD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.HDCED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SLED
@@ -62,16 +60,12 @@ class SentenceLevelDatesAreStoredAlongsideACalculationIntTest(private val mockPr
 
     assertThat(sentences).hasSize(3)
     val readerForSentences = objectMapper.readerFor(SentenceAndOffenceWithReleaseArrangements::class.java)
-    val readerForAdjustments = objectMapper.readerFor(object : TypeReference<List<AdjustmentDto>>() {})
-    val withExtractedSentencesAndAdjustments = sentences.map {
+    val withExtractedSentences = sentences.map {
       val sentence = readerForSentences.readValue<SentenceAndOffenceWithReleaseArrangements>(it.inputSentenceData)
-      val adjustments = readerForAdjustments.readValue<List<AdjustmentDto>>(it.sentenceAdjustments)
-      val sentenceAndAdjustments = sentence to adjustments
-      it to sentenceAndAdjustments
+      it to sentence
     }
 
-    val (firstEntity, firstSentenceAndAdjustments) = withExtractedSentencesAndAdjustments.find { it.second.first.sentenceSequence == 1 }!!
-    assertThat(firstSentenceAndAdjustments.second).hasSize(1)
+    val firstEntity = withExtractedSentences.find { it.second.sentenceSequence == 1 }!!.first
     assertThat(firstEntity.impactsFinalReleaseDate).isTrue
     assertThat(firstEntity.releaseMultiplier).isEqualTo(ReleaseMultiplier.ONE_HALF)
     val firstDates = calculationRequestSentenceOutcomeRepository.findByCalculationRequestSentenceId(firstEntity.id!!)
@@ -80,8 +74,7 @@ class SentenceLevelDatesAreStoredAlongsideACalculationIntTest(private val mockPr
     assertThat(firstDates.find { it.calculationDateType == CRD }?.outcomeDate).isEqualTo(LocalDate.of(2024, 9, 14))
     assertThat(firstDates.find { it.calculationDateType == HDCED }?.outcomeDate).isEqualTo(LocalDate.of(2024, 4, 20))
 
-    val (secondEntity, secondSentenceAndAdjustments) = withExtractedSentencesAndAdjustments.find { it.second.first.sentenceSequence == 2 }!!
-    assertThat(secondSentenceAndAdjustments.second).hasSize(1)
+    val secondEntity = withExtractedSentences.find { it.second.sentenceSequence == 2 }!!.first
     assertThat(secondEntity.impactsFinalReleaseDate).isTrue
     assertThat(secondEntity.releaseMultiplier).isEqualTo(ReleaseMultiplier.ONE_HALF)
     val secondDates = calculationRequestSentenceOutcomeRepository.findByCalculationRequestSentenceId(secondEntity.id!!)
@@ -90,8 +83,7 @@ class SentenceLevelDatesAreStoredAlongsideACalculationIntTest(private val mockPr
     assertThat(secondDates.find { it.calculationDateType == CRD }?.outcomeDate).isEqualTo(LocalDate.of(2024, 9, 14))
     assertThat(secondDates.find { it.calculationDateType == HDCED }?.outcomeDate).isEqualTo(LocalDate.of(2024, 4, 20))
 
-    val (thirdEntity, thirdSentenceAndAdjustments) = withExtractedSentencesAndAdjustments.find { it.second.first.sentenceSequence == 3 }!!
-    assertThat(thirdSentenceAndAdjustments.second).isEmpty()
+    val thirdEntity = withExtractedSentences.find { it.second.sentenceSequence == 3 }!!.first
     assertThat(thirdEntity.impactsFinalReleaseDate).isFalse
     assertThat(thirdEntity.releaseMultiplier).isEqualTo(ReleaseMultiplier.ONE_HALF)
     val thirdDates = calculationRequestSentenceOutcomeRepository.findByCalculationRequestSentenceId(thirdEntity.id!!)

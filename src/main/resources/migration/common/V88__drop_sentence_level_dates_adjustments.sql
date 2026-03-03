@@ -1,0 +1,1 @@
+ALTER TABLE calculation_request_sentence DROP COLUMN sentence_adjustments_json;

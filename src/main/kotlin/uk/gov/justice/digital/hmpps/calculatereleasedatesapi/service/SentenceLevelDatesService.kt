@@ -43,17 +43,10 @@ class SentenceLevelDatesService(
     sentenceLevelDates
       .mapNotNull { sentenceLevelDates -> sourceSentencesByUUID[sentenceLevelDates.sentence.identifier]?.let { sentenceLevelDates to it } }
       .forEach { (sentenceLevelDates, sourceSentence) ->
-        val sentenceAdjustmentsJson =
-          sourceData.bookingAndSentenceAdjustments.fold(
-            { prisonApiAdjustments -> objectToJson(prisonApiAdjustments.sentenceAdjustments.filter { adjustment -> sourceSentence.sentenceSequence == adjustment.sentenceSequence }, objectMapper) },
-            { adjustmentsApiAdjustments -> objectToJson(adjustmentsApiAdjustments.filter { adjustment -> sourceSentence.sentenceSequence == adjustment.sentenceSequence }, objectMapper) },
-          )
-
         val calculationRequestSentence = calculationRequestSentenceRepository.saveAndFlush(
           CalculationRequestSentence(
             calculationRequestId = calculationRequest.id(),
             inputSentenceData = objectToJson(sourceSentence, objectMapper),
-            sentenceAdjustments = sentenceAdjustmentsJson,
             impactsFinalReleaseDate = sentenceLevelDates.impactsFinalReleaseDate,
             releaseMultiplier = sentenceLevelDates.releaseMultiplier,
           ),
