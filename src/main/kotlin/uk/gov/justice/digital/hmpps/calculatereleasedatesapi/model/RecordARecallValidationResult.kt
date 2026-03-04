@@ -8,7 +8,7 @@ data class RecordARecallValidationResult(
   val latestOtherMessages: List<ValidationMessage> = emptyList(),
   val penultimateCriticalMessages: List<ValidationMessage> = emptyList(),
   val penultimateOtherMessages: List<ValidationMessage> = emptyList(),
-  val earliestSentenceDate: LocalDate,
+  val earliestSentenceDate: LocalDate? = null,
 ) {
   companion object {
     fun fromLatest(result: RecallInterimValidationResult): RecordARecallValidationResult = RecordARecallValidationResult(
@@ -25,7 +25,7 @@ data class RecordARecallValidationResult(
       latestOtherMessages = latest.otherMessages,
       penultimateCriticalMessages = penultimate.criticalMessages,
       penultimateOtherMessages = penultimate.otherMessages,
-      earliestSentenceDate = minOf(penultimate.earliestSentenceDate, latest.earliestSentenceDate),
+      earliestSentenceDate = listOfNotNull(penultimate.earliestSentenceDate, latest.earliestSentenceDate).minOrNull(),
     )
   }
 }
@@ -33,5 +33,5 @@ data class RecordARecallValidationResult(
 data class RecallInterimValidationResult(
   val criticalMessages: List<ValidationMessage>,
   val otherMessages: List<ValidationMessage>,
-  val earliestSentenceDate: LocalDate,
+  val earliestSentenceDate: LocalDate? = null,
 )

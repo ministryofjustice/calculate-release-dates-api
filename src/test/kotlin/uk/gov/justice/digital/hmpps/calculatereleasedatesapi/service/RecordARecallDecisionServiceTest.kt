@@ -160,6 +160,21 @@ class RecordARecallDecisionServiceTest {
       assertThat(result.penultimateCriticalMessages).isEmpty()
       assertThat(result.penultimateOtherMessages).isNotEmpty()
     }
+
+    @Test
+    fun `validate sets earliestSentenceDate to null when there are no sentences`() {
+      val inPrisonSummary = mock(PrisonerInPrisonSummary::class.java)
+      whenever(inPrisonSummary.prisonPeriod).thenReturn(null)
+      whenever(prisonService.getPrisonerInPrisonSummary(PRISONER_ID)).thenReturn(inPrisonSummary)
+      whenever(calculationSourceDataService.getCalculationSourceData(eq(PRISONER_ID), any(), any()))
+        .thenReturn(baseSourceData)
+      whenever(validationService.validate(any(), any<CalculationUserInputs>(), eq(ValidationOrder.INVALID)))
+        .thenReturn(emptyList())
+
+      val result = underTest.validate(PRISONER_ID)
+
+      assertThat(result.earliestSentenceDate).isNull()
+    }
   }
 
   @Nested
