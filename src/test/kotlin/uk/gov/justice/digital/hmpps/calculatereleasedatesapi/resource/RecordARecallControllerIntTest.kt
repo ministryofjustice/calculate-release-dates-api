@@ -159,8 +159,6 @@ class RecordARecallControllerIntTest(private val mockManageOffencesClient: MockM
         RecordARecallRequest(revocationDate = LocalDate.of(2025, 8, 6)),
       )
 
-      println(result.validationMessages)
-
       assertThat(result.decision).isEqualTo(RecordARecallDecision.AUTOMATED)
       assertThat(result.validationMessages).isEmpty()
       assertThat(result.automatedCalculationData!!.recallableSentences).hasSize(2)
@@ -234,17 +232,19 @@ class RecordARecallControllerIntTest(private val mockManageOffencesClient: MockM
       )
 
       assertThat(result.decision).isEqualTo(RecordARecallDecision.AUTOMATED)
+    }
 
-      @Test
-      fun `Validation passes`() {
-        mockManageOffencesClient.noneInPCSC(listOf("GBH", "SX03014"))
-        val result = validateForRecordARecall(
-          RECORD_A_RECALL_PRISONER_ID,
-        )
+    @Test
+    fun `Validation passes`() {
+      mockManageOffencesClient.noneInPCSC(listOf("GBH", "SX03014"))
+      val result = validateForRecordARecall(
+        RECORD_A_RECALL_PRISONER_ID,
+      )
 
-        assertThat(result.criticalValidationMessages).isEmpty()
-        assertThat(result.otherValidationMessages).isEmpty()
-      }
+      assertThat(result.latestCriticalMessages).isEmpty()
+      assertThat(result.penultimateCriticalMessages).isEmpty()
+      assertThat(result.latestOtherMessages).isEmpty()
+      assertThat(result.penultimateOtherMessages).isEmpty()
     }
 
     @Test
@@ -266,8 +266,10 @@ class RecordARecallControllerIntTest(private val mockManageOffencesClient: MockM
         VALIDATION_PRISONER_ID,
       )
 
-      assertThat(result.criticalValidationMessages).isNotEmpty()
-      assertThat(result.otherValidationMessages).isNotEmpty()
+      assertThat(result.latestCriticalMessages).isNotEmpty()
+      assertThat(result.latestOtherMessages).isNotEmpty()
+      assertThat(result.penultimateCriticalMessages).isEmpty()
+      assertThat(result.penultimateOtherMessages).isEmpty()
     }
   }
 
