@@ -51,7 +51,7 @@ class RecordARecallDecisionService(
   fun validate(prisonerId: String): RecordARecallValidationResult {
     val penultimateBookingId = getPenultimateBookingId(prisonerId)
     val sourceData = getSourceData(prisonerId, penultimateBookingId)
-    if (penultimateBookingId == null || sourceData.sentenceAndOffences.none{ it.bookingId == penultimateBookingId }) {
+    if (penultimateBookingId == null || sourceData.sentenceAndOffences.none { it.bookingId == penultimateBookingId }) {
       return RecordARecallValidationResult.fromLatest(validate(sourceData))
     }
 
@@ -79,13 +79,13 @@ class RecordARecallDecisionService(
     val latest = sourceData.copy(
       sentenceAndOffences = latestSentenceAndOffences,
       offenderFinePayments = latestFinePayments,
-      bookingAndSentenceAdjustments = sourceData.bookingAndSentenceAdjustments.copy(adjustmentsApiData = latestAdjustments)
+      bookingAndSentenceAdjustments = sourceData.bookingAndSentenceAdjustments.copy(adjustmentsApiData = latestAdjustments),
     )
 
     val penultimate = sourceData.copy(
       sentenceAndOffences = penultimateSentenceAndOffences,
       offenderFinePayments = penultimateFinePayments,
-      bookingAndSentenceAdjustments = sourceData.bookingAndSentenceAdjustments.copy(adjustmentsApiData = penultimateAdjustments)
+      bookingAndSentenceAdjustments = sourceData.bookingAndSentenceAdjustments.copy(adjustmentsApiData = penultimateAdjustments),
     )
 
     return latest to penultimate
@@ -125,7 +125,7 @@ class RecordARecallDecisionService(
     val penultimateBookingId = getPenultimateBookingId(prisonerId)
     val sourceData = getSourceData(prisonerId, penultimateBookingId)
 
-    val latestValidationMessages = if (penultimateBookingId != null && sourceData.sentenceAndOffences.any{ it.bookingId == penultimateBookingId }) {
+    val latestValidationMessages = if (penultimateBookingId != null && sourceData.sentenceAndOffences.any { it.bookingId == penultimateBookingId }) {
       val (latestBookingData, _) = splitLatestAndPenultimate(sourceData, penultimateBookingId)
       validate(latestBookingData)
     } else {
