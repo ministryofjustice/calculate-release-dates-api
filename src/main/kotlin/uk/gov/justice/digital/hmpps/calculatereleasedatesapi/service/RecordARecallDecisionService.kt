@@ -112,7 +112,7 @@ class RecordARecallDecisionService(
     return RecallInterimValidationResult(
       criticalMessages = criticalValidationMessages,
       otherMessages = otherValidationMessages,
-      earliestSentenceDate = sourceData.sentenceAndOffences.minOf { it.sentenceDate },
+      earliestSentenceDate = sourceData.sentenceAndOffences.minOfOrNull { it.sentenceDate },
     )
   }
 
