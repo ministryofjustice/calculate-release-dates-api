@@ -36,6 +36,7 @@ class ToreraValidationServiceTest {
 
     assertThat(result.count()).isEqualTo(1)
     assertThat(result.first()).isEqualTo(ValidationMessage(ValidationCode.SDS_TORERA_EXCLUSION))
+    assertThat(result.first().calculationUnsupported).isTrue
   }
 
   @Test
@@ -53,6 +54,7 @@ class ToreraValidationServiceTest {
 
     assertThat(result.count()).isEqualTo(1)
     assertThat(result.first()).isEqualTo(ValidationMessage(ValidationCode.SOPC_TORERA_EXCLUSION))
+    assertThat(result.first().calculationUnsupported).isTrue
   }
 
   @Test
