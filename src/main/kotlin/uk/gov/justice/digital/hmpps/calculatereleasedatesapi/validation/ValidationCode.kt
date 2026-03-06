@@ -68,8 +68,8 @@ enum class ValidationCode(val message: String, val validationType: ValidationTyp
   SENTENCE_HAS_NO_LICENCE_TERM("Court case %s NOMIS line reference %s must include a licence term."),
   SOPC18_SOPC21_SENTENCE_TYPE_INCORRECT("The sentence type for court case %s NOMIS line reference %s is invalid for the sentence date entered."),
   SOPC_LICENCE_TERM_NOT_12_MONTHS("Court case %s NOMIS line reference %s must include a licence term of 12 months or 1 year."),
-  SDS_TORERA_EXCLUSION("The calculation includes SDS TORERA offences."),
-  SOPC_TORERA_EXCLUSION("The calculation includes SOPC TORERA offences."),
+  SDS_TORERA_EXCLUSION("The calculation includes SDS TORERA offences.", UNSUPPORTED_CALCULATION),
+  SOPC_TORERA_EXCLUSION("The calculation includes SOPC TORERA offences.", UNSUPPORTED_CALCULATION),
   UNSUPPORTED_ADJUSTMENT_LAWFULLY_AT_LARGE(
     "A Lawfully at large (LAL) adjustment has been recorded.",
     UNSUPPORTED_CALCULATION,
