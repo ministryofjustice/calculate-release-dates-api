@@ -252,7 +252,7 @@ class CalculationTransactionalServiceTest {
         CALCULATION_REQUEST_WITH_OUTCOMES,
       ),
     )
-    whenever(calculationService.calculateReleaseDates(any(), any())).thenReturn(CALCULATION_OUTPUT)
+    whenever(calculationService.calculateReleaseDates(any(), any(), any())).thenReturn(CALCULATION_OUTPUT)
 
     assertDoesNotThrow {
       calculationTransactionalService.validateAndConfirmCalculation(
@@ -416,7 +416,7 @@ class CalculationTransactionalServiceTest {
         usedPreviouslyRecordedSLED = usedPreviouslyRecordedSLED,
       ),
     )
-    whenever(calculationService.calculateReleaseDates(any(), any())).thenReturn(calculationOutput)
+    whenever(calculationService.calculateReleaseDates(any(), any(), any())).thenReturn(calculationOutput)
     val calculatedReleaseDates = calculationTransactionalService.validateAndConfirmCalculation(
       CALCULATION_REQUEST_ID,
       SubmitCalculationRequest(
@@ -458,7 +458,7 @@ class CalculationTransactionalServiceTest {
       submittedByUsername = USERNAME,
     )
     whenever(approvedDatesSubmissionRepository.save(any())).thenReturn(submission)
-    whenever(calculationService.calculateReleaseDates(any(), any())).thenReturn(CALCULATION_OUTPUT)
+    whenever(calculationService.calculateReleaseDates(any(), any(), any())).thenReturn(CALCULATION_OUTPUT)
     calculationTransactionalService.validateAndConfirmCalculation(
       CALCULATION_REQUEST_ID,
       SubmitCalculationRequest(

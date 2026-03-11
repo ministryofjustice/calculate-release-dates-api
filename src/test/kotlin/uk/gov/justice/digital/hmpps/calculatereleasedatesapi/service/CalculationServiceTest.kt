@@ -56,7 +56,7 @@ class CalculationServiceTest {
     whenever(bookingTimelineService.calculate(anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull()))
       .thenReturn(CALCULATION_OUTPUT)
 
-    val result = service.calculateReleaseDates(BOOKING, CalculationUserInputs(usePreviouslyRecordedSLEDIfFound = false))
+    val result = service.calculateReleaseDates(BOOKING, CalculationUserInputs(usePreviouslyRecordedSLEDIfFound = false), calculateSentenceLevelDates = false)
 
     assertThat(result).isEqualTo(CALCULATION_OUTPUT)
 
@@ -74,7 +74,7 @@ class CalculationServiceTest {
     )
     whenever(previouslyRecordedSLEDService.findPreviouslyRecordedSLEDThatShouldOverrideTheCalculatedSLED(any(), any())).thenReturn(expectedPreviouslyRecordedSled)
 
-    val result = service.calculateReleaseDates(BOOKING, CalculationUserInputs(usePreviouslyRecordedSLEDIfFound = true))
+    val result = service.calculateReleaseDates(BOOKING, CalculationUserInputs(usePreviouslyRecordedSLEDIfFound = true), calculateSentenceLevelDates = false)
 
     assertThat(result).isEqualTo(
       CalculationOutput(
@@ -120,7 +120,7 @@ class CalculationServiceTest {
     )
     whenever(previouslyRecordedSLEDService.findPreviouslyRecordedSLEDThatShouldOverrideTheCalculatedSLED(any(), any())).thenReturn(expectedPreviouslyRecordedSled)
 
-    val result = service.calculateReleaseDates(BOOKING, CalculationUserInputs(usePreviouslyRecordedSLEDIfFound = true))
+    val result = service.calculateReleaseDates(BOOKING, CalculationUserInputs(usePreviouslyRecordedSLEDIfFound = true), calculateSentenceLevelDates = false)
 
     assertThat(result).isEqualTo(
       CalculationOutput(
@@ -155,7 +155,7 @@ class CalculationServiceTest {
       .thenReturn(CALCULATION_OUTPUT)
     whenever(previouslyRecordedSLEDService.findPreviouslyRecordedSLEDThatShouldOverrideTheCalculatedSLED(any(), any())).thenReturn(null)
 
-    val result = service.calculateReleaseDates(BOOKING, CalculationUserInputs(usePreviouslyRecordedSLEDIfFound = true))
+    val result = service.calculateReleaseDates(BOOKING, CalculationUserInputs(usePreviouslyRecordedSLEDIfFound = true), calculateSentenceLevelDates = false)
 
     assertThat(result).isEqualTo(CALCULATION_OUTPUT)
 
