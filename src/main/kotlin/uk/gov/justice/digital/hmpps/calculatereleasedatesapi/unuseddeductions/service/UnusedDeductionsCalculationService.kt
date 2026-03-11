@@ -41,7 +41,7 @@ class UnusedDeductionsCalculationService(
     }
 
     val booking = bookingService.getBooking(sourceData)
-    val result = calculationService.calculateReleaseDates(booking, calculationUserInputs)
+    val result = calculationService.calculateReleaseDates(booking, calculationUserInputs, calculateSentenceLevelDates = false)
 
     return calculate(result)
   }

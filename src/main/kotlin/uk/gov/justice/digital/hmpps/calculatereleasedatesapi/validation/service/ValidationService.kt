@@ -68,6 +68,7 @@ class ValidationService(
         calculationOutput = calculationOutput ?: calculationService.calculateReleaseDates(
           booking,
           calculationUserInputs ?: CalculationUserInputs(),
+          calculateSentenceLevelDates = false,
         )
         calculationFailure = null
       } catch (e: Exception) {

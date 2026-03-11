@@ -80,7 +80,7 @@ class HintTextTest : SpringTestBase() {
     log.info("Running test-case $testCase")
     val calculationFile = jsonTransformation.loadCalculationTestFile("/hint-text/input-data/$testCase")
     overrideFeatureTogglesForTest(calculationFile, featureToggles)
-    val calculation = calculationService.calculateReleaseDates(calculationFile.booking, calculationFile.userInputs)
+    val calculation = calculationService.calculateReleaseDates(calculationFile.booking, calculationFile.userInputs, calculateSentenceLevelDates = true)
     val calculatedReleaseDates = createCalculatedReleaseDates(calculation.calculationResult)
     val calculationBreakdown = performCalculationBreakdown(calculationFile.booking, calculatedReleaseDates, calculationFile.userInputs)
 
@@ -103,7 +103,7 @@ class HintTextTest : SpringTestBase() {
     log.info("Running hint text test-case with date override $testCase")
 
     val calculationFile = jsonTransformation.loadCalculationTestFile("/hint-text/input-data/$testCase")
-    val calculation = calculationService.calculateReleaseDates(calculationFile.booking, calculationFile.userInputs)
+    val calculation = calculationService.calculateReleaseDates(calculationFile.booking, calculationFile.userInputs, calculateSentenceLevelDates = true)
     val calculatedReleaseDates = createCalculatedReleaseDates(calculation.calculationResult)
     val calculationBreakdown = performCalculationBreakdown(calculationFile.booking, calculatedReleaseDates, calculationFile.userInputs)
     val breakdownWithHints = enrichBreakdownWithHints(
