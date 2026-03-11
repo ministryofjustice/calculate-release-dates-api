@@ -206,7 +206,7 @@ class CalculationTransactionalService(
       ),
     )
 
-    val calculationOutput = calculationService.calculateReleaseDates(booking, calculationUserInputs)
+    val calculationOutput = calculationService.calculateReleaseDates(booking, calculationUserInputs, calculateSentenceLevelDates = true)
     val calculationResult = calculationOutput.calculationResult
 
     calculationResult.dates.forEach { (type, date) ->
@@ -263,7 +263,7 @@ class CalculationTransactionalService(
     calculationUserInputs: CalculationUserInputs,
   ): CalculationBreakdown {
     if (previousCalculationResults.calculationType == CalculationType.CALCULATED) {
-      val calculationOutput = calculationService.calculateReleaseDates(booking, calculationUserInputs)
+      val calculationOutput = calculationService.calculateReleaseDates(booking, calculationUserInputs, calculateSentenceLevelDates = true)
       val calculationResult = calculationOutput.calculationResult
       if (calculationResult.dates == previousCalculationResults.dates) {
         return transform(

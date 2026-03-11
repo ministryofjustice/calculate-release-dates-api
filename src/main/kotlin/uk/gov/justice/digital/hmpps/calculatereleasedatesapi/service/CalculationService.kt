@@ -25,6 +25,7 @@ class CalculationService(
   fun calculateReleaseDates(
     booking: Booking,
     calculationUserInputs: CalculationUserInputs,
+    calculateSentenceLevelDates: Boolean,
   ): CalculationOutput {
     val options = CalculationOptions(calculationUserInputs.calculateErsed)
     // identify the types of the sentences
@@ -33,7 +34,7 @@ class CalculationService(
     }
 
     var calculatedReleaseDates = bookingTimelineService.calculate(booking.sentences, booking.adjustments, booking.offender, booking.returnToCustodyDate, options, booking.externalMovements)
-    if (featureToggles.storeSentenceLevelDates) {
+    if (calculateSentenceLevelDates && featureToggles.storeSentenceLevelDates) {
       calculatedReleaseDates = calculatedReleaseDates.copy(sentenceLevelDates = sentenceLevelDatesService.extractSentenceLevelDates(calculatedReleaseDates))
     }
     val sledCalculatedForCurrentSentences = calculatedReleaseDates.calculationResult.dates[ReleaseDateType.SLED]

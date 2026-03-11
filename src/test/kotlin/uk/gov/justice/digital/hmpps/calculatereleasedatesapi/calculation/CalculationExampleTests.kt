@@ -59,7 +59,7 @@ abstract class CalculationExampleTests : SpringTestBase() {
     val returnedValidationMessages: List<ValidationMessage>
     try {
       calculatedReleaseDates = calculationService
-        .calculateReleaseDates(calculationTestFile.booking, calculationTestFile.userInputs)
+        .calculateReleaseDates(calculationTestFile.booking, calculationTestFile.userInputs, calculateSentenceLevelDates = true)
 
       returnedValidationMessages = validators.map { it.validate(calculatedReleaseDates, calculationTestFile.booking) }
         .flatten()
@@ -128,7 +128,7 @@ abstract class CalculationExampleTests : SpringTestBase() {
     val calculationTestFile = jsonTransformation.loadCalculationTestFile("overall_calculation/$example")
     overrideFeatureTogglesForTest(calculationTestFile, featureToggles)
     val calculatedReleaseDates = calculationService
-      .calculateReleaseDates(calculationTestFile.booking, calculationTestFile.userInputs)
+      .calculateReleaseDates(calculationTestFile.booking, calculationTestFile.userInputs, calculateSentenceLevelDates = true)
     val expected = jsonTransformation.loadExpectedSentenceLevelDates(example)
     val actual = calculatedReleaseDates.sentenceLevelDates.map {
       ExpectedSentenceLevelDates(

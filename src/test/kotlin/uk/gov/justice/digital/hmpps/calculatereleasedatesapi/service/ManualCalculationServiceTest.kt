@@ -643,7 +643,7 @@ class ManualCalculationServiceTest {
     whenever(bookingService.getBooking(FAKE_SOURCE_DATA)).thenReturn(BOOKING)
     whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
     whenever(nomisCommentService.getManualNomisComment(any(), any(), any())).thenReturn("The NOMIS Reason")
-    whenever(calculationService.calculateReleaseDates(any(), any())).thenReturn(
+    whenever(calculationService.calculateReleaseDates(any(), any(), any())).thenReturn(
       CalculationOutput(
         listOf(),
         listOf(),
