@@ -49,6 +49,7 @@ class SentenceLevelDatesService(
             inputSentenceData = objectToJson(sourceSentence, objectMapper),
             impactsFinalReleaseDate = sentenceLevelDates.impactsFinalReleaseDate,
             releaseMultiplier = sentenceLevelDates.releaseMultiplier,
+            groupIndex = sentenceLevelDates.groupIndex,
           ),
         )
         sentenceLevelDates.dates.forEach { (type, date) ->

@@ -30,4 +30,6 @@ data class CalculationRequestSentence(
 
   @Enumerated(EnumType.STRING)
   val releaseMultiplier: ReleaseMultiplier,
+
+  val groupIndex: Int,
 )
