@@ -1,0 +1,26 @@
+{
+  "sentenceLevelDates": [
+    {
+      "identifier": "7677dafd-945f-3792-bf10-97b9246ec1ec",
+      "impactsFinalReleaseDate": true,
+      "dates": {
+        "SLED": "2055-10-23",
+        "CRD": "2045-10-24",
+        "PED": "2039-10-25"
+      },
+      "groupIndex": 0,
+      "releaseMultiplier": "FULL"
+    },
+    {
+      "identifier": "28678f86-86ae-3ba2-ba07-aae1ee0b44ef",
+      "impactsFinalReleaseDate": true,
+      "dates": {
+        "SLED": "2055-10-23",
+        "CRD": "2045-10-24",
+        "PED": "2039-10-25"
+      },
+      "groupIndex": 0,
+      "releaseMultiplier": "FORTY_PERCENT"
+    }
+  ]
+}

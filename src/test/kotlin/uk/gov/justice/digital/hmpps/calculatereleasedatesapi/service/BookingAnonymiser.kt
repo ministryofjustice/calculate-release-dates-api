@@ -121,10 +121,10 @@ class BookingAnonymiser {
         obj.remove("hasAnSDSEarlyReleaseExclusion")
       }
 
-      val identifier = obj.get("identifier").asText()
-      if (sentencesString.split(identifier).size == 2) { // Identifier only appears once. Not needed for a consecutive sentence.
-        obj.remove("identifier")
-      }
+//      val identifier = obj.get("identifier").asText()
+//      if (sentencesString.split(identifier).size == 2) { // Identifier only appears once. Not needed for a consecutive sentence.
+//        obj.remove("identifier")
+//      }
 
       if (obj.has("externalSentenceId")) {
         obj.remove("externalSentenceId")
