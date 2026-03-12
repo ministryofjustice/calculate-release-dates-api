@@ -8,7 +8,8 @@
         "CRD": "2024-06-21",
         "HDCED": "2023-12-25"
       },
-      "groupIndex": 0
+      "groupIndex": 0,
+      "releaseMultiplier": "ONE_HALF"
     },
     {
       "identifier": "710a37d8-aac7-306b-a0f6-bc391925f3ff",
@@ -18,7 +19,8 @@
         "CRD": "2027-05-21",
         "PED": "2026-01-19"
       },
-      "groupIndex": 1
+      "groupIndex": 1,
+      "releaseMultiplier": "FULL"
     }
   ]
 }

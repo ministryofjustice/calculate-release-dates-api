@@ -22,7 +22,7 @@ class SentenceLevelDatesService(
   fun extractSentenceLevelDates(calculatedReleaseDates: CalculationOutput): List<SentenceLevelDates> {
     val finalReleaseDateUUIDs = calculatedReleaseDates.calculationResult.sentencesImpactingFinalReleaseDate.flatMap { it.sentenceParts().map { it.identifier } }
     return calculatedReleaseDates.sentences
-      .filter { it.isIdentificationTrackInitialized() && it.isCalculationInitialised() }
+      .filter { it.isCalculationInitialised() }
       .flatMapIndexed { index, sentence ->
         val dates = sentence.releaseDateTypes.getReleaseDateTypes()
           .mapNotNull { releaseDateType -> sentence.sentenceCalculation.getDateByType(releaseDateType)?.let { releaseDateType to it } }
@@ -32,7 +32,7 @@ class SentenceLevelDatesService(
             sentence = sentencePart,
             groupIndex = index,
             impactsFinalReleaseDate = sentencePart.identifier in finalReleaseDateUUIDs,
-            releaseMultiplier = sentence.sentenceCalculation.unadjustedReleaseDate.multiplier(sentence),
+            releaseMultiplier = sentence.sentenceCalculation.unadjustedReleaseDate.multiplier(sentencePart),
             dates = dates,
           )
         }
