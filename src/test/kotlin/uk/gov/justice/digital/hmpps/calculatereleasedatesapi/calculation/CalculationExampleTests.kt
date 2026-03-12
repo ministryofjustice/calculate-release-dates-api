@@ -136,6 +136,7 @@ abstract class CalculationExampleTests : SpringTestBase() {
         impactsFinalReleaseDate = it.impactsFinalReleaseDate,
         dates = it.dates,
         groupIndex = it.groupIndex,
+        releaseMultiplier = it.releaseMultiplier,
       )
     }
     assertThat(actual).containsExactlyInAnyOrderElementsOf(expected.sentenceLevelDates)

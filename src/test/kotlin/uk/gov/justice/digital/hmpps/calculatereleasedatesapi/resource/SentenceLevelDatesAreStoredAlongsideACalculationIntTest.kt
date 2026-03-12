@@ -67,7 +67,7 @@ class SentenceLevelDatesAreStoredAlongsideACalculationIntTest(private val mockPr
 
     val firstEntity = withExtractedSentences.find { it.second.sentenceSequence == 1 }!!.first
     assertThat(firstEntity.impactsFinalReleaseDate).isTrue
-    assertThat(firstEntity.releaseMultiplier).isEqualTo(ReleaseMultiplier.ONE_HALF)
+    assertThat(firstEntity.releaseMultiplier).isEqualTo(ReleaseMultiplier.FORTY_PERCENT)
     val firstDates = calculationRequestSentenceOutcomeRepository.findByCalculationRequestSentenceId(firstEntity.id!!)
     assertThat(firstDates).hasSize(3)
     assertThat(firstDates.find { it.calculationDateType == SLED }?.outcomeDate).isEqualTo(LocalDate.of(2025, 11, 30))
@@ -76,7 +76,7 @@ class SentenceLevelDatesAreStoredAlongsideACalculationIntTest(private val mockPr
 
     val secondEntity = withExtractedSentences.find { it.second.sentenceSequence == 2 }!!.first
     assertThat(secondEntity.impactsFinalReleaseDate).isTrue
-    assertThat(secondEntity.releaseMultiplier).isEqualTo(ReleaseMultiplier.ONE_HALF)
+    assertThat(secondEntity.releaseMultiplier).isEqualTo(ReleaseMultiplier.FORTY_PERCENT)
     val secondDates = calculationRequestSentenceOutcomeRepository.findByCalculationRequestSentenceId(secondEntity.id!!)
     assertThat(secondDates).hasSize(3)
     assertThat(secondDates.find { it.calculationDateType == SLED }?.outcomeDate).isEqualTo(LocalDate.of(2025, 11, 30))

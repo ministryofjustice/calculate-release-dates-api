@@ -8,7 +8,8 @@
         "CRD": "2025-08-27",
         "HDCED": "2025-03-01"
       },
-      "groupIndex": 0
+      "groupIndex": 0,
+      "releaseMultiplier": "FORTY_PERCENT"
     }
   ]
 }

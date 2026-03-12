@@ -9,7 +9,8 @@
         "TUSED": "2023-09-04",
         "HDCED": "2022-05-22"
       },
-      "groupIndex": 0
+      "groupIndex": 0,
+      "releaseMultiplier": "ONE_HALF"
     },
     {
       "identifier": "9553e81f-6d4f-34bf-ab7e-a6e793009a0e",
@@ -19,7 +20,8 @@
         "CRD": "2024-05-06",
         "HDCED": "2023-11-09"
       },
-      "groupIndex": 1
+      "groupIndex": 1,
+      "releaseMultiplier": "FORTY_PERCENT"
     },
     {
       "identifier": "8686af20-d6b6-3d16-a202-25c3964cdc5f",
@@ -29,7 +31,8 @@
         "CRD": "2024-05-06",
         "HDCED": "2023-11-09"
       },
-      "groupIndex": 1
+      "groupIndex": 1,
+      "releaseMultiplier": "FORTY_PERCENT"
     }
   ]
 }
