@@ -67,7 +67,7 @@ class ComparisonDiscrepancyServiceTest {
       createdBy = USERNAME,
     )
     whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
-    whenever(comparisonPersonDiscrepancyRepository.save(any())).thenReturn(discrepancy)
+    whenever(comparisonPersonDiscrepancyRepository.save(any<ComparisonPersonDiscrepancy>())).thenReturn(discrepancy)
     val discrepancyCause = DiscrepancyCause(DiscrepancyCategory.TUSED, DiscrepancySubCategory.REMAND_OR_UAL_RELATED)
     val discrepancyRequest = CreateComparisonDiscrepancyRequest(
       impact = discrepancyImpact.impact,
@@ -125,7 +125,7 @@ class ComparisonDiscrepancyServiceTest {
       createdBy = USERNAME,
     )
     whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
-    whenever(comparisonPersonDiscrepancyRepository.save(any())).thenReturn(discrepancy)
+    whenever(comparisonPersonDiscrepancyRepository.save(any<ComparisonPersonDiscrepancy>())).thenReturn(discrepancy)
     whenever(
       comparisonPersonDiscrepancyRepository.findTopByComparisonPersonShortReferenceAndSupersededByIdIsNullOrderByCreatedAtDesc(
         comparisonPerson.shortReference,

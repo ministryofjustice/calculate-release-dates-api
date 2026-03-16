@@ -103,8 +103,8 @@ class GenuineOverrideServiceTest {
     whenever(bookingService.getBooking(FAKE_SOURCE_DATA)).thenReturn(BOOKING)
     whenever(serviceUserService.getUsername()).thenReturn("USER1")
     whenever(calculationRequestRepository.findByIdAndCalculationStatus(123L, "PRELIMINARY")).thenReturn(Optional.of(originalRequest))
-    whenever(calculationRequestRepository.save(argThat { request -> request?.id == null })).thenReturn(newRequest)
-    whenever(calculationRequestRepository.save(argThat { request -> request?.id == 123L })).thenReturn(originalRequest)
+    whenever<CalculationRequest>(calculationRequestRepository.save(argThat<CalculationRequest> { request -> request?.id == null })).thenReturn(newRequest)
+    whenever<CalculationRequest>(calculationRequestRepository.save(argThat<CalculationRequest> { request -> request?.id == 123L })).thenReturn(originalRequest)
     whenever(manualCalculationService.calculateEffectiveSentenceLength(BOOKING, LocalDate.of(2025, 1, 2))).thenReturn(Period.ZERO)
     whenever(calculationOutcomeRepository.saveAll<CalculationOutcome>(any())).thenReturn(calculationOutcomes)
 

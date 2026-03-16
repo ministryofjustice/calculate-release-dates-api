@@ -415,7 +415,7 @@ class ManualCalculationServiceTest {
         SourceDataLookupOptions.default(),
       ),
     ).thenReturn(FAKE_SOURCE_DATA)
-    whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
+    whenever(calculationRequestRepository.save(any<CalculationRequest>())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
     whenever(calculationRequestRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES))
     whenever(calculationReasonRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REASON))
     whenever(bookingService.getBooking(FAKE_SOURCE_DATA)).thenReturn(BOOKING)
@@ -446,7 +446,7 @@ class ManualCalculationServiceTest {
         SourceDataLookupOptions.default(),
       ),
     ).thenReturn(FAKE_SOURCE_DATA)
-    whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
+    whenever(calculationRequestRepository.save(any<CalculationRequest>())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
     whenever(calculationRequestRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES))
     whenever(calculationReasonRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REASON))
     whenever(bookingService.getBooking(FAKE_SOURCE_DATA)).thenReturn(BOOKING)
@@ -482,7 +482,7 @@ class ManualCalculationServiceTest {
         SourceDataLookupOptions.default(),
       ),
     ).thenReturn(FAKE_SOURCE_DATA)
-    whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
+    whenever(calculationRequestRepository.save(any<CalculationRequest>())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
     whenever(calculationRequestRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES))
     whenever(calculationReasonRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REASON))
     whenever(bookingService.getBooking(FAKE_SOURCE_DATA)).thenReturn(BOOKING)
@@ -533,7 +533,7 @@ class ManualCalculationServiceTest {
         SourceDataLookupOptions.default(),
       ),
     ).thenReturn(FAKE_SOURCE_DATA)
-    whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
+    whenever(calculationRequestRepository.save(any<CalculationRequest>())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
     whenever(calculationRequestRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES))
     whenever(calculationReasonRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REASON))
     whenever(bookingService.getBooking(FAKE_SOURCE_DATA)).thenReturn(BOOKING)
@@ -573,7 +573,7 @@ class ManualCalculationServiceTest {
         SourceDataLookupOptions.default(),
       ),
     ).thenReturn(FAKE_SOURCE_DATA)
-    whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
+    whenever(calculationRequestRepository.save(any<CalculationRequest>())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
     whenever(calculationRequestRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES))
     whenever(calculationReasonRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REASON))
     whenever(bookingService.getBooking(FAKE_SOURCE_DATA)).thenReturn(BOOKING)
@@ -600,7 +600,7 @@ class ManualCalculationServiceTest {
         SourceDataLookupOptions.default(),
       ),
     ).thenReturn(FAKE_SOURCE_DATA)
-    whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
+    whenever(calculationRequestRepository.save(any<CalculationRequest>())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
     whenever(calculationRequestRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES))
     whenever(calculationReasonRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REASON))
     whenever(bookingService.getBooking(FAKE_SOURCE_DATA)).thenReturn(BOOKING)
@@ -637,7 +637,7 @@ class ManualCalculationServiceTest {
         SourceDataLookupOptions.default(),
       ),
     ).thenReturn(FAKE_SOURCE_DATA)
-    whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
+    whenever(calculationRequestRepository.save(any<CalculationRequest>())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
     whenever(calculationRequestRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES))
     whenever(calculationReasonRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REASON))
     whenever(bookingService.getBooking(FAKE_SOURCE_DATA)).thenReturn(BOOKING)
