@@ -95,7 +95,7 @@ class ComparisonServiceTest {
   @Test
   fun `A Comparison is created when create is called`() {
     val outputComparison = aComparison()
-    whenever(comparisonRepository.save(any())).thenReturn(outputComparison)
+    whenever(comparisonRepository.save(any<Comparison>())).thenReturn(outputComparison)
 
     val comparisonInput = ComparisonInput(emptyMap(), prison = "ABC")
     val comparison = comparisonService.create(comparisonInput, "")
@@ -105,7 +105,7 @@ class ComparisonServiceTest {
   @Test
   fun `A Comparison is created and results returned when create is called on AUTO`() {
     val outputComparison = aComparison()
-    whenever(comparisonRepository.save(any())).thenReturn(outputComparison)
+    whenever(comparisonRepository.save(any<Comparison>())).thenReturn(outputComparison)
 
     val comparisonInput = ComparisonInput(null, prison = "ABC")
     val comparison = comparisonService.create(comparisonInput, "")

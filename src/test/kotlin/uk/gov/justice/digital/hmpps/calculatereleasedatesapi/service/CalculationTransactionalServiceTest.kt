@@ -246,7 +246,7 @@ class CalculationTransactionalServiceTest {
       fakeSourceData,
     )
     whenever(bookingService.getBooking(fakeSourceData)).thenReturn(BOOKING)
-    whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
+    whenever(calculationRequestRepository.save(any<CalculationRequest>())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
     whenever(calculationRequestRepository.findById(CALCULATION_REQUEST_ID)).thenReturn(
       Optional.of(
         CALCULATION_REQUEST_WITH_OUTCOMES,
@@ -394,7 +394,7 @@ class CalculationTransactionalServiceTest {
       Optional.of(requestAndOutcomes),
     )
     whenever(bookingService.getBooking(fakeSourceData)).thenReturn(BOOKING)
-    whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
+    whenever(calculationRequestRepository.save(any<CalculationRequest>())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
     whenever(calculationRequestRepository.findById(CALCULATION_REQUEST_ID)).thenReturn(Optional.of(requestAndOutcomes))
     whenever(nomisCommentService.getNomisComment(any(), any())).thenReturn("The NOMIS Reason")
 
@@ -405,7 +405,7 @@ class CalculationTransactionalServiceTest {
       bookingId = BOOKING_ID,
       submittedByUsername = USERNAME,
     )
-    whenever(approvedDatesSubmissionRepository.save(any())).thenReturn(submission)
+    whenever(approvedDatesSubmissionRepository.save(any<ApprovedDatesSubmission>())).thenReturn(submission)
     val usedPreviouslyRecordedSLED = PreviouslyRecordedSLED(
       previouslyRecordedSLEDDate = FIFTH_APRIL_2021,
       calculatedDate = THIRD_FEB_2021,
@@ -444,7 +444,7 @@ class CalculationTransactionalServiceTest {
       fakeSourceData,
     )
     whenever(bookingService.getBooking(fakeSourceData)).thenReturn(BOOKING)
-    whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
+    whenever(calculationRequestRepository.save(any<CalculationRequest>())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
     whenever(calculationRequestRepository.findById(CALCULATION_REQUEST_ID)).thenReturn(
       Optional.of(
         CALCULATION_REQUEST_WITH_OUTCOMES,
@@ -457,7 +457,7 @@ class CalculationTransactionalServiceTest {
       bookingId = BOOKING_ID,
       submittedByUsername = USERNAME,
     )
-    whenever(approvedDatesSubmissionRepository.save(any())).thenReturn(submission)
+    whenever(approvedDatesSubmissionRepository.save(any<ApprovedDatesSubmission>())).thenReturn(submission)
     whenever(calculationService.calculateReleaseDates(any(), any(), any())).thenReturn(CALCULATION_OUTPUT)
     calculationTransactionalService.validateAndConfirmCalculation(
       CALCULATION_REQUEST_ID,
