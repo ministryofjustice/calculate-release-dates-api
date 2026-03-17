@@ -21,7 +21,7 @@ class SentenceValidatorTest {
     sentenceValidator = SentenceValidator(validationUtilities)
   }
 
-  private fun createSentenceAndOffence(offenceStartDate: LocalDate?): SentenceAndOffence {
+  private fun createSentenceAndOffence(offenceStartDate: LocalDate?, sentenceDate: LocalDate?): SentenceAndOffence {
     val offenderOffence = OffenderOffence(
       offenderChargeId = 1L,
       offenceStartDate = offenceStartDate,
@@ -39,7 +39,7 @@ class SentenceValidatorTest {
       override val sentenceCategory = "cat"
       override val sentenceCalculationType = "type"
       override val sentenceTypeDescription = "desc"
-      override val sentenceDate = LocalDate.now()
+      override val sentenceDate = sentenceDate ?: LocalDate.now()
       override val terms = emptyList<SentenceTerms>()
       override val offence = offenderOffence
       override val caseReference: String? = null
@@ -55,7 +55,7 @@ class SentenceValidatorTest {
   inner class ValidateOffenceDateOverOneHundredYearsAgoTests {
     @Test
     fun `returns null if offenceStartDate is null`() {
-      val sentenceAndOffence = createSentenceAndOffence(null)
+      val sentenceAndOffence = createSentenceAndOffence(null, null)
       val result = sentenceValidator.validateOffenceStartDateRange(sentenceAndOffence)
       assertThat(result).isNull()
     }
@@ -63,7 +63,7 @@ class SentenceValidatorTest {
     @Test
     fun `returns null if offenceStartDate is exactly 100 years ago`() {
       val date = LocalDate.now().minusYears(100)
-      val sentenceAndOffence = createSentenceAndOffence(date)
+      val sentenceAndOffence = createSentenceAndOffence(date, null)
       val result = sentenceValidator.validateOffenceStartDateRange(sentenceAndOffence)
       assertThat(result).isNull()
     }
@@ -71,7 +71,7 @@ class SentenceValidatorTest {
     @Test
     fun `returns null if offenceStartDate is less than 100 years ago`() {
       val date = LocalDate.now().minusYears(99)
-      val sentenceAndOffence = createSentenceAndOffence(date)
+      val sentenceAndOffence = createSentenceAndOffence(date, null)
       val result = sentenceValidator.validateOffenceStartDateRange(sentenceAndOffence)
       assertThat(result).isNull()
     }
@@ -79,7 +79,7 @@ class SentenceValidatorTest {
     @Test
     fun `returns ValidationMessage if offenceStartDate is more than 100 years ago`() {
       val date = LocalDate.now().minusYears(101)
-      val sentenceAndOffence = createSentenceAndOffence(date)
+      val sentenceAndOffence = createSentenceAndOffence(date, null)
       val result = sentenceValidator.validateOffenceStartDateRange(sentenceAndOffence)
       assertThat(result).isNotNull()
       assertThat(result!!.code).isEqualTo(ValidationCode.OFFENCE_DATE_OVER_OR_UNDER_100_YEARS_AGO)
@@ -89,7 +89,7 @@ class SentenceValidatorTest {
     @Test
     fun `returns ValidationMessage if offenceStartDate is more than 100 years in the future`() {
       val date = LocalDate.now().plusYears(101)
-      val sentenceAndOffence = createSentenceAndOffence(date)
+      val sentenceAndOffence = createSentenceAndOffence(date, null)
       val result = sentenceValidator.validateOffenceStartDateRange(sentenceAndOffence)
       assertThat(result).isNotNull()
       assertThat(result!!.code).isEqualTo(ValidationCode.OFFENCE_DATE_OVER_OR_UNDER_100_YEARS_AGO)
@@ -101,7 +101,7 @@ class SentenceValidatorTest {
   inner class ValidateOffenceDateAfterSentenceDateTests {
     @Test
     fun `returns null if offenceStartDate is null`() {
-      val sentenceAndOffence = createSentenceAndOffence(null)
+      val sentenceAndOffence = createSentenceAndOffence(null, null)
       val result = sentenceValidator.validateOffenceDateAfterSentenceDate(sentenceAndOffence)
       assertThat(result).isNull()
     }
@@ -109,26 +109,20 @@ class SentenceValidatorTest {
     @Test
     fun `returns null if offenceStartDate is before or equal to sentenceDate`() {
       val sentenceDate = LocalDate.now()
-      val sentenceAndOffence = object : SentenceAndOffence by createSentenceAndOffence(sentenceDate.minusDays(1)) {
-        override val sentenceDate = sentenceDate
-      }
-      val result = sentenceValidator.validateOffenceDateAfterSentenceDate(sentenceAndOffence)
-      assertThat(result).isNull()
+      val sentenceAndOffenceStartingYesterday = createSentenceAndOffence(sentenceDate.minusDays(1), sentenceDate)
+      val sentenceAndOffenceStartingYesterdayResult = sentenceValidator.validateOffenceDateAfterSentenceDate(sentenceAndOffenceStartingYesterday)
+      assertThat(sentenceAndOffenceStartingYesterdayResult).isNull()
 
-      val sentenceAndOffence2 = object : SentenceAndOffence by createSentenceAndOffence(sentenceDate) {
-        override val sentenceDate = sentenceDate
-      }
-      val result2 = sentenceValidator.validateOffenceDateAfterSentenceDate(sentenceAndOffence2)
-      assertThat(result2).isNull()
+      val sentenceAndOffenceStartingToday = createSentenceAndOffence(sentenceDate, sentenceDate)
+      val sentenceAndOffenceStartingTodayResult = sentenceValidator.validateOffenceDateAfterSentenceDate(sentenceAndOffenceStartingToday)
+      assertThat(sentenceAndOffenceStartingTodayResult).isNull()
     }
 
     @Test
     fun `returns OFFENCE_DATE_AFTER_SENTENCE_START_DATE if offenceStartDate is after sentenceDate but within 100 years`() {
       val sentenceDate = LocalDate.now()
       val offenceStartDate = sentenceDate.plusDays(1)
-      val sentenceAndOffence = object : SentenceAndOffence by createSentenceAndOffence(offenceStartDate) {
-        override val sentenceDate = sentenceDate
-      }
+      val sentenceAndOffence = createSentenceAndOffence(offenceStartDate, sentenceDate)
       val result = sentenceValidator.validateOffenceDateAfterSentenceDate(sentenceAndOffence)
       assertThat(result).isNotNull()
       assertThat(result!!.code).isEqualTo(ValidationCode.OFFENCE_DATE_AFTER_SENTENCE_START_DATE)
