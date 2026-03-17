@@ -21,6 +21,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.Validati
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessage
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationOrder
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationUtilities
+import java.time.LocalDate
 import java.time.Period
 
 @Component
@@ -29,6 +30,7 @@ class SentenceValidator(private val validationUtilities: ValidationUtilities) : 
   override fun validate(sourceData: CalculationSourceData): List<ValidationMessage> = sourceData.sentenceAndOffences.map {
     listOfNotNull(
       validateWithoutOffenceDate(it),
+      validateOffenceStartDateRange(it),
       validateOffenceDateAfterSentenceDate(it),
       validateOffenceRangeDateAfterSentenceDate(it),
     ) + validateDuration(it) + listOfNotNull(
@@ -161,7 +163,7 @@ class SentenceValidator(private val validationUtilities: ValidationUtilities) : 
     }
   }
 
-  public fun validateWithoutOffenceDate(sentencesAndOffence: SentenceAndOffence): ValidationMessage? {
+  fun validateWithoutOffenceDate(sentencesAndOffence: SentenceAndOffence): ValidationMessage? {
     // It's valid to not have an end date for many offence types, but the start date must always be present in
     // either case. If an end date is null it will be set to the start date in the transformation.
     val invalid = sentencesAndOffence.offence.offenceStartDate == null
@@ -174,7 +176,32 @@ class SentenceValidator(private val validationUtilities: ValidationUtilities) : 
     return null
   }
 
-  private fun validateOffenceDateAfterSentenceDate(
+  fun validateOffenceStartDateRange(sentenceAndOffence: SentenceAndOffence): ValidationMessage? {
+    val today = LocalDate.now()
+    val minDate = today.minusYears(100)
+    val maxDate = today.plusYears(100)
+    val offence = sentenceAndOffence.offence
+    if (offence.offenceStartDate == null) return null
+
+    if (offence.offenceStartDate.isBefore(minDate)) {
+      return ValidationMessage(
+        ValidationCode.OFFENCE_DATE_OVER_OR_UNDER_100_YEARS_AGO,
+        validationUtilities.getCaseSeqAndLineSeq(sentenceAndOffence)
+          .plus(listOf(minDate.year.toString(), today.year.toString())),
+      )
+    }
+    if (offence.offenceStartDate.isAfter(maxDate)) {
+      return ValidationMessage(
+        ValidationCode.OFFENCE_DATE_OVER_OR_UNDER_100_YEARS_AGO,
+        validationUtilities.getCaseSeqAndLineSeq(sentenceAndOffence)
+          .plus(listOf(LocalDate.now().year.toString(), maxDate.year.toString())),
+      )
+    }
+
+    return null
+  }
+
+  fun validateOffenceDateAfterSentenceDate(
     sentencesAndOffence: SentenceAndOffence,
   ): ValidationMessage? {
     val offence = sentencesAndOffence.offence
