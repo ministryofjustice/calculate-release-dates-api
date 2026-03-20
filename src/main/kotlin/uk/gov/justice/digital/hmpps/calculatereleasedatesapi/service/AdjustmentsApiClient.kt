@@ -7,6 +7,7 @@ import org.springframework.core.ParameterizedTypeReference
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.adjustmentsapi.model.AdjustmentDto
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.client.loggingRetry
 
 @Service
 class AdjustmentsApiClient(@param:Qualifier("adjustmentsApiWebClient") private val webClient: WebClient) {
@@ -25,6 +26,7 @@ class AdjustmentsApiClient(@param:Qualifier("adjustmentsApiWebClient") private v
       }
       .retrieve()
       .bodyToMono(typeReference<List<AdjustmentDto>>())
+      .loggingRetry(log, "getAdjustmentsByPerson($prisonerId, $statuses, $currentPeriodOfCustody)")
       .block()!!
       .filter {
         val isNomisAdjustmentWithZeroOrLessDays = it.source == AdjustmentDto.Source.NOMIS && it.effectiveDays!! <= 0
