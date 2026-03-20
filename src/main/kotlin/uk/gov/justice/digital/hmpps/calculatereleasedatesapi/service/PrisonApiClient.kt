@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import reactor.core.publisher.Mono
-import reactor.util.retry.Retry
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.client.loggingRetry
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Agency
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CaseLoad
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NomisCalculationReason
@@ -29,9 +29,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.pris
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.PrisonApiExternalMovement
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.PrisonerInPrisonSummary
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.SentenceDetail
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.prisonapi.model.CalculablePrisoner
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ManageOffencesApiClient.MaxRetryAchievedException
 import java.time.Duration
 import java.time.LocalDate
 
@@ -49,14 +47,9 @@ class PrisonApiClient(
       .uri("/api/offenders/$prisonerId")
       .retrieve()
       .bodyToMono(typeReference<PrisonerDetails>())
+      .loggingRetry(log, "getOffenderDetail($prisonerId)")
       .block()!!
   }
-
-  fun getSentenceDetail(bookingId: Long): SentenceDetail = systemAuthWebClient.get()
-    .uri("/api/bookings/$bookingId/sentenceDetail")
-    .retrieve()
-    .bodyToMono(typeReference<SentenceDetail>())
-    .block()!!
 
   fun getSentenceAndBookingAdjustments(bookingId: Long): BookingAndSentenceAdjustments {
     log.info("Requesting sentence and booking adjustment details for bookingId $bookingId")
@@ -64,6 +57,7 @@ class PrisonApiClient(
       .uri("/api/adjustments/$bookingId/sentence-and-booking")
       .retrieve()
       .bodyToMono(typeReference<BookingAndSentenceAdjustments>())
+      .loggingRetry(log, "getSentenceAndBookingAdjustments($bookingId)")
       .block()!!
   }
 
@@ -73,6 +67,7 @@ class PrisonApiClient(
       .uri("/api/offender-sentences/booking/$bookingId/sentences-and-offences")
       .retrieve()
       .bodyToMono(typeReference<List<PrisonApiSentenceAndOffences>>())
+      .loggingRetry(log, "getSentencesAndOffences($bookingId)")
       .block()!!
   }
 
@@ -83,6 +78,7 @@ class PrisonApiClient(
       .retrieve()
       .bodyToMono(typeReference<FixedTermRecallDetails>())
       .onErrorResume(WebClientResponseException.NotFound::class.java) { _ -> Mono.empty() }
+      .loggingRetry(log, "getSentencesAndOffences($bookingId)")
       .block()
   }
 
@@ -104,6 +100,7 @@ class PrisonApiClient(
       .uri("api/offender-fine-payment/booking/$bookingId")
       .retrieve()
       .bodyToMono(typeReference<List<OffenderFinePayment>>())
+      .loggingRetry(log, "getOffenderFinePayments($bookingId)")
       .block()!!
   }
 
@@ -111,6 +108,7 @@ class PrisonApiClient(
     .uri("/api/users/me/caseLoads")
     .retrieve()
     .bodyToMono(typeReference<ArrayList<CaseLoad>>())
+    .loggingRetry(log, "getCurrentUserCaseLoads()")
     .block()
 
   fun getCalculablePrisonerByPrison(
@@ -122,15 +120,12 @@ class PrisonApiClient(
       .uri("/api/prison/$establishmentId/booking/latest/paged/calculable-prisoner?page=$pageNumber")
       .retrieve()
       .bodyToMono(typeReference<RestResponsePage<CalculablePrisoner>>())
-      .retryWhen(
-        Retry.backoff(5, Duration.ofSeconds(2))
-          .maxBackoff(Duration.ofSeconds(10))
-          .doBeforeRetry { retrySignal ->
-            log.warn("getCalculablePrisonerByPrison: Retrying [Attempt: ${retrySignal.totalRetries() + 1}] due to ${retrySignal.failure().message}. ")
-          }
-          .onRetryExhaustedThrow { _, _ ->
-            throw MaxRetryAchievedException("getCalculablePrisonerByPrison: Max retries - lookup failed for $establishmentId")
-          },
+      .loggingRetry(
+        logger = log,
+        description = "getCalculablePrisonerByPrison($establishmentId, $pageNumber)",
+        maxAttempts = 5,
+        minBackoff = Duration.ofSeconds(2),
+        maxBackoff = Duration.ofSeconds(10),
       )
       .block()!!
   }
@@ -142,6 +137,7 @@ class PrisonApiClient(
     }
     .retrieve()
     .bodyToMono(typeReference<List<SentenceCalculationSummary>>())
+    .loggingRetry(log, "getCalculationsForAPrisonerId($prisonerId)")
     .block()!!
 
   fun getOffenderKeyDates(bookingId: Long): Either<String, OffenderKeyDates> = systemAuthWebClient.get()
@@ -174,6 +170,7 @@ class PrisonApiClient(
       .uri("/api/agencies/type/$agencyType")
       .retrieve()
       .bodyToMono(typeReference<List<Agency>>())
+      .loggingRetry(log, "getAgenciesByType($agencyType)")
       .block()!!
   }
 
@@ -181,6 +178,7 @@ class PrisonApiClient(
     .uri("/api/reference-domains/domains/CALC_REASON/codes")
     .retrieve()
     .bodyToMono(typeReference<List<NomisCalculationReason>>())
+    .loggingRetry(log, "getNOMISCalcReasons()")
     .block()!!
 
   fun getNOMISOffenderKeyDates(offenderSentCalcId: Long): Either<String, OffenderKeyDates> = systemAuthWebClient.get()
@@ -204,6 +202,7 @@ class PrisonApiClient(
       .uri("/api/movements/offender/$prisonerId?allBookings=true&movementTypes=ADM&movementTypes=REL&movementsAfter=$earliestSentenceDate")
       .retrieve()
       .bodyToMono(typeReference<List<PrisonApiExternalMovement>>())
+      .loggingRetry(log, "getExternalMovements($prisonerId)")
       .block()!!
   }
 
@@ -225,6 +224,7 @@ class PrisonApiClient(
       .uri("/api/offenders/$prisonerId/prison-timeline")
       .retrieve()
       .bodyToMono(PrisonerInPrisonSummary::class.java)
+      .loggingRetry(log, "getPrisonerInPrisonSummary($prisonerId)")
       .block()!!
   }
 

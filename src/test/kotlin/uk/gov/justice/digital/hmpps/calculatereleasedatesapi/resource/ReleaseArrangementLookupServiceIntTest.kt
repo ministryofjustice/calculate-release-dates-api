@@ -10,13 +10,13 @@ import org.junit.jupiter.api.assertThrows
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpHeaders
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.UserContext
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.MaxRetryAchievedException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.MockManageOffencesClient
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NormalisedSentenceAndOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ManageOffencesApiClient
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ReleaseArrangementLookupService
 import java.time.LocalDate
 
@@ -113,7 +113,7 @@ class ReleaseArrangementLookupServiceIntTest(private val mockManageOffencesClien
       releaseArrangementLookupService.populateReleaseArrangements(inputOffenceList)
     }
 
-    assertTrue(exception is ManageOffencesApiClient.MaxRetryAchievedException)
+    assertTrue(exception is MaxRetryAchievedException)
   }
 
   @Test

@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpHeaders
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.UserContext
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.MaxRetryAchievedException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.MockManageOffencesClient
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.manageoffencesapi.SDSEarlyReleaseExclusionForOffenceCode
@@ -167,7 +168,7 @@ class ManageOffencesApiClientIntTest(private val mockManageOffencesClient: MockM
     assertThatThrownBy {
       manageOffencesApiClient.getSdsExclusionsForOffenceCodes(listOf("ErrorExample1", "ErrorExample2", "ErrorExample3"))
     }
-      .isInstanceOf(ManageOffencesApiClient.MaxRetryAchievedException::class.java)
-      .hasMessageContaining("getSdsExclusionsForOffenceCodes: Max retries - lookup failed")
+      .isInstanceOf(MaxRetryAchievedException::class.java)
+      .hasMessageContaining("Max retries - getSdsExclusionsForOffenceCodes")
   }
 }
