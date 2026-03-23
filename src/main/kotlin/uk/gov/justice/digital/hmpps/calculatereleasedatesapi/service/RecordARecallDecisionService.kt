@@ -242,11 +242,7 @@ class RecordARecallDecisionService(
     externalMovements: List<ExternalMovement>,
     revocationDate: LocalDate,
   ): List<Recall.RecallType> {
-    val expectedRecallTypes = if (featureToggles.recordARecallFtr56Rules) {
-      findExpectedRecallTypesForFtr56(recallableSentences, externalMovements, revocationDate)
-    } else {
-      findExpectedRecallTypesForFtr(recallableSentences, externalMovements, revocationDate)
-    }
+    val expectedRecallTypes = findExpectedRecallTypesForFtr56(recallableSentences, externalMovements, revocationDate)
     return Recall.RecallType.entries.filterNot { expectedRecallTypes.contains(it) }
   }
 
