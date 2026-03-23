@@ -3,8 +3,9 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseConfigurations
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseTrancheType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.FTRLegislations
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.SDSLegislations
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.ADDITIONAL_DAYS_AWARDED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.RECALL_REMAND
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.RECALL_TAGGED_BAIL
@@ -48,7 +49,8 @@ class BookingTimelineService(
   private val timelineExternalAdmissionMovementCalculationHandler: TimelineExternalAdmissionMovementCalculationHandler,
   private val timelinePostTrancheAdjustmentService: TimelinePostTrancheAdjustmentService,
   private val timelineTrancheThreeCalculationHandler: TimelineTrancheThreeCalculationHandler,
-  private val earlyReleaseConfigurations: EarlyReleaseConfigurations,
+  private val sdsLegislations: SDSLegislations,
+  private val ftrLegislations: FTRLegislations,
 ) {
 
   fun calculate(
@@ -219,15 +221,18 @@ class BookingTimelineService(
       futureData.additional.map { TimelineCalculationDate(it.appliesToSentencesFrom, TimelineCalculationType.ADDITIONAL_DAYS) } +
       futureData.restored.map { TimelineCalculationDate(it.appliesToSentencesFrom, TimelineCalculationType.RESTORATION_DAYS) } +
       futureData.ual.map { TimelineCalculationDate(it.appliesToSentencesFrom, TimelineCalculationType.UAL) } +
-      earlyReleaseConfigurations.configurations.map { configuration ->
-        configuration.tranches.map {
+      sdsLegislations.all().flatMap { legislation ->
+        legislation.configuration.tranches.map {
           if (it.type == EarlyReleaseTrancheType.SDS_40_TRANCHE_3) {
             TimelineCalculationDate(it.date, TimelineCalculationType.SDS_40_TRANCHE_3)
           } else {
-            TimelineCalculationDate(it.date, TimelineCalculationType.EARLY_RELEASE_TRANCHE, configuration, it)
+            TimelineCalculationDate(it.date, TimelineCalculationType.EARLY_RELEASE_TRANCHE, legislation.configuration, it)
           }
         }
-      }.flatten() +
+      } +
+      ftrLegislations.ftr56Legislation.configuration.tranches.map {
+        TimelineCalculationDate(it.date, TimelineCalculationType.EARLY_RELEASE_TRANCHE, ftrLegislations.ftr56Legislation.configuration, it)
+      } +
       externalMovements.map { TimelineCalculationDate(it.movementDate, if (it.direction == ExternalMovementDirection.OUT) TimelineCalculationType.EXTERNAL_RELEASE else TimelineCalculationType.EXTERNAL_ADMISSION) }
     )
     .sortedBy { it.date }

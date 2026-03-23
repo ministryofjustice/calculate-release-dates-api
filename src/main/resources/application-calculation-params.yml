@@ -24,9 +24,10 @@ sds-40-early-release-tranches:
 release-point-multipliers:
   earlyReleasePoint: FORTY_PERCENT
 
-early-release-configuration:
-  configurations:
-    - release-multiplier:
+sds-legislations:
+  sds40-legislation:
+    configuration:
+      release-multiplier:
         SDS: ${release-point-multipliers.earlyReleasePoint}
       filter: SDS_40_EXCLUSIONS
       tranches:
@@ -41,7 +42,10 @@ early-release-configuration:
         - type: SDS_40_TRANCHE3
           date: ${sds-40-early-release-tranches.tranche-three-date}
 
-    - recall-calculation: FTR_56
+ftr-legislations:
+  ftr56-legislation:
+    configuration:
+      recall-calculation: FTR_56
       filter: FTR_56
       additions-applied-after-defaulting: true
       tranches:

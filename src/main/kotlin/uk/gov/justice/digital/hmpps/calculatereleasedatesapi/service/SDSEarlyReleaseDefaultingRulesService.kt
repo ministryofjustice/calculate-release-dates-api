@@ -2,8 +2,8 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseConfiguration
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseConfigurations
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseTrancheConfiguration
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.SDSLegislations
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SDSEarlyReleaseTranche
@@ -16,7 +16,7 @@ import java.time.LocalDate
 
 @Service
 class SDSEarlyReleaseDefaultingRulesService(
-  val earlyReleaseConfigurations: EarlyReleaseConfigurations,
+  val earlyReleaseConfigurations: SDSLegislations,
 ) {
   fun applySDSEarlyReleaseRulesAndFinalizeDates(
     earlyReleaseResult: CalculationResult,
@@ -167,7 +167,7 @@ class SDSEarlyReleaseDefaultingRulesService(
     val crdOrdArd = dates[ReleaseDateType.CRD] ?: dates[ReleaseDateType.ARD] ?: return
 
     val hdcedAndErsedDateTypes = listOf(ReleaseDateType.HDCED, ReleaseDateType.ERSED)
-    val trancheCommencementDates = earlyReleaseConfigurations.configurations.flatMap { it.tranches.map { tranche -> tranche.date } }
+    val trancheCommencementDates = earlyReleaseConfigurations.all().flatMap { it.configuration.tranches.map { tranche -> tranche.date } }
     hdcedAndErsedDateTypes.forEach { dateType ->
       dates[dateType]?.let { hdcedOrErsedDate ->
         if (hdcedOrErsedDate == crdOrdArd && hdcedOrErsedDate in trancheCommencementDates) {

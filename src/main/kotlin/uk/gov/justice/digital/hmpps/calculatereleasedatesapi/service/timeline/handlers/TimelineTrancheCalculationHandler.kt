@@ -2,7 +2,8 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.h
 
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseConfiguration
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseConfigurations
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.FTRLegislations
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.SDSLegislations
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationTrigger
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExternalMovementReason
@@ -16,9 +17,10 @@ import java.time.LocalDate
 @Service
 class TimelineTrancheCalculationHandler(
   timelineCalculator: TimelineCalculator,
-  earlyReleaseConfigurations: EarlyReleaseConfigurations,
+  sdsLegislations: SDSLegislations,
+  ftrLegislations: FTRLegislations,
   val trancheAllocationService: TrancheAllocationService,
-) : TimelineCalculationHandler(timelineCalculator, earlyReleaseConfigurations) {
+) : TimelineCalculationHandler(timelineCalculator, sdsLegislations, ftrLegislations) {
 
   override fun handle(
     timelineCalculationDate: LocalDate,

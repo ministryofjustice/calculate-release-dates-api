@@ -6,26 +6,10 @@ sds-40-early-release-tranches:
 release-point-multipliers:
   earlyReleasePoint: FORTY_PERCENT
 
-early-release-configuration:
-  configurations:
-    - release-multiplier:
-        SDS: ${release-point-multipliers.earlyReleasePoint}
-      filter: SDS_40_EXCLUSIONS
-      tranches:
-        - type: SENTENCE_LENGTH
-          unit: YEARS
-          duration: 5
-          date: ${sds-40-early-release-tranches.tranche-one-date}
-          name: TRANCHE_1
-
-        - type: FINAL
-          date: ${sds-40-early-release-tranches.tranche-two-date}
-          name: TRANCHE_2
-
-        - type: SDS_40_TRANCHE3
-          date: ${sds-40-early-release-tranches.tranche-three-date}
-
-    - release-multiplier:
+sds-legislations:
+  progression-model-legislation:
+    configuration:
+      release-multiplier:
         SDS: ONE_THIRD
         SDS_PLUS: ONE_HALF
       filter: SDS_OR_SDS_PLUS_ADULT
@@ -78,4 +62,3 @@ early-release-configuration:
 
         - type: FINAL
           date: 2027-05-01
-        
