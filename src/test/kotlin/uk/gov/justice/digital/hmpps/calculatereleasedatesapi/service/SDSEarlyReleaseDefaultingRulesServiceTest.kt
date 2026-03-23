@@ -8,9 +8,10 @@ import org.junit.jupiter.params.provider.CsvSource
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.mock
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.SDS40TrancheConfiguration
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseConfigurations
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseTrancheConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseTrancheType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.SDSLegislation
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.SDSLegislations
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SDSEarlyReleaseTranche
@@ -62,7 +63,11 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
 
   private val earlyReleaseConfiguration = trancheConfiguration.getSds40EarlyReleaseConfig(ReleaseMultiplier.FORTY_PERCENT)
 
-  private val service = SDSEarlyReleaseDefaultingRulesService(EarlyReleaseConfigurations(listOf(earlyReleaseConfiguration)))
+  val sdsLegislations = SDSLegislations(
+    sds40Legislation = SDSLegislation.SDS40Legislation(earlyReleaseConfiguration),
+    progressionModelLegislation = null,
+  )
+  private val service = SDSEarlyReleaseDefaultingRulesService(sdsLegislations)
 
   @ParameterizedTest
   @CsvSource(
@@ -147,7 +152,8 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
     val sentenceCalculation = SentenceCalculation(
       UnadjustedReleaseDate(
         sentence,
-        EarlyReleaseConfigurations(emptyList()),
+        sdsLegislations,
+        mock(),
         CalculationTrigger(LocalDate.now()),
       ),
       SentenceAdjustments(),
@@ -202,7 +208,8 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
     val sentenceCalculation = SentenceCalculation(
       UnadjustedReleaseDate(
         sentence,
-        EarlyReleaseConfigurations(emptyList()),
+        sdsLegislations,
+        mock(),
         CalculationTrigger(LocalDate.now()),
       ),
       SentenceAdjustments(),
@@ -397,7 +404,8 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
     val sentenceCalculation = SentenceCalculation(
       UnadjustedReleaseDate(
         sentence,
-        EarlyReleaseConfigurations(emptyList()),
+        sdsLegislations,
+        mock(),
         CalculationTrigger(LocalDate.now()),
       ),
       SentenceAdjustments(remand = 1),

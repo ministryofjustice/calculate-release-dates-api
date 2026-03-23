@@ -1,10 +1,10 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseConfiguration
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseConfigurations
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseTrancheConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseTrancheType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.RecallCalculationType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.FTRLegislations
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.SDSLegislations
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.PED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.NoValidReturnToCustodyDateException
@@ -21,7 +21,8 @@ import kotlin.properties.Delegates
 
 class UnadjustedReleaseDate(
   val sentence: CalculableSentence,
-  val earlyReleaseConfigurations: EarlyReleaseConfigurations,
+  val sdsLegislations: SDSLegislations,
+  val ftrLegislations: FTRLegislations,
   calculationTrigger: CalculationTrigger,
 ) {
 
@@ -33,8 +34,6 @@ class UnadjustedReleaseDate(
 
   lateinit var releaseDateCalculation: ReleaseDateCalculation
     private set
-  lateinit var historicReleaseDateCalculation: ReleaseDateCalculation
-    private set
   var numberOfDaysToPostRecallReleaseDate: Int? = null
     private set
   var unadjustedPostRecallReleaseDate: LocalDate? = null
@@ -44,7 +43,6 @@ class UnadjustedReleaseDate(
 
   private fun recalculate() {
     releaseDateCalculation = calculateReleaseDate(this::multiplier)
-    historicReleaseDateCalculation = calculateReleaseDate(this::historicMultiplier)
     val recallCalculation = findRecallCalculation()
     numberOfDaysToPostRecallReleaseDate = recallCalculation?.numberOfDaysToPostRecallReleaseDate
     unadjustedPostRecallReleaseDate = recallCalculation?.unadjustedPostRecallReleaseDate
@@ -61,13 +59,6 @@ class UnadjustedReleaseDate(
       .plusDays(releaseDateCalculation.numberOfDaysToDeterminateReleaseDate.toLong())
       .minusDays(1)
 
-  val unadjustedHistoricDeterminateReleaseDate: LocalDate
-    get() {
-      return sentence.sentencedAt
-        .plusDays(historicReleaseDateCalculation.numberOfDaysToDeterminateReleaseDate.toLong())
-        .minusDays(1)
-    }
-
   private fun calculateReleaseDate(findMultiplierBySentence: (sentence: CalculableSentence) -> ReleaseMultiplier): ReleaseDateCalculation = if (sentence is ConsecutiveSentence) {
     getConsecutiveRelease(findMultiplierBySentence)
   } else {
@@ -77,13 +68,6 @@ class UnadjustedReleaseDate(
   fun multiplier(sentence: CalculableSentence): ReleaseMultiplier = multiplierForSentence(
     calculationTrigger.timelineCalculationDate,
     calculationTrigger.allocatedTranche?.date,
-    sentence,
-  )
-
-  fun historicMultiplier(sentence: CalculableSentence): ReleaseMultiplier = multiplierForSentence(
-    earlyReleaseConfigurations.configurations.minOfOrNull { it.earliestTranche() }?.minusDays(1)
-      ?: calculationTrigger.timelineCalculationDate,
-    null,
     sentence,
   )
 
@@ -111,8 +95,8 @@ class UnadjustedReleaseDate(
           throw NoValidRevocationDateException("No revocation date available")
         }
 
-        val ftr56Configuration = earlyReleaseConfigurations.configurations.find { it.recallCalculation == RecallCalculationType.FTR_56 }
-        val revocationDateOrReturnToCustodyDateAfterFtr56Commencement = ftr56Configuration != null && returnToCustodyDate.isAfterOrEqualTo(ftr56Configuration.earliestTranche())
+        val ftr56Configuration = ftrLegislations.ftr56Legislation.configuration
+        val revocationDateOrReturnToCustodyDateAfterFtr56Commencement = returnToCustodyDate.isAfterOrEqualTo(ftr56Configuration.earliestTranche())
         val allocatedToFtr56Tranche = calculationTrigger.allocatedEarlyReleaseConfiguration != null && calculationTrigger.allocatedEarlyReleaseConfiguration == ftr56Configuration
 
         if (revocationDateOrReturnToCustodyDateAfterFtr56Commencement || allocatedToFtr56Tranche) {
@@ -164,7 +148,7 @@ class UnadjustedReleaseDate(
   ): ReleaseMultiplier {
     if (sentence is StandardDeterminateSentence) {
       val latestEarlyReleaseConfig =
-        earlyReleaseConfigurations.configurations
+        sdsLegislations.all().map { it.configuration }
           .filter { timelineCalculationDate.isAfterOrEqualTo(it.earliestTranche()) }
           .filter { it.releaseMultiplier != null }
           .maxByOrNull { it.earliestTranche() }
@@ -187,7 +171,7 @@ class UnadjustedReleaseDate(
   private fun defaultSDSReleaseMultiplier(sentence: CalculableSentence): ReleaseMultiplier = when (sentence.identificationTrack) {
     SentenceIdentificationTrack.SDS -> ReleaseMultiplier.ONE_HALF
     SentenceIdentificationTrack.SDS_PLUS -> ReleaseMultiplier.TWO_THIRDS
-    else -> throw UnexpectedException("Unknown default release multipler.")
+    else -> throw UnexpectedException("Unknown default release multiplier.")
   }
 
   private fun getMultiplierForConfiguration(

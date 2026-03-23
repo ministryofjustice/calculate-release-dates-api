@@ -11,9 +11,17 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeter
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ReleaseMultiplier
 import java.time.LocalDate
 
-@ConfigurationProperties(prefix = "early-release-configuration")
-data class EarlyReleaseConfigurations(
-  val configurations: List<EarlyReleaseConfiguration>,
+@ConfigurationProperties(prefix = "sds-legislations")
+data class SDSLegislations(
+  val sds40Legislation: SDSLegislation.SDS40Legislation,
+  val progressionModelLegislation: SDSLegislation.ProgressionModelLegislation?,
+) {
+  fun all(): List<SDSLegislation> = listOfNotNull(sds40Legislation, progressionModelLegislation)
+}
+
+@ConfigurationProperties(prefix = "ftr-legislations")
+data class FTRLegislations(
+  val ftr56Legislation: FTRLegislation.FTR56Legislation,
 )
 
 data class EarlyReleaseConfiguration(

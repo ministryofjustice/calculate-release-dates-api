@@ -1,7 +1,8 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers
 
 import org.springframework.stereotype.Service
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseConfigurations
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.FTRLegislations
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.SDSLegislations
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AbstractSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationTrigger
@@ -19,16 +20,17 @@ import java.time.temporal.ChronoUnit
 @Service
 class TimelineSentenceCalculationHandler(
   timelineCalculator: TimelineCalculator,
-  earlyReleaseConfigurations: EarlyReleaseConfigurations,
+  sdsLegislations: SDSLegislations,
+  ftrLegislations: FTRLegislations,
   private val sentenceCombinationService: SentenceCombinationService,
-) : TimelineCalculationHandler(timelineCalculator, earlyReleaseConfigurations) {
+) : TimelineCalculationHandler(timelineCalculator, sdsLegislations, ftrLegislations) {
 
   override fun handle(
     timelineCalculationDate: LocalDate,
     timelineTrackingData: TimelineTrackingData,
   ): TimelineHandleResult {
     with(timelineTrackingData) {
-      allocatedEarlyRelease = earlyReleaseConfigurations.configurations.filter { timelineCalculationDate.isAfter(it.earliestTranche()) }.maxByOrNull { it.earliestTranche() }
+      allocatedEarlyRelease = sdsLegislations.all().map { it.configuration }.filter { timelineCalculationDate.isAfter(it.earliestTranche()) }.maxByOrNull { it.earliestTranche() }
 
       var servedAdas = findServedAdas(timelineCalculationDate, currentSentenceGroup, latestRelease)
 
@@ -81,7 +83,8 @@ class TimelineSentenceCalculationHandler(
         sentence.sentenceCalculation = SentenceCalculation(
           UnadjustedReleaseDate(
             sentence,
-            earlyReleaseConfigurations,
+            sdsLegislations,
+            ftrLegislations,
             CalculationTrigger(
               timelineCalculationDate,
               allocatedEarlyRelease,

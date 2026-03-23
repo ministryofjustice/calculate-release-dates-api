@@ -104,14 +104,14 @@ class TrancheAllocationService {
       earlyReleaseConfig: EarlyReleaseConfiguration,
     ): Boolean {
       val sentencesWithReleaseAfterTrancheCommencement = (timelineTrackingData.currentSentenceGroup + timelineTrackingData.licenceSentences).filter {
-        earlyReleaseConfig.releaseDateConsidered(it.sentenceCalculation).isAfter(earlyReleaseConfig.earliestTranche())
+        it.sentenceCalculation.adjustedDeterminateReleaseDate.isAfter(earlyReleaseConfig.earliestTranche())
       }
-      return sentencesWithReleaseAfterTrancheCommencement.filter { sentence ->
+      return sentencesWithReleaseAfterTrancheCommencement.any { sentence ->
         sentence.sentenceParts().any { sentencePart ->
           val isInRangeOfEarlyRelease = sentencePart.sentencedAt.isBefore(earlyReleaseConfig.earliestTranche())
           isInRangeOfEarlyRelease && earlyReleaseConfig.isEligibleForTrancheRules(sentencePart)
         }
-      }.isNotEmpty()
+      }
     }
 
     override fun sentencesToMatchOnSentenceLength(

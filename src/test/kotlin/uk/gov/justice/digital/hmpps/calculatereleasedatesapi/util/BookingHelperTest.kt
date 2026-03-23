@@ -62,7 +62,6 @@ class BookingHelperTest {
     consecutiveSentences.forEach {
       whenever(it.sentenceCalculation.adjustedDeterminateReleaseDate).thenReturn(LocalDate.of(2024, 1, 1))
       whenever(it.sentenceCalculation.releaseDate).thenReturn(LocalDate.of(2024, 1, 1))
-      whenever(it.sentenceCalculation.adjustedHistoricDeterminateReleaseDate).thenReturn(LocalDate.of(2024, 1, 1))
     }
 
     return consecutiveSentences

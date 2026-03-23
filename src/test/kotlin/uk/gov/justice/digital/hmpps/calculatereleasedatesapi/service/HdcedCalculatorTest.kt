@@ -12,7 +12,6 @@ import org.mockito.kotlin.spy
 import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.hdcedConfigurationForTests
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.HdcedConfiguration
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseConfigurations
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
@@ -578,7 +577,8 @@ class HdcedCalculatorTest {
     )
     var unadjustedReleaseDate = UnadjustedReleaseDate(
       sentence,
-      EarlyReleaseConfigurations(emptyList()),
+      mock(),
+      mock(),
       CalculationTrigger(LocalDate.now()),
     )
     unadjustedReleaseDate = spy(unadjustedReleaseDate)
