@@ -45,7 +45,6 @@ sds-legislations:
 ftr-legislations:
   ftr56-legislation:
     configuration:
-      recall-calculation: FTR_56
       filter: FTR_56
       additions-applied-after-defaulting: true
       tranches:

@@ -116,7 +116,6 @@ class SentenceLevelDatesServiceTest {
       UnadjustedReleaseDate(
         sentence,
         mock(),
-        mock(),
         CalculationTrigger(LocalDate.now()),
       ),
       SentenceAdjustments(),

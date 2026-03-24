@@ -1,7 +1,9 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.ApplicableLegislation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseTrancheConfiguration
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.FTRLegislation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isBeforeOrEqualTo
 import java.math.BigDecimal
@@ -19,6 +21,7 @@ data class SentenceCalculation(
 
   var allocatedEarlyRelease: EarlyReleaseConfiguration? = null
   var allocatedTranche: EarlyReleaseTrancheConfiguration? = null
+  var applicableFtrLegislation: ApplicableLegislation<FTRLegislation>? = null
 
   val releaseDateCalculation: ReleaseDateCalculation get() = unadjustedReleaseDate.releaseDateCalculation
   val numberOfDaysToSentenceExpiryDate: Int get() = releaseDateCalculation.numberOfDaysToSentenceExpiryDate
@@ -105,19 +108,14 @@ data class SentenceCalculation(
         return null
       }
 
-      val currentAllocatedEarlyRelease = allocatedEarlyRelease
       val postRecallReleaseDateWithUal = unadjustedPostRecallReleaseDate?.plusDays(adjustments.ualAfterFtr)
 
-      val overrideWithTrancheDate = currentAllocatedEarlyRelease !== null &&
-        currentAllocatedEarlyRelease.modifiesRecallReleaseDate() &&
-        currentAllocatedEarlyRelease.additionsAppliedAfterDefaulting &&
-        postRecallReleaseDateWithUal !== null &&
-        postRecallReleaseDateWithUal.isBeforeOrEqualTo(
-          allocatedTranche?.date ?: currentAllocatedEarlyRelease.earliestTranche(),
-        )
+      val earliestApplicableDate = applicableFtrLegislation?.earliestApplicableDate
+      val overrideWithTrancheDate = earliestApplicableDate != null &&
+        postRecallReleaseDateWithUal != null &&
+        postRecallReleaseDateWithUal.isBeforeOrEqualTo(earliestApplicableDate)
 
-      val ualAdjustedDate =
-        allocatedTranche?.date.takeIf { overrideWithTrancheDate } ?: postRecallReleaseDateWithUal
+      val ualAdjustedDate = if (overrideWithTrancheDate) earliestApplicableDate else postRecallReleaseDateWithUal
 
       // Fixed term recalls only apply adjustments from return to custody date
       val fixedTermRecallRelease = ualAdjustedDate?.plusDays(
@@ -201,10 +199,13 @@ data class SentenceCalculation(
       }
     }
 
-  fun releaseDateDefaultedByCommencement(): LocalDate = if (isDateDefaultedToCommencement(releaseDate)) {
+  fun releaseDateDefaultedByCommencement(): LocalDate = if (sentence.isRecall()) {
+    // PRRD is already adjusted for FTR56 commencement
+    adjustedPostRecallReleaseDate!!
+  } else if (isDateDefaultedToCommencement(adjustedDeterminateReleaseDate)) {
     allocatedTranche!!.date
   } else {
-    releaseDate
+    adjustedDeterminateReleaseDate
   }
 
   val releaseDateWithoutDeductions: LocalDate

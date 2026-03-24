@@ -3,12 +3,10 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseTrancheConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseTrancheType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.FTRLegislations
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.SDSLegislations
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.PED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.NoValidReturnToCustodyDateException
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.NoValidRevocationDateException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ReleaseMultiplier
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ReleaseMultiplier.Companion.toIntReleaseDays
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ReleaseMultiplier.Companion.toLongReleaseDays
@@ -22,7 +20,6 @@ import kotlin.properties.Delegates
 class UnadjustedReleaseDate(
   val sentence: CalculableSentence,
   val sdsLegislations: SDSLegislations,
-  val ftrLegislations: FTRLegislations,
   calculationTrigger: CalculationTrigger,
 ) {
 
@@ -73,7 +70,6 @@ class UnadjustedReleaseDate(
 
   fun findRecallCalculation(): RecallCalculationResult? {
     val standardCalculation = releaseDateCalculation.numberOfDaysToSentenceExpiryDate to unadjustedExpiryDate
-    val revocationDate = sentence.recall?.revocationDate
     val returnToCustodyDate = sentence.recall?.returnToCustodyDate
     return when (val recallType = sentence.recallType) {
       RecallType.STANDARD_RECALL -> RecallCalculationResult(
@@ -88,18 +84,9 @@ class UnadjustedReleaseDate(
 
       RecallType.FIXED_TERM_RECALL_56 -> {
         if (returnToCustodyDate == null) {
-          throw NoValidReturnToCustodyDateException("No return to custody date available")
+          throw NoValidReturnToCustodyDateException("No return to custody date available for FTR56")
         }
-
-        if (revocationDate == null) {
-          throw NoValidRevocationDateException("No revocation date available")
-        }
-
-        val ftr56Configuration = ftrLegislations.ftr56Legislation.configuration
-        val revocationDateOrReturnToCustodyDateAfterFtr56Commencement = returnToCustodyDate.isAfterOrEqualTo(ftr56Configuration.earliestTranche())
-        val allocatedToFtr56Tranche = calculationTrigger.allocatedEarlyReleaseConfiguration != null && calculationTrigger.allocatedEarlyReleaseConfiguration == ftr56Configuration
-
-        if (revocationDateOrReturnToCustodyDateAfterFtr56Commencement || allocatedToFtr56Tranche) {
+        if (this.calculationTrigger.ftr56Supported) {
           calculateFixedTermRecall(returnToCustodyDate, recallType)
         } else {
           RecallCalculationResult(
@@ -327,6 +314,7 @@ data class CalculationTrigger(
   val timelineCalculationDate: LocalDate,
   val allocatedEarlyReleaseConfiguration: EarlyReleaseConfiguration? = null,
   val allocatedTranche: EarlyReleaseTrancheConfiguration? = null,
+  val ftr56Supported: Boolean = false,
 )
 
 data class RecallCalculationResult(

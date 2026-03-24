@@ -1,7 +1,9 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline
 
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.ApplicableLegislation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseTrancheConfiguration
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.FTRLegislation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SDSEarlyReleaseTranche
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SDSEarlyReleaseTrancheCategory
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
@@ -34,6 +36,7 @@ data class TimelineTrackingData(
 
   var allocatedEarlyRelease: EarlyReleaseConfiguration? = null,
   var allocatedTranche: EarlyReleaseTrancheConfiguration? = null,
+  var applicableFtrLegislation: ApplicableLegislation<FTRLegislation>? = null,
   val trancheAllocationByCategory: MutableMap<SDSEarlyReleaseTrancheCategory, SDSEarlyReleaseTranche> = mutableMapOf(),
 ) {
 

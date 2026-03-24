@@ -1,7 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers
 
 import org.springframework.stereotype.Service
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.FTRLegislations
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.SDSLegislations
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AbstractSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
@@ -20,10 +19,9 @@ import java.time.temporal.ChronoUnit
 @Service
 class TimelineSentenceCalculationHandler(
   timelineCalculator: TimelineCalculator,
-  sdsLegislations: SDSLegislations,
-  ftrLegislations: FTRLegislations,
+  val sdsLegislations: SDSLegislations,
   private val sentenceCombinationService: SentenceCombinationService,
-) : TimelineCalculationHandler(timelineCalculator, sdsLegislations, ftrLegislations) {
+) : TimelineCalculationHandler(timelineCalculator) {
 
   override fun handle(
     timelineCalculationDate: LocalDate,
@@ -84,18 +82,18 @@ class TimelineSentenceCalculationHandler(
           UnadjustedReleaseDate(
             sentence,
             sdsLegislations,
-            ftrLegislations,
             CalculationTrigger(
               timelineCalculationDate,
               allocatedEarlyRelease,
               allocatedTranche,
+              applicableFtrLegislation?.legislation?.isFTR56Supported() == true,
             ),
-
           ),
           SentenceAdjustments(),
           calculateErsed = options.calculateErsed,
         )
         sentence.sentenceCalculation.allocatedEarlyRelease = allocatedEarlyRelease
+        sentence.sentenceCalculation.applicableFtrLegislation = applicableFtrLegislation
       }
     }
   }
