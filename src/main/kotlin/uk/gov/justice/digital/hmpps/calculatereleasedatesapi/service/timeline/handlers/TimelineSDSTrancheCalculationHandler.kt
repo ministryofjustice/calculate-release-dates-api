@@ -2,11 +2,8 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.h
 
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseConfiguration
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.FTRLegislations
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.SDSLegislations
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationTrigger
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExternalMovementReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.TrancheAllocationService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculator
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineHandleResult
@@ -15,29 +12,29 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqual
 import java.time.LocalDate
 
 @Service
-class TimelineTrancheCalculationHandler(
+class TimelineSDSTrancheCalculationHandler(
   timelineCalculator: TimelineCalculator,
-  sdsLegislations: SDSLegislations,
-  ftrLegislations: FTRLegislations,
   val trancheAllocationService: TrancheAllocationService,
-) : TimelineCalculationHandler(timelineCalculator, sdsLegislations, ftrLegislations) {
+) : AbstractTimelineTrancheHandler(timelineCalculator) {
 
   override fun handle(
     timelineCalculationDate: LocalDate,
     timelineTrackingData: TimelineTrackingData,
   ): TimelineHandleResult {
     with(timelineTrackingData) {
-      val earlyReleaseConfiguration = currentTimelineCalculationDate.earlyReleaseConfiguration!!
-      val tranche = currentTimelineCalculationDate.trancheConfiguration!!
+      val legislationToApply = requireNotNull(currentTimelineCalculationDate.tranchedLegislationToApplyOnDate) { "Received a tranche allocation timeline event without an allocation piece of legislation on $timelineCalculationDate" }
 
-      if (isPersonConsideredOutOfCustodyAtTrancheCommencement(timelineCalculationDate, earlyReleaseConfiguration, timelineTrackingData)) {
+      val earlyReleaseConfiguration = legislationToApply.configuration
+      val tranche = requireNotNull(earlyReleaseConfiguration.tranches.find { it.date == timelineCalculationDate }) { "Couldn't find tranche in early release configuration on $timelineCalculationDate" }
+
+      if (isPersonConsideredOutOfCustodyAtTrancheCommencement(timelineCalculationDate, legislationToApply.commencementDate(), timelineTrackingData)) {
         // The person is considered out of custody and is excluded from early release.
         return TimelineHandleResult(false)
       }
 
       val requiresTrancheAllocation = earlyReleaseConfiguration.earliestTranche() == tranche.date || allocatedTranche == null
       if (requiresTrancheAllocation) {
-        val allocated = trancheAllocationService.allocateTranche(timelineTrackingData, earlyReleaseConfiguration)
+        val allocated = trancheAllocationService.allocateTranche(timelineTrackingData, legislationToApply)
         if (allocated != null && allocated.date.isAfterOrEqualTo(timelineCalculationDate)) {
           allocatedTranche = allocated
           allocatedEarlyRelease = earlyReleaseConfiguration
@@ -55,8 +52,8 @@ class TimelineTrancheCalculationHandler(
           timelineCalculator.getLatestCalculation(allSentences, offender, timelineTrackingData.returnToCustodyDate)
         }
         sentencesToModifyReleaseDates.forEach {
-          it.sentenceCalculation.allocatedTranche = currentTimelineCalculationDate.trancheConfiguration
-          it.sentenceCalculation.allocatedEarlyRelease = currentTimelineCalculationDate.earlyReleaseConfiguration
+          it.sentenceCalculation.allocatedTranche = tranche
+          it.sentenceCalculation.allocatedEarlyRelease = earlyReleaseConfiguration
           it.sentenceCalculation.unadjustedReleaseDate.calculationTrigger = CalculationTrigger(
             timelineCalculationDate,
             allocatedEarlyRelease,
@@ -80,29 +77,7 @@ class TimelineTrancheCalculationHandler(
     timelineCalculationDate: LocalDate,
     earlyReleaseConfiguration: EarlyReleaseConfiguration,
   ): List<CalculableSentence> = (timelineTrackingData.currentSentenceGroup + timelineTrackingData.licenceSentences).filter {
-    earlyReleaseConfiguration.releaseDateConsidered(
-      it.sentenceCalculation,
-    ).isAfter(timelineCalculationDate)
+    it.sentenceCalculation.adjustedDeterminateReleaseDate.isAfter(timelineCalculationDate)
   }
     .filter { sentence -> sentence.sentenceParts().any { earlyReleaseConfiguration.matchesFilter(it) } }
-
-  fun isPersonConsideredOutOfCustodyAtTrancheCommencement(timelineCalculationDate: LocalDate, earlyReleaseConfiguration: EarlyReleaseConfiguration, timelineTrackingData: TimelineTrackingData): Boolean {
-    with(timelineTrackingData) {
-      if (isOutOfPrison() && earlyReleaseConfiguration.earliestTranche() == timelineCalculationDate) {
-        // They are out of prison. The following code checking for any exemptions to that.
-
-        // If they were a HDC, ERS or ECSL release then they should not be early released.
-        if (listOf(ExternalMovementReason.HDC, ExternalMovementReason.ERS, ExternalMovementReason.ECSL).contains(outOfPrisonStatus!!.release.movementReason)) {
-          return true
-        }
-
-        // If the person was UAL at tranche commencement then they are subject to early release.
-        val ualAtCommencement = previousUalPeriods.any {
-          it.first.isBefore(timelineCalculationDate) && it.second.isAfterOrEqualTo(timelineCalculationDate)
-        }
-        return !ualAtCommencement
-      }
-      return false
-    }
-  }
 }

@@ -6,10 +6,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AbstractSente
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ReleaseMultiplier
-import java.time.LocalDate
 
 @ConfigurationProperties(prefix = "sds-legislations")
 data class SDSLegislations(
@@ -26,7 +24,6 @@ data class FTRLegislations(
 
 data class EarlyReleaseConfiguration(
   val releaseMultiplier: Map<SentenceIdentificationTrack, ReleaseMultiplier>? = null,
-  val recallCalculation: RecallCalculationType? = null,
   val filter: EarlyReleaseSentenceFilter,
   val additionsAppliedAfterDefaulting: Boolean = false,
   val tranches: List<EarlyReleaseTrancheConfiguration>,
@@ -52,18 +49,4 @@ data class EarlyReleaseConfiguration(
   } else {
     sentence.sentenceParts().any { this.matchesFilter(it) }
   }
-
-  fun releaseDateConsidered(
-    sentenceCalculation: SentenceCalculation,
-  ): LocalDate = if (releaseMultiplier != null) {
-    sentenceCalculation.adjustedDeterminateReleaseDate
-  } else {
-    sentenceCalculation.releaseDate
-  }
-
-  fun modifiesRecallReleaseDate(): Boolean = releaseMultiplier == null
-}
-
-enum class RecallCalculationType {
-  FTR_56,
 }

@@ -578,7 +578,6 @@ class HdcedCalculatorTest {
     var unadjustedReleaseDate = UnadjustedReleaseDate(
       sentence,
       mock(),
-      mock(),
       CalculationTrigger(LocalDate.now()),
     )
     unadjustedReleaseDate = spy(unadjustedReleaseDate)

@@ -153,7 +153,6 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
       UnadjustedReleaseDate(
         sentence,
         sdsLegislations,
-        mock(),
         CalculationTrigger(LocalDate.now()),
       ),
       SentenceAdjustments(),
@@ -209,7 +208,6 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
       UnadjustedReleaseDate(
         sentence,
         sdsLegislations,
-        mock(),
         CalculationTrigger(LocalDate.now()),
       ),
       SentenceAdjustments(),
@@ -405,7 +403,6 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
       UnadjustedReleaseDate(
         sentence,
         sdsLegislations,
-        mock(),
         CalculationTrigger(LocalDate.now()),
       ),
       SentenceAdjustments(remand = 1),
