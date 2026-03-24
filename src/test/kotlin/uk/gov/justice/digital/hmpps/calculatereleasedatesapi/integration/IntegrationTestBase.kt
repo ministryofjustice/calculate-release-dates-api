@@ -183,7 +183,7 @@ open class IntegrationTestBase internal constructor() {
   companion object {
     @JvmStatic
     private val localStackContainer: LocalStackContainer =
-      LocalStackContainer(DockerImageName.parse("localstack/localstack"))
+      LocalStackContainer(DockerImageName.parse("localstack/localstack:3"))
         .apply {
           withEnv("DEFAULT_REGION", "eu-west-2")
           withServices(Service.SNS, Service.SQS)

@@ -1,10 +1,8 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource
 
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
@@ -106,7 +104,7 @@ class RecordARecallControllerIntTest(private val mockManageOffencesClient: MockM
       assertThat(result.automatedCalculationData.unexpectedRecallTypes).isEqualTo(
         listOf(
           Recall.RecallType.FTR_14,
-          Recall.RecallType.FTR_56,
+          Recall.RecallType.FTR_28,
           Recall.RecallType.FTR_HDC_14,
           Recall.RecallType.FTR_HDC_28,
           Recall.RecallType.CUR_HDC,
@@ -274,135 +272,7 @@ class RecordARecallControllerIntTest(private val mockManageOffencesClient: MockM
   }
 
   @Nested
-  inner class UnexpectedRecallTypeTests {
-    @Test
-    fun `Test unexpected recall types for SDS sentences under 12 months non HDC release`() {
-      val result = createCalculationForRecordARecall(
-        "RCLL-565-14",
-        RecordARecallRequest(revocationDate = LocalDate.of(2024, 6, 1)),
-      )
-
-      assertThat(result.decision).isEqualTo(RecordARecallDecision.AUTOMATED)
-      assertThat(result.automatedCalculationData!!.unexpectedRecallTypes).isEqualTo(
-        listOf(
-          Recall.RecallType.LR,
-          Recall.RecallType.FTR_28,
-          Recall.RecallType.FTR_56,
-          Recall.RecallType.FTR_HDC_14,
-          Recall.RecallType.FTR_HDC_28,
-          Recall.RecallType.CUR_HDC,
-          Recall.RecallType.IN_HDC,
-        ),
-      )
-    }
-
-    @Test
-    fun `Test unexpected recall types for SDS sentences over 12 months non HDC release`() {
-      val result = createCalculationForRecordARecall(
-        "RCLL-565-28",
-        RecordARecallRequest(revocationDate = LocalDate.of(2024, 12, 1)),
-      )
-
-      assertThat(result.decision).isEqualTo(RecordARecallDecision.AUTOMATED)
-      assertThat(result.automatedCalculationData!!.unexpectedRecallTypes).isEqualTo(
-        listOf(
-          Recall.RecallType.FTR_14,
-          Recall.RecallType.FTR_56,
-          Recall.RecallType.FTR_HDC_14,
-          Recall.RecallType.FTR_HDC_28,
-          Recall.RecallType.CUR_HDC,
-          Recall.RecallType.IN_HDC,
-        ),
-      )
-    }
-
-    @Test
-    fun `Test unexpected recall types for SDS sentences under 12 months HDC release`() {
-      val result = createCalculationForRecordARecall(
-        "RCLL-565-H14",
-        RecordARecallRequest(revocationDate = LocalDate.of(2024, 3, 2)),
-      )
-
-      assertThat(result.decision).isEqualTo(RecordARecallDecision.AUTOMATED)
-      assertThat(result.automatedCalculationData!!.unexpectedRecallTypes).isEqualTo(
-        listOf(
-          Recall.RecallType.LR,
-          Recall.RecallType.FTR_14,
-          Recall.RecallType.FTR_28,
-          Recall.RecallType.FTR_56,
-          Recall.RecallType.FTR_HDC_28,
-        ),
-      )
-    }
-
-    @Test
-    fun `Test unexpected recall types for SDS sentences over 12 months HDC release`() {
-      val result = createCalculationForRecordARecall(
-        "RCLL-565-H28",
-        RecordARecallRequest(revocationDate = LocalDate.of(2024, 5, 2)),
-      )
-
-      assertThat(result.decision).isEqualTo(RecordARecallDecision.AUTOMATED)
-      assertThat(result.automatedCalculationData!!.unexpectedRecallTypes).isEqualTo(
-        listOf(
-          Recall.RecallType.LR,
-          Recall.RecallType.FTR_14,
-          Recall.RecallType.FTR_28,
-          Recall.RecallType.FTR_56,
-          Recall.RecallType.FTR_HDC_14,
-        ),
-      )
-    }
-
-    @Test
-    fun `Test unexpected recall types for SDS sentences under 12 months HDC release, revocation after CRD`() {
-      val result = createCalculationForRecordARecall(
-        "RCLL-565-H14",
-        RecordARecallRequest(revocationDate = LocalDate.of(2024, 6, 2)),
-      )
-
-      assertThat(result.decision).isEqualTo(RecordARecallDecision.AUTOMATED)
-      assertThat(result.automatedCalculationData!!.unexpectedRecallTypes).isEqualTo(
-        listOf(
-          Recall.RecallType.LR,
-          Recall.RecallType.FTR_28,
-          Recall.RecallType.FTR_56,
-          Recall.RecallType.FTR_HDC_14,
-          Recall.RecallType.FTR_HDC_28,
-          Recall.RecallType.CUR_HDC,
-          Recall.RecallType.IN_HDC,
-        ),
-      )
-    }
-
-    @Test
-    fun `Test unexpected recall types for SDS sentences over 12 months HDC release, revocation after CRD`() {
-      val result = createCalculationForRecordARecall(
-        "RCLL-565-H28",
-        RecordARecallRequest(revocationDate = LocalDate.of(2024, 12, 1)),
-      )
-
-      assertThat(result.decision).isEqualTo(RecordARecallDecision.AUTOMATED)
-      assertThat(result.automatedCalculationData!!.unexpectedRecallTypes).isEqualTo(
-        listOf(
-          Recall.RecallType.FTR_14,
-          Recall.RecallType.FTR_56,
-          Recall.RecallType.FTR_HDC_14,
-          Recall.RecallType.FTR_HDC_28,
-          Recall.RecallType.CUR_HDC,
-          Recall.RecallType.IN_HDC,
-        ),
-      )
-    }
-  }
-
-  @Nested
   inner class UnexpectedFtr56RecallTypes {
-    @BeforeEach
-    fun beforeEachFtr56Test() {
-      whenever(featureToggles.recordARecallFtr56Rules).thenReturn(true)
-    }
-
     @Test
     fun `Test unexpected recall types for SDS Adult sentences non HDC release`() {
       val result = createCalculationForRecordARecall(
