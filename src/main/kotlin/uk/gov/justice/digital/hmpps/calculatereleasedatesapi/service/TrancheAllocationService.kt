@@ -1,9 +1,9 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import org.springframework.stereotype.Service
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseTrancheConfiguration
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseTrancheType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.TranchedLegislation
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.LegislationWithTranches
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.TrancheConfiguration
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.TrancheType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AFineSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
@@ -14,40 +14,42 @@ import java.time.temporal.ChronoUnit
 @Service
 class TrancheAllocationService {
 
-  fun allocateTranche(timelineTrackingData: TimelineTrackingData, tranchedLegislation: TranchedLegislation): EarlyReleaseTrancheConfiguration? {
-    val trancheSelectionStrategy = tranchedLegislation.trancheSelectionStrategy
-    if (!trancheSelectionStrategy.hasSentencesThatMightApplyToTheTranche(timelineTrackingData, tranchedLegislation.configuration)) {
+  fun allocateTranche(timelineTrackingData: TimelineTrackingData, legislation: LegislationWithTranches): TrancheConfiguration? {
+    val trancheSelectionStrategy = legislation.trancheSelectionStrategy
+    if (!trancheSelectionStrategy.hasSentencesThatMightApplyToTheTranche(timelineTrackingData, legislation)) {
       return null
     }
 
-    if (timelineTrackingData.allocatedTranche != null && tranchedLegislation.configuration.tranches.any { it == timelineTrackingData.allocatedTranche }) {
+    if (
+      timelineTrackingData.applicableSdsLegislations.hasTrancheSet(legislation.legislationName) ||
+      timelineTrackingData.applicableFtrLegislation?.legislation?.legislationName == legislation.legislationName
+    ) {
       // Already allocated to a tranche in this early release group.
       return null
     }
 
     return findTranche(
-      tranchedLegislation.configuration.tranches,
-      tranchedLegislation.commencementDate(),
-      trancheSelectionStrategy.sentencesToMatchOnSentenceLength(timelineTrackingData, tranchedLegislation.configuration),
+      legislation.tranches,
+      legislation.commencementDate(),
+      trancheSelectionStrategy.sentencesToMatchOnSentenceLength(timelineTrackingData, legislation),
     )
   }
 
   private fun findTranche(
-    tranches: List<EarlyReleaseTrancheConfiguration>,
+    tranches: List<TrancheConfiguration>,
     legislationCommencementDate: LocalDate,
     allSentences: List<CalculableSentence>,
-  ): EarlyReleaseTrancheConfiguration? = tranches.find {
+  ): TrancheConfiguration? = tranches.find {
     when (it.type) {
-      EarlyReleaseTrancheType.SENTENCE_LENGTH -> matchesSentenceLength(allSentences, legislationCommencementDate, it)
-      EarlyReleaseTrancheType.FINAL -> true // Not matched any other tranche, so must be in this one.
-      EarlyReleaseTrancheType.SDS_40_TRANCHE_3 -> false // Not really a tranche that can be allocated to.
+      TrancheType.SENTENCE_LENGTH -> matchesSentenceLength(allSentences, legislationCommencementDate, it)
+      TrancheType.FINAL -> true // Not matched any other tranche, so must be in this one.
     }
   }
 
   private fun matchesSentenceLength(
     sentencesConsideredForTrancheRules: List<CalculableSentence>,
     legislationCommencementDate: LocalDate,
-    tranche: EarlyReleaseTrancheConfiguration,
+    tranche: TrancheConfiguration,
   ): Boolean {
     val sentenceDurations = sentencesConsideredForTrancheRules.map { filterAndMapSentencesForNotIncludedTypesByDuration(it, legislationCommencementDate, tranche.unit!!) }
     return sentenceDurations.none { it >= tranche.duration!! }

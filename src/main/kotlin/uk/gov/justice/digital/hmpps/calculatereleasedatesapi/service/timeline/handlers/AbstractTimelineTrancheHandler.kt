@@ -7,7 +7,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqual
 import java.time.LocalDate
 
 abstract class AbstractTimelineTrancheHandler(timelineCalculator: TimelineCalculator) : TimelineCalculationHandler(timelineCalculator) {
-  fun isPersonConsideredOutOfCustodyAtTrancheCommencement(timelineCalculationDate: LocalDate, legislationCommencementDate: LocalDate, timelineTrackingData: TimelineTrackingData): Boolean {
+  fun isPersonConsideredOutOfCustodyAtLegislationCommencement(timelineCalculationDate: LocalDate, legislationCommencementDate: LocalDate, timelineTrackingData: TimelineTrackingData): Boolean {
     with(timelineTrackingData) {
       if (isOutOfPrison() && legislationCommencementDate == timelineCalculationDate) {
         // They are out of prison. The following code checking for any exemptions to that.

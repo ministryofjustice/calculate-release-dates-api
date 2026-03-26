@@ -4,8 +4,8 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.SDS40TrancheConfiguration
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SDSEarlyReleaseTranche
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SDSEarlyReleaseTrancheCategory
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.LegislationName
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.TrancheName
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOutput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
@@ -22,7 +22,7 @@ class SdsImposedConsecBetweenTrancheDatesSds40Validator(private val trancheConfi
     calculationOutput: CalculationOutput,
     booking: Booking,
   ): List<ValidationMessage> {
-    if (calculationOutput.calculationResult.trancheAllocationByCategory[SDSEarlyReleaseTrancheCategory.SDS40] == SDSEarlyReleaseTranche.TRANCHE_2 &&
+    if (calculationOutput.calculationResult.trancheAllocationByLegislationName[LegislationName.SDS_40] == TrancheName.TRANCHE_2 &&
       calculationOutput.sentences.filterIsInstance<ConsecutiveSentence>().any { consecutiveSentence ->
         consecutiveSentence.orderedSentences.any {
           it is StandardDeterminateSentence &&

@@ -25,59 +25,64 @@ release-point-multipliers:
   earlyReleasePoint: FORTY_PERCENT
 
 sds-legislations:
+  default-legislation:
+    release-multiplier:
+      SDS: ONE_HALF
+      SDS_PLUS: TWO_THIRDS
+    filter: SDS_OR_SDS_PLUS
   sds40-legislation:
-    configuration:
-      release-multiplier:
-        SDS: ${release-point-multipliers.earlyReleasePoint}
-      filter: SDS_40_EXCLUSIONS
-      tranches:
-        - type: SENTENCE_LENGTH
-          unit: YEARS
-          duration: 5
-          date: ${sds-40-early-release-tranches.tranche-one-date}
-          name: TRANCHE_1
-        - type: FINAL
-          date: ${sds-40-early-release-tranches.tranche-two-date}
-          name: TRANCHE_2
-        - type: SDS_40_TRANCHE3
-          date: ${sds-40-early-release-tranches.tranche-three-date}
+    release-multiplier:
+      SDS: ${release-point-multipliers.earlyReleasePoint}
+    filter: SDS_40_EXCLUSIONS
+    tranches:
+      - type: SENTENCE_LENGTH
+        unit: YEARS
+        duration: 5
+        date: ${sds-40-early-release-tranches.tranche-one-date}
+        name: TRANCHE_1
+      - type: FINAL
+        date: ${sds-40-early-release-tranches.tranche-two-date}
+        name: TRANCHE_2
+  sds40-additional-excluded-offences-legislation:
+    commencement-date: ${sds-40-early-release-tranches.tranche-three-date}
+    release-multiplier:
+      SDS: ONE_HALF
+      SDS_PLUS: TWO_THIRDS
+    filter: SDS_40_ADDITIONAL_EXCLUDED_OFFENCES
 
 ftr-legislations:
   ftr56-legislation:
-    configuration:
-      filter: FTR_56
-      additions-applied-after-defaulting: true
-      tranches:
-        - type: SENTENCE_LENGTH
-          unit: DAYS
-          duration: 1701
-          date: 2026-03-31
-          name: FTR_56_TRANCHE_1
+    tranches:
+      - type: SENTENCE_LENGTH
+        unit: DAYS
+        duration: 1701
+        date: 2026-03-31
+        name: FTR_56_TRANCHE_1
 
-        - type: SENTENCE_LENGTH
-          unit: DAYS
-          duration: 2128
-          date: 2026-04-14
-          name: FTR_56_TRANCHE_2
+      - type: SENTENCE_LENGTH
+        unit: DAYS
+        duration: 2128
+        date: 2026-04-14
+        name: FTR_56_TRANCHE_2
 
-        - type: SENTENCE_LENGTH
-          unit: DAYS
-          duration: 2576
-          date: 2026-04-21
-          name: FTR_56_TRANCHE_3
+      - type: SENTENCE_LENGTH
+        unit: DAYS
+        duration: 2576
+        date: 2026-04-21
+        name: FTR_56_TRANCHE_3
 
-        - type: SENTENCE_LENGTH
-          unit: DAYS
-          duration: 3304
-          date: 2026-04-28
-          name: FTR_56_TRANCHE_4
+      - type: SENTENCE_LENGTH
+        unit: DAYS
+        duration: 3304
+        date: 2026-04-28
+        name: FTR_56_TRANCHE_4
 
-        - type: SENTENCE_LENGTH
-          unit: DAYS
-          duration: 4438
-          date: 2026-05-05
-          name: FTR_56_TRANCHE_5
+      - type: SENTENCE_LENGTH
+        unit: DAYS
+        duration: 4438
+        date: 2026-05-05
+        name: FTR_56_TRANCHE_5
 
-        - type: FINAL
-          date: 2026-05-12
-          name: FTR_56_TRANCHE_6
+      - type: FINAL
+        date: 2026-05-12
+        name: FTR_56_TRANCHE_6

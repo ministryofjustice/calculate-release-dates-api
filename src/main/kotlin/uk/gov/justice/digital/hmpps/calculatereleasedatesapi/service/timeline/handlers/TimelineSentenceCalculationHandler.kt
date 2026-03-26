@@ -1,12 +1,12 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers
 
 import org.springframework.stereotype.Service
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.SDSLegislations
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AbstractSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationTrigger
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.UnadjustedReleaseDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.sentence.SentenceCombinationService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculator
@@ -19,7 +19,6 @@ import java.time.temporal.ChronoUnit
 @Service
 class TimelineSentenceCalculationHandler(
   timelineCalculator: TimelineCalculator,
-  val sdsLegislations: SDSLegislations,
   private val sentenceCombinationService: SentenceCombinationService,
 ) : TimelineCalculationHandler(timelineCalculator) {
 
@@ -28,8 +27,6 @@ class TimelineSentenceCalculationHandler(
     timelineTrackingData: TimelineTrackingData,
   ): TimelineHandleResult {
     with(timelineTrackingData) {
-      allocatedEarlyRelease = sdsLegislations.all().map { it.configuration }.filter { timelineCalculationDate.isAfter(it.earliestTranche()) }.maxByOrNull { it.earliestTranche() }
-
       var servedAdas = findServedAdas(timelineCalculationDate, currentSentenceGroup, latestRelease)
 
       val existingAdjustments =
@@ -53,6 +50,8 @@ class TimelineSentenceCalculationHandler(
       currentSentenceGroup.addAll(unchangedByCombiningSentences)
       currentSentenceGroup.apply { sortWith(compareBy { it.sentencedAt }) }
 
+      initialiseReleaseMultipliersForNewSDSParts(newlySentenced, timelineTrackingData)
+
       initialiseCalculationForNewSentences(timelineCalculationDate, timelineTrackingData, combinedSentencesWhichHaveNewParts)
 
       shareAdjustmentsFromExistingCustodialSentencesToNewlySentenced(combinedSentencesWhichHaveNewParts, existingAdjustments, servedAdas)
@@ -62,6 +61,23 @@ class TimelineSentenceCalculationHandler(
       shareDeductionsThatAreApplicableToThisSentenceDate(timelineCalculationDate, timelineTrackingData)
     }
     return TimelineHandleResult()
+  }
+
+  /**
+   * On the sentence date for this sentence there may be multiple applicable legislations in effect so lookup the relevant sentence for each part.
+   * As more legislation comes into effect the release multipliers will be overridden a the sentence part level.
+   */
+  private fun initialiseReleaseMultipliersForNewSDSParts(newlySentenced: List<AbstractSentence>, timelineTrackingData: TimelineTrackingData) {
+    with(timelineTrackingData) {
+      newlySentenced
+        .flatMap { it.sentenceParts() }
+        .mapNotNull { part -> part as? StandardDeterminateSentence }
+        .onEach { sdsPart ->
+          val applicableSdsLegislation = applicableSdsLegislations.legislationByCommencementDate()
+            .find { (legislation, _) -> legislation.appliesToSentence(sdsPart) }?.legislation
+          sdsPart.releaseMultiplier = applicableSdsLegislation?.releaseMultiplier?.get(sdsPart.identificationTrack)
+        }
+    }
   }
 
   private fun newlySentencedIsConsecutiveToAnyExistingSentences(timelineTrackingData: TimelineTrackingData, newlySentenced: List<AbstractSentence>): Boolean {
@@ -78,22 +94,23 @@ class TimelineSentenceCalculationHandler(
   private fun initialiseCalculationForNewSentences(timelineCalculationDate: LocalDate, timelineTrackingData: TimelineTrackingData, newSentencesToCalculate: List<CalculableSentence>) {
     with(timelineTrackingData) {
       newSentencesToCalculate.forEach { sentence ->
+        // Find the latest applicable legislation at the consecutive or single sentence level so that tranche defaulting
+        // occurs correctly even if the sentence parts might have different legislation applied.
+        val applicableSdsLegislation = applicableSdsLegislations.legislationByCommencementDate()
+          .find { (legislation, _) -> sentence.sentenceParts().any { part -> legislation.appliesToSentence(part) } }
         sentence.sentenceCalculation = SentenceCalculation(
           UnadjustedReleaseDate(
             sentence,
-            sdsLegislations,
             CalculationTrigger(
               timelineCalculationDate,
-              allocatedEarlyRelease,
-              allocatedTranche,
               applicableFtrLegislation?.legislation?.isFTR56Supported() == true,
             ),
           ),
           SentenceAdjustments(),
           calculateErsed = options.calculateErsed,
         )
-        sentence.sentenceCalculation.allocatedEarlyRelease = allocatedEarlyRelease
         sentence.sentenceCalculation.applicableFtrLegislation = applicableFtrLegislation
+        sentence.sentenceCalculation.applicableSdsLegislation = applicableSdsLegislation
       }
     }
   }

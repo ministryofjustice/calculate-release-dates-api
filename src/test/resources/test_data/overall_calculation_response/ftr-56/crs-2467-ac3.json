@@ -7,8 +7,8 @@
   "effectiveSentenceLength": "P5Y6M",
   "sdsEarlyReleaseTranche": "TRANCHE_2",
   "sdsEarlyReleaseAllocatedTranche": "TRANCHE_2",
-  "trancheAllocationByCategory": {
-    "SDS40": "TRANCHE_2",
-    "FTR56": "FTR_56_TRANCHE_2"
+  "trancheAllocationByLegislationName": {
+    "SDS_40": "TRANCHE_2",
+    "FTR_56": "FTR_56_TRANCHE_2"
   }
 }

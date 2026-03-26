@@ -8,57 +8,71 @@ release-point-multipliers:
 
 sds-legislations:
   progression-model-legislation:
-    configuration:
-      release-multiplier:
-        SDS: ONE_THIRD
-        SDS_PLUS: ONE_HALF
-      filter: SDS_OR_SDS_PLUS_ADULT
-      additions-applied-after-defaulting: true
-      tranches:
-        - type: SENTENCE_LENGTH
-          unit: YEARS
-          duration: 2
-          date: 2026-09-01
+    release-multiplier:
+      SDS: ONE_THIRD
+      SDS_PLUS: ONE_HALF
+    filter: SDS_OR_SDS_PLUS_ADULT
+    tranches:
+      - type: SENTENCE_LENGTH
+        unit: YEARS
+        duration: 2
+        date: 2026-09-01
+        name: TRANCHE_1
 
-        - type: SENTENCE_LENGTH
-          unit: YEARS
-          duration: 3
-          date: 2026-10-01
+      - type: SENTENCE_LENGTH
+        unit: YEARS
+        duration: 3
+        date: 2026-10-01
+        name: TRANCHE_2
 
-        - type: SENTENCE_LENGTH
-          unit: YEARS
-          duration: 4
-          date: 2026-11-01
+      - type: SENTENCE_LENGTH
+        unit: YEARS
+        duration: 4
+        date: 2026-11-01
+        name: TRANCHE_3
 
-        - type: SENTENCE_LENGTH
-          unit: YEARS
-          duration: 5
-          date: 2026-12-01
+      - type: SENTENCE_LENGTH
+        unit: YEARS
+        duration: 5
+        date: 2026-12-01
+        name: TRANCHE_4
 
-        - type: SENTENCE_LENGTH
-          unit: YEARS
-          duration: 6
-          date: 2027-01-01
+      - type: SENTENCE_LENGTH
+        unit: YEARS
+        duration: 6
+        date: 2027-01-01
+        name: TRANCHE_5
 
-        - type: SENTENCE_LENGTH
-          unit: YEARS
-          duration: 7
-          date: 2027-02-01
+      - type: SENTENCE_LENGTH
+        unit: YEARS
+        duration: 7
+        date: 2027-02-01
+        name: TRANCHE_6
 
-        - type: SENTENCE_LENGTH
-          unit: YEARS
-          duration: 8
-          date: 2028-02-01
+      - type: SENTENCE_LENGTH
+        unit: YEARS
+        duration: 8
+        date: 2028-02-01
+        name: TRANCHE_7
 
-        - type: SENTENCE_LENGTH
-          unit: YEARS
-          duration: 9
-          date: 2027-03-01
+      - type: SENTENCE_LENGTH
+        unit: YEARS
+        duration: 9
+        date: 2027-03-01
+        name: TRANCHE_8
 
-        - type: SENTENCE_LENGTH
-          unit: YEARS
-          duration: 10
-          date: 2027-04-01
+      - type: SENTENCE_LENGTH
+        unit: YEARS
+        duration: 10
+        date: 2027-04-01
+        name: TRANCHE_9
 
-        - type: FINAL
-          date: 2027-05-01
+      - type: FINAL
+        date: 2027-05-01
+        name: TRANCHE_10
+  sds40-youth-repeal:
+    commencement-date: 2026-09-01
+    release-multiplier:
+      SDS: ONE_HALF
+      SDS_PLUS: TWO_THIRDS
+    filter: YOUTH

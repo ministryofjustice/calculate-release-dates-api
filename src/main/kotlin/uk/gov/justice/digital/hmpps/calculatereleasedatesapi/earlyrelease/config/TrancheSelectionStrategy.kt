@@ -4,6 +4,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSen
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineTrackingData
 
 interface TrancheSelectionStrategy {
-  fun hasSentencesThatMightApplyToTheTranche(timelineTrackingData: TimelineTrackingData, earlyReleaseConfig: EarlyReleaseConfiguration): Boolean
-  fun sentencesToMatchOnSentenceLength(timelineTrackingData: TimelineTrackingData, earlyReleaseConfig: EarlyReleaseConfiguration): List<CalculableSentence>
+  fun hasSentencesThatMightApplyToTheTranche(timelineTrackingData: TimelineTrackingData, legislation: Legislation): Boolean
+  fun sentencesToMatchOnSentenceLength(timelineTrackingData: TimelineTrackingData, legislation: Legislation): List<CalculableSentence>
 }

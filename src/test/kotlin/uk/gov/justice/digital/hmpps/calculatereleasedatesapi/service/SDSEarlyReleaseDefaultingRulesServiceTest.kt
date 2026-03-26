@@ -8,14 +8,17 @@ import org.junit.jupiter.params.provider.CsvSource
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.mock
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.SDS40TrancheConfiguration
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseTrancheConfiguration
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseTrancheType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.ApplicableLegislation
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseSentenceFilter
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.PreLegislationCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.SDSLegislation
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.SDSLegislations
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.SDSLegislationConfiguration
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.TrancheConfiguration
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.TrancheType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SDSEarlyReleaseTranche
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.TrancheName
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
@@ -47,12 +50,12 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
   private val testTrancheTwoCommencementDate = LocalDate.of(2024, 10, 22)
   private val testTrancheThreeCommencementDate = LocalDate.of(2024, 12, 16)
 
-  private val earlyReleaseTrancheOne = EarlyReleaseTrancheConfiguration(
+  private val earlyReleaseTrancheOne = TrancheConfiguration(
     date = testCommencementDate,
-    type = EarlyReleaseTrancheType.SENTENCE_LENGTH,
+    type = TrancheType.SENTENCE_LENGTH,
     unit = YEARS,
     duration = 5,
-    name = SDSEarlyReleaseTranche.TRANCHE_1,
+    name = TrancheName.TRANCHE_1,
   )
 
   private val trancheConfiguration = SDS40TrancheConfiguration(
@@ -61,13 +64,14 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
     testTrancheThreeCommencementDate,
   )
 
-  private val earlyReleaseConfiguration = trancheConfiguration.getSds40EarlyReleaseConfig(ReleaseMultiplier.FORTY_PERCENT)
-
-  val sdsLegislations = SDSLegislations(
-    sds40Legislation = SDSLegislation.SDS40Legislation(earlyReleaseConfiguration),
+  val sdsLegislationConfiguration = SDSLegislationConfiguration(
+    defaultLegislation = SDSLegislation.DefaultSDSLegislation(mapOf(SentenceIdentificationTrack.SDS to ReleaseMultiplier.ONE_HALF, SentenceIdentificationTrack.SDS_PLUS to ReleaseMultiplier.TWO_THIRDS), EarlyReleaseSentenceFilter.SDS_OR_SDS_PLUS),
+    sds40Legislation = SDSLegislation.SDS40Legislation(trancheConfiguration.getSds40Tranches(), mapOf(SentenceIdentificationTrack.SDS to ReleaseMultiplier.FORTY_PERCENT), EarlyReleaseSentenceFilter.SDS_40_EXCLUSIONS),
+    sds40AdditionalExcludedOffencesLegislation = SDSLegislation.SDS40AdditionalExcludedOffencesLegislation(trancheConfiguration.trancheThreeCommencementDate, mapOf(SentenceIdentificationTrack.SDS to ReleaseMultiplier.ONE_HALF, SentenceIdentificationTrack.SDS_PLUS to ReleaseMultiplier.TWO_THIRDS), EarlyReleaseSentenceFilter.SDS_40_ADDITIONAL_EXCLUDED_OFFENCES),
     progressionModelLegislation = null,
+    sds40YouthRepeal = null,
   )
-  private val service = SDSEarlyReleaseDefaultingRulesService(sdsLegislations)
+  private val service = SDSEarlyReleaseDefaultingRulesService(sdsLegislationConfiguration)
 
   @ParameterizedTest
   @CsvSource(
@@ -100,10 +104,8 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
     assertThat(
       service.applySDSEarlyReleaseRulesAndFinalizeDates(
         early,
-        standard,
-        earlyReleaseTrancheOne,
+        PreLegislationCalculation(standard, ApplicableLegislation(sdsLegislationConfiguration.sds40Legislation, earlyReleaseTrancheOne.date)),
         createBookingWithSDSSentenceOfType(SentenceIdentificationTrack.SDS).sentences,
-        earlyReleaseConfiguration,
       ),
     ).isEqualTo(
       CalculationResult(
@@ -145,14 +147,13 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
       isSDSPlus = false,
       hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
       recall = Recall(RecallType.STANDARD_RECALL),
-    )
+    ).apply { releaseMultiplier = ReleaseMultiplier.ONE_HALF }
     sentence.releaseDateTypes = ReleaseDateTypes(listOf(ReleaseDateType.TUSED), sentence, testOffender)
     sentence.identificationTrack = SentenceIdentificationTrack.SDS
     val earlyTused = LocalDate.of(2024, 12, 2)
     val sentenceCalculation = SentenceCalculation(
       UnadjustedReleaseDate(
         sentence,
-        sdsLegislations,
         CalculationTrigger(LocalDate.now()),
       ),
       SentenceAdjustments(),
@@ -168,7 +169,7 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
       standard,
       resultBreakdown,
       listOf(sentence),
-      earlyReleaseConfiguration,
+      trancheConfiguration.trancheOneCommencementDate,
     )
 
     assertThat(resultDates[ReleaseDateType.TUSED]).isEqualTo(LocalDate.of(2024, 8, 1))
@@ -200,14 +201,13 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
       isSDSPlus = false,
       hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
       recall = Recall(RecallType.STANDARD_RECALL),
-    )
+    ).apply { releaseMultiplier = ReleaseMultiplier.ONE_HALF }
     sentence.releaseDateTypes = ReleaseDateTypes(listOf(ReleaseDateType.TUSED), sentence, testOffender)
     sentence.identificationTrack = SentenceIdentificationTrack.SDS
     val earlyTused = LocalDate.of(2024, 1, 1)
     val sentenceCalculation = SentenceCalculation(
       UnadjustedReleaseDate(
         sentence,
-        sdsLegislations,
         CalculationTrigger(LocalDate.now()),
       ),
       SentenceAdjustments(),
@@ -223,7 +223,7 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
       standard,
       resultBreakdown,
       listOf(sentence),
-      earlyReleaseConfiguration,
+      trancheConfiguration.trancheOneCommencementDate,
     )
 
     assertThat(resultDates[ReleaseDateType.TUSED]).isEqualTo(earlyTused)
@@ -257,10 +257,8 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
     assertThat(
       service.applySDSEarlyReleaseRulesAndFinalizeDates(
         early,
-        standard,
-        earlyReleaseTrancheOne,
+        PreLegislationCalculation(standard, ApplicableLegislation(sdsLegislationConfiguration.sds40Legislation, earlyReleaseTrancheOne.date)),
         createBookingWithSDSSentenceOfType(SentenceIdentificationTrack.SDS).sentences,
-        earlyReleaseConfiguration,
       ),
     ).isEqualTo(
       CalculationResult(
@@ -311,10 +309,8 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
     assertThat(
       service.applySDSEarlyReleaseRulesAndFinalizeDates(
         early,
-        standard,
-        earlyReleaseTrancheOne,
+        PreLegislationCalculation(standard, ApplicableLegislation(sdsLegislationConfiguration.sds40Legislation, earlyReleaseTrancheOne.date)),
         createBookingWithSDSSentenceOfType(SentenceIdentificationTrack.SDS).sentences,
-        earlyReleaseConfiguration,
       ),
     ).isEqualTo(
       CalculationResult(
@@ -359,13 +355,11 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
     assertThat(
       service.applySDSEarlyReleaseRulesAndFinalizeDates(
         early,
-        standard,
-        earlyReleaseTrancheOne,
+        PreLegislationCalculation(standard, ApplicableLegislation(sdsLegislationConfiguration.sds40Legislation, earlyReleaseTrancheOne.date)),
         createBookingWithSDSSentenceOfType(
           SentenceIdentificationTrack.SDS,
           listOf(ReleaseDateType.CRD, ReleaseDateType.SLED),
         ).sentences,
-        earlyReleaseConfiguration,
       ),
     ).isEqualTo(
       CalculationResult(
@@ -388,7 +382,7 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
       lineSequence = 1,
       isSDSPlus = false,
       hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
-    )
+    ).apply { releaseMultiplier = ReleaseMultiplier.ONE_HALF }
     sentence.identificationTrack = identificationTrack
     sentence.releaseDateTypes = ReleaseDateTypes(
       if (releaseDateTypes !== null) {
@@ -402,7 +396,6 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
     val sentenceCalculation = SentenceCalculation(
       UnadjustedReleaseDate(
         sentence,
-        sdsLegislations,
         CalculationTrigger(LocalDate.now()),
       ),
       SentenceAdjustments(remand = 1),

@@ -24,7 +24,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationT
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.TrancheOutcome
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SDSEarlyReleaseTranche
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.TrancheName
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Agency
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BreakdownMissingReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
@@ -126,7 +126,7 @@ class DetailedCalculationResultsServiceTest {
           ),
         ),
       ),
-      allocatedSDSTranche = TrancheOutcome(calculationRequest = base, tranche = SDSEarlyReleaseTranche.TRANCHE_1, allocatedTranche = SDSEarlyReleaseTranche.TRANCHE_1, ftr56Tranche = SDSEarlyReleaseTranche.FTR_56_TRANCHE_1),
+      allocatedSDSTranche = TrancheOutcome(calculationRequest = base, tranche = TrancheName.TRANCHE_1, allocatedTranche = TrancheName.TRANCHE_1, ftr56Tranche = TrancheName.FTR_56_TRANCHE_1),
     )
     val enrichedReleaseDates = mapOf(ReleaseDateType.CRD to DetailedDate(ReleaseDateType.CRD, ReleaseDateType.CRD.description, LocalDate.of(2026, 6, 26), emptyList()))
     val expectedBreakdown = CalculationBreakdown(emptyList(), null, mapOf(ReleaseDateType.CRD to ReleaseDateCalculationBreakdown(emptySet())), mapOf(ReleaseDateType.PRRD to LocalDate.of(2026, 6, 27)))
@@ -161,8 +161,8 @@ class DetailedCalculationResultsServiceTest {
         ),
         expectedBreakdown,
         null,
-        SDSEarlyReleaseTranche.TRANCHE_1,
-        SDSEarlyReleaseTranche.FTR_56_TRANCHE_1,
+        TrancheName.TRANCHE_1,
+        TrancheName.FTR_56_TRANCHE_1,
       ),
     )
     verify(calculationResultEnrichmentService).addDetailToCalculationDates(
@@ -190,9 +190,9 @@ class DetailedCalculationResultsServiceTest {
     val calculationRequestWithTranches = base.copy(
       allocatedSDSTranche = TrancheOutcome(
         calculationRequest = base,
-        tranche = SDSEarlyReleaseTranche.TRANCHE_2,
-        allocatedTranche = SDSEarlyReleaseTranche.TRANCHE_2,
-        ftr56Tranche = SDSEarlyReleaseTranche.FTR_56_TRANCHE_4,
+        tranche = TrancheName.TRANCHE_2,
+        allocatedTranche = TrancheName.TRANCHE_2,
+        ftr56Tranche = TrancheName.FTR_56_TRANCHE_4,
       ),
     )
     val enrichedReleaseDates = mapOf(ReleaseDateType.CRD to DetailedDate(ReleaseDateType.CRD, ReleaseDateType.CRD.description, LocalDate.of(2026, 6, 26), emptyList()))
@@ -222,8 +222,8 @@ class DetailedCalculationResultsServiceTest {
         calculationOriginalData = CalculationOriginalData(prisonerDetails, listOf(originalSentence)),
         calculationBreakdown = expectedBreakdown,
         breakdownMissingReason = null,
-        sds40Tranche = SDSEarlyReleaseTranche.TRANCHE_2,
-        ftr56Tranche = SDSEarlyReleaseTranche.FTR_56_TRANCHE_4,
+        sds40Tranche = TrancheName.TRANCHE_2,
+        ftr56Tranche = TrancheName.FTR_56_TRANCHE_4,
       ),
     )
   }

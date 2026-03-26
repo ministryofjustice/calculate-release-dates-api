@@ -109,13 +109,12 @@ class SentenceLevelDatesServiceTest {
   @Test
   fun `return initialised sentences`() {
     val testIdentifierUUID = UUID.randomUUID()
-    val sentence = STANDARD_SENTENCE.copy(identifier = testIdentifierUUID)
+    val sentence = STANDARD_SENTENCE.copy(identifier = testIdentifierUUID).apply { releaseMultiplier = ReleaseMultiplier.ONE_HALF }
     sentence.identificationTrack = SentenceIdentificationTrack.SDS
     sentence.releaseDateTypes = ReleaseDateTypes(listOf(SLED), sentence, OFFENDER)
     sentence.sentenceCalculation = SentenceCalculation(
       UnadjustedReleaseDate(
         sentence,
-        mock(),
         CalculationTrigger(LocalDate.now()),
       ),
       SentenceAdjustments(),

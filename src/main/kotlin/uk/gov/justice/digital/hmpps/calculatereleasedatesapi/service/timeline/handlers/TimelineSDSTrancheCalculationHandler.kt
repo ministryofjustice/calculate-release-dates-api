@@ -1,14 +1,16 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers
 
 import org.springframework.stereotype.Service
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseConfiguration
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.ApplicableLegislation
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.ApplicableLegislation.Companion.applyToSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.PreLegislationCalculation
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.SDSLegislation
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.SDSLegislationWithTranches
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationTrigger
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.TrancheAllocationService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculator
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineHandleResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineTrackingData
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
 import java.time.LocalDate
 
 @Service
@@ -22,62 +24,66 @@ class TimelineSDSTrancheCalculationHandler(
     timelineTrackingData: TimelineTrackingData,
   ): TimelineHandleResult {
     with(timelineTrackingData) {
-      val legislationToApply = requireNotNull(currentTimelineCalculationDate.tranchedLegislationToApplyOnDate) { "Received a tranche allocation timeline event without an allocation piece of legislation on $timelineCalculationDate" }
+      val legislationToApply = requireNotNull(currentTimelineCalculationDate.sdsLegislationToApplyOnDate) { "Received a tranche allocation timeline event without an allocation piece of legislation on $timelineCalculationDate" }
 
-      val earlyReleaseConfiguration = legislationToApply.configuration
-      val tranche = requireNotNull(earlyReleaseConfiguration.tranches.find { it.date == timelineCalculationDate }) { "Couldn't find tranche in early release configuration on $timelineCalculationDate" }
-
-      if (isPersonConsideredOutOfCustodyAtTrancheCommencement(timelineCalculationDate, legislationToApply.commencementDate(), timelineTrackingData)) {
+      if (isPersonConsideredOutOfCustodyAtLegislationCommencement(timelineCalculationDate, legislationToApply.commencementDate(), timelineTrackingData)) {
         // The person is considered out of custody and is excluded from early release.
         return TimelineHandleResult(false)
       }
 
-      val requiresTrancheAllocation = earlyReleaseConfiguration.earliestTranche() == tranche.date || allocatedTranche == null
-      if (requiresTrancheAllocation) {
-        val allocated = trancheAllocationService.allocateTranche(timelineTrackingData, legislationToApply)
-        if (allocated != null && allocated.date.isAfterOrEqualTo(timelineCalculationDate)) {
-          allocatedTranche = allocated
-          allocatedEarlyRelease = earlyReleaseConfiguration
-          if (allocated.name != null) trancheAllocationByCategory[allocated.name.category] = allocated.name
-        }
-      }
+      allocateATrancheIfNoneSetYetForThisLegislation(legislationToApply)
 
-      val thisTrancheIsAllocatedTranche = allocatedTranche?.date == tranche.date
-      val sentencesToModifyReleaseDates = sentencesToModifyReleaseDates(timelineTrackingData, timelineCalculationDate, earlyReleaseConfiguration)
-      if (thisTrancheIsAllocatedTranche && sentencesToModifyReleaseDates.isNotEmpty()) {
-        val allSentences = releasedSentenceGroups.map { it.sentences }.plus(listOf(currentSentenceGroup))
-        beforeTrancheCalculation = if (earlyReleaseConfiguration.additionsAppliedAfterDefaulting) {
-          null
-        } else {
-          timelineCalculator.getLatestCalculation(allSentences, offender, timelineTrackingData.returnToCustodyDate)
-        }
-        sentencesToModifyReleaseDates.forEach {
-          it.sentenceCalculation.allocatedTranche = tranche
-          it.sentenceCalculation.allocatedEarlyRelease = earlyReleaseConfiguration
-          it.sentenceCalculation.unadjustedReleaseDate.calculationTrigger = CalculationTrigger(
-            timelineCalculationDate,
-            allocatedEarlyRelease,
-            allocatedTranche,
-          )
-          it.sentenceCalculation.adjustments = it.sentenceCalculation.adjustments.copy(
-            unusedAdaDays = 0,
-            unusedLicenceAdaDays = 0,
-          )
-        }
-      } else {
-        // No sentences at tranche date.
+      val anySentencesRequiringRecalculation = configureCalculationsForSentencesImpactedByThisTranche(legislationToApply, timelineCalculationDate)
+      if (!anySentencesRequiringRecalculation) {
         return TimelineHandleResult(requiresCalculation = false)
       }
     }
     return TimelineHandleResult()
   }
 
-  fun sentencesToModifyReleaseDates(
+  private fun TimelineTrackingData.configureCalculationsForSentencesImpactedByThisTranche(
+    legislationToApply: SDSLegislation,
+    timelineCalculationDate: LocalDate,
+  ): Boolean {
+    val applicableLegislation = applicableSdsLegislations.getApplicableLegislation(legislationToApply.legislationName)
+    val sentencesToModifyReleaseDates = sentencesToModifyReleaseDates(this, timelineCalculationDate, legislationToApply)
+    val currentTimelineDateIsTheAllocatedTrancheDate = timelineCalculationDate == applicableLegislation?.earliestApplicableDate
+    return if (applicableLegislation != null && currentTimelineDateIsTheAllocatedTrancheDate && sentencesToModifyReleaseDates.isNotEmpty()) {
+      val allSentences = releasedSentenceGroups.map { it.sentences }.plus(listOf(currentSentenceGroup))
+      beforeTrancheCalculation = PreLegislationCalculation(
+        timelineCalculator.getLatestCalculation(allSentences, offender, returnToCustodyDate),
+        applicableLegislation,
+      )
+      sentencesToModifyReleaseDates.forEach {
+        applicableLegislation.applyToSentence(it, timelineCalculationDate)
+        it.sentenceCalculation.adjustments = it.sentenceCalculation.adjustments.copy(
+          unusedAdaDays = 0,
+          unusedLicenceAdaDays = 0,
+        )
+      }
+      true
+    } else {
+      // No sentences at tranche date.
+      false
+    }
+  }
+
+  private fun TimelineTrackingData.allocateATrancheIfNoneSetYetForThisLegislation(legislationToApply: SDSLegislation) {
+    val requiresTrancheAllocation = !applicableSdsLegislations.hasTrancheSet(legislationToApply.legislationName)
+    if (requiresTrancheAllocation && legislationToApply is SDSLegislationWithTranches) {
+      trancheAllocationService.allocateTranche(this, legislationToApply)?.let { allocated ->
+        applicableSdsLegislations.setApplicableLegislation(ApplicableLegislation(legislationToApply, allocated.date))
+        trancheAllocationByLegislationName[legislationToApply.legislationName] = allocated.name
+      }
+    }
+  }
+
+  private fun sentencesToModifyReleaseDates(
     timelineTrackingData: TimelineTrackingData,
     timelineCalculationDate: LocalDate,
-    earlyReleaseConfiguration: EarlyReleaseConfiguration,
+    legislation: SDSLegislation,
   ): List<CalculableSentence> = (timelineTrackingData.currentSentenceGroup + timelineTrackingData.licenceSentences).filter {
     it.sentenceCalculation.adjustedDeterminateReleaseDate.isAfter(timelineCalculationDate)
   }
-    .filter { sentence -> sentence.sentenceParts().any { earlyReleaseConfiguration.matchesFilter(it) } }
+    .filter { sentence -> sentence.sentenceParts().any { legislation.appliesToSentence(it) } }
 }

@@ -1,13 +1,17 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline
 
+/**
+ * Note that the order of elements is important as timeline events on the same date are handled in the order of this enum.
+ */
 enum class TimelineCalculationType {
+  SDS_LEGISLATION_COMMENCEMENT,
+  EARLY_RELEASE_TRANCHE,
+  SDS_LEGISLATION_AMENDMENT,
+  FTR56_TRANCHE,
+  EXTERNAL_ADMISSION,
   SENTENCED,
   ADDITIONAL_DAYS,
   RESTORATION_DAYS,
   UAL,
-  EARLY_RELEASE_TRANCHE,
-  FTR56_TRANCHE,
-  EXTERNAL_ADMISSION,
   EXTERNAL_RELEASE,
-  SDS_40_TRANCHE_3,
 }
