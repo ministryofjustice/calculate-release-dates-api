@@ -1,7 +1,7 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SDSEarlyReleaseTranche
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.TrancheName
 
 data class DetailedCalculationResults(
   val context: CalculationContext,
@@ -10,7 +10,7 @@ data class DetailedCalculationResults(
   val calculationOriginalData: CalculationOriginalData,
   val calculationBreakdown: CalculationBreakdown?,
   val breakdownMissingReason: BreakdownMissingReason? = null,
-  val sds40Tranche: SDSEarlyReleaseTranche? = null,
-  val ftr56Tranche: SDSEarlyReleaseTranche? = null,
+  val sds40Tranche: TrancheName? = null,
+  val ftr56Tranche: TrancheName? = null,
   val usedPreviouslyRecordedSLED: PreviouslyRecordedSLED? = null,
 )

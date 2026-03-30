@@ -5,7 +5,6 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.mock
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseConfigurations
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.CRD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ESED
@@ -110,13 +109,12 @@ class SentenceLevelDatesServiceTest {
   @Test
   fun `return initialised sentences`() {
     val testIdentifierUUID = UUID.randomUUID()
-    val sentence = STANDARD_SENTENCE.copy(identifier = testIdentifierUUID)
+    val sentence = STANDARD_SENTENCE.copy(identifier = testIdentifierUUID).apply { releaseMultiplier = ReleaseMultiplier.ONE_HALF }
     sentence.identificationTrack = SentenceIdentificationTrack.SDS
     sentence.releaseDateTypes = ReleaseDateTypes(listOf(SLED), sentence, OFFENDER)
     sentence.sentenceCalculation = SentenceCalculation(
       UnadjustedReleaseDate(
         sentence,
-        EarlyReleaseConfigurations(emptyList()),
         CalculationTrigger(LocalDate.now()),
       ),
       SentenceAdjustments(),

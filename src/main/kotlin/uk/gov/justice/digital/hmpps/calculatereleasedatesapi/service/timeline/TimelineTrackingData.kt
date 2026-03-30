@@ -1,9 +1,11 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline
 
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseConfiguration
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseTrancheConfiguration
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SDSEarlyReleaseTranche
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SDSEarlyReleaseTrancheCategory
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.ApplicableLegislation
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.ApplicableSDSLegislations
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.FTRLegislation
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.LegislationName
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.PreLegislationCalculation
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.TrancheName
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOptions
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
@@ -30,11 +32,11 @@ data class TimelineTrackingData(
 
   var outOfPrisonStatus: OutOfPrisonStatus? = null,
   var padas: Long = 0,
-  var beforeTrancheCalculation: CalculationResult? = null,
+  var beforeTrancheCalculation: PreLegislationCalculation? = null,
 
-  var allocatedEarlyRelease: EarlyReleaseConfiguration? = null,
-  var allocatedTranche: EarlyReleaseTrancheConfiguration? = null,
-  val trancheAllocationByCategory: MutableMap<SDSEarlyReleaseTrancheCategory, SDSEarlyReleaseTranche> = mutableMapOf(),
+  var applicableFtrLegislation: ApplicableLegislation<FTRLegislation>? = null,
+  val applicableSdsLegislations: ApplicableSDSLegislations = ApplicableSDSLegislations(),
+  val trancheAllocationByLegislationName: MutableMap<LegislationName, TrancheName> = mutableMapOf(),
 ) {
 
   lateinit var latestCalculation: CalculationResult

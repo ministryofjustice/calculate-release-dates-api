@@ -1,19 +1,12 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseConfiguration
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseConfigurations
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseTrancheConfiguration
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseTrancheType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.RecallCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.PED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.NoValidReturnToCustodyDateException
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.NoValidRevocationDateException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ReleaseMultiplier
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ReleaseMultiplier.Companion.toIntReleaseDays
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ReleaseMultiplier.Companion.toLongReleaseDays
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.sentence.SentenceAggregator
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
 import java.math.BigDecimal
 import java.rmi.UnexpectedException
 import java.time.LocalDate
@@ -21,7 +14,6 @@ import kotlin.properties.Delegates
 
 class UnadjustedReleaseDate(
   val sentence: CalculableSentence,
-  val earlyReleaseConfigurations: EarlyReleaseConfigurations,
   calculationTrigger: CalculationTrigger,
 ) {
 
@@ -33,8 +25,6 @@ class UnadjustedReleaseDate(
 
   lateinit var releaseDateCalculation: ReleaseDateCalculation
     private set
-  lateinit var historicReleaseDateCalculation: ReleaseDateCalculation
-    private set
   var numberOfDaysToPostRecallReleaseDate: Int? = null
     private set
   var unadjustedPostRecallReleaseDate: LocalDate? = null
@@ -43,8 +33,7 @@ class UnadjustedReleaseDate(
     private set
 
   private fun recalculate() {
-    releaseDateCalculation = calculateReleaseDate(this::multiplier)
-    historicReleaseDateCalculation = calculateReleaseDate(this::historicMultiplier)
+    releaseDateCalculation = calculateReleaseDate()
     val recallCalculation = findRecallCalculation()
     numberOfDaysToPostRecallReleaseDate = recallCalculation?.numberOfDaysToPostRecallReleaseDate
     unadjustedPostRecallReleaseDate = recallCalculation?.unadjustedPostRecallReleaseDate
@@ -61,35 +50,14 @@ class UnadjustedReleaseDate(
       .plusDays(releaseDateCalculation.numberOfDaysToDeterminateReleaseDate.toLong())
       .minusDays(1)
 
-  val unadjustedHistoricDeterminateReleaseDate: LocalDate
-    get() {
-      return sentence.sentencedAt
-        .plusDays(historicReleaseDateCalculation.numberOfDaysToDeterminateReleaseDate.toLong())
-        .minusDays(1)
-    }
-
-  private fun calculateReleaseDate(findMultiplierBySentence: (sentence: CalculableSentence) -> ReleaseMultiplier): ReleaseDateCalculation = if (sentence is ConsecutiveSentence) {
-    getConsecutiveRelease(findMultiplierBySentence)
+  private fun calculateReleaseDate(): ReleaseDateCalculation = if (sentence is ConsecutiveSentence) {
+    getConsecutiveRelease()
   } else {
-    getSingleSentenceRelease(findMultiplierBySentence)
+    getSingleSentenceRelease()
   }
-
-  fun multiplier(sentence: CalculableSentence): ReleaseMultiplier = multiplierForSentence(
-    calculationTrigger.timelineCalculationDate,
-    calculationTrigger.allocatedTranche?.date,
-    sentence,
-  )
-
-  fun historicMultiplier(sentence: CalculableSentence): ReleaseMultiplier = multiplierForSentence(
-    earlyReleaseConfigurations.configurations.minOfOrNull { it.earliestTranche() }?.minusDays(1)
-      ?: calculationTrigger.timelineCalculationDate,
-    null,
-    sentence,
-  )
 
   fun findRecallCalculation(): RecallCalculationResult? {
     val standardCalculation = releaseDateCalculation.numberOfDaysToSentenceExpiryDate to unadjustedExpiryDate
-    val revocationDate = sentence.recall?.revocationDate
     val returnToCustodyDate = sentence.recall?.returnToCustodyDate
     return when (val recallType = sentence.recallType) {
       RecallType.STANDARD_RECALL -> RecallCalculationResult(
@@ -104,18 +72,9 @@ class UnadjustedReleaseDate(
 
       RecallType.FIXED_TERM_RECALL_56 -> {
         if (returnToCustodyDate == null) {
-          throw NoValidReturnToCustodyDateException("No return to custody date available")
+          throw NoValidReturnToCustodyDateException("No return to custody date available for FTR56")
         }
-
-        if (revocationDate == null) {
-          throw NoValidRevocationDateException("No revocation date available")
-        }
-
-        val ftr56Configuration = earlyReleaseConfigurations.configurations.find { it.recallCalculation == RecallCalculationType.FTR_56 }
-        val revocationDateOrReturnToCustodyDateAfterFtr56Commencement = ftr56Configuration != null && returnToCustodyDate.isAfterOrEqualTo(ftr56Configuration.earliestTranche())
-        val allocatedToFtr56Tranche = calculationTrigger.allocatedEarlyReleaseConfiguration != null && calculationTrigger.allocatedEarlyReleaseConfiguration == ftr56Configuration
-
-        if (revocationDateOrReturnToCustodyDateAfterFtr56Commencement || allocatedToFtr56Tranche) {
+        if (this.calculationTrigger.ftr56Supported) {
           calculateFixedTermRecall(returnToCustodyDate, recallType)
         } else {
           RecallCalculationResult(
@@ -147,66 +106,30 @@ class UnadjustedReleaseDate(
     )
   }
 
-  private fun multiplierForSentence(
-    timelineCalculationDate: LocalDate,
-    allocatedTrancheDate: LocalDate?,
+  fun multiplierForSentence(
     sentence: CalculableSentence,
   ): ReleaseMultiplier = if (sentence.identificationTrack.isMultiplierFixed()) {
     sentence.identificationTrack.fixedMultiplier()
+  } else if (sentence is StandardDeterminateSentence) {
+    sdsReleaseMultiplier(sentence)
+  } else if (sentence is SingleTermSentence) {
+    singleTermedReleaseMultiplier(sentence)
   } else {
-    sdsReleaseMultiplier(sentence, timelineCalculationDate, allocatedTrancheDate)
+    throw IllegalStateException("The multiplier isn't fixed and the sentence isn't SDS")
   }
 
-  private fun sdsReleaseMultiplier(
-    sentence: CalculableSentence,
-    timelineCalculationDate: LocalDate,
-    allocatedTrancheDate: LocalDate?,
-  ): ReleaseMultiplier {
-    if (sentence is StandardDeterminateSentence) {
-      val latestEarlyReleaseConfig =
-        earlyReleaseConfigurations.configurations
-          .filter { timelineCalculationDate.isAfterOrEqualTo(it.earliestTranche()) }
-          .filter { it.releaseMultiplier != null }
-          .maxByOrNull { it.earliestTranche() }
-      if (latestEarlyReleaseConfig != null) {
-        // They are tranched.
-        if (allocatedTrancheDate != null) {
-          if (latestEarlyReleaseConfig.matchesFilter(sentence)) {
-            return getMultiplierForConfiguration(latestEarlyReleaseConfig, timelineCalculationDate, sentence)
-          }
-        } else if (sentence.sentencedAt.isAfterOrEqualTo(latestEarlyReleaseConfig.earliestTranche())) {
-          if (latestEarlyReleaseConfig.matchesFilter(sentence)) {
-            return getMultiplierForConfiguration(latestEarlyReleaseConfig, timelineCalculationDate, sentence)
-          }
-        }
-      }
-    }
-    return defaultSDSReleaseMultiplier(sentence)
-  }
+  private fun sdsReleaseMultiplier(sentence: StandardDeterminateSentence): ReleaseMultiplier = requireNotNull(sentence.releaseMultiplier) { "SDS did not have it's release multiplier initialised" }
 
-  private fun defaultSDSReleaseMultiplier(sentence: CalculableSentence): ReleaseMultiplier = when (sentence.identificationTrack) {
+  private fun singleTermedReleaseMultiplier(sentence: SingleTermSentence): ReleaseMultiplier = when (sentence.identificationTrack) {
     SentenceIdentificationTrack.SDS -> ReleaseMultiplier.ONE_HALF
-    SentenceIdentificationTrack.SDS_PLUS -> ReleaseMultiplier.TWO_THIRDS
-    else -> throw UnexpectedException("Unknown default release multipler.")
+    else -> throw UnexpectedException("Unknown identification track '${sentence.identificationTrack}' for SingleTermed sentence")
   }
 
-  private fun getMultiplierForConfiguration(
-    earlyReleaseConfig: EarlyReleaseConfiguration,
-    timelineCalculationDate: LocalDate,
-    sentence: StandardDeterminateSentence,
-  ): ReleaseMultiplier {
-    val sds40Tranche3 = earlyReleaseConfig.tranches.find { it.type == EarlyReleaseTrancheType.SDS_40_TRANCHE_3 }
-    if (sds40Tranche3 != null && timelineCalculationDate.isAfterOrEqualTo(sds40Tranche3.date) && sentence.hasAnSDSEarlyReleaseExclusion.trancheThreeExclusion) {
-      return defaultSDSReleaseMultiplier(sentence)
-    }
-    return earlyReleaseConfig.releaseMultiplier!![sentence.identificationTrack]!!
-  }
-
-  private fun getSingleSentenceRelease(findMultiplierBySentence: (sentence: CalculableSentence) -> ReleaseMultiplier): ReleaseDateCalculation {
+  private fun getSingleSentenceRelease(): ReleaseDateCalculation {
     var numberOfDaysToParoleEligibilityDate: Long? = null
     val custodialDuration = sentence.custodialDuration()
     val custodialDays = custodialDuration.getLengthInDays(sentence.sentencedAt).toLong()
-    val multiplier = findMultiplierBySentence(sentence)
+    val multiplier = multiplierForSentence(sentence)
     val numberOfDaysToReleaseDateDecimal = BigDecimal.valueOf(custodialDays).times(multiplier.value)
 
     val numberOfDaysToReleaseDate: Int = numberOfDaysToReleaseDateDecimal.toIntReleaseDays()
@@ -226,7 +149,7 @@ class UnadjustedReleaseDate(
     )
   }
 
-  private fun getConsecutiveRelease(findMultiplierBySentence: (sentence: CalculableSentence) -> ReleaseMultiplier): ReleaseDateCalculation {
+  private fun getConsecutiveRelease(): ReleaseDateCalculation {
     sentence as ConsecutiveSentence
     val daysToExpiry =
       SentenceAggregator().getDaysInGroup(sentence.sentencedAt, sentence.orderedSentences) { it.totalDuration() }
@@ -235,7 +158,7 @@ class UnadjustedReleaseDate(
         IndexedSentenceWithReleasePointMultiplier(
           sentence.orderedSentences.indexOf(it),
           it,
-          findMultiplierBySentence(it).value,
+          multiplierForSentence(it).value,
         )
       }
       .partition { (it.sentence is ExtendedDeterminateSentence && !it.sentence.automaticRelease) || it.sentence is SopcSentence }
@@ -338,11 +261,10 @@ data class ReleaseDateCalculation(
   val numberOfDaysToParoleEligibilityDate: Long?,
 )
 
-/* The timeline & early release data that can change and trigger release multipliers to change */
+/* The timeline data that can change and trigger release multipliers to change */
 data class CalculationTrigger(
   val timelineCalculationDate: LocalDate,
-  val allocatedEarlyReleaseConfiguration: EarlyReleaseConfiguration? = null,
-  val allocatedTranche: EarlyReleaseTrancheConfiguration? = null,
+  val ftr56Supported: Boolean = false,
 )
 
 data class RecallCalculationResult(

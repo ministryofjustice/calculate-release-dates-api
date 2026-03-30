@@ -1,7 +1,8 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseConfiguration
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseTrancheConfiguration
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.ApplicableLegislation
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.FTRLegislation
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.SDSLegislation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isBeforeOrEqualTo
 import java.math.BigDecimal
@@ -17,8 +18,8 @@ data class SentenceCalculation(
   var lastDayOfUal: LocalDate? = null,
 ) {
 
-  var allocatedEarlyRelease: EarlyReleaseConfiguration? = null
-  var allocatedTranche: EarlyReleaseTrancheConfiguration? = null
+  var applicableFtrLegislation: ApplicableLegislation<FTRLegislation>? = null
+  var applicableSdsLegislation: ApplicableLegislation<SDSLegislation>? = null
 
   val releaseDateCalculation: ReleaseDateCalculation get() = unadjustedReleaseDate.releaseDateCalculation
   val numberOfDaysToSentenceExpiryDate: Int get() = releaseDateCalculation.numberOfDaysToSentenceExpiryDate
@@ -27,18 +28,6 @@ data class SentenceCalculation(
   val unadjustedExpiryDate get() = unadjustedReleaseDate.unadjustedExpiryDate
   val unadjustedDeterminateReleaseDate get() = unadjustedReleaseDate.unadjustedDeterminateReleaseDate
   val unadjustedPostRecallReleaseDate: LocalDate? get() = unadjustedReleaseDate.unadjustedPostRecallReleaseDate
-
-  val adjustedHistoricDeterminateReleaseDate: LocalDate
-    get() {
-      val date = unadjustedReleaseDate.unadjustedHistoricDeterminateReleaseDate
-        .plusDays(adjustments.adjustmentsForInitialRelease())
-        .minusDays(adjustments.unusedAdaDays)
-      return if (date.isAfter(sentence.sentencedAt)) {
-        date
-      } else {
-        sentence.sentencedAt
-      }
-    }
 
   val adjustedDeterminateReleaseDate: LocalDate
     get() {
@@ -117,19 +106,14 @@ data class SentenceCalculation(
         return null
       }
 
-      val currentAllocatedEarlyRelease = allocatedEarlyRelease
       val postRecallReleaseDateWithUal = unadjustedPostRecallReleaseDate?.plusDays(adjustments.ualAfterFtr)
 
-      val overrideWithTrancheDate = currentAllocatedEarlyRelease !== null &&
-        currentAllocatedEarlyRelease.modifiesRecallReleaseDate() &&
-        currentAllocatedEarlyRelease.additionsAppliedAfterDefaulting &&
-        postRecallReleaseDateWithUal !== null &&
-        postRecallReleaseDateWithUal.isBeforeOrEqualTo(
-          allocatedTranche?.date ?: currentAllocatedEarlyRelease.earliestTranche(),
-        )
+      val earliestApplicableDate = applicableFtrLegislation?.earliestApplicableDate
+      val overrideWithTrancheDate = earliestApplicableDate != null &&
+        postRecallReleaseDateWithUal != null &&
+        postRecallReleaseDateWithUal.isBeforeOrEqualTo(earliestApplicableDate)
 
-      val ualAdjustedDate =
-        allocatedTranche?.date.takeIf { overrideWithTrancheDate } ?: postRecallReleaseDateWithUal
+      val ualAdjustedDate = if (overrideWithTrancheDate) earliestApplicableDate else postRecallReleaseDateWithUal
 
       // Fixed term recalls only apply adjustments from return to custody date
       val fixedTermRecallRelease = ualAdjustedDate?.plusDays(
@@ -213,10 +197,13 @@ data class SentenceCalculation(
       }
     }
 
-  fun releaseDateDefaultedByCommencement(): LocalDate = if (isDateDefaultedToCommencement(releaseDate)) {
-    allocatedTranche!!.date
+  fun releaseDateDefaultedByCommencement(): LocalDate = if (sentence.isRecall()) {
+    // PRRD is already adjusted for FTR56 commencement
+    adjustedPostRecallReleaseDate!!
+  } else if (isDateDefaultedToCommencement(adjustedDeterminateReleaseDate)) {
+    applicableSdsLegislation?.earliestApplicableDate!!
   } else {
-    releaseDate
+    adjustedDeterminateReleaseDate
   }
 
   val releaseDateWithoutDeductions: LocalDate
@@ -231,7 +218,7 @@ data class SentenceCalculation(
   var topUpSupervisionDate: LocalDate? = null
   var isReleaseDateConditional: Boolean = false
 
-  private fun isDateDefaultedToCommencement(releaseDate: LocalDate): Boolean = allocatedTranche != null && allocatedEarlyRelease != null && sentence.sentenceParts().any { allocatedEarlyRelease!!.matchesFilter(it) } && releaseDate.isBeforeOrEqualTo(allocatedTranche!!.date)
+  private fun isDateDefaultedToCommencement(releaseDate: LocalDate): Boolean = applicableSdsLegislation?.earliestApplicableDate != null && releaseDate.isBeforeOrEqualTo(applicableSdsLegislation?.earliestApplicableDate!!)
 
   fun buildString(releaseDateTypes: List<ReleaseDateType>): String {
     val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")

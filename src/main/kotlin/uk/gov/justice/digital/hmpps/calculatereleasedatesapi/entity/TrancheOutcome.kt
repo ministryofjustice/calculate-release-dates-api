@@ -11,7 +11,7 @@ import jakarta.persistence.JoinColumn
 import jakarta.persistence.OneToOne
 import jakarta.persistence.Table
 import org.jetbrains.annotations.NotNull
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SDSEarlyReleaseTranche
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.TrancheName
 import java.time.LocalDate
 
 @Entity
@@ -29,15 +29,15 @@ data class TrancheOutcome(
 
   @NotNull
   @Enumerated(value = EnumType.STRING)
-  val allocatedTranche: SDSEarlyReleaseTranche,
+  val allocatedTranche: TrancheName,
 
   @NotNull
   @Enumerated(value = EnumType.STRING)
-  val tranche: SDSEarlyReleaseTranche,
+  val tranche: TrancheName,
 
   @Enumerated(value = EnumType.STRING)
   @Column("ftr_56_tranche")
-  val ftr56Tranche: SDSEarlyReleaseTranche?,
+  val ftr56Tranche: TrancheName?,
 
   @NotNull
   val affectedBySds40: Boolean = false,

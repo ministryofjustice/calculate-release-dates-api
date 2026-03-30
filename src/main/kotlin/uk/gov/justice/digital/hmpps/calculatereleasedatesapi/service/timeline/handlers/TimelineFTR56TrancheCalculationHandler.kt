@@ -1,0 +1,79 @@
+package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers
+
+import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.ApplicableLegislation
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.FTRLegislationConfiguration
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.TrancheType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.TrancheAllocationService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculator
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineHandleResult
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineTrackingData
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
+import java.time.LocalDate
+
+@Service
+class TimelineFTR56TrancheCalculationHandler(
+  timelineCalculator: TimelineCalculator,
+  val ftrLegislationConfiguration: FTRLegislationConfiguration,
+  val trancheAllocationService: TrancheAllocationService,
+) : AbstractTimelineTrancheHandler(timelineCalculator) {
+
+  override fun handle(
+    timelineCalculationDate: LocalDate,
+    timelineTrackingData: TimelineTrackingData,
+  ): TimelineHandleResult {
+    with(timelineTrackingData) {
+      val ftr56Legislation = ftrLegislationConfiguration.ftr56Legislation
+      val thisTranche = requireNotNull(ftr56Legislation.tranches.find { it.date == timelineCalculationDate }) { "Couldn't find tranche for date $timelineCalculationDate" }
+
+      if (isPersonConsideredOutOfCustodyAtLegislationCommencement(timelineCalculationDate, ftr56Legislation.commencementDate(), timelineTrackingData)) {
+        // The person is considered out of custody and is excluded from early release.
+        return TimelineHandleResult(false)
+      }
+
+      if (applicableFtrLegislation == null) {
+        val allocatedTranche = trancheAllocationService.allocateTranche(timelineTrackingData, ftr56Legislation)
+        if (allocatedTranche != null && allocatedTranche.date.isAfterOrEqualTo(timelineCalculationDate)) {
+          applicableFtrLegislation = ApplicableLegislation(
+            legislation = ftr56Legislation,
+            earliestApplicableDate = allocatedTranche.date,
+          )
+          trancheAllocationByLegislationName[ftr56Legislation.legislationName] = allocatedTranche.name
+        } else if (thisTranche.type == TrancheType.FINAL) {
+          // after the final tranche the legislation is in full effect and should apply to all future eligible recalls with no defaulting required
+          applicableFtrLegislation = ApplicableLegislation(
+            legislation = ftr56Legislation,
+            earliestApplicableDate = null,
+          )
+        }
+      }
+
+      val thisTrancheIsTheOneAllocated = applicableFtrLegislation?.earliestApplicableDate == thisTranche.date
+      val sentencesToModifyReleaseDates = sentencesToModifyReleaseDates(timelineTrackingData, timelineCalculationDate)
+      if (thisTrancheIsTheOneAllocated || sentencesToModifyReleaseDates.isNotEmpty()) {
+        sentencesToModifyReleaseDates.forEach {
+          it.sentenceCalculation.unadjustedReleaseDate.calculationTrigger = it.sentenceCalculation.unadjustedReleaseDate.calculationTrigger.copy(ftr56Supported = true)
+          it.sentenceCalculation.applicableFtrLegislation = applicableFtrLegislation
+          it.sentenceCalculation.adjustments = it.sentenceCalculation.adjustments.copy(
+            unusedAdaDays = 0,
+            unusedLicenceAdaDays = 0,
+          )
+        }
+      } else {
+        // No sentences at tranche date.
+        return TimelineHandleResult(requiresCalculation = false)
+      }
+    }
+    return TimelineHandleResult()
+  }
+
+  fun sentencesToModifyReleaseDates(
+    timelineTrackingData: TimelineTrackingData,
+    timelineCalculationDate: LocalDate,
+  ): List<CalculableSentence> = (timelineTrackingData.currentSentenceGroup + timelineTrackingData.licenceSentences).filter {
+    it.sentenceCalculation.releaseDate.isAfter(timelineCalculationDate)
+  }
+    .filter { sentence -> sentence.sentenceParts().any { it.recall?.recallType == RecallType.FIXED_TERM_RECALL_56 } }
+}

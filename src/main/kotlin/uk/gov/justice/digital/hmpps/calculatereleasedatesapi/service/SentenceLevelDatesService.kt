@@ -32,7 +32,7 @@ class SentenceLevelDatesService(
             sentence = sentencePart,
             groupIndex = index,
             impactsFinalReleaseDate = sentencePart.identifier in finalReleaseDateUUIDs,
-            releaseMultiplier = sentence.sentenceCalculation.unadjustedReleaseDate.multiplier(sentencePart),
+            releaseMultiplier = sentence.sentenceCalculation.unadjustedReleaseDate.multiplierForSentence(sentencePart),
             dates = dates,
           )
         }

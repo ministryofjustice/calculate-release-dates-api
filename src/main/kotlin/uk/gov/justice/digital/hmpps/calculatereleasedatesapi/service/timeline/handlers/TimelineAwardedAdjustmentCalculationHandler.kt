@@ -1,7 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers
 
 import org.springframework.stereotype.Service
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseConfigurations
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Term
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculator
@@ -13,8 +12,7 @@ import java.time.LocalDate
 @Service
 class TimelineAwardedAdjustmentCalculationHandler(
   timelineCalculator: TimelineCalculator,
-  earlyReleaseConfigurations: EarlyReleaseConfigurations,
-) : TimelineCalculationHandler(timelineCalculator, earlyReleaseConfigurations) {
+) : TimelineCalculationHandler(timelineCalculator) {
   override fun handle(timelineCalculationDate: LocalDate, timelineTrackingData: TimelineTrackingData): TimelineHandleResult {
     with(timelineTrackingData) {
       val adas = futureData.additional.filter { it.appliesToSentencesFrom == timelineCalculationDate }

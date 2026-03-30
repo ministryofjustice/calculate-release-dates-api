@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.CJA_DATE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.LASPO_DATE
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ReleaseMultiplier
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
 import java.time.LocalDate
 import java.util.*
@@ -25,6 +26,9 @@ data class StandardDeterminateSentence(
   val hasAnSDSEarlyReleaseExclusion: SDSEarlyReleaseExclusionType,
   val section250: Boolean = false,
 ) : AbstractSentence(offence, sentencedAt, identifier, consecutiveSentenceUUIDs, caseSequence, lineSequence, externalSentenceId, caseReference, recall) {
+
+  @JsonIgnore
+  var releaseMultiplier: ReleaseMultiplier? = null
 
   override fun buildString(): String = "Sentence\t:\t\n" +
     "Identification Track\t:\t${identificationTrack}\n" +
