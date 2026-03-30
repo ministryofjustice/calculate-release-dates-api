@@ -5,7 +5,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationT
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.HistoricalTusedSource
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SDSEarlyReleaseTranche
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.TrancheName
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.SentenceCalcDates
 import java.time.LocalDate
 import java.time.Period
@@ -28,8 +28,8 @@ data class CalculatedReleaseDates(
   val otherReasonDescription: String? = null,
   val calculationDate: LocalDate?,
   val historicalTusedSource: HistoricalTusedSource? = null,
-  val sdsEarlyReleaseAllocatedTranche: SDSEarlyReleaseTranche? = null,
-  val sdsEarlyReleaseTranche: SDSEarlyReleaseTranche? = null,
+  val sdsEarlyReleaseAllocatedTranche: TrancheName? = null,
+  val sdsEarlyReleaseTranche: TrancheName? = null,
   @JsonIgnore
   val calculationOutput: CalculationOutput? = null,
   val usedPreviouslyRecordedSLED: PreviouslyRecordedSLED? = null,

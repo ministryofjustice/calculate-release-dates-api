@@ -9,7 +9,7 @@ import org.springframework.test.context.ActiveProfiles
 import java.io.File
 import java.util.stream.Stream
 
-@ActiveProfiles(Sds33Tests.Companion.TEST_CONFIGURATION)
+@ActiveProfiles(Sds33Tests.TEST_CONFIGURATION)
 class Sds33Tests : CalculationExampleTests() {
 
   @ParameterizedTest

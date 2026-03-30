@@ -6,8 +6,8 @@
     "ESED": "2026-05-23"
   },
   "effectiveSentenceLength": "P5Y5M3D",
-  "trancheAllocationByCategory": {
-    "SDS40": "TRANCHE_1",
-    "FTR56": "FTR_56_TRANCHE_1"
+  "trancheAllocationByLegislationName": {
+    "SDS_40": "TRANCHE_1",
+    "FTR_56": "FTR_56_TRANCHE_1"
   }
 }

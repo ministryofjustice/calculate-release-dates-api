@@ -1,13 +1,13 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config
 
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SDSEarlyReleaseTranche
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.TrancheName
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 
-data class EarlyReleaseTrancheConfiguration(
-  val type: EarlyReleaseTrancheType,
+data class TrancheConfiguration(
+  val type: TrancheType,
   val date: LocalDate,
   val duration: Int? = null,
   val unit: ChronoUnit? = null,
-  val name: SDSEarlyReleaseTranche? = null,
+  val name: TrancheName,
 )

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.adjustmentsapi.model.AdjustmentDto
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.LegislationName
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcomeHistoricSledOverride
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
@@ -20,8 +21,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Calcul
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.ERROR
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.PRELIMINARY
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.HistoricalTusedSource
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SDSEarlyReleaseTranche
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SDSEarlyReleaseTrancheCategory
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.TrancheName
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.BreakdownChangedSinceLastCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CalculationDataHasChangedError
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CrdWebException
@@ -213,14 +213,14 @@ class CalculationTransactionalService(
       calculationOutcomeRepository.save(transform(calculationRequest, type, date))
     }
 
-    val sds40TrancheName = calculationResult.trancheAllocationByCategory[SDSEarlyReleaseTrancheCategory.SDS40] ?: SDSEarlyReleaseTranche.TRANCHE_0
+    val sds40TrancheName = calculationResult.trancheAllocationByLegislationName[LegislationName.SDS_40] ?: TrancheName.TRANCHE_0
     trancheOutcomeRepository.save(
       TrancheOutcome(
         calculationRequest = calculationRequest,
         allocatedTranche = sds40TrancheName,
         tranche = sds40TrancheName,
         affectedBySds40 = calculationResult.affectedBySds40,
-        ftr56Tranche = calculationResult.trancheAllocationByCategory[SDSEarlyReleaseTrancheCategory.FTR56] ?: SDSEarlyReleaseTranche.FTR_56_TRANCHE_0,
+        ftr56Tranche = calculationResult.trancheAllocationByLegislationName[LegislationName.FTR_56] ?: TrancheName.FTR_56_TRANCHE_0,
       ),
     )
 

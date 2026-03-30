@@ -113,14 +113,15 @@ abstract class CalculationExampleTests : SpringTestBase() {
           calculatedReleaseDates.calculationResult.sdsEarlyReleaseTranche,
         )
       }
-      if (bookingData.second.contains("trancheAllocationByCategory")) {
+      if (bookingData.second.contains("trancheAllocationByLegislationName")) {
         assertEquals(
-          result.trancheAllocationByCategory,
-          calculatedReleaseDates.calculationResult.trancheAllocationByCategory,
+          result.trancheAllocationByLegislationName,
+          calculatedReleaseDates.calculationResult.trancheAllocationByLegislationName,
         )
       }
     }
   }
+
   protected fun `Test Sentence Level Dates Example`(
     example: String,
   ) {

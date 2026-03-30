@@ -190,6 +190,6 @@ interface CalculableSentence {
   @JsonIgnore
   fun isAffectedBySds40EarlyRelease(): Boolean = this.sentenceParts().any {
     it.identificationTrack == SentenceIdentificationTrack.SDS &&
-      this.sentenceCalculation.unadjustedReleaseDate.multiplier(it) == ReleaseMultiplier.FORTY_PERCENT
+      sentenceCalculation.unadjustedReleaseDate.multiplierForSentence(it) == ReleaseMultiplier.FORTY_PERCENT
   }
 }
