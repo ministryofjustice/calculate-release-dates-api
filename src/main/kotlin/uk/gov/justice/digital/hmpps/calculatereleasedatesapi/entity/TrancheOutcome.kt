@@ -39,6 +39,9 @@ data class TrancheOutcome(
   @Column("ftr_56_tranche")
   val ftr56Tranche: TrancheName?,
 
+  @Enumerated(value = EnumType.STRING)
+  val progressionModelTranche: TrancheName?,
+
   @NotNull
   val affectedBySds40: Boolean = false,
 

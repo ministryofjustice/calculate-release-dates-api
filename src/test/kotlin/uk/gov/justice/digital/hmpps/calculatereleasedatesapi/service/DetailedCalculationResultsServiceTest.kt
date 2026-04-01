@@ -126,7 +126,7 @@ class DetailedCalculationResultsServiceTest {
           ),
         ),
       ),
-      allocatedSDSTranche = TrancheOutcome(calculationRequest = base, tranche = TrancheName.TRANCHE_1, allocatedTranche = TrancheName.TRANCHE_1, ftr56Tranche = TrancheName.FTR_56_TRANCHE_1),
+      allocatedSDSTranche = TrancheOutcome(calculationRequest = base, tranche = TrancheName.TRANCHE_1, allocatedTranche = TrancheName.TRANCHE_1, ftr56Tranche = TrancheName.FTR_56_TRANCHE_1, progressionModelTranche = TrancheName.TRANCHE_10),
     )
     val enrichedReleaseDates = mapOf(ReleaseDateType.CRD to DetailedDate(ReleaseDateType.CRD, ReleaseDateType.CRD.description, LocalDate.of(2026, 6, 26), emptyList()))
     val expectedBreakdown = CalculationBreakdown(emptyList(), null, mapOf(ReleaseDateType.CRD to ReleaseDateCalculationBreakdown(emptySet())), mapOf(ReleaseDateType.PRRD to LocalDate.of(2026, 6, 27)))
@@ -163,6 +163,7 @@ class DetailedCalculationResultsServiceTest {
         null,
         TrancheName.TRANCHE_1,
         TrancheName.FTR_56_TRANCHE_1,
+        TrancheName.TRANCHE_10,
       ),
     )
     verify(calculationResultEnrichmentService).addDetailToCalculationDates(
@@ -193,6 +194,7 @@ class DetailedCalculationResultsServiceTest {
         tranche = TrancheName.TRANCHE_2,
         allocatedTranche = TrancheName.TRANCHE_2,
         ftr56Tranche = TrancheName.FTR_56_TRANCHE_4,
+        progressionModelTranche = TrancheName.TRANCHE_10,
       ),
     )
     val enrichedReleaseDates = mapOf(ReleaseDateType.CRD to DetailedDate(ReleaseDateType.CRD, ReleaseDateType.CRD.description, LocalDate.of(2026, 6, 26), emptyList()))
@@ -224,6 +226,7 @@ class DetailedCalculationResultsServiceTest {
         breakdownMissingReason = null,
         sds40Tranche = TrancheName.TRANCHE_2,
         ftr56Tranche = TrancheName.FTR_56_TRANCHE_4,
+        progressionModelTranche = TrancheName.TRANCHE_10,
       ),
     )
   }
