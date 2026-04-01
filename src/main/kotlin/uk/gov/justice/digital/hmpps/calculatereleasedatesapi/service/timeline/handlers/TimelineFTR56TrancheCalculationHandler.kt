@@ -3,7 +3,6 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.h
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.ApplicableLegislation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.FTRLegislationConfiguration
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.TrancheType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.TrancheAllocationService
@@ -18,7 +17,7 @@ class TimelineFTR56TrancheCalculationHandler(
   timelineCalculator: TimelineCalculator,
   val ftrLegislationConfiguration: FTRLegislationConfiguration,
   val trancheAllocationService: TrancheAllocationService,
-) : AbstractTimelineTrancheHandler(timelineCalculator) {
+) : TimelineCalculationHandler(timelineCalculator) {
 
   override fun handle(
     timelineCalculationDate: LocalDate,
@@ -28,11 +27,6 @@ class TimelineFTR56TrancheCalculationHandler(
       val ftr56Legislation = ftrLegislationConfiguration.ftr56Legislation
       val thisTranche = requireNotNull(ftr56Legislation.tranches.find { it.date == timelineCalculationDate }) { "Couldn't find tranche for date $timelineCalculationDate" }
 
-      if (isPersonConsideredOutOfCustodyAtLegislationCommencement(timelineCalculationDate, ftr56Legislation.commencementDate(), timelineTrackingData)) {
-        // The person is considered out of custody and is excluded from early release.
-        return TimelineHandleResult(false)
-      }
-
       if (applicableFtrLegislation == null) {
         val allocatedTranche = trancheAllocationService.allocateTranche(timelineTrackingData, ftr56Legislation)
         if (allocatedTranche != null && allocatedTranche.date.isAfterOrEqualTo(timelineCalculationDate)) {
@@ -41,8 +35,8 @@ class TimelineFTR56TrancheCalculationHandler(
             earliestApplicableDate = allocatedTranche.date,
           )
           trancheAllocationByLegislationName[ftr56Legislation.legislationName] = allocatedTranche.name
-        } else if (thisTranche.type == TrancheType.FINAL) {
-          // after the final tranche the legislation is in full effect and should apply to all future eligible recalls with no defaulting required
+        } else {
+          // if no tranche is applicable then the legislation becomes available for all FTR56 sentences from this date
           applicableFtrLegislation = ApplicableLegislation(
             legislation = ftr56Legislation,
             earliestApplicableDate = null,

@@ -15,8 +15,7 @@ import java.time.temporal.ChronoUnit
 class TrancheAllocationService {
 
   fun allocateTranche(timelineTrackingData: TimelineTrackingData, legislation: LegislationWithTranches): TrancheConfiguration? {
-    val trancheSelectionStrategy = legislation.trancheSelectionStrategy
-    if (!trancheSelectionStrategy.hasSentencesThatMightApplyToTheTranche(timelineTrackingData, legislation)) {
+    if (!legislation.trancheSelectionStrategy.hasSentencesThatMightApplyToTheTranche(timelineTrackingData, legislation)) {
       return null
     }
 
@@ -28,22 +27,22 @@ class TrancheAllocationService {
       return null
     }
 
-    return findTranche(
-      legislation.tranches,
-      legislation.commencementDate(),
-      trancheSelectionStrategy.sentencesToMatchOnSentenceLength(timelineTrackingData, legislation),
-    )
+    val allocatedTranche = findTranche(timelineTrackingData, legislation)
+    if (legislation.anyReasonTheTrancheCannotApply(allocatedTranche, timelineTrackingData)) {
+      return null
+    }
+    return allocatedTranche
   }
 
-  private fun findTranche(
-    tranches: List<TrancheConfiguration>,
-    legislationCommencementDate: LocalDate,
-    allSentences: List<CalculableSentence>,
-  ): TrancheConfiguration? = tranches.find {
-    when (it.type) {
-      TrancheType.SENTENCE_LENGTH -> matchesSentenceLength(allSentences, legislationCommencementDate, it)
-      TrancheType.FINAL -> true // Not matched any other tranche, so must be in this one.
+  private fun findTranche(timelineTrackingData: TimelineTrackingData, legislation: LegislationWithTranches): TrancheConfiguration {
+    val allSentences = legislation.trancheSelectionStrategy.sentencesToMatchOnSentenceLength(timelineTrackingData, legislation)
+    val allocatedTranche = legislation.tranches.find {
+      when (it.type) {
+        TrancheType.SENTENCE_LENGTH -> matchesSentenceLength(allSentences, legislation.commencementDate(), it)
+        TrancheType.FINAL -> true // Not matched any other tranche, so must be in this one.
+      }
     }
+    return requireNotNull(allocatedTranche) { "Should have allocated a specific tranche or the final one" }
   }
 
   private fun matchesSentenceLength(
