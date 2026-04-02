@@ -1,0 +1,164 @@
+{
+  "booking": {
+    "offender": {
+      "reference": "A2882EV",
+      "dateOfBirth": "1985-02-26",
+      "isActiveSexOffender": false
+    },
+    "bookingId": 2790917,
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "recall": {
+          "recallType": "FIXED_TERM_RECALL_56",
+          "revocationDate": "2025-06-11",
+          "returnToCustodyDate": "2025-07-09"
+        },
+        "offence": {
+          "committedAt": "2022-08-27",
+          "offenceCode": "TH68023"
+        },
+        "duration": {
+          "durationElements": {
+            "DAYS": 0,
+            "WEEKS": 0,
+            "YEARS": 0,
+            "MONTHS": 56
+          }
+        },
+        "isSDSPlus": false,
+        "identifier": "468a6ca0-42a5-3c85-b1a5-8a9fce6d6b6a",
+        "section250": false,
+        "sentencedAt": "2022-12-15",
+        "caseSequence": 2,
+        "lineSequence": 6,
+        "caseReference": "07NZ1323322",
+        "externalSentenceId": {
+          "bookingId": 2790917,
+          "sentenceSequence": 11
+        },
+        "consecutiveSentenceUUIDs": [],
+        "isSDSPlusOffenceInPeriod": false,
+        "hasAnSDSEarlyReleaseExclusion": "VIOLENT",
+        "isSDSPlusEligibleSentenceTypeLengthAndOffence": false
+      },
+      {
+        "type": "StandardSentence",
+        "recall": {
+          "recallType": "FIXED_TERM_RECALL_56",
+          "revocationDate": "2025-06-11",
+          "returnToCustodyDate": "2025-07-09"
+        },
+        "offence": {
+          "committedAt": "2022-08-27",
+          "offenceCode": "CJ88117"
+        },
+        "duration": {
+          "durationElements": {
+            "DAYS": 0,
+            "WEEKS": 0,
+            "YEARS": 0,
+            "MONTHS": 8
+          }
+        },
+        "isSDSPlus": false,
+        "identifier": "b723c683-10ae-3f3f-9d54-df4ad2e6f34c",
+        "section250": false,
+        "sentencedAt": "2022-12-15",
+        "caseSequence": 2,
+        "lineSequence": 7,
+        "caseReference": "07NZ1323322",
+        "externalSentenceId": {
+          "bookingId": 2790917,
+          "sentenceSequence": 12
+        },
+        "consecutiveSentenceUUIDs": [],
+        "isSDSPlusOffenceInPeriod": false,
+        "hasAnSDSEarlyReleaseExclusion": "NO",
+        "isSDSPlusEligibleSentenceTypeLengthAndOffence": false
+      },
+      {
+        "type": "StandardSentence",
+        "recall": {
+          "recallType": "FIXED_TERM_RECALL_56",
+          "revocationDate": "2025-06-11",
+          "returnToCustodyDate": "2025-07-09"
+        },
+        "offence": {
+          "committedAt": "2022-08-27",
+          "offenceCode": "TH68001"
+        },
+        "duration": {
+          "durationElements": {
+            "DAYS": 0,
+            "WEEKS": 0,
+            "YEARS": 0,
+            "MONTHS": 6
+          }
+        },
+        "isSDSPlus": false,
+        "identifier": "0369b717-4c0d-322a-9204-4d673b960263",
+        "section250": false,
+        "sentencedAt": "2022-12-15",
+        "caseSequence": 2,
+        "lineSequence": 8,
+        "caseReference": "07NZ1323322",
+        "externalSentenceId": {
+          "bookingId": 2790917,
+          "sentenceSequence": 13
+        },
+        "consecutiveSentenceUUIDs": [],
+        "isSDSPlusOffenceInPeriod": false,
+        "hasAnSDSEarlyReleaseExclusion": "NO",
+        "isSDSPlusEligibleSentenceTypeLengthAndOffence": false
+      }
+    ],
+    "adjustments": {
+      "RECALL_REMAND": [
+        {
+          "toDate": "2022-12-14",
+          "fromDate": "2022-09-28",
+          "numberOfDays": 78,
+          "appliesToSentencesFrom": "2022-12-15"
+        }
+      ],
+      "UNLAWFULLY_AT_LARGE": [
+        {
+          "toDate": "2025-07-08",
+          "fromDate": "2025-06-12",
+          "numberOfDays": 27,
+          "appliesToSentencesFrom": "2025-06-12"
+        }
+      ]
+    },
+    "externalMovements": [
+      {
+        "direction": "OUT",
+        "movementDate": "2025-01-23",
+        "movementReason": "CRD"
+      },
+      {
+        "direction": "IN",
+        "movementDate": "2025-02-27",
+        "movementReason": "RECALL_ADMISSION"
+      },
+      {
+        "direction": "OUT",
+        "movementDate": "2025-03-26",
+        "movementReason": "RECALL_RELEASE"
+      },
+      {
+        "direction": "IN",
+        "movementDate": "2025-02-27",
+        "movementReason": "RECALL_ADMISSION"
+      }
+    ],
+    "historicalTusedData": null,
+    "returnToCustodyDate": "2025-07-09",
+    "fixedTermRecallDetails": {
+      "bookingId": 2790917,
+      "recallLength": 56,
+      "returnToCustodyDate": "2025-07-09"
+    }
+  }
+}

@@ -17,7 +17,7 @@ import java.time.LocalDate
 class TimelineSDSTrancheCalculationHandler(
   timelineCalculator: TimelineCalculator,
   val trancheAllocationService: TrancheAllocationService,
-) : AbstractTimelineTrancheHandler(timelineCalculator) {
+) : TimelineCalculationHandler(timelineCalculator) {
 
   override fun handle(
     timelineCalculationDate: LocalDate,
@@ -25,11 +25,6 @@ class TimelineSDSTrancheCalculationHandler(
   ): TimelineHandleResult {
     with(timelineTrackingData) {
       val legislationToApply = requireNotNull(currentTimelineCalculationDate.sdsLegislationToApplyOnDate) { "Received a tranche allocation timeline event without an allocation piece of legislation on $timelineCalculationDate" }
-
-      if (isPersonConsideredOutOfCustodyAtLegislationCommencement(timelineCalculationDate, legislationToApply.commencementDate(), timelineTrackingData)) {
-        // The person is considered out of custody and is excluded from early release.
-        return TimelineHandleResult(false)
-      }
 
       allocateATrancheIfNoneSetYetForThisLegislation(legislationToApply)
 

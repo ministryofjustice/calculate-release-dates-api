@@ -20,15 +20,13 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSen
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOptions
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOutput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExternalMovement
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExternalMovementDirection
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceGroup
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.SDSEarlyReleaseDefaultingRulesService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.WorkingDayService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers.TimelineAwardedAdjustmentCalculationHandler
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers.TimelineCalculationHandler
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers.TimelineExternalAdmissionMovementCalculationHandler
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers.TimelineExternalReleaseMovementCalculationHandler
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers.TimelineExternalMovementCalculationHandler
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers.TimelineFTR56TrancheCalculationHandler
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers.TimelineSDSLegislationAmendmentHandler
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers.TimelineSDSLegislationCommencementHandler
@@ -47,8 +45,7 @@ class BookingTimelineService(
   private val timelineFTR56TrancheCalculationHandler: TimelineFTR56TrancheCalculationHandler,
   private val timelineSentenceCalculationHandler: TimelineSentenceCalculationHandler,
   private val timelineUalAdjustmentCalculationHandler: TimelineUalAdjustmentCalculationHandler,
-  private val timelineExternalReleaseMovementCalculationHandler: TimelineExternalReleaseMovementCalculationHandler,
-  private val timelineExternalAdmissionMovementCalculationHandler: TimelineExternalAdmissionMovementCalculationHandler,
+  private val timelineExternalMovementCalculationHandler: TimelineExternalMovementCalculationHandler,
   private val timelinePostTrancheAdjustmentService: TimelinePostTrancheAdjustmentService,
   private val timelineSDSLegislationCommencementHandler: TimelineSDSLegislationCommencementHandler,
   private val timelineSDSLegislationAmendmentHandler: TimelineSDSLegislationAmendmentHandler,
@@ -79,6 +76,8 @@ class BookingTimelineService(
 
     val earliestSentence = futureData.sentences.minBy { it.sentencedAt }
 
+    val externalMovementTimeline = ExternalMovementTimeline(externalMovements)
+
     val timelineTrackingData = TimelineTrackingData(
       futureData,
       calculationsByDate,
@@ -86,7 +85,7 @@ class BookingTimelineService(
       returnToCustodyDate,
       offender,
       options,
-      externalMovements,
+      externalMovementTimeline,
     )
 
     calculationsByDate.forEach { (timelineCalculationDate, calculations) ->
@@ -167,8 +166,7 @@ class BookingTimelineService(
     TimelineCalculationType.UAL -> timelineUalAdjustmentCalculationHandler
     TimelineCalculationType.EARLY_RELEASE_TRANCHE -> timelineSDSTrancheCalculationHandler
     TimelineCalculationType.FTR56_TRANCHE -> timelineFTR56TrancheCalculationHandler
-    TimelineCalculationType.EXTERNAL_ADMISSION -> timelineExternalAdmissionMovementCalculationHandler
-    TimelineCalculationType.EXTERNAL_RELEASE -> timelineExternalReleaseMovementCalculationHandler
+    TimelineCalculationType.EXTERNAL_MOVEMENT -> timelineExternalMovementCalculationHandler
     TimelineCalculationType.SDS_LEGISLATION_AMENDMENT -> timelineSDSLegislationAmendmentHandler
   }
 
@@ -229,7 +227,7 @@ class BookingTimelineService(
       futureData.ual.map { TimelineCalculationDate(it.appliesToSentencesFrom, TimelineCalculationType.UAL) } +
       sdsLegislationConfiguration.all().flatMap { legislation -> legislation.requiredTimelineCalculations() } +
       ftrLegislationConfiguration.ftr56Legislation.requiredTimelineCalculations() +
-      externalMovements.map { TimelineCalculationDate(it.movementDate, if (it.direction == ExternalMovementDirection.OUT) TimelineCalculationType.EXTERNAL_RELEASE else TimelineCalculationType.EXTERNAL_ADMISSION) }
+      externalMovements.map { TimelineCalculationDate(it.movementDate, TimelineCalculationType.EXTERNAL_MOVEMENT) }
     )
     .sortedBy { it.date }
     .distinct()
