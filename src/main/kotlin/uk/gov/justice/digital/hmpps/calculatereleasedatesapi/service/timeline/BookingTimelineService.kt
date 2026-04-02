@@ -127,7 +127,7 @@ class BookingTimelineService(
           releasedSentenceGroups.map { it.sentences },
           offender,
           returnToCustodyDate,
-          options
+          options,
         )
 
       if (beforeTrancheCalculation != null) {
@@ -211,7 +211,7 @@ class BookingTimelineService(
           releasedSentenceGroups.map { it.sentences },
           offender,
           returnToCustodyDate,
-          options
+          options,
         )
       }
       if (licenceSentences.isNotEmpty()) {
