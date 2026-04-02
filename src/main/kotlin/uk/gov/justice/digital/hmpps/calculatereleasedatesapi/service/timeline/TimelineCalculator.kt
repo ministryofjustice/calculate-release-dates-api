@@ -6,11 +6,13 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AFineSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOptions
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Term
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.BookingExtractionService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ErsedCalculator
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.sentence.SentenceAdjustedCalculationService
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
@@ -19,19 +21,34 @@ import java.time.temporal.ChronoUnit
 class TimelineCalculator(
   private val sentenceAdjustedCalculationService: SentenceAdjustedCalculationService,
   private val bookingExtractionService: BookingExtractionService,
+  private val ersedCalculator: ErsedCalculator,
 ) {
 
-  fun getLatestCalculation(sentences: List<List<CalculableSentence>>, offender: Offender, returnToCustodyDate: LocalDate? = null): CalculationResult {
+  fun getLatestCalculation(
+    sentences: List<List<CalculableSentence>>,
+    offender: Offender,
+    returnToCustodyDate: LocalDate? = null,
+    options: CalculationOptions,
+  ): CalculationResult {
     calculateUnusedAdas(sentences)
-    sentences.flatten().forEach {
+    val allSentences = sentences.flatten()
+
+    allSentences.forEach {
       sentenceAdjustedCalculationService.calculateDatesFromAdjustments(it, offender)
     }
+
     val adjustAgain = calculateUnusedLicenceAdas(sentences)
+
     if (adjustAgain) {
       sentences.flatten().forEach {
         sentenceAdjustedCalculationService.calculateDatesFromAdjustments(it, offender)
       }
     }
+
+    if (options.calculateErsed) {
+      ersedCalculator.calculateERSEDUsingERS30Algorithm(allSentences)
+    }
+
     return bookingExtractionService.extract(
       sentences.flatten(),
       sentences,

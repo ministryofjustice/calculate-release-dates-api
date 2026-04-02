@@ -1,0 +1,101 @@
+{
+  "booking": {
+    "offender": {
+      "reference": "A0746ED",
+      "dateOfBirth": "1990-11-05",
+      "isActiveSexOffender": false
+    },
+    "bookingId": 1234031,
+    "sentences": [
+      {
+        "type": "ExtendedDeterminateSentence",
+        "recall": null,
+        "offence": {
+          "committedAt": "2024-10-01",
+          "offenceCode": "SX03008"
+        },
+        "isSDSPlus": false,
+        "identifier": "9db00800-b189-3cdd-99ff-f84e82bc9e9e",
+        "sentencedAt": "2025-11-03",
+        "caseSequence": 1,
+        "lineSequence": 1,
+        "caseReference": null,
+        "automaticRelease": false,
+        "custodialDuration": {
+          "durationElements": {
+            "DAYS": 0,
+            "WEEKS": 0,
+            "YEARS": 18,
+            "MONTHS": 0
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "DAYS": 0,
+            "WEEKS": 0,
+            "YEARS": 7,
+            "MONTHS": 0
+          }
+        },
+        "externalSentenceId": {
+          "bookingId": 1234031,
+          "sentenceSequence": 1
+        },
+        "consecutiveSentenceUUIDs": [],
+        "isSDSPlusOffenceInPeriod": false,
+        "isSDSPlusEligibleSentenceTypeLengthAndOffence": false
+      },
+      {
+        "type": "StandardSentence",
+        "recall": null,
+        "offence": {
+          "committedAt": "2025-02-01",
+          "offenceCode": "TH68013"
+        },
+        "duration": {
+          "durationElements": {
+            "DAYS": 0,
+            "WEEKS": 0,
+            "YEARS": 5,
+            "MONTHS": 0
+          }
+        },
+        "isSDSPlus": false,
+        "identifier": "a915dd1d-dd40-3fe0-84e4-56f56825d337",
+        "section250": false,
+        "sentencedAt": "2025-11-03",
+        "caseSequence": 1,
+        "lineSequence": 2,
+        "caseReference": null,
+        "externalSentenceId": {
+          "bookingId": 1234031,
+          "sentenceSequence": 2
+        },
+        "consecutiveSentenceUUIDs": [],
+        "isSDSPlusOffenceInPeriod": true,
+        "hasAnSDSEarlyReleaseExclusion": "NO",
+        "isSDSPlusEligibleSentenceTypeLengthAndOffence": false
+      }
+    ],
+    "adjustments": {
+      "REMAND": [
+        {
+          "toDate": "2025-11-02",
+          "fromDate": "2025-10-24",
+          "numberOfDays": 10,
+          "appliesToSentencesFrom": "2025-11-03"
+        }
+      ]
+    },
+    "externalMovements": [],
+    "historicalTusedData": null,
+    "returnToCustodyDate": null,
+    "fixedTermRecallDetails": null
+  },
+  "userInputs": {
+    "calculateErsed": true
+  },
+  "featureToggles": {
+    "useERS0Calculation": true
+  }
+}

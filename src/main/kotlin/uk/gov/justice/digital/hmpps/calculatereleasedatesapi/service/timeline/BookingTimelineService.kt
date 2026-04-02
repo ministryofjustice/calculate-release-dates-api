@@ -126,6 +126,7 @@ class BookingTimelineService(
           releasedSentenceGroups.map { it.sentences },
           offender,
           returnToCustodyDate,
+          options,
         )
 
       if (beforeTrancheCalculation != null) {
@@ -204,7 +205,12 @@ class BookingTimelineService(
           }
           currentSentenceGroup.clear()
         }
-        latestCalculation = timelineCalculator.getLatestCalculation(releasedSentenceGroups.map { it.sentences }, offender, returnToCustodyDate)
+        latestCalculation = timelineCalculator.getLatestCalculation(
+          releasedSentenceGroups.map { it.sentences },
+          offender,
+          returnToCustodyDate,
+          options,
+        )
       }
       if (licenceSentences.isNotEmpty()) {
         val sentencesThatHaveExpired = licenceSentences.filter { date.isAfter(it.sentenceCalculation.licenceExpiryAtInitialRelease) }
