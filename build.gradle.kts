@@ -41,7 +41,7 @@ dependencies {
   implementation("uk.gov.service.notify:notifications-java-client:6.0.0-RELEASE")
 
   // Enable kotlin reflect
-  implementation("org.jetbrains.kotlin:kotlin-reflect:2.3.10")
+  implementation("org.jetbrains.kotlin:kotlin-reflect:2.3.20")
 
   // Three Ten Date Calculations
   implementation("org.threeten:threeten-extra:1.8.0")
