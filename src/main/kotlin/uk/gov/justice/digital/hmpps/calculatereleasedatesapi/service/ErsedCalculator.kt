@@ -48,6 +48,7 @@ class ErsedCalculator(
         ersedSentencesBeforeErs0CommencementDate(ersedSentences) -> {
           ersedSentences
             .filterIsInstance<StandardDeterminateSentence>()
+            .filter(::ersedReleaseAfterErs0CommencementDate)
             .forEach(::ers0DefaultErsedToCommencementDate)
         }
         sentences.hasNoSopcOrEdsSentences() -> {
@@ -63,6 +64,8 @@ class ErsedCalculator(
   private fun ersedSentencesBeforeErs0CommencementDate(sentences: List<CalculableSentence>): Boolean = sentences.all {
     it.sentencedAt.isBefore(ImportantDates.ERS0_COMMENCEMENT_DATE)
   }
+
+  private fun ersedReleaseAfterErs0CommencementDate(sentence: StandardDeterminateSentence): Boolean = sentence.sentenceCalculation.earlyReleaseSchemeEligibilityDate?.isAfter(ImportantDates.ERS0_COMMENCEMENT_DATE) == true
 
   private fun ers0DefaultErsedToCommencementDate(sentence: CalculableSentence) {
     sentence.sentenceCalculation.breakdownByReleaseDateType[ReleaseDateType.ERSED] = ReleaseDateCalculationBreakdown(
