@@ -1,6 +1,8 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util
 
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeterminateSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SopcSentence
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 import java.time.temporal.ChronoUnit.MONTHS
@@ -26,6 +28,10 @@ fun List<CalculableSentence>.findClosestUnder12MonthSentence(
     it.sentenceCalculation.unadjustedExpiryDate.isAfterOrEqualTo(returnToCustodyDate)
 }.minByOrNull {
   kotlin.math.abs(ChronoUnit.DAYS.between(it.sentenceCalculation.unadjustedExpiryDate, returnToCustodyDate))
+}
+
+fun List<CalculableSentence>.hasNoSopcOrEdsSentences(): Boolean = this.all {
+  s -> s.sentenceParts().none { it is ExtendedDeterminateSentence || it is SopcSentence }
 }
 
 fun CalculableSentence.getSentencePartIdentifiers(): List<UUID> = this.sentenceParts().map { it.identifier }

@@ -51,7 +51,7 @@ class TimelineSDSTrancheCalculationHandler(
     return if (applicableLegislation != null && currentTimelineDateIsTheAllocatedTrancheDate && sentencesToModifyReleaseDates.isNotEmpty()) {
       val allSentences = releasedSentenceGroups.map { it.sentences }.plus(listOf(currentSentenceGroup))
       beforeTrancheCalculation = PreLegislationCalculation(
-        timelineCalculator.getLatestCalculation(allSentences, offender, returnToCustodyDate),
+        timelineCalculator.getLatestCalculation(allSentences, offender, returnToCustodyDate, options),
         applicableLegislation,
       )
       sentencesToModifyReleaseDates.forEach {
