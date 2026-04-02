@@ -28,7 +28,7 @@ class TimelineCalculator(
     sentences: List<List<CalculableSentence>>,
     offender: Offender,
     returnToCustodyDate: LocalDate? = null,
-    options: CalculationOptions
+    options: CalculationOptions,
   ): CalculationResult {
     calculateUnusedAdas(sentences)
     val allSentences = sentences.flatten()
@@ -46,7 +46,7 @@ class TimelineCalculator(
     }
 
     if (options.calculateErsed) {
-       ersedCalculator.calculateERSEDUsingERS30Algorithm(allSentences)
+      ersedCalculator.calculateERSEDUsingERS30Algorithm(allSentences)
     }
 
     return bookingExtractionService.extract(

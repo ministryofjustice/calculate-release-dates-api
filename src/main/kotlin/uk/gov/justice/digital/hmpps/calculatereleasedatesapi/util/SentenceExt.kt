@@ -30,8 +30,8 @@ fun List<CalculableSentence>.findClosestUnder12MonthSentence(
   kotlin.math.abs(ChronoUnit.DAYS.between(it.sentenceCalculation.unadjustedExpiryDate, returnToCustodyDate))
 }
 
-fun List<CalculableSentence>.hasNoSopcOrEdsSentences(): Boolean = this.all {
-  s -> s.sentenceParts().none { it is ExtendedDeterminateSentence || it is SopcSentence }
+fun List<CalculableSentence>.hasNoSopcOrEdsSentences(): Boolean = this.all { s ->
+  s.sentenceParts().none { it is ExtendedDeterminateSentence || it is SopcSentence }
 }
 
 fun CalculableSentence.getSentencePartIdentifiers(): List<UUID> = this.sentenceParts().map { it.identifier }
