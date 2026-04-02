@@ -9,12 +9,12 @@ import org.springframework.test.context.ActiveProfiles
 import java.io.File
 import java.util.stream.Stream
 
-@ActiveProfiles(Sds33Tests.TEST_CONFIGURATION)
-class Sds33Tests : CalculationExampleTests() {
+@ActiveProfiles(ProgressionModelCalculationTests.TEST_CONFIGURATION)
+class ProgressionModelCalculationTests : CalculationExampleTests() {
 
   @ParameterizedTest
   @MethodSource(value = ["testCases"])
-  fun `Test calculation with sds-33 configuration`(
+  fun `Test calculation with sds-progression-model configuration`(
     example: String,
   ) {
     `Test Example`(example)
@@ -22,7 +22,7 @@ class Sds33Tests : CalculationExampleTests() {
 
   companion object {
     val log: Logger = LoggerFactory.getLogger(this::class.java)
-    const val TEST_CONFIGURATION = "sds-33"
+    const val TEST_CONFIGURATION = "sds-progression-model"
 
     @JvmStatic
     fun testCases(): Stream<Arguments> {
