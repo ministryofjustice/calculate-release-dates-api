@@ -4,5 +4,6 @@
     "PRRD": "2027-12-15",
     "ESED": "2027-12-15"
   },
-  "effectiveSentenceLength": "P3Y"
+  "effectiveSentenceLength": "P3Y",
+  "affectedBySds40": false
 }

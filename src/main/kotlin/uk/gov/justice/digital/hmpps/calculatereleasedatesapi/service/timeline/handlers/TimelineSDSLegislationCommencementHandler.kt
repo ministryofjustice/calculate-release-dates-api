@@ -8,7 +8,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.Ti
 import java.time.LocalDate
 
 @Service
-class TimelineSDSLegislationCommencementHandler(timelineCalculator: TimelineCalculator) : AbstractTimelineTrancheHandler(timelineCalculator) {
+class TimelineSDSLegislationCommencementHandler(timelineCalculator: TimelineCalculator) : TimelineCalculationHandler(timelineCalculator) {
 
   override fun handle(
     timelineCalculationDate: LocalDate,

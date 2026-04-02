@@ -61,8 +61,7 @@ abstract class CalculationExampleTests : SpringTestBase() {
       calculatedReleaseDates = calculationService
         .calculateReleaseDates(calculationTestFile.booking, calculationTestFile.userInputs, calculateSentenceLevelDates = true)
 
-      returnedValidationMessages = validators.map { it.validate(calculatedReleaseDates, calculationTestFile.booking) }
-        .flatten()
+      returnedValidationMessages = validators.flatMap { it.validate(calculatedReleaseDates, calculationTestFile.booking) }
         .distinct()
     } catch (e: Exception) {
       if (!calculationTestFile.error.isNullOrEmpty()) {
@@ -74,7 +73,7 @@ abstract class CalculationExampleTests : SpringTestBase() {
     }
     log.info(
       "Example $example outcome BookingCalculation: {}",
-      TestUtil.Companion.objectMapper().writeValueAsString(calculatedReleaseDates),
+      TestUtil.objectMapper().writeValueAsString(calculatedReleaseDates),
     )
     if (calculationTestFile.expectedValidationException != null) {
       val expectedExceptions = calculationTestFile.expectedValidationException.split("|")
@@ -90,32 +89,31 @@ abstract class CalculationExampleTests : SpringTestBase() {
     } else if (returnedValidationMessages.isNotEmpty()) {
       fail("Validation messages were returned: $returnedValidationMessages")
     } else {
-      val bookingData = jsonTransformation.loadCalculationResult("$example")
-      val result = bookingData.first
+      val expectedResult = jsonTransformation.loadCalculationResult(example)
       assertEquals(
-        result.dates.entries.sortedBy { it.key },
+        expectedResult.dates.entries.sortedBy { it.key },
         calculatedReleaseDates.calculationResult.dates.entries.sortedBy { it.key },
       )
       assertEquals(
-        result.effectiveSentenceLength,
+        expectedResult.effectiveSentenceLength,
         calculatedReleaseDates.calculationResult.effectiveSentenceLength,
       )
       if (calculationTestFile.assertSds40 == true) {
-        assertEquals(result.affectedBySds40, calculatedReleaseDates.calculationResult.affectedBySds40)
+        assertEquals(expectedResult.affectedBySds40, calculatedReleaseDates.calculationResult.affectedBySds40)
       }
-      if (bookingData.second.contains("sdsEarlyReleaseAllocatedTranche")) {
+      if (expectedResult.sdsEarlyReleaseAllocatedTranche != null) {
         assertEquals(
-          result.sdsEarlyReleaseAllocatedTranche,
+          expectedResult.sdsEarlyReleaseAllocatedTranche,
           calculatedReleaseDates.calculationResult.sdsEarlyReleaseAllocatedTranche,
         )
         assertEquals(
-          result.sdsEarlyReleaseTranche,
+          expectedResult.sdsEarlyReleaseTranche,
           calculatedReleaseDates.calculationResult.sdsEarlyReleaseTranche,
         )
       }
-      if (bookingData.second.contains("trancheAllocationByLegislationName")) {
+      if (expectedResult.trancheAllocationByLegislationName != null) {
         assertEquals(
-          result.trancheAllocationByLegislationName,
+          expectedResult.trancheAllocationByLegislationName,
           calculatedReleaseDates.calculationResult.trancheAllocationByLegislationName,
         )
       }
@@ -146,17 +144,17 @@ abstract class CalculationExampleTests : SpringTestBase() {
   fun `Test UX Example Breakdowns`(
     example: String,
   ) {
-    CalculationTransactionalServiceTest.Companion.log.info("Testing example $example")
+    CalculationTransactionalServiceTest.log.info("Testing example breakdown $example")
     val calculationTestFile = jsonTransformation.loadCalculationTestFile("overall_calculation/$example")
     overrideFeatureTogglesForTest(calculationTestFile, featureToggles)
-    val calculation = jsonTransformation.loadCalculationResult("$example").first
+    val expectedCalculation = jsonTransformation.loadCalculationResult(example)
 
     val calculationBreakdown: CalculationBreakdown?
     try {
       calculationBreakdown = calculationTransactionalService.calculateWithBreakdown(
         calculationTestFile.booking,
         CalculatedReleaseDates(
-          calculation.dates,
+          expectedCalculation.dates,
           -1,
           -1,
           "",
@@ -175,7 +173,7 @@ abstract class CalculationExampleTests : SpringTestBase() {
         throw e
       }
     }
-    CalculationTransactionalServiceTest.Companion.log.info(
+    CalculationTransactionalServiceTest.log.info(
       "Example $example outcome CalculationBreakdown: {}",
       TestUtil.objectMapper().writeValueAsString(calculationBreakdown),
     )
@@ -189,7 +187,7 @@ abstract class CalculationExampleTests : SpringTestBase() {
       JSONCompareMode.LENIENT,
     )
 
-    assertThat(calculationBreakdown).isEqualTo(jsonTransformation.loadCalculationBreakdown("$example"))
+    assertThat(calculationBreakdown).isEqualTo(jsonTransformation.loadCalculationBreakdown(example))
   }
 
   companion object {
@@ -208,7 +206,7 @@ abstract class CalculationExampleTests : SpringTestBase() {
               if (file.params == params) {
                 args.add(arg)
               }
-            } catch (e: Exception) {
+            } catch (_: Exception) {
               // Error with the JSON test file. Ignore it here and it will be picked up and ran within the test with a better log message.
               log.error("FAILED TO LOAD FILE: $arg")
               args.add(arg)

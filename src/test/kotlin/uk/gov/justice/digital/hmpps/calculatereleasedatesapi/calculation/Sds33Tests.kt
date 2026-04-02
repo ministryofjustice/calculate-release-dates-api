@@ -26,7 +26,7 @@ class Sds33Tests : CalculationExampleTests() {
 
     @JvmStatic
     fun testCases(): Stream<Arguments> {
-      val dir = File(object {}.javaClass.getResource("/test_data/overall_calculation").file)
+      val dir = File(object {}.javaClass.getResource("/test_data/overall_calculation")!!.file)
       return getTestCasesFromDir(dir, listOf(), TEST_CONFIGURATION)
     }
   }

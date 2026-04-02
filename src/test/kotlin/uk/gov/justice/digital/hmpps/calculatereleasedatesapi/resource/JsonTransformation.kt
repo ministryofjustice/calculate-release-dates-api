@@ -6,13 +6,13 @@ import org.slf4j.LoggerFactory
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.DatesAndHints
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.CalculationTestFile
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.TestExpectedCalculationResult
 import java.io.File
 import java.io.FileNotFoundException
 
@@ -42,9 +42,9 @@ class JsonTransformation {
     return mapper.readValue(json, CalculationTestFile::class.java)
   }
 
-  fun loadCalculationResult(testData: String): Pair<CalculationResult, String> {
+  fun loadCalculationResult(testData: String): TestExpectedCalculationResult {
     val json = getJsonTest("$testData.json", "overall_calculation_response")
-    return mapper.readValue(json, CalculationResult::class.java) to json
+    return mapper.readValue(json, TestExpectedCalculationResult::class.java)
   }
 
   fun loadCalculationBreakdown(testData: String): CalculationBreakdown {
