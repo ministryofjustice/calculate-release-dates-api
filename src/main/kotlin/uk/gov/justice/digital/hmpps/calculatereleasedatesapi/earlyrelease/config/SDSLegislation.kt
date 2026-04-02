@@ -62,10 +62,9 @@ sealed interface SDSLegislation : Legislation {
         }
 
         // If the person was UAL at tranche commencement then they are subject to early release.
-        val ualAtCommencement = previousUalPeriods.any {
+        return previousUalPeriods.none {
           it.first.isBefore(allocatedTrancheDate) && it.second.isAfterOrEqualTo(allocatedTrancheDate)
         }
-        return !ualAtCommencement
       }
       return false
     }
