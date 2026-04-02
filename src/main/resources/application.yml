@@ -168,5 +168,6 @@ feature-toggles:
   useAdjustmentsApi: ${USE_ADJUSTMENTS_API:false}
   applyPostRecallRepealRules: ${APPLY_POST_RECALL_REPEAL_RULES:false}
   storeSentenceLevelDates: ${STORE_SENTECE_LEVEL_DATES:false}
+  useERS0Calculation: ${USE_ERS0_CALCULATION:false}
 
 prisonsWithNomisCalcDisabled: ${PRISONS_WITH_NOMIS_CALC_DISABLED:}

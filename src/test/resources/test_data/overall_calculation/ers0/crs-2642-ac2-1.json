@@ -1,0 +1,54 @@
+{
+  "booking": {
+    "offender": {
+      "reference": "A0748ED",
+      "dateOfBirth": "1980-12-14",
+      "isActiveSexOffender": false
+    },
+    "bookingId": 1234033,
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "recall": null,
+        "offence": {
+          "committedAt": "2026-02-01",
+          "offenceCode": "CD98078"
+        },
+        "duration": {
+          "durationElements": {
+            "DAYS": 0,
+            "WEEKS": 0,
+            "YEARS": 5,
+            "MONTHS": 0
+          }
+        },
+        "isSDSPlus": false,
+        "identifier": "4278b8c2-041c-38e6-83cd-bfcd41272d4c",
+        "section250": false,
+        "sentencedAt": "2026-02-05",
+        "caseSequence": 1,
+        "lineSequence": 1,
+        "caseReference": null,
+        "externalSentenceId": {
+          "bookingId": 1234033,
+          "sentenceSequence": 1
+        },
+        "consecutiveSentenceUUIDs": [],
+        "isSDSPlusOffenceInPeriod": true,
+        "hasAnSDSEarlyReleaseExclusion": "DOMESTIC_ABUSE",
+        "isSDSPlusEligibleSentenceTypeLengthAndOffence": false
+      }
+    ],
+    "adjustments": {},
+    "externalMovements": [],
+    "historicalTusedData": null,
+    "returnToCustodyDate": null,
+    "fixedTermRecallDetails": null
+  },
+  "userInputs": {
+    "calculateErsed": true
+  },
+  "featureToggles": {
+    "useERS0Calculation": true
+  }
+}

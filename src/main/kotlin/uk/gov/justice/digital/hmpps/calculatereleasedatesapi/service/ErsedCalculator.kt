@@ -4,6 +4,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.ErsedConfiguration
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentDuration
@@ -13,21 +14,68 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCa
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ReleaseMultiplier.Companion.toLongReleaseDays
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.hasNoSopcOrEdsSentences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.hasSentencesBeforeAndAfter
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
+import kotlin.collections.set
 
 @Service
 class ErsedCalculator(
   private val ersedConfiguration: ErsedConfiguration,
+  private val featureToggles: FeatureToggles,
 ) {
 
   fun generateEarlyReleaseSchemeEligibilityDateBreakdown(sentence: CalculableSentence, sentenceCalculation: SentenceCalculation) {
     if (isSentenceEligible(sentence)) {
       calculateUsingBothERS30AndERS50(sentence, sentenceCalculation)
     }
+  }
+
+  /**
+   * 1. If all ERSED-eligible sentences were sentenced before the ERS0 commencement date, the ERSED for all SDS
+   *    is set to the ERS0 commencement date.
+   * 2. Otherwise, if the list of sentences contains no SOPC or EDS,
+   *    the ERSED of the latest SDS is adjusted to its sentenced date.
+   * If neither of these conditions is met, the existing ERSED30 calculations are preserved.
+   */
+  fun calculateERSEDUsingERS30Algorithm(sentences: List<CalculableSentence>) {
+    if (featureToggles.useERS0Calculation) {
+      val ersedSentences = sentences.filter { isSentenceEligible(it) }
+      when {
+        ersedSentencesBeforeErs0CommencementDate(ersedSentences) -> {
+          ersedSentences
+            .filterIsInstance<StandardDeterminateSentence>()
+            .forEach(::ers0DefaultErsedToCommencementDate)
+        }
+        sentences.hasNoSopcOrEdsSentences() -> {
+          sentences
+            .filterIsInstance<StandardDeterminateSentence>()
+            .maxByOrNull { it.sentenceCalculation.adjustedDeterminateReleaseDate }
+            ?.let(::ersed0DefaultErsedToLatestSentenceDate)
+        }
+      }
+    }
+  }
+
+  private fun ersedSentencesBeforeErs0CommencementDate(sentences: List<CalculableSentence>): Boolean = sentences.all {
+    it.sentencedAt.isBefore(ImportantDates.ERS0_COMMENCEMENT_DATE)
+  }
+
+  private fun ers0DefaultErsedToCommencementDate(sentence: CalculableSentence) {
+    sentence.sentenceCalculation.breakdownByReleaseDateType[ReleaseDateType.ERSED] = ReleaseDateCalculationBreakdown(
+      rules = setOf(CalculationRule.ERSED_ADJUSTED_TO_ERS0_COMMENCEMENT),
+      releaseDate = ImportantDates.ERS0_COMMENCEMENT_DATE,
+    )
+  }
+
+  private fun ersed0DefaultErsedToLatestSentenceDate(sentence: CalculableSentence) {
+    sentence.sentenceCalculation.breakdownByReleaseDateType[ReleaseDateType.ERSED] = ReleaseDateCalculationBreakdown(
+      rules = setOf(CalculationRule.ERSED_ADJUSTED_TO_ERS0_LATEST_SDS_RELEASE_DATE),
+      releaseDate = sentence.sentencedAt,
+    )
   }
 
   private fun calculateUsingBothERS30AndERS50(sentence: CalculableSentence, sentenceCalculation: SentenceCalculation) {
