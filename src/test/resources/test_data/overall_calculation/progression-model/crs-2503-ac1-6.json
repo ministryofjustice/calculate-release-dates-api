@@ -1,0 +1,43 @@
+{
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "2000-01-01"
+    },
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2025-01-01"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 5,
+            "MONTHS": 9
+          }
+        },
+        "sentencedAt": "2024-10-29",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "ExtendedDeterminateSentence",
+        "offence": {
+          "committedAt": "2017-07-16"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "YEARS": 5
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "YEARS": 2
+          }
+        },
+        "sentencedAt": "2023-06-17"
+      }
+    ],
+    "adjustments": {}
+  },
+  "params": "sds-progression-model"
+}

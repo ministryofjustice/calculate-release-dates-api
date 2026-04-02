@@ -1,0 +1,41 @@
+{
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "2000-01-01"
+    },
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2025-01-01"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 2,
+            "MONTHS": 6
+          }
+        },
+        "sentencedAt": "2025-11-18",
+        "hasAnSDSEarlyReleaseExclusion": "TERRORISM"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2025-01-01"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 3,
+            "MONTHS": 4
+          }
+        },
+        "sentencedAt": "2026-03-12",
+        "hasAnSDSEarlyReleaseExclusion": "DOMESTIC_ABUSE",
+        "section250": true
+      }
+    ],
+    "adjustments": {}
+  },
+  "params": "sds-progression-model"
+}

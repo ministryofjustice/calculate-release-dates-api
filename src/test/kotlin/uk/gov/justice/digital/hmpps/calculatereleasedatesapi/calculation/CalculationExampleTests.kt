@@ -90,14 +90,16 @@ abstract class CalculationExampleTests : SpringTestBase() {
       fail("Validation messages were returned: $returnedValidationMessages")
     } else {
       val expectedResult = jsonTransformation.loadCalculationResult(example)
-      assertEquals(
-        expectedResult.dates.entries.sortedBy { it.key },
-        calculatedReleaseDates.calculationResult.dates.entries.sortedBy { it.key },
-      )
-      assertEquals(
-        expectedResult.effectiveSentenceLength,
-        calculatedReleaseDates.calculationResult.effectiveSentenceLength,
-      )
+      if (expectedResult.skipAssertingDates != true) {
+        assertEquals(
+          expectedResult.dates!!.entries.sortedBy { it.key },
+          calculatedReleaseDates.calculationResult.dates.entries.sortedBy { it.key },
+        )
+        assertEquals(
+          expectedResult.effectiveSentenceLength,
+          calculatedReleaseDates.calculationResult.effectiveSentenceLength,
+        )
+      }
       if (calculationTestFile.assertSds40 == true) {
         assertEquals(expectedResult.affectedBySds40, calculatedReleaseDates.calculationResult.affectedBySds40)
       }
@@ -144,7 +146,7 @@ abstract class CalculationExampleTests : SpringTestBase() {
   fun `Test UX Example Breakdowns`(
     example: String,
   ) {
-    CalculationTransactionalServiceTest.log.info("Testing example breakdown $example")
+    log.info("Testing example breakdown $example")
     val calculationTestFile = jsonTransformation.loadCalculationTestFile("overall_calculation/$example")
     overrideFeatureTogglesForTest(calculationTestFile, featureToggles)
     val expectedCalculation = jsonTransformation.loadCalculationResult(example)
@@ -154,7 +156,7 @@ abstract class CalculationExampleTests : SpringTestBase() {
       calculationBreakdown = calculationTransactionalService.calculateWithBreakdown(
         calculationTestFile.booking,
         CalculatedReleaseDates(
-          expectedCalculation.dates,
+          expectedCalculation.dates!!,
           -1,
           -1,
           "",

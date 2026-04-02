@@ -1,0 +1,44 @@
+{
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "2000-01-01"
+    },
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2024-05-15"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 13,
+            "MONTHS": 9
+          }
+        },
+        "sentencedAt": "2024-05-15",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2009-03-12"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 17,
+            "MONTHS": 5
+          }
+        },
+        "sentencedAt": "2009-03-12",
+        "hasAnSDSEarlyReleaseExclusion": "NO",
+        "recall": {
+          "recallType": "STANDARD_RECALL",
+          "revocationDate": "2015-01-01"
+        }
+      }
+    ],
+    "adjustments": {}
+  },
+  "params": "sds-progression-model"
+}
