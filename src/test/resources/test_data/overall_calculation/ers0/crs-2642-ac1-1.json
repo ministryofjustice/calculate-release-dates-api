@@ -1,0 +1,84 @@
+{
+  "booking": {
+    "offender": {
+      "reference": "A0744ED",
+      "dateOfBirth": "1969-07-14",
+      "isActiveSexOffender": false
+    },
+    "bookingId": 1234029,
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "recall": null,
+        "offence": {
+          "committedAt": "2025-06-01",
+          "offenceCode": "TH68001"
+        },
+        "duration": {
+          "durationElements": {
+            "DAYS": 260,
+            "WEEKS": 0,
+            "YEARS": 3,
+            "MONTHS": 0
+          }
+        },
+        "isSDSPlus": false,
+        "identifier": "dda3570f-f67b-38f2-897e-4036676bdecb",
+        "section250": false,
+        "sentencedAt": "2025-06-27",
+        "caseSequence": 1,
+        "lineSequence": 1,
+        "caseReference": null,
+        "externalSentenceId": {
+          "bookingId": 1234029,
+          "sentenceSequence": 1
+        },
+        "consecutiveSentenceUUIDs": [],
+        "isSDSPlusOffenceInPeriod": false,
+        "hasAnSDSEarlyReleaseExclusion": "NO",
+        "isSDSPlusEligibleSentenceTypeLengthAndOffence": false
+      },
+      {
+        "type": "AFineSentence",
+        "recall": null,
+        "offence": {
+          "committedAt": "2026-03-09",
+          "offenceCode": "CJ61002"
+        },
+        "duration": {
+          "durationElements": {
+            "DAYS": 0,
+            "WEEKS": 0,
+            "YEARS": 0,
+            "MONTHS": 16
+          }
+        },
+        "isSDSPlus": false,
+        "fineAmount": 1000.0,
+        "identifier": "54d30958-cd75-326c-9412-1f72aa4ef61e",
+        "sentencedAt": "2026-03-10",
+        "caseSequence": 2,
+        "lineSequence": 2,
+        "caseReference": null,
+        "externalSentenceId": {
+          "bookingId": 1234029,
+          "sentenceSequence": 2
+        },
+        "consecutiveSentenceUUIDs": [],
+        "isSDSPlusOffenceInPeriod": false,
+        "isSDSPlusEligibleSentenceTypeLengthAndOffence": false
+      }
+    ],
+    "adjustments": {},
+    "externalMovements": [],
+    "historicalTusedData": null,
+    "returnToCustodyDate": null,
+    "fixedTermRecallDetails": null
+  },
+  "userInputs": {
+    "calculateErsed": true
+  },
+  "featureToggles": {
+    "useERS0Calculation": true
+  }
+}
