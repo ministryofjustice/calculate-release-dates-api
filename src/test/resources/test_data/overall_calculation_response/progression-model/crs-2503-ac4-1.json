@@ -1,0 +1,6 @@
+{
+  "skipAssertingDates": true,
+  "trancheAllocationByLegislationName": {
+    "SDS_40": "TRANCHE_2"
+  }
+}

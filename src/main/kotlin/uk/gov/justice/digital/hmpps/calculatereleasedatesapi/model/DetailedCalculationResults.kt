@@ -12,5 +12,6 @@ data class DetailedCalculationResults(
   val breakdownMissingReason: BreakdownMissingReason? = null,
   val sds40Tranche: TrancheName? = null,
   val ftr56Tranche: TrancheName? = null,
+  val progressionModelTranche: TrancheName? = null,
   val usedPreviouslyRecordedSLED: PreviouslyRecordedSLED? = null,
 )
