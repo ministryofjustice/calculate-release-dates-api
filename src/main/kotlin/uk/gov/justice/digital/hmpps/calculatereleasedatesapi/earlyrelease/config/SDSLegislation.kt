@@ -4,6 +4,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Senten
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AbstractSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExternalMovementReason
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ReleaseMultiplier
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.ExternalMovementTimeline
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculationDate
@@ -19,8 +20,6 @@ sealed interface SDSLegislation : Legislation {
   fun requiredTimelineCalculations(): List<TimelineCalculationDate> = listOf(TimelineCalculationDate(commencementDate(), TimelineCalculationType.SDS_LEGISLATION_COMMENCEMENT, this))
 
   fun appliesToSentence(part: AbstractSentence) = filter.matches(part)
-
-  fun hasReleaseMultiplierForSentence(sentence: CalculableSentence) = this.releaseMultiplier.keys.contains(sentence.identificationTrack)
 
   data class DefaultSDSLegislation(
     override val releaseMultiplier: Map<SentenceIdentificationTrack, ReleaseMultiplier>,
@@ -68,6 +67,8 @@ sealed interface SDSLegislation : Legislation {
       }
       return false
     }
+
+    override fun isSentenceSubjectToTraches(sentence: CalculableSentence) = this.releaseMultiplier.keys.contains(sentence.identificationTrack)
   }
 
   data class SDS40AdditionalExcludedOffencesLegislation(
@@ -95,6 +96,8 @@ sealed interface SDSLegislation : Legislation {
     }
 
     override fun commencementDate(): LocalDate = tranches.minOf { it.date }
+
+    override fun isSentenceSubjectToTraches(sentence: CalculableSentence) = sentence is StandardDeterminateSentence && this.releaseMultiplier.keys.contains(sentence.identificationTrack) && !sentence.section250
   }
 
   data class SDS40YouthRepealLegislation(
@@ -114,14 +117,14 @@ sealed interface SDSLegislation : Legislation {
       timelineTrackingData: TimelineTrackingData,
       legislation: Legislation,
     ): Boolean {
-      require(legislation is SDSLegislation) { "Tried to allocate non SDSLegislation using SDS tranche allocation strategy" }
+      require(legislation is SDSLegislationWithTranches) { "Tried to allocate non SDSLegislation using SDS tranche allocation strategy" }
       val sentencesWithReleaseAfterTrancheCommencement = (timelineTrackingData.currentSentenceGroup + timelineTrackingData.licenceSentences).filter {
         it.sentenceCalculation.adjustedDeterminateReleaseDate.isAfter(legislation.commencementDate())
       }
       return sentencesWithReleaseAfterTrancheCommencement.any { sentence ->
         sentence.sentenceParts().any { sentencePart ->
           val isInRangeOfEarlyRelease = sentencePart.sentencedAt.isBefore(legislation.commencementDate())
-          isInRangeOfEarlyRelease && legislation.hasReleaseMultiplierForSentence(sentencePart)
+          isInRangeOfEarlyRelease && legislation.isSentenceSubjectToTraches(sentencePart)
         }
       }
     }

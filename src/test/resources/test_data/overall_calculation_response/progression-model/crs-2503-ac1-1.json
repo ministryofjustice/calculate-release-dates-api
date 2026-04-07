@@ -1,0 +1,6 @@
+{
+  "skipAssertingDates": true,
+  "trancheAllocationByLegislationName": {
+    "SDS_PROGRESSION_MODEL": "TRANCHE_1"
+  }
+}
