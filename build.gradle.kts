@@ -64,11 +64,11 @@ dependencies {
   implementation("io.awspring.cloud:spring-cloud-aws-core:4.0.0")
   implementation("io.awspring.cloud:spring-cloud-aws-sns:4.0.0")
   implementation("io.awspring.cloud:spring-cloud-aws-sqs:4.0.0")
-  implementation("org.springframework:spring-jms:7.0.5")
+  implementation("org.springframework:spring-jms:7.0.6")
   implementation("org.apache.commons:commons-text:1.15.0")
 
   // SQS
-  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:7.0.1")
+  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:7.3.0")
 
   // Test dependencies
   testImplementation("org.wiremock:wiremock-standalone:3.13.2")
@@ -85,7 +85,7 @@ dependencies {
   testImplementation("org.testcontainers:localstack:1.21.4")
   testImplementation("org.testcontainers:postgresql:1.21.4")
   testImplementation("org.testcontainers:junit-jupiter:1.21.4")
-  testImplementation("io.github.hakky54:logcaptor:2.12.5")
+  testImplementation("io.github.hakky54:logcaptor:2.12.6")
   testImplementation("org.mockito.kotlin:mockito-kotlin")
   testImplementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter-test:2.1.0")
   testImplementation(kotlin("test"))
