@@ -29,6 +29,7 @@ class SDSReleaseArrangementLookupService {
   internal fun offenceCodesExcludingSDSPlus(checkedForSDSPlus: List<SDSPlusCheckResult>): List<String> = checkedForSDSPlus
     .filterNot { it.isSDSPlus }
     .map { it.sentenceAndOffence.offence.offenceCode }.sorted()
+
   internal fun exclusionForOffence(
     exclusionsForOffences: Map<String, SDSEarlyReleaseExclusionForOffenceCode>,
     sentenceAndOffence: SentenceAndOffence,
