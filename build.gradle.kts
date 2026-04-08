@@ -87,7 +87,7 @@ dependencies {
   testImplementation("org.testcontainers:junit-jupiter:1.21.4")
   testImplementation("io.github.hakky54:logcaptor:2.12.6")
   testImplementation("org.mockito.kotlin:mockito-kotlin")
-  testImplementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter-test:2.0.2")
+  testImplementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter-test:2.1.0")
   testImplementation(kotlin("test"))
   if (project.hasProperty("docs")) {
     implementation("com.h2database:h2")
