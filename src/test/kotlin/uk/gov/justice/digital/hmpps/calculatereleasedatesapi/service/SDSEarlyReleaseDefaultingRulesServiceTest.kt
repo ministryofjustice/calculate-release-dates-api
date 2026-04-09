@@ -69,7 +69,6 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
     sds40Legislation = SDSLegislation.SDS40Legislation(trancheConfiguration.getSds40Tranches(), mapOf(SentenceIdentificationTrack.SDS to ReleaseMultiplier.FORTY_PERCENT), EarlyReleaseSentenceFilter.SDS_40_EXCLUSIONS),
     sds40AdditionalExcludedOffencesLegislation = SDSLegislation.SDS40AdditionalExcludedOffencesLegislation(trancheConfiguration.trancheThreeCommencementDate, mapOf(SentenceIdentificationTrack.SDS to ReleaseMultiplier.ONE_HALF, SentenceIdentificationTrack.SDS_PLUS to ReleaseMultiplier.TWO_THIRDS), EarlyReleaseSentenceFilter.SDS_40_ADDITIONAL_EXCLUDED_OFFENCES),
     progressionModelLegislation = null,
-    sds40YouthRepeal = null,
   )
   private val service = SDSEarlyReleaseDefaultingRulesService(sdsLegislationConfiguration)
 
