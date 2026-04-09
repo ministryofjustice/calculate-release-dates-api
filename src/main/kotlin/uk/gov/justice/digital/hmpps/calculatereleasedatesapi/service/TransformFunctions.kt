@@ -534,7 +534,7 @@ fun transform(calculationRequest: CalculationRequest): CalculatedReleaseDates = 
     { it.outcomeDate },
   ).toMutableMap(),
   calculationRequestId = calculationRequest.id(),
-  calculationFragments = if (calculationRequest.breakdownHtml != null) CalculationFragments(calculationRequest.breakdownHtml) else null,
+  calculationFragments = calculationRequest.breakdownHtml?.let { CalculationFragments(it) },
   bookingId = calculationRequest.bookingId,
   prisonerId = calculationRequest.prisonerId,
   calculationStatus = CalculationStatus.valueOf(calculationRequest.calculationStatus),
