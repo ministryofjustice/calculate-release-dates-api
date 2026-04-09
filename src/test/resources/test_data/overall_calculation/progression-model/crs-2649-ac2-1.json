@@ -1,0 +1,26 @@
+{
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "2000-01-01"
+    },
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2020-10-08"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 12
+          }
+        },
+        "sentencedAt": "2020-10-08",
+        "hasAnSDSEarlyReleaseExclusion": "SEXUAL",
+        "section250": true
+      }
+    ],
+    "adjustments": {}
+  },
+  "params": "sds-progression-model"
+}
