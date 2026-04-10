@@ -22,9 +22,7 @@ enum class EarlyReleaseSentenceFilter {
   SDS_OR_SDS_PLUS {
     override fun matches(part: AbstractSentence): Boolean = listOf(SentenceIdentificationTrack.SDS, SentenceIdentificationTrack.SDS_PLUS).contains(part.identificationTrack)
   },
-  YOUTH {
-    override fun matches(part: AbstractSentence): Boolean = part is StandardDeterminateSentence && part.section250
-  }, ;
+  ;
 
   abstract fun matches(part: AbstractSentence): Boolean
 }
