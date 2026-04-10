@@ -8,13 +8,11 @@ data class SDSLegislationConfiguration(
   val sds40Legislation: SDSLegislation.SDS40Legislation,
   val sds40AdditionalExcludedOffencesLegislation: SDSLegislation.SDS40AdditionalExcludedOffencesLegislation,
   val progressionModelLegislation: SDSLegislation.ProgressionModelLegislation?,
-  val sds40YouthRepeal: SDSLegislation.SDS40YouthRepealLegislation?,
 ) {
   fun all(): List<SDSLegislation> = listOfNotNull(
     defaultLegislation,
     sds40Legislation,
     sds40AdditionalExcludedOffencesLegislation,
     progressionModelLegislation,
-    sds40YouthRepeal,
   )
 }

@@ -70,9 +70,3 @@ sds-legislations:
       - type: FINAL
         date: 2027-06-08
         name: TRANCHE_10
-  sds40-youth-repeal:
-    commencement-date: 2026-09-01
-    release-multiplier:
-      SDS: ONE_HALF
-      SDS_PLUS: TWO_THIRDS
-    filter: YOUTH

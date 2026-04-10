@@ -100,18 +100,6 @@ sealed interface SDSLegislation : Legislation {
     override fun isSentenceSubjectToTraches(sentence: CalculableSentence) = sentence is StandardDeterminateSentence && this.releaseMultiplier.keys.contains(sentence.identificationTrack) && !sentence.section250
   }
 
-  data class SDS40YouthRepealLegislation(
-    val commencementDate: LocalDate,
-    override val releaseMultiplier: Map<SentenceIdentificationTrack, ReleaseMultiplier>,
-    override val filter: EarlyReleaseSentenceFilter,
-  ) : SDSLegislation {
-    override val legislationName = LegislationName.SDS_40_YOUTH_REPEAL
-
-    override fun commencementDate(): LocalDate = commencementDate
-
-    override fun requiredTimelineCalculations(): List<TimelineCalculationDate> = super.requiredTimelineCalculations() + TimelineCalculationDate(commencementDate, TimelineCalculationType.SDS_LEGISLATION_AMENDMENT, this)
-  }
-
   private object SDSTrancheSelectionStrategy : TrancheSelectionStrategy {
     override fun hasSentencesThatMightApplyToTheTranche(
       timelineTrackingData: TimelineTrackingData,
