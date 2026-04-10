@@ -53,7 +53,7 @@ dependencies {
   runtimeOnly("org.flywaydb:flyway-database-postgresql")
   runtimeOnly("org.postgresql:postgresql")
 
-  implementation("io.arrow-kt:arrow-core:2.2.2")
+  implementation("io.arrow-kt:arrow-core:2.2.2.1")
   implementation("io.hypersistence:hypersistence-utils-hibernate-71:3.15.2")
 
   // OpenAPI
