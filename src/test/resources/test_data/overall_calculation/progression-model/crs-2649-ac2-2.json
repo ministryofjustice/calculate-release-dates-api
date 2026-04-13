@@ -1,0 +1,45 @@
+{
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "2000-01-01"
+    },
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2025-03-26"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 2
+          }
+        },
+        "sentencedAt": "2025-03-26",
+        "hasAnSDSEarlyReleaseExclusion": "SEXUAL",
+        "section250": true,
+        "identifier": "d211f333-aa1a-3e25-ac8d-0459c1f98868"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2025-03-26"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 2
+          }
+        },
+        "sentencedAt": "2025-03-26",
+        "hasAnSDSEarlyReleaseExclusion": "NO",
+        "section250": true,
+        "identifier": "023e388e-1673-3bbc-9f13-1b1d915f3b73",
+        "consecutiveSentenceUUIDs": [
+          "d211f333-aa1a-3e25-ac8d-0459c1f98868"
+        ]
+      }
+    ],
+    "adjustments": {}
+  },
+  "params": "sds-progression-model"
+}

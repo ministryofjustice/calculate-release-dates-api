@@ -1,0 +1,10 @@
+{
+  "dates": {
+    "SED": "2027-06-13",
+    "ARD": "2026-12-13",
+    "HDCED": "2026-10-14",
+    "ESED": "2027-06-13"
+  },
+  "effectiveSentenceLength": "P10M",
+  "trancheAllocationByLegislationName": {}
+}
