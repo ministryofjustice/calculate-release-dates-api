@@ -2,8 +2,8 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.confi
 
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculationDate
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculationType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculationEvent
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculationEvent.FTR56TrancheTimelineCalculationEvent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineTrackingData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isBeforeOrEqualTo
 import java.time.LocalDate
@@ -11,7 +11,7 @@ import java.time.LocalDate
 sealed interface FTRLegislation : Legislation {
   fun isFTR56Supported(): Boolean = false
 
-  fun requiredTimelineCalculations(): List<TimelineCalculationDate>
+  fun requiredTimelineCalculations(): List<TimelineCalculationEvent>
 
   data class FTR56Legislation(override val tranches: List<TrancheConfiguration>) :
     FTRLegislation,
@@ -21,7 +21,7 @@ sealed interface FTRLegislation : Legislation {
 
     override fun isFTR56Supported(): Boolean = true
 
-    override fun requiredTimelineCalculations() = tranches.map { TimelineCalculationDate(it.date, TimelineCalculationType.FTR56_TRANCHE) }
+    override fun requiredTimelineCalculations() = tranches.map { tranche -> FTR56TrancheTimelineCalculationEvent(tranche.date, legislation = this, tranche) }
 
     override fun commencementDate(): LocalDate = tranches.minOf { it.date }
   }
