@@ -9,6 +9,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalcu
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.UnadjustedReleaseDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.sentence.SentenceCombinationService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculationEvent.SentenceTimelineCalculationEvent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculator
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineHandleResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineTrackingData
@@ -20,19 +21,19 @@ import java.time.temporal.ChronoUnit
 class TimelineSentenceCalculationHandler(
   timelineCalculator: TimelineCalculator,
   private val sentenceCombinationService: SentenceCombinationService,
-) : TimelineCalculationHandler(timelineCalculator) {
+) : TimelineCalculationHandler<SentenceTimelineCalculationEvent>(timelineCalculator) {
 
   override fun handle(
-    timelineCalculationDate: LocalDate,
+    event: SentenceTimelineCalculationEvent,
     timelineTrackingData: TimelineTrackingData,
   ): TimelineHandleResult {
     with(timelineTrackingData) {
-      var servedAdas = findServedAdas(timelineCalculationDate, currentSentenceGroup, latestRelease)
+      var servedAdas = findServedAdas(event.date, currentSentenceGroup, latestRelease)
 
       val existingAdjustments =
         currentSentenceGroup.maxByOrNull { it.sentenceCalculation.adjustments.totalAdjustmentDays() }?.sentenceCalculation?.adjustments ?: SentenceAdjustments()
 
-      val newlySentenced = futureData.sentences.filter { it.sentencedAt == timelineCalculationDate }
+      val newlySentenced = futureData.sentences.filter { it.sentencedAt == event.date }
       if (newlySentencedIsConsecutiveToAnyExistingSentences(timelineTrackingData, newlySentenced)) {
         servedAdas = 0
       }
@@ -52,13 +53,13 @@ class TimelineSentenceCalculationHandler(
 
       initialiseReleaseMultipliersForNewSDSParts(newlySentenced, timelineTrackingData)
 
-      initialiseCalculationForNewSentences(timelineCalculationDate, timelineTrackingData, combinedSentencesWhichHaveNewParts)
+      initialiseCalculationForNewSentences(event.date, timelineTrackingData, combinedSentencesWhichHaveNewParts)
 
       shareAdjustmentsFromExistingCustodialSentencesToNewlySentenced(combinedSentencesWhichHaveNewParts, existingAdjustments, servedAdas)
 
       applyUalToCombinedSentences(combinedSentencesWhichHaveNewParts, sentencesBeforeCombining)
 
-      shareDeductionsThatAreApplicableToThisSentenceDate(timelineCalculationDate, timelineTrackingData)
+      shareDeductionsThatAreApplicableToThisSentenceDate(event.date, timelineTrackingData)
     }
     return TimelineHandleResult()
   }

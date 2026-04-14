@@ -7,8 +7,10 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExternalMovem
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ReleaseMultiplier
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.ExternalMovementTimeline
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculationDate
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculationType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculationEvent
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculationEvent.SDSLegislationAmendmentTimelineCalculationEvent
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculationEvent.SDSLegislationCommencementTimelineCalculationEvent
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculationEvent.SDSTrancheTimelineCalculationEvent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineTrackingData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
 import java.time.LocalDate
@@ -17,7 +19,7 @@ sealed interface SDSLegislation : Legislation {
   val releaseMultiplier: Map<SentenceIdentificationTrack, ReleaseMultiplier>
   val filter: EarlyReleaseSentenceFilter
 
-  fun requiredTimelineCalculations(): List<TimelineCalculationDate> = listOf(TimelineCalculationDate(commencementDate(), TimelineCalculationType.SDS_LEGISLATION_COMMENCEMENT, this))
+  fun requiredTimelineCalculations(): List<TimelineCalculationEvent> = listOf(SDSLegislationCommencementTimelineCalculationEvent(commencementDate(), legislation = this))
 
   fun appliesToSentence(part: AbstractSentence) = filter.matches(part)
 
@@ -38,8 +40,8 @@ sealed interface SDSLegislation : Legislation {
     override val legislationName = LegislationName.SDS_40
     override val trancheSelectionStrategy: TrancheSelectionStrategy = SDSTrancheSelectionStrategy
 
-    override fun requiredTimelineCalculations(): List<TimelineCalculationDate> = super.requiredTimelineCalculations() + tranches.map {
-      TimelineCalculationDate(it.date, TimelineCalculationType.EARLY_RELEASE_TRANCHE, this)
+    override fun requiredTimelineCalculations(): List<TimelineCalculationEvent> = super.requiredTimelineCalculations() + tranches.map { tranche ->
+      SDSTrancheTimelineCalculationEvent(tranche.date, legislation = this, tranche)
     }
 
     override fun commencementDate(): LocalDate = tranches.minOf { it.date }
@@ -80,7 +82,7 @@ sealed interface SDSLegislation : Legislation {
 
     override fun commencementDate(): LocalDate = commencementDate
 
-    override fun requiredTimelineCalculations(): List<TimelineCalculationDate> = super.requiredTimelineCalculations() + TimelineCalculationDate(commencementDate, TimelineCalculationType.SDS_LEGISLATION_AMENDMENT, this)
+    override fun requiredTimelineCalculations(): List<TimelineCalculationEvent> = super.requiredTimelineCalculations() + SDSLegislationAmendmentTimelineCalculationEvent(commencementDate, legislation = this)
   }
 
   data class ProgressionModelLegislation(
@@ -91,8 +93,8 @@ sealed interface SDSLegislation : Legislation {
     override val legislationName = LegislationName.SDS_PROGRESSION_MODEL
     override val trancheSelectionStrategy: TrancheSelectionStrategy = SDSTrancheSelectionStrategy
 
-    override fun requiredTimelineCalculations(): List<TimelineCalculationDate> = super.requiredTimelineCalculations() + tranches.map {
-      TimelineCalculationDate(it.date, TimelineCalculationType.EARLY_RELEASE_TRANCHE, this)
+    override fun requiredTimelineCalculations(): List<TimelineCalculationEvent> = super.requiredTimelineCalculations() + tranches.map { tranche ->
+      SDSTrancheTimelineCalculationEvent(tranche.date, legislation = this, tranche)
     }
 
     override fun commencementDate(): LocalDate = tranches.minOf { it.date }

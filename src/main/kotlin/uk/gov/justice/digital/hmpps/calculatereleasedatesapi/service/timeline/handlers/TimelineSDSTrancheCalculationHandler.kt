@@ -8,6 +8,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.SDSLegislationWithTranches
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.TrancheAllocationService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculationEvent.SDSTrancheTimelineCalculationEvent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculator
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineHandleResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineTrackingData
@@ -17,18 +18,16 @@ import java.time.LocalDate
 class TimelineSDSTrancheCalculationHandler(
   timelineCalculator: TimelineCalculator,
   val trancheAllocationService: TrancheAllocationService,
-) : TimelineCalculationHandler(timelineCalculator) {
+) : TimelineCalculationHandler<SDSTrancheTimelineCalculationEvent>(timelineCalculator) {
 
   override fun handle(
-    timelineCalculationDate: LocalDate,
+    event: SDSTrancheTimelineCalculationEvent,
     timelineTrackingData: TimelineTrackingData,
   ): TimelineHandleResult {
     with(timelineTrackingData) {
-      val legislationToApply = requireNotNull(currentTimelineCalculationDate.sdsLegislationToApplyOnDate) { "Received a tranche allocation timeline event without an allocation piece of legislation on $timelineCalculationDate" }
+      allocateATrancheIfNoneSetYetForThisLegislation(event.legislation)
 
-      allocateATrancheIfNoneSetYetForThisLegislation(legislationToApply)
-
-      val anySentencesRequiringRecalculation = configureCalculationsForSentencesImpactedByThisTranche(legislationToApply, timelineCalculationDate)
+      val anySentencesRequiringRecalculation = configureCalculationsForSentencesImpactedByThisTranche(event.legislation, event.date)
       if (!anySentencesRequiringRecalculation) {
         return TimelineHandleResult(requiresCalculation = false)
       }

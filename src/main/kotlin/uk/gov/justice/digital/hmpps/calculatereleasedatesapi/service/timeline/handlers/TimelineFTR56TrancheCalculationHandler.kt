@@ -2,10 +2,10 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.h
 
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.ApplicableLegislation
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.FTRLegislationConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.TrancheAllocationService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculationEvent.FTR56TrancheTimelineCalculationEvent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculator
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineHandleResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineTrackingData
@@ -15,37 +15,33 @@ import java.time.LocalDate
 @Service
 class TimelineFTR56TrancheCalculationHandler(
   timelineCalculator: TimelineCalculator,
-  val ftrLegislationConfiguration: FTRLegislationConfiguration,
   val trancheAllocationService: TrancheAllocationService,
-) : TimelineCalculationHandler(timelineCalculator) {
+) : TimelineCalculationHandler<FTR56TrancheTimelineCalculationEvent>(timelineCalculator) {
 
   override fun handle(
-    timelineCalculationDate: LocalDate,
+    event: FTR56TrancheTimelineCalculationEvent,
     timelineTrackingData: TimelineTrackingData,
   ): TimelineHandleResult {
     with(timelineTrackingData) {
-      val ftr56Legislation = ftrLegislationConfiguration.ftr56Legislation
-      val thisTranche = requireNotNull(ftr56Legislation.tranches.find { it.date == timelineCalculationDate }) { "Couldn't find tranche for date $timelineCalculationDate" }
-
       if (applicableFtrLegislation == null) {
-        val allocatedTranche = trancheAllocationService.allocateTranche(timelineTrackingData, ftr56Legislation)
-        if (allocatedTranche != null && allocatedTranche.date.isAfterOrEqualTo(timelineCalculationDate)) {
+        val allocatedTranche = trancheAllocationService.allocateTranche(timelineTrackingData, event.legislation)
+        if (allocatedTranche != null && allocatedTranche.date.isAfterOrEqualTo(event.date)) {
           applicableFtrLegislation = ApplicableLegislation(
-            legislation = ftr56Legislation,
+            legislation = event.legislation,
             earliestApplicableDate = allocatedTranche.date,
           )
-          trancheAllocationByLegislationName[ftr56Legislation.legislationName] = allocatedTranche.name
+          trancheAllocationByLegislationName[event.legislation.legislationName] = allocatedTranche.name
         } else {
           // if no tranche is applicable then the legislation becomes available for all FTR56 sentences from this date
           applicableFtrLegislation = ApplicableLegislation(
-            legislation = ftr56Legislation,
+            legislation = event.legislation,
             earliestApplicableDate = null,
           )
         }
       }
 
-      val thisTrancheIsTheOneAllocated = applicableFtrLegislation?.earliestApplicableDate == thisTranche.date
-      val sentencesToModifyReleaseDates = sentencesToModifyReleaseDates(timelineTrackingData, timelineCalculationDate)
+      val thisTrancheIsTheOneAllocated = applicableFtrLegislation?.earliestApplicableDate == event.tranche.date
+      val sentencesToModifyReleaseDates = sentencesToModifyReleaseDates(timelineTrackingData, event.date)
       if (thisTrancheIsTheOneAllocated || sentencesToModifyReleaseDates.isNotEmpty()) {
         sentencesToModifyReleaseDates.forEach {
           it.sentenceCalculation.unadjustedReleaseDate.calculationTrigger = it.sentenceCalculation.unadjustedReleaseDate.calculationTrigger.copy(ftr56Supported = true)

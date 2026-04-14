@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.h
 
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAdjustments
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculationEvent.UALTimelineCalculationEvent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculator
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineHandleResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineTrackingData
@@ -12,15 +13,15 @@ import java.time.LocalDate
 @Service
 class TimelineUalAdjustmentCalculationHandler(
   timelineCalculator: TimelineCalculator,
-) : TimelineCalculationHandler(timelineCalculator) {
-  override fun handle(timelineCalculationDate: LocalDate, timelineTrackingData: TimelineTrackingData): TimelineHandleResult {
+) : TimelineCalculationHandler<UALTimelineCalculationEvent>(timelineCalculator) {
+  override fun handle(event: UALTimelineCalculationEvent, timelineTrackingData: TimelineTrackingData): TimelineHandleResult {
     with(timelineTrackingData) {
-      val ual = futureData.ual.filter { it.appliesToSentencesFrom == timelineCalculationDate }
+      val ual = futureData.ual.filter { it.appliesToSentencesFrom == event.date }
       val ualDays = ual.sumOf { it.numberOfDays }.toLong()
       val lastDayOfUal = ual.mapNotNull { it.toDate }.maxOrNull()
 
-      setAdjustmentsDuringCustodialPeriod(timelineCalculationDate, timelineTrackingData, ualDays, lastDayOfUal)
-      setAdjustmentsDuringLicencePeriod(timelineCalculationDate, timelineTrackingData, ualDays, lastDayOfUal)
+      setAdjustmentsDuringCustodialPeriod(event.date, timelineTrackingData, ualDays, lastDayOfUal)
+      setAdjustmentsDuringLicencePeriod(event.date, timelineTrackingData, ualDays, lastDayOfUal)
 
       futureData.ual -= ual
       previousUalPeriods.addAll(ual.filter { it.fromDate != null && it.toDate != null }.map { it.fromDate!! to it.toDate!! })

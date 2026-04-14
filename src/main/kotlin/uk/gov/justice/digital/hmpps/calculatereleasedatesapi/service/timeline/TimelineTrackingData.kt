@@ -15,7 +15,7 @@ import java.time.LocalDate
 
 data class TimelineTrackingData(
   val futureData: TimelineFutureData,
-  val calculationsByDate: Map<LocalDate, List<TimelineCalculationDate>>,
+  val calculationsByDate: Map<LocalDate, List<TimelineCalculationEvent>>,
   var latestRelease: Pair<LocalDate, CalculableSentence>,
   val returnToCustodyDate: LocalDate?,
   val offender: Offender,
@@ -38,5 +38,4 @@ data class TimelineTrackingData(
 ) {
 
   lateinit var latestCalculation: CalculationResult
-  lateinit var currentTimelineCalculationDate: TimelineCalculationDate
 }
