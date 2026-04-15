@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.adjustmentsapi.model.AdjustmentDto
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ApprovedDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ApprovedDatesSubmission
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcome
@@ -260,7 +261,7 @@ class TransformFunctionsTest {
   }
 
   @Test
-  fun `Transform adjustments`() {
+  fun `Transform prison API adjustments`() {
     val fromDate = LocalDate.of(2022, 3, 1)
     val toDate = LocalDate.of(2022, 3, 10)
     val recallSentence = NormalisedSentenceAndOffence(
@@ -382,6 +383,174 @@ class TransformFunctionsTest {
     assertThat(additionalDays[0].appliesToSentencesFrom).isEqualTo(fromDate)
     assertThat(additionalDays[0].fromDate).isEqualTo(fromDate)
     assertThat(additionalDays[0].toDate).isEqualTo(toDate)
+  }
+
+  @ParameterizedTest
+  @EnumSource(
+    value = AdjustmentDto.AdjustmentType::class,
+    mode = EnumSource.Mode.EXCLUDE,
+    names = [
+      "LAWFULLY_AT_LARGE",
+      "SPECIAL_REMISSION",
+      "UNUSED_DEDUCTIONS",
+      "CUSTODY_ABROAD",
+      "APPEAL_APPLICANT",
+    ],
+  )
+  fun `Transform relevant adjustments API adjustments for every type with a sentence date`(type: AdjustmentDto.AdjustmentType) {
+    val fromDate = LocalDate.of(2022, 3, 1)
+    val toDate = LocalDate.of(2022, 3, 10)
+    val standardSentence = NormalisedSentenceAndOffence(
+      bookingId = 1L,
+      sentenceSequence = 2,
+      sentenceDate = SECOND_JAN_2015,
+      sentenceStatus = "IMP",
+      sentenceCategory = "CAT",
+      sentenceCalculationType = SentenceCalculationType.ADIMP.name,
+      sentenceTypeDescription = "Recall",
+      lineSequence = 1,
+      caseSequence = 2,
+      offence = OffenderOffence(1, LocalDate.of(2020, 4, 1), null, "A123456", "TEST OFFENCE 2"),
+      terms = emptyList(),
+      caseReference = null,
+      fineAmount = null,
+      courtId = null,
+      courtDescription = null,
+      courtTypeCode = null,
+      consecutiveToSequence = null,
+      revocationDates = emptyList(),
+    )
+
+    val adjustmentDtos = listOf(
+      AdjustmentDto(
+        person = "A1234BC",
+        bookingId = 1L,
+        adjustmentType = type,
+        fromDate = fromDate,
+        toDate = toDate,
+        effectiveDays = 2,
+        sentenceSequence = 2,
+      ),
+    )
+
+    val adjustments = transform(adjustmentDtos, listOf(standardSentence))
+
+    val transformed = adjustments.entries().flatMap { it.value }
+    assertThat(transformed.size).isEqualTo(1)
+    assertThat(transformed[0].appliesToSentencesFrom).isEqualTo(standardSentence.sentenceDate)
+    assertThat(transformed[0].fromDate).isEqualTo(fromDate)
+    assertThat(transformed[0].toDate).isEqualTo(toDate)
+    assertThat(transformed[0].numberOfDays).isEqualTo(2)
+  }
+
+  @ParameterizedTest
+  @EnumSource(
+    value = AdjustmentDto.AdjustmentType::class,
+    mode = EnumSource.Mode.EXCLUDE,
+    names = [
+      "LAWFULLY_AT_LARGE",
+      "SPECIAL_REMISSION",
+      "UNUSED_DEDUCTIONS",
+      "CUSTODY_ABROAD",
+      "APPEAL_APPLICANT",
+    ],
+  )
+  fun `Transform adjustments API adjustments for every type with out a sentence sequence`(type: AdjustmentDto.AdjustmentType) {
+    val fromDate = LocalDate.of(2022, 3, 1)
+    val toDate = LocalDate.of(2022, 3, 10)
+
+    val adjustmentDtos = listOf(
+      AdjustmentDto(
+        person = "A1234BC",
+        bookingId = 1L,
+        adjustmentType = type,
+        fromDate = fromDate,
+        toDate = toDate,
+        effectiveDays = 2,
+      ),
+    )
+
+    val adjustments = transform(adjustmentDtos, listOf())
+
+    val transformed = adjustments.entries().flatMap { it.value }
+    assertThat(transformed.size).isEqualTo(1)
+    assertThat(transformed[0].appliesToSentencesFrom).isEqualTo(fromDate)
+    assertThat(transformed[0].fromDate).isEqualTo(fromDate)
+    assertThat(transformed[0].toDate).isEqualTo(toDate)
+    assertThat(transformed[0].numberOfDays).isEqualTo(2)
+  }
+
+  @ParameterizedTest
+  @EnumSource(
+    value = AdjustmentDto.AdjustmentType::class,
+    mode = EnumSource.Mode.INCLUDE,
+    names = [
+      "LAWFULLY_AT_LARGE",
+      "SPECIAL_REMISSION",
+      "UNUSED_DEDUCTIONS",
+      "CUSTODY_ABROAD",
+      "APPEAL_APPLICANT",
+    ],
+  )
+  fun `Exclude adjustments that are not supported in the calculation`(type: AdjustmentDto.AdjustmentType) {
+    val fromDate = LocalDate.of(2022, 3, 1)
+    val toDate = LocalDate.of(2022, 3, 10)
+
+    val adjustmentDtos = listOf(
+      AdjustmentDto(
+        person = "A1234BC",
+        bookingId = 1L,
+        adjustmentType = type,
+        fromDate = fromDate,
+        toDate = toDate,
+        effectiveDays = 2,
+      ),
+    )
+
+    val adjustments = transform(adjustmentDtos, listOf())
+
+    val transformed = adjustments.entries().flatMap { it.value }
+    assertThat(transformed).isEmpty()
+  }
+
+  @Test
+  fun `Skip adjustments which specify a sentence sequence but there is no matching sentence (do not blow up on missing from date)`() {
+    val standardSentence = NormalisedSentenceAndOffence(
+      bookingId = 1L,
+      sentenceSequence = 2,
+      sentenceDate = SECOND_JAN_2015,
+      sentenceStatus = "IMP",
+      sentenceCategory = "CAT",
+      sentenceCalculationType = SentenceCalculationType.ADIMP.name,
+      sentenceTypeDescription = "Recall",
+      lineSequence = 1,
+      caseSequence = 2,
+      offence = OffenderOffence(1, LocalDate.of(2020, 4, 1), null, "A123456", "TEST OFFENCE 2"),
+      terms = emptyList(),
+      caseReference = null,
+      fineAmount = null,
+      courtId = null,
+      courtDescription = null,
+      courtTypeCode = null,
+      consecutiveToSequence = null,
+      revocationDates = emptyList(),
+    )
+
+    val adjustmentDtos = listOf(
+      AdjustmentDto(
+        person = "A1234BC",
+        adjustmentType = AdjustmentDto.AdjustmentType.REMAND,
+        fromDate = null,
+        toDate = null,
+        effectiveDays = 2,
+        sentenceSequence = 99,
+      ),
+    )
+
+    val adjustments = transform(adjustmentDtos, listOf(standardSentence))
+
+    val transformed = adjustments.entries().flatMap { it.value }
+    assertThat(transformed).isEmpty()
   }
 
   @Test
