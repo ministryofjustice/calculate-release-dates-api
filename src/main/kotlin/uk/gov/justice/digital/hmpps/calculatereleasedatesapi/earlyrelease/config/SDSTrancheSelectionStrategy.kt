@@ -32,5 +32,5 @@ object SDSTrancheSelectionStrategy : TrancheSelectionStrategy {
   override fun sentenceDurationsWithinTrancheDuration(
     trancheConfig: TrancheConfiguration,
     durations: List<Long>,
-  ) = trancheConfig.duration?.let { duration -> durations.none { it >= duration } } ?: true
+  ) = trancheConfig.duration is Int && durations.none { it >= trancheConfig.duration }
 }
