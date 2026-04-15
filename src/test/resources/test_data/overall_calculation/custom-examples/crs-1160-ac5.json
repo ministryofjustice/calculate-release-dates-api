@@ -1,0 +1,55 @@
+{
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
+      {
+        "type": "SopcSentence",
+        "offence": {
+          "committedAt": "2025-09-05"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "YEARS": 2
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "YEARS": 1
+          }
+        },
+        "sentencedAt": "2025-09-05",
+        "identifier": "70b10e6a-a5b2-43e7-a5db-3694d75bedec"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2025-10-11"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 2
+          }
+        },
+        "sentencedAt": "2025-10-11",
+        "hasAnSDSEarlyReleaseExclusion": "NO",
+        "identifier": "09a755e1-c13a-4dc4-81b6-baed0f9724bd",
+        "consecutiveSentenceUUIDs": [
+          "70b10e6a-a5b2-43e7-a5db-3694d75bedec"
+        ]
+      }
+    ],
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2025-09-05",
+          "numberOfDays": 515,
+          "fromDate": "2024-04-08",
+          "toDate": "2025-09-04"
+        }
+      ]
+    }
+  }
+}
