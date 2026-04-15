@@ -1,0 +1,129 @@
+{
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
+      {
+        "offence": {
+          "committedAt": "2022-03-16",
+          "offenceCode": "PC53001"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 16
+          }
+        },
+        "sentencedAt": "2023-06-21",
+        "identifier": "46ee41df-ace2-39f9-8bcd-718575963446",
+        "recall": {
+          "recallType": "FIXED_TERM_RECALL_56",
+          "revocationDate": "2025-01-14",
+          "returnToCustodyDate": "2025-01-14"
+        }
+      },
+      {
+        "offence": {
+          "committedAt": "2022-03-16",
+          "offenceCode": "PC53003"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 20
+          }
+        },
+        "sentencedAt": "2023-06-21",
+        "identifier": "ec5eef37-d6e1-3f5c-afd9-98af5400d6b1",
+        "recall": {
+          "recallType": "FIXED_TERM_RECALL_56",
+          "revocationDate": "2025-01-14",
+          "returnToCustodyDate": "2025-01-14"
+        }
+      },
+      {
+        "offence": {
+          "committedAt": "2022-01-27",
+          "offenceCode": "CJ03507"
+        },
+        "duration": {
+          "durationElements": {
+            "WEEKS": 8
+          }
+        },
+        "sentencedAt": "2023-06-21",
+        "identifier": "d63c1a95-e9be-3fb3-91e9-f9bc507f01b0",
+        "consecutiveSentenceUUIDs": [
+          "ec5eef37-d6e1-3f5c-afd9-98af5400d6b1"
+        ],
+        "recall": {
+          "recallType": "FIXED_TERM_RECALL_56",
+          "revocationDate": "2025-01-14",
+          "returnToCustodyDate": "2025-01-14"
+        }
+      },
+      {
+        "offence": {
+          "committedAt": "2022-04-16",
+          "offenceCode": "TH68023"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 4
+          }
+        },
+        "sentencedAt": "2023-06-21",
+        "identifier": "d09d599d-c754-3f7f-974f-5ee84410754c",
+        "consecutiveSentenceUUIDs": [
+          "d63c1a95-e9be-3fb3-91e9-f9bc507f01b0"
+        ],
+        "recall": {
+          "recallType": "FIXED_TERM_RECALL_56",
+          "revocationDate": "2025-01-14",
+          "returnToCustodyDate": "2025-01-14"
+        },
+        "hasAnSDSEarlyReleaseExclusion": "VIOLENT"
+      }
+    ],
+    "adjustments": {
+      "UNLAWFULLY_AT_LARGE": [
+        {
+          "appliesToSentencesFrom": "2025-01-11",
+          "numberOfDays": 2,
+          "fromDate": "2025-01-11",
+          "toDate": "2025-01-12"
+        }
+      ],
+      "RECALL_REMAND": [
+        {
+          "appliesToSentencesFrom": "2023-06-21",
+          "numberOfDays": 429,
+          "fromDate": "2022-04-18",
+          "toDate": "2023-06-20"
+        }
+      ]
+    },
+    "returnToCustodyDate": "2025-01-14",
+    "fixedTermRecallDetails": {
+      "bookingId": 2720523,
+      "returnToCustodyDate": "2025-01-14",
+      "recallLength": 56
+    },
+    "externalMovements": [
+      {
+        "movementDate": "2025-01-09",
+        "movementReason": "CRD",
+        "direction": "OUT"
+      },
+      {
+        "movementDate": "2025-01-14",
+        "movementReason": "RECALL_ADMISSION",
+        "direction": "IN"
+      }
+    ]
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params"
+}

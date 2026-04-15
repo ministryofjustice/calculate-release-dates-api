@@ -6,4 +6,5 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.Ti
 interface TrancheSelectionStrategy {
   fun hasSentencesThatMightApplyToTheTranche(timelineTrackingData: TimelineTrackingData, legislation: Legislation): Boolean
   fun sentencesToMatchOnSentenceLength(timelineTrackingData: TimelineTrackingData, legislation: Legislation): List<CalculableSentence>
+  fun sentenceDurationsWithinTrancheDuration(trancheConfig: TrancheConfiguration, durations: List<Long>): Boolean
 }

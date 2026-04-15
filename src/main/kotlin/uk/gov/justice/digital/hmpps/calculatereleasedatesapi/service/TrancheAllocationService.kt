@@ -38,7 +38,7 @@ class TrancheAllocationService {
     val allSentences = legislation.trancheSelectionStrategy.sentencesToMatchOnSentenceLength(timelineTrackingData, legislation)
     val allocatedTranche = legislation.tranches.find {
       when (it.type) {
-        TrancheType.SENTENCE_LENGTH -> matchesSentenceLength(allSentences, legislation.commencementDate(), it)
+        TrancheType.SENTENCE_LENGTH -> matchesSentenceLength(allSentences, legislation, it)
         TrancheType.FINAL -> true // Not matched any other tranche, so must be in this one.
       }
     }
@@ -47,45 +47,59 @@ class TrancheAllocationService {
 
   private fun matchesSentenceLength(
     sentencesConsideredForTrancheRules: List<CalculableSentence>,
-    legislationCommencementDate: LocalDate,
+    legislation: LegislationWithTranches,
     tranche: TrancheConfiguration,
   ): Boolean {
-    val sentenceDurations = sentencesConsideredForTrancheRules.map { filterAndMapSentencesForNotIncludedTypesByDuration(it, legislationCommencementDate, tranche.unit!!) }
-    return sentenceDurations.none { it >= tranche.duration!! }
+    val sentenceDurations = getSentenceDurations(sentencesConsideredForTrancheRules, legislation.commencementDate(), tranche.unit!!)
+    return legislation.trancheSelectionStrategy.sentenceDurationsWithinTrancheDuration(tranche, sentenceDurations)
   }
 
-  private fun filterAndMapSentencesForNotIncludedTypesByDuration(
-    sentenceToFilter: CalculableSentence,
+  private fun getSentenceDurations(
+    sentences: List<CalculableSentence>,
+    legislationCommencementDate: LocalDate,
+    unit: ChronoUnit,
+  ) = sentences.map { sentenceDuration(it, legislationCommencementDate, unit) }
+
+  private fun sentenceDuration(
+    sentence: CalculableSentence,
+    legislationCommencementDate: LocalDate,
+    unit: ChronoUnit,
+  ): Long = when (sentence) {
+    is ConsecutiveSentence -> calculateConsecutiveDuration(sentence, legislationCommencementDate, unit)
+    else -> calculateSingleSentenceDuration(sentence, legislationCommencementDate, unit)
+  }
+
+  private fun calculateConsecutiveDuration(
+    sentence: ConsecutiveSentence,
     legislationCommencementDate: LocalDate,
     unit: ChronoUnit,
   ): Long {
-    return if (sentenceToFilter is ConsecutiveSentence) {
-      val filteredSentences = sentenceToFilter.orderedSentences
-        .filter { filterOnType(it) && filterOnSentenceDate(it, legislationCommencementDate) }
+    val filteredSentences = sentence.orderedSentences
+      .filter { filterOnType(it) && filterOnSentenceDate(it, legislationCommencementDate) }
 
-      if (filteredSentences.isNotEmpty()) {
-        val earliestSentencedAt = filteredSentences.minByOrNull { it.sentencedAt } ?: return 0
-        var concurrentSentenceEndDate = earliestSentencedAt.sentencedAt
+    if (filteredSentences.isEmpty()) return 0
 
-        filteredSentences.forEach { sentence ->
-          concurrentSentenceEndDate = sentence.totalDuration()
-            .getEndDate(concurrentSentenceEndDate).plusDays(1)
-        }
+    val earliestSentencedAt = filteredSentences.minByOrNull { it.sentencedAt }?.sentencedAt ?: return 0
+    var concurrentSentenceEndDate = earliestSentencedAt
 
-        unit.between(earliestSentencedAt.sentencedAt, concurrentSentenceEndDate)
-      } else {
-        0
-      }
-    } else {
-      if (filterOnType(sentenceToFilter) && filterOnSentenceDate(sentenceToFilter, legislationCommencementDate)) {
-        unit.between(
-          sentenceToFilter.sentencedAt,
-          sentenceToFilter.sentencedAt.plus(sentenceToFilter.getLengthInDays().toLong(), ChronoUnit.DAYS).plusDays(1),
-        )
-      } else {
-        0
-      }
+    filteredSentences.forEach {
+      concurrentSentenceEndDate = it.totalDuration().getEndDate(concurrentSentenceEndDate).plusDays(1)
     }
+
+    return unit.between(earliestSentencedAt, concurrentSentenceEndDate)
+  }
+
+  private fun calculateSingleSentenceDuration(
+    sentence: CalculableSentence,
+    legislationCommencementDate: LocalDate,
+    unit: ChronoUnit,
+  ): Long = if (filterOnType(sentence) && filterOnSentenceDate(sentence, legislationCommencementDate)) {
+    unit.between(
+      sentence.sentencedAt,
+      sentence.sentencedAt.plus(sentence.getLengthInDays().toLong(), ChronoUnit.DAYS).plusDays(1),
+    )
+  } else {
+    0
   }
 
   private fun filterOnType(sentence: CalculableSentence): Boolean = !sentence.isDto() && !sentence.isOrExclusivelyBotus() && sentence !is AFineSentence
