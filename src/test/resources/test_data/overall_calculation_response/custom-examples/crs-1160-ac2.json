@@ -1,0 +1,9 @@
+{
+  "dates": {
+    "SLED": "2023-04-25",
+    "CRD": "2022-04-25",
+    "PED": "2022-01-01",
+    "ESED": "2023-12-31"
+  },
+  "effectiveSentenceLength": "P2Y"
+}
