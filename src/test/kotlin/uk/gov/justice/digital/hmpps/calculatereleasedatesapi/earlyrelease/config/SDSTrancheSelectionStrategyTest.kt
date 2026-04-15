@@ -51,7 +51,7 @@ class SDSTrancheSelectionStrategyTest {
     }
 
     @Test
-    fun `should return true if tranche duration is null`() {
+    fun `should return false if tranche duration is null`() {
       val trancheConfig = TrancheConfiguration(
         type = TrancheType.SENTENCE_LENGTH,
         date = LocalDate.now(),
@@ -60,7 +60,7 @@ class SDSTrancheSelectionStrategyTest {
         name = TrancheName.TRANCHE_1,
       )
       val durations = listOf(365L, 2000L)
-      assertThat(SDSTrancheSelectionStrategy.sentenceDurationsWithinTrancheDuration(trancheConfig, durations)).isTrue
+      assertThat(SDSTrancheSelectionStrategy.sentenceDurationsWithinTrancheDuration(trancheConfig, durations)).isFalse
     }
   }
 }
