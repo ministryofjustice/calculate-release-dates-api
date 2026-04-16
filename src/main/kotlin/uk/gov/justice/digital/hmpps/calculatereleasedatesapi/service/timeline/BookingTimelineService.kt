@@ -24,8 +24,15 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceGroup
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.SDSEarlyReleaseDefaultingRulesService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.WorkingDayService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculationEvent.AwardedAdjustmentTimelineCalculationEvent
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculationEvent.ExternalMovementTimelineCalculationEvent
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculationEvent.FTR56TrancheTimelineCalculationEvent
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculationEvent.SDSLegislationAmendmentTimelineCalculationEvent
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculationEvent.SDSLegislationCommencementTimelineCalculationEvent
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculationEvent.SDSTrancheTimelineCalculationEvent
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculationEvent.SentenceTimelineCalculationEvent
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculationEvent.UALTimelineCalculationEvent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers.TimelineAwardedAdjustmentCalculationHandler
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers.TimelineCalculationHandler
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers.TimelineExternalMovementCalculationHandler
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers.TimelineFTR56TrancheCalculationHandler
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers.TimelineSDSLegislationAmendmentHandler
@@ -91,9 +98,17 @@ class BookingTimelineService(
     calculationsByDate.forEach { (timelineCalculationDate, calculations) ->
       checkForReleasesAndLicenceExpiry(timelineCalculationDate, timelineTrackingData)
 
-      val results = calculations.sortedBy { it.type.ordinal }.map {
-        timelineTrackingData.currentTimelineCalculationDate = it
-        handlerFor(it.type).handle(timelineCalculationDate, timelineTrackingData)
+      val results = calculations.sortedBy { it.type.order }.map {
+        when (it) {
+          is SDSLegislationCommencementTimelineCalculationEvent -> timelineSDSLegislationCommencementHandler.handle(it, timelineTrackingData)
+          is SentenceTimelineCalculationEvent -> timelineSentenceCalculationHandler.handle(it, timelineTrackingData)
+          is AwardedAdjustmentTimelineCalculationEvent -> timelineAwardedAdjustmentCalculationHandler.handle(it, timelineTrackingData)
+          is UALTimelineCalculationEvent -> timelineUalAdjustmentCalculationHandler.handle(it, timelineTrackingData)
+          is SDSTrancheTimelineCalculationEvent -> timelineSDSTrancheCalculationHandler.handle(it, timelineTrackingData)
+          is FTR56TrancheTimelineCalculationEvent -> timelineFTR56TrancheCalculationHandler.handle(it, timelineTrackingData)
+          is ExternalMovementTimelineCalculationEvent -> timelineExternalMovementCalculationHandler.handle(it, timelineTrackingData)
+          is SDSLegislationAmendmentTimelineCalculationEvent -> timelineSDSLegislationAmendmentHandler.handle(it, timelineTrackingData)
+        }
       }
       val anyCalculationRequired = results.any { it.requiresCalculation }
       val anySkipCalculation = results.any { it.skipCalculationForEntireDate }
@@ -158,17 +173,6 @@ class BookingTimelineService(
     }
   }
 
-  private fun handlerFor(type: TimelineCalculationType): TimelineCalculationHandler = when (type) {
-    TimelineCalculationType.SDS_LEGISLATION_COMMENCEMENT -> timelineSDSLegislationCommencementHandler
-    TimelineCalculationType.SENTENCED -> timelineSentenceCalculationHandler
-    TimelineCalculationType.ADDITIONAL_DAYS, TimelineCalculationType.RESTORATION_DAYS -> timelineAwardedAdjustmentCalculationHandler
-    TimelineCalculationType.UAL -> timelineUalAdjustmentCalculationHandler
-    TimelineCalculationType.EARLY_RELEASE_TRANCHE -> timelineSDSTrancheCalculationHandler
-    TimelineCalculationType.FTR56_TRANCHE -> timelineFTR56TrancheCalculationHandler
-    TimelineCalculationType.EXTERNAL_MOVEMENT -> timelineExternalMovementCalculationHandler
-    TimelineCalculationType.SDS_LEGISLATION_AMENDMENT -> timelineSDSLegislationAmendmentHandler
-  }
-
   private fun calculateLatestCustodialRelease(timelineTrackingData: TimelineTrackingData) {
     with(timelineTrackingData) {
       if (currentSentenceGroup.isNotEmpty()) {
@@ -214,14 +218,14 @@ class BookingTimelineService(
     }
   }
 
-  private fun getCalculationsByDate(sentences: List<CalculableSentence>, futureData: TimelineFutureData, externalMovements: List<ExternalMovement>): Map<LocalDate, List<TimelineCalculationDate>> = (
-    sentences.flatMap { it.sentenceParts().map { part -> TimelineCalculationDate(part.sentencedAt, TimelineCalculationType.SENTENCED) } } +
-      futureData.additional.map { TimelineCalculationDate(it.appliesToSentencesFrom, TimelineCalculationType.ADDITIONAL_DAYS) } +
-      futureData.restored.map { TimelineCalculationDate(it.appliesToSentencesFrom, TimelineCalculationType.RESTORATION_DAYS) } +
-      futureData.ual.map { TimelineCalculationDate(it.appliesToSentencesFrom, TimelineCalculationType.UAL) } +
+  private fun getCalculationsByDate(sentences: List<CalculableSentence>, futureData: TimelineFutureData, externalMovements: List<ExternalMovement>): Map<LocalDate, List<TimelineCalculationEvent>> = (
+    sentences.flatMap { it.sentenceParts().map { part -> SentenceTimelineCalculationEvent(part.sentencedAt) } } +
+      futureData.additional.map { AwardedAdjustmentTimelineCalculationEvent(it.appliesToSentencesFrom, TimelineCalculationType.ADDITIONAL_DAYS) } +
+      futureData.restored.map { AwardedAdjustmentTimelineCalculationEvent(it.appliesToSentencesFrom, TimelineCalculationType.RESTORATION_DAYS) } +
+      futureData.ual.map { UALTimelineCalculationEvent(it.appliesToSentencesFrom) } +
       sdsLegislationConfiguration.all().flatMap { legislation -> legislation.requiredTimelineCalculations() } +
       ftrLegislationConfiguration.ftr56Legislation.requiredTimelineCalculations() +
-      externalMovements.map { TimelineCalculationDate(it.movementDate, TimelineCalculationType.EXTERNAL_MOVEMENT) }
+      externalMovements.map { ExternalMovementTimelineCalculationEvent(it.movementDate) }
     )
     .sortedBy { it.date }
     .distinct()

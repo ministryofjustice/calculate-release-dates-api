@@ -100,7 +100,8 @@ class BookingExtractionService(
     }
 
     if (sentenceCalculation.extendedDeterminateParoleEligibilityDate != null) {
-      dates[PED] = sentenceCalculation.extendedDeterminateParoleEligibilityDate!!
+      val ped = sentenceCalculation.extendedDeterminateParoleEligibilityDate!!
+      dates[PED] = if (ped.isAfter(sentence.sentencedAt)) ped else sentence.sentencedAt
     }
 
     if (sentenceCalculation.earlyReleaseSchemeEligibilityDate != null) {
@@ -202,7 +203,15 @@ class BookingExtractionService(
     val latestExtendedDeterminateParoleEligibilityDate: LocalDate? = extractionService.mostRecentOrNull(
       sentences,
       SentenceCalculation::extendedDeterminateParoleEligibilityDate,
-    )
+    )?.let { adjustedPed ->
+      // adjustments can make the PED earlier than the earliest sentence date
+      val earliestSentenceDate = sentences.minOf { it.sentencedAt }
+      if (adjustedPed.isAfter(earliestSentenceDate)) {
+        adjustedPed
+      } else {
+        earliestSentenceDate
+      }
+    }
 
     val concurrentOraAndNonOraDetails = extractConcurrentOraAndNonOraDetails(
       mostRecentSentenceByAdjustedDeterminateReleaseDate.releaseDateTypes.getReleaseDateTypes(),
@@ -414,9 +423,9 @@ class BookingExtractionService(
     breakdownByReleaseDateType: MutableMap<ReleaseDateType, ReleaseDateCalculationBreakdown>,
   ) {
     if (latestExtendedDeterminateParoleEligibilityDate != null) {
-      val mostRecentReleaseSentenceHasParoleDate =
+      val mostRecentReleaseSentenceParoleDate =
         mostRecentSentenceByAdjustedDeterminateReleaseDate.sentenceCalculation.extendedDeterminateParoleEligibilityDate
-      if (mostRecentReleaseSentenceHasParoleDate != null) {
+      if (mostRecentReleaseSentenceParoleDate != null) {
         val latestNonPedReleaseSentence = extractionService.mostRecentSentenceOrNull(
           sentences.filter { !it.isRecall() && it.sentenceCalculation.extendedDeterminateParoleEligibilityDate == null && !it.isDto() && !it.sentenceCalculation.isImmediateRelease() },
           SentenceCalculation::releaseDate,

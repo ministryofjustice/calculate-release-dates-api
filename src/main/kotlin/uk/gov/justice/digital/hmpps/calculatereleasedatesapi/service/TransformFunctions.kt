@@ -305,18 +305,18 @@ fun transform(
 ): Adjustments {
   val adjustments = Adjustments()
   adjustmentsSource
-    .forEach {
-      val sentence: SentenceAndOffence? = if (it.sentenceSequence != null) sentencesAndOffences.find { sentence -> it.sentenceSequence == sentence.sentenceSequence && it.bookingId == sentence.bookingId } else null
-      val adjustmentType = transform(it.adjustmentType, sentence)
-      if (adjustmentType != null) {
+    .map { it to if (it.sentenceSequence != null) sentencesAndOffences.find { sentence -> it.sentenceSequence == sentence.sentenceSequence && it.bookingId == sentence.bookingId } else null }
+    .filter { (adjustment, sentenceAndOffence) -> adjustment.sentenceSequence == null || sentenceAndOffence != null } // filter out sentence specific adjustments with missing sentence
+    .forEach { (adjustment, sentenceAndOffence) ->
+      val adjustmentTypeOrNullIfUnsupported = transform(adjustment.adjustmentType, sentenceAndOffence)
+      if (adjustmentTypeOrNullIfUnsupported != null) {
         adjustments.addAdjustment(
-          adjustmentType,
+          adjustmentTypeOrNullIfUnsupported,
           Adjustment(
-            fromDate = it.fromDate,
-            toDate = it.toDate,
-            appliesToSentencesFrom = sentence?.sentenceDate ?: it.fromDate!!,
-            numberOfDays = it.effectiveDays!!,
-
+            fromDate = adjustment.fromDate,
+            toDate = adjustment.toDate,
+            appliesToSentencesFrom = sentenceAndOffence?.sentenceDate ?: adjustment.fromDate!!,
+            numberOfDays = adjustment.effectiveDays!!,
           ),
         )
       }
