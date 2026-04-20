@@ -64,7 +64,7 @@ dependencies {
   implementation("io.awspring.cloud:spring-cloud-aws-core:4.0.0")
   implementation("io.awspring.cloud:spring-cloud-aws-sns:4.0.0")
   implementation("io.awspring.cloud:spring-cloud-aws-sqs:4.0.0")
-  implementation("org.springframework:spring-jms:7.0.6")
+  implementation("org.springframework:spring-jms:7.0.7")
   implementation("org.apache.commons:commons-text:1.15.0")
 
   // SQS
