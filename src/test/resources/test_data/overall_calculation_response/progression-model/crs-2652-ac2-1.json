@@ -1,0 +1,11 @@
+{
+  "dates": {
+    "SLED": "2030-07-25",
+    "CRD": "2027-11-24",
+    "ESED": "2030-09-02"
+  },
+  "effectiveSentenceLength": "P5Y2M7D",
+  "trancheAllocationByLegislationName": {
+    "SDS_PROGRESSION_MODEL": "TRANCHE_3"
+  }
+}
