@@ -5,7 +5,7 @@ import org.jlleitschuh.gradle.ktlint.tasks.KtLintFormatTask
 import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "10.1.2"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "10.2.1"
   id("org.springdoc.openapi-gradle-plugin") version "1.9.0"
   kotlin("plugin.spring") version "2.3.20"
   kotlin("plugin.jpa") version "2.3.20"
@@ -64,7 +64,7 @@ dependencies {
   implementation("io.awspring.cloud:spring-cloud-aws-core:4.0.0")
   implementation("io.awspring.cloud:spring-cloud-aws-sns:4.0.0")
   implementation("io.awspring.cloud:spring-cloud-aws-sqs:4.0.0")
-  implementation("org.springframework:spring-jms:7.0.6")
+  implementation("org.springframework:spring-jms:7.0.7")
   implementation("org.apache.commons:commons-text:1.15.0")
 
   // SQS
