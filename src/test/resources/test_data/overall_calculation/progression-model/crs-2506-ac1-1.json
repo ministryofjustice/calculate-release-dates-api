@@ -2,7 +2,8 @@
   "booking": {
     "offender": {
       "reference": "ABC123",
-      "dateOfBirth": "2009-01-01"
+      "dateOfBirth": "2009-01-01",
+      "isActiveSexOffender": true
     },
     "sentences": [
       {
