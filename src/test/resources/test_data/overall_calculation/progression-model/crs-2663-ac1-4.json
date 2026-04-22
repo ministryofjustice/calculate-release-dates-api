@@ -1,0 +1,69 @@
+{
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "2000-01-01",
+      "isActiveSexOffender": true
+    },
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2025-06-30"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 24
+          }
+        },
+        "sentencedAt": "2025-06-30",
+        "hasAnSDSEarlyReleaseExclusion": "SEXUAL",
+        "identifier": "d211f333-aa1a-3e25-ac8d-0459c1f98868"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2025-06-30"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 12
+          }
+        },
+        "sentencedAt": "2025-06-30",
+        "hasAnSDSEarlyReleaseExclusion": "SEXUAL",
+        "identifier": "023e388e-1673-3bbc-9f13-1b1d915f3b73",
+        "consecutiveSentenceUUIDs": [
+          "d211f333-aa1a-3e25-ac8d-0459c1f98868"
+        ]
+      }
+    ],
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2025-06-30",
+          "numberOfDays": 120,
+          "fromDate": "2025-03-02",
+          "toDate": "2025-06-29"
+        }
+      ],
+      "UNLAWFULLY_AT_LARGE": [
+        {
+          "appliesToSentencesFrom": "2025-06-30",
+          "numberOfDays": 5,
+          "fromDate": "2025-08-30",
+          "toDate": "2025-09-03",
+          "additionalInfo": {
+            "type": "UAL",
+            "reason": "ESCAPE"
+          }
+        }
+      ]
+
+    }
+  },
+  "params": "sds-progression-model",
+  "featureToggles": {
+    "applyPostRecallRepealRules": true
+  }
+}
