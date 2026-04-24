@@ -1,5 +1,7 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config
 
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.SDSTrancheSelectionStrategy.SDS40TrancheSelectionStrategy
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.SDSTrancheSelectionStrategy.SDSProgressionModelTrancheSelectionStrategy
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AbstractSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
@@ -38,7 +40,7 @@ sealed interface SDSLegislation : Legislation {
     override val filter: EarlyReleaseSentenceFilter,
   ) : SDSLegislationWithTranches {
     override val legislationName = LegislationName.SDS_40
-    override val trancheSelectionStrategy: TrancheSelectionStrategy = SDSTrancheSelectionStrategy
+    override val trancheSelectionStrategy: TrancheSelectionStrategy = SDS40TrancheSelectionStrategy()
 
     override fun requiredTimelineCalculations(): List<TimelineCalculationEvent> = super.requiredTimelineCalculations() + tranches.map { tranche ->
       SDSTrancheTimelineCalculationEvent(tranche.date, legislation = this, tranche)
@@ -88,10 +90,10 @@ sealed interface SDSLegislation : Legislation {
   data class ProgressionModelLegislation(
     override val tranches: List<TrancheConfiguration>,
     override val releaseMultiplier: Map<SentenceIdentificationTrack, ReleaseMultiplier>,
-    override val filter: EarlyReleaseSentenceFilter,
   ) : SDSLegislationWithTranches {
+    override val filter: EarlyReleaseSentenceFilter = EarlyReleaseSentenceFilter.SDS_OR_SDS_PLUS_ADULT
     override val legislationName = LegislationName.SDS_PROGRESSION_MODEL
-    override val trancheSelectionStrategy: TrancheSelectionStrategy = SDSTrancheSelectionStrategy
+    override val trancheSelectionStrategy: TrancheSelectionStrategy = SDSProgressionModelTrancheSelectionStrategy()
 
     override fun requiredTimelineCalculations(): List<TimelineCalculationEvent> = super.requiredTimelineCalculations() + tranches.map { tranche ->
       SDSTrancheTimelineCalculationEvent(tranche.date, legislation = this, tranche)
@@ -99,6 +101,6 @@ sealed interface SDSLegislation : Legislation {
 
     override fun commencementDate(): LocalDate = tranches.minOf { it.date }
 
-    override fun isSentenceSubjectToTraches(sentence: CalculableSentence) = sentence is StandardDeterminateSentence && this.releaseMultiplier.keys.contains(sentence.identificationTrack) && !sentence.section250
+    override fun isSentenceSubjectToTraches(sentence: CalculableSentence) = sentence is StandardDeterminateSentence && filter.matches(sentence) && !sentence.isRecall()
   }
 }

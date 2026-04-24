@@ -99,6 +99,10 @@ enum class ValidationCode(val message: String, val validationType: ValidationTyp
     "The SDS40 calculation includes unsupported SDS for tranche 2 prisoners, who have been sentenced between tranche commencement dates.",
     MANUAL_ENTRY_JOURNEY_REQUIRED,
   ),
+  UNSUPPORTED_OUT_OF_CUSTODY_AT_PROGRESSION_MODEL_COMMENCEMENT(
+    "Person was out of custody at Progression commencement. Release dates need to be calculated under SDS40 rules.",
+    MANUAL_ENTRY_JOURNEY_REQUIRED,
+  ),
   INCORRECT_OFFENCE_ENCOURAGING_OR_ASSISTING(
     "Any offences that include the inchoate ‘Encouraging/ Assisting’ should be recorded as the underlying act, ending in the letter ‘e’.\n" +
       "For example, ‘Encouraging/Assisting’ a Rape SX03001 would be SX03001E.",
