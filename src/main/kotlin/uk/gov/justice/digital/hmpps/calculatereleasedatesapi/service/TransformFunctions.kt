@@ -57,6 +57,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AFineSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AbstractSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustment
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentAdditionalInfo
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentsSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AnalysedSentenceAndOffence
@@ -118,7 +119,7 @@ import java.time.temporal.ChronoUnit.DAYS
 import java.time.temporal.ChronoUnit.MONTHS
 import java.time.temporal.ChronoUnit.WEEKS
 import java.time.temporal.ChronoUnit.YEARS
-import java.util.*
+import java.util.UUID
 
 /*
 ** Functions which transform entities objects into their model equivalents.
@@ -317,6 +318,10 @@ fun transform(
             toDate = adjustment.toDate,
             appliesToSentencesFrom = sentenceAndOffence?.sentenceDate ?: adjustment.fromDate!!,
             numberOfDays = adjustment.effectiveDays!!,
+            additionalInfo = when (adjustmentTypeOrNullIfUnsupported) {
+              UNLAWFULLY_AT_LARGE -> AdjustmentAdditionalInfo.UALAdjustmentAdditionalInfo(adjustment.unlawfullyAtLarge?.type)
+              else -> AdjustmentAdditionalInfo.NoAdjustmentAdditionalInfo
+            },
           ),
         )
       }

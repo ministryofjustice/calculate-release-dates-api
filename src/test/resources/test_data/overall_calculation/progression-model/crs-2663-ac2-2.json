@@ -1,0 +1,43 @@
+{
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "2000-01-01",
+      "isActiveSexOffender": true
+    },
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2025-08-29"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 30
+          }
+        },
+        "sentencedAt": "2025-08-29",
+        "hasAnSDSEarlyReleaseExclusion": "NO"
+      }
+    ],
+    "adjustments": {
+      "UNLAWFULLY_AT_LARGE": [
+        {
+          "appliesToSentencesFrom": "2025-08-29",
+          "numberOfDays": 4,
+          "fromDate": "2026-09-01",
+          "toDate": "2026-09-04",
+          "additionalInfo": {
+            "type": "UAL",
+            "reason": "ESCAPE"
+          }
+        }
+      ]
+    }
+  },
+  "params": "sds-progression-model",
+  "featureToggles": {
+    "applyPostRecallRepealRules": true
+  },
+  "expectedValidationException": "UNSUPPORTED_OUT_OF_CUSTODY_AT_PROGRESSION_MODEL_COMMENCEMENT"
+}

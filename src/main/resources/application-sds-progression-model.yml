@@ -11,7 +11,6 @@ sds-legislations:
     release-multiplier:
       SDS: ONE_THIRD
       SDS_PLUS: ONE_HALF
-    filter: SDS_OR_SDS_PLUS_ADULT
     tranches:
       - type: SENTENCE_LENGTH
         unit: DAYS
