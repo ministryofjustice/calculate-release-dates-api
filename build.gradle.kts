@@ -60,7 +60,7 @@ dependencies {
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.3")
 
   implementation("com.amazonaws:amazon-sqs-java-messaging-lib:2.1.4")
-  implementation("io.awspring.cloud:spring-cloud-aws-starter:4.0.0")
+  implementation("io.awspring.cloud:spring-cloud-aws-starter:4.0.1")
   implementation("io.awspring.cloud:spring-cloud-aws-core:4.0.0")
   implementation("io.awspring.cloud:spring-cloud-aws-sns:4.0.0")
   implementation("io.awspring.cloud:spring-cloud-aws-sqs:4.0.0")
