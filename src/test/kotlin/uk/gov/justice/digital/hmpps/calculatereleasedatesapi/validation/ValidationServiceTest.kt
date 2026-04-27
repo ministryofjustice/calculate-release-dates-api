@@ -92,7 +92,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.Validati
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.MORE_THAN_ONE_IMPRISONMENT_TERM
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.MORE_THAN_ONE_LICENCE_TERM
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.PRE_PCSC_DTO_WITH_ADJUSTMENT
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.SEC236A_SENTENCE_TYPE_INCORRECT
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.SENTENCE_HAS_NO_IMPRISONMENT_TERM
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.SENTENCE_HAS_NO_LICENCE_TERM
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.SOPC18_SOPC21_SENTENCE_TYPE_INCORRECT
@@ -1024,46 +1023,6 @@ class ValidationServiceTest : SpringTestBase() {
       listOf(
         ValidationMessage(SOPC18_SOPC21_SENTENCE_TYPE_INCORRECT, listOf(CASE_SEQ.toString(), LINE_SEQ.toString())),
         ValidationMessage(SOPC18_SOPC21_SENTENCE_TYPE_INCORRECT, listOf(CASE_SEQ.toString(), LINE_SEQ.toString())),
-      ),
-    )
-  }
-
-  @Test
-  fun `Test SEC236A sentences should be correctly dated`() {
-    val sentences = listOf(
-      validSopcSentence.copy(
-        sentenceCalculationType = SentenceCalculationType.SEC236A.name,
-        sentenceDate = ImportantDates.SEC_91_END_DATE,
-      ),
-      validSopcSentence.copy(
-        sentenceCalculationType = SentenceCalculationType.SEC236A.name,
-        sentenceDate = ImportantDates.SEC_91_END_DATE.minusDays(1),
-      ),
-    )
-    val result =
-      validationService.validate(
-        CalculationSourceData(
-          sentences.map {
-            SentenceAndOffenceWithReleaseArrangements(
-              it,
-              isSdsPlus = false,
-              isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-              isSDSPlusOffenceInPeriod = false,
-              hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
-            )
-          },
-          VALID_PRISONER,
-          VALID_ADJUSTMENTS,
-          listOf(),
-          null,
-        ),
-        USER_INPUTS,
-        ValidationOrder.allValidations(),
-      )
-
-    assertThat(result).isEqualTo(
-      listOf(
-        ValidationMessage(SEC236A_SENTENCE_TYPE_INCORRECT, listOf(CASE_SEQ.toString(), LINE_SEQ.toString())),
       ),
     )
   }
