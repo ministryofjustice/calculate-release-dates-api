@@ -141,7 +141,6 @@ class BotusSupportedValidatorTest {
           source = it,
           isSdsPlus = false,
           isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-          isSDSPlusOffenceInPeriod = false,
           hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
         )
       },
@@ -157,7 +156,6 @@ class BotusSupportedValidatorTest {
           source = it,
           isSdsPlus = false,
           isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-          isSDSPlusOffenceInPeriod = false,
           hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
         )
       },
@@ -173,7 +171,6 @@ class BotusSupportedValidatorTest {
           source = it,
           isSdsPlus = false,
           isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-          isSDSPlusOffenceInPeriod = false,
           hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
         )
       },

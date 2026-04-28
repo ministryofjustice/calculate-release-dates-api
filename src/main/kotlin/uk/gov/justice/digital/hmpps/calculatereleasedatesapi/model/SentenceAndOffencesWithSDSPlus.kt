@@ -26,7 +26,6 @@ data class SentenceAndOffencesWithSDSPlus(
   val revocationDates: List<LocalDate> = emptyList(),
   val isSDSPlus: Boolean,
   val isSDSPlusEligibleSentenceTypeLengthAndOffence: Boolean,
-  val isSDSPlusOffenceInPeriod: Boolean,
 ) {
   fun toLatest(): List<SentenceAndOffenceWithReleaseArrangements> = offences.map {
     SentenceAndOffenceWithReleaseArrangements(
@@ -50,7 +49,6 @@ data class SentenceAndOffencesWithSDSPlus(
       this.revocationDates,
       this.isSDSPlus,
       this.isSDSPlusEligibleSentenceTypeLengthAndOffence,
-      this.isSDSPlusOffenceInPeriod,
       SDSEarlyReleaseExclusionType.NO,
     )
   }

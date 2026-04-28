@@ -115,7 +115,6 @@ class SourceDataMapperTest {
           offence = version1.offences[0],
           isSdsPlus = false,
           isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-          isSDSPlusOffenceInPeriod = false,
           hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
         ),
         SentenceAndOffenceWithReleaseArrangements(
@@ -123,7 +122,6 @@ class SourceDataMapperTest {
           offence = version1.offences[1],
           isSdsPlus = false,
           isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-          isSDSPlusOffenceInPeriod = false,
           hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
         ),
       ),
@@ -157,7 +155,6 @@ class SourceDataMapperTest {
       fineAmount = null,
       isSDSPlus = true,
       isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-      isSDSPlusOffenceInPeriod = false,
     )
     val calculationRequest = CalculationRequest(
       sentenceAndOffences = objectMapper.valueToTree(listOf(version2)),
@@ -186,7 +183,6 @@ class SourceDataMapperTest {
       fineAmount = null,
       isSDSPlus = true,
       isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-      isSDSPlusOffenceInPeriod = false,
       hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
     )
     val theOtherSentenceAndOffence = aNewSentenceAndOffence.copy(offence = OffenderOffence(2L, LocalDate.of(2015, 1, 1), null, "Another Dummy Offence", "description", listOf("A")))
@@ -219,7 +215,6 @@ class SourceDataMapperTest {
       fineAmount = null,
       isSDSPlus = true,
       isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-      isSDSPlusOffenceInPeriod = false,
       hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.SEXUAL,
     )
     val calculationRequest = CalculationRequest(
@@ -255,7 +250,6 @@ class SourceDataMapperTest {
       fineAmount = null,
       isSDSPlus = true,
       isSDSPlusEligibleSentenceTypeLengthAndOffence = true,
-      isSDSPlusOffenceInPeriod = true,
       hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
     )
 
@@ -264,7 +258,7 @@ class SourceDataMapperTest {
       "\"sentenceDate\":\"2022-06-27\",\"terms\":[{\"years\":8,\"months\":0,\"weeks\":0,\"days\":0,\"code\":\"IMP\"}],\"offence\":" +
       "{\"offenderChargeId\":1,\"offenceStartDate\":\"2015-01-01\",\"offenceEndDate\":null,\"offenceCode\":\"ADIMP_ORA\"," +
       "\"offenceDescription\":\"description\",\"indicators\":[\"A\"]},\"caseReference\":null,\"courtDescription\":null,\"fineAmount\":null" +
-      ",\"isSDSPlus\":true,\"isSDSPlusEligibleSentenceTypeLengthAndOffence\":true,\"isSDSPlusOffenceInPeriod\":true}]"
+      ",\"isSDSPlus\":true,\"isSDSPlusEligibleSentenceTypeLengthAndOffence\":true}]"
 
     val calculationRequest = CalculationRequest(
       sentenceAndOffences = objectMapper.readTree(jsonWithoutHasAnSDSExclusion),

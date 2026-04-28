@@ -201,7 +201,6 @@ class SentenceAndOffenceServiceTest {
         consecutiveToSequence = null,
         isSDSPlus = false,
         isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-        isSDSPlusOffenceInPeriod = false,
         hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
         revocationDates = listOf(LocalDate.of(2024, 1, 1)),
       )
@@ -234,7 +233,6 @@ class SentenceAndOffenceServiceTest {
         consecutiveToSequence = null,
         isSDSPlus = true,
         isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-        isSDSPlusOffenceInPeriod = false,
         hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
         revocationDates = listOf(LocalDate.of(2024, 1, 1)),
       )
@@ -269,7 +267,6 @@ class SentenceAndOffenceServiceTest {
       consecutiveToSequence = null,
       isSDSPlus = true,
       isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-      isSDSPlusOffenceInPeriod = false,
       hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
       revocationDates = listOf(LocalDate.of(2024, 1, 1)),
     )

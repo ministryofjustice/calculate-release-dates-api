@@ -76,7 +76,7 @@ class SentenceCombinationService(
      the only offence based data we have currently is SDS+ & SDS40 exclusions.
    */
   private fun collapseDuplicateConsecutiveSentences(consecutiveSentences: List<ConsecutiveSentence>): List<ConsecutiveSentence> = consecutiveSentences.distinctBy {
-    it.orderedSentences.joinToString { sentence -> "${sentence.identifier}${sentence.isSDSPlus}${sentence is StandardDeterminateSentence && sentence.hasAnSDSEarlyReleaseExclusion != SDSEarlyReleaseExclusionType.NO}" }
+    it.orderedSentences.joinToString { sentence -> "${sentence.identifier}${sentence is StandardDeterminateSentence && sentence.isSDSPlus}${sentence is StandardDeterminateSentence && sentence.section250}${sentence is StandardDeterminateSentence && sentence.isSDSPlusEligibleSentenceTypeLengthAndOffence}${sentence is StandardDeterminateSentence && sentence.hasAnSDSEarlyReleaseExclusion != SDSEarlyReleaseExclusionType.NO}" }
   }
 
   private fun getAllExtractableSentences(

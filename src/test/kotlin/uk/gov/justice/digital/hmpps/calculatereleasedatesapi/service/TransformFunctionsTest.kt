@@ -115,7 +115,6 @@ class TransformFunctionsTest {
       offence,
       isSdsPlus = true,
       isSDSPlusEligibleSentenceTypeLengthAndOffence = true,
-      isSDSPlusOffenceInPeriod = true,
       hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
     )
 
@@ -131,7 +130,6 @@ class TransformFunctionsTest {
         externalSentenceId = ExternalSentenceId(sequence, bookingId),
         isSDSPlus = true,
         isSDSPlusEligibleSentenceTypeLengthAndOffence = true,
-        isSDSPlusOffenceInPeriod = true,
         hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
       ),
     )
@@ -614,7 +612,6 @@ class TransformFunctionsTest {
       offence,
       isSdsPlus = true,
       isSDSPlusEligibleSentenceTypeLengthAndOffence = true,
-      isSDSPlusOffenceInPeriod = true,
       hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
     )
 
@@ -681,7 +678,6 @@ class TransformFunctionsTest {
       offence,
       isSdsPlus = true,
       isSDSPlusEligibleSentenceTypeLengthAndOffence = true,
-      isSDSPlusOffenceInPeriod = true,
       hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
     )
 
