@@ -17,9 +17,6 @@ data class BotusSentence(
   var latestTusedSource: HistoricalTusedSource? = null,
 ) : AbstractSentence(offence, sentencedAt, identifier, consecutiveSentenceUUIDs, caseSequence, lineSequence, externalSentenceId),
   Term {
-  override val isSDSPlus: Boolean = false
-  override val isSDSPlusEligibleSentenceTypeLengthAndOffence: Boolean = false
-  override val isSDSPlusOffenceInPeriod: Boolean = false
 
   override fun buildString(): String = "Sentence\t:\t\n" +
     "Identification Track\t:\t${identificationTrack}\n" +

@@ -24,7 +24,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.TestBui
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentsSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOutput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualEntryRequest
@@ -57,7 +56,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.service.
 import java.time.LocalDate
 import java.time.Period
 import java.time.temporal.ChronoUnit
-import java.util.*
+import java.util.Optional
+import java.util.UUID
 
 class ManualCalculationServiceTest {
   private val prisonService = mock<PrisonService>()
@@ -73,7 +73,6 @@ class ManualCalculationServiceTest {
   private val sentenceIdentificationService = mock<SentenceIdentificationService>()
   private val sentenceCombinationService = mock<SentenceCombinationService>()
   private val validationService = mock<ValidationService>()
-  private val calculationService = mock<CalculationService>()
   private val manualCalculationService = ManualCalculationService(
     prisonService,
     bookingService,
@@ -89,7 +88,6 @@ class ManualCalculationServiceTest {
     sentenceCombinationService,
     validationService,
     calculationSourceDataService,
-    calculationService,
   )
   private val calculationRequestArgumentCaptor = argumentCaptor<CalculationRequest>()
 
@@ -103,14 +101,12 @@ class ManualCalculationServiceTest {
             BASE_DETERMINATE_SENTENCE.copy(sentenceCalculationType = SentenceCalculationType.NP.name),
             isSdsPlus = false,
             isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-            isSDSPlusOffenceInPeriod = false,
             hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
           ),
           SentenceAndOffenceWithReleaseArrangements(
             BASE_DETERMINATE_SENTENCE,
             isSdsPlus = false,
             isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-            isSDSPlusOffenceInPeriod = false,
             hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
           ),
         ),
@@ -199,14 +195,12 @@ class ManualCalculationServiceTest {
             BASE_DETERMINATE_SENTENCE.copy(sentenceCalculationType = SentenceCalculationType.TWENTY.name),
             isSdsPlus = false,
             isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-            isSDSPlusOffenceInPeriod = false,
             hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
           ),
           SentenceAndOffenceWithReleaseArrangements(
             BASE_DETERMINATE_SENTENCE,
             false,
             isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-            isSDSPlusOffenceInPeriod = false,
             hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
           ),
         ),
@@ -307,14 +301,12 @@ class ManualCalculationServiceTest {
             BASE_DETERMINATE_SENTENCE.copy(sentenceCalculationType = SentenceCalculationType.LR_ORA.name),
             isSdsPlus = false,
             isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-            isSDSPlusOffenceInPeriod = false,
             hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
           ),
           SentenceAndOffenceWithReleaseArrangements(
             BASE_DETERMINATE_SENTENCE,
             isSdsPlus = false,
             isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-            isSDSPlusOffenceInPeriod = false,
             hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
           ),
         ),
@@ -333,14 +325,12 @@ class ManualCalculationServiceTest {
             source = BASE_DETERMINATE_SENTENCE.copy(sentenceCalculationType = SentenceCalculationType.ADIMP_ORA.name),
             isSdsPlus = false,
             isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-            isSDSPlusOffenceInPeriod = false,
             hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
           ),
           SentenceAndOffenceWithReleaseArrangements(
             source = BASE_DETERMINATE_SENTENCE,
             isSdsPlus = false,
             isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-            isSDSPlusOffenceInPeriod = false,
             hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
           ),
         ),
@@ -362,14 +352,12 @@ class ManualCalculationServiceTest {
             source = BASE_DETERMINATE_SENTENCE.copy(sentenceCalculationType = SentenceCalculationType.TWENTY.name),
             isSdsPlus = false,
             isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-            isSDSPlusOffenceInPeriod = false,
             hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
           ),
           SentenceAndOffenceWithReleaseArrangements(
             source = BASE_DETERMINATE_SENTENCE,
             isSdsPlus = false,
             isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-            isSDSPlusOffenceInPeriod = false,
             hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
           ),
         ),
@@ -388,14 +376,12 @@ class ManualCalculationServiceTest {
             BASE_DETERMINATE_SENTENCE.copy(sentenceCalculationType = SentenceCalculationType.FTR.name),
             isSdsPlus = false,
             isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-            isSDSPlusOffenceInPeriod = false,
             hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
           ),
           SentenceAndOffenceWithReleaseArrangements(
             BASE_DETERMINATE_SENTENCE,
             isSdsPlus = false,
             isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-            isSDSPlusOffenceInPeriod = false,
             hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
           ),
         ),
@@ -507,7 +493,6 @@ class ManualCalculationServiceTest {
           offence = offence,
           isSdsPlus = false,
           isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-          isSDSPlusOffenceInPeriod = false,
           hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
         ),
       ),
@@ -643,13 +628,6 @@ class ManualCalculationServiceTest {
     whenever(bookingService.getBooking(FAKE_SOURCE_DATA)).thenReturn(BOOKING)
     whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
     whenever(nomisCommentService.getManualNomisComment(any(), any(), any())).thenReturn("The NOMIS Reason")
-    whenever(calculationService.calculateReleaseDates(any(), any(), any())).thenReturn(
-      CalculationOutput(
-        listOf(),
-        listOf(),
-        mock(),
-      ),
-    )
     whenever(validationService.validate(any(), any(), any())).thenReturn(
       listOf(
         ValidationMessage(ValidationCode.UNSUPPORTED_SDS40_RECALL_SENTENCE_TYPE),

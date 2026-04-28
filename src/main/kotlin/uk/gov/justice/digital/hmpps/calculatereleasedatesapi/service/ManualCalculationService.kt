@@ -45,7 +45,6 @@ class ManualCalculationService(
   private val sentenceCombinationService: SentenceCombinationService,
   private val validationService: ValidationService,
   private val calculationSourceDataService: CalculationSourceDataService,
-  private val calculationService: CalculationService,
 ) {
 
   fun hasIndeterminateSentences(bookingId: Long): Boolean {

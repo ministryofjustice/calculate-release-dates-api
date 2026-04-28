@@ -135,7 +135,6 @@ class RecallValidationFtr56ServiceTest {
       revocationDates = listOf(LocalDate.of(2024, 1, 1)),
       isSDSPlus = false,
       isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-      isSDSPlusOffenceInPeriod = false,
       hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
     )
 

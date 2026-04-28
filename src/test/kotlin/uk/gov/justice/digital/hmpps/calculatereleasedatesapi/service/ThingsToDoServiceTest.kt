@@ -758,7 +758,6 @@ class ThingsToDoServiceTest {
       revocationDates = emptyList(),
       isSDSPlus = false,
       isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-      isSDSPlusOffenceInPeriod = false,
       hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
     )
     private val BASE_SOURCE_DATA = CalculationSourceData(

@@ -45,7 +45,6 @@ class PrisonApiDataVersions {
           fineAmount = 0.toBigDecimal(),
           isSDSPlus = false,
           isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-          isSDSPlusOffenceInPeriod = false,
           hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
         )
       }

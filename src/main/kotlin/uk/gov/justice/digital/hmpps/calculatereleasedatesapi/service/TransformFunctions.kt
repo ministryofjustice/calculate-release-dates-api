@@ -267,7 +267,6 @@ fun transform(
         recall = recall,
         isSDSPlus = sentence.isSDSPlus,
         isSDSPlusEligibleSentenceTypeLengthAndOffence = sentence.isSDSPlusEligibleSentenceTypeLengthAndOffence,
-        isSDSPlusOffenceInPeriod = sentence.isSDSPlusOffenceInPeriod,
         hasAnSDSEarlyReleaseExclusion = sentence.hasAnSDSEarlyReleaseExclusion,
         section250 = sentenceCalculationType.sdsPlusEligibilityType === SentenceCalculationType.SDSPlusEligibilityType.SECTION250,
       )

@@ -20,7 +20,6 @@
         "identifier": "da83cc08-7e6b-309f-9fb2-148ddec2e02e",
         "isSDSPlus": true,
         "isSDSPlusEligibleSentenceTypeLengthAndOffence": true,
-        "isSDSPlusOffenceInPeriod": true,
         "hasAnSDSEarlyReleaseExclusion": "NO"
       },
       {
@@ -38,7 +37,6 @@
         "identifier": "51e4a96a-feee-4deb-8efc-792411ce16ec",
         "isSDSPlus": true,
         "isSDSPlusEligibleSentenceTypeLengthAndOffence": true,
-        "isSDSPlusOffenceInPeriod": true,
         "hasAnSDSEarlyReleaseExclusion": "NO"
       },
       {

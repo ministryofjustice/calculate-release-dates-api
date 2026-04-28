@@ -35,7 +35,6 @@
     "consecutiveToSequence": null,
     "sentenceCalculationType": "ADIMP_ORA",
     "sentenceTypeDescription": "ORA Sentencing Code Standard Determinate Sentence",
-    "isSDSPlusOffenceInPeriod": false,
     "hasAnSDSEarlyReleaseExclusion": "NO",
     "isSDSPlusEligibleSentenceTypeLengthAndOffence": false
   },
@@ -75,7 +74,6 @@
     "consecutiveToSequence": 1,
     "sentenceCalculationType": "ADIMP_ORA",
     "sentenceTypeDescription": "ORA Sentencing Code Standard Determinate Sentence",
-    "isSDSPlusOffenceInPeriod": false,
     "hasAnSDSEarlyReleaseExclusion": "NO",
     "isSDSPlusEligibleSentenceTypeLengthAndOffence": false
   },
@@ -113,7 +111,6 @@
     "consecutiveToSequence": null,
     "sentenceCalculationType": "ADIMP_ORA",
     "sentenceTypeDescription": "ORA Sentencing Code Standard Determinate Sentence",
-    "isSDSPlusOffenceInPeriod": false,
     "hasAnSDSEarlyReleaseExclusion": "NO",
     "isSDSPlusEligibleSentenceTypeLengthAndOffence": false
   }

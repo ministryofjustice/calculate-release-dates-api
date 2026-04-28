@@ -14,8 +14,6 @@ class SDSPlusCheckResult(
 ) {
   val isSDSPlus: Boolean
   val isSDSPlusEligibleSentenceTypeLengthAndOffence: Boolean
-  val isSDSPlusOffenceInPeriod: Boolean
-  private val eligibleSentence: Boolean
   private val offenceMarkers: OffencePcscMarkers?
   private val listDExtended: Boolean
   private val eligibilityType: SentenceCalculationType.SDSPlusEligibilityType
@@ -24,13 +22,13 @@ class SDSPlusCheckResult(
 
     val offenceCode = sentenceAndOffence.offence.offenceCode
 
-    eligibleSentence = SentenceCalculationType.isCalculable(sentenceAndOffence.sentenceCalculationType) &&
+    val eligibleSentence = SentenceCalculationType.isCalculable(sentenceAndOffence.sentenceCalculationType) &&
       SentenceCalculationType.isSDSPlusEligible(sentenceAndOffence.sentenceCalculationType)
     offenceMarkers = sdsPlusMarkersByOffences[offenceCode]
     listDExtended = offenceCode in LEGACY_OFFENCE_CODES_FOR_OFFENCES_ON_LIST_D
 
     eligibilityType = getSentenceEligibilityType(sentenceAndOffence.sentenceCalculationType)
-    isSDSPlusOffenceInPeriod = offenceWithinDateRangeForLists()
+    val isSDSPlusOffenceInPeriod = offenceWithinDateRangeForLists()
 
     isSDSPlusEligibleSentenceTypeLengthAndOffence = eligibleSentence && eligibleSentenceTypeLengthAndOffence()
 

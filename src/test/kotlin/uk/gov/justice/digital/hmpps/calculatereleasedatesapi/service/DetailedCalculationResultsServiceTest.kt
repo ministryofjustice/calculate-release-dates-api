@@ -414,7 +414,6 @@ class DetailedCalculationResultsServiceTest {
     consecutiveToSequence = null,
     isSDSPlus = false,
     isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-    isSDSPlusOffenceInPeriod = false,
     hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
   )
 

@@ -32,7 +32,6 @@
         "identifier": "ca84ac47-1c06-426c-b9b8-460df71cc627",
         "isSDSPlus": true,
         "isSDSPlusEligibleSentenceTypeLengthAndOffence": true,
-        "isSDSPlusOffenceInPeriod": true,
         "hasAnSDSEarlyReleaseExclusion": "NO"
       }
     ],

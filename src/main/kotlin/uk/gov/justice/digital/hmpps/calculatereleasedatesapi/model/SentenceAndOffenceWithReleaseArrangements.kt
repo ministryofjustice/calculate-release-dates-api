@@ -28,7 +28,6 @@ data class SentenceAndOffenceWithReleaseArrangements(
   override val revocationDates: List<LocalDate> = emptyList(),
   val isSDSPlus: Boolean,
   val isSDSPlusEligibleSentenceTypeLengthAndOffence: Boolean,
-  val isSDSPlusOffenceInPeriod: Boolean,
   val hasAnSDSEarlyReleaseExclusion: SDSEarlyReleaseExclusionType,
 ) : SentenceAndOffence {
 
@@ -36,7 +35,6 @@ data class SentenceAndOffenceWithReleaseArrangements(
     source: SentenceAndOffence,
     isSdsPlus: Boolean,
     isSDSPlusEligibleSentenceTypeLengthAndOffence: Boolean,
-    isSDSPlusOffenceInPeriod: Boolean,
     hasAnSDSExclusion: SDSEarlyReleaseExclusionType,
   ) : this(
     source.bookingId,
@@ -59,7 +57,6 @@ data class SentenceAndOffenceWithReleaseArrangements(
     source.revocationDates,
     isSdsPlus,
     isSDSPlusEligibleSentenceTypeLengthAndOffence,
-    isSDSPlusOffenceInPeriod,
     hasAnSDSExclusion,
   )
 
@@ -85,7 +82,6 @@ data class SentenceAndOffenceWithReleaseArrangements(
     sdsPlusCheckResult.sentenceAndOffence.revocationDates,
     sdsPlusCheckResult.isSDSPlus,
     sdsPlusCheckResult.isSDSPlusEligibleSentenceTypeLengthAndOffence,
-    sdsPlusCheckResult.isSDSPlusOffenceInPeriod,
     hasAnSDSExclusion,
   )
   constructor(
@@ -93,7 +89,6 @@ data class SentenceAndOffenceWithReleaseArrangements(
     offence: OffenderOffence,
     isSdsPlus: Boolean,
     isSDSPlusEligibleSentenceTypeLengthAndOffence: Boolean,
-    isSDSPlusOffenceInPeriod: Boolean,
     hasAnSDSExclusion: SDSEarlyReleaseExclusionType,
   ) : this(
     bookingId = source.bookingId,
@@ -116,7 +111,6 @@ data class SentenceAndOffenceWithReleaseArrangements(
     revocationDates = source.revocationDates,
     isSDSPlus = isSdsPlus,
     isSDSPlusEligibleSentenceTypeLengthAndOffence = isSDSPlusEligibleSentenceTypeLengthAndOffence,
-    isSDSPlusOffenceInPeriod = isSDSPlusOffenceInPeriod,
     hasAnSDSEarlyReleaseExclusion = hasAnSDSExclusion,
   )
 }

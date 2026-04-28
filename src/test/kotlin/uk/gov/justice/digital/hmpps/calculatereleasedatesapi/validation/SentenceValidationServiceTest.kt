@@ -164,7 +164,6 @@ class SentenceValidationServiceTest {
       NormalisedSentenceAndOffence(prisonApiSentenceAndOffences, offence),
       false,
       false,
-      false,
       SDSEarlyReleaseExclusionType.NO,
     )
   }

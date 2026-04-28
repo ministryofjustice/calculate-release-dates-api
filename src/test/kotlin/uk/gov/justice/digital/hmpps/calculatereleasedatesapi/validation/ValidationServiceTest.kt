@@ -275,7 +275,6 @@ class ValidationServiceTest : SpringTestBase() {
               source = invalidSentence,
               isSdsPlus = false,
               isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-              isSDSPlusOffenceInPeriod = false,
               hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
             ),
           ),
@@ -311,7 +310,6 @@ class ValidationServiceTest : SpringTestBase() {
               source = invalidSentence,
               isSdsPlus = false,
               isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-              isSDSPlusOffenceInPeriod = false,
               hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
             ),
           ),
@@ -348,7 +346,6 @@ class ValidationServiceTest : SpringTestBase() {
               source = invalidSentence,
               isSdsPlus = false,
               isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-              isSDSPlusOffenceInPeriod = false,
               hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
             ),
           ),
@@ -385,7 +382,6 @@ class ValidationServiceTest : SpringTestBase() {
               source = invalidSentence,
               isSdsPlus = false,
               isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-              isSDSPlusOffenceInPeriod = false,
               hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
             ),
           ),
@@ -422,7 +418,6 @@ class ValidationServiceTest : SpringTestBase() {
               source = invalidSentence,
               isSdsPlus = false,
               isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-              isSDSPlusOffenceInPeriod = false,
               hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
             ),
           ),
@@ -459,7 +454,6 @@ class ValidationServiceTest : SpringTestBase() {
               source = validSentence,
               isSdsPlus = false,
               isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-              isSDSPlusOffenceInPeriod = false,
               hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
             ),
           ),
@@ -485,7 +479,6 @@ class ValidationServiceTest : SpringTestBase() {
             source = it,
             isSdsPlus = false,
             isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-            isSDSPlusOffenceInPeriod = false,
             hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
           )
         },
@@ -506,7 +499,6 @@ class ValidationServiceTest : SpringTestBase() {
             source = it,
             isSdsPlus = false,
             isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-            isSDSPlusOffenceInPeriod = false,
             hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
           )
         },
@@ -527,7 +519,6 @@ class ValidationServiceTest : SpringTestBase() {
             validEdsSentence,
             isSdsPlus = false,
             isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-            isSDSPlusOffenceInPeriod = false,
             hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
           ),
         ),
@@ -558,7 +549,6 @@ class ValidationServiceTest : SpringTestBase() {
               source = sentence,
               isSdsPlus = false,
               isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-              isSDSPlusOffenceInPeriod = false,
               hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
             ),
           ),
@@ -597,7 +587,6 @@ class ValidationServiceTest : SpringTestBase() {
               source = sentence,
               isSdsPlus = false,
               isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-              isSDSPlusOffenceInPeriod = false,
               hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
             ),
           ),
@@ -635,7 +624,6 @@ class ValidationServiceTest : SpringTestBase() {
               source = sentence,
               isSdsPlus = false,
               isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-              isSDSPlusOffenceInPeriod = false,
               hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
             ),
           ),
@@ -682,7 +670,6 @@ class ValidationServiceTest : SpringTestBase() {
               source = it,
               isSdsPlus = false,
               isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-              isSDSPlusOffenceInPeriod = false,
               hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
             )
           }.map {
@@ -690,7 +677,6 @@ class ValidationServiceTest : SpringTestBase() {
               source = it,
               isSdsPlus = false,
               isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-              isSDSPlusOffenceInPeriod = false,
               hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
             )
           },
@@ -735,7 +721,6 @@ class ValidationServiceTest : SpringTestBase() {
               source = it,
               isSdsPlus = false,
               isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-              isSDSPlusOffenceInPeriod = false,
               hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
             )
           }.map {
@@ -743,7 +728,6 @@ class ValidationServiceTest : SpringTestBase() {
               source = it,
               isSdsPlus = false,
               isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-              isSDSPlusOffenceInPeriod = false,
               hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
             )
           },
@@ -777,7 +761,6 @@ class ValidationServiceTest : SpringTestBase() {
               source = it,
               isSdsPlus = false,
               isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-              isSDSPlusOffenceInPeriod = false,
               hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
             )
           },
@@ -840,7 +823,6 @@ class ValidationServiceTest : SpringTestBase() {
               source = it,
               isSdsPlus = false,
               isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-              isSDSPlusOffenceInPeriod = false,
               hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
             )
           },
@@ -886,7 +868,6 @@ class ValidationServiceTest : SpringTestBase() {
               source = it,
               isSdsPlus = false,
               isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-              isSDSPlusOffenceInPeriod = false,
               hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
             )
           },
@@ -932,7 +913,6 @@ class ValidationServiceTest : SpringTestBase() {
               it,
               isSdsPlus = false,
               isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-              isSDSPlusOffenceInPeriod = false,
               hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
             )
           },
@@ -962,7 +942,6 @@ class ValidationServiceTest : SpringTestBase() {
             source = it,
             isSdsPlus = false,
             isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-            isSDSPlusOffenceInPeriod = false,
             hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
           )
         },
@@ -1006,7 +985,6 @@ class ValidationServiceTest : SpringTestBase() {
               source = it,
               isSdsPlus = false,
               isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-              isSDSPlusOffenceInPeriod = false,
               hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
             )
           },
@@ -1036,7 +1014,6 @@ class ValidationServiceTest : SpringTestBase() {
             source = it,
             isSdsPlus = false,
             isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-            isSDSPlusOffenceInPeriod = false,
             hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
           )
         },
@@ -1118,7 +1095,6 @@ class ValidationServiceTest : SpringTestBase() {
               source = it,
               isSdsPlus = false,
               isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-              isSDSPlusOffenceInPeriod = false,
               hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
             )
           },
@@ -1147,7 +1123,6 @@ class ValidationServiceTest : SpringTestBase() {
           source = validSdsSentence,
           isSdsPlus = false,
           isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-          isSDSPlusOffenceInPeriod = false,
           hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
         ),
       )
@@ -1159,7 +1134,6 @@ class ValidationServiceTest : SpringTestBase() {
               source = it,
               isSdsPlus = false,
               isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-              isSDSPlusOffenceInPeriod = false,
               hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
             )
           },
@@ -1186,7 +1160,6 @@ class ValidationServiceTest : SpringTestBase() {
               source = it,
               isSdsPlus = false,
               isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-              isSDSPlusOffenceInPeriod = false,
               hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
             )
           },
@@ -1212,7 +1185,6 @@ class ValidationServiceTest : SpringTestBase() {
             source = it,
             isSdsPlus = false,
             isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-            isSDSPlusOffenceInPeriod = false,
             hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
           )
         },
@@ -1253,7 +1225,6 @@ class ValidationServiceTest : SpringTestBase() {
               source = it,
               isSdsPlus = false,
               isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-              isSDSPlusOffenceInPeriod = false,
               hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
             )
           },
@@ -1294,7 +1265,6 @@ class ValidationServiceTest : SpringTestBase() {
               source = it,
               isSdsPlus = false,
               isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-              isSDSPlusOffenceInPeriod = false,
               hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
             )
           },
@@ -1342,7 +1312,6 @@ class ValidationServiceTest : SpringTestBase() {
               source = it,
               isSdsPlus = false,
               isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-              isSDSPlusOffenceInPeriod = false,
               hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
             )
           },
@@ -1386,7 +1355,6 @@ class ValidationServiceTest : SpringTestBase() {
               source = it,
               isSdsPlus = false,
               isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-              isSDSPlusOffenceInPeriod = false,
               hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
             )
           },
@@ -1440,7 +1408,6 @@ class ValidationServiceTest : SpringTestBase() {
               source = it,
               isSdsPlus = false,
               isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-              isSDSPlusOffenceInPeriod = false,
               hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
             )
           },
@@ -1506,7 +1473,6 @@ class ValidationServiceTest : SpringTestBase() {
               source = it,
               isSdsPlus = false,
               isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-              isSDSPlusOffenceInPeriod = false,
               hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
             )
           },
@@ -1544,7 +1510,6 @@ class ValidationServiceTest : SpringTestBase() {
               source = it,
               isSdsPlus = false,
               isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-              isSDSPlusOffenceInPeriod = false,
               hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
             )
           },
@@ -1587,7 +1552,6 @@ class ValidationServiceTest : SpringTestBase() {
               source = it,
               isSdsPlus = false,
               isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-              isSDSPlusOffenceInPeriod = false,
               hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
             )
           },
@@ -1626,7 +1590,6 @@ class ValidationServiceTest : SpringTestBase() {
               source = it,
               isSdsPlus = false,
               isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-              isSDSPlusOffenceInPeriod = false,
               hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
             )
           },
@@ -1664,7 +1627,6 @@ class ValidationServiceTest : SpringTestBase() {
             source = it,
             isSdsPlus = false,
             isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-            isSDSPlusOffenceInPeriod = false,
             hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
           )
         },
@@ -1700,7 +1662,6 @@ class ValidationServiceTest : SpringTestBase() {
               source = it,
               isSdsPlus = false,
               isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-              isSDSPlusOffenceInPeriod = false,
               hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
             )
           },
@@ -1735,7 +1696,6 @@ class ValidationServiceTest : SpringTestBase() {
               source = it,
               isSdsPlus = false,
               isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-              isSDSPlusOffenceInPeriod = false,
               hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
             )
           },
@@ -1764,7 +1724,6 @@ class ValidationServiceTest : SpringTestBase() {
             source = validSdsSentence,
             isSdsPlus = false,
             isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-            isSDSPlusOffenceInPeriod = false,
             hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
           ),
         ),
@@ -1790,7 +1749,6 @@ class ValidationServiceTest : SpringTestBase() {
             source = validSdsSentence,
             isSdsPlus = false,
             isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-            isSDSPlusOffenceInPeriod = false,
             hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
           ),
         ),
@@ -1816,7 +1774,6 @@ class ValidationServiceTest : SpringTestBase() {
             source = validSdsSentence,
             isSdsPlus = false,
             isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-            isSDSPlusOffenceInPeriod = false,
             hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
           ),
         ),
@@ -1842,7 +1799,6 @@ class ValidationServiceTest : SpringTestBase() {
             source = validSdsSentence,
             isSdsPlus = false,
             isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-            isSDSPlusOffenceInPeriod = false,
             hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
           ),
         ),
@@ -1868,7 +1824,6 @@ class ValidationServiceTest : SpringTestBase() {
             source = validEdsRecallSentence,
             isSdsPlus = false,
             isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-            isSDSPlusOffenceInPeriod = false,
             hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
           ),
         ),
@@ -1893,7 +1848,6 @@ class ValidationServiceTest : SpringTestBase() {
             source = validSopcRecallSentence,
             isSdsPlus = false,
             isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-            isSDSPlusOffenceInPeriod = false,
             hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
           ),
         ),
@@ -1922,7 +1876,6 @@ class ValidationServiceTest : SpringTestBase() {
             source = it,
             isSdsPlus = false,
             isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-            isSDSPlusOffenceInPeriod = false,
             hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
           )
         },
@@ -1943,7 +1896,6 @@ class ValidationServiceTest : SpringTestBase() {
             source = it,
             isSdsPlus = false,
             isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-            isSDSPlusOffenceInPeriod = false,
             hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
           )
         },
@@ -1964,7 +1916,6 @@ class ValidationServiceTest : SpringTestBase() {
         sentenceAndOffences = listOf(FTR_28_DAY_SENTENCE).map {
           SentenceAndOffenceWithReleaseArrangements(
             it,
-            false,
             false,
             false,
             SDSEarlyReleaseExclusionType.NO,
@@ -2012,7 +1963,6 @@ class ValidationServiceTest : SpringTestBase() {
                 source = it,
                 isSdsPlus = false,
                 isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-                isSDSPlusOffenceInPeriod = false,
                 hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
               )
             },
@@ -2034,7 +1984,6 @@ class ValidationServiceTest : SpringTestBase() {
                 source = it,
                 isSdsPlus = false,
                 isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-                isSDSPlusOffenceInPeriod = false,
                 hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
               )
             },
@@ -2057,7 +2006,6 @@ class ValidationServiceTest : SpringTestBase() {
                 source = it,
                 isSdsPlus = false,
                 isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-                isSDSPlusOffenceInPeriod = false,
                 hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
               )
             },
@@ -2165,7 +2113,6 @@ class ValidationServiceTest : SpringTestBase() {
           sentenceAndOffences = listOf(
             SentenceAndOffenceWithReleaseArrangements(
               validSdsSentence,
-              false,
               false,
               false,
               SDSEarlyReleaseExclusionType.NO,
@@ -2347,7 +2294,6 @@ class ValidationServiceTest : SpringTestBase() {
                 source = it,
                 isSdsPlus = false,
                 isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-                isSDSPlusOffenceInPeriod = false,
                 hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
               )
             },
@@ -2377,7 +2323,6 @@ class ValidationServiceTest : SpringTestBase() {
                 source = it,
                 isSdsPlus = false,
                 isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-                isSDSPlusOffenceInPeriod = false,
                 hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
               )
             },
@@ -2406,7 +2351,6 @@ class ValidationServiceTest : SpringTestBase() {
                 source = it,
                 isSdsPlus = false,
                 isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-                isSDSPlusOffenceInPeriod = false,
                 hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
               )
             },
@@ -2435,7 +2379,6 @@ class ValidationServiceTest : SpringTestBase() {
                 source = it,
                 isSdsPlus = false,
                 isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-                isSDSPlusOffenceInPeriod = false,
                 hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
               )
             },
@@ -2464,7 +2407,6 @@ class ValidationServiceTest : SpringTestBase() {
                 source = it,
                 isSdsPlus = false,
                 isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-                isSDSPlusOffenceInPeriod = false,
                 hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
               )
             },
@@ -2493,7 +2435,6 @@ class ValidationServiceTest : SpringTestBase() {
                 source = it,
                 isSdsPlus = false,
                 isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-                isSDSPlusOffenceInPeriod = false,
                 hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
               )
             },
@@ -2521,7 +2462,6 @@ class ValidationServiceTest : SpringTestBase() {
                 source = it,
                 isSdsPlus = false,
                 isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-                isSDSPlusOffenceInPeriod = false,
                 hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
               )
             },
@@ -2560,7 +2500,6 @@ class ValidationServiceTest : SpringTestBase() {
                 source = validSdsSentence,
                 isSdsPlus = false,
                 isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-                isSDSPlusOffenceInPeriod = false,
                 hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
               ),
             ),
@@ -2598,7 +2537,6 @@ class ValidationServiceTest : SpringTestBase() {
                 source = validSdsSentence,
                 isSdsPlus = false,
                 isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-                isSDSPlusOffenceInPeriod = false,
                 hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
               ),
             ),
@@ -2636,7 +2574,6 @@ class ValidationServiceTest : SpringTestBase() {
                 source = validSdsSentence,
                 isSdsPlus = false,
                 isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-                isSDSPlusOffenceInPeriod = false,
                 hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
               ),
             ),
@@ -2674,7 +2611,6 @@ class ValidationServiceTest : SpringTestBase() {
                 source = validSdsSentence,
                 isSdsPlus = false,
                 isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-                isSDSPlusOffenceInPeriod = false,
                 hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
               ),
             ),
@@ -2702,7 +2638,6 @@ class ValidationServiceTest : SpringTestBase() {
             source = sentenceWithMissingOffenceDates,
             isSdsPlus = true,
             isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-            isSDSPlusOffenceInPeriod = false,
             hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
           ),
         ),
@@ -2747,7 +2682,6 @@ class ValidationServiceTest : SpringTestBase() {
       consecutiveToSequence = 3,
       isSDSPlus = false,
       isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-      isSDSPlusOffenceInPeriod = false,
       hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
     )
     val sentence2 = sentence1.copy(
@@ -2785,7 +2719,6 @@ class ValidationServiceTest : SpringTestBase() {
       consecutiveToSequence = 1,
       isSDSPlus = false,
       isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-      isSDSPlusOffenceInPeriod = false,
       hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
     )
 
@@ -2812,7 +2745,6 @@ class ValidationServiceTest : SpringTestBase() {
             source = it,
             isSdsPlus = true,
             isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-            isSDSPlusOffenceInPeriod = false,
             hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
           )
         },
@@ -3044,7 +2976,6 @@ class ValidationServiceTest : SpringTestBase() {
         ),
         isSdsPlus = false,
         isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-        isSDSPlusOffenceInPeriod = false,
         hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
       )
       )
@@ -3062,7 +2993,6 @@ class ValidationServiceTest : SpringTestBase() {
         ),
         isSdsPlus = false,
         isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-        isSDSPlusOffenceInPeriod = false,
         hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
       )
       )
@@ -3097,7 +3027,6 @@ class ValidationServiceTest : SpringTestBase() {
         ),
         isSdsPlus = false,
         isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-        isSDSPlusOffenceInPeriod = false,
         hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
       )
       )
@@ -3116,7 +3045,6 @@ class ValidationServiceTest : SpringTestBase() {
         ),
         isSdsPlus = false,
         isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-        isSDSPlusOffenceInPeriod = false,
         hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
       )
       )
@@ -3151,7 +3079,6 @@ class ValidationServiceTest : SpringTestBase() {
         ),
         isSdsPlus = false,
         isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-        isSDSPlusOffenceInPeriod = false,
         hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
       )
       )
@@ -3185,7 +3112,6 @@ class ValidationServiceTest : SpringTestBase() {
         ),
         isSdsPlus = false,
         isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-        isSDSPlusOffenceInPeriod = false,
         hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
       )
       )
@@ -3203,7 +3129,6 @@ class ValidationServiceTest : SpringTestBase() {
         ),
         isSdsPlus = false,
         isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-        isSDSPlusOffenceInPeriod = false,
         hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
       )
       )
@@ -3238,7 +3163,6 @@ class ValidationServiceTest : SpringTestBase() {
         ),
         isSdsPlus = false,
         isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-        isSDSPlusOffenceInPeriod = false,
         hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
       )
       )
@@ -3258,7 +3182,6 @@ class ValidationServiceTest : SpringTestBase() {
         ),
         isSdsPlus = false,
         isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-        isSDSPlusOffenceInPeriod = false,
         hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
       )
       )
@@ -3278,7 +3201,6 @@ class ValidationServiceTest : SpringTestBase() {
         ),
         isSdsPlus = false,
         isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-        isSDSPlusOffenceInPeriod = false,
         hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
       )
       )
@@ -3316,7 +3238,6 @@ class ValidationServiceTest : SpringTestBase() {
         ),
         isSdsPlus = false,
         isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-        isSDSPlusOffenceInPeriod = false,
         hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
       )
       )
@@ -3334,7 +3255,6 @@ class ValidationServiceTest : SpringTestBase() {
         ),
         isSdsPlus = false,
         isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-        isSDSPlusOffenceInPeriod = false,
         hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
       )
       )
@@ -3352,7 +3272,6 @@ class ValidationServiceTest : SpringTestBase() {
         ),
         isSdsPlus = false,
         isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-        isSDSPlusOffenceInPeriod = false,
         hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
       )
       )
@@ -3390,7 +3309,6 @@ class ValidationServiceTest : SpringTestBase() {
         ),
         isSdsPlus = false,
         isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-        isSDSPlusOffenceInPeriod = false,
         hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
       )
       )
@@ -3424,7 +3342,6 @@ class ValidationServiceTest : SpringTestBase() {
         ),
         isSdsPlus = false,
         isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-        isSDSPlusOffenceInPeriod = false,
         hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
       )
       )
@@ -3449,7 +3366,6 @@ class ValidationServiceTest : SpringTestBase() {
       source = validSdsSentence.copy(courtId = "FORGN"),
       isSdsPlus = false,
       isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-      isSDSPlusOffenceInPeriod = false,
       hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
     )
 
@@ -3476,7 +3392,6 @@ class ValidationServiceTest : SpringTestBase() {
             source = it.copy(revocationDates = emptyList()),
             isSdsPlus = false,
             isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-            isSDSPlusOffenceInPeriod = false,
             hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
           )
         },
@@ -3500,7 +3415,6 @@ class ValidationServiceTest : SpringTestBase() {
             source = it.copy(revocationDates = listOf(revocationDate)),
             isSdsPlus = false,
             isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-            isSDSPlusOffenceInPeriod = false,
             hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
           )
         },
@@ -3636,7 +3550,6 @@ class ValidationServiceTest : SpringTestBase() {
           source = it,
           isSdsPlus = false,
           isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-          isSDSPlusOffenceInPeriod = false,
           hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
         )
       },

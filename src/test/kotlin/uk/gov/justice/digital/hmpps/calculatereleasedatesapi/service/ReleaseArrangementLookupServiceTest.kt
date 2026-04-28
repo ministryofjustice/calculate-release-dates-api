@@ -76,7 +76,6 @@ class ReleaseArrangementLookupServiceTest {
 
     val returnedResult = underTest.populateReleaseArrangements(sentencedAfterSDSPlusBeforePCSCLongerThan7Years)
     assertFalse(returnedResult[0].isSDSPlus)
-    assertFalse(returnedResult[0].isSDSPlusOffenceInPeriod)
     assertTrue(returnedResult[0].isSDSPlusEligibleSentenceTypeLengthAndOffence)
   }
 

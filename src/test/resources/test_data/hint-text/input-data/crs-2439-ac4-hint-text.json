@@ -31,7 +31,6 @@
           "sentenceSequence": 1
         },
         "consecutiveSentenceUUIDs": [],
-        "isSDSPlusOffenceInPeriod": false,
         "hasAnSDSEarlyReleaseExclusion": "NO",
         "isSDSPlusEligibleSentenceTypeLengthAndOffence": false
       },
@@ -60,7 +59,6 @@
           "sentenceSequence": 2
         },
         "consecutiveSentenceUUIDs": [],
-        "isSDSPlusOffenceInPeriod": false,
         "hasAnSDSEarlyReleaseExclusion": "NO",
         "isSDSPlusEligibleSentenceTypeLengthAndOffence": false
       },
@@ -89,7 +87,6 @@
           "sentenceSequence": 3
         },
         "consecutiveSentenceUUIDs": [],
-        "isSDSPlusOffenceInPeriod": false,
         "hasAnSDSEarlyReleaseExclusion": "NO",
         "isSDSPlusEligibleSentenceTypeLengthAndOffence": false
       }

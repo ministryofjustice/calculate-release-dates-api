@@ -14,6 +14,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSe
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.HDC_365_COMMENCEMENT_DATE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ReleaseMultiplier.Companion.toLongReleaseDays
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.hasSentencesBeforeAndAfter
@@ -57,7 +58,7 @@ class HdcedCalculator(
     return true
   }
 
-  fun hasSdsPlus(sentence: CalculableSentence): Boolean = sentence.sentenceParts().any { it.isSDSPlusEligibleSentenceTypeLengthAndOffence }
+  fun hasSdsPlus(sentence: CalculableSentence): Boolean = sentence.sentenceParts().any { it is StandardDeterminateSentence && it.isSDSPlusEligibleSentenceTypeLengthAndOffence }
 
   private data class HdcedCalculationInput(
     val custodialPeriodDecimal: BigDecimal,

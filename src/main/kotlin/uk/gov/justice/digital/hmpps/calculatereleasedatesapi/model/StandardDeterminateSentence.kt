@@ -20,9 +20,8 @@ data class StandardDeterminateSentence(
   override val externalSentenceId: ExternalSentenceId? = null,
   override val caseReference: String? = null,
   override val recall: Recall? = null,
-  override val isSDSPlus: Boolean,
-  override val isSDSPlusEligibleSentenceTypeLengthAndOffence: Boolean = isSDSPlus,
-  override val isSDSPlusOffenceInPeriod: Boolean = isSDSPlus,
+  val isSDSPlus: Boolean,
+  val isSDSPlusEligibleSentenceTypeLengthAndOffence: Boolean = isSDSPlus,
   val hasAnSDSEarlyReleaseExclusion: SDSEarlyReleaseExclusionType,
   val section250: Boolean = false,
 ) : AbstractSentence(offence, sentencedAt, identifier, consecutiveSentenceUUIDs, caseSequence, lineSequence, externalSentenceId, caseReference, recall) {

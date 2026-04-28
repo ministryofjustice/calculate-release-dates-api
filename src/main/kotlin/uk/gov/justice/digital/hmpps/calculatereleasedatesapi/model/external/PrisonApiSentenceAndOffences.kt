@@ -31,7 +31,6 @@ data class PrisonApiSentenceAndOffences(
       offence = offence,
       isSdsPlus = false,
       isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-      isSDSPlusOffenceInPeriod = false,
       hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
     )
   }
