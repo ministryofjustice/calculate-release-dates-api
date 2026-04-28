@@ -18,7 +18,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Recall
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangementsV4
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustmentType
@@ -62,7 +62,7 @@ class BookingServiceTest {
       offenceDescription = "Littering",
     ),
   )
-  private val sentenceAndOffences = SentenceAndOffenceWithReleaseArrangements(
+  private val sentenceAndOffences = SentenceAndOffenceWithReleaseArrangementsV4(
     PrisonApiSentenceAndOffences(
       bookingId = bookingId,
       sentenceSequence = sequence,

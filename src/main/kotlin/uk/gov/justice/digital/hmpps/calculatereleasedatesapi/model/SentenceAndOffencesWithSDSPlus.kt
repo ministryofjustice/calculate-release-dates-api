@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
 import java.math.BigDecimal
 import java.time.LocalDate
@@ -27,8 +28,9 @@ data class SentenceAndOffencesWithSDSPlus(
   val isSDSPlus: Boolean,
   val isSDSPlusEligibleSentenceTypeLengthAndOffence: Boolean,
 ) {
-  fun toLatest(): List<SentenceAndOffenceWithReleaseArrangements> = offences.map {
-    SentenceAndOffenceWithReleaseArrangements(
+  fun toLatest(): List<SentenceAndOffenceWithReleaseArrangementsV4> = offences.map {
+    val sentenceType = SentenceCalculationType.from(sentenceCalculationType)
+    SentenceAndOffenceWithReleaseArrangementsV4(
       this.bookingId,
       this.sentenceSequence,
       this.lineSequence,
@@ -47,9 +49,16 @@ data class SentenceAndOffencesWithSDSPlus(
       this.courtTypeCode,
       this.fineAmount,
       this.revocationDates,
-      this.isSDSPlus,
-      this.isSDSPlusEligibleSentenceTypeLengthAndOffence,
-      SDSEarlyReleaseExclusionType.NO,
+      if (sentenceType.isSDS()) {
+        SDSReleaseArrangements(
+          isSDSPlus = this.isSDSPlus,
+          isSDSPlusEligibleSentenceTypeLengthAndOffence = this.isSDSPlusEligibleSentenceTypeLengthAndOffence,
+          sdsEarlyReleaseExclusions = emptyList(),
+          isSection250 = sentenceType.isSection250(),
+        )
+      } else {
+        null
+      },
     )
   }
 }

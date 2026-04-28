@@ -2,7 +2,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.eligibilit
 
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangementsV4
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ManageOffencesService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.PrisonService
@@ -40,13 +40,13 @@ class ErsedEligibilityService(
     }
   }
 
-  private fun getToreraEdsOffenceCodes(sourceData: List<SentenceAndOffenceWithReleaseArrangements>): List<String> = sourceData
+  private fun getToreraEdsOffenceCodes(sourceData: List<SentenceAndOffenceWithReleaseArrangementsV4>): List<String> = sourceData
     .asSequence()
     .filter { it.sentenceCalculationType in edsCalculationTypes }
     .map { it.offence.offenceCode }
     .toList()
 
-  private fun exemptSentenceType(sentenceAndOffence: SentenceAndOffenceWithReleaseArrangements): Boolean {
+  private fun exemptSentenceType(sentenceAndOffence: SentenceAndOffenceWithReleaseArrangementsV4): Boolean {
     val type = runCatching {
       SentenceCalculationType.valueOf(sentenceAndOffence.sentenceCalculationType)
     }.getOrElse { return true }

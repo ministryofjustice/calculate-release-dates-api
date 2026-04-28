@@ -16,7 +16,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentsSo
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecordARecallDecision
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecordARecallRequest
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangementsV4
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.PrisonPeriod
@@ -72,11 +72,11 @@ class RecordARecallDecisionServiceTest {
       whenever(inPrisonSummary.prisonPeriod).thenReturn(listOf(latest, penultimate))
       whenever(prisonService.getPrisonerInPrisonSummary(PRISONER_ID)).thenReturn(inPrisonSummary)
 
-      val latestSentence = mock(SentenceAndOffenceWithReleaseArrangements::class.java).apply {
+      val latestSentence = mock(SentenceAndOffenceWithReleaseArrangementsV4::class.java).apply {
         whenever(bookingId).thenReturn(LATEST_BOOKING_ID)
         whenever(sentenceDate).thenReturn(LocalDate.of(2020, 1, 1))
       }
-      val penultimateSentence = mock(SentenceAndOffenceWithReleaseArrangements::class.java).apply {
+      val penultimateSentence = mock(SentenceAndOffenceWithReleaseArrangementsV4::class.java).apply {
         whenever(bookingId).thenReturn(PENULTIMATE_BOOKING_ID)
         whenever(sentenceDate).thenReturn(LocalDate.of(2019, 1, 1))
       }
@@ -121,11 +121,11 @@ class RecordARecallDecisionServiceTest {
       whenever(inPrisonSummary.prisonPeriod).thenReturn(listOf(latest, penultimate))
       whenever(prisonService.getPrisonerInPrisonSummary(PRISONER_ID)).thenReturn(inPrisonSummary)
 
-      val latestSentence = mock(SentenceAndOffenceWithReleaseArrangements::class.java).apply {
+      val latestSentence = mock(SentenceAndOffenceWithReleaseArrangementsV4::class.java).apply {
         whenever(bookingId).thenReturn(LATEST_BOOKING_ID)
         whenever(sentenceDate).thenReturn(LocalDate.of(2020, 1, 1))
       }
-      val penultimateSentence = mock(SentenceAndOffenceWithReleaseArrangements::class.java).apply {
+      val penultimateSentence = mock(SentenceAndOffenceWithReleaseArrangementsV4::class.java).apply {
         whenever(bookingId).thenReturn(PENULTIMATE_BOOKING_ID)
         whenever(sentenceDate).thenReturn(LocalDate.of(2019, 1, 1))
       }
@@ -195,11 +195,11 @@ class RecordARecallDecisionServiceTest {
       whenever(inPrisonSummary.prisonPeriod).thenReturn(listOf(latest, penultimate))
       whenever(prisonService.getPrisonerInPrisonSummary(PRISONER_ID)).thenReturn(inPrisonSummary)
 
-      val latestSentence = mock(SentenceAndOffenceWithReleaseArrangements::class.java).apply {
+      val latestSentence = mock(SentenceAndOffenceWithReleaseArrangementsV4::class.java).apply {
         whenever(bookingId).thenReturn(LATEST_BOOKING_ID)
         whenever(sentenceDate).thenReturn(LocalDate.of(2020, 1, 1))
       }
-      val penultimateSentence = mock(SentenceAndOffenceWithReleaseArrangements::class.java).apply {
+      val penultimateSentence = mock(SentenceAndOffenceWithReleaseArrangementsV4::class.java).apply {
         whenever(bookingId).thenReturn(PENULTIMATE_BOOKING_ID)
       }
 
@@ -243,11 +243,11 @@ class RecordARecallDecisionServiceTest {
       whenever(inPrisonSummary.prisonPeriod).thenReturn(listOf(latest, penultimate))
       whenever(prisonService.getPrisonerInPrisonSummary(PRISONER_ID)).thenReturn(inPrisonSummary)
 
-      val latestSentence = mock(SentenceAndOffenceWithReleaseArrangements::class.java).apply {
+      val latestSentence = mock(SentenceAndOffenceWithReleaseArrangementsV4::class.java).apply {
         whenever(bookingId).thenReturn(LATEST_BOOKING_ID)
         whenever(sentenceDate).thenReturn(LocalDate.of(2020, 1, 1))
       }
-      val penultimateSentence = mock(SentenceAndOffenceWithReleaseArrangements::class.java).apply {
+      val penultimateSentence = mock(SentenceAndOffenceWithReleaseArrangementsV4::class.java).apply {
         whenever(bookingId).thenReturn(PENULTIMATE_BOOKING_ID)
         whenever(sentenceDate).thenReturn(LocalDate.of(2019, 1, 1))
       }

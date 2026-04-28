@@ -36,8 +36,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.GenuineOverrideReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSReleaseArrangements
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangementsV4
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustment
@@ -392,7 +392,7 @@ class DetailedCalculationResultsServiceTest {
     private const val CALCULATION_REQUEST_ID = 123456L
   }
 
-  private val originalSentence = SentenceAndOffenceWithReleaseArrangements(
+  private val originalSentence = SentenceAndOffenceWithReleaseArrangementsV4(
     bookingId = 1L,
     sentenceSequence = 3,
     lineSequence = 2,
@@ -412,9 +412,12 @@ class DetailedCalculationResultsServiceTest {
     courtDescription = null,
     courtTypeCode = null,
     consecutiveToSequence = null,
-    isSDSPlus = false,
-    isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-    hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
+    sdsReleaseArrangements = SDSReleaseArrangements(
+      isSDSPlus = false,
+      isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+      sdsEarlyReleaseExclusions = emptyList(),
+      isSection250 = false,
+    ),
   )
 
   private val prisonerDetails = PrisonerDetails(

@@ -9,7 +9,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.adjustmentsapi.mode
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentsSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NormalisedSentenceAndOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangementsV4
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSentenceAndOffences
@@ -97,7 +97,7 @@ class RemandPeriodsAgainstSentenceDateValidatorTest {
       "description",
       listOf("A"),
     )
-    val sentence = SentenceAndOffenceWithReleaseArrangements(
+    val sentence = SentenceAndOffenceWithReleaseArrangementsV4(
       NormalisedSentenceAndOffence(
         PrisonApiSentenceAndOffences(
           1,

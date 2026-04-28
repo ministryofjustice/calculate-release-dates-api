@@ -7,7 +7,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.adjustmentsapi.mode
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentsSourceData
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangementsV4
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.FixedTermRecallDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderFinePayment
@@ -65,10 +65,10 @@ class CalculationSourceDataService(
    * When loading data from an older booking remove all sentences in a given court case where there is duplicated sentence on a newer booking.
    */
   private fun removeDuplicatedSentencesFromOlderBooking(
-    olderBookingSentences: List<SentenceAndOffenceWithReleaseArrangements>,
+    olderBookingSentences: List<SentenceAndOffenceWithReleaseArrangementsV4>,
     olderBooking: Boolean,
     newerBookingSentences: List<DistinctSentenceData>,
-  ): List<SentenceAndOffenceWithReleaseArrangements> {
+  ): List<SentenceAndOffenceWithReleaseArrangementsV4> {
     if (olderBooking) {
       val caseSequencesWithDuplicates = olderBookingSentences.filter { newerBookingSentences.contains(DistinctSentenceData(it)) }.map { it.caseSequence }.distinct()
       return olderBookingSentences.filterNot { caseSequencesWithDuplicates.contains(it.caseSequence) }
@@ -156,7 +156,7 @@ data class DistinctSentenceData(
   val offenceEndDate: LocalDate? = null,
   val offenceCode: String,
 ) {
-  constructor(sentence: SentenceAndOffenceWithReleaseArrangements) : this(
+  constructor(sentence: SentenceAndOffenceWithReleaseArrangementsV4) : this(
     sentenceDate = sentence.sentenceDate,
     offenceStartDate = sentence.offence.offenceStartDate,
     offenceEndDate = sentence.offence.offenceEndDate,
@@ -165,7 +165,7 @@ data class DistinctSentenceData(
 }
 
 data class BookingLevelSourceData(
-  val sentenceAndOffences: List<SentenceAndOffenceWithReleaseArrangements>,
+  val sentenceAndOffences: List<SentenceAndOffenceWithReleaseArrangementsV4>,
   val adjustments: AdjustmentsSourceData,
   val offenderFinePayments: List<OffenderFinePayment> = listOf(),
   val returnToCustodyDate: ReturnToCustodyDate?,

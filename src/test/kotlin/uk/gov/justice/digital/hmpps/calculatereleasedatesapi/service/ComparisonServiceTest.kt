@@ -40,8 +40,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DiscrepancyCa
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.MismatchType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.PersonComparisonInputs
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSReleaseArrangements
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangementsV4
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ComparisonInput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
@@ -535,7 +535,7 @@ class ComparisonServiceTest {
   @Test
   fun `get a comparison person with SDS+ sentences`() {
     val emptyObjectNode = objectMapper.createObjectNode()
-    val sdsPlusSentence = SentenceAndOffenceWithReleaseArrangements(
+    val sdsPlusSentence = SentenceAndOffenceWithReleaseArrangementsV4(
       bookingId = 1L,
       sentenceSequence = 3,
       consecutiveToSequence = null,
@@ -555,9 +555,12 @@ class ComparisonServiceTest {
       courtDescription = null,
       courtTypeCode = null,
       fineAmount = null,
-      isSDSPlus = true,
-      isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-      hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
+      sdsReleaseArrangements = SDSReleaseArrangements(
+        isSDSPlus = true,
+        isSDSPlusEligibleSentenceTypeLengthAndOffence = true,
+        sdsEarlyReleaseExclusions = emptyList(),
+        isSection250 = false,
+      ),
     )
     val person = ComparisonPerson(
       1,
@@ -636,7 +639,7 @@ class ComparisonServiceTest {
       returnToCustodyDate = null,
     )
     val adjustments = emptyList<AdjustmentDto>()
-    val sentencesAndOffences = emptyList<SentenceAndOffenceWithReleaseArrangements>()
+    val sentencesAndOffences = emptyList<SentenceAndOffenceWithReleaseArrangementsV4>()
 
     whenever(comparisonPersonRepository.getCalculationRequestFromComparisonPerson("ABCD1234", "FOO"))
       .thenReturn(calculationRequest)

@@ -10,8 +10,8 @@ import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.any
 import org.mockito.kotlin.whenever
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSReleaseArrangements
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangementsV4
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
@@ -38,7 +38,7 @@ class ErsedEligibilityServiceTest {
 
   @ParameterizedTest
   @MethodSource("ineligibleSentences")
-  fun `should return ineligible when sentence has invalid type`(sentence: SentenceAndOffenceWithReleaseArrangements) {
+  fun `should return ineligible when sentence has invalid type`(sentence: SentenceAndOffenceWithReleaseArrangementsV4) {
     val bookingId = 123L
     whenever(prisonService.getSentencesAndOffences(any(), any())).thenReturn(listOf(sentence))
 
@@ -100,7 +100,7 @@ class ErsedEligibilityServiceTest {
       createSentence(SentenceCalculationType.LR.name, "OFF_PART5"), // recall sentence type
     )
 
-    private fun createSentence(type: String, code: String): SentenceAndOffenceWithReleaseArrangements = SentenceAndOffenceWithReleaseArrangements(
+    private fun createSentence(type: String, code: String): SentenceAndOffenceWithReleaseArrangementsV4 = SentenceAndOffenceWithReleaseArrangementsV4(
       bookingId = 1L,
       sentenceSequence = 3,
       lineSequence = 2,
@@ -120,9 +120,12 @@ class ErsedEligibilityServiceTest {
       courtDescription = null,
       courtTypeCode = null,
       consecutiveToSequence = null,
-      isSDSPlus = false,
-      isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-      hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
+      sdsReleaseArrangements = SDSReleaseArrangements(
+        isSDSPlus = false,
+        isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+        sdsEarlyReleaseExclusions = emptyList(),
+        isSection250 = false,
+      ),
     )
   }
 }

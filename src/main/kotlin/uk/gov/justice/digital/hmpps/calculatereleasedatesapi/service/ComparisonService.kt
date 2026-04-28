@@ -21,7 +21,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CreateCompari
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.MismatchType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.PersonComparisonInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangementsV4
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ComparisonInput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonPersonDiscrepancyRepository
@@ -143,7 +143,7 @@ class ComparisonService(
         } else {
           objectMapper.convertValue(
             comparisonPerson.sdsPlusSentencesIdentified,
-            object : TypeReference<List<SentenceAndOffenceWithReleaseArrangements>>() {},
+            object : TypeReference<List<SentenceAndOffenceWithReleaseArrangementsV4>>() {},
           )
         }
       transform(

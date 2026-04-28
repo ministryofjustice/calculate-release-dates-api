@@ -11,7 +11,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NomisCalculat
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NomisTusedData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NormalisedSentenceAndOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OffenderKeyDates
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangementsV4
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculationSummary
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.FixedTermRecallDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
@@ -30,7 +30,7 @@ class PrisonService(
 ) {
 
   fun getExternalMovements(
-    sentenceAndOffences: List<SentenceAndOffenceWithReleaseArrangements>,
+    sentenceAndOffences: List<SentenceAndOffenceWithReleaseArrangementsV4>,
     prisonerId: String,
   ): List<PrisonApiExternalMovement> {
     val earliestSentenceDate = sentenceAndOffences.minOfOrNull { it.sentenceDate }
@@ -66,7 +66,7 @@ class PrisonService(
     )
   }
 
-  fun getSentencesAndOffences(bookingId: Long, filterActive: Boolean = true): List<SentenceAndOffenceWithReleaseArrangements> {
+  fun getSentencesAndOffences(bookingId: Long, filterActive: Boolean = true): List<SentenceAndOffenceWithReleaseArrangementsV4> {
     // There shouldn't be multiple offences associated to a single sentence; however there are at the moment (NOMIS doesn't
     // guard against it) therefore if there are multiple offences associated with one sentence then each offence is being
     // treated as a separate sentence

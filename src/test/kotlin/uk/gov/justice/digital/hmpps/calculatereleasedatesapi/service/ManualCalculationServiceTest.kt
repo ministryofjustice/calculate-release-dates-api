@@ -34,7 +34,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Recall
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangementsV4
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmittedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
@@ -97,13 +97,13 @@ class ManualCalculationServiceTest {
     fun `Check ESL is calculated correctly for determinate sentences without SED`() {
       whenever(prisonService.getSentencesAndOffences(BOOKING_ID)).thenReturn(
         listOf(
-          SentenceAndOffenceWithReleaseArrangements(
+          SentenceAndOffenceWithReleaseArrangementsV4(
             BASE_DETERMINATE_SENTENCE.copy(sentenceCalculationType = SentenceCalculationType.NP.name),
             isSdsPlus = false,
             isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
             hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
           ),
-          SentenceAndOffenceWithReleaseArrangements(
+          SentenceAndOffenceWithReleaseArrangementsV4(
             BASE_DETERMINATE_SENTENCE,
             isSdsPlus = false,
             isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
@@ -191,13 +191,13 @@ class ManualCalculationServiceTest {
       // Arrange
       whenever(prisonService.getSentencesAndOffences(BOOKING_ID)).thenReturn(
         listOf(
-          SentenceAndOffenceWithReleaseArrangements(
+          SentenceAndOffenceWithReleaseArrangementsV4(
             BASE_DETERMINATE_SENTENCE.copy(sentenceCalculationType = SentenceCalculationType.TWENTY.name),
             isSdsPlus = false,
             isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
             hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
           ),
-          SentenceAndOffenceWithReleaseArrangements(
+          SentenceAndOffenceWithReleaseArrangementsV4(
             BASE_DETERMINATE_SENTENCE,
             false,
             isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
@@ -297,13 +297,13 @@ class ManualCalculationServiceTest {
     fun `Check the presence of recall sentences returns true`() {
       whenever(prisonService.getSentencesAndOffences(BOOKING_ID)).thenReturn(
         listOf(
-          SentenceAndOffenceWithReleaseArrangements(
+          SentenceAndOffenceWithReleaseArrangementsV4(
             BASE_DETERMINATE_SENTENCE.copy(sentenceCalculationType = SentenceCalculationType.LR_ORA.name),
             isSdsPlus = false,
             isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
             hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
           ),
-          SentenceAndOffenceWithReleaseArrangements(
+          SentenceAndOffenceWithReleaseArrangementsV4(
             BASE_DETERMINATE_SENTENCE,
             isSdsPlus = false,
             isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
@@ -321,13 +321,13 @@ class ManualCalculationServiceTest {
     fun `Check the absence of licenceRecall sentences returns false`() {
       whenever(prisonService.getSentencesAndOffences(BOOKING_ID)).thenReturn(
         listOf(
-          SentenceAndOffenceWithReleaseArrangements(
+          SentenceAndOffenceWithReleaseArrangementsV4(
             source = BASE_DETERMINATE_SENTENCE.copy(sentenceCalculationType = SentenceCalculationType.ADIMP_ORA.name),
             isSdsPlus = false,
             isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
             hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
           ),
-          SentenceAndOffenceWithReleaseArrangements(
+          SentenceAndOffenceWithReleaseArrangementsV4(
             source = BASE_DETERMINATE_SENTENCE,
             isSdsPlus = false,
             isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
@@ -348,13 +348,13 @@ class ManualCalculationServiceTest {
     fun `Check the presence of indeterminate sentences returns true`() {
       whenever(prisonService.getSentencesAndOffences(BOOKING_ID)).thenReturn(
         listOf(
-          SentenceAndOffenceWithReleaseArrangements(
+          SentenceAndOffenceWithReleaseArrangementsV4(
             source = BASE_DETERMINATE_SENTENCE.copy(sentenceCalculationType = SentenceCalculationType.TWENTY.name),
             isSdsPlus = false,
             isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
             hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
           ),
-          SentenceAndOffenceWithReleaseArrangements(
+          SentenceAndOffenceWithReleaseArrangementsV4(
             source = BASE_DETERMINATE_SENTENCE,
             isSdsPlus = false,
             isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
@@ -372,13 +372,13 @@ class ManualCalculationServiceTest {
     fun `Check the absence of indeterminate sentences returns false`() {
       whenever(prisonService.getSentencesAndOffences(BOOKING_ID)).thenReturn(
         listOf(
-          SentenceAndOffenceWithReleaseArrangements(
+          SentenceAndOffenceWithReleaseArrangementsV4(
             BASE_DETERMINATE_SENTENCE.copy(sentenceCalculationType = SentenceCalculationType.FTR.name),
             isSdsPlus = false,
             isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
             hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
           ),
-          SentenceAndOffenceWithReleaseArrangements(
+          SentenceAndOffenceWithReleaseArrangementsV4(
             BASE_DETERMINATE_SENTENCE,
             isSdsPlus = false,
             isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
@@ -476,7 +476,7 @@ class ManualCalculationServiceTest {
     whenever(nomisCommentService.getManualNomisComment(any(), any(), any())).thenReturn("The NOMIS Reason")
     whenever(prisonService.getSentencesAndOffences(anyLong(), eq(true))).thenReturn(
       listOf(
-        SentenceAndOffenceWithReleaseArrangements(
+        SentenceAndOffenceWithReleaseArrangementsV4(
           source = PrisonApiSentenceAndOffences(
             bookingId = 1,
             sentenceSequence = 1,

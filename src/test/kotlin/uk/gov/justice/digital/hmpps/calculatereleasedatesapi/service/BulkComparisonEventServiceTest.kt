@@ -23,7 +23,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedRel
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NormalisedSentenceAndOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangementsV4
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
@@ -245,13 +245,13 @@ class BulkComparisonEventServiceTest {
     whenever(calculationSourceDataService.getCalculationSourceData(same(prisonerDetails), any(), any())).thenReturn(
       CalculationSourceData(
         listOf(
-          SentenceAndOffenceWithReleaseArrangements(
+          SentenceAndOffenceWithReleaseArrangementsV4(
             source = BASE_DETERMINATE_SENTENCE.copy(sentenceCalculationType = SentenceCalculationType.TWENTY.name),
             isSdsPlus = false,
             isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
             hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
           ),
-          SentenceAndOffenceWithReleaseArrangements(
+          SentenceAndOffenceWithReleaseArrangementsV4(
             source = BASE_DETERMINATE_SENTENCE,
             isSdsPlus = false,
             isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
@@ -295,7 +295,7 @@ class BulkComparisonEventServiceTest {
     whenever(calculationSourceDataService.getCalculationSourceData(same(prisonerDetails), any(), any())).thenReturn(
       CalculationSourceData(
         listOf(
-          SentenceAndOffenceWithReleaseArrangements(
+          SentenceAndOffenceWithReleaseArrangementsV4(
             source = BASE_DETERMINATE_SENTENCE,
             isSdsPlus = false,
             isSDSPlusEligibleSentenceTypeLengthAndOffence = false,

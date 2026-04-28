@@ -8,7 +8,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationR
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.SourceDataMissingException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentsSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.HistoricalTusedData
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangementsV3
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangementsV4
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffencesWithSDSPlus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderFinePayment
@@ -46,7 +47,7 @@ class SourceDataMapper(private val objectMapper: ObjectMapper) {
     )
   }
 
-  fun mapSentencesAndOffences(calculationRequest: CalculationRequest): List<SentenceAndOffenceWithReleaseArrangements> = when (calculationRequest.sentenceAndOffencesVersion) {
+  fun mapSentencesAndOffences(calculationRequest: CalculationRequest): List<SentenceAndOffenceWithReleaseArrangementsV4> = when (calculationRequest.sentenceAndOffencesVersion) {
     0 -> {
       val reader = objectMapper.readerFor(object : TypeReference<List<PrisonApiDataVersions.Version0.SentenceAndOffences>>() {})
       val sentencesAndOffences: List<PrisonApiDataVersions.Version0.SentenceAndOffences> = reader.readValue(calculationRequest.sentenceAndOffences)
@@ -62,10 +63,16 @@ class SourceDataMapper(private val objectMapper: ObjectMapper) {
       reader.readValue<List<SentenceAndOffencesWithSDSPlus>>(calculationRequest.sentenceAndOffences)
         .flatMap(SentenceAndOffencesWithSDSPlus::toLatest)
     }
-    else -> {
-      val reader = objectMapper.readerFor(object : TypeReference<List<SentenceAndOffenceWithReleaseArrangements>>() {})
+    3 -> {
+      val reader = objectMapper.readerFor(object : TypeReference<List<SentenceAndOffenceWithReleaseArrangementsV3>>() {})
+      reader.readValue<List<SentenceAndOffenceWithReleaseArrangementsV3>>(calculationRequest.sentenceAndOffences)
+        .map(SentenceAndOffenceWithReleaseArrangementsV3::toLatest)
+    }
+    4 -> {
+      val reader = objectMapper.readerFor(object : TypeReference<List<SentenceAndOffenceWithReleaseArrangementsV4>>() {})
       reader.readValue(calculationRequest.sentenceAndOffences)
     }
+    else -> throw IllegalArgumentException("Unexpected sentence and offence version ${calculationRequest.sentenceAndOffencesVersion}")
   }
 
   fun mapPrisonerDetails(calculationRequest: CalculationRequest): PrisonerDetails = objectMapper.convertValue(calculationRequest.prisonerDetails, PrisonerDetails::class.java)

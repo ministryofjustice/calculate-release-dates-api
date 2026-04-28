@@ -3,7 +3,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSPlusCheckResult
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangementsV4
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.manageoffencesapi.SDSEarlyReleaseExclusionForOffenceCode
 
@@ -13,7 +13,7 @@ class ReleaseArrangementLookupService(
   private val sdsReleaseArrangementLookupService: SDSReleaseArrangementLookupService,
   private val manageOffencesService: ManageOffencesService,
 ) {
-  fun populateReleaseArrangements(sentencesAndOffences: List<SentenceAndOffence>): List<SentenceAndOffenceWithReleaseArrangements> {
+  fun populateReleaseArrangements(sentencesAndOffences: List<SentenceAndOffence>): List<SentenceAndOffenceWithReleaseArrangementsV4> {
     log.info("Checking ${sentencesAndOffences.size} sentences for SDS release arrangements")
 
     val checkedForSDSPlus = checkForSDSPlus(sentencesAndOffences)
@@ -21,7 +21,7 @@ class ReleaseArrangementLookupService(
     val sdsExclusionsForOffences = fetchSdsExclusions(excludeIfSDSPlus = checkedForSDSPlus)
 
     return checkedForSDSPlus.map { sdsPlusCheckResult ->
-      SentenceAndOffenceWithReleaseArrangements(
+      SentenceAndOffenceWithReleaseArrangementsV4(
         sdsPlusCheckResult,
         sdsReleaseArrangementLookupService.exclusionForOffence(
           sdsExclusionsForOffences,

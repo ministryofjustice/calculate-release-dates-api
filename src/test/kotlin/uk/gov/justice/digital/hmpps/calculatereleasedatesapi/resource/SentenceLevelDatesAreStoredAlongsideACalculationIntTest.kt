@@ -18,7 +18,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Agency
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationRequestModel
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NomisCalculationReason
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangementsV4
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestSentenceOutcomeRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestSentenceRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ReleaseMultiplier
@@ -59,9 +59,9 @@ class SentenceLevelDatesAreStoredAlongsideACalculationIntTest(private val mockPr
     val sentences = calculationRequestSentenceRepository.findByCalculationRequestId(calc.calculationRequestId)
 
     assertThat(sentences).hasSize(3)
-    val readerForSentences = objectMapper.readerFor(SentenceAndOffenceWithReleaseArrangements::class.java)
+    val readerForSentences = objectMapper.readerFor(SentenceAndOffenceWithReleaseArrangementsV4::class.java)
     val withExtractedSentences = sentences.map {
-      val sentence = readerForSentences.readValue<SentenceAndOffenceWithReleaseArrangements>(it.inputSentenceData)
+      val sentence = readerForSentences.readValue<SentenceAndOffenceWithReleaseArrangementsV4>(it.inputSentenceData)
       it to sentence
     }
 

@@ -47,7 +47,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangementsV4
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SopcSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Alert
@@ -93,7 +93,7 @@ class TransformFunctionsTest {
       offenceCode = "RR1",
       offenceDescription = "Littering",
     )
-    val request = SentenceAndOffenceWithReleaseArrangements(
+    val request = SentenceAndOffenceWithReleaseArrangementsV4(
       PrisonApiSentenceAndOffences(
         bookingId = bookingId,
         sentenceSequence = sequence,
@@ -587,7 +587,7 @@ class TransformFunctionsTest {
       offenceCode = "RR1",
       offenceDescription = "Littering",
     )
-    val request = SentenceAndOffenceWithReleaseArrangements(
+    val request = SentenceAndOffenceWithReleaseArrangementsV4(
       PrisonApiSentenceAndOffences(
         bookingId = BOOKING_ID,
         sentenceSequence = sequence,
@@ -657,7 +657,7 @@ class TransformFunctionsTest {
       offenceCode = "RR1",
       offenceDescription = "Littering",
     )
-    val request = SentenceAndOffenceWithReleaseArrangements(
+    val request = SentenceAndOffenceWithReleaseArrangementsV4(
       PrisonApiSentenceAndOffences(
         bookingId = BOOKING_ID,
         sentenceSequence = sequence,

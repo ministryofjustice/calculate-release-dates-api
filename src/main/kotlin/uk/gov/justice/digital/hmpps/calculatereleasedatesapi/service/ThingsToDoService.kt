@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.adjustmentsapi.model.AdjustmentDto
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ToDoType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangementsV4
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ThingsToDo
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
@@ -86,8 +86,8 @@ class ThingsToDoService(
   )
 
   private fun areThereAnyDifferencesInSentencesAndOffences(
-    previousSentencesAndOffences: List<SentenceAndOffenceWithReleaseArrangements>,
-    currentSentencesAndOffences: List<SentenceAndOffenceWithReleaseArrangements>,
+    previousSentencesAndOffences: List<SentenceAndOffenceWithReleaseArrangementsV4>,
+    currentSentencesAndOffences: List<SentenceAndOffenceWithReleaseArrangementsV4>,
   ): Boolean {
     if (previousSentencesAndOffences == currentSentencesAndOffences) {
       return false
@@ -104,8 +104,8 @@ class ThingsToDoService(
   }
 
   private fun sentenceAndOffenceHasChanged(
-    previous: SentenceAndOffenceWithReleaseArrangements?,
-    current: SentenceAndOffenceWithReleaseArrangements?,
+    previous: SentenceAndOffenceWithReleaseArrangementsV4?,
+    current: SentenceAndOffenceWithReleaseArrangementsV4?,
   ): Boolean {
     if (previous == null || current == null) {
       return true
@@ -119,33 +119,33 @@ class ThingsToDoService(
   }
 
   private fun isSentenceStillConcurrentOrConsecutiveToTheSameSentence(
-    previous: SentenceAndOffenceWithReleaseArrangements,
-    current: SentenceAndOffenceWithReleaseArrangements,
+    previous: SentenceAndOffenceWithReleaseArrangementsV4,
+    current: SentenceAndOffenceWithReleaseArrangementsV4,
   ): Boolean = previous.consecutiveToSequence != current.consecutiveToSequence
 
   private fun hasSentenceStatusChanged(
-    previous: SentenceAndOffenceWithReleaseArrangements,
-    current: SentenceAndOffenceWithReleaseArrangements,
+    previous: SentenceAndOffenceWithReleaseArrangementsV4,
+    current: SentenceAndOffenceWithReleaseArrangementsV4,
   ): Boolean = previous.sentenceStatus != current.sentenceStatus
 
   private fun hasSentenceTypeChanged(
-    previous: SentenceAndOffenceWithReleaseArrangements,
-    current: SentenceAndOffenceWithReleaseArrangements,
+    previous: SentenceAndOffenceWithReleaseArrangementsV4,
+    current: SentenceAndOffenceWithReleaseArrangementsV4,
   ): Boolean = previous.sentenceCalculationType != current.sentenceCalculationType
 
   private fun hasSentenceDateChanged(
-    previous: SentenceAndOffenceWithReleaseArrangements,
-    current: SentenceAndOffenceWithReleaseArrangements,
+    previous: SentenceAndOffenceWithReleaseArrangementsV4,
+    current: SentenceAndOffenceWithReleaseArrangementsV4,
   ): Boolean = previous.sentenceDate != current.sentenceDate
 
   private fun haveSentenceTermsChanged(
-    previous: SentenceAndOffenceWithReleaseArrangements,
-    current: SentenceAndOffenceWithReleaseArrangements,
+    previous: SentenceAndOffenceWithReleaseArrangementsV4,
+    current: SentenceAndOffenceWithReleaseArrangementsV4,
   ): Boolean = previous.terms != current.terms
 
   private fun haveFineAmountsChanged(
-    previous: SentenceAndOffenceWithReleaseArrangements,
-    current: SentenceAndOffenceWithReleaseArrangements,
+    previous: SentenceAndOffenceWithReleaseArrangementsV4,
+    current: SentenceAndOffenceWithReleaseArrangementsV4,
   ): Boolean = previous.fineAmount != current.fineAmount
 
   private fun checkIfAdjustmentsHaveChanged(previousSourceData: CalculationSourceData, currentSourceData: CalculationSourceData, prisonerDetails: PrisonerDetails): AdjustmentCheckResult {

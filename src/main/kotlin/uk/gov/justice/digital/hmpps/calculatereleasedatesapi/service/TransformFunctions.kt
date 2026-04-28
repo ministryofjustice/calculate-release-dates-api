@@ -93,8 +93,9 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Recall
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceAnalysis
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangementsV4
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SopcSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustmentType
@@ -127,7 +128,7 @@ import java.util.UUID
 */
 
 fun transform(
-  sentence: SentenceAndOffenceWithReleaseArrangements,
+  sentence: SentenceAndOffenceWithReleaseArrangementsV4,
   historicalTusedData: HistoricalTusedData? = null,
   revocationDate: LocalDate? = null,
   returnToCustodyDate: LocalDate? = null,
@@ -265,10 +266,11 @@ fun transform(
         externalSentenceId = externalSentenceId,
         caseReference = sentence.caseReference,
         recall = recall,
-        isSDSPlus = sentence.isSDSPlus,
-        isSDSPlusEligibleSentenceTypeLengthAndOffence = sentence.isSDSPlusEligibleSentenceTypeLengthAndOffence,
-        hasAnSDSEarlyReleaseExclusion = sentence.hasAnSDSEarlyReleaseExclusion,
-        section250 = sentenceCalculationType.sdsPlusEligibilityType === SentenceCalculationType.SDSPlusEligibilityType.SECTION250,
+        // TODO change SDS to use sdsReleaseArrangements directly
+        isSDSPlus = sentence.sdsReleaseArrangements?.isSDSPlus == true,
+        isSDSPlusEligibleSentenceTypeLengthAndOffence = sentence.sdsReleaseArrangements?.isSDSPlusEligibleSentenceTypeLengthAndOffence == true,
+        hasAnSDSEarlyReleaseExclusion = sentence.sdsReleaseArrangements?.sdsEarlyReleaseExclusions?.firstOrNull() ?: SDSEarlyReleaseExclusionType.NO,
+        section250 = sentenceCalculationType.isSection250(),
       )
     }
   }
@@ -586,8 +588,7 @@ fun transform(
           consecutiveSentence.sentenceCalculation.numberOfDaysToSentenceExpiryDate,
           extractDates(consecutiveSentence),
           consecutiveSentence.orderedSentences.map { sentencePart ->
-            sentencePart as AbstractSentence
-            val originalSentence = consecutiveSentence.orderedSentences.find { (it as AbstractSentence).identifier == sentencePart.identifier }!! as AbstractSentence
+            val originalSentence = consecutiveSentence.orderedSentences.find { it.identifier == sentencePart.identifier }!!
             val consecutiveToUUID =
               if (originalSentence.consecutiveSentenceUUIDs.isNotEmpty()) {
                 originalSentence.consecutiveSentenceUUIDs[0]
@@ -596,7 +597,7 @@ fun transform(
               }
             val consecutiveToSentence =
               if (consecutiveToUUID != null) {
-                consecutiveSentence.orderedSentences.find { (it as AbstractSentence).identifier == consecutiveToUUID }!! as AbstractSentence
+                consecutiveSentence.orderedSentences.find { it.identifier == consecutiveToUUID }!!
               } else {
                 null
               }
@@ -807,7 +808,7 @@ internal fun transform(comparisonPerson: ComparisonPerson, objectMapper: ObjectM
   transform(comparisonPerson.validationMessages, objectMapper),
   comparisonPerson.shortReference,
   comparisonPerson.mismatchType,
-  if (comparisonPerson.sdsPlusSentencesIdentified.isEmpty) emptyList() else objectMapper.convertValue(comparisonPerson.sdsPlusSentencesIdentified, object : TypeReference<List<SentenceAndOffenceWithReleaseArrangements>>() {}),
+  if (comparisonPerson.sdsPlusSentencesIdentified.isEmpty) emptyList() else objectMapper.convertValue(comparisonPerson.sdsPlusSentencesIdentified, object : TypeReference<List<SentenceAndOffenceWithReleaseArrangementsV4>>() {}),
   comparisonPerson.establishment,
   comparisonPerson.fatalException,
 )
@@ -823,7 +824,7 @@ fun transform(
   calculatedReleaseDates: CalculatedReleaseDates?,
   overrideDates: Map<ReleaseDateType, LocalDate?>,
   breakdownByReleaseDateType: Map<ReleaseDateType, ReleaseDateCalculationBreakdown>,
-  sdsSentencesIdentified: List<SentenceAndOffenceWithReleaseArrangements>,
+  sdsSentencesIdentified: List<SentenceAndOffenceWithReleaseArrangementsV4>,
   hasDiscrepancyRecorded: Boolean,
   objectMapper: ObjectMapper,
 ): ComparisonPersonOverview = ComparisonPersonOverview(
@@ -866,14 +867,14 @@ fun transform(discrepancyCauses: List<ComparisonPersonDiscrepancyCause>): List<D
 
 fun transform(
   sentenceAndOffenceAnalysis: SentenceAndOffenceAnalysis,
-  sentencesAndOffences: List<SentenceAndOffenceWithReleaseArrangements>,
+  sentencesAndOffences: List<SentenceAndOffenceWithReleaseArrangementsV4>,
 ): List<AnalysedSentenceAndOffence> = sentencesAndOffences.map {
   transform(sentenceAndOffences = it, sentenceAndOffenceAnalysis = sentenceAndOffenceAnalysis)
 }
 
 fun transform(
   sentenceAndOffenceAnalysis: SentenceAndOffenceAnalysis,
-  sentenceAndOffences: SentenceAndOffenceWithReleaseArrangements,
+  sentenceAndOffences: SentenceAndOffenceWithReleaseArrangementsV4,
 ): AnalysedSentenceAndOffence = AnalysedSentenceAndOffence(
   sentenceAndOffences.bookingId,
   sentenceAndOffences.sentenceSequence,
@@ -891,8 +892,8 @@ fun transform(
   sentenceAndOffences.courtDescription,
   sentenceAndOffences.fineAmount,
   sentenceAndOffenceAnalysis,
-  sentenceAndOffences.isSDSPlus,
-  sentenceAndOffences.hasAnSDSEarlyReleaseExclusion,
+  sentenceAndOffences.sdsReleaseArrangements?.isSDSPlus == true,
+  sentenceAndOffences.sdsReleaseArrangements?.sdsEarlyReleaseExclusions?.firstOrNull() ?: SDSEarlyReleaseExclusionType.NO,
   sentenceAndOffences.revocationDates,
 )
 

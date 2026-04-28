@@ -8,8 +8,8 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.mock
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSReleaseArrangements
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangementsV4
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.FixedTermRecallDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
@@ -175,7 +175,7 @@ class RecallValidationServiceTest {
   }
 
   private fun createSourceData(
-    sentences: List<SentenceAndOffenceWithReleaseArrangements>,
+    sentences: List<SentenceAndOffenceWithReleaseArrangementsV4>,
     returnToCustodyDate: LocalDate? = null,
     recallLength: Int? = null,
     movements: List<PrisonApiExternalMovement>? = null,
@@ -204,7 +204,7 @@ class RecallValidationServiceTest {
   )
 
   private companion object {
-    private val FTR_14_DAY_SENTENCE = SentenceAndOffenceWithReleaseArrangements(
+    private val FTR_14_DAY_SENTENCE = SentenceAndOffenceWithReleaseArrangementsV4(
       bookingId = 1L,
       sentenceSequence = 7,
       lineSequence = 1,
@@ -231,9 +231,12 @@ class RecallValidationServiceTest {
       courtTypeCode = null,
       consecutiveToSequence = null,
       revocationDates = listOf(LocalDate.of(2024, 1, 1)),
-      isSDSPlus = false,
-      isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-      hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
+      sdsReleaseArrangements = SDSReleaseArrangements(
+        isSDSPlus = false,
+        isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+        sdsEarlyReleaseExclusions = emptyList(),
+        isSection250 = false,
+      ),
     )
 
     private val FTR_56_DAY_SENTENCE = FTR_14_DAY_SENTENCE.copy(sentenceCalculationType = SentenceCalculationType.FTR_56ORA.name)

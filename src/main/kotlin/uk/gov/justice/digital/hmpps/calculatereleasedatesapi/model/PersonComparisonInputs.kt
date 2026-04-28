@@ -4,6 +4,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.adjustmentsapi.mode
 
 data class PersonComparisonInputs(
   val inputData: Booking,
-  val sentenceAndOffences: List<SentenceAndOffenceWithReleaseArrangements>,
+  val sentenceAndOffences: List<SentenceAndOffenceWithReleaseArrangementsV4>,
   val adjustments: List<AdjustmentDto>,
 )
