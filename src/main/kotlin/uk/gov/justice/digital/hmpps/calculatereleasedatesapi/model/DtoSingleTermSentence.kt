@@ -11,9 +11,6 @@ class DtoSingleTermSentence(
   override val standardSentences: List<AbstractSentence>,
 ) : SingleTermed,
   Term {
-  override val isSDSPlus: Boolean = false
-  override val isSDSPlusEligibleSentenceTypeLengthAndOffence: Boolean = false
-  override val isSDSPlusOffenceInPeriod: Boolean = false
   constructor(standardSentences: List<AbstractSentence>) :
     this(
       standardSentences.minOf(AbstractSentence::sentencedAt),
