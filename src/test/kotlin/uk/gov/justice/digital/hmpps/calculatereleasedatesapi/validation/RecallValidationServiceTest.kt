@@ -9,7 +9,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.mock
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSReleaseArrangements
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangementsV4
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.FixedTermRecallDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
@@ -175,7 +175,7 @@ class RecallValidationServiceTest {
   }
 
   private fun createSourceData(
-    sentences: List<SentenceAndOffenceWithReleaseArrangementsV4>,
+    sentences: List<SentenceAndOffenceWithReleaseArrangements>,
     returnToCustodyDate: LocalDate? = null,
     recallLength: Int? = null,
     movements: List<PrisonApiExternalMovement>? = null,
@@ -204,7 +204,7 @@ class RecallValidationServiceTest {
   )
 
   private companion object {
-    private val FTR_14_DAY_SENTENCE = SentenceAndOffenceWithReleaseArrangementsV4(
+    private val FTR_14_DAY_SENTENCE = SentenceAndOffenceWithReleaseArrangements(
       bookingId = 1L,
       sentenceSequence = 7,
       lineSequence = 1,

@@ -22,7 +22,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateHint
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSReleaseArrangements
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangementsV4
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.WorkingDay
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
@@ -1177,9 +1177,9 @@ class CalculationResultEnrichmentServiceTest {
     return ReleaseDate(date, type)
   }
 
-  private fun sentenceAndOffence(sentenceCalculationType: String, sentenceDate: LocalDate = LocalDate.of(2020, 1, 2), bookingId: Long = 0, sentenceSequence: Int = 0, lineSequence: Int = 0, sentenceTerm: Int = 5, isSdsPlus: Boolean = false, isSDSPlusEligibleSentenceTypeLengthAndOffence: Boolean = false): SentenceAndOffenceWithReleaseArrangementsV4 {
+  private fun sentenceAndOffence(sentenceCalculationType: String, sentenceDate: LocalDate = LocalDate.of(2020, 1, 2), bookingId: Long = 0, sentenceSequence: Int = 0, lineSequence: Int = 0, sentenceTerm: Int = 5, isSdsPlus: Boolean = false, isSDSPlusEligibleSentenceTypeLengthAndOffence: Boolean = false): SentenceAndOffenceWithReleaseArrangements {
     val sentenceType = SentenceCalculationType.from(sentenceCalculationType)
-    return SentenceAndOffenceWithReleaseArrangementsV4(
+    return SentenceAndOffenceWithReleaseArrangements(
       bookingId = bookingId,
       sentenceSequence = sentenceSequence,
       lineSequence = lineSequence,
@@ -1221,7 +1221,7 @@ class CalculationResultEnrichmentServiceTest {
     emptyList(),
   )
 
-  private val sentenceAndOffenceWithReleaseArrangements = SentenceAndOffenceWithReleaseArrangementsV4(
+  private val sentenceAndOffenceWithReleaseArrangements = SentenceAndOffenceWithReleaseArrangements(
     bookingId = 1L,
     sentenceSequence = 3,
     lineSequence = 2,

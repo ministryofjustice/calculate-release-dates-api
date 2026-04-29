@@ -61,7 +61,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.PreviouslyRecordedSLED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangementsV4
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmitCalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmittedDate
@@ -630,7 +630,7 @@ class CalculationTransactionalServiceTest {
     val SOURCE_DATA =
       CalculationSourceData(
         listOf(
-          SentenceAndOffenceWithReleaseArrangementsV4(
+          SentenceAndOffenceWithReleaseArrangements(
             originalSentence,
             originalSentence.offences[0],
             isSdsPlus = false,

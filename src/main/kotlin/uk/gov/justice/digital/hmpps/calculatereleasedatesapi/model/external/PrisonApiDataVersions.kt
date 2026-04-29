@@ -1,7 +1,7 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external
 
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSReleaseArrangements
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangementsV4
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import java.time.LocalDate
 
 class PrisonApiDataVersions {
@@ -26,7 +26,7 @@ class PrisonApiDataVersions {
     ) {
       fun toLatest() = offences.map { offence: OffenderOffence ->
         val sentenceType = SentenceCalculationType.from(sentenceCalculationType)
-        SentenceAndOffenceWithReleaseArrangementsV4(
+        SentenceAndOffenceWithReleaseArrangements(
           bookingId = bookingId,
           sentenceSequence = sentenceSequence,
           lineSequence = lineSequence,

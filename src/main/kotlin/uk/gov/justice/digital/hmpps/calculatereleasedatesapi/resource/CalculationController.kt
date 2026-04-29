@@ -30,7 +30,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NomisCalculat
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDatesAndCalculationContext
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RelevantRemandCalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RelevantRemandCalculationResult
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangementsV4
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmitCalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ReturnToCustodyDate
@@ -230,7 +230,7 @@ class CalculationController(
     @Parameter(required = true, example = "123456", description = "The calculationRequestId of the calculation")
     @PathVariable("calculationRequestId")
     calculationRequestId: Long,
-  ): List<SentenceAndOffenceWithReleaseArrangementsV4> {
+  ): List<SentenceAndOffenceWithReleaseArrangements> {
     log.info("Request received to get sentences and offences from $calculationRequestId calculation")
     return calculationTransactionalService.findSentenceAndOffencesFromCalculation(calculationRequestId)
   }

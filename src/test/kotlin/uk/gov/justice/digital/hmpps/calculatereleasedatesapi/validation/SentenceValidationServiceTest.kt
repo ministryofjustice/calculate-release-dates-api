@@ -9,7 +9,7 @@ import org.mockito.Mockito.mock
 import org.mockito.junit.jupiter.MockitoExtension
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NormalisedSentenceAndOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangementsV4
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSentenceAndOffences
@@ -160,7 +160,7 @@ class SentenceValidationServiceTest {
       ),
       offences = listOf(offence),
     )
-    val activeOffence = SentenceAndOffenceWithReleaseArrangementsV4(
+    val activeOffence = SentenceAndOffenceWithReleaseArrangements(
       NormalisedSentenceAndOffence(prisonApiSentenceAndOffences, offence),
       false,
       false,

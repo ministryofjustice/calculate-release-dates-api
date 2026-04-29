@@ -1,7 +1,7 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.validator
 
 import org.springframework.stereotype.Component
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangementsV4
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType.BOTUS
@@ -31,7 +31,7 @@ class BotusSupportedValidator : PreCalculationSourceDataValidator {
     return emptyList()
   }
 
-  private fun isBotusSentence(sentence: SentenceAndOffenceWithReleaseArrangementsV4): Boolean = SentenceCalculationType.from(sentence.sentenceCalculationType) == BOTUS
+  private fun isBotusSentence(sentence: SentenceAndOffenceWithReleaseArrangements): Boolean = SentenceCalculationType.from(sentence.sentenceCalculationType) == BOTUS
 
   private fun isBotusAdjacentSentence(sourceData: CalculationSourceData, index: Int): Boolean {
     val sentence = sourceData.sentenceAndOffences.firstOrNull { it.sentenceSequence == index }
@@ -39,7 +39,7 @@ class BotusSupportedValidator : PreCalculationSourceDataValidator {
   }
 
   private fun getConsecutiveChains(
-    consecutiveSentences: List<SentenceAndOffenceWithReleaseArrangementsV4>,
+    consecutiveSentences: List<SentenceAndOffenceWithReleaseArrangements>,
   ): List<List<Int>> {
     val sentenceChains = mutableListOf<MutableList<Int>>()
 

@@ -7,7 +7,9 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Sent
 import java.math.BigDecimal
 import java.time.LocalDate
 
-data class SentenceAndOffenceWithReleaseArrangementsV3(
+// This version of sentence and offence data added SDS early release exclusions to support SDS40 and also removed multiple offences to a single sentence with that now being handled upstream
+@Deprecated("Maintained for backwards compatibility with historical calculations. Superseded by SentenceAndOffenceWithReleaseArrangements")
+data class LegacyCRDSSentenceAndOffenceV3(
   override val bookingId: Long,
   override val sentenceSequence: Int,
   override val lineSequence: Int,
@@ -31,9 +33,9 @@ data class SentenceAndOffenceWithReleaseArrangementsV3(
   val hasAnSDSEarlyReleaseExclusion: SDSEarlyReleaseExclusionType,
 ) : SentenceAndOffence {
 
-  fun toLatest(): SentenceAndOffenceWithReleaseArrangementsV4 {
+  fun toLatest(): SentenceAndOffenceWithReleaseArrangements {
     val sentenceType = SentenceCalculationType.from(sentenceCalculationType)
-    return SentenceAndOffenceWithReleaseArrangementsV4(
+    return SentenceAndOffenceWithReleaseArrangements(
       bookingId = bookingId,
       sentenceSequence = sentenceSequence,
       lineSequence = lineSequence,

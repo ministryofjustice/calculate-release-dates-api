@@ -21,7 +21,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonPer
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualComparisonInput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.MismatchType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSReleaseArrangements
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangementsV4
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
@@ -152,7 +152,7 @@ class ManualComparisonServiceTest {
   @Test
   fun `get a comparison person with SDS+ sentences`() {
     val emptyObjectNode = objectMapper.createObjectNode()
-    val sdsPlusSentence = SentenceAndOffenceWithReleaseArrangementsV4(
+    val sdsPlusSentence = SentenceAndOffenceWithReleaseArrangements(
       bookingId = 1L,
       sentenceSequence = 3,
       consecutiveToSequence = null,

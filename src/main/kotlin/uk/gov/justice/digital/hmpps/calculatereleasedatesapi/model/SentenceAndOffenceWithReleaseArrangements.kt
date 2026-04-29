@@ -8,7 +8,10 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Sent
 import java.math.BigDecimal
 import java.time.LocalDate
 
-data class SentenceAndOffenceWithReleaseArrangementsV4(
+// This version of sentence and offence data moved SDS release arrangements into their own entity to represent the fact they are only relevant on SDS
+// sentences and also to support multiple early release exclusions so that we may know if the sentence is eligible for SDS40, SDS40 Additional Excluded Offences
+// and/or Progression Model release arrangements.
+data class SentenceAndOffenceWithReleaseArrangements(
   override val bookingId: Long,
   override val sentenceSequence: Int,
   override val lineSequence: Int,

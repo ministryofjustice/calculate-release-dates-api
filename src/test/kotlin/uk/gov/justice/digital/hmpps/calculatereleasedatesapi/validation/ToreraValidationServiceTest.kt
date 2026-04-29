@@ -6,7 +6,7 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSReleaseArrangements
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangementsV4
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
@@ -140,7 +140,7 @@ class ToreraValidationServiceTest {
     private val caseSequence = 155
     private val toreraOffenceCode = "A123456"
 
-    private val validSDSSentence = SentenceAndOffenceWithReleaseArrangementsV4(
+    private val validSDSSentence = SentenceAndOffenceWithReleaseArrangements(
       bookingId = 1,
       sentenceSequence = 1,
       sentenceDate = SDS_DYO_TORERA_START_DATE.plusDays(1),

@@ -13,7 +13,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationR
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ToDoType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentsSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSReleaseArrangements
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangementsV4
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ThingsToDo
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustmentType
@@ -730,7 +730,7 @@ class ThingsToDoServiceTest {
       offenceCode = "RR1",
       offenceDescription = "Littering",
     )
-    private val BASE_SENTENCE = SentenceAndOffenceWithReleaseArrangementsV4(
+    private val BASE_SENTENCE = SentenceAndOffenceWithReleaseArrangements(
       bookingId = BOOKING_ID,
       sentenceSequence = 1,
       lineSequence = 1,

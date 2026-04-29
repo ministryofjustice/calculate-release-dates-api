@@ -11,7 +11,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OffenderKeyDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateHint
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangementsV4
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.SDS_40_COMMENCEMENT_DATE
@@ -28,7 +28,7 @@ class CalculationResultEnrichmentService(
 
   fun addDetailToCalculationDates(
     releaseDates: List<ReleaseDate>,
-    sentenceAndOffences: List<SentenceAndOffenceWithReleaseArrangementsV4>?,
+    sentenceAndOffences: List<SentenceAndOffenceWithReleaseArrangements>?,
     calculationBreakdown: CalculationBreakdown?,
     historicalTusedSource: HistoricalTusedSource? = null,
     nomisPrisonerCalculation: OffenderKeyDates? = null,
@@ -59,7 +59,7 @@ class CalculationResultEnrichmentService(
     date: LocalDate,
     calculationBreakdown: CalculationBreakdown?,
     releaseDates: Map<ReleaseDateType, ReleaseDate>,
-    sentenceAndOffences: List<SentenceAndOffenceWithReleaseArrangementsV4>?,
+    sentenceAndOffences: List<SentenceAndOffenceWithReleaseArrangements>?,
     historicalTusedSource: HistoricalTusedSource? = null,
     nomisPrisonerCalculation: OffenderKeyDates? = null,
     historicSledOverride: CalculationOutcomeHistoricSledOverride?,
@@ -105,7 +105,7 @@ class CalculationResultEnrichmentService(
   }
 
   private fun showSDS40Hints(
-    sentenceAndOffences: List<SentenceAndOffenceWithReleaseArrangementsV4>,
+    sentenceAndOffences: List<SentenceAndOffenceWithReleaseArrangements>,
     calculationBreakdown: CalculationBreakdown,
   ): Boolean {
     if (!calculationBreakdown.showSds40Hints) return false

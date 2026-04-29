@@ -41,7 +41,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.MismatchType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.PersonComparisonInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSReleaseArrangements
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangementsV4
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ComparisonInput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
@@ -535,7 +535,7 @@ class ComparisonServiceTest {
   @Test
   fun `get a comparison person with SDS+ sentences`() {
     val emptyObjectNode = objectMapper.createObjectNode()
-    val sdsPlusSentence = SentenceAndOffenceWithReleaseArrangementsV4(
+    val sdsPlusSentence = SentenceAndOffenceWithReleaseArrangements(
       bookingId = 1L,
       sentenceSequence = 3,
       consecutiveToSequence = null,
@@ -639,7 +639,7 @@ class ComparisonServiceTest {
       returnToCustodyDate = null,
     )
     val adjustments = emptyList<AdjustmentDto>()
-    val sentencesAndOffences = emptyList<SentenceAndOffenceWithReleaseArrangementsV4>()
+    val sentencesAndOffences = emptyList<SentenceAndOffenceWithReleaseArrangements>()
 
     whenever(comparisonPersonRepository.getCalculationRequestFromComparisonPerson("ABCD1234", "FOO"))
       .thenReturn(calculationRequest)

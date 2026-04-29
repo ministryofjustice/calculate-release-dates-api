@@ -14,7 +14,7 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NormalisedSentenceAndOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangementsV4
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
@@ -455,7 +455,7 @@ class ReleaseArrangementLookupServiceTest {
     sentenceSequence = sequence,
   )
 
-  private fun assertSentence(sentence: SentenceAndOffenceWithReleaseArrangementsV4, isSDSPlus: Boolean, exclusionType: SDSEarlyReleaseExclusionType, sequence: Int) {
+  private fun assertSentence(sentence: SentenceAndOffenceWithReleaseArrangements, isSDSPlus: Boolean, exclusionType: SDSEarlyReleaseExclusionType, sequence: Int) {
     assertThat(sentence.sdsReleaseArrangements!!.isSDSPlus).isEqualTo(isSDSPlus)
     assertThat(sentence.sdsReleaseArrangements.sdsEarlyReleaseExclusions.firstOrNull()).isEqualTo(exclusionType)
     assertThat(sentence.sentenceSequence).isEqualTo(sequence)

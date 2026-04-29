@@ -38,7 +38,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType.FI
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType.FIXED_TERM_RECALL_28
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSReleaseArrangements
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangementsV4
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustment
@@ -272,7 +272,7 @@ class ValidationServiceTest : SpringTestBase() {
       validationService.validate(
         CalculationSourceData(
           listOf(
-            SentenceAndOffenceWithReleaseArrangementsV4(
+            SentenceAndOffenceWithReleaseArrangements(
               source = invalidSentence,
               isSdsPlus = false,
               isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
@@ -307,7 +307,7 @@ class ValidationServiceTest : SpringTestBase() {
       validationService.validate(
         CalculationSourceData(
           sentenceAndOffences = listOf(
-            SentenceAndOffenceWithReleaseArrangementsV4(
+            SentenceAndOffenceWithReleaseArrangements(
               source = invalidSentence,
               isSdsPlus = false,
               isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
@@ -343,7 +343,7 @@ class ValidationServiceTest : SpringTestBase() {
       validationService.validate(
         CalculationSourceData(
           listOf(
-            SentenceAndOffenceWithReleaseArrangementsV4(
+            SentenceAndOffenceWithReleaseArrangements(
               source = invalidSentence,
               isSdsPlus = false,
               isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
@@ -379,7 +379,7 @@ class ValidationServiceTest : SpringTestBase() {
       validationService.validate(
         CalculationSourceData(
           sentenceAndOffences = listOf(
-            SentenceAndOffenceWithReleaseArrangementsV4(
+            SentenceAndOffenceWithReleaseArrangements(
               source = invalidSentence,
               isSdsPlus = false,
               isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
@@ -415,7 +415,7 @@ class ValidationServiceTest : SpringTestBase() {
       validationService.validate(
         CalculationSourceData(
           sentenceAndOffences = listOf(
-            SentenceAndOffenceWithReleaseArrangementsV4(
+            SentenceAndOffenceWithReleaseArrangements(
               source = invalidSentence,
               isSdsPlus = false,
               isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
@@ -451,7 +451,7 @@ class ValidationServiceTest : SpringTestBase() {
       validationService.validate(
         CalculationSourceData(
           listOf(
-            SentenceAndOffenceWithReleaseArrangementsV4(
+            SentenceAndOffenceWithReleaseArrangements(
               source = validSentence,
               isSdsPlus = false,
               isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
@@ -476,7 +476,7 @@ class ValidationServiceTest : SpringTestBase() {
     val result = validationService.validate(
       VALID_FTR_SOURCE_DATA.copy(
         sentenceAndOffences = listOf(FTR_14_DAY_SENTENCE).map {
-          SentenceAndOffenceWithReleaseArrangementsV4(
+          SentenceAndOffenceWithReleaseArrangements(
             source = it,
             isSdsPlus = false,
             isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
@@ -496,7 +496,7 @@ class ValidationServiceTest : SpringTestBase() {
     val result = validationService.validate(
       VALID_FTR_SOURCE_DATA.copy(
         sentenceAndOffences = listOf(FTR_14_DAY_SENTENCE).map {
-          SentenceAndOffenceWithReleaseArrangementsV4(
+          SentenceAndOffenceWithReleaseArrangements(
             source = it,
             isSdsPlus = false,
             isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
@@ -516,7 +516,7 @@ class ValidationServiceTest : SpringTestBase() {
     val result = validationService.validate(
       CalculationSourceData(
         listOf(
-          SentenceAndOffenceWithReleaseArrangementsV4(
+          SentenceAndOffenceWithReleaseArrangements(
             validEdsSentence,
             isSdsPlus = false,
             isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
@@ -546,7 +546,7 @@ class ValidationServiceTest : SpringTestBase() {
       validationService.validate(
         CalculationSourceData(
           listOf(
-            SentenceAndOffenceWithReleaseArrangementsV4(
+            SentenceAndOffenceWithReleaseArrangements(
               source = sentence,
               isSdsPlus = false,
               isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
@@ -584,7 +584,7 @@ class ValidationServiceTest : SpringTestBase() {
       validationService.validate(
         CalculationSourceData(
           listOf(
-            SentenceAndOffenceWithReleaseArrangementsV4(
+            SentenceAndOffenceWithReleaseArrangements(
               source = sentence,
               isSdsPlus = false,
               isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
@@ -621,7 +621,7 @@ class ValidationServiceTest : SpringTestBase() {
       validationService.validate(
         CalculationSourceData(
           listOf(
-            SentenceAndOffenceWithReleaseArrangementsV4(
+            SentenceAndOffenceWithReleaseArrangements(
               source = sentence,
               isSdsPlus = false,
               isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
@@ -667,14 +667,14 @@ class ValidationServiceTest : SpringTestBase() {
       validationService.validate(
         CalculationSourceData(
           sentences.map {
-            SentenceAndOffenceWithReleaseArrangementsV4(
+            SentenceAndOffenceWithReleaseArrangements(
               source = it,
               isSdsPlus = false,
               isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
               hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
             )
           }.map {
-            SentenceAndOffenceWithReleaseArrangementsV4(
+            SentenceAndOffenceWithReleaseArrangements(
               source = it,
               isSdsPlus = false,
               isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
@@ -718,14 +718,14 @@ class ValidationServiceTest : SpringTestBase() {
       validationService.validate(
         CalculationSourceData(
           sentences.map {
-            SentenceAndOffenceWithReleaseArrangementsV4(
+            SentenceAndOffenceWithReleaseArrangements(
               source = it,
               isSdsPlus = false,
               isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
               hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
             )
           }.map {
-            SentenceAndOffenceWithReleaseArrangementsV4(
+            SentenceAndOffenceWithReleaseArrangements(
               source = it,
               isSdsPlus = false,
               isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
@@ -758,7 +758,7 @@ class ValidationServiceTest : SpringTestBase() {
       validationService.validate(
         CalculationSourceData(
           sentences.map {
-            SentenceAndOffenceWithReleaseArrangementsV4(
+            SentenceAndOffenceWithReleaseArrangements(
               source = it,
               isSdsPlus = false,
               isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
@@ -820,7 +820,7 @@ class ValidationServiceTest : SpringTestBase() {
       validationService.validate(
         CalculationSourceData(
           sentences.map {
-            SentenceAndOffenceWithReleaseArrangementsV4(
+            SentenceAndOffenceWithReleaseArrangements(
               source = it,
               isSdsPlus = false,
               isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
@@ -865,7 +865,7 @@ class ValidationServiceTest : SpringTestBase() {
       validationService.validate(
         CalculationSourceData(
           sentences.map {
-            SentenceAndOffenceWithReleaseArrangementsV4(
+            SentenceAndOffenceWithReleaseArrangements(
               source = it,
               isSdsPlus = false,
               isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
@@ -910,7 +910,7 @@ class ValidationServiceTest : SpringTestBase() {
       validationService.validate(
         CalculationSourceData(
           sentences.map {
-            SentenceAndOffenceWithReleaseArrangementsV4(
+            SentenceAndOffenceWithReleaseArrangements(
               it,
               isSdsPlus = false,
               isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
@@ -939,7 +939,7 @@ class ValidationServiceTest : SpringTestBase() {
     val result = validationService.validate(
       CalculationSourceData(
         listOf(validSopcSentence).map {
-          SentenceAndOffenceWithReleaseArrangementsV4(
+          SentenceAndOffenceWithReleaseArrangements(
             source = it,
             isSdsPlus = false,
             isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
@@ -982,7 +982,7 @@ class ValidationServiceTest : SpringTestBase() {
       validationService.validate(
         CalculationSourceData(
           sentences.map {
-            SentenceAndOffenceWithReleaseArrangementsV4(
+            SentenceAndOffenceWithReleaseArrangements(
               source = it,
               isSdsPlus = false,
               isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
@@ -1011,7 +1011,7 @@ class ValidationServiceTest : SpringTestBase() {
     val result = validationService.validate(
       CalculationSourceData(
         listOf(validEdsSentence).map {
-          SentenceAndOffenceWithReleaseArrangementsV4(
+          SentenceAndOffenceWithReleaseArrangements(
             source = it,
             isSdsPlus = false,
             isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
@@ -1092,7 +1092,7 @@ class ValidationServiceTest : SpringTestBase() {
       validationService.validate(
         CalculationSourceData(
           sentences.map {
-            SentenceAndOffenceWithReleaseArrangementsV4(
+            SentenceAndOffenceWithReleaseArrangements(
               source = it,
               isSdsPlus = false,
               isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
@@ -1120,7 +1120,7 @@ class ValidationServiceTest : SpringTestBase() {
   fun `Test SDS sentence is valid`() {
     val sentences =
       listOf(
-        SentenceAndOffenceWithReleaseArrangementsV4(
+        SentenceAndOffenceWithReleaseArrangements(
           source = validSdsSentence,
           isSdsPlus = false,
           isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
@@ -1131,7 +1131,7 @@ class ValidationServiceTest : SpringTestBase() {
       validationService.validate(
         CalculationSourceData(
           sentences.map {
-            SentenceAndOffenceWithReleaseArrangementsV4(
+            SentenceAndOffenceWithReleaseArrangements(
               source = it,
               isSdsPlus = false,
               isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
@@ -1157,7 +1157,7 @@ class ValidationServiceTest : SpringTestBase() {
       validationService.validate(
         CalculationSourceData(
           sentences.map {
-            SentenceAndOffenceWithReleaseArrangementsV4(
+            SentenceAndOffenceWithReleaseArrangements(
               source = it,
               isSdsPlus = false,
               isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
@@ -1182,7 +1182,7 @@ class ValidationServiceTest : SpringTestBase() {
     val result = validationService.validate(
       CalculationSourceData(
         sentences.map {
-          SentenceAndOffenceWithReleaseArrangementsV4(
+          SentenceAndOffenceWithReleaseArrangements(
             source = it,
             isSdsPlus = false,
             isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
@@ -1222,7 +1222,7 @@ class ValidationServiceTest : SpringTestBase() {
       validationService.validate(
         CalculationSourceData(
           sentences.map {
-            SentenceAndOffenceWithReleaseArrangementsV4(
+            SentenceAndOffenceWithReleaseArrangements(
               source = it,
               isSdsPlus = false,
               isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
@@ -1262,7 +1262,7 @@ class ValidationServiceTest : SpringTestBase() {
       validationService.validate(
         CalculationSourceData(
           sentences.map {
-            SentenceAndOffenceWithReleaseArrangementsV4(
+            SentenceAndOffenceWithReleaseArrangements(
               source = it,
               isSdsPlus = false,
               isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
@@ -1309,7 +1309,7 @@ class ValidationServiceTest : SpringTestBase() {
       validationService.validate(
         CalculationSourceData(
           sentences.map {
-            SentenceAndOffenceWithReleaseArrangementsV4(
+            SentenceAndOffenceWithReleaseArrangements(
               source = it,
               isSdsPlus = false,
               isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
@@ -1352,7 +1352,7 @@ class ValidationServiceTest : SpringTestBase() {
       validationService.validate(
         CalculationSourceData(
           sentences.map {
-            SentenceAndOffenceWithReleaseArrangementsV4(
+            SentenceAndOffenceWithReleaseArrangements(
               source = it,
               isSdsPlus = false,
               isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
@@ -1405,7 +1405,7 @@ class ValidationServiceTest : SpringTestBase() {
       validationService.validate(
         CalculationSourceData(
           sentences.map {
-            SentenceAndOffenceWithReleaseArrangementsV4(
+            SentenceAndOffenceWithReleaseArrangements(
               source = it,
               isSdsPlus = false,
               isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
@@ -1470,7 +1470,7 @@ class ValidationServiceTest : SpringTestBase() {
       validationService.validate(
         CalculationSourceData(
           sentences.map {
-            SentenceAndOffenceWithReleaseArrangementsV4(
+            SentenceAndOffenceWithReleaseArrangements(
               source = it,
               isSdsPlus = false,
               isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
@@ -1507,7 +1507,7 @@ class ValidationServiceTest : SpringTestBase() {
       validationService.validate(
         CalculationSourceData(
           sentences.map {
-            SentenceAndOffenceWithReleaseArrangementsV4(
+            SentenceAndOffenceWithReleaseArrangements(
               source = it,
               isSdsPlus = false,
               isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
@@ -1549,7 +1549,7 @@ class ValidationServiceTest : SpringTestBase() {
       validationService.validate(
         CalculationSourceData(
           sentences.map {
-            SentenceAndOffenceWithReleaseArrangementsV4(
+            SentenceAndOffenceWithReleaseArrangements(
               source = it,
               isSdsPlus = false,
               isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
@@ -1587,7 +1587,7 @@ class ValidationServiceTest : SpringTestBase() {
       validationService.validate(
         CalculationSourceData(
           sentences.map {
-            SentenceAndOffenceWithReleaseArrangementsV4(
+            SentenceAndOffenceWithReleaseArrangements(
               source = it,
               isSdsPlus = false,
               isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
@@ -1624,7 +1624,7 @@ class ValidationServiceTest : SpringTestBase() {
     val result = validationService.validate(
       CalculationSourceData(
         sentences.map {
-          SentenceAndOffenceWithReleaseArrangementsV4(
+          SentenceAndOffenceWithReleaseArrangements(
             source = it,
             isSdsPlus = false,
             isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
@@ -1659,7 +1659,7 @@ class ValidationServiceTest : SpringTestBase() {
       validationService.validate(
         CalculationSourceData(
           sentences.map {
-            SentenceAndOffenceWithReleaseArrangementsV4(
+            SentenceAndOffenceWithReleaseArrangements(
               source = it,
               isSdsPlus = false,
               isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
@@ -1693,7 +1693,7 @@ class ValidationServiceTest : SpringTestBase() {
       validationService.validate(
         CalculationSourceData(
           sentences.map {
-            SentenceAndOffenceWithReleaseArrangementsV4(
+            SentenceAndOffenceWithReleaseArrangements(
               source = it,
               isSdsPlus = false,
               isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
@@ -1721,7 +1721,7 @@ class ValidationServiceTest : SpringTestBase() {
     val result = validationService.validate(
       sourceData = CalculationSourceData(
         sentenceAndOffences = listOf(
-          SentenceAndOffenceWithReleaseArrangementsV4(
+          SentenceAndOffenceWithReleaseArrangements(
             source = validSdsSentence,
             isSdsPlus = false,
             isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
@@ -1746,7 +1746,7 @@ class ValidationServiceTest : SpringTestBase() {
     val result = validationService.validate(
       sourceData = CalculationSourceData(
         sentenceAndOffences = listOf(
-          SentenceAndOffenceWithReleaseArrangementsV4(
+          SentenceAndOffenceWithReleaseArrangements(
             source = validSdsSentence,
             isSdsPlus = false,
             isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
@@ -1771,7 +1771,7 @@ class ValidationServiceTest : SpringTestBase() {
     val result = validationService.validate(
       sourceData = CalculationSourceData(
         sentenceAndOffences = listOf(
-          SentenceAndOffenceWithReleaseArrangementsV4(
+          SentenceAndOffenceWithReleaseArrangements(
             source = validSdsSentence,
             isSdsPlus = false,
             isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
@@ -1796,7 +1796,7 @@ class ValidationServiceTest : SpringTestBase() {
     val result = validationService.validate(
       sourceData = CalculationSourceData(
         sentenceAndOffences = listOf(
-          SentenceAndOffenceWithReleaseArrangementsV4(
+          SentenceAndOffenceWithReleaseArrangements(
             source = validSdsSentence,
             isSdsPlus = false,
             isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
@@ -1821,7 +1821,7 @@ class ValidationServiceTest : SpringTestBase() {
     val result = validationService.validate(
       CalculationSourceData(
         listOf(
-          SentenceAndOffenceWithReleaseArrangementsV4(
+          SentenceAndOffenceWithReleaseArrangements(
             source = validEdsRecallSentence,
             isSdsPlus = false,
             isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
@@ -1845,7 +1845,7 @@ class ValidationServiceTest : SpringTestBase() {
     val result = validationService.validate(
       CalculationSourceData(
         listOf(
-          SentenceAndOffenceWithReleaseArrangementsV4(
+          SentenceAndOffenceWithReleaseArrangements(
             source = validSopcRecallSentence,
             isSdsPlus = false,
             isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
@@ -1873,7 +1873,7 @@ class ValidationServiceTest : SpringTestBase() {
           FTR_14_DAY_SENTENCE,
           FTR_28_DAY_SENTENCE,
         ).map {
-          SentenceAndOffenceWithReleaseArrangementsV4(
+          SentenceAndOffenceWithReleaseArrangements(
             source = it,
             isSdsPlus = false,
             isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
@@ -1893,7 +1893,7 @@ class ValidationServiceTest : SpringTestBase() {
     val result = validationService.validate(
       VALID_FTR_SOURCE_DATA.copy(
         sentenceAndOffences = listOf(FTR_14_DAY_SENTENCE).map {
-          SentenceAndOffenceWithReleaseArrangementsV4(
+          SentenceAndOffenceWithReleaseArrangements(
             source = it,
             isSdsPlus = false,
             isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
@@ -1915,7 +1915,7 @@ class ValidationServiceTest : SpringTestBase() {
     val result = validationService.validate(
       VALID_FTR_SOURCE_DATA.copy(
         sentenceAndOffences = listOf(FTR_28_DAY_SENTENCE).map {
-          SentenceAndOffenceWithReleaseArrangementsV4(
+          SentenceAndOffenceWithReleaseArrangements(
             it,
             false,
             false,
@@ -1960,7 +1960,7 @@ class ValidationServiceTest : SpringTestBase() {
               FTR_14_DAY_SENTENCE,
               FTR_28_DAY_SENTENCE,
             ).map {
-              SentenceAndOffenceWithReleaseArrangementsV4(
+              SentenceAndOffenceWithReleaseArrangements(
                 source = it,
                 isSdsPlus = false,
                 isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
@@ -1981,7 +1981,7 @@ class ValidationServiceTest : SpringTestBase() {
         val result = validationService.validate(
           VALID_FTR_SOURCE_DATA.copy(
             sentenceAndOffences = listOf(FTR_14_DAY_SENTENCE).map {
-              SentenceAndOffenceWithReleaseArrangementsV4(
+              SentenceAndOffenceWithReleaseArrangements(
                 source = it,
                 isSdsPlus = false,
                 isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
@@ -2003,7 +2003,7 @@ class ValidationServiceTest : SpringTestBase() {
         val result = validationService.validate(
           VALID_FTR_SOURCE_DATA.copy(
             sentenceAndOffences = listOf(FTR_28_DAY_SENTENCE).map {
-              SentenceAndOffenceWithReleaseArrangementsV4(
+              SentenceAndOffenceWithReleaseArrangements(
                 source = it,
                 isSdsPlus = false,
                 isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
@@ -2112,7 +2112,7 @@ class ValidationServiceTest : SpringTestBase() {
       val sourceData =
         CalculationSourceData(
           sentenceAndOffences = listOf(
-            SentenceAndOffenceWithReleaseArrangementsV4(
+            SentenceAndOffenceWithReleaseArrangements(
               validSdsSentence,
               false,
               false,
@@ -2291,7 +2291,7 @@ class ValidationServiceTest : SpringTestBase() {
         val result = validationService.validate(
           CalculationSourceData(
             sentenceAndOffences = listOf(sentenceAndOffences).map {
-              SentenceAndOffenceWithReleaseArrangementsV4(
+              SentenceAndOffenceWithReleaseArrangements(
                 source = it,
                 isSdsPlus = false,
                 isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
@@ -2320,7 +2320,7 @@ class ValidationServiceTest : SpringTestBase() {
         val result = validationService.validate(
           CalculationSourceData(
             sentenceAndOffences = listOf(sentenceAndOffences).map {
-              SentenceAndOffenceWithReleaseArrangementsV4(
+              SentenceAndOffenceWithReleaseArrangements(
                 source = it,
                 isSdsPlus = false,
                 isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
@@ -2348,7 +2348,7 @@ class ValidationServiceTest : SpringTestBase() {
         val result = validationService.validate(
           CalculationSourceData(
             sentenceAndOffences = listOf(sentenceAndOffences).map {
-              SentenceAndOffenceWithReleaseArrangementsV4(
+              SentenceAndOffenceWithReleaseArrangements(
                 source = it,
                 isSdsPlus = false,
                 isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
@@ -2376,7 +2376,7 @@ class ValidationServiceTest : SpringTestBase() {
         val result = validationService.validate(
           CalculationSourceData(
             sentenceAndOffences = listOf(sentenceAndOffences).map {
-              SentenceAndOffenceWithReleaseArrangementsV4(
+              SentenceAndOffenceWithReleaseArrangements(
                 source = it,
                 isSdsPlus = false,
                 isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
@@ -2404,7 +2404,7 @@ class ValidationServiceTest : SpringTestBase() {
         val result = validationService.validate(
           CalculationSourceData(
             sentenceAndOffences = listOf(sentenceAndOffences).map {
-              SentenceAndOffenceWithReleaseArrangementsV4(
+              SentenceAndOffenceWithReleaseArrangements(
                 source = it,
                 isSdsPlus = false,
                 isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
@@ -2432,7 +2432,7 @@ class ValidationServiceTest : SpringTestBase() {
         val result = validationService.validate(
           CalculationSourceData(
             sentenceAndOffences = listOf(sentenceAndOffences).map {
-              SentenceAndOffenceWithReleaseArrangementsV4(
+              SentenceAndOffenceWithReleaseArrangements(
                 source = it,
                 isSdsPlus = false,
                 isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
@@ -2459,7 +2459,7 @@ class ValidationServiceTest : SpringTestBase() {
         val result = validationService.validate(
           CalculationSourceData(
             sentenceAndOffences = listOf(sentenceAndOffences).map {
-              SentenceAndOffenceWithReleaseArrangementsV4(
+              SentenceAndOffenceWithReleaseArrangements(
                 source = it,
                 isSdsPlus = false,
                 isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
@@ -2497,7 +2497,7 @@ class ValidationServiceTest : SpringTestBase() {
         val result = validationService.validate(
           CalculationSourceData(
             sentenceAndOffences = listOf(
-              SentenceAndOffenceWithReleaseArrangementsV4(
+              SentenceAndOffenceWithReleaseArrangements(
                 source = validSdsSentence,
                 isSdsPlus = false,
                 isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
@@ -2534,7 +2534,7 @@ class ValidationServiceTest : SpringTestBase() {
         val result = validationService.validate(
           sourceData = CalculationSourceData(
             sentenceAndOffences = listOf(
-              SentenceAndOffenceWithReleaseArrangementsV4(
+              SentenceAndOffenceWithReleaseArrangements(
                 source = validSdsSentence,
                 isSdsPlus = false,
                 isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
@@ -2571,7 +2571,7 @@ class ValidationServiceTest : SpringTestBase() {
         val result = validationService.validate(
           CalculationSourceData(
             sentenceAndOffences = listOf(
-              SentenceAndOffenceWithReleaseArrangementsV4(
+              SentenceAndOffenceWithReleaseArrangements(
                 source = validSdsSentence,
                 isSdsPlus = false,
                 isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
@@ -2608,7 +2608,7 @@ class ValidationServiceTest : SpringTestBase() {
         val result = validationService.validate(
           CalculationSourceData(
             sentenceAndOffences = listOf(
-              SentenceAndOffenceWithReleaseArrangementsV4(
+              SentenceAndOffenceWithReleaseArrangements(
                 source = validSdsSentence,
                 isSdsPlus = false,
                 isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
@@ -2635,7 +2635,7 @@ class ValidationServiceTest : SpringTestBase() {
     whenever(sourceDataService.getCalculationSourceData(eq(PRISONER_ID), any(), any())).thenReturn(
       CalculationSourceData(
         listOf(
-          SentenceAndOffenceWithReleaseArrangementsV4(
+          SentenceAndOffenceWithReleaseArrangements(
             source = sentenceWithMissingOffenceDates,
             isSdsPlus = true,
             isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
@@ -2656,7 +2656,7 @@ class ValidationServiceTest : SpringTestBase() {
 
   @Test
   fun `If a sentence has been normalised then it doesn't trigger consecutive sentence warning`() {
-    val sentence1 = SentenceAndOffenceWithReleaseArrangementsV4(
+    val sentence1 = SentenceAndOffenceWithReleaseArrangements(
       bookingId = 1L,
       sentenceSequence = 1,
       lineSequence = 1,
@@ -2696,7 +2696,7 @@ class ValidationServiceTest : SpringTestBase() {
         offenceDescription = "A Dummy description",
       ),
     )
-    val sentence3 = SentenceAndOffenceWithReleaseArrangementsV4(
+    val sentence3 = SentenceAndOffenceWithReleaseArrangements(
       bookingId = 1L,
       sentenceSequence = 3,
       lineSequence = 1,
@@ -2748,7 +2748,7 @@ class ValidationServiceTest : SpringTestBase() {
     val result = validationService.validate(
       CalculationSourceData(
         listOf(validSdsSentence).map {
-          SentenceAndOffenceWithReleaseArrangementsV4(
+          SentenceAndOffenceWithReleaseArrangements(
             source = it,
             isSdsPlus = true,
             isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
@@ -2971,7 +2971,7 @@ class ValidationServiceTest : SpringTestBase() {
   @Test
   fun `Sentence contains SE20 offence with start date 2020-11-30`() {
     val sentence1 = (
-      SentenceAndOffenceWithReleaseArrangementsV4(
+      SentenceAndOffenceWithReleaseArrangements(
         source = validSdsSentence.copy(
           sentenceDate = LocalDate.of(2023, 8, 8),
           lineSequence = 1,
@@ -2988,7 +2988,7 @@ class ValidationServiceTest : SpringTestBase() {
       )
 
     val sentence2 = (
-      SentenceAndOffenceWithReleaseArrangementsV4(
+      SentenceAndOffenceWithReleaseArrangements(
         source = validSdsSentence.copy(
           sentenceDate = LocalDate.of(2024, 11, 3),
           lineSequence = 1,
@@ -3021,7 +3021,7 @@ class ValidationServiceTest : SpringTestBase() {
   @Test
   fun `Sentence contains SE20 offence with start date 2024-11-02`() {
     val sentence1 = (
-      SentenceAndOffenceWithReleaseArrangementsV4(
+      SentenceAndOffenceWithReleaseArrangements(
         source = validSdsSentence.copy(
           sentenceDate = LocalDate.of(2023, 6, 7),
           lineSequence = 1,
@@ -3039,7 +3039,7 @@ class ValidationServiceTest : SpringTestBase() {
       )
 
     val sentence2 = (
-      SentenceAndOffenceWithReleaseArrangementsV4(
+      SentenceAndOffenceWithReleaseArrangements(
         source = validSdsSentence.copy(
           sentenceDate = LocalDate.of(2023, 6, 7),
           lineSequence = 1,
@@ -3073,7 +3073,7 @@ class ValidationServiceTest : SpringTestBase() {
   @Test
   fun `Sentence contains SE20 offence with start date 2020-11-28`() {
     val sentence1 = (
-      SentenceAndOffenceWithReleaseArrangementsV4(
+      SentenceAndOffenceWithReleaseArrangements(
         source = validSdsSentence.copy(
           sentenceDate = LocalDate.of(2024, 9, 10),
           lineSequence = 1,
@@ -3107,7 +3107,7 @@ class ValidationServiceTest : SpringTestBase() {
   @Test
   fun `Sentence contains SE20 offence with start date 2018-07-09`() {
     val sentence1 = (
-      SentenceAndOffenceWithReleaseArrangementsV4(
+      SentenceAndOffenceWithReleaseArrangements(
         source = validSdsSentence.copy(
           sentenceDate = LocalDate.of(2021, 7, 10),
           lineSequence = 1,
@@ -3124,7 +3124,7 @@ class ValidationServiceTest : SpringTestBase() {
       )
 
     val sentence2 = (
-      SentenceAndOffenceWithReleaseArrangementsV4(
+      SentenceAndOffenceWithReleaseArrangements(
         source = validSdsSentence.copy(
           sentenceDate = LocalDate.of(2022, 6, 6),
           lineSequence = 1,
@@ -3157,7 +3157,7 @@ class ValidationServiceTest : SpringTestBase() {
   @Test
   fun `Sentence contains two SE20 offence violations dated 2020-11-03 and one valid`() {
     val sentence1 = (
-      SentenceAndOffenceWithReleaseArrangementsV4(
+      SentenceAndOffenceWithReleaseArrangements(
         source = validSdsSentence.copy(
           sentenceDate = LocalDate.of(2022, 7, 10),
           lineSequence = 1,
@@ -3175,7 +3175,7 @@ class ValidationServiceTest : SpringTestBase() {
       )
 
     val sentence2 = (
-      SentenceAndOffenceWithReleaseArrangementsV4(
+      SentenceAndOffenceWithReleaseArrangements(
         validSdsSentence.copy(
           sentenceDate = LocalDate.of(2022, 7, 10),
           lineSequence = 1,
@@ -3194,7 +3194,7 @@ class ValidationServiceTest : SpringTestBase() {
       )
 
     val sentence3 = (
-      SentenceAndOffenceWithReleaseArrangementsV4(
+      SentenceAndOffenceWithReleaseArrangements(
         validSdsSentence.copy(
           sentenceDate = LocalDate.of(2022, 7, 10),
           lineSequence = 1,
@@ -3233,7 +3233,7 @@ class ValidationServiceTest : SpringTestBase() {
   @Test
   fun `Sentence contains two SE20 offence violations dated 2020-10-23, 2020-11-15 and one valid`() {
     val sentence1 = (
-      SentenceAndOffenceWithReleaseArrangementsV4(
+      SentenceAndOffenceWithReleaseArrangements(
         source = validSdsSentence.copy(
           sentenceDate = LocalDate.of(2023, 4, 14),
           lineSequence = 1,
@@ -3250,7 +3250,7 @@ class ValidationServiceTest : SpringTestBase() {
       )
 
     val sentence2 = (
-      SentenceAndOffenceWithReleaseArrangementsV4(
+      SentenceAndOffenceWithReleaseArrangements(
         source = validSdsSentence.copy(
           sentenceDate = LocalDate.of(2023, 7, 16),
           lineSequence = 1,
@@ -3267,7 +3267,7 @@ class ValidationServiceTest : SpringTestBase() {
       )
 
     val sentence3 = (
-      SentenceAndOffenceWithReleaseArrangementsV4(
+      SentenceAndOffenceWithReleaseArrangements(
         source = validSdsSentence.copy(
           sentenceDate = LocalDate.of(2023, 8, 18),
           lineSequence = 1,
@@ -3304,7 +3304,7 @@ class ValidationServiceTest : SpringTestBase() {
   @Test
   fun `Sentence contains no SE20 offence violations with offence dated 2024-03-08`() {
     val sentence1 = (
-      SentenceAndOffenceWithReleaseArrangementsV4(
+      SentenceAndOffenceWithReleaseArrangements(
         source = validSdsSentence.copy(
           sentenceDate = LocalDate.of(2024, 3, 9),
           lineSequence = 1,
@@ -3337,7 +3337,7 @@ class ValidationServiceTest : SpringTestBase() {
   @Test
   fun `Sentence contains no SE20 offence violations with offence dated 2020-12-24`() {
     val sentence1 = (
-      SentenceAndOffenceWithReleaseArrangementsV4(
+      SentenceAndOffenceWithReleaseArrangements(
         source = validSdsSentence.copy(
           sentenceDate = LocalDate.of(2024, 2, 2),
           lineSequence = 1,
@@ -3369,7 +3369,7 @@ class ValidationServiceTest : SpringTestBase() {
 
   @Test
   fun `repatriated prisoners should be unsupported`() {
-    val sentenceWithRepatriatedCourtId = SentenceAndOffenceWithReleaseArrangementsV4(
+    val sentenceWithRepatriatedCourtId = SentenceAndOffenceWithReleaseArrangements(
       source = validSdsSentence.copy(courtId = "FORGN"),
       isSdsPlus = false,
       isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
@@ -3395,7 +3395,7 @@ class ValidationServiceTest : SpringTestBase() {
     val result = validationService.validate(
       VALID_FTR_SOURCE_DATA.copy(
         sentenceAndOffences = listOf(FTR_56_DAY_SENTENCE).map {
-          SentenceAndOffenceWithReleaseArrangementsV4(
+          SentenceAndOffenceWithReleaseArrangements(
             source = it.copy(revocationDates = emptyList()),
             isSdsPlus = false,
             isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
@@ -3418,7 +3418,7 @@ class ValidationServiceTest : SpringTestBase() {
     val result = validationService.validate(
       VALID_FTR_SOURCE_DATA.copy(
         sentenceAndOffences = listOf(FTR_56_DAY_SENTENCE).map {
-          SentenceAndOffenceWithReleaseArrangementsV4(
+          SentenceAndOffenceWithReleaseArrangements(
             source = it.copy(revocationDates = listOf(revocationDate)),
             isSdsPlus = false,
             isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
@@ -3553,7 +3553,7 @@ class ValidationServiceTest : SpringTestBase() {
     )
     private val VALID_FTR_SOURCE_DATA = CalculationSourceData(
       sentenceAndOffences = listOf(FTR_14_DAY_SENTENCE).map {
-        SentenceAndOffenceWithReleaseArrangementsV4(
+        SentenceAndOffenceWithReleaseArrangements(
           source = it,
           isSdsPlus = false,
           isSDSPlusEligibleSentenceTypeLengthAndOffence = false,

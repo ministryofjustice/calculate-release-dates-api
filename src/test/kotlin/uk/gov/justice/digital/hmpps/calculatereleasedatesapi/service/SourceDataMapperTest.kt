@@ -7,10 +7,10 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.adjustmentsapi.model.AdjustmentDto
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentsSourceData
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.LegacyCRDSSentenceAndOffenceV2
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSReleaseArrangements
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangementsV4
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffencesWithSDSPlus
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
@@ -111,14 +111,14 @@ class SourceDataMapperTest {
     val sentencesAndOffences = sourceDataMapper.mapSentencesAndOffences(calculationRequest)
     assertThat(sentencesAndOffences).isEqualTo(
       listOf(
-        SentenceAndOffenceWithReleaseArrangementsV4(
+        SentenceAndOffenceWithReleaseArrangements(
           source = version1,
           offence = version1.offences[0],
           isSdsPlus = false,
           isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
           hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
         ),
-        SentenceAndOffenceWithReleaseArrangementsV4(
+        SentenceAndOffenceWithReleaseArrangements(
           source = version1,
           offence = version1.offences[1],
           isSdsPlus = false,
@@ -131,7 +131,7 @@ class SourceDataMapperTest {
 
   @Test
   fun `Map version 2 of sentences and offences`() {
-    val version2 = SentenceAndOffencesWithSDSPlus(
+    val version2 = LegacyCRDSSentenceAndOffenceV2(
       bookingId = 1L,
       sentenceSequence = 3,
       consecutiveToSequence = null,
@@ -162,7 +162,7 @@ class SourceDataMapperTest {
       sentenceAndOffencesVersion = 2,
     )
 
-    val aNewSentenceAndOffence = SentenceAndOffenceWithReleaseArrangementsV4(
+    val aNewSentenceAndOffence = SentenceAndOffenceWithReleaseArrangements(
       bookingId = 1L,
       sentenceSequence = 3,
       consecutiveToSequence = null,
@@ -197,7 +197,7 @@ class SourceDataMapperTest {
 
   @Test
   fun `Map version 3 of sentences and offences missing SDS exclusion type defaults to empty list`() {
-    val expected = SentenceAndOffenceWithReleaseArrangementsV4(
+    val expected = SentenceAndOffenceWithReleaseArrangements(
       bookingId = 1L,
       sentenceSequence = 3,
       consecutiveToSequence = null,
@@ -243,7 +243,7 @@ class SourceDataMapperTest {
 
   @Test
   fun `Map version 3 of sentences and offences with SDS exclusion type maps to sds release arrangements`() {
-    val expected = SentenceAndOffenceWithReleaseArrangementsV4(
+    val expected = SentenceAndOffenceWithReleaseArrangements(
       bookingId = 1L,
       sentenceSequence = 3,
       consecutiveToSequence = null,
@@ -289,7 +289,7 @@ class SourceDataMapperTest {
 
   @Test
   fun `Map version 4 of sentences and offences`() {
-    val version4 = SentenceAndOffenceWithReleaseArrangementsV4(
+    val version4 = SentenceAndOffenceWithReleaseArrangements(
       bookingId = 1L,
       sentenceSequence = 3,
       consecutiveToSequence = null,

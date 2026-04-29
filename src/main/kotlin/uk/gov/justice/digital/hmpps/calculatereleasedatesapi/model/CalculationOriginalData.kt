@@ -4,5 +4,5 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Pris
 
 data class CalculationOriginalData(
   val prisonerDetails: PrisonerDetails?,
-  val sentencesAndOffences: List<SentenceAndOffenceWithReleaseArrangementsV4>?,
+  val sentencesAndOffences: List<SentenceAndOffenceWithReleaseArrangements>?,
 )

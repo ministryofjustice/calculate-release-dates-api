@@ -37,7 +37,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.GenuineOverri
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSReleaseArrangements
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangementsV4
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustment
@@ -392,7 +392,7 @@ class DetailedCalculationResultsServiceTest {
     private const val CALCULATION_REQUEST_ID = 123456L
   }
 
-  private val originalSentence = SentenceAndOffenceWithReleaseArrangementsV4(
+  private val originalSentence = SentenceAndOffenceWithReleaseArrangements(
     bookingId = 1L,
     sentenceSequence = 3,
     lineSequence = 2,

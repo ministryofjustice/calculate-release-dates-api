@@ -16,7 +16,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AnalysedSente
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceAnalysis
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangementsV4
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
@@ -186,7 +186,7 @@ class SentenceAndOffenceServiceTest {
       ),
     )
     val sentenceAndOffences = offences.map {
-      SentenceAndOffenceWithReleaseArrangementsV4(
+      SentenceAndOffenceWithReleaseArrangements(
         bookingId = 1,
         sentenceSequence = 1,
         sentenceDate = FIRST_JAN_2015,
@@ -221,7 +221,7 @@ class SentenceAndOffenceServiceTest {
       )
     }
     val changedSentenceAndOffences = changedOffences.map {
-      SentenceAndOffenceWithReleaseArrangementsV4(
+      SentenceAndOffenceWithReleaseArrangements(
         bookingId = 1,
         sentenceSequence = 1,
         sentenceDate = FIRST_JAN_2015,
@@ -258,7 +258,7 @@ class SentenceAndOffenceServiceTest {
   }
 
   val newSentenceAndOffences = newOffences.map {
-    SentenceAndOffenceWithReleaseArrangementsV4(
+    SentenceAndOffenceWithReleaseArrangements(
       bookingId = 1,
       sentenceSequence = 2,
       sentenceDate = FIRST_JAN_2015,

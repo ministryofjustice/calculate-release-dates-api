@@ -28,7 +28,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NomisCalculat
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OffenderKeyDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSReleaseArrangements
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangementsV4
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
@@ -599,7 +599,7 @@ class LatestCalculationServiceTest {
     verify(sourceDataMapper, never()).mapSentencesAndOffences(calculationRequest)
   }
 
-  private val someSentence = SentenceAndOffenceWithReleaseArrangementsV4(
+  private val someSentence = SentenceAndOffenceWithReleaseArrangements(
     bookingId = 1L,
     sentenceSequence = 3,
     lineSequence = 2,

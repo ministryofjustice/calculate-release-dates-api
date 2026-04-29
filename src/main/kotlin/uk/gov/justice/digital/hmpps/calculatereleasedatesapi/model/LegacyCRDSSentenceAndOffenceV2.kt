@@ -6,7 +6,9 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Sent
 import java.math.BigDecimal
 import java.time.LocalDate
 
-data class SentenceAndOffencesWithSDSPlus(
+// This version of sentence and offence data added indicators for SDS+ and would be SDS plus if sentenced today but maintained the multiple offence mapping.
+@Deprecated("Maintained for backwards compatibility with historical calculations. Superseded by LegacyCRDSSentenceAndOffenceV3.")
+data class LegacyCRDSSentenceAndOffenceV2(
   val bookingId: Long,
   val sentenceSequence: Int,
   val lineSequence: Int,
@@ -28,9 +30,9 @@ data class SentenceAndOffencesWithSDSPlus(
   val isSDSPlus: Boolean,
   val isSDSPlusEligibleSentenceTypeLengthAndOffence: Boolean,
 ) {
-  fun toLatest(): List<SentenceAndOffenceWithReleaseArrangementsV4> = offences.map {
+  fun toLatest(): List<SentenceAndOffenceWithReleaseArrangements> = offences.map {
     val sentenceType = SentenceCalculationType.from(sentenceCalculationType)
-    SentenceAndOffenceWithReleaseArrangementsV4(
+    SentenceAndOffenceWithReleaseArrangements(
       this.bookingId,
       this.sentenceSequence,
       this.lineSequence,

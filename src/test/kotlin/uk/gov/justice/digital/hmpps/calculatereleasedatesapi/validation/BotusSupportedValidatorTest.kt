@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentsSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NormalisedSentenceAndOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangementsV4
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
@@ -137,7 +137,7 @@ class BotusSupportedValidatorTest {
 
     val SOURCE_DATA = CalculationSourceData(
       sentenceAndOffences = CONSECUTIVE_BOTUS_SENTENCES.map {
-        SentenceAndOffenceWithReleaseArrangementsV4(
+        SentenceAndOffenceWithReleaseArrangements(
           source = it,
           isSdsPlus = false,
           isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
@@ -152,7 +152,7 @@ class BotusSupportedValidatorTest {
 
     val SOURCE_DATE_NO_CONSECUTIVE_BOTUS = CalculationSourceData(
       sentenceAndOffences = CONSECUTIVE_NONE_BOTUS_SENTENCES.map {
-        SentenceAndOffenceWithReleaseArrangementsV4(
+        SentenceAndOffenceWithReleaseArrangements(
           source = it,
           isSdsPlus = false,
           isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
@@ -167,7 +167,7 @@ class BotusSupportedValidatorTest {
 
     val SOURCE_DATA_FIRST_CHAIN_IS_BOTUS = CalculationSourceData(
       sentenceAndOffences = CONSECUTIVE_BOTUS_SENTENCES_ADJACENT_FIRST.map {
-        SentenceAndOffenceWithReleaseArrangementsV4(
+        SentenceAndOffenceWithReleaseArrangements(
           source = it,
           isSdsPlus = false,
           isSDSPlusEligibleSentenceTypeLengthAndOffence = false,

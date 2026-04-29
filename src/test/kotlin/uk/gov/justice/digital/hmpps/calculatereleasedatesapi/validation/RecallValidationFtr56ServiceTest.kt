@@ -3,7 +3,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSReleaseArrangements
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangementsV4
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.FixedTermRecallDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
@@ -78,7 +78,7 @@ class RecallValidationFtr56ServiceTest {
   }
 
   private fun createSourceData(
-    sentences: List<SentenceAndOffenceWithReleaseArrangementsV4>,
+    sentences: List<SentenceAndOffenceWithReleaseArrangements>,
     returnToCustodyDate: LocalDate? = null,
     movements: List<PrisonApiExternalMovement>? = null,
   ) = CalculationSourceData(
@@ -106,7 +106,7 @@ class RecallValidationFtr56ServiceTest {
   )
 
   private companion object {
-    private val FTR_56_DAY_SENTENCE = SentenceAndOffenceWithReleaseArrangementsV4(
+    private val FTR_56_DAY_SENTENCE = SentenceAndOffenceWithReleaseArrangements(
       bookingId = 1L,
       sentenceSequence = 7,
       lineSequence = 1,

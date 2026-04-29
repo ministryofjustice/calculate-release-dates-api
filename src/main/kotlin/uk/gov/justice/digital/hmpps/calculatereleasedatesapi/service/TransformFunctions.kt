@@ -95,7 +95,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Recall
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceAnalysis
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangementsV4
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SopcSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustmentType
@@ -128,7 +128,7 @@ import java.util.UUID
 */
 
 fun transform(
-  sentence: SentenceAndOffenceWithReleaseArrangementsV4,
+  sentence: SentenceAndOffenceWithReleaseArrangements,
   historicalTusedData: HistoricalTusedData? = null,
   revocationDate: LocalDate? = null,
   returnToCustodyDate: LocalDate? = null,
@@ -808,7 +808,7 @@ internal fun transform(comparisonPerson: ComparisonPerson, objectMapper: ObjectM
   transform(comparisonPerson.validationMessages, objectMapper),
   comparisonPerson.shortReference,
   comparisonPerson.mismatchType,
-  if (comparisonPerson.sdsPlusSentencesIdentified.isEmpty) emptyList() else objectMapper.convertValue(comparisonPerson.sdsPlusSentencesIdentified, object : TypeReference<List<SentenceAndOffenceWithReleaseArrangementsV4>>() {}),
+  if (comparisonPerson.sdsPlusSentencesIdentified.isEmpty) emptyList() else objectMapper.convertValue(comparisonPerson.sdsPlusSentencesIdentified, object : TypeReference<List<SentenceAndOffenceWithReleaseArrangements>>() {}),
   comparisonPerson.establishment,
   comparisonPerson.fatalException,
 )
@@ -824,7 +824,7 @@ fun transform(
   calculatedReleaseDates: CalculatedReleaseDates?,
   overrideDates: Map<ReleaseDateType, LocalDate?>,
   breakdownByReleaseDateType: Map<ReleaseDateType, ReleaseDateCalculationBreakdown>,
-  sdsSentencesIdentified: List<SentenceAndOffenceWithReleaseArrangementsV4>,
+  sdsSentencesIdentified: List<SentenceAndOffenceWithReleaseArrangements>,
   hasDiscrepancyRecorded: Boolean,
   objectMapper: ObjectMapper,
 ): ComparisonPersonOverview = ComparisonPersonOverview(
@@ -867,14 +867,14 @@ fun transform(discrepancyCauses: List<ComparisonPersonDiscrepancyCause>): List<D
 
 fun transform(
   sentenceAndOffenceAnalysis: SentenceAndOffenceAnalysis,
-  sentencesAndOffences: List<SentenceAndOffenceWithReleaseArrangementsV4>,
+  sentencesAndOffences: List<SentenceAndOffenceWithReleaseArrangements>,
 ): List<AnalysedSentenceAndOffence> = sentencesAndOffences.map {
   transform(sentenceAndOffences = it, sentenceAndOffenceAnalysis = sentenceAndOffenceAnalysis)
 }
 
 fun transform(
   sentenceAndOffenceAnalysis: SentenceAndOffenceAnalysis,
-  sentenceAndOffences: SentenceAndOffenceWithReleaseArrangementsV4,
+  sentenceAndOffences: SentenceAndOffenceWithReleaseArrangements,
 ): AnalysedSentenceAndOffence = AnalysedSentenceAndOffence(
   sentenceAndOffences.bookingId,
   sentenceAndOffences.sentenceSequence,

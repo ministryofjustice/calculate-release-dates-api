@@ -1,7 +1,7 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external
 
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangementsV4
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import java.math.BigDecimal
 import java.time.LocalDate
 
@@ -25,8 +25,8 @@ data class PrisonApiSentenceAndOffences(
   val fineAmount: BigDecimal? = null,
   val revocationDates: List<LocalDate> = emptyList(),
 ) {
-  fun toLatest(): List<SentenceAndOffenceWithReleaseArrangementsV4> = offences.map { offence ->
-    SentenceAndOffenceWithReleaseArrangementsV4(
+  fun toLatest(): List<SentenceAndOffenceWithReleaseArrangements> = offences.map { offence ->
+    SentenceAndOffenceWithReleaseArrangements(
       source = this,
       offence = offence,
       isSdsPlus = false,

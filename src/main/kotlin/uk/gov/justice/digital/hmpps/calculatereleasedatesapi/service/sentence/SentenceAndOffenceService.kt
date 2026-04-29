@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AnalysedSentenceAndOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceAnalysis
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangementsV4
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.PrisonService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.SourceDataMapper
@@ -26,20 +26,20 @@ class SentenceAndOffenceService(
   }
 
   fun determineSentencesAndOffences(
-    sentencesAndOffences: List<SentenceAndOffenceWithReleaseArrangementsV4>,
+    sentencesAndOffences: List<SentenceAndOffenceWithReleaseArrangements>,
     latestCalculation: CalculationRequest,
   ): List<AnalysedSentenceAndOffence> {
     if (latestCalculation.sentenceAndOffences == null) {
       return transform(SentenceAndOffenceAnalysis.NEW, sentencesAndOffences)
     }
-    val lastSentenceAndOffences: List<SentenceAndOffenceWithReleaseArrangementsV4> = sourceDataMapper.mapSentencesAndOffences(latestCalculation)
+    val lastSentenceAndOffences: List<SentenceAndOffenceWithReleaseArrangements> = sourceDataMapper.mapSentencesAndOffences(latestCalculation)
 
     return if (sentencesAndOffences == lastSentenceAndOffences) {
       transform(SentenceAndOffenceAnalysis.SAME, sentencesAndOffences)
     } else {
       val sentencesAndOffencesBySequence = sentencesAndOffences.groupBy { sentenceAndOffences -> "${sentenceAndOffences.caseSequence}-${sentenceAndOffences.sentenceSequence}" }
       val lastSentencesAndOffencesBySequence = lastSentenceAndOffences.groupBy { sentenceAndOffences -> "${sentenceAndOffences.caseSequence}-${sentenceAndOffences.sentenceSequence}" }
-      sentencesAndOffencesBySequence.flatMap { (key: String, values: List<SentenceAndOffenceWithReleaseArrangementsV4>) ->
+      sentencesAndOffencesBySequence.flatMap { (key: String, values: List<SentenceAndOffenceWithReleaseArrangements>) ->
         if (lastSentencesAndOffencesBySequence.containsKey(key)) {
           if (values.map { it.offence } == lastSentencesAndOffencesBySequence[key]!!.map { it.offence }) {
             values.map { transform(SentenceAndOffenceAnalysis.SAME, it) }
