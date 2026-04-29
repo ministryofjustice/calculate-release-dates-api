@@ -14,6 +14,7 @@ import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AnalysedSentenceAndOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceAnalysis
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
@@ -90,8 +91,19 @@ class SentenceAndOffenceServiceTest {
 
   @Test
   fun `If old version did not have SDS plus flag (defaults to false) ignore the difference`() {
-    whenever(prisonService.getSentencesAndOffences(anyLong(), eq(true))).thenReturn(sentenceAndOffences.map { it.copy(isSDSPlus = true) })
-    val defaultedSentencesAndOffences = sentenceAndOffences.map { it.copy(isSDSPlus = false) }
+    whenever(prisonService.getSentencesAndOffences(anyLong(), eq(true))).thenReturn(
+      sentenceAndOffences.map {
+        it.copy(
+          sdsReleaseArrangements = SDSReleaseArrangements(
+            isSDSPlus = true,
+            isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+            sdsEarlyReleaseExclusions = emptyList(),
+            isSection250 = false,
+          ),
+        )
+      },
+    )
+    val defaultedSentencesAndOffences = sentenceAndOffences.map { it.copy(sdsReleaseArrangements = null) }
     val calcRequestWithMissingSDSPlusFlag = CalculationRequest(sentenceAndOffences = objectToJson(defaultedSentencesAndOffences, jacksonObjectMapper().findAndRegisterModules()))
     whenever(sourceDataMapper.mapSentencesAndOffences(calculationRequest)).thenReturn(defaultedSentencesAndOffences)
     whenever(calculationRequestRepository.findFirstByBookingIdAndCalculationStatusOrderByCalculatedAtDesc(anyLong(), anyString())).thenReturn(Optional.of(calcRequestWithMissingSDSPlusFlag))
@@ -199,9 +211,12 @@ class SentenceAndOffenceServiceTest {
         courtDescription = null,
         courtTypeCode = null,
         consecutiveToSequence = null,
-        isSDSPlus = false,
-        isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-        hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
+        sdsReleaseArrangements = SDSReleaseArrangements(
+          isSDSPlus = false,
+          isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+          sdsEarlyReleaseExclusions = emptyList(),
+          isSection250 = false,
+        ),
         revocationDates = listOf(LocalDate.of(2024, 1, 1)),
       )
     }
@@ -231,9 +246,12 @@ class SentenceAndOffenceServiceTest {
         courtDescription = null,
         courtTypeCode = null,
         consecutiveToSequence = null,
-        isSDSPlus = true,
-        isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-        hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
+        sdsReleaseArrangements = SDSReleaseArrangements(
+          isSDSPlus = true,
+          isSDSPlusEligibleSentenceTypeLengthAndOffence = true,
+          sdsEarlyReleaseExclusions = emptyList(),
+          isSection250 = false,
+        ),
         revocationDates = listOf(LocalDate.of(2024, 1, 1)),
       )
     }
@@ -265,9 +283,12 @@ class SentenceAndOffenceServiceTest {
       courtDescription = null,
       courtTypeCode = null,
       consecutiveToSequence = null,
-      isSDSPlus = true,
-      isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-      hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
+      sdsReleaseArrangements = SDSReleaseArrangements(
+        isSDSPlus = true,
+        isSDSPlusEligibleSentenceTypeLengthAndOffence = true,
+        sdsEarlyReleaseExclusions = emptyList(),
+        isSection250 = false,
+      ),
       revocationDates = listOf(LocalDate.of(2024, 1, 1)),
     )
   }

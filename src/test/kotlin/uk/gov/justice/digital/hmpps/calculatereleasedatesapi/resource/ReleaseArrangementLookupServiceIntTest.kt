@@ -66,7 +66,7 @@ class ReleaseArrangementLookupServiceIntTest(private val mockManageOffencesClien
 
     UserContext.setAuthToken("123456")
     val markedUp = releaseArrangementLookupService.populateReleaseArrangements(inputOffenceList)
-    assertTrue(markedUp[0].isSDSPlus)
+    assertTrue(markedUp[0].sdsReleaseArrangements!!.isSDSPlus)
   }
 
   @Test
@@ -176,6 +176,6 @@ class ReleaseArrangementLookupServiceIntTest(private val mockManageOffencesClien
 
     UserContext.setAuthToken("123456")
     val markedUp = releaseArrangementLookupService.populateReleaseArrangements(inputOffenceList)
-    assertTrue(markedUp[0].isSDSPlus)
+    assertTrue(markedUp[0].sdsReleaseArrangements!!.isSDSPlus)
   }
 }

@@ -3,10 +3,14 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
 import java.math.BigDecimal
 import java.time.LocalDate
 
+// This version of sentence and offence data moved SDS release arrangements into their own entity to represent the fact they are only relevant on SDS
+// sentences and also to support multiple early release exclusions so that we may know if the sentence is eligible for SDS40, SDS40 Additional Excluded Offences
+// and/or Progression Model release arrangements.
 data class SentenceAndOffenceWithReleaseArrangements(
   override val bookingId: Long,
   override val sentenceSequence: Int,
@@ -26,9 +30,7 @@ data class SentenceAndOffenceWithReleaseArrangements(
   override val courtTypeCode: String?,
   override val fineAmount: BigDecimal?,
   override val revocationDates: List<LocalDate> = emptyList(),
-  val isSDSPlus: Boolean,
-  val isSDSPlusEligibleSentenceTypeLengthAndOffence: Boolean,
-  val hasAnSDSEarlyReleaseExclusion: SDSEarlyReleaseExclusionType,
+  val sdsReleaseArrangements: SDSReleaseArrangements? = null,
 ) : SentenceAndOffence {
 
   constructor(
@@ -55,13 +57,15 @@ data class SentenceAndOffenceWithReleaseArrangements(
     source.courtTypeCode,
     source.fineAmount,
     source.revocationDates,
-    isSdsPlus,
-    isSDSPlusEligibleSentenceTypeLengthAndOffence,
-    hasAnSDSExclusion,
+    SDSReleaseArrangements(
+      isSDSPlus = isSdsPlus,
+      isSDSPlusEligibleSentenceTypeLengthAndOffence = isSDSPlusEligibleSentenceTypeLengthAndOffence,
+      sdsEarlyReleaseExclusions = listOf(hasAnSDSExclusion),
+      isSection250 = SentenceCalculationType.from(source.sentenceCalculationType).isSection250(),
+    ),
   )
 
   constructor(sdsPlusCheckResult: SDSPlusCheckResult, hasAnSDSExclusion: SDSEarlyReleaseExclusionType) : this(
-
     sdsPlusCheckResult.sentenceAndOffence.bookingId,
     sdsPlusCheckResult.sentenceAndOffence.sentenceSequence,
     sdsPlusCheckResult.sentenceAndOffence.lineSequence,
@@ -80,10 +84,14 @@ data class SentenceAndOffenceWithReleaseArrangements(
     sdsPlusCheckResult.sentenceAndOffence.courtTypeCode,
     sdsPlusCheckResult.sentenceAndOffence.fineAmount,
     sdsPlusCheckResult.sentenceAndOffence.revocationDates,
-    sdsPlusCheckResult.isSDSPlus,
-    sdsPlusCheckResult.isSDSPlusEligibleSentenceTypeLengthAndOffence,
-    hasAnSDSExclusion,
+    SDSReleaseArrangements(
+      isSDSPlus = sdsPlusCheckResult.isSDSPlus,
+      isSDSPlusEligibleSentenceTypeLengthAndOffence = sdsPlusCheckResult.isSDSPlusEligibleSentenceTypeLengthAndOffence,
+      sdsEarlyReleaseExclusions = listOf(hasAnSDSExclusion),
+      isSection250 = SentenceCalculationType.from(sdsPlusCheckResult.sentenceAndOffence.sentenceCalculationType).isSection250(),
+    ),
   )
+
   constructor(
     source: PrisonApiSentenceAndOffences,
     offence: OffenderOffence,
@@ -109,8 +117,11 @@ data class SentenceAndOffenceWithReleaseArrangements(
     courtTypeCode = source.courtTypeCode,
     fineAmount = source.fineAmount,
     revocationDates = source.revocationDates,
-    isSDSPlus = isSdsPlus,
-    isSDSPlusEligibleSentenceTypeLengthAndOffence = isSDSPlusEligibleSentenceTypeLengthAndOffence,
-    hasAnSDSEarlyReleaseExclusion = hasAnSDSExclusion,
+    sdsReleaseArrangements = SDSReleaseArrangements(
+      isSDSPlus = isSdsPlus,
+      isSDSPlusEligibleSentenceTypeLengthAndOffence = isSDSPlusEligibleSentenceTypeLengthAndOffence,
+      sdsEarlyReleaseExclusions = listOf(hasAnSDSExclusion),
+      isSection250 = SentenceCalculationType.from(source.sentenceCalculationType).isSection250(),
+    ),
   )
 }

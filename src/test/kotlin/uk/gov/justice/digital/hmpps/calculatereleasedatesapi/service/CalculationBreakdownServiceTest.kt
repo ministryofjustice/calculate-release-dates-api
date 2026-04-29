@@ -25,7 +25,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BreakdownMissingReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
@@ -157,9 +157,12 @@ class CalculationBreakdownServiceTest {
     courtDescription = null,
     courtTypeCode = null,
     consecutiveToSequence = null,
-    isSDSPlus = false,
-    isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-    hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
+    sdsReleaseArrangements = SDSReleaseArrangements(
+      isSDSPlus = false,
+      isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+      sdsEarlyReleaseExclusions = emptyList(),
+      isSection250 = false,
+    ),
   )
 
   private val prisonerDetails = PrisonerDetails(

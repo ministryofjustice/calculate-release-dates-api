@@ -1,11 +1,14 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
 import java.math.BigDecimal
 import java.time.LocalDate
 
-data class SentenceAndOffencesWithSDSPlus(
+// This version of sentence and offence data added indicators for SDS+ and would be SDS plus if sentenced today but maintained the multiple offence mapping.
+@Deprecated("Maintained for backwards compatibility with historical calculations. Superseded by LegacyCRDSSentenceAndOffenceV3.")
+data class LegacyCRDSSentenceAndOffenceV2(
   val bookingId: Long,
   val sentenceSequence: Int,
   val lineSequence: Int,
@@ -28,6 +31,7 @@ data class SentenceAndOffencesWithSDSPlus(
   val isSDSPlusEligibleSentenceTypeLengthAndOffence: Boolean,
 ) {
   fun toLatest(): List<SentenceAndOffenceWithReleaseArrangements> = offences.map {
+    val sentenceType = SentenceCalculationType.from(sentenceCalculationType)
     SentenceAndOffenceWithReleaseArrangements(
       this.bookingId,
       this.sentenceSequence,
@@ -47,9 +51,16 @@ data class SentenceAndOffencesWithSDSPlus(
       this.courtTypeCode,
       this.fineAmount,
       this.revocationDates,
-      this.isSDSPlus,
-      this.isSDSPlusEligibleSentenceTypeLengthAndOffence,
-      SDSEarlyReleaseExclusionType.NO,
+      if (sentenceType.isSDS()) {
+        SDSReleaseArrangements(
+          isSDSPlus = this.isSDSPlus,
+          isSDSPlusEligibleSentenceTypeLengthAndOffence = this.isSDSPlusEligibleSentenceTypeLengthAndOffence,
+          sdsEarlyReleaseExclusions = emptyList(),
+          isSection250 = sentenceType.isSection250(),
+        )
+      } else {
+        null
+      },
     )
   }
 }

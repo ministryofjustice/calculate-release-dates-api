@@ -21,7 +21,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NonFridayRele
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateHint
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.WorkingDay
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
@@ -1056,7 +1056,7 @@ class CalculationResultEnrichmentServiceTest {
           sentenceAndOffenceWithReleaseArrangements.copy(
             sentenceCalculationType = SentenceCalculationType.ADIMP_ORA.name,
             sentenceDate = LocalDate.of(2024, 9, 13),
-            isSDSPlus = true,
+            sdsReleaseArrangements = sentenceAndOffenceWithReleaseArrangements.sdsReleaseArrangements?.copy(isSDSPlus = true),
           ),
         ),
         calculationBreakdown,
@@ -1177,30 +1177,40 @@ class CalculationResultEnrichmentServiceTest {
     return ReleaseDate(date, type)
   }
 
-  private fun sentenceAndOffence(sentenceCalculationType: String, sentenceDate: LocalDate = LocalDate.of(2020, 1, 2), bookingId: Long = 0, sentenceSequence: Int = 0, lineSequence: Int = 0, sentenceTerm: Int = 5, isSdsPlus: Boolean = false, isSDSPlusEligibleSentenceTypeLengthAndOffence: Boolean = false) = SentenceAndOffenceWithReleaseArrangements(
-    bookingId = bookingId,
-    sentenceSequence = sentenceSequence,
-    lineSequence = lineSequence,
-    caseSequence = 1,
-    sentenceDate = sentenceDate,
-    terms = listOf(
-      SentenceTerms(years = sentenceTerm),
-    ),
-    sentenceStatus = "A",
-    sentenceCategory = "SEN",
-    sentenceCalculationType = sentenceCalculationType,
-    sentenceTypeDescription = "DESC",
-    offence = offenderOffence,
-    caseReference = null,
-    fineAmount = null,
-    courtId = null,
-    courtDescription = null,
-    courtTypeCode = null,
-    consecutiveToSequence = null,
-    isSDSPlus = isSdsPlus,
-    isSDSPlusEligibleSentenceTypeLengthAndOffence = isSDSPlusEligibleSentenceTypeLengthAndOffence,
-    hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
-  )
+  private fun sentenceAndOffence(sentenceCalculationType: String, sentenceDate: LocalDate = LocalDate.of(2020, 1, 2), bookingId: Long = 0, sentenceSequence: Int = 0, lineSequence: Int = 0, sentenceTerm: Int = 5, isSdsPlus: Boolean = false, isSDSPlusEligibleSentenceTypeLengthAndOffence: Boolean = false): SentenceAndOffenceWithReleaseArrangements {
+    val sentenceType = SentenceCalculationType.from(sentenceCalculationType)
+    return SentenceAndOffenceWithReleaseArrangements(
+      bookingId = bookingId,
+      sentenceSequence = sentenceSequence,
+      lineSequence = lineSequence,
+      caseSequence = 1,
+      sentenceDate = sentenceDate,
+      terms = listOf(
+        SentenceTerms(years = sentenceTerm),
+      ),
+      sentenceStatus = "A",
+      sentenceCategory = "SEN",
+      sentenceCalculationType = sentenceCalculationType,
+      sentenceTypeDescription = "DESC",
+      offence = offenderOffence,
+      caseReference = null,
+      fineAmount = null,
+      courtId = null,
+      courtDescription = null,
+      courtTypeCode = null,
+      consecutiveToSequence = null,
+      sdsReleaseArrangements = if (sentenceType.isSDS()) {
+        SDSReleaseArrangements(
+          isSDSPlus = isSdsPlus,
+          isSDSPlusEligibleSentenceTypeLengthAndOffence = isSDSPlusEligibleSentenceTypeLengthAndOffence,
+          sdsEarlyReleaseExclusions = emptyList(),
+          isSection250 = sentenceType.isSection250(),
+        )
+      } else {
+        null
+      },
+    )
+  }
 
   private val offenderOffence = OffenderOffence(
     123,
@@ -1231,9 +1241,12 @@ class CalculationResultEnrichmentServiceTest {
     courtDescription = null,
     courtTypeCode = null,
     consecutiveToSequence = null,
-    isSDSPlus = false,
-    isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-    hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
+    sdsReleaseArrangements = SDSReleaseArrangements(
+      isSDSPlus = false,
+      isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+      sdsEarlyReleaseExclusions = emptyList(),
+      isSection250 = false,
+    ),
   )
 
   private fun calculationResultEnrichmentService(today: LocalDate = LocalDate.of(2000, 1, 1)): CalculationResultEnrichmentService {
