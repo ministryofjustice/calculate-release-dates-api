@@ -13,8 +13,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.UserContext
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.MaxRetryAchievedException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.MockManageOffencesClient
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.manageoffencesapi.SDSEarlyReleaseExclusionForOffenceCode
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.manageoffencesapi.SDSEarlyReleaseExclusionSchedulePart
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.manageoffencesapi.model.OffenceSdsExclusion
 
 class ManageOffencesApiClientIntTest(private val mockManageOffencesClient: MockManageOffencesClient) : IntegrationTestBase() {
 
@@ -82,12 +81,12 @@ class ManageOffencesApiClientIntTest(private val mockManageOffencesClient: MockM
     )
       .isEqualTo(
         listOf(
-          SDSEarlyReleaseExclusionForOffenceCode("SuccessExample1", SDSEarlyReleaseExclusionSchedulePart.NONE),
-          SDSEarlyReleaseExclusionForOffenceCode("SuccessExample2", SDSEarlyReleaseExclusionSchedulePart.SEXUAL),
-          SDSEarlyReleaseExclusionForOffenceCode("SuccessExample3", SDSEarlyReleaseExclusionSchedulePart.VIOLENT),
-          SDSEarlyReleaseExclusionForOffenceCode("SuccessExample4", SDSEarlyReleaseExclusionSchedulePart.DOMESTIC_ABUSE),
-          SDSEarlyReleaseExclusionForOffenceCode("SuccessExample5", SDSEarlyReleaseExclusionSchedulePart.NATIONAL_SECURITY),
-          SDSEarlyReleaseExclusionForOffenceCode("SuccessExample6", SDSEarlyReleaseExclusionSchedulePart.TERRORISM),
+          OffenceSdsExclusion("SuccessExample1", OffenceSdsExclusion.SchedulePart.NONE),
+          OffenceSdsExclusion("SuccessExample2", OffenceSdsExclusion.SchedulePart.SEXUAL),
+          OffenceSdsExclusion("SuccessExample3", OffenceSdsExclusion.SchedulePart.VIOLENT),
+          OffenceSdsExclusion("SuccessExample4", OffenceSdsExclusion.SchedulePart.DOMESTIC_ABUSE),
+          OffenceSdsExclusion("SuccessExample5", OffenceSdsExclusion.SchedulePart.NATIONAL_SECURITY),
+          OffenceSdsExclusion("SuccessExample6", OffenceSdsExclusion.SchedulePart.TERRORISM),
         ),
       )
   }
@@ -148,9 +147,9 @@ class ManageOffencesApiClientIntTest(private val mockManageOffencesClient: MockM
 
     assertThat(result).isEqualTo(
       listOf(
-        SDSEarlyReleaseExclusionForOffenceCode("RetryExample1", SDSEarlyReleaseExclusionSchedulePart.NONE),
-        SDSEarlyReleaseExclusionForOffenceCode("RetryExample2", SDSEarlyReleaseExclusionSchedulePart.SEXUAL),
-        SDSEarlyReleaseExclusionForOffenceCode("RetryExample3", SDSEarlyReleaseExclusionSchedulePart.VIOLENT),
+        OffenceSdsExclusion("RetryExample1", OffenceSdsExclusion.SchedulePart.NONE),
+        OffenceSdsExclusion("RetryExample2", OffenceSdsExclusion.SchedulePart.SEXUAL),
+        OffenceSdsExclusion("RetryExample3", OffenceSdsExclusion.SchedulePart.VIOLENT),
       ),
     )
   }

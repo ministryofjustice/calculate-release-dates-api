@@ -17,7 +17,6 @@ enum class SDSEarlyReleaseExclusionType(
   NATIONAL_SECURITY(sds40Exclusion = true, sds40AdditionalExcludedOffence = false, progressionModelExclusion = false),
   TERRORISM(sds40Exclusion = true, sds40AdditionalExcludedOffence = false, progressionModelExclusion = false),
   SEXUAL_T3(sds40Exclusion = false, sds40AdditionalExcludedOffence = true, progressionModelExclusion = false),
-  VIOLENT_T3(sds40Exclusion = false, sds40AdditionalExcludedOffence = true, progressionModelExclusion = false),
   DOMESTIC_ABUSE_T3(sds40Exclusion = false, sds40AdditionalExcludedOffence = true, progressionModelExclusion = false),
   NATIONAL_SECURITY_T3(sds40Exclusion = false, sds40AdditionalExcludedOffence = true, progressionModelExclusion = false),
   TERRORISM_T3(sds40Exclusion = false, sds40AdditionalExcludedOffence = true, progressionModelExclusion = false),

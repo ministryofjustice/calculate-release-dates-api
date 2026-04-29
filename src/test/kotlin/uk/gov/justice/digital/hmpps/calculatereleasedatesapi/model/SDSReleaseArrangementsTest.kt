@@ -49,7 +49,7 @@ class SDSReleaseArrangementsTest {
     val arrangements = SDSReleaseArrangements(
       isSDSPlus = false,
       isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-      sdsEarlyReleaseExclusions = listOf(SDSEarlyReleaseExclusionType.VIOLENT_T3),
+      sdsEarlyReleaseExclusions = listOf(SDSEarlyReleaseExclusionType.SEXUAL_T3),
       isSection250 = false,
     )
     assertThat(arrangements.hasSDS40EarlyReleaseExclusion()).describedAs("hasSDS40EarlyReleaseExclusion").isFalse()
