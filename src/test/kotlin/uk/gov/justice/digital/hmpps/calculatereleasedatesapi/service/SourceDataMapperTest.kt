@@ -7,9 +7,10 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.adjustmentsapi.model.AdjustmentDto
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentsSourceData
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.LegacyCRDSSentenceAndOffenceV2
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffencesWithSDSPlus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
@@ -130,7 +131,7 @@ class SourceDataMapperTest {
 
   @Test
   fun `Map version 2 of sentences and offences`() {
-    val version2 = SentenceAndOffencesWithSDSPlus(
+    val version2 = LegacyCRDSSentenceAndOffenceV2(
       bookingId = 1L,
       sentenceSequence = 3,
       consecutiveToSequence = null,
@@ -181,9 +182,12 @@ class SourceDataMapperTest {
       courtDescription = null,
       courtTypeCode = null,
       fineAmount = null,
-      isSDSPlus = true,
-      isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-      hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
+      sdsReleaseArrangements = SDSReleaseArrangements(
+        isSDSPlus = true,
+        isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+        sdsEarlyReleaseExclusions = emptyList(),
+        isSection250 = false,
+      ),
     )
     val theOtherSentenceAndOffence = aNewSentenceAndOffence.copy(offence = OffenderOffence(2L, LocalDate.of(2015, 1, 1), null, "Another Dummy Offence", "description", listOf("A")))
 
@@ -192,42 +196,7 @@ class SourceDataMapperTest {
   }
 
   @Test
-  fun `Map version 3 of sentences and offences`() {
-    val version3 = SentenceAndOffenceWithReleaseArrangements(
-      bookingId = 1L,
-      sentenceSequence = 3,
-      consecutiveToSequence = null,
-      lineSequence = 2,
-      caseSequence = 1,
-      sentenceDate = ImportantDates.PCSC_COMMENCEMENT_DATE.minusDays(1),
-      terms = listOf(
-        SentenceTerms(years = 8),
-      ),
-      sentenceStatus = "IMP",
-      sentenceCategory = "CAT",
-      sentenceCalculationType = SentenceCalculationType.ADIMP.name,
-      sentenceTypeDescription = "ADMIP",
-      offence = OffenderOffence(1L, LocalDate.of(2015, 1, 1), null, "ADIMP_ORA", "description", listOf("A")),
-      caseReference = null,
-      courtId = null,
-      courtDescription = null,
-      courtTypeCode = null,
-      fineAmount = null,
-      isSDSPlus = true,
-      isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-      hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.SEXUAL,
-    )
-    val calculationRequest = CalculationRequest(
-      sentenceAndOffences = objectMapper.valueToTree(listOf(version3)),
-      sentenceAndOffencesVersion = 3,
-    )
-
-    val sentencesAndOffences = sourceDataMapper.mapSentencesAndOffences(calculationRequest)
-    assertThat(sentencesAndOffences).isEqualTo(listOf(version3))
-  }
-
-  @Test
-  fun `Map version 3 of sentences and offences missing SDS exclusion type defaults to NO`() {
+  fun `Map version 3 of sentences and offences missing SDS exclusion type defaults to empty list`() {
     val expected = SentenceAndOffenceWithReleaseArrangements(
       bookingId = 1L,
       sentenceSequence = 3,
@@ -248,9 +217,12 @@ class SourceDataMapperTest {
       courtDescription = null,
       courtTypeCode = null,
       fineAmount = null,
-      isSDSPlus = true,
-      isSDSPlusEligibleSentenceTypeLengthAndOffence = true,
-      hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
+      sdsReleaseArrangements = SDSReleaseArrangements(
+        isSDSPlus = true,
+        isSDSPlusEligibleSentenceTypeLengthAndOffence = true,
+        sdsEarlyReleaseExclusions = listOf(),
+        isSection250 = false,
+      ),
     )
 
     val jsonWithoutHasAnSDSExclusion = "[{\"bookingId\":1,\"sentenceSequence\":3,\"lineSequence\":2,\"caseSequence\":1,\"consecutiveToSequence\":null," +
@@ -267,6 +239,90 @@ class SourceDataMapperTest {
 
     val sentencesAndOffences = sourceDataMapper.mapSentencesAndOffences(calculationRequest)
     assertThat(sentencesAndOffences).isEqualTo(listOf(expected))
+  }
+
+  @Test
+  fun `Map version 3 of sentences and offences with SDS exclusion type maps to sds release arrangements`() {
+    val expected = SentenceAndOffenceWithReleaseArrangements(
+      bookingId = 1L,
+      sentenceSequence = 3,
+      consecutiveToSequence = null,
+      lineSequence = 2,
+      caseSequence = 1,
+      sentenceDate = ImportantDates.PCSC_COMMENCEMENT_DATE.minusDays(1),
+      terms = listOf(
+        SentenceTerms(years = 8),
+      ),
+      sentenceStatus = "IMP",
+      sentenceCategory = "CAT",
+      sentenceCalculationType = SentenceCalculationType.ADIMP.name,
+      sentenceTypeDescription = "ADMIP",
+      offence = OffenderOffence(1L, LocalDate.of(2015, 1, 1), null, "ADIMP_ORA", "description", listOf("A")),
+      caseReference = null,
+      courtId = null,
+      courtDescription = null,
+      courtTypeCode = null,
+      fineAmount = null,
+      sdsReleaseArrangements = SDSReleaseArrangements(
+        isSDSPlus = true,
+        isSDSPlusEligibleSentenceTypeLengthAndOffence = true,
+        sdsEarlyReleaseExclusions = listOf(SDSEarlyReleaseExclusionType.SEXUAL),
+        isSection250 = false,
+      ),
+    )
+
+    val jsonWithHasAnSDSExclusion = "[{\"bookingId\":1,\"sentenceSequence\":3,\"lineSequence\":2,\"caseSequence\":1,\"consecutiveToSequence\":null," +
+      "\"sentenceStatus\":\"IMP\",\"sentenceCategory\":\"CAT\",\"sentenceCalculationType\":\"ADIMP\",\"sentenceTypeDescription\":\"ADMIP\"," +
+      "\"sentenceDate\":\"2022-06-27\",\"terms\":[{\"years\":8,\"months\":0,\"weeks\":0,\"days\":0,\"code\":\"IMP\"}],\"offence\":" +
+      "{\"offenderChargeId\":1,\"offenceStartDate\":\"2015-01-01\",\"offenceEndDate\":null,\"offenceCode\":\"ADIMP_ORA\"," +
+      "\"offenceDescription\":\"description\",\"indicators\":[\"A\"]},\"caseReference\":null,\"courtDescription\":null,\"fineAmount\":null" +
+      ",\"isSDSPlus\":true,\"isSDSPlusEligibleSentenceTypeLengthAndOffence\":true, \"hasAnSDSEarlyReleaseExclusion\":\"SEXUAL\" }]"
+
+    val calculationRequest = CalculationRequest(
+      sentenceAndOffences = objectMapper.readTree(jsonWithHasAnSDSExclusion),
+      sentenceAndOffencesVersion = 3,
+    )
+
+    val sentencesAndOffences = sourceDataMapper.mapSentencesAndOffences(calculationRequest)
+    assertThat(sentencesAndOffences).isEqualTo(listOf(expected))
+  }
+
+  @Test
+  fun `Map version 4 of sentences and offences`() {
+    val version4 = SentenceAndOffenceWithReleaseArrangements(
+      bookingId = 1L,
+      sentenceSequence = 3,
+      consecutiveToSequence = null,
+      lineSequence = 2,
+      caseSequence = 1,
+      sentenceDate = ImportantDates.PCSC_COMMENCEMENT_DATE.minusDays(1),
+      terms = listOf(
+        SentenceTerms(years = 8),
+      ),
+      sentenceStatus = "IMP",
+      sentenceCategory = "CAT",
+      sentenceCalculationType = SentenceCalculationType.ADIMP.name,
+      sentenceTypeDescription = "ADMIP",
+      offence = OffenderOffence(1L, LocalDate.of(2015, 1, 1), null, "ADIMP_ORA", "description", listOf("A")),
+      caseReference = null,
+      courtId = null,
+      courtDescription = null,
+      courtTypeCode = null,
+      fineAmount = null,
+      sdsReleaseArrangements = SDSReleaseArrangements(
+        isSDSPlus = true,
+        isSDSPlusEligibleSentenceTypeLengthAndOffence = true,
+        sdsEarlyReleaseExclusions = listOf(SDSEarlyReleaseExclusionType.SEXUAL),
+        isSection250 = false,
+      ),
+    )
+    val calculationRequest = CalculationRequest(
+      sentenceAndOffences = objectMapper.valueToTree(listOf(version4)),
+      sentenceAndOffencesVersion = 4,
+    )
+
+    val sentencesAndOffences = sourceDataMapper.mapSentencesAndOffences(calculationRequest)
+    assertThat(sentencesAndOffences).isEqualTo(listOf(version4))
   }
 
   @Test

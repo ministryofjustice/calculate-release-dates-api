@@ -93,6 +93,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Recall
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceAnalysis
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SopcSentence
@@ -265,10 +266,11 @@ fun transform(
         externalSentenceId = externalSentenceId,
         caseReference = sentence.caseReference,
         recall = recall,
-        isSDSPlus = sentence.isSDSPlus,
-        isSDSPlusEligibleSentenceTypeLengthAndOffence = sentence.isSDSPlusEligibleSentenceTypeLengthAndOffence,
-        hasAnSDSEarlyReleaseExclusion = sentence.hasAnSDSEarlyReleaseExclusion,
-        section250 = sentenceCalculationType.sdsPlusEligibilityType === SentenceCalculationType.SDSPlusEligibilityType.SECTION250,
+        // TODO change SDS to use sdsReleaseArrangements directly
+        isSDSPlus = sentence.sdsReleaseArrangements?.isSDSPlus == true,
+        isSDSPlusEligibleSentenceTypeLengthAndOffence = sentence.sdsReleaseArrangements?.isSDSPlusEligibleSentenceTypeLengthAndOffence == true,
+        hasAnSDSEarlyReleaseExclusion = sentence.sdsReleaseArrangements?.sdsEarlyReleaseExclusions?.firstOrNull() ?: SDSEarlyReleaseExclusionType.NO,
+        section250 = sentenceCalculationType.isSection250(),
       )
     }
   }
@@ -586,8 +588,7 @@ fun transform(
           consecutiveSentence.sentenceCalculation.numberOfDaysToSentenceExpiryDate,
           extractDates(consecutiveSentence),
           consecutiveSentence.orderedSentences.map { sentencePart ->
-            sentencePart as AbstractSentence
-            val originalSentence = consecutiveSentence.orderedSentences.find { (it as AbstractSentence).identifier == sentencePart.identifier }!! as AbstractSentence
+            val originalSentence = consecutiveSentence.orderedSentences.find { it.identifier == sentencePart.identifier }!!
             val consecutiveToUUID =
               if (originalSentence.consecutiveSentenceUUIDs.isNotEmpty()) {
                 originalSentence.consecutiveSentenceUUIDs[0]
@@ -596,7 +597,7 @@ fun transform(
               }
             val consecutiveToSentence =
               if (consecutiveToUUID != null) {
-                consecutiveSentence.orderedSentences.find { (it as AbstractSentence).identifier == consecutiveToUUID }!! as AbstractSentence
+                consecutiveSentence.orderedSentences.find { it.identifier == consecutiveToUUID }!!
               } else {
                 null
               }
@@ -891,8 +892,8 @@ fun transform(
   sentenceAndOffences.courtDescription,
   sentenceAndOffences.fineAmount,
   sentenceAndOffenceAnalysis,
-  sentenceAndOffences.isSDSPlus,
-  sentenceAndOffences.hasAnSDSEarlyReleaseExclusion,
+  sentenceAndOffences.sdsReleaseArrangements?.isSDSPlus == true,
+  sentenceAndOffences.sdsReleaseArrangements?.sdsEarlyReleaseExclusions?.firstOrNull() ?: SDSEarlyReleaseExclusionType.NO,
   sentenceAndOffences.revocationDates,
 )
 

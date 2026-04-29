@@ -111,7 +111,7 @@ class CalculationResultEnrichmentService(
     if (!calculationBreakdown.showSds40Hints) return false
 
     return sentenceAndOffences.none {
-      !it.isSDSPlus &&
+      it.sdsReleaseArrangements?.isSDSPlus != true &&
         (SentenceCalculationType.isSDSPlusEligible(it.sentenceCalculationType) && it.sentenceDate.isAfter(SDS_40_COMMENCEMENT_DATE))
     }
   }

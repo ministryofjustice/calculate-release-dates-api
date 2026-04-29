@@ -157,7 +157,7 @@ class BulkComparisonEventHandlerService(
       return
     }
 
-    val sdsPlusSentenceAndOffences = sourceData.sentenceAndOffences.filter { it.isSDSPlus }
+    val sdsPlusSentenceAndOffences = sourceData.sentenceAndOffences.filter { it.sdsReleaseArrangements?.isSDSPlus == true }
 
     val mismatchType =
       determineMismatchType(validationResult, sourceData.prisonerDetails.sentenceDetail, sourceData.sentenceAndOffences)

@@ -9,7 +9,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.SourceDa
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentsSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.HistoricalTusedData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffencesWithSDSPlus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderFinePayment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiDataVersions
@@ -46,6 +45,7 @@ class SourceDataMapper(private val objectMapper: ObjectMapper) {
     )
   }
 
+  @Suppress("DEPRECATION")
   fun mapSentencesAndOffences(calculationRequest: CalculationRequest): List<SentenceAndOffenceWithReleaseArrangements> = when (calculationRequest.sentenceAndOffencesVersion) {
     0 -> {
       val reader = objectMapper.readerFor(object : TypeReference<List<PrisonApiDataVersions.Version0.SentenceAndOffences>>() {})
@@ -58,14 +58,20 @@ class SourceDataMapper(private val objectMapper: ObjectMapper) {
         .flatMap(PrisonApiSentenceAndOffences::toLatest)
     }
     2 -> {
-      val reader = objectMapper.readerFor(object : TypeReference<List<SentenceAndOffencesWithSDSPlus>>() {})
-      reader.readValue<List<SentenceAndOffencesWithSDSPlus>>(calculationRequest.sentenceAndOffences)
-        .flatMap(SentenceAndOffencesWithSDSPlus::toLatest)
+      val reader = objectMapper.readerFor(object : TypeReference<List<uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.LegacyCRDSSentenceAndOffenceV2>>() {})
+      reader.readValue<List<uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.LegacyCRDSSentenceAndOffenceV2>>(calculationRequest.sentenceAndOffences)
+        .flatMap(uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.LegacyCRDSSentenceAndOffenceV2::toLatest)
     }
-    else -> {
+    3 -> {
+      val reader = objectMapper.readerFor(object : TypeReference<List<uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.LegacyCRDSSentenceAndOffenceV3>>() {})
+      reader.readValue<List<uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.LegacyCRDSSentenceAndOffenceV3>>(calculationRequest.sentenceAndOffences)
+        .map(uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.LegacyCRDSSentenceAndOffenceV3::toLatest)
+    }
+    4 -> {
       val reader = objectMapper.readerFor(object : TypeReference<List<SentenceAndOffenceWithReleaseArrangements>>() {})
       reader.readValue(calculationRequest.sentenceAndOffences)
     }
+    else -> throw IllegalArgumentException("Unexpected sentence and offence version ${calculationRequest.sentenceAndOffencesVersion}")
   }
 
   fun mapPrisonerDetails(calculationRequest: CalculationRequest): PrisonerDetails = objectMapper.convertValue(calculationRequest.prisonerDetails, PrisonerDetails::class.java)

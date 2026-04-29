@@ -1,6 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external
 
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import java.time.LocalDate
 
@@ -25,6 +25,7 @@ class PrisonApiDataVersions {
       val offences: List<OffenderOffence> = emptyList(),
     ) {
       fun toLatest() = offences.map { offence: OffenderOffence ->
+        val sentenceType = SentenceCalculationType.from(sentenceCalculationType)
         SentenceAndOffenceWithReleaseArrangements(
           bookingId = bookingId,
           sentenceSequence = sentenceSequence,
@@ -43,9 +44,16 @@ class PrisonApiDataVersions {
           courtDescription = null,
           courtTypeCode = null,
           fineAmount = 0.toBigDecimal(),
-          isSDSPlus = false,
-          isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-          hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
+          sdsReleaseArrangements = if (sentenceType.isSDS()) {
+            SDSReleaseArrangements(
+              isSDSPlus = false,
+              isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+              sdsEarlyReleaseExclusions = emptyList(),
+              isSection250 = sentenceType.isSection250(),
+            )
+          } else {
+            null
+          },
         )
       }
     }
