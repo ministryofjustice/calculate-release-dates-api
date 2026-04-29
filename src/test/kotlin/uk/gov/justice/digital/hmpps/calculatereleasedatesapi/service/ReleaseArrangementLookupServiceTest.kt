@@ -12,16 +12,15 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.manageoffencesapi.model.OffencePcscMarkers
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.manageoffencesapi.model.OffenceSdsExclusion
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.manageoffencesapi.model.PcscMarkers
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NormalisedSentenceAndOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.manageoffencesapi.OffencePcscMarkers
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.manageoffencesapi.PcscMarkers
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.manageoffencesapi.SDSEarlyReleaseExclusionForOffenceCode
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.manageoffencesapi.SDSEarlyReleaseExclusionSchedulePart
 import java.time.LocalDate
 
 class ReleaseArrangementLookupServiceTest {
@@ -181,7 +180,7 @@ class ReleaseArrangementLookupServiceTest {
   fun `should not set an SDS exclusion if offence is neither sexual or violent`() {
     whenever(mockManageOffencesService.getSdsExclusionsForOffenceCodes(listOf(OFFENCE_CODE_NON_SDS_PLUS))).thenReturn(
       listOf(
-        SDSEarlyReleaseExclusionForOffenceCode(OFFENCE_CODE_NON_SDS_PLUS, SDSEarlyReleaseExclusionSchedulePart.NONE),
+        OffenceSdsExclusion(OFFENCE_CODE_NON_SDS_PLUS, OffenceSdsExclusion.SchedulePart.NONE),
       ),
     )
     val withReleaseArrangements = underTest.populateReleaseArrangements(listOf(nonSDSPlusSentenceAndOffenceFourYears))
@@ -195,7 +194,7 @@ class ReleaseArrangementLookupServiceTest {
   fun `should set has an SDS exclusion if offence is sexual`() {
     whenever(mockManageOffencesService.getSdsExclusionsForOffenceCodes(listOf(OFFENCE_CODE_NON_SDS_PLUS))).thenReturn(
       listOf(
-        SDSEarlyReleaseExclusionForOffenceCode(OFFENCE_CODE_NON_SDS_PLUS, SDSEarlyReleaseExclusionSchedulePart.SEXUAL),
+        OffenceSdsExclusion(OFFENCE_CODE_NON_SDS_PLUS, OffenceSdsExclusion.SchedulePart.SEXUAL),
       ),
     )
 
@@ -211,7 +210,7 @@ class ReleaseArrangementLookupServiceTest {
   fun `should set has an SDS exclusion if offence is domestic abuse`() {
     whenever(mockManageOffencesService.getSdsExclusionsForOffenceCodes(listOf(OFFENCE_CODE_NON_SDS_PLUS))).thenReturn(
       listOf(
-        SDSEarlyReleaseExclusionForOffenceCode(OFFENCE_CODE_NON_SDS_PLUS, SDSEarlyReleaseExclusionSchedulePart.DOMESTIC_ABUSE),
+        OffenceSdsExclusion(OFFENCE_CODE_NON_SDS_PLUS, OffenceSdsExclusion.SchedulePart.DOMESTIC_ABUSE),
       ),
     )
 
@@ -227,7 +226,7 @@ class ReleaseArrangementLookupServiceTest {
   fun `should set has an SDS exclusion if offence is national security`() {
     whenever(mockManageOffencesService.getSdsExclusionsForOffenceCodes(listOf(OFFENCE_CODE_NON_SDS_PLUS))).thenReturn(
       listOf(
-        SDSEarlyReleaseExclusionForOffenceCode(OFFENCE_CODE_NON_SDS_PLUS, SDSEarlyReleaseExclusionSchedulePart.NATIONAL_SECURITY),
+        OffenceSdsExclusion(OFFENCE_CODE_NON_SDS_PLUS, OffenceSdsExclusion.SchedulePart.NATIONAL_SECURITY),
       ),
     )
 
@@ -243,7 +242,7 @@ class ReleaseArrangementLookupServiceTest {
   fun `should set has an SDS exclusion if offence is terrorism`() {
     whenever(mockManageOffencesService.getSdsExclusionsForOffenceCodes(listOf(OFFENCE_CODE_NON_SDS_PLUS))).thenReturn(
       listOf(
-        SDSEarlyReleaseExclusionForOffenceCode(OFFENCE_CODE_NON_SDS_PLUS, SDSEarlyReleaseExclusionSchedulePart.TERRORISM),
+        OffenceSdsExclusion(OFFENCE_CODE_NON_SDS_PLUS, OffenceSdsExclusion.SchedulePart.TERRORISM),
       ),
     )
 
@@ -259,7 +258,7 @@ class ReleaseArrangementLookupServiceTest {
   fun `should set has an SDS exclusion if offence is violent and 4 years or more`() {
     whenever(mockManageOffencesService.getSdsExclusionsForOffenceCodes(listOf(OFFENCE_CODE_NON_SDS_PLUS))).thenReturn(
       listOf(
-        SDSEarlyReleaseExclusionForOffenceCode(OFFENCE_CODE_NON_SDS_PLUS, SDSEarlyReleaseExclusionSchedulePart.VIOLENT),
+        OffenceSdsExclusion(OFFENCE_CODE_NON_SDS_PLUS, OffenceSdsExclusion.SchedulePart.VIOLENT),
       ),
     )
 
@@ -275,7 +274,7 @@ class ReleaseArrangementLookupServiceTest {
   fun `should not set an SDS exclusion if offence is violent but under 4 years`() {
     whenever(mockManageOffencesService.getSdsExclusionsForOffenceCodes(listOf(OFFENCE_CODE_NON_SDS_PLUS))).thenReturn(
       listOf(
-        SDSEarlyReleaseExclusionForOffenceCode(OFFENCE_CODE_NON_SDS_PLUS, SDSEarlyReleaseExclusionSchedulePart.VIOLENT),
+        OffenceSdsExclusion(OFFENCE_CODE_NON_SDS_PLUS, OffenceSdsExclusion.SchedulePart.VIOLENT),
       ),
     )
 
@@ -304,7 +303,7 @@ class ReleaseArrangementLookupServiceTest {
   fun `should not set an SDS exclusion if sentence is not SDS eligible`() {
     whenever(mockManageOffencesService.getSdsExclusionsForOffenceCodes(listOf(OFFENCE_CODE_NON_SDS_PLUS))).thenReturn(
       listOf(
-        SDSEarlyReleaseExclusionForOffenceCode(OFFENCE_CODE_NON_SDS_PLUS, SDSEarlyReleaseExclusionSchedulePart.VIOLENT),
+        OffenceSdsExclusion(OFFENCE_CODE_NON_SDS_PLUS, OffenceSdsExclusion.SchedulePart.VIOLENT),
       ),
     )
 
@@ -325,7 +324,7 @@ class ReleaseArrangementLookupServiceTest {
   fun `should not set an SDS exclusion if sentence is supported but not in SDS sentence types`() {
     whenever(mockManageOffencesService.getSdsExclusionsForOffenceCodes(listOf(OFFENCE_CODE_NON_SDS_PLUS))).thenReturn(
       listOf(
-        SDSEarlyReleaseExclusionForOffenceCode(OFFENCE_CODE_NON_SDS_PLUS, SDSEarlyReleaseExclusionSchedulePart.VIOLENT),
+        OffenceSdsExclusion(OFFENCE_CODE_NON_SDS_PLUS, OffenceSdsExclusion.SchedulePart.VIOLENT),
       ),
     )
 
@@ -352,7 +351,7 @@ class ReleaseArrangementLookupServiceTest {
   fun `should set an SDS exclusion for all specifically listed SDS sentence types`(type: SentenceCalculationType) {
     whenever(mockManageOffencesService.getSdsExclusionsForOffenceCodes(listOf(OFFENCE_CODE_NON_SDS_PLUS))).thenReturn(
       listOf(
-        SDSEarlyReleaseExclusionForOffenceCode(OFFENCE_CODE_NON_SDS_PLUS, SDSEarlyReleaseExclusionSchedulePart.VIOLENT),
+        OffenceSdsExclusion(OFFENCE_CODE_NON_SDS_PLUS, OffenceSdsExclusion.SchedulePart.VIOLENT),
       ),
     )
 
@@ -369,9 +368,9 @@ class ReleaseArrangementLookupServiceTest {
   fun `Should set an SDS exclusion for all enumerated SDS sentence types`(type: SentenceCalculationType) {
     whenever(mockManageOffencesService.getSdsExclusionsForOffenceCodes(listOf(OFFENCE_CODE_NON_SDS_PLUS))).thenReturn(
       listOf(
-        SDSEarlyReleaseExclusionForOffenceCode(
+        OffenceSdsExclusion(
           OFFENCE_CODE_NON_SDS_PLUS,
-          SDSEarlyReleaseExclusionSchedulePart.VIOLENT,
+          OffenceSdsExclusion.SchedulePart.VIOLENT,
         ),
       ),
     )
@@ -388,8 +387,8 @@ class ReleaseArrangementLookupServiceTest {
   fun `should match codes for sexual and violent against correct offences`() {
     whenever(mockManageOffencesService.getSdsExclusionsForOffenceCodes(listOf("SX01", "V01"))).thenReturn(
       listOf(
-        SDSEarlyReleaseExclusionForOffenceCode("SX01", SDSEarlyReleaseExclusionSchedulePart.SEXUAL),
-        SDSEarlyReleaseExclusionForOffenceCode("V01", SDSEarlyReleaseExclusionSchedulePart.VIOLENT),
+        OffenceSdsExclusion("SX01", OffenceSdsExclusion.SchedulePart.SEXUAL),
+        OffenceSdsExclusion("V01", OffenceSdsExclusion.SchedulePart.VIOLENT),
       ),
     )
 
@@ -429,8 +428,8 @@ class ReleaseArrangementLookupServiceTest {
     whenever(mockManageOffencesService.getSdsExclusionsForOffenceCodes(sds40Offences))
       .thenReturn(
         listOf(
-          SDSEarlyReleaseExclusionForOffenceCode(offenceCodeSexualSds40, SDSEarlyReleaseExclusionSchedulePart.SEXUAL),
-          SDSEarlyReleaseExclusionForOffenceCode(offenceCodeViolentSds40, SDSEarlyReleaseExclusionSchedulePart.VIOLENT),
+          OffenceSdsExclusion(offenceCodeSexualSds40, OffenceSdsExclusion.SchedulePart.SEXUAL),
+          OffenceSdsExclusion(offenceCodeViolentSds40, OffenceSdsExclusion.SchedulePart.VIOLENT),
         ),
       )
 

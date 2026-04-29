@@ -6,10 +6,9 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.manageoffencesapi.OffencePcscMarkers
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.manageoffencesapi.PcscMarkers
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.manageoffencesapi.SDSEarlyReleaseExclusionForOffenceCode
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.manageoffencesapi.SDSEarlyReleaseExclusionSchedulePart
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.manageoffencesapi.model.OffencePcscMarkers
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.manageoffencesapi.model.OffenceSdsExclusion
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.manageoffencesapi.model.PcscMarkers
 
 class ManageOffencesServiceTest {
 
@@ -27,9 +26,9 @@ class ManageOffencesServiceTest {
   @Test
   fun getSdsExclusionsForOffenceCodes() {
     val moResult = listOf(
-      SDSEarlyReleaseExclusionForOffenceCode("SX01", SDSEarlyReleaseExclusionSchedulePart.SEXUAL),
-      SDSEarlyReleaseExclusionForOffenceCode("V01", SDSEarlyReleaseExclusionSchedulePart.VIOLENT),
-      SDSEarlyReleaseExclusionForOffenceCode("N01", SDSEarlyReleaseExclusionSchedulePart.NONE),
+      OffenceSdsExclusion("SX01", OffenceSdsExclusion.SchedulePart.SEXUAL),
+      OffenceSdsExclusion("V01", OffenceSdsExclusion.SchedulePart.VIOLENT),
+      OffenceSdsExclusion("N01", OffenceSdsExclusion.SchedulePart.NONE),
     )
     whenever(mockManageOffencesApiClient.getSdsExclusionsForOffenceCodes(listOf("SX01", "V01", "N01"))).thenReturn(moResult)
     val testResult = underTest.getSdsExclusionsForOffenceCodes(listOf("SX01", "V01", "N01"))
