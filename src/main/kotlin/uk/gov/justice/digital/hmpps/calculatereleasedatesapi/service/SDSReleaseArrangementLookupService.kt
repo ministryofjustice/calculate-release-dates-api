@@ -1,12 +1,11 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.manageoffencesapi.model.OffenceSdsExclusion
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSPlusCheckResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.manageoffencesapi.SDSEarlyReleaseExclusionForOffenceCode
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.manageoffencesapi.SDSEarlyReleaseExclusionSchedulePart
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
 import java.time.LocalDate
 import java.time.Period
@@ -31,7 +30,7 @@ class SDSReleaseArrangementLookupService {
     .map { it.sentenceAndOffence.offence.offenceCode }.sorted()
 
   internal fun exclusionForOffence(
-    exclusionsForOffences: Map<String, SDSEarlyReleaseExclusionForOffenceCode>,
+    exclusionsForOffences: Map<String, OffenceSdsExclusion>,
     sentenceAndOffence: SentenceAndOffence,
     isSDSPlus: Boolean,
   ): SDSEarlyReleaseExclusionType {
@@ -44,36 +43,34 @@ class SDSReleaseArrangementLookupService {
     val exclusionForOffence = exclusionsForOffences[offenceCode] ?: return SDSEarlyReleaseExclusionType.NO
 
     return when (exclusionForOffence.schedulePart) {
-      SDSEarlyReleaseExclusionSchedulePart.SEXUAL_T3,
-      SDSEarlyReleaseExclusionSchedulePart.SEXUAL,
+      OffenceSdsExclusion.SchedulePart.SEXUAL_T3,
+      OffenceSdsExclusion.SchedulePart.SEXUAL,
       -> SDSEarlyReleaseExclusionType.SEXUAL
 
-      SDSEarlyReleaseExclusionSchedulePart.DOMESTIC_ABUSE_T3,
-      SDSEarlyReleaseExclusionSchedulePart.DOMESTIC_ABUSE,
+      OffenceSdsExclusion.SchedulePart.DOMESTIC_ABUSE_T3,
+      OffenceSdsExclusion.SchedulePart.DOMESTIC_ABUSE,
       -> SDSEarlyReleaseExclusionType.DOMESTIC_ABUSE
 
-      SDSEarlyReleaseExclusionSchedulePart.NATIONAL_SECURITY_T3,
-      SDSEarlyReleaseExclusionSchedulePart.NATIONAL_SECURITY,
+      OffenceSdsExclusion.SchedulePart.NATIONAL_SECURITY,
       -> SDSEarlyReleaseExclusionType.NATIONAL_SECURITY
 
-      SDSEarlyReleaseExclusionSchedulePart.TERRORISM_T3,
-      SDSEarlyReleaseExclusionSchedulePart.TERRORISM,
+      OffenceSdsExclusion.SchedulePart.TERRORISM,
       -> SDSEarlyReleaseExclusionType.TERRORISM
 
-      SDSEarlyReleaseExclusionSchedulePart.MURDER_T3 -> SDSEarlyReleaseExclusionType.MURDER_T3
+      OffenceSdsExclusion.SchedulePart.MURDER_T3 -> SDSEarlyReleaseExclusionType.MURDER_T3
 
-      SDSEarlyReleaseExclusionSchedulePart.VIOLENT_T3 -> evaluateViolentExclusion(sentenceAndOffence, true)
-      SDSEarlyReleaseExclusionSchedulePart.VIOLENT -> evaluateViolentExclusion(sentenceAndOffence, false)
+      OffenceSdsExclusion.SchedulePart.VIOLENT -> evaluateViolentExclusion(sentenceAndOffence)
 
-      SDSEarlyReleaseExclusionSchedulePart.NONE -> SDSEarlyReleaseExclusionType.NO
+      OffenceSdsExclusion.SchedulePart.SCHEDULE_13_PART_3 -> SDSEarlyReleaseExclusionType.SCHEDULE_13_PART_3
+
+      OffenceSdsExclusion.SchedulePart.NONE -> SDSEarlyReleaseExclusionType.NO
     }
   }
 
   private fun evaluateViolentExclusion(
     sentenceAndOffence: SentenceAndOffence,
-    isT3: Boolean,
   ): SDSEarlyReleaseExclusionType = if (fourYearsOrMore(sentenceAndOffence)) {
-    if (isT3) SDSEarlyReleaseExclusionType.VIOLENT_T3 else SDSEarlyReleaseExclusionType.VIOLENT
+    SDSEarlyReleaseExclusionType.VIOLENT
   } else {
     SDSEarlyReleaseExclusionType.NO
   }

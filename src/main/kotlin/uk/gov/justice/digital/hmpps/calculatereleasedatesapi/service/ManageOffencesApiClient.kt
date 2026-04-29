@@ -5,14 +5,10 @@ import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
-import reactor.util.retry.Retry
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.client.loggingRetry
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CouldNotGetMoOffenceInformation
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.MaxRetryAchievedException
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.manageoffencesapi.OffencePcscMarkers
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.manageoffencesapi.SDSEarlyReleaseExclusionForOffenceCode
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.manageoffencesapi.ToreraSchedulePartCodes
-import java.time.Duration
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.manageoffencesapi.model.OffencePcscMarkers
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.manageoffencesapi.model.OffenceSdsExclusion
 
 @Service
 class ManageOffencesApiClient(@param:Qualifier("manageOffencesApiWebClient") private val webClient: WebClient) {
@@ -31,14 +27,14 @@ class ManageOffencesApiClient(@param:Qualifier("manageOffencesApiWebClient") pri
       .block() ?: throw CouldNotGetMoOffenceInformation("PCSC indicator for offence lookup, otherwise failed for $offencesList, cannot proceed to perform a sentence calculation")
   }
 
-  fun getSdsExclusionsForOffenceCodes(offenceCodes: List<String>): List<SDSEarlyReleaseExclusionForOffenceCode> {
+  fun getSdsExclusionsForOffenceCodes(offenceCodes: List<String>): List<OffenceSdsExclusion> {
     val offencesList = offenceCodes.joinToString(",")
     log.info("getSdsExclusionsForOffenceCodes : /schedule/sds-early-release-exclusions?offenceCodes=$offencesList")
 
     return webClient.get()
       .uri("/schedule/sds-early-release-exclusions?offenceCodes=$offencesList")
       .retrieve()
-      .bodyToMono(typeReference<List<SDSEarlyReleaseExclusionForOffenceCode>>())
+      .bodyToMono(typeReference<List<OffenceSdsExclusion>>())
       .loggingRetry(log, "getSdsExclusionsForOffenceCodes($offencesList)")
       .block() ?: throw CouldNotGetMoOffenceInformation("Sds early release exclusions schedule otherwise failed for offence lookup failed for $offencesList, cannot proceed to perform a sentence calculation")
   }
@@ -49,21 +45,4 @@ class ManageOffencesApiClient(@param:Qualifier("manageOffencesApiWebClient") pri
     .bodyToMono(typeReference<List<String>>())
     .loggingRetry(log, "getToreraOffenceCodes()")
     .block() ?: throw CouldNotGetMoOffenceInformation("getToreraOffenceCodes request failed to load")
-
-  fun getToreraCodesByParts(): ToreraSchedulePartCodes = webClient.get()
-    .uri("/schedule/torera-offence-codes-by-schedule-part")
-    .retrieve()
-    .bodyToMono(typeReference<ToreraSchedulePartCodes>())
-    .retryWhen(
-      Retry
-        .backoff(5, Duration.ofMillis(100))
-        .maxBackoff(Duration.ofSeconds(5))
-        .doBeforeRetry { retrySignal ->
-          log.warn("getToreraCodesByParts: Retrying [Attempt: ${retrySignal.totalRetries() + 1}] due to ${retrySignal.failure().message}. ")
-        }
-        .onRetryExhaustedThrow { _, _ ->
-          throw MaxRetryAchievedException("getToreraCodesByParts: Max retries - lookup failed, cannot proceed to perform a sentence calculation")
-        },
-    )
-    .block() ?: throw CouldNotGetMoOffenceInformation("getToreraCodesByParts request failed to load")
 }
