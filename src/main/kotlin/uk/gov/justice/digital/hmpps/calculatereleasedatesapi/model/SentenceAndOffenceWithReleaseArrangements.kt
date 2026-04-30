@@ -92,6 +92,28 @@ data class SentenceAndOffenceWithReleaseArrangements(
     ),
   )
 
+  constructor(sentenceAndOffence: SentenceAndOffence, releaseArrangements: SDSReleaseArrangements?) : this(
+    bookingId = sentenceAndOffence.bookingId,
+    sentenceSequence = sentenceAndOffence.sentenceSequence,
+    lineSequence = sentenceAndOffence.lineSequence,
+    caseSequence = sentenceAndOffence.caseSequence,
+    consecutiveToSequence = sentenceAndOffence.consecutiveToSequence,
+    sentenceStatus = sentenceAndOffence.sentenceStatus,
+    sentenceCategory = sentenceAndOffence.sentenceCategory,
+    sentenceCalculationType = sentenceAndOffence.sentenceCalculationType,
+    sentenceTypeDescription = sentenceAndOffence.sentenceTypeDescription,
+    sentenceDate = sentenceAndOffence.sentenceDate,
+    terms = sentenceAndOffence.terms,
+    offence = sentenceAndOffence.offence,
+    caseReference = sentenceAndOffence.caseReference,
+    courtId = sentenceAndOffence.courtId,
+    courtDescription = sentenceAndOffence.courtDescription,
+    courtTypeCode = sentenceAndOffence.courtTypeCode,
+    fineAmount = sentenceAndOffence.fineAmount,
+    revocationDates = sentenceAndOffence.revocationDates,
+    sdsReleaseArrangements = releaseArrangements,
+  )
+
   constructor(
     source: PrisonApiSentenceAndOffences,
     offence: OffenderOffence,

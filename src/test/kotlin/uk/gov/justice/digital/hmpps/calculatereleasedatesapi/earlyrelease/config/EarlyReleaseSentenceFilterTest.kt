@@ -76,8 +76,6 @@ class EarlyReleaseSentenceFilterTest {
       SDSEarlyReleaseExclusionType.TERRORISM -> false
       SDSEarlyReleaseExclusionType.SEXUAL_T3 -> true
       SDSEarlyReleaseExclusionType.DOMESTIC_ABUSE_T3 -> true
-      SDSEarlyReleaseExclusionType.NATIONAL_SECURITY_T3 -> true
-      SDSEarlyReleaseExclusionType.TERRORISM_T3 -> true
       SDSEarlyReleaseExclusionType.MURDER_T3 -> true
       SDSEarlyReleaseExclusionType.SCHEDULE_13_PART_3 -> true
       SDSEarlyReleaseExclusionType.NO -> true
@@ -110,8 +108,6 @@ class EarlyReleaseSentenceFilterTest {
       SDSEarlyReleaseExclusionType.TERRORISM -> false
       SDSEarlyReleaseExclusionType.SEXUAL_T3 -> true
       SDSEarlyReleaseExclusionType.DOMESTIC_ABUSE_T3 -> true
-      SDSEarlyReleaseExclusionType.NATIONAL_SECURITY_T3 -> true
-      SDSEarlyReleaseExclusionType.TERRORISM_T3 -> true
       SDSEarlyReleaseExclusionType.MURDER_T3 -> true
       SDSEarlyReleaseExclusionType.SCHEDULE_13_PART_3 -> false
       SDSEarlyReleaseExclusionType.NO -> false
