@@ -17,8 +17,12 @@
           }
         },
         "sentencedAt": "2022-01-19",
-        "identifier": "69223792-506e-4c83-8489-6536173fcd98",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "AFineSentence",
@@ -32,14 +36,14 @@
           }
         },
         "sentencedAt": "2022-01-19",
-        "identifier": "493019e8-36ba-442d-90d6-315ead9dcf51",
         "fineAmount": 1014
       }
     ],
-    "adjustments": {
-    }
+    "adjustments": {}
   },
   "userInputs": {
-    "calculateErsed": true
-  }
+    "calculateErsed": true,
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params"
 }

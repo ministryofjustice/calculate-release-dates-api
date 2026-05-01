@@ -9,7 +9,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSe
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetentionAndTrainingOrderSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DtoSingleTermSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SingleTermSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SingleTermed
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
@@ -76,7 +75,7 @@ class SentenceCombinationService(
      the only offence based data we have currently is SDS+ & SDS40 exclusions.
    */
   private fun collapseDuplicateConsecutiveSentences(consecutiveSentences: List<ConsecutiveSentence>): List<ConsecutiveSentence> = consecutiveSentences.distinctBy {
-    it.orderedSentences.joinToString { sentence -> "${sentence.identifier}${sentence is StandardDeterminateSentence && sentence.isSDSPlus}${sentence is StandardDeterminateSentence && sentence.section250}${sentence is StandardDeterminateSentence && sentence.isSDSPlusEligibleSentenceTypeLengthAndOffence}${sentence is StandardDeterminateSentence && sentence.hasAnSDSEarlyReleaseExclusion != SDSEarlyReleaseExclusionType.NO}" }
+    it.orderedSentences.joinToString { sentence -> "${sentence.identifier}${if (sentence is StandardDeterminateSentence) sentence.releaseArrangements else ""}" }
   }
 
   private fun getAllExtractableSentences(

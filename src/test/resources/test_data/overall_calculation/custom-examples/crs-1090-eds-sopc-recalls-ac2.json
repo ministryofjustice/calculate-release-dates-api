@@ -21,24 +21,24 @@
           }
         },
         "sentencedAt": "2017-09-29",
-        "identifier": "e21c5be4-8ea6-4ee6-9eb1-e248bd59a791",
         "recall": {
           "recallType": "STANDARD_RECALL"
         }
       }
-        ],
-        "adjustments": {
-          "RECALL_REMAND": [
-            {
-              "appliesToSentencesFrom": "2017-09-29",
-              "numberOfDays": 71,
-              "fromDate": "2017-07-20",
-              "toDate": "2017-09-28"
-            }
-          ]
+    ],
+    "adjustments": {
+      "RECALL_REMAND": [
+        {
+          "appliesToSentencesFrom": "2017-09-29",
+          "numberOfDays": 71,
+          "fromDate": "2017-07-20",
+          "toDate": "2017-09-28"
         }
-      },
-      "params"
-      :
-      "sds-50"
-      }
+      ]
+    }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "sds-50"
+}

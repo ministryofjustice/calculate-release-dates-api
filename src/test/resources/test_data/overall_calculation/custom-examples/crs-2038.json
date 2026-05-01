@@ -16,24 +16,32 @@
           }
         },
         "sentencedAt": "2024-09-26",
-        "identifier": "b048642b-0db4-4d41-b9fc-6d5491f05e3b",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
+      "TAGGED_BAIL": [
+        {
+          "appliesToSentencesFrom": "2024-09-26",
+          "numberOfDays": 120
+        }
+      ],
       "ADDITIONAL_DAYS_AWARDED": [
         {
           "appliesToSentencesFrom": "2024-09-27",
           "numberOfDays": 42,
           "fromDate": "2024-09-27"
         }
-      ],
-      "TAGGED_BAIL": [
-        {
-          "appliesToSentencesFrom": "2024-09-26",
-          "numberOfDays": 120
-        }
       ]
     }
-  }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params"
 }

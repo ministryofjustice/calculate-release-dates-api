@@ -16,12 +16,16 @@
           }
         },
         "sentencedAt": "2021-01-22",
-        "identifier": "0dbd392e-4223-4347-85cc-63334dd7fef4",
         "recall": {
           "recallType": "FIXED_TERM_RECALL_28",
           "returnToCustodyDate": "2022-02-03"
         },
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
@@ -35,6 +39,9 @@
       ]
     },
     "returnToCustodyDate": "2022-02-03"
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-50"
 }

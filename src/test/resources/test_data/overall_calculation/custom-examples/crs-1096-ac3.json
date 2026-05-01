@@ -15,8 +15,7 @@
             "MONTHS": 8
           }
         },
-        "sentencedAt": "2022-07-04",
-        "identifier": "6be25145-8a9d-47bc-8b4c-41e03593c817"
+        "sentencedAt": "2022-07-04"
       }
     ],
     "adjustments": {
@@ -29,6 +28,9 @@
         }
       ]
     }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-50"
 }

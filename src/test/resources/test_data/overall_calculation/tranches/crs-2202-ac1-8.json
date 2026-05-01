@@ -17,11 +17,17 @@
           }
         },
         "sentencedAt": "2024-09-16",
-        "identifier": "96887c4e-39bf-4574-ae4b-151c19d57e4c",
         "recall": {
           "recallType": "STANDARD_RECALL"
         },
-        "hasAnSDSEarlyReleaseExclusion": "DOMESTIC_ABUSE_T3"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [
+            "DOMESTIC_ABUSE_T3"
+          ],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
@@ -35,5 +41,9 @@
       ]
     }
   },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params",
   "assertSds40": true
 }

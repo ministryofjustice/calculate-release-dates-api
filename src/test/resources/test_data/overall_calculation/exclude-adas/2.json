@@ -16,8 +16,7 @@
             "WEEKS": 16
           }
         },
-        "sentencedAt": "2023-11-17",
-        "identifier": "2088146c-93f8-426a-bb44-bf748ad945a3"
+        "sentencedAt": "2023-11-17"
       }
     ],
     "adjustments": {
@@ -30,5 +29,9 @@
         }
       ]
     }
-  }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params"
 }

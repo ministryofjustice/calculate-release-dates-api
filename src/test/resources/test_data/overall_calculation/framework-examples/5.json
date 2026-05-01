@@ -20,11 +20,13 @@
             "YEARS": 5
           }
         },
-        "sentencedAt": "2025-04-16",
-        "identifier": "c222d8ea-bd9f-49f2-9284-a38242c2f85a"
+        "sentencedAt": "2025-04-16"
       }
     ],
     "adjustments": {}
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-50"
 }

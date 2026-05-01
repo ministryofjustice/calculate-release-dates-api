@@ -17,12 +17,16 @@
           }
         },
         "sentencedAt": "2021-05-27",
-        "identifier": "c1d94eeb-8f7c-4791-915b-c32e11b4fa11",
         "recall": {
           "recallType": "FIXED_TERM_RECALL_28",
           "returnToCustodyDate": "2024-07-08"
         },
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -37,12 +41,16 @@
           }
         },
         "sentencedAt": "2021-05-27",
-        "identifier": "bc780ee0-d2cf-4eb2-b795-fbf0d2eeb926",
         "recall": {
           "recallType": "FIXED_TERM_RECALL_28",
           "returnToCustodyDate": "2024-07-08"
         },
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -56,12 +64,16 @@
           }
         },
         "sentencedAt": "2021-05-27",
-        "identifier": "90fc3274-ddef-445c-841b-5ff8c0c2a8df",
         "recall": {
           "recallType": "FIXED_TERM_RECALL_28",
           "returnToCustodyDate": "2024-07-08"
         },
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -75,12 +87,16 @@
           }
         },
         "sentencedAt": "2021-05-27",
-        "identifier": "f281d6a5-7712-4502-984c-6c72dc7676c1",
         "recall": {
           "recallType": "FIXED_TERM_RECALL_28",
           "returnToCustodyDate": "2024-07-08"
         },
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -94,12 +110,16 @@
           }
         },
         "sentencedAt": "2021-05-27",
-        "identifier": "f41b8418-8bda-48a4-b629-e2108a1e5ba1",
         "recall": {
           "recallType": "FIXED_TERM_RECALL_28",
           "returnToCustodyDate": "2024-07-08"
         },
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -113,25 +133,29 @@
           }
         },
         "sentencedAt": "2024-07-11",
-        "identifier": "ef45746b-5bf2-4d12-a72f-222b426dfd7a",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
-      "UNLAWFULLY_AT_LARGE": [
-        {
-          "appliesToSentencesFrom": "2024-05-22",
-          "numberOfDays": 47,
-          "fromDate": "2024-05-22",
-          "toDate": "2024-07-07"
-        }
-      ],
       "RECALL_REMAND": [
         {
           "appliesToSentencesFrom": "2021-05-27",
           "numberOfDays": 5,
           "fromDate": "2020-07-04",
           "toDate": "2020-07-08"
+        }
+      ],
+      "UNLAWFULLY_AT_LARGE": [
+        {
+          "appliesToSentencesFrom": "2024-05-22",
+          "numberOfDays": 47,
+          "fromDate": "2024-05-22",
+          "toDate": "2024-07-07"
         }
       ]
     },
@@ -142,5 +166,9 @@
       "recallLength": 28
     }
   },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params",
   "assertSds40": true
 }

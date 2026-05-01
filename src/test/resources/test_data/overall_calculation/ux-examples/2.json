@@ -19,7 +19,12 @@
         "identifier": "fba317ac-0aa0-4e12-a1c1-b0c188636728",
         "caseSequence": 1,
         "lineSequence": 1,
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -35,7 +40,12 @@
         "identifier": "d2f66c4a-450c-42a6-afff-8e6ef0351a02",
         "caseSequence": 2,
         "lineSequence": 2,
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -51,7 +61,12 @@
         "identifier": "1e9b6977-0946-4004-a4c3-7aa09a3696a9",
         "caseSequence": 3,
         "lineSequence": 3,
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {

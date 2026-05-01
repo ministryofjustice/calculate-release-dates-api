@@ -16,8 +16,12 @@
           }
         },
         "sentencedAt": "2019-04-30",
-        "identifier": "4d4652f5-641a-400a-be70-4926f206f459",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "AFineSentence",
@@ -30,7 +34,6 @@
           }
         },
         "sentencedAt": "2020-03-20",
-        "identifier": "65161182-e8a4-40d2-afa7-36d2f54bf327",
         "fineAmount": 1.9E+2
       }
     ],
@@ -44,6 +47,9 @@
         }
       ]
     }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-50"
 }

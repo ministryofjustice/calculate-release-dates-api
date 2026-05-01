@@ -18,8 +18,14 @@
           }
         },
         "sentencedAt": "2023-09-26",
-        "identifier": "be1a1fbe-fe25-4a45-a3ff-ae89a2ea626f",
-        "hasAnSDSEarlyReleaseExclusion": "SEXUAL"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [
+            "SEXUAL"
+          ],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -33,8 +39,14 @@
           }
         },
         "sentencedAt": "2023-09-26",
-        "identifier": "8bdd75f3-db7b-49f8-b674-3a59f6683d90",
-        "hasAnSDSEarlyReleaseExclusion": "SEXUAL"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [
+            "SEXUAL"
+          ],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -48,8 +60,14 @@
           }
         },
         "sentencedAt": "2023-09-26",
-        "identifier": "0cc80b92-e3f5-4402-b2d4-47ea7ff25e83",
-        "hasAnSDSEarlyReleaseExclusion": "SEXUAL"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [
+            "SEXUAL"
+          ],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
@@ -62,5 +80,9 @@
         }
       ]
     }
-  }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params"
 }

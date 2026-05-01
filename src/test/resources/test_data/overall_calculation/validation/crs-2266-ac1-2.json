@@ -18,8 +18,12 @@
           }
         },
         "sentencedAt": "2023-08-19",
-        "identifier": "c2c05b33-e33d-4b1c-a0e0-1d189ca58b55",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -34,11 +38,21 @@
           }
         },
         "sentencedAt": "2023-09-13",
-        "identifier": "973fa199-ae73-40f0-8b0f-92f5137a0be6",
-        "hasAnSDSEarlyReleaseExclusion": "SEXUAL"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [
+            "SEXUAL"
+          ],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {}
   },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params",
   "expectedValidationException": "UNABLE_TO_DETERMINE_SHPO_RELEASE_PROVISIONS"
 }

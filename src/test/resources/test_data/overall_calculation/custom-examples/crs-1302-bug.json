@@ -28,8 +28,7 @@
             "MONTHS": 8
           }
         },
-        "sentencedAt": "2023-03-02",
-        "identifier": "784cca7f-88f4-49bc-8a61-c863083afcf7"
+        "sentencedAt": "2023-03-02"
       },
       {
         "type": "DetentionAndTrainingOrderSentence",
@@ -42,19 +41,12 @@
           }
         },
         "sentencedAt": "2023-03-02",
-        "identifier": "b7c388de-5f32-481e-a19f-effa2929cfad",
         "consecutiveSentenceUUIDs": [
           "ee91a161-dde2-3a7b-8611-624d255542a7"
         ]
       }
     ],
     "adjustments": {
-      "TAGGED_BAIL": [
-        {
-          "appliesToSentencesFrom": "2023-03-02",
-          "numberOfDays": 12
-        }
-      ],
       "REMAND": [
         {
           "appliesToSentencesFrom": "2023-03-02",
@@ -62,8 +54,17 @@
           "fromDate": "2023-01-30",
           "toDate": "2023-03-01"
         }
+      ],
+      "TAGGED_BAIL": [
+        {
+          "appliesToSentencesFrom": "2023-03-02",
+          "numberOfDays": 12
+        }
       ]
     }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-50"
 }

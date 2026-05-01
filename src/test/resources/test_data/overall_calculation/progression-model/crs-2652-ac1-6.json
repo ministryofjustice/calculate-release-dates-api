@@ -17,8 +17,12 @@
           }
         },
         "sentencedAt": "2026-02-19",
-        "hasAnSDSEarlyReleaseExclusion": "NO",
-        "isSDSPlus": false
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
@@ -28,8 +32,10 @@
           "numberOfDays": 15
         }
       ]
-
     }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-progression-model",
   "featureToggles": {

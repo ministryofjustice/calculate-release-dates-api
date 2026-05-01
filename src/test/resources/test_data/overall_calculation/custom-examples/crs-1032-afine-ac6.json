@@ -16,7 +16,6 @@
           }
         },
         "sentencedAt": "2022-08-02",
-        "identifier": "f56b29dd-c070-45dd-8242-7b4d8708d7a1",
         "fineAmount": 2E+3
       },
       {
@@ -30,11 +29,13 @@
           }
         },
         "sentencedAt": "2022-08-02",
-        "identifier": "e04ad32f-db23-4fc3-8324-9b063d2329de",
         "fineAmount": 1.5E+3
       }
     ],
     "adjustments": {}
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-50"
 }

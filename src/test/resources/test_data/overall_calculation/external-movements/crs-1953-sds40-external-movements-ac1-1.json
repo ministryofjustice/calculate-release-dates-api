@@ -6,6 +6,7 @@
     },
     "sentences": [
       {
+        "type": "StandardSentence",
         "offence": {
           "committedAt": "2022-08-01",
           "offenceCode": "EP90015"
@@ -18,9 +19,16 @@
         "sentencedAt": "2024-02-03",
         "recall": {
           "recallType": "STANDARD_RECALL"
+        },
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
         }
       },
       {
+        "type": "StandardSentence",
         "offence": {
           "committedAt": "2021-08-18",
           "offenceCode": "OF61131"
@@ -33,9 +41,16 @@
         "sentencedAt": "2024-02-03",
         "recall": {
           "recallType": "STANDARD_RECALL"
+        },
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
         }
       },
       {
+        "type": "StandardSentence",
         "offence": {
           "committedAt": "2022-08-18",
           "offenceCode": "CD71039"
@@ -48,43 +63,45 @@
         "sentencedAt": "2024-02-03",
         "recall": {
           "recallType": "STANDARD_RECALL"
+        },
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
         }
       }
-        ],
-        "adjustments": {
-          "UNLAWFULLY_AT_LARGE": [
-            {
-              "appliesToSentencesFrom": "2024-08-07",
-              "numberOfDays": 7,
-              "fromDate": "2024-08-07",
-              "toDate": "2024-08-13"
-            }
-          ]
-        },
-        "externalMovements": [
-          {
-            "movementDate": "2024-02-03",
-            "movementReason": "SENTENCE",
-            "direction": "IN"
-          },
-          {
-            "movementDate": "2024-06-29",
-            "movementReason": "HDC",
-            "direction": "OUT"
-          },
-          {
-            "movementDate": "2024-08-14",
-            "movementReason": "RECALL_ADMISSION",
-            "direction": "IN"
-          }
-        ]
-      },
-      "userInputs"
-      :
+    ],
+    "adjustments": {
+      "UNLAWFULLY_AT_LARGE": [
+        {
+          "appliesToSentencesFrom": "2024-08-07",
+          "numberOfDays": 7,
+          "fromDate": "2024-08-07",
+          "toDate": "2024-08-13"
+        }
+      ]
+    },
+    "externalMovements": [
       {
-        "useOffenceIndicators": true
+        "movementDate": "2024-02-03",
+        "movementReason": "SENTENCE",
+        "direction": "IN"
       },
-      "params"
-      :
-      "calculation-params"
+      {
+        "movementDate": "2024-06-29",
+        "movementReason": "HDC",
+        "direction": "OUT"
+      },
+      {
+        "movementDate": "2024-08-14",
+        "movementReason": "RECALL_ADMISSION",
+        "direction": "IN"
       }
+    ]
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params"
+}

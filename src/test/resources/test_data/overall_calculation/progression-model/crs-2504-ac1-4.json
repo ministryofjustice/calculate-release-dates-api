@@ -35,14 +35,21 @@
           }
         },
         "sentencedAt": "2019-10-29",
-        "hasAnSDSEarlyReleaseExclusion": "NO",
-        "identifier": "023e388e-1673-3bbc-9f13-1b1d915f3b73",
         "consecutiveSentenceUUIDs": [
           "d211f333-aa1a-3e25-ac8d-0459c1f98868"
-        ]
+        ],
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {}
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-progression-model",
   "featureToggles": {

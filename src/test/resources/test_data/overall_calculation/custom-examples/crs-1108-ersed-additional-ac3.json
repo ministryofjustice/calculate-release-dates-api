@@ -17,8 +17,12 @@
           }
         },
         "sentencedAt": "2012-12-20",
-        "identifier": "d3c28ef5-a813-4e16-910d-993d6b0d6928",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {

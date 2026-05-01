@@ -18,10 +18,15 @@
         "sentencedAt": "2022-02-02",
         "recall": {
           "recallType": "FIXED_TERM_RECALL_56",
-          "returnToCustodyDate": "2026-04-18",
-          "revocationDate": "2026-03-11"
+          "revocationDate": "2026-03-11",
+          "returnToCustodyDate": "2026-04-18"
         },
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
@@ -35,5 +40,9 @@
       ]
     },
     "returnToCustodyDate": "2026-04-18"
-  }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params"
 }

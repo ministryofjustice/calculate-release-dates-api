@@ -34,6 +34,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Recall
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmittedDate
@@ -834,8 +835,12 @@ class ManualCalculationServiceTest {
       identifier = UUID.fromString("5ac7a5ae-fa7b-4b57-a44f-8eddde24f5fa"),
       caseSequence = 1,
       lineSequence = 2,
-      isSDSPlus = false,
-      hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
+      releaseArrangements = SDSReleaseArrangements(
+        isSDSPlus = false,
+        isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+        isSection250 = false,
+        sdsEarlyReleaseExclusions = emptyList(),
+      ),
     )
     private val BOOKING = Booking(OFFENDER, listOf(StandardSENTENCE), Adjustments(), null, null, BOOKING_ID)
     private val MANUAL_ENTRY = ManualEntryRequest(

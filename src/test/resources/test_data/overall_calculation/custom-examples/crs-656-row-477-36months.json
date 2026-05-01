@@ -16,17 +16,24 @@
           }
         },
         "sentencedAt": "2021-03-01",
-        "identifier": "09bdbc8d-377a-4adc-af03-dcb1e89ced79",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
-      "RESTORATION_OF_ADDITIONAL_DAYS_AWARDED": [
+      "REMAND": [
         {
-          "appliesToSentencesFrom": "2021-03-01"
+          "appliesToSentencesFrom": "2021-03-01",
+          "numberOfDays": 174,
+          "fromDate": "2020-09-07",
+          "toDate": "2021-02-28"
         }
       ],
-      "ADDITIONAL_DAYS_AWARDED": [
+      "TAGGED_BAIL": [
         {
           "appliesToSentencesFrom": "2021-03-01"
         }
@@ -36,20 +43,20 @@
           "appliesToSentencesFrom": "2021-03-01"
         }
       ],
-      "TAGGED_BAIL": [
+      "ADDITIONAL_DAYS_AWARDED": [
         {
           "appliesToSentencesFrom": "2021-03-01"
         }
       ],
-      "REMAND": [
+      "RESTORATION_OF_ADDITIONAL_DAYS_AWARDED": [
         {
-          "appliesToSentencesFrom": "2021-03-01",
-          "numberOfDays": 174,
-          "fromDate": "2020-09-07",
-          "toDate": "2021-02-28"
+          "appliesToSentencesFrom": "2021-03-01"
         }
       ]
     }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-50"
 }

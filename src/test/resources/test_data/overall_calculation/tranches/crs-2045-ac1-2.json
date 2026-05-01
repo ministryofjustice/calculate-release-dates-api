@@ -16,8 +16,14 @@
           }
         },
         "sentencedAt": "2024-03-22",
-        "identifier": "f4160f62-3d5d-4b60-8dc0-d8454cee2cd0",
-        "hasAnSDSEarlyReleaseExclusion": "DOMESTIC_ABUSE"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [
+            "DOMESTIC_ABUSE"
+          ],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -30,8 +36,12 @@
           }
         },
         "sentencedAt": "2024-03-22",
-        "identifier": "ad51b1f4-980d-4545-adb2-6081ca33feca",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
@@ -44,5 +54,9 @@
         }
       ]
     }
-  }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params"
 }

@@ -20,7 +20,6 @@
             "MONTHS": 0
           }
         },
-        "isSDSPlus": false,
         "identifier": "1b9c2ba0-9523-36d3-bdae-4ac1f76d273a",
         "recall": null,
         "sentencedAt": "2023-04-16",
@@ -31,8 +30,12 @@
           "sentenceSequence": 1
         },
         "consecutiveSentenceUUIDs": [],
-        "hasAnSDSEarlyReleaseExclusion": "NO",
-        "isSDSPlusEligibleSentenceTypeLengthAndOffence": false
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {},

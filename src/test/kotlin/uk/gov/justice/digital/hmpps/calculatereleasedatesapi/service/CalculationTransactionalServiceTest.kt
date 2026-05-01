@@ -61,6 +61,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.PreviouslyRecordedSLED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmitCalculationRequest
@@ -245,6 +246,7 @@ class CalculationTransactionalServiceTest {
     ).thenReturn(
       fakeSourceData,
     )
+    println("XXX" + TestUtil.objectMapper().writeValueAsString(BOOKING))
     whenever(bookingService.getBooking(fakeSourceData)).thenReturn(BOOKING)
     whenever(calculationRequestRepository.save(any<CalculationRequest>())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
     whenever(calculationRequestRepository.findById(CALCULATION_REQUEST_ID)).thenReturn(
@@ -683,7 +685,7 @@ class CalculationTransactionalServiceTest {
           "\"offenceCode\":null},\"duration\":{\"durationElements\":{\"DAYS\":0,\"WEEKS\":0,\"MONTHS\":0,\"YEARS\":5}}," +
           "\"sentencedAt\":\"2021-02-03\",\"identifier\":\"5ac7a5ae-fa7b-4b57-a44f-8eddde24f5fa\"," +
           "\"consecutiveSentenceUUIDs\":[],\"caseSequence\":1,\"lineSequence\":2,\"externalSentenceId\":{\"sentenceSequence\":1,\"bookingId\":12345},\"caseReference\":null," +
-          "\"recall\":null,\"isSDSPlus\":false,\"isSDSPlusEligibleSentenceTypeLengthAndOffence\":false,\"hasAnSDSEarlyReleaseExclusion\":\"NO\",\"section250\":false}],\"adjustments\":{},\"returnToCustodyDate\":null,\"fixedTermRecallDetails\":null," +
+          "\"recall\":null,\"releaseArrangements\":{\"isSDSPlus\":false,\"isSDSPlusEligibleSentenceTypeLengthAndOffence\":false,\"sdsEarlyReleaseExclusions\":[],\"isSection250\":false}}],\"adjustments\":{},\"returnToCustodyDate\":null,\"fixedTermRecallDetails\":null," +
           "\"bookingId\":12345}",
       )
 
@@ -755,9 +757,12 @@ class CalculationTransactionalServiceTest {
       caseSequence = 1,
       lineSequence = 2,
       externalSentenceId = ExternalSentenceId(sentenceSequence = 1, bookingId = BOOKING_ID),
-      isSDSPlus = false,
-      isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-      hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
+      releaseArrangements = SDSReleaseArrangements(
+        isSDSPlus = false,
+        isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+        isSection250 = false,
+        sdsEarlyReleaseExclusions = emptyList(),
+      ),
     )
 
     val BOOKING = Booking(OFFENDER, listOf(StandardSENTENCE), Adjustments(), null, null, BOOKING_ID)

@@ -24,7 +24,12 @@
           "recallType": "FIXED_TERM_RECALL_28",
           "returnToCustodyDate": "2025-02-19"
         },
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "ExtendedDeterminateSentence",
@@ -62,7 +67,12 @@
         "caseSequence": 3,
         "lineSequence": 3,
         "caseReference": "T20220101",
-        "hasAnSDSEarlyReleaseExclusion": "SEXUAL"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": ["SEXUAL"],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {

@@ -21,7 +21,6 @@
           }
         },
         "sentencedAt": "2018-09-26",
-        "identifier": "c0ea3cb1-9ec4-406b-852a-6f7ef9dfe228",
         "recall": {
           "recallType": "STANDARD_RECALL"
         }
@@ -41,8 +40,7 @@
             "YEARS": 1
           }
         },
-        "sentencedAt": "2023-07-04",
-        "identifier": "420939a0-d67f-4826-a6d0-e7be59080155"
+        "sentencedAt": "2023-07-04"
       }
     ],
     "adjustments": {

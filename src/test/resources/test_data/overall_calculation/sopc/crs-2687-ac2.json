@@ -20,10 +20,13 @@
             "YEARS": 1
           }
         },
-        "sentencedAt": "2020-12-15",
-        "identifier": "2890b699-c9a6-42c5-9203-ad580de569ec"
+        "sentencedAt": "2020-12-15"
       }
     ],
-    "adjustments": { }
-  }
+    "adjustments": {}
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params"
 }

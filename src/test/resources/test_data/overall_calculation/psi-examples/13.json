@@ -16,15 +16,21 @@
           }
         },
         "sentencedAt": "2015-03-17",
-        "identifier": "9b6a8914-1067-4f49-a5f3-5f2cc81398a5",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
-      "UNLAWFULLY_AT_LARGE": [
+      "REMAND": [
         {
           "appliesToSentencesFrom": "2015-03-17",
-          "numberOfDays": 29
+          "numberOfDays": 28,
+          "fromDate": "2015-02-16",
+          "toDate": "2015-03-16"
         }
       ],
       "TAGGED_BAIL": [
@@ -33,15 +39,16 @@
           "numberOfDays": 11
         }
       ],
-      "REMAND": [
+      "UNLAWFULLY_AT_LARGE": [
         {
           "appliesToSentencesFrom": "2015-03-17",
-          "numberOfDays": 28,
-          "fromDate": "2015-02-16",
-          "toDate": "2015-03-16"
+          "numberOfDays": 29
         }
       ]
     }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-50"
 }

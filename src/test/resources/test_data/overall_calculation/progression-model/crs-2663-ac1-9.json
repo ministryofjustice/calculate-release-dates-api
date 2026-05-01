@@ -17,7 +17,12 @@
           }
         },
         "sentencedAt": "2024-04-13",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
@@ -28,12 +33,14 @@
           "fromDate": "2024-08-23",
           "toDate": "2024-10-17",
           "additionalInfo": {
-            "type": "UAL",
-            "comment": "No reason for UAL provided to simulate a NOMIS adjustment"
+            "type": "UAL"
           }
         }
       ]
     }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-progression-model",
   "featureToggles": {

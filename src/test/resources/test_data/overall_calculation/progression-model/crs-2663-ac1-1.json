@@ -17,18 +17,15 @@
           }
         },
         "sentencedAt": "2026-03-25",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
-      "REMAND": [
-        {
-          "appliesToSentencesFrom": "2026-03-25",
-          "numberOfDays": 50,
-          "fromDate": "2026-02-03",
-          "toDate": "2026-03-24"
-        }
-      ],
       "UNLAWFULLY_AT_LARGE": [
         {
           "appliesToSentencesFrom": "2026-03-25",
@@ -40,9 +37,19 @@
             "reason": "ESCAPE"
           }
         }
+      ],
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2026-03-25",
+          "numberOfDays": 50,
+          "fromDate": "2026-02-03",
+          "toDate": "2026-03-24"
+        }
       ]
-
     }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-progression-model",
   "featureToggles": {

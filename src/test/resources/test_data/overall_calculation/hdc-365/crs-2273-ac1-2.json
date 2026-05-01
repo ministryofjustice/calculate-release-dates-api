@@ -19,7 +19,12 @@
         },
         "sentencedAt": "2024-03-29",
         "identifier": "cb304745-d781-47d3-b931-4baa31551fc5",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -33,20 +38,24 @@
           }
         },
         "sentencedAt": "2025-07-01",
-        "identifier": "627d332b-183a-4e24-8541-1be0258e5656",
         "consecutiveSentenceUUIDs": [
           "cb304745-d781-47d3-b931-4baa31551fc5"
         ],
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
-      "RESTORATION_OF_ADDITIONAL_DAYS_AWARDED": [
+      "UNLAWFULLY_AT_LARGE": [
         {
-          "appliesToSentencesFrom": "2025-08-08",
-          "numberOfDays": 2,
-          "fromDate": "2025-08-08",
-          "toDate": "2025-08-09"
+          "appliesToSentencesFrom": "2025-06-04",
+          "numberOfDays": 3,
+          "fromDate": "2025-06-04",
+          "toDate": "2025-06-06"
         }
       ],
       "ADDITIONAL_DAYS_AWARDED": [
@@ -57,14 +66,18 @@
           "toDate": "2025-07-07"
         }
       ],
-      "UNLAWFULLY_AT_LARGE": [
+      "RESTORATION_OF_ADDITIONAL_DAYS_AWARDED": [
         {
-          "appliesToSentencesFrom": "2025-06-04",
-          "numberOfDays": 3,
-          "fromDate": "2025-06-04",
-          "toDate": "2025-06-06"
+          "appliesToSentencesFrom": "2025-08-08",
+          "numberOfDays": 2,
+          "fromDate": "2025-08-08",
+          "toDate": "2025-08-09"
         }
       ]
     }
-  }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params"
 }

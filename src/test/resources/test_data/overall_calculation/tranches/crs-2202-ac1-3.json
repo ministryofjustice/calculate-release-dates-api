@@ -22,7 +22,14 @@
           "recallType": "FIXED_TERM_RECALL_28",
           "returnToCustodyDate": "2025-03-10"
         },
-        "hasAnSDSEarlyReleaseExclusion": "SEXUAL_T3"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [
+            "SEXUAL_T3"
+          ],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -36,7 +43,6 @@
           }
         },
         "sentencedAt": "2024-06-03",
-        "identifier": "6a35e7fd-13d3-324f-ab3b-37fa226d091b",
         "consecutiveSentenceUUIDs": [
           "f3837ea1-7b3b-3d7a-8392-a5dc18354abf"
         ],
@@ -44,11 +50,20 @@
           "recallType": "FIXED_TERM_RECALL_28",
           "returnToCustodyDate": "2025-03-10"
         },
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {},
     "returnToCustodyDate": "2025-03-10"
   },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params",
   "assertSds40": true
 }

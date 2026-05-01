@@ -6,6 +6,7 @@
     },
     "sentences": [
       {
+        "type": "StandardSentence",
         "offence": {
           "committedAt": "2025-06-05",
           "offenceCode": "SE20002"
@@ -16,7 +17,14 @@
           }
         },
         "sentencedAt": "2025-09-26",
-        "hasAnSDSEarlyReleaseExclusion": "DOMESTIC_ABUSE"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [
+            "DOMESTIC_ABUSE"
+          ],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
@@ -40,5 +48,6 @@
   "userInputs": {
     "calculateErsed": true,
     "useOffenceIndicators": true
-  }
+  },
+  "params": "calculation-params"
 }

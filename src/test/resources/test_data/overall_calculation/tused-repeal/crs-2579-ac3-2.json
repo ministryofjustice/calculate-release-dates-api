@@ -17,8 +17,12 @@
           }
         },
         "sentencedAt": "2025-02-12",
-        "hasAnSDSEarlyReleaseExclusion": "NO",
-        "section250": true
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": true
+        }
       },
       {
         "type": "BotusSentence",

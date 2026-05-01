@@ -6,6 +6,7 @@
     },
     "sentences": [
       {
+        "type": "StandardSentence",
         "offence": {
           "committedAt": "2022-08-11",
           "offenceCode": "MD71231"
@@ -19,9 +20,16 @@
         "identifier": "6bd3ade6-2bb4-3430-98f4-f3ea12fef154",
         "recall": {
           "recallType": "STANDARD_RECALL"
+        },
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
         }
       },
       {
+        "type": "StandardSentence",
         "offence": {
           "committedAt": "2022-08-11",
           "offenceCode": "MD71230"
@@ -34,9 +42,16 @@
         "sentencedAt": "2022-11-29",
         "recall": {
           "recallType": "STANDARD_RECALL"
+        },
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
         }
       },
       {
+        "type": "StandardSentence",
         "offence": {
           "committedAt": "2019-04-01",
           "offenceCode": "CJ03506"
@@ -53,9 +68,16 @@
         ],
         "recall": {
           "recallType": "STANDARD_RECALL"
+        },
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
         }
       },
       {
+        "type": "StandardSentence",
         "offence": {
           "committedAt": "2021-02-10",
           "offenceCode": "CJ88149"
@@ -72,9 +94,16 @@
         ],
         "recall": {
           "recallType": "STANDARD_RECALL"
+        },
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
         }
       },
       {
+        "type": "StandardSentence",
         "offence": {
           "committedAt": "2021-04-01",
           "offenceCode": "BA76001"
@@ -90,9 +119,16 @@
         ],
         "recall": {
           "recallType": "STANDARD_RECALL"
+        },
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
         }
       },
       {
+        "type": "StandardSentence",
         "offence": {
           "committedAt": "2024-08-13",
           "offenceCode": "RT88507"
@@ -102,10 +138,30 @@
             "MONTHS": 6
           }
         },
-        "sentencedAt": "2024-10-03"
+        "sentencedAt": "2024-10-03",
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
+      "UNLAWFULLY_AT_LARGE": [
+        {
+          "appliesToSentencesFrom": "2024-07-06",
+          "numberOfDays": 38,
+          "fromDate": "2024-07-06",
+          "toDate": "2024-08-12"
+        },
+        {
+          "appliesToSentencesFrom": "2024-02-27",
+          "numberOfDays": 10,
+          "fromDate": "2024-02-27",
+          "toDate": "2024-03-07"
+        }
+      ],
       "RECALL_REMAND": [
         {
           "appliesToSentencesFrom": "2022-11-29",
@@ -125,21 +181,11 @@
           "fromDate": "2022-08-13",
           "toDate": "2022-11-28"
         }
-      ],
-      "UNLAWFULLY_AT_LARGE": [
-        {
-          "appliesToSentencesFrom": "2024-07-06",
-          "numberOfDays": 38,
-          "fromDate": "2024-07-06",
-          "toDate": "2024-08-12"
-        },
-        {
-          "appliesToSentencesFrom": "2024-02-27",
-          "numberOfDays": 10,
-          "fromDate": "2024-02-27",
-          "toDate": "2024-03-07"
-        }
       ]
     }
-  }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params"
 }

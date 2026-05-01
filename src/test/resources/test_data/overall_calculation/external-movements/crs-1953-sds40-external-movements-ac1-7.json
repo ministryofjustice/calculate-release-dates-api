@@ -6,6 +6,7 @@
     },
     "sentences": [
       {
+        "type": "StandardSentence",
         "offence": {
           "committedAt": "2018-10-10",
           "offenceCode": "CD98067"
@@ -16,22 +17,28 @@
             "MONTHS": 3
           }
         },
-        "sentencedAt": "2019-01-14"
+        "sentencedAt": "2019-01-14",
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
+      "TAGGED_BAIL": [
+        {
+          "appliesToSentencesFrom": "2019-01-14",
+          "numberOfDays": 326
+        }
+      ],
       "UNLAWFULLY_AT_LARGE": [
         {
           "appliesToSentencesFrom": "2024-09-26",
           "numberOfDays": 40,
           "fromDate": "2024-09-26",
           "toDate": "2024-11-04"
-        }
-      ],
-      "TAGGED_BAIL": [
-        {
-          "appliesToSentencesFrom": "2019-01-14",
-          "numberOfDays": 326
         }
       ]
     },

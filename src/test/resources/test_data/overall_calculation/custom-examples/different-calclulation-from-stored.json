@@ -16,8 +16,12 @@
           }
         },
         "sentencedAt": "2015-02-16",
-        "identifier": "fe219237-8aaf-4496-8b76-73d0fc70bcfb",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
@@ -30,6 +34,9 @@
         }
       ]
     }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "error": "BreakdownChangedSinceLastCalculation",
   "params": "sds-50"

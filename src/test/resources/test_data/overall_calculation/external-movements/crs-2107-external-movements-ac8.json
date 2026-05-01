@@ -16,8 +16,7 @@
             "MONTHS": 10
           }
         },
-        "sentencedAt": "2023-05-01",
-        "identifier": "2185fec3-c8aa-47d0-809b-9732612a8691"
+        "sentencedAt": "2023-05-01"
       },
       {
         "type": "DetentionAndTrainingOrderSentence",
@@ -30,8 +29,7 @@
             "MONTHS": 22
           }
         },
-        "sentencedAt": "2023-09-04",
-        "identifier": "65b7890c-a27a-41a1-8079-133b90747af2"
+        "sentencedAt": "2023-09-04"
       }
     ],
     "adjustments": {
@@ -56,5 +54,9 @@
         "direction": "OUT"
       }
     ]
-  }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params"
 }

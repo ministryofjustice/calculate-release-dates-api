@@ -13,11 +13,10 @@
         },
         "duration": {
           "durationElements": {
-            "MONTHS":  11
+            "MONTHS": 11
           }
         },
-        "sentencedAt": "2026-05-02",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "sentencedAt": "2026-05-02"
       }
     ],
     "adjustments": {}

@@ -15,8 +15,7 @@
             "MONTHS": 15
           }
         },
-        "sentencedAt": "2019-03-07",
-        "identifier": "84fff476-5cf0-4e47-a938-b95568db7c09"
+        "sentencedAt": "2019-03-07"
       },
       {
         "type": "DetentionAndTrainingOrderSentence",
@@ -28,11 +27,13 @@
             "MONTHS": 12
           }
         },
-        "sentencedAt": "2019-03-07",
-        "identifier": "5ead7d1a-0717-400e-a67b-f767b709bb3a"
+        "sentencedAt": "2019-03-07"
       }
     ],
     "adjustments": {}
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-50"
 }

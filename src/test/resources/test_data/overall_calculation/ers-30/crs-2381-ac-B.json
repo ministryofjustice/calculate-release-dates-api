@@ -21,11 +21,17 @@
             "YEARS": 8
           }
         },
-        "sentencedAt": "2021-06-25",
-        "identifier": "49edac49-781b-3265-a766-6b8e6919639c"
+        "sentencedAt": "2021-06-25"
       }
     ],
     "adjustments": {
+      "ADDITIONAL_DAYS_AWARDED": [
+        {
+          "appliesToSentencesFrom": "2021-06-25",
+          "numberOfDays": 20,
+          "fromDate": "2021-06-25"
+        }
+      ],
       "REMAND": [
         {
           "appliesToSentencesFrom": "2021-06-25",
@@ -33,17 +39,12 @@
           "fromDate": "2019-10-22",
           "toDate": "2021-06-24"
         }
-      ],
-      "ADDITIONAL_DAYS_AWARDED": [
-        {
-          "appliesToSentencesFrom": "2021-06-25",
-          "numberOfDays": 20,
-          "fromDate": "2021-06-25"
-        }
       ]
     }
   },
   "userInputs": {
-    "calculateErsed": true
-  }
+    "calculateErsed": true,
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params"
 }
