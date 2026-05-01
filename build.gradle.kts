@@ -87,7 +87,7 @@ dependencies {
   testImplementation("org.testcontainers:junit-jupiter:1.21.4")
   testImplementation("io.github.hakky54:logcaptor:2.12.6")
   testImplementation("org.mockito.kotlin:mockito-kotlin")
-  testImplementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter-test:2.1.0")
+  testImplementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter-test:2.2.0")
   testImplementation(kotlin("test"))
   if (project.hasProperty("docs")) {
     implementation("com.h2database:h2")
@@ -178,6 +178,13 @@ val models = listOf(
     input = "manage-users-api-docs.json",
     output = "manageusersapi",
     packageName = "manageusersapi",
+  ),
+  // https://manage-offences-api-dev.hmpps.service.justice.gov.uk/v3/api-docs
+  ModelConfiguration(
+    name = "buildManageOffencesApiModel",
+    input = "manage-offences-api-docs.json",
+    output = "manageoffencesapi",
+    packageName = "manageoffencesapi",
   ),
 )
 

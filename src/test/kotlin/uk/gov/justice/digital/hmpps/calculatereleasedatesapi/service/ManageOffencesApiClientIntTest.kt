@@ -13,13 +13,17 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.UserContext
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.MaxRetryAchievedException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.MockManageOffencesClient
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.manageoffencesapi.SDSEarlyReleaseExclusionForOffenceCode
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.manageoffencesapi.SDSEarlyReleaseExclusionSchedulePart
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.manageoffencesapi.model.OffenceSdsExclusionIndicator
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.manageoffencesapi.model.PcscMarkers
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.manageoffencesapi.model.SdsOffenceDetails
 
 class ManageOffencesApiClientIntTest(private val mockManageOffencesClient: MockManageOffencesClient) : IntegrationTestBase() {
 
   @Autowired
   lateinit var manageOffencesApiClient: ManageOffencesApiClient
+
+  private val noPscsMarkers = PcscMarkers(inListA = false, inListB = false, inListC = false, inListD = false)
+  private val somePscsMarkers = PcscMarkers(inListA = true, inListB = false, inListC = false, inListD = true)
 
   @BeforeEach
   fun setUp() {
@@ -31,7 +35,7 @@ class ManageOffencesApiClientIntTest(private val mockManageOffencesClient: MockM
   @Test
   fun `should get sexual or violent for multiple offence codes`() {
     mockManageOffencesClient.withStub(
-      get(urlMatching("/schedule/sds-early-release-exclusions\\?offenceCodes=SuccessExample1,SuccessExample2,SuccessExample3,SuccessExample4,SuccessExample5,SuccessExample6"))
+      get(urlMatching("/schedule/sds-offence-details\\?offenceCodes=SuccessExample1,SuccessExample2,SuccessExample3,SuccessExample4,SuccessExample5,SuccessExample6,SuccessExample7"))
         .willReturn(
           aResponse()
             .withHeader("Content-Type", "application/json")
@@ -39,27 +43,38 @@ class ManageOffencesApiClientIntTest(private val mockManageOffencesClient: MockM
               """[
                 {
                     "offenceCode": "SuccessExample1",
-                    "schedulePart": "NONE"
+                    "pcscMarkers": {"inListA": false, "inListB": false, "inListC": false, "inListD": false},
+                    "earlyReleaseExclusions": []
                 },
                 {
                     "offenceCode": "SuccessExample2",
-                    "schedulePart": "SEXUAL"
+                    "pcscMarkers": {"inListA": true, "inListB": false, "inListC": false, "inListD": true},
+                    "earlyReleaseExclusions": ["SEXUAL"]
                 },
                 {
                     "offenceCode": "SuccessExample3",
-                    "schedulePart": "VIOLENT"
+                    "pcscMarkers": {"inListA": false, "inListB": false, "inListC": false, "inListD": false},
+                    "earlyReleaseExclusions": ["VIOLENT"]
                 },
                 {
                     "offenceCode": "SuccessExample4",
-                    "schedulePart": "DOMESTIC_ABUSE"
+                    "pcscMarkers": {"inListA": false, "inListB": false, "inListC": false, "inListD": false},
+                    "earlyReleaseExclusions": ["DOMESTIC_ABUSE"]
                 },
                 {
                     "offenceCode": "SuccessExample5",
-                    "schedulePart": "NATIONAL_SECURITY"
+                    "pcscMarkers": {"inListA": false, "inListB": false, "inListC": false, "inListD": false},
+                    "earlyReleaseExclusions": ["NATIONAL_SECURITY"]
                 },
                 {
                     "offenceCode": "SuccessExample6",
-                    "schedulePart": "TERRORISM"
+                    "pcscMarkers": {"inListA": false, "inListB": false, "inListC": false, "inListD": false},
+                    "earlyReleaseExclusions": ["TERRORISM"]
+                },
+                {
+                    "offenceCode": "SuccessExample7",
+                    "pcscMarkers": {"inListA": true, "inListB": false, "inListC": false, "inListD": true},
+                    "earlyReleaseExclusions": ["NATIONAL_SECURITY", "SCHEDULE_13_PART_3"]
                 }
             ]
               """.trimIndent(),
@@ -69,7 +84,7 @@ class ManageOffencesApiClientIntTest(private val mockManageOffencesClient: MockM
         ),
     )
     assertThat(
-      manageOffencesApiClient.getSdsExclusionsForOffenceCodes(
+      manageOffencesApiClient.getSdsOffenceDetails(
         listOf(
           "SuccessExample1",
           "SuccessExample2",
@@ -77,17 +92,19 @@ class ManageOffencesApiClientIntTest(private val mockManageOffencesClient: MockM
           "SuccessExample4",
           "SuccessExample5",
           "SuccessExample6",
+          "SuccessExample7",
         ),
       ),
     )
       .isEqualTo(
         listOf(
-          SDSEarlyReleaseExclusionForOffenceCode("SuccessExample1", SDSEarlyReleaseExclusionSchedulePart.NONE),
-          SDSEarlyReleaseExclusionForOffenceCode("SuccessExample2", SDSEarlyReleaseExclusionSchedulePart.SEXUAL),
-          SDSEarlyReleaseExclusionForOffenceCode("SuccessExample3", SDSEarlyReleaseExclusionSchedulePart.VIOLENT),
-          SDSEarlyReleaseExclusionForOffenceCode("SuccessExample4", SDSEarlyReleaseExclusionSchedulePart.DOMESTIC_ABUSE),
-          SDSEarlyReleaseExclusionForOffenceCode("SuccessExample5", SDSEarlyReleaseExclusionSchedulePart.NATIONAL_SECURITY),
-          SDSEarlyReleaseExclusionForOffenceCode("SuccessExample6", SDSEarlyReleaseExclusionSchedulePart.TERRORISM),
+          SdsOffenceDetails("SuccessExample1", noPscsMarkers, emptyList()),
+          SdsOffenceDetails("SuccessExample2", somePscsMarkers, listOf(OffenceSdsExclusionIndicator.SEXUAL)),
+          SdsOffenceDetails("SuccessExample3", noPscsMarkers, listOf(OffenceSdsExclusionIndicator.VIOLENT)),
+          SdsOffenceDetails("SuccessExample4", noPscsMarkers, listOf(OffenceSdsExclusionIndicator.DOMESTIC_ABUSE)),
+          SdsOffenceDetails("SuccessExample5", noPscsMarkers, listOf(OffenceSdsExclusionIndicator.NATIONAL_SECURITY)),
+          SdsOffenceDetails("SuccessExample6", noPscsMarkers, listOf(OffenceSdsExclusionIndicator.TERRORISM)),
+          SdsOffenceDetails("SuccessExample7", somePscsMarkers, listOf(OffenceSdsExclusionIndicator.NATIONAL_SECURITY, OffenceSdsExclusionIndicator.SCHEDULE_13_PART_3)),
         ),
       )
   }
@@ -95,7 +112,7 @@ class ManageOffencesApiClientIntTest(private val mockManageOffencesClient: MockM
   @Test
   fun `should retry and eventually get sexual or violent for multiple offence codes`() {
     mockManageOffencesClient.withStub(
-      get(urlMatching("/schedule/sds-early-release-exclusions\\?offenceCodes=RetryExample1,RetryExample2,RetryExample3"))
+      get(urlMatching("/schedule/sds-offence-details\\?offenceCodes=RetryExample1,RetryExample2,RetryExample3"))
         .inScenario("Retry Scenario")
         .whenScenarioStateIs("Started")
         .willReturn(
@@ -106,7 +123,7 @@ class ManageOffencesApiClientIntTest(private val mockManageOffencesClient: MockM
     )
 
     mockManageOffencesClient.withStub(
-      get(urlMatching("/schedule/sds-early-release-exclusions\\?offenceCodes=RetryExample1,RetryExample2,RetryExample3"))
+      get(urlMatching("/schedule/sds-offence-details\\?offenceCodes=RetryExample1,RetryExample2,RetryExample3"))
         .inScenario("Retry Scenario")
         .whenScenarioStateIs("Second Attempt")
         .willReturn(
@@ -117,7 +134,7 @@ class ManageOffencesApiClientIntTest(private val mockManageOffencesClient: MockM
     )
 
     mockManageOffencesClient.withStub(
-      get(urlMatching("/schedule/sds-early-release-exclusions\\?offenceCodes=RetryExample1,RetryExample2,RetryExample3"))
+      get(urlMatching("/schedule/sds-offence-details\\?offenceCodes=RetryExample1,RetryExample2,RetryExample3"))
         .inScenario("Retry Scenario")
         .whenScenarioStateIs("Third Attempt")
         .willReturn(
@@ -127,15 +144,18 @@ class ManageOffencesApiClientIntTest(private val mockManageOffencesClient: MockM
               """[
                 {
                     "offenceCode": "RetryExample1",
-                    "schedulePart": "NONE"
+                    "pcscMarkers": {"inListA": false, "inListB": false, "inListC": false, "inListD": false},
+                    "earlyReleaseExclusions": []
                 },
                 {
                     "offenceCode": "RetryExample2",
-                    "schedulePart": "SEXUAL"
+                    "pcscMarkers": {"inListA": false, "inListB": false, "inListC": false, "inListD": false},
+                    "earlyReleaseExclusions": ["SEXUAL"]
                 },
                 {
                     "offenceCode": "RetryExample3",
-                    "schedulePart": "VIOLENT"
+                    "pcscMarkers": {"inListA": false, "inListB": false, "inListC": false, "inListD": false},
+                    "earlyReleaseExclusions": ["VIOLENT"]
                 }
               ]
               """.trimIndent(),
@@ -144,13 +164,13 @@ class ManageOffencesApiClientIntTest(private val mockManageOffencesClient: MockM
         ),
     )
 
-    val result = manageOffencesApiClient.getSdsExclusionsForOffenceCodes(listOf("RetryExample1", "RetryExample2", "RetryExample3"))
+    val result = manageOffencesApiClient.getSdsOffenceDetails(listOf("RetryExample1", "RetryExample2", "RetryExample3"))
 
     assertThat(result).isEqualTo(
       listOf(
-        SDSEarlyReleaseExclusionForOffenceCode("RetryExample1", SDSEarlyReleaseExclusionSchedulePart.NONE),
-        SDSEarlyReleaseExclusionForOffenceCode("RetryExample2", SDSEarlyReleaseExclusionSchedulePart.SEXUAL),
-        SDSEarlyReleaseExclusionForOffenceCode("RetryExample3", SDSEarlyReleaseExclusionSchedulePart.VIOLENT),
+        SdsOffenceDetails("RetryExample1", noPscsMarkers, emptyList()),
+        SdsOffenceDetails("RetryExample2", noPscsMarkers, listOf(OffenceSdsExclusionIndicator.SEXUAL)),
+        SdsOffenceDetails("RetryExample3", noPscsMarkers, listOf(OffenceSdsExclusionIndicator.VIOLENT)),
       ),
     )
   }
@@ -158,7 +178,7 @@ class ManageOffencesApiClientIntTest(private val mockManageOffencesClient: MockM
   @Test
   fun `should throw exception when maximum retries are exceeded`() {
     mockManageOffencesClient.withStub(
-      get(urlMatching("/schedule/sds-early-release-exclusions\\?offenceCodes=ErrorExample1,ErrorExample2,ErrorExample3"))
+      get(urlMatching("/schedule/sds-offence-details\\?offenceCodes=ErrorExample1,ErrorExample2,ErrorExample3"))
         .willReturn(
           aResponse()
             .withStatus(500),
@@ -166,9 +186,9 @@ class ManageOffencesApiClientIntTest(private val mockManageOffencesClient: MockM
     )
 
     assertThatThrownBy {
-      manageOffencesApiClient.getSdsExclusionsForOffenceCodes(listOf("ErrorExample1", "ErrorExample2", "ErrorExample3"))
+      manageOffencesApiClient.getSdsOffenceDetails(listOf("ErrorExample1", "ErrorExample2", "ErrorExample3"))
     }
       .isInstanceOf(MaxRetryAchievedException::class.java)
-      .hasMessageContaining("Max retries - getSdsExclusionsForOffenceCodes")
+      .hasMessageContaining("Max retries - getSdsOffenceDetails")
   }
 }
