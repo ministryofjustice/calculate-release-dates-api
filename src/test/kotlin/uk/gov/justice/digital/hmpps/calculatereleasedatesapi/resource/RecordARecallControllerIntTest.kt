@@ -29,7 +29,7 @@ class RecordARecallControllerIntTest(private val mockManageOffencesClient: MockM
   inner class AutomatedRecallsTests {
     @Test
     fun `RCLL 583`() {
-      mockManageOffencesClient.noneInPCSC(listOf("AR97001", "CE79046", "FI68002"))
+      mockManageOffencesClient.notSDSPlusAndNoExclusions(listOf("AR97001", "CE79046", "FI68002"))
 
       val result = createCalculationForRecordARecall(
         "RCLL-583",
@@ -150,7 +150,7 @@ class RecordARecallControllerIntTest(private val mockManageOffencesClient: MockM
 
     @Test
     fun `RCLL-700 Calculation across multiple bookings with the same sentences on both bookings should be de-duplicated`() {
-      mockManageOffencesClient.noneInPCSC(listOf("GBH", "TH68001"))
+      mockManageOffencesClient.notSDSPlusAndNoExclusions(listOf("GBH", "TH68001"))
 
       val result = createCalculationForRecordARecall(
         "RCLL-700-1",
@@ -234,7 +234,7 @@ class RecordARecallControllerIntTest(private val mockManageOffencesClient: MockM
 
     @Test
     fun `Validation passes`() {
-      mockManageOffencesClient.noneInPCSC(listOf("GBH", "SX03014"))
+      mockManageOffencesClient.notSDSPlusAndNoExclusions(listOf("GBH", "SX03014"))
       val result = validateForRecordARecall(
         RECORD_A_RECALL_PRISONER_ID,
       )
@@ -247,7 +247,7 @@ class RecordARecallControllerIntTest(private val mockManageOffencesClient: MockM
 
     @Test
     fun `Validation errors`() {
-      mockManageOffencesClient.noneInPCSC(listOf("GBH", "SX03014"))
+      mockManageOffencesClient.notSDSPlusAndNoExclusions(listOf("GBH", "SX03014"))
       val result = createCalculationForRecordARecall(
         VALIDATION_PRISONER_ID,
         RecordARecallRequest(revocationDate = LocalDate.of(2016, 2, 6)),
@@ -259,7 +259,7 @@ class RecordARecallControllerIntTest(private val mockManageOffencesClient: MockM
 
     @Test
     fun `Validation errors from validation endpoint`() {
-      mockManageOffencesClient.noneInPCSC(listOf("GBH", "SX03014"))
+      mockManageOffencesClient.notSDSPlusAndNoExclusions(listOf("GBH", "SX03014"))
       val result = validateForRecordARecall(
         VALIDATION_PRISONER_ID,
       )

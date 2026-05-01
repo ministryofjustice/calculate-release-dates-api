@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.MappingBuilder
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
@@ -14,8 +13,8 @@ import org.junit.jupiter.api.extension.ExtensionContext
 import org.junit.jupiter.api.extension.ParameterContext
 import org.junit.jupiter.api.extension.ParameterResolver
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.manageoffencesapi.model.OffencePcscMarkers
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.manageoffencesapi.model.PcscMarkers
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.manageoffencesapi.model.SdsOffenceDetails
 
 class ManageOffencesApiExtension :
   BeforeAllCallback,
@@ -27,16 +26,12 @@ class ManageOffencesApiExtension :
     val manageOffencesApi = ManageOffencesMockServer()
   }
 
-  private val objectMapper = TestUtil.objectMapper()
-
   override fun beforeAll(context: ExtensionContext) {
     manageOffencesApi.start()
-    manageOffencesApi.stubMOResponse()
-    manageOffencesApi.stubMOMultipleResults()
-    manageOffencesApi.stubSX03014MOResponse()
-    manageOffencesApi.stub500Response()
-    manageOffencesApi.stubBaseResponse()
-    manageOffencesApi.stubSdsExclusionsDefaultToNo()
+    manageOffencesApi.stubSdsDetailsResponseForCOML025A()
+    manageOffencesApi.stubSdsDetailsResponseForCOML022AndCOML025A()
+    manageOffencesApi.stubSdsDetailsResponseForSX03014()
+    manageOffencesApi.stubDefaultSdsOffenceDetailsResponse()
     manageOffencesApi.subOffencesFromCodes()
     manageOffencesApi.stubToreraOffenceCodes()
   }
@@ -51,7 +46,7 @@ class ManageOffencesApiExtension :
 
   override fun supportsParameter(parameterContext: ParameterContext, context: ExtensionContext): Boolean = parameterContext.parameter.type == MockManageOffencesClient::class.java
 
-  override fun resolveParameter(parameterContext: ParameterContext, context: ExtensionContext): Any = MockManageOffencesClient(manageOffencesApi, objectMapper)
+  override fun resolveParameter(parameterContext: ParameterContext, context: ExtensionContext): Any = MockManageOffencesClient(manageOffencesApi)
 }
 
 class ManageOffencesMockServer : WireMockServer(WIREMOCK_PORT) {
@@ -59,8 +54,8 @@ class ManageOffencesMockServer : WireMockServer(WIREMOCK_PORT) {
     private const val WIREMOCK_PORT = 8335
   }
 
-  fun stubMOResponse(): StubMapping = stubFor(
-    get(urlMatching("/schedule/pcsc-indicators\\?offenceCodes=COML025A"))
+  fun stubSdsDetailsResponseForCOML025A(): StubMapping = stubFor(
+    get(urlMatching("/schedule/sds-offence-details\\?offenceCodes=COML025A"))
       .willReturn(
         aResponse()
           .withHeader("Content-Type", "application/json")
@@ -73,7 +68,8 @@ class ManageOffencesMockServer : WireMockServer(WIREMOCK_PORT) {
                         "inListB": true,
                         "inListC": true,
                         "inListD": false
-                    }
+                    },
+                    "earlyReleaseExclusions": []
                 }
             ]
             """.trimIndent(),
@@ -82,8 +78,8 @@ class ManageOffencesMockServer : WireMockServer(WIREMOCK_PORT) {
       ),
   )
 
-  fun stubSX03014MOResponse(): StubMapping = stubFor(
-    get(urlMatching("/schedule/pcsc-indicators\\?offenceCodes=(SX03014|SX03013A)"))
+  fun stubSdsDetailsResponseForSX03014(): StubMapping = stubFor(
+    get(urlMatching("/schedule/sds-offence-details\\?offenceCodes=(SX03014|SX03013A)"))
       .atPriority(1)
       .willReturn(
         aResponse()
@@ -97,7 +93,8 @@ class ManageOffencesMockServer : WireMockServer(WIREMOCK_PORT) {
                         "inListB": true,
                         "inListC": true,
                         "inListD": true
-                    }
+                    },
+                    "earlyReleaseExclusions": []
                 }
             ]
             """.trimIndent(),
@@ -107,8 +104,8 @@ class ManageOffencesMockServer : WireMockServer(WIREMOCK_PORT) {
       ),
   )
 
-  fun stubMOMultipleResults(): StubMapping = stubFor(
-    get(urlMatching("/schedule/pcsc-indicators\\?offenceCodes=COML022,COML025A"))
+  fun stubSdsDetailsResponseForCOML022AndCOML025A(): StubMapping = stubFor(
+    get(urlMatching("/schedule/sds-offence-details\\?offenceCodes=COML022,COML025A"))
       .willReturn(
         aResponse()
           .withHeader("Content-Type", "application/json")
@@ -121,7 +118,8 @@ class ManageOffencesMockServer : WireMockServer(WIREMOCK_PORT) {
                         "inListB": true,
                         "inListC": true,
                         "inListD": false
-                    }
+                    },
+                    "earlyReleaseExclusions": []
                 },
                 {
                     "offenceCode": "COML022",
@@ -130,7 +128,8 @@ class ManageOffencesMockServer : WireMockServer(WIREMOCK_PORT) {
                         "inListB": true,
                         "inListC": true,
                         "inListD": false
-                    }
+                    },
+                    "earlyReleaseExclusions": []
                 }
             ]
             """.trimIndent(),
@@ -139,51 +138,8 @@ class ManageOffencesMockServer : WireMockServer(WIREMOCK_PORT) {
       ),
   )
 
-  fun stubBaseResponse(): StubMapping = stubFor(
-    get(urlMatching("/schedule/pcsc-indicators\\?offenceCodes=([A-Za-z0-9]+)"))
-      .atPriority(Int.MAX_VALUE)
-      .willReturn(
-        aResponse()
-          .withHeader("Content-Type", "application/json")
-          .withBody(
-            """[
-                {
-                    "offenceCode": "{{request.query.offenceCodes}}",
-                    "pcscMarkers": {
-                        "inListA": false,
-                        "inListB": false,
-                        "inListC": false,
-                        "inListD": false
-                    }
-                }
-            ]
-            """.trimIndent(),
-          )
-          .withStatus(200)
-          .withTransformers("response-template"),
-      ),
-  )
-  fun stubSpecificResponse(offences: String, json: String): StubMapping = stubFor(
-    get(urlMatching("/schedule/pcsc-indicators\\?offenceCodes=$offences"))
-      .willReturn(
-        aResponse()
-          .withHeader("Content-Type", "application/json")
-          .withBody(json)
-          .withStatus(200),
-      ),
-  )
-
-  fun stub500Response(): StubMapping = stubFor(
-    get(urlMatching("/schedule/pcsc-indicators\\?offenceCodes=500Response"))
-      .willReturn(
-        aResponse()
-          .withHeader("Content-Type", "application/json")
-          .withStatus(500),
-      ),
-  )
-
-  fun stubSdsExclusionsDefaultToNo(): StubMapping = stubFor(
-    get(urlMatching("/schedule/sds-early-release-exclusions\\?offenceCodes=([A-Za-z0-9,]+)"))
+  fun stubDefaultSdsOffenceDetailsResponse(): StubMapping = stubFor(
+    get(urlMatching("/schedule/sds-offence-details\\?offenceCodes=([A-Za-z0-9,]+)"))
       .atPriority(Int.MAX_VALUE)
       .willReturn(
         aResponse()
@@ -193,7 +149,13 @@ class ManageOffencesMockServer : WireMockServer(WIREMOCK_PORT) {
                 {{#each request.query.offenceCodes as |offenceCode|}}
                 {
                     "offenceCode": "{{{offenceCode}}}",
-                    "schedulePart": "NONE"
+                    "pcscMarkers": {
+                        "inListA": false,
+                        "inListB": false,
+                        "inListC": false,
+                        "inListD": false
+                    },
+                    "earlyReleaseExclusions": []
                 }{{#if @last}}{{else}},{{/if}}
                 {{/each}}
             ]
@@ -201,6 +163,16 @@ class ManageOffencesMockServer : WireMockServer(WIREMOCK_PORT) {
           )
           .withStatus(200)
           .withTransformers("response-template"),
+      ),
+  )
+
+  fun stubSpecificSDSOffenceDetailsResponse(offences: String, response: List<SdsOffenceDetails>): StubMapping = stubFor(
+    get(urlMatching("/schedule/sds-offence-details\\?offenceCodes=$offences"))
+      .willReturn(
+        aResponse()
+          .withHeader("Content-Type", "application/json")
+          .withBody(TestUtil.objectMapper().writeValueAsString(response))
+          .withStatus(200),
       ),
   )
 
@@ -237,27 +209,29 @@ class ManageOffencesMockServer : WireMockServer(WIREMOCK_PORT) {
 
 class MockManageOffencesClient(
   private val manageOffencesApi: ManageOffencesMockServer,
-  private val objectMapper: ObjectMapper,
 ) {
 
-  fun withPCSCMarkersResponse(vararg moResponseToMock: OffencePcscMarkers, offences: String): MockManageOffencesClient {
-    manageOffencesApi.stubSpecificResponse(offences, objectMapper.writeValueAsString(moResponseToMock.toList()))
+  fun withSdsOffenceDetailsResponse(vararg moResponseToMock: SdsOffenceDetails, offences: String): MockManageOffencesClient {
+    manageOffencesApi.stubSpecificSDSOffenceDetailsResponse(offences, moResponseToMock.toList())
     return this
   }
+
   fun withStub(mappingBuilder: MappingBuilder): StubMapping = manageOffencesApi.stubFor(mappingBuilder)
-  fun noneInPCSC(offences: List<String>): MockManageOffencesClient {
-    val defaultMarkers = offences.map { offenceCode ->
-      OffencePcscMarkers(
-        offenceCode = offenceCode,
-        pcscMarkers = PcscMarkers(inListA = false, inListB = false, inListC = false, inListD = false),
-      )
-    }
-    manageOffencesApi.stubSpecificResponse(
-      offences.joinToString(","),
-      objectMapper.writeValueAsString(defaultMarkers),
+  fun notSDSPlusAndNoExclusions(offences: List<String>): MockManageOffencesClient {
+    val offencesAsString = offences.joinToString(",")
+    manageOffencesApi.stubSpecificSDSOffenceDetailsResponse(
+      offencesAsString,
+      offences.map { offenceCode ->
+        SdsOffenceDetails(
+          offenceCode = offenceCode,
+          pcscMarkers = PcscMarkers(inListA = false, inListB = false, inListC = false, inListD = false),
+          earlyReleaseExclusions = emptyList(),
+        )
+      },
     )
     return this
   }
+
   fun stubToreraOffenceCodes(offenceCodes: List<String>) {
     manageOffencesApi.stubToreraOffenceCodes(offenceCodes)
   }

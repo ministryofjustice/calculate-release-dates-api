@@ -266,10 +266,10 @@ fun transform(
         externalSentenceId = externalSentenceId,
         caseReference = sentence.caseReference,
         recall = recall,
-        // TODO change SDS to use sdsReleaseArrangements directly
+        // TODO CRS-2656 change SDS to use sdsReleaseArrangements directly
         isSDSPlus = sentence.sdsReleaseArrangements?.isSDSPlus == true,
         isSDSPlusEligibleSentenceTypeLengthAndOffence = sentence.sdsReleaseArrangements?.isSDSPlusEligibleSentenceTypeLengthAndOffence == true,
-        hasAnSDSEarlyReleaseExclusion = sentence.sdsReleaseArrangements?.sdsEarlyReleaseExclusions?.firstOrNull() ?: SDSEarlyReleaseExclusionType.NO,
+        hasAnSDSEarlyReleaseExclusion = sentence.sdsReleaseArrangements?.sdsEarlyReleaseExclusions?.firstOrNull { it != SDSEarlyReleaseExclusionType.SCHEDULE_13_PART_3 } ?: SDSEarlyReleaseExclusionType.NO,
         section250 = sentenceCalculationType.isSection250(),
       )
     }

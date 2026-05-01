@@ -1,6 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.manageoffencesapi.model.OffencePcscMarkers
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.manageoffencesapi.model.PcscMarkers
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates
@@ -10,11 +10,10 @@ import java.time.Period
 
 class SDSPlusCheckResult(
   val sentenceAndOffence: SentenceAndOffence,
-  sdsPlusMarkersByOffences: Map<String, OffencePcscMarkers>,
+  val pcscMarkers: PcscMarkers,
 ) {
   val isSDSPlus: Boolean
   val isSDSPlusEligibleSentenceTypeLengthAndOffence: Boolean
-  private val offenceMarkers: OffencePcscMarkers?
   private val listDExtended: Boolean
   private val eligibilityType: SentenceCalculationType.SDSPlusEligibilityType
 
@@ -24,7 +23,6 @@ class SDSPlusCheckResult(
 
     val eligibleSentence = SentenceCalculationType.isCalculable(sentenceAndOffence.sentenceCalculationType) &&
       SentenceCalculationType.isSDSPlusEligible(sentenceAndOffence.sentenceCalculationType)
-    offenceMarkers = sdsPlusMarkersByOffences[offenceCode]
     listDExtended = offenceCode in LEGACY_OFFENCE_CODES_FOR_OFFENCES_ON_LIST_D
 
     eligibilityType = getSentenceEligibilityType(sentenceAndOffence.sentenceCalculationType)
@@ -38,13 +36,13 @@ class SDSPlusCheckResult(
   private fun eligibleSentenceTypeLengthAndOffence(): Boolean = when (eligibilityType) {
     SentenceCalculationType.SDSPlusEligibilityType.SDS -> {
       when {
-        (sevenYearsOrMore() && (offenceMarkers?.pcscMarkers?.inListA == true || offenceMarkers?.pcscMarkers?.inListD == true || listDExtended)) -> true
-        (fourToUnderSeven() && offenceMarkers?.pcscMarkers?.inListB == true) -> true
+        (sevenYearsOrMore() && (pcscMarkers.inListA || pcscMarkers.inListD || listDExtended)) -> true
+        (fourToUnderSeven() && pcscMarkers.inListB) -> true
         else -> false
       }
     }
     SentenceCalculationType.SDSPlusEligibilityType.SECTION250 -> {
-      sevenYearsOrMore() && offenceMarkers?.pcscMarkers?.inListC == true
+      sevenYearsOrMore() && pcscMarkers.inListC
     }
     else -> false
   }
@@ -64,7 +62,7 @@ class SDSPlusCheckResult(
   private fun evaluateEligibilityForSevenYearsOrMore(): Boolean = if (listDExtended) {
     sentencedAfterPcsc()
   } else {
-    sentencedAfterPcsc() || offenceMarkers?.pcscMarkers?.inListA == true && sentencedWithinOriginalSdsPlusWindow()
+    sentencedAfterPcsc() || pcscMarkers.inListA && sentencedWithinOriginalSdsPlusWindow()
   }
 
   private fun getSentenceEligibilityType(sentenceCalculationType: String): SentenceCalculationType.SDSPlusEligibilityType {

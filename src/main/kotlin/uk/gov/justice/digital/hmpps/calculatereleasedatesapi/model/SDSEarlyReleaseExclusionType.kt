@@ -18,8 +18,6 @@ enum class SDSEarlyReleaseExclusionType(
   TERRORISM(sds40Exclusion = true, sds40AdditionalExcludedOffence = false, progressionModelExclusion = false),
   SEXUAL_T3(sds40Exclusion = false, sds40AdditionalExcludedOffence = true, progressionModelExclusion = false),
   DOMESTIC_ABUSE_T3(sds40Exclusion = false, sds40AdditionalExcludedOffence = true, progressionModelExclusion = false),
-  NATIONAL_SECURITY_T3(sds40Exclusion = false, sds40AdditionalExcludedOffence = true, progressionModelExclusion = false),
-  TERRORISM_T3(sds40Exclusion = false, sds40AdditionalExcludedOffence = true, progressionModelExclusion = false),
   MURDER_T3(sds40Exclusion = false, sds40AdditionalExcludedOffence = true, progressionModelExclusion = false),
   SCHEDULE_13_PART_3(sds40Exclusion = false, sds40AdditionalExcludedOffence = false, progressionModelExclusion = true),
   NO(sds40Exclusion = false, sds40AdditionalExcludedOffence = false, progressionModelExclusion = false),
