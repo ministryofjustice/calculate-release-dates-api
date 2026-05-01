@@ -16,7 +16,7 @@ class UnusedDeductionsControllerIntTest(private val mockManageOffencesClient: Mo
 
   @Test
   fun `Run unused deductions calculation`() {
-    mockManageOffencesClient.noneInPCSC(listOf("TH68010A", "TH68037"))
+    mockManageOffencesClient.notSDSPlusAndNoExclusions(listOf("TH68010A", "TH68037"))
     val adjustments = listOf(
       AdjustmentDto(
         fromDate = LocalDate.of(2020, 2, 1),
@@ -47,7 +47,7 @@ class UnusedDeductionsControllerIntTest(private val mockManageOffencesClient: Mo
 
   @Test
   fun `Run unused deductions calculation again, once unused deductions is already set`() {
-    mockManageOffencesClient.noneInPCSC(listOf("TH68010A", "TH68037"))
+    mockManageOffencesClient.notSDSPlusAndNoExclusions(listOf("TH68010A", "TH68037"))
     val adjustments = listOf(
       AdjustmentDto(
         fromDate = LocalDate.of(2020, 2, 1),
@@ -330,7 +330,7 @@ class UnusedDeductionsControllerIntTest(private val mockManageOffencesClient: Mo
 
   @Test
   fun `Release in-between sentences unused deductions calculation  (ADJST-1363)`() {
-    mockManageOffencesClient.noneInPCSC(listOf("CS00011", "WR91001"))
+    mockManageOffencesClient.notSDSPlusAndNoExclusions(listOf("CS00011", "WR91001"))
 
     val adjustments = listOf(
       AdjustmentDto(
@@ -374,7 +374,7 @@ class UnusedDeductionsControllerIntTest(private val mockManageOffencesClient: Mo
 
   @Test
   fun `Release in-between sentences unused deductions calculation (ADJST-1373)`() {
-    mockManageOffencesClient.noneInPCSC(listOf("CS00011", "PA53052", "WR91001"))
+    mockManageOffencesClient.notSDSPlusAndNoExclusions(listOf("CS00011", "PA53052", "WR91001"))
 
     val adjustments = listOf(
       AdjustmentDto(

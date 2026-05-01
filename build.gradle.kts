@@ -179,6 +179,13 @@ val models = listOf(
     output = "manageusersapi",
     packageName = "manageusersapi",
   ),
+  // https://manage-offences-api-dev.hmpps.service.justice.gov.uk/v3/api-docs
+  ModelConfiguration(
+    name = "buildManageOffencesApiModel",
+    input = "manage-offences-api-docs.json",
+    output = "manageoffencesapi",
+    packageName = "manageoffencesapi",
+  ),
 )
 
 tasks {
