@@ -72,7 +72,7 @@ class ReleaseArrangementLookupServiceIntTest(private val mockManageOffencesClien
   @Test
   fun `Test exception is thrown on 500 MO response`() {
     mockManageOffencesClient.withStub(
-      get(urlMatching("/schedule/sds-early-release-exclusions\\?offenceCodes=500Response"))
+      get(urlMatching("/schedule/sds-offence-details\\?offenceCodes=500Response"))
         .willReturn(
           aResponse()
             .withStatus(500),

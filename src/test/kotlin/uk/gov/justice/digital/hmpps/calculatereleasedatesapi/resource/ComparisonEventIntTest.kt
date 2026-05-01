@@ -27,8 +27,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Discre
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.SqsIntegrationTestBase
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.MockManageOffencesClient
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.MockPrisonService
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.manageoffencesapi.model.OffencePcscMarkers
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.manageoffencesapi.model.PcscMarkers
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.manageoffencesapi.model.SdsOffenceDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Agency
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonDiscrepancySummary
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonDto
@@ -62,14 +62,16 @@ class ComparisonEventIntTest(private val mockManageOffencesClient: MockManageOff
   fun clearTables() {
     comparisonPersonRepository.deleteAll()
     comparisonRepository.deleteAll()
-    mockManageOffencesClient.withPCSCMarkersResponse(
-      OffencePcscMarkers(
+    mockManageOffencesClient.withSdsOffenceDetailsResponse(
+      SdsOffenceDetails(
         offenceCode = "CD79009",
         pcscMarkers = PcscMarkers(inListA = false, inListB = false, inListC = false, inListD = false),
+        earlyReleaseExclusions = emptyList(),
       ),
-      OffencePcscMarkers(
+      SdsOffenceDetails(
         offenceCode = "TR68132",
         pcscMarkers = PcscMarkers(inListA = false, inListB = false, inListC = false, inListD = false),
+        earlyReleaseExclusions = emptyList(),
       ),
       offences = "CD79009,TR68132",
     )
