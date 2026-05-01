@@ -2,27 +2,26 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.confi
 
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AbstractSentence
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 
 enum class EarlyReleaseSentenceFilter {
   SDS_40_EXCLUSIONS {
-    override fun matches(part: AbstractSentence): Boolean = part is StandardDeterminateSentence &&
+    override fun isIncluded(part: AbstractSentence): Boolean = part is StandardDeterminateSentence &&
       part.identificationTrack == SentenceIdentificationTrack.SDS &&
-      (part.hasAnSDSEarlyReleaseExclusion == SDSEarlyReleaseExclusionType.NO || part.hasAnSDSEarlyReleaseExclusion.trancheThreeExclusion)
+      !part.hasAnSDSEarlyReleaseExclusion.sds40Exclusion
   },
   SDS_40_ADDITIONAL_EXCLUDED_OFFENCES {
-    override fun matches(part: AbstractSentence): Boolean = part is StandardDeterminateSentence && part.identificationTrack == SentenceIdentificationTrack.SDS && part.hasAnSDSEarlyReleaseExclusion.trancheThreeExclusion
+    override fun isIncluded(part: AbstractSentence): Boolean = part is StandardDeterminateSentence && part.identificationTrack == SentenceIdentificationTrack.SDS && part.hasAnSDSEarlyReleaseExclusion.sds40AdditionalExcludedOffence
   },
-  SDS_OR_SDS_PLUS_ADULT {
-    override fun matches(part: AbstractSentence): Boolean = part is StandardDeterminateSentence &&
+  SDS_PROGRESSION_MODEL {
+    override fun isIncluded(part: AbstractSentence): Boolean = part is StandardDeterminateSentence &&
       !part.section250 &&
       listOf(SentenceIdentificationTrack.SDS, SentenceIdentificationTrack.SDS_PLUS).contains(part.identificationTrack)
   },
   SDS_OR_SDS_PLUS {
-    override fun matches(part: AbstractSentence): Boolean = listOf(SentenceIdentificationTrack.SDS, SentenceIdentificationTrack.SDS_PLUS).contains(part.identificationTrack)
+    override fun isIncluded(part: AbstractSentence): Boolean = listOf(SentenceIdentificationTrack.SDS, SentenceIdentificationTrack.SDS_PLUS).contains(part.identificationTrack)
   },
   ;
 
-  abstract fun matches(part: AbstractSentence): Boolean
+  abstract fun isIncluded(part: AbstractSentence): Boolean
 }

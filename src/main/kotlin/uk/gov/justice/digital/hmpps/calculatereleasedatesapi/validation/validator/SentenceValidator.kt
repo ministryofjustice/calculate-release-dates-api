@@ -15,7 +15,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqual
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.EDS18_EDS21_EDSU18_SENTENCE_TYPE_INCORRECT
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.LASPO_AR_SENTENCE_TYPE_INCORRECT
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.SEC236A_SENTENCE_TYPE_INCORRECT
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.SEC_91_SENTENCE_TYPE_INCORRECT
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.SOPC18_SOPC21_SENTENCE_TYPE_INCORRECT
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessage
@@ -37,7 +36,7 @@ class SentenceValidator(private val validationUtilities: ValidationUtilities) : 
       section91Validation(it),
       edsSentenceValidation(it),
       validateFineAmount(it),
-    ) + sopcSentenceValidation(it)
+    ) + validateSOPC(it)
   }.flatten()
 
   private fun validateFineAmount(sentencesAndOffence: SentenceAndOffence): ValidationMessage? {
@@ -52,15 +51,6 @@ class SentenceValidator(private val validationUtilities: ValidationUtilities) : 
 
   private fun isFineSentence(sentencesAndOffence: SentenceAndOffence): Boolean = SentenceCalculationType.from(sentencesAndOffence.sentenceCalculationType).sentenceType == SentenceType.AFine
 
-  private fun sopcSentenceValidation(
-    sentencesAndOffence: SentenceAndOffence,
-  ): List<ValidationMessage> {
-    val messages = mutableListOf<ValidationMessage>()
-    messages.addAll(validateSOPC(sentencesAndOffence))
-    messages.addAll(validateSec236A(sentencesAndOffence))
-    return messages
-  }
-
   private fun validateSOPC(sentencesAndOffence: SentenceAndOffence): List<ValidationMessage> {
     val messages = mutableListOf<ValidationMessage>()
     if (isSopc(SentenceCalculationType.from(sentencesAndOffence.sentenceCalculationType)) && isBeforeSec91EndDate(sentencesAndOffence)) {
@@ -74,22 +64,7 @@ class SentenceValidator(private val validationUtilities: ValidationUtilities) : 
     return messages
   }
 
-  private fun validateSec236A(sentencesAndOffence: SentenceAndOffence): List<ValidationMessage> {
-    val messages = mutableListOf<ValidationMessage>()
-    if (isSec236A(SentenceCalculationType.from(sentencesAndOffence.sentenceCalculationType)) && isAfterOrEqualToSec91EndDate(sentencesAndOffence)) {
-      messages.add(
-        ValidationMessage(
-          SEC236A_SENTENCE_TYPE_INCORRECT,
-          validationUtilities.getCaseSeqAndLineSeq(sentencesAndOffence),
-        ),
-      )
-    }
-    return messages
-  }
-
   private fun isSopc(sentenceCalculationType: SentenceCalculationType): Boolean = sentenceCalculationType == SentenceCalculationType.SOPC18 || sentenceCalculationType == SentenceCalculationType.SOPC21
-
-  private fun isSec236A(sentenceCalculationType: SentenceCalculationType): Boolean = sentenceCalculationType == SentenceCalculationType.SEC236A
 
   private fun isBeforeSec91EndDate(sentencesAndOffence: SentenceAndOffence): Boolean = sentencesAndOffence.sentenceDate.isBefore(ImportantDates.SEC_91_END_DATE)
 

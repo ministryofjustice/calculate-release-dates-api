@@ -23,7 +23,7 @@ sealed interface SDSLegislation : Legislation {
 
   fun requiredTimelineCalculations(): List<TimelineCalculationEvent> = listOf(SDSLegislationCommencementTimelineCalculationEvent(commencementDate(), legislation = this))
 
-  fun appliesToSentence(part: AbstractSentence) = filter.matches(part)
+  fun appliesToSentence(part: AbstractSentence) = filter.isIncluded(part)
 
   data class DefaultSDSLegislation(
     override val releaseMultiplier: Map<SentenceIdentificationTrack, ReleaseMultiplier>,
@@ -91,7 +91,7 @@ sealed interface SDSLegislation : Legislation {
     override val tranches: List<TrancheConfiguration>,
     override val releaseMultiplier: Map<SentenceIdentificationTrack, ReleaseMultiplier>,
   ) : SDSLegislationWithTranches {
-    override val filter: EarlyReleaseSentenceFilter = EarlyReleaseSentenceFilter.SDS_OR_SDS_PLUS_ADULT
+    override val filter: EarlyReleaseSentenceFilter = EarlyReleaseSentenceFilter.SDS_PROGRESSION_MODEL
     override val legislationName = LegislationName.SDS_PROGRESSION_MODEL
     override val trancheSelectionStrategy: TrancheSelectionStrategy = SDSProgressionModelTrancheSelectionStrategy()
 
@@ -101,6 +101,6 @@ sealed interface SDSLegislation : Legislation {
 
     override fun commencementDate(): LocalDate = tranches.minOf { it.date }
 
-    override fun isSentenceSubjectToTraches(sentence: CalculableSentence) = sentence is StandardDeterminateSentence && filter.matches(sentence) && !sentence.isRecall()
+    override fun isSentenceSubjectToTraches(sentence: CalculableSentence) = sentence is StandardDeterminateSentence && filter.isIncluded(sentence) && !sentence.isRecall()
   }
 }

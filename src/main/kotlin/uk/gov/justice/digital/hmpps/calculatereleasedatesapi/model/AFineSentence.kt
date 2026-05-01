@@ -19,10 +19,6 @@ data class AFineSentence(
 ) : AbstractSentence(offence, sentencedAt, identifier, consecutiveSentenceUUIDs, caseSequence, lineSequence, externalSentenceId, caseReference, recall),
   Term {
 
-  override val isSDSPlus: Boolean = false
-  override val isSDSPlusEligibleSentenceTypeLengthAndOffence: Boolean = false
-  override val isSDSPlusOffenceInPeriod: Boolean = false
-
   override fun buildString(): String = "AFineSentence\t:\t\n" +
     "Identification Track\t:\t${identificationTrack}\n" +
     "Duration\t:\t$duration\n" +

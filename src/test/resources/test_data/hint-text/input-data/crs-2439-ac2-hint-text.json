@@ -31,7 +31,6 @@
           "sentenceSequence": 2
         },
         "consecutiveSentenceUUIDs": [],
-        "isSDSPlusOffenceInPeriod": true,
         "hasAnSDSEarlyReleaseExclusion": "NO",
         "isSDSPlusEligibleSentenceTypeLengthAndOffence": false
       },
@@ -60,7 +59,6 @@
           "sentenceSequence": 3
         },
         "consecutiveSentenceUUIDs": [],
-        "isSDSPlusOffenceInPeriod": true,
         "hasAnSDSEarlyReleaseExclusion": "NO",
         "isSDSPlusEligibleSentenceTypeLengthAndOffence": false
       },
@@ -89,7 +87,6 @@
           "sentenceSequence": 4
         },
         "consecutiveSentenceUUIDs": [],
-        "isSDSPlusOffenceInPeriod": true,
         "hasAnSDSEarlyReleaseExclusion": "NO",
         "isSDSPlusEligibleSentenceTypeLengthAndOffence": false
       },
@@ -118,7 +115,6 @@
           "sentenceSequence": 5
         },
         "consecutiveSentenceUUIDs": [],
-        "isSDSPlusOffenceInPeriod": true,
         "hasAnSDSEarlyReleaseExclusion": "NO",
         "isSDSPlusEligibleSentenceTypeLengthAndOffence": false
       },
@@ -147,7 +143,6 @@
           "sentenceSequence": 6
         },
         "consecutiveSentenceUUIDs": [],
-        "isSDSPlusOffenceInPeriod": true,
         "hasAnSDSEarlyReleaseExclusion": "NO",
         "isSDSPlusEligibleSentenceTypeLengthAndOffence": false
       }

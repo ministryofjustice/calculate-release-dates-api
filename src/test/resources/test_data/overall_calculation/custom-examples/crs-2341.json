@@ -19,8 +19,7 @@
         "sentencedAt": "2020-11-13",
         "identifier": "28f7a391-5b92-307a-8caa-f2a4a10ff268",
         "isSDSPlus": true,
-        "isSDSPlusEligibleSentenceTypeLengthAndOffence": true,
-        "isSDSPlusOffenceInPeriod": true
+        "isSDSPlusEligibleSentenceTypeLengthAndOffence": true
       },
       {
         "offence": {
@@ -36,8 +35,7 @@
         "identifier": "c266e68f-0e04-39b8-a26c-129ea5b5b081",
         "consecutiveSentenceUUIDs": [
           "28f7a391-5b92-307a-8caa-f2a4a10ff268"
-        ],
-        "isSDSPlusOffenceInPeriod": true
+        ]
       },
       {
         "offence": {
@@ -50,7 +48,6 @@
           }
         },
         "sentencedAt": "2024-09-23",
-        "isSDSPlusOffenceInPeriod": true,
         "hasAnSDSEarlyReleaseExclusion": "VIOLENT"
       },
       {

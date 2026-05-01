@@ -17,7 +17,7 @@
         },
         "sentencedAt": "2024-09-20",
         "identifier": "cb304745-d781-47d3-b931-4baa31551fc5",
-        "hasAnSDSEarlyReleaseExclusion": "VIOLENT_T3"
+        "hasAnSDSEarlyReleaseExclusion": "SEXUAL_T3"
       },
       {
         "type": "StandardSentence",
@@ -34,7 +34,7 @@
         "consecutiveSentenceUUIDs": [
           "cb304745-d781-47d3-b931-4baa31551fc5"
         ],
-        "hasAnSDSEarlyReleaseExclusion": "VIOLENT_T3"
+        "hasAnSDSEarlyReleaseExclusion": "SEXUAL_T3"
       }
     ],
     "adjustments": {}

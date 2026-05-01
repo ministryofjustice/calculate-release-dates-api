@@ -22,9 +22,6 @@ data class ExtendedDeterminateSentence(
   override val caseReference: String?,
   override val recall: Recall? = null,
 ) : AbstractSentence(offence, sentencedAt, identifier, consecutiveSentenceUUIDs, caseSequence, lineSequence, externalSentenceId, caseReference, recall) {
-  override val isSDSPlus: Boolean = false
-  override val isSDSPlusEligibleSentenceTypeLengthAndOffence: Boolean = false
-  override val isSDSPlusOffenceInPeriod: Boolean = false
 
   override fun buildString(): String = "ExtendedDeterminateSentence\t:\t\n" +
     "Identification Track\t:\t${identificationTrack}\n" +
