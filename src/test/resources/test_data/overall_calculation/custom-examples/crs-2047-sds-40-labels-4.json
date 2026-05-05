@@ -17,7 +17,12 @@
         },
         "sentencedAt": "2022-04-08",
         "identifier": "7e630c54-5071-3914-be62-c177e622cdfc",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -34,7 +39,12 @@
         "consecutiveSentenceUUIDs": [
           "7e630c54-5071-3914-be62-c177e622cdfc"
         ],
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -47,11 +57,15 @@
           }
         },
         "sentencedAt": "2022-04-08",
-        "identifier": "3e7bf85a-c06b-4382-96d9-45377355b258",
         "consecutiveSentenceUUIDs": [
           "f2321d7a-07ca-3dbe-b1fe-09cdbd9728ec"
         ],
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -64,17 +78,15 @@
           }
         },
         "sentencedAt": "2022-04-08",
-        "identifier": "55480fb2-d0da-46fd-a9b5-cc34d7152d3a",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
-      "TAGGED_BAIL": [
-        {
-          "appliesToSentencesFrom": "2022-04-08",
-          "numberOfDays": 205
-        }
-      ],
       "REMAND": [
         {
           "appliesToSentencesFrom": "2022-04-08",
@@ -88,11 +100,18 @@
           "fromDate": "2021-05-29",
           "toDate": "2021-06-23"
         }
+      ],
+      "TAGGED_BAIL": [
+        {
+          "appliesToSentencesFrom": "2022-04-08",
+          "numberOfDays": 205
+        }
       ]
     }
   },
   "userInputs": {
     "calculateErsed": true,
     "useOffenceIndicators": true
-  }
+  },
+  "params": "calculation-params"
 }

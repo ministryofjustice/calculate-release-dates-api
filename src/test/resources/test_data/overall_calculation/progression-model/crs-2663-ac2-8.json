@@ -17,8 +17,12 @@
           }
         },
         "sentencedAt": "2025-10-09",
-        "hasAnSDSEarlyReleaseExclusion": "NO",
-        "section250": true
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": true
+        }
       }
     ],
     "adjustments": {
@@ -35,6 +39,9 @@
         }
       ]
     }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-progression-model",
   "featureToggles": {

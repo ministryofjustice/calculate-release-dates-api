@@ -6,6 +6,7 @@
     },
     "sentences": [
       {
+        "type": "StandardSentence",
         "offence": {
           "committedAt": "2023-01-01",
           "offenceCode": "HF46001"
@@ -16,7 +17,13 @@
           }
         },
         "sentencedAt": "2023-01-01",
-        "identifier": "118f3f35-30ea-3029-b92e-bea226d51393"
+        "identifier": "118f3f35-30ea-3029-b92e-bea226d51393",
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "ExtendedDeterminateSentence",

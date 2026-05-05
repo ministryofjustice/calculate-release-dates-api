@@ -20,7 +20,12 @@
         "identifier": "89712998-30a3-3166-9823-0bc4126a3707",
         "caseSequence": 1,
         "lineSequence": 1,
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -36,7 +41,12 @@
         "identifier": "cbb76316-3e51-3615-a76f-821308464c5e",
         "caseSequence": 1,
         "lineSequence": 2,
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {},

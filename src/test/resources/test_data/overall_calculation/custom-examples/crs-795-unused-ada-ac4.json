@@ -17,7 +17,12 @@
         },
         "sentencedAt": "2021-12-17",
         "identifier": "0b10fc4b-1920-4b74-96e0-d95369adb5e1",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -30,11 +35,15 @@
           }
         },
         "sentencedAt": "2022-01-18",
-        "identifier": "c3bde614-c190-410d-b4c2-f1a7387eef0b",
         "consecutiveSentenceUUIDs": [
           "0b10fc4b-1920-4b74-96e0-d95369adb5e1"
         ],
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
@@ -47,6 +56,9 @@
         }
       ]
     }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-50"
 }

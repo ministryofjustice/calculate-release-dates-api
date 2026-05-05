@@ -140,5 +140,9 @@
         }
       ]
     }
-  }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params"
 }

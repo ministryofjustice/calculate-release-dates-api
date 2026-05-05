@@ -16,15 +16,27 @@
           }
         },
         "sentencedAt": "2022-10-11",
-        "identifier": "4f33063d-400c-42b7-9f80-9637d0908934",
         "recall": {
           "recallType": "FIXED_TERM_RECALL_14",
           "returnToCustodyDate": "2023-01-03"
         },
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
+      "UNLAWFULLY_AT_LARGE": [
+        {
+          "appliesToSentencesFrom": "2022-10-18",
+          "numberOfDays": 77,
+          "fromDate": "2022-10-18",
+          "toDate": "2023-01-02"
+        }
+      ],
       "RECALL_REMAND": [
         {
           "appliesToSentencesFrom": "2022-10-11",
@@ -34,17 +46,12 @@
           "appliesToSentencesFrom": "2022-10-11",
           "numberOfDays": 6
         }
-      ],
-      "UNLAWFULLY_AT_LARGE": [
-        {
-          "appliesToSentencesFrom": "2022-10-18",
-          "numberOfDays": 77,
-          "fromDate": "2022-10-18",
-          "toDate": "2023-01-02"
-        }
       ]
     },
     "returnToCustodyDate": "2023-01-03"
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-50"
 }

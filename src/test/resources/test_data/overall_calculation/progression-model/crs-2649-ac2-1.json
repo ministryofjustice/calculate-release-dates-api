@@ -16,11 +16,20 @@
           }
         },
         "sentencedAt": "2020-10-08",
-        "hasAnSDSEarlyReleaseExclusion": "SEXUAL",
-        "section250": true
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [
+            "SEXUAL"
+          ],
+          "isSection250": true
+        }
       }
     ],
     "adjustments": {}
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-progression-model"
 }

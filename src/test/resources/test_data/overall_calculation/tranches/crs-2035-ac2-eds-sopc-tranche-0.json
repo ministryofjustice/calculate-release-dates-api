@@ -21,8 +21,7 @@
           }
         },
         "automaticRelease": true,
-        "sentencedAt": "2023-12-12",
-        "identifier": "b8806d58-fad6-46ce-a848-03a79e93929a"
+        "sentencedAt": "2023-12-12"
       },
       {
         "type": "SopcSentence",
@@ -39,10 +38,13 @@
             "MONTHS": 12
           }
         },
-        "sentencedAt": "2023-12-12",
-        "identifier": "307d9e04-e33e-4827-a55c-cfb69c9bbe4c"
+        "sentencedAt": "2023-12-12"
       }
     ],
     "adjustments": {}
-  }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params"
 }

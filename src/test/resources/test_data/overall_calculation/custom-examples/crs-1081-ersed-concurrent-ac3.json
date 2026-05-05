@@ -16,8 +16,12 @@
           }
         },
         "sentencedAt": "2020-07-26",
-        "identifier": "5243f87b-2bfc-45e9-b670-efa6e9740782",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -30,8 +34,12 @@
           }
         },
         "sentencedAt": "2020-07-26",
-        "identifier": "68f27a09-d56b-46f7-92cd-c1989002d166",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "AFineSentence",
@@ -44,7 +52,6 @@
           }
         },
         "sentencedAt": "2021-04-19",
-        "identifier": "fe5671d9-c260-470e-9a84-5fab6ef9db62",
         "fineAmount": 9E+2
       }
     ],

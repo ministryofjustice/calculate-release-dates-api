@@ -17,8 +17,12 @@
           }
         },
         "sentencedAt": "2024-08-09",
-        "identifier": "a416e6c4-0a08-4521-ad29-799d90a8fff4",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
@@ -29,5 +33,9 @@
         }
       ]
     }
-  }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params"
 }

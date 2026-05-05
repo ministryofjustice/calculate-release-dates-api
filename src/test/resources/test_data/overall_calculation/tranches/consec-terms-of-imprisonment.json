@@ -17,7 +17,12 @@
         },
         "sentencedAt": "2023-09-05",
         "identifier": "cb304745-d781-47d3-b931-4baa31551fc5",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "AFineSentence",
@@ -30,12 +35,9 @@
           }
         },
         "sentencedAt": "2023-09-05",
-        "identifier": "20eff70f-f54a-4dfa-800e-7645fc9cf95c",
         "consecutiveSentenceUUIDs": [
           "cb304745-d781-47d3-b931-4baa31551fc5"
         ],
-        "caseSequence": 2,
-        "lineSequence": 2,
         "fineAmount": 4E+3
       }
     ],
@@ -44,5 +46,6 @@
   "userInputs": {
     "calculateErsed": true,
     "useOffenceIndicators": true
-  }
+  },
+  "params": "calculation-params"
 }

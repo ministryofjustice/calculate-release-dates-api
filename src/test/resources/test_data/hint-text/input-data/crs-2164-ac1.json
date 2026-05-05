@@ -17,7 +17,12 @@
         },
         "sentencedAt": "2024-07-26",
         "identifier": "ffd4472f-246f-4c51-9b68-1dd8dcbafad8",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {

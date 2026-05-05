@@ -17,7 +17,12 @@
         },
         "sentencedAt": "2015-03-17",
         "identifier": "5dfde034-b7d7-4c54-a86c-67d42a1fd669",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -30,11 +35,15 @@
           }
         },
         "sentencedAt": "2015-03-17",
-        "identifier": "718a7547-12b7-42f4-86c2-87aad5e25f35",
         "consecutiveSentenceUUIDs": [
           "5dfde034-b7d7-4c54-a86c-67d42a1fd669"
         ],
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
@@ -47,6 +56,9 @@
         }
       ]
     }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-50"
 }

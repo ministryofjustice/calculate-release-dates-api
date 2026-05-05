@@ -16,13 +16,18 @@
           }
         },
         "sentencedAt": "2024-05-23",
+        "identifier": "0de48d91-c0de-37d4-940a-9b1ec02eaac5",
         "recall": {
           "recallType": "FIXED_TERM_RECALL_56",
-          "returnToCustodyDate": "2026-05-18",
-          "revocationDate": "2026-05-18"
+          "revocationDate": "2026-05-18",
+          "returnToCustodyDate": "2026-05-18"
         },
-        "hasAnSDSEarlyReleaseExclusion": "NO",
-        "identifier": "0de48d91-c0de-37d4-940a-9b1ec02eaac5"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -35,31 +40,40 @@
           }
         },
         "sentencedAt": "2024-05-23",
-        "recall": {
-          "recallType": "FIXED_TERM_RECALL_56",
-          "returnToCustodyDate": "2026-05-18",
-          "revocationDate": "2026-05-18"
-        },
-        "hasAnSDSEarlyReleaseExclusion": "NO",
         "consecutiveSentenceUUIDs": [
           "0de48d91-c0de-37d4-940a-9b1ec02eaac5"
-        ]
+        ],
+        "recall": {
+          "recallType": "FIXED_TERM_RECALL_56",
+          "revocationDate": "2026-05-18",
+          "returnToCustodyDate": "2026-05-18"
+        },
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
-      "ADDITIONAL_DAYS_AWARDED": [
-        {
-          "appliesToSentencesFrom": "2026-06-08",
-          "numberOfDays": 10
-        }
-      ],
       "RESTORATION_OF_ADDITIONAL_DAYS_AWARDED": [
         {
           "appliesToSentencesFrom": "2026-07-03",
           "numberOfDays": 5
         }
+      ],
+      "ADDITIONAL_DAYS_AWARDED": [
+        {
+          "appliesToSentencesFrom": "2026-06-08",
+          "numberOfDays": 10
+        }
       ]
     },
     "returnToCustodyDate": "2026-05-18"
-  }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params"
 }

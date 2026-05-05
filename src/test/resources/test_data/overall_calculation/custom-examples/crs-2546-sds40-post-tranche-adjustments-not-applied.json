@@ -6,6 +6,7 @@
     },
     "sentences": [
       {
+        "type": "StandardSentence",
         "offence": {
           "committedAt": "2014-08-08",
           "offenceCode": "TH68001"
@@ -20,9 +21,16 @@
         "recall": {
           "recallType": "STANDARD_RECALL",
           "revocationDate": "2017-07-19"
+        },
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
         }
       },
       {
+        "type": "StandardSentence",
         "offence": {
           "committedAt": "2014-08-08",
           "offenceCode": "TH68023"
@@ -39,6 +47,12 @@
         "recall": {
           "recallType": "STANDARD_RECALL",
           "revocationDate": "2017-07-19"
+        },
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
         }
       },
       {
@@ -79,6 +93,7 @@
         "sentencedAt": "2017-09-20"
       },
       {
+        "type": "StandardSentence",
         "offence": {
           "committedAt": "2017-06-29",
           "offenceCode": "TH68016"
@@ -88,9 +103,16 @@
             "WEEKS": 12
           }
         },
-        "sentencedAt": "2018-01-11"
+        "sentencedAt": "2018-01-11",
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
+        "type": "StandardSentence",
         "offence": {
           "committedAt": "2017-07-07",
           "offenceCode": "TH68020C"
@@ -104,9 +126,16 @@
         "identifier": "7ceb1fea-868f-39a9-afaf-fc03d546e2d6",
         "consecutiveSentenceUUIDs": [
           "999fe16f-a99a-3ff3-b952-d6e8374b3bc3"
-        ]
+        ],
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
+        "type": "StandardSentence",
         "offence": {
           "committedAt": "2023-02-09",
           "offenceCode": "COML016"
@@ -120,9 +149,16 @@
         "identifier": "cfc48443-6cf2-31e0-81b0-ffdcc5738789",
         "consecutiveSentenceUUIDs": [
           "7ceb1fea-868f-39a9-afaf-fc03d546e2d6"
-        ]
+        ],
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
+        "type": "StandardSentence",
         "offence": {
           "committedAt": "2023-02-20",
           "offenceCode": "TH68010"
@@ -136,9 +172,16 @@
         "identifier": "6be4a1d4-0967-35ca-8474-5f93d79b949a",
         "consecutiveSentenceUUIDs": [
           "cfc48443-6cf2-31e0-81b0-ffdcc5738789"
-        ]
+        ],
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
+        "type": "StandardSentence",
         "offence": {
           "committedAt": "2023-04-28",
           "offenceCode": "TH68010"
@@ -151,9 +194,16 @@
         "sentencedAt": "2023-06-01",
         "consecutiveSentenceUUIDs": [
           "6be4a1d4-0967-35ca-8474-5f93d79b949a"
-        ]
+        ],
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
+        "type": "StandardSentence",
         "offence": {
           "committedAt": "2023-04-21",
           "offenceCode": "TH68010"
@@ -163,9 +213,16 @@
             "MONTHS": 1
           }
         },
-        "sentencedAt": "2023-06-01"
+        "sentencedAt": "2023-06-01",
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
+        "type": "StandardSentence",
         "offence": {
           "committedAt": "2023-03-09",
           "offenceCode": "TH68023"
@@ -176,10 +233,24 @@
             "MONTHS": 7
           }
         },
-        "sentencedAt": "2025-06-30"
+        "sentencedAt": "2025-06-30",
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
+      "UNLAWFULLY_AT_LARGE": [
+        {
+          "appliesToSentencesFrom": "2023-02-09",
+          "numberOfDays": 83,
+          "fromDate": "2023-02-09",
+          "toDate": "2023-05-02"
+        }
+      ],
       "ADDITIONAL_DAYS_AWARDED": [
         {
           "appliesToSentencesFrom": "2023-11-03",
@@ -192,14 +263,6 @@
           "numberOfDays": 18,
           "fromDate": "2025-07-04",
           "toDate": "2025-07-21"
-        }
-      ],
-      "UNLAWFULLY_AT_LARGE": [
-        {
-          "appliesToSentencesFrom": "2023-02-09",
-          "numberOfDays": 83,
-          "fromDate": "2023-02-09",
-          "toDate": "2023-05-02"
         }
       ]
     },

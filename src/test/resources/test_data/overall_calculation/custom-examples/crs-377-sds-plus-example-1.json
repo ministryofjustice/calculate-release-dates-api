@@ -16,13 +16,18 @@
           }
         },
         "sentencedAt": "2020-04-01",
-        "identifier": "de42b939-8a00-4981-b31c-4c2593cd00f5",
-        "isSDSPlus": true,
-        "isSDSPlusEligibleSentenceTypeLengthAndOffence": true,
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": true,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": true,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {}
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-50"
 }

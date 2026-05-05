@@ -35,8 +35,12 @@
           }
         },
         "sentencedAt": "2018-05-16",
-        "identifier": "43ab983a-ad1b-4f00-9287-2fa877cd08af",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "DetentionAndTrainingOrderSentence",
@@ -48,8 +52,7 @@
             "MONTHS": 4
           }
         },
-        "sentencedAt": "2018-05-21",
-        "identifier": "691c45d5-c116-48f5-adc2-ee3b2f29f182"
+        "sentencedAt": "2018-05-21"
       },
       {
         "type": "StandardSentence",
@@ -66,7 +69,12 @@
         "consecutiveSentenceUUIDs": [
           "ee91a161-dde2-3a7b-8611-624d255542a7"
         ],
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -79,11 +87,15 @@
           }
         },
         "sentencedAt": "2022-09-09",
-        "identifier": "da4f2fb0-ff4e-4821-a50a-144f35a18819",
         "consecutiveSentenceUUIDs": [
           "ee91a161-dde2-3a7b-8611-624d255542a9"
         ],
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "DetentionAndTrainingOrderSentence",
@@ -95,11 +107,18 @@
             "MONTHS": 12
           }
         },
-        "sentencedAt": "2018-08-20",
-        "identifier": "630c513a-27df-41b2-98d6-ceb67b9748ac"
+        "sentencedAt": "2018-08-20"
       }
     ],
     "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2018-05-16",
+          "numberOfDays": 310,
+          "fromDate": "2017-07-10",
+          "toDate": "2018-05-15"
+        }
+      ],
       "ADDITIONAL_DAYS_AWARDED": [
         {
           "appliesToSentencesFrom": "2018-05-16",
@@ -143,16 +162,11 @@
           "fromDate": "2018-07-12",
           "toDate": "2018-08-02"
         }
-      ],
-      "REMAND": [
-        {
-          "appliesToSentencesFrom": "2018-05-16",
-          "numberOfDays": 310,
-          "fromDate": "2017-07-10",
-          "toDate": "2018-05-15"
-        }
       ]
     }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-50"
 }

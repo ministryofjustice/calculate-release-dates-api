@@ -17,11 +17,17 @@
           }
         },
         "sentencedAt": "2020-12-01",
-        "identifier": "3790cf7f-81c3-40d6-9408-b6583306511e",
         "recall": {
           "recallType": "STANDARD_RECALL"
         },
-        "hasAnSDSEarlyReleaseExclusion": "VIOLENT"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [
+            "VIOLENT"
+          ],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -35,14 +41,26 @@
           }
         },
         "sentencedAt": "2023-01-09",
-        "identifier": "2d642e57-759b-49fc-87d2-45c6c5691224",
         "recall": {
           "recallType": "STANDARD_RECALL"
         },
-        "hasAnSDSEarlyReleaseExclusion": "SEXUAL"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [
+            "SEXUAL"
+          ],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
+      "RECALL_TAGGED_BAIL": [
+        {
+          "appliesToSentencesFrom": "2020-12-01",
+          "numberOfDays": 197
+        }
+      ],
       "UNLAWFULLY_AT_LARGE": [
         {
           "appliesToSentencesFrom": "2022-08-31",
@@ -55,12 +73,6 @@
           "numberOfDays": 1,
           "fromDate": "2024-08-09",
           "toDate": "2024-08-09"
-        }
-      ],
-      "RECALL_TAGGED_BAIL": [
-        {
-          "appliesToSentencesFrom": "2020-12-01",
-          "numberOfDays": 197
         }
       ]
     },
@@ -86,5 +98,9 @@
         "direction": "IN"
       }
     ]
-  }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params"
 }

@@ -19,7 +19,12 @@
         },
         "sentencedAt": "2018-08-09",
         "identifier": "b71e09b6-3728-3b80-8e86-b1c40d52c812",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "ExtendedDeterminateSentence",
@@ -37,7 +42,6 @@
           }
         },
         "sentencedAt": "2018-08-09",
-        "identifier": "4467327f-2deb-4704-8303-b77e166a553e",
         "consecutiveSentenceUUIDs": [
           "b71e09b6-3728-3b80-8e86-b1c40d52c812"
         ]
@@ -45,5 +49,9 @@
     ],
     "adjustments": {}
   },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params",
   "assertSds40": true
 }

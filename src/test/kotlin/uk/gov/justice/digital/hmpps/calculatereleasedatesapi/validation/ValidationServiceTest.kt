@@ -2863,7 +2863,12 @@ class ValidationServiceTest : SpringTestBase() {
     val consecSdsPlusSentence = STANDARD_SENTENCE.copy(
       consecutiveSentenceUUIDs = listOf(testIdentifierUUID),
       sentencedAt = TRANCHE_CONFIGURATION.trancheOneCommencementDate,
-      isSDSPlus = true,
+      releaseArrangements = SDSReleaseArrangements(
+        isSDSPlus = true,
+        isSDSPlusEligibleSentenceTypeLengthAndOffence = true,
+        isSection250 = false,
+        sdsEarlyReleaseExclusions = emptyList(),
+      ),
     )
 
     val workingBooking = BOOKING.copy(
@@ -3579,8 +3584,12 @@ class ValidationServiceTest : SpringTestBase() {
       lineSequence = LINE_SEQUENCE,
       caseSequence = CASE_SEQUENCE,
       recall = Recall(FIXED_TERM_RECALL_28),
-      isSDSPlus = true,
-      hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
+      releaseArrangements = SDSReleaseArrangements(
+        isSDSPlus = true,
+        isSDSPlusEligibleSentenceTypeLengthAndOffence = true,
+        isSection250 = false,
+        sdsEarlyReleaseExclusions = emptyList(),
+      ),
     )
 
     val ONE_DAY_DURATION = Duration(mapOf(DAYS to 1L))
@@ -3589,8 +3598,12 @@ class ValidationServiceTest : SpringTestBase() {
       OFFENCE,
       ONE_DAY_DURATION,
       LocalDate.of(2020, 1, 1),
-      isSDSPlus = false,
-      hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
+      releaseArrangements = SDSReleaseArrangements(
+        isSDSPlus = false,
+        isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+        isSection250 = false,
+        sdsEarlyReleaseExclusions = emptyList(),
+      ),
     )
     val SENTENCE_CALCULATION = mock<SentenceCalculation>()
 

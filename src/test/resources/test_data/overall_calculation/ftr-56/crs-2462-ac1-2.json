@@ -18,21 +18,18 @@
         "sentencedAt": "2024-09-02",
         "recall": {
           "recallType": "FIXED_TERM_RECALL_56",
-          "returnToCustodyDate": "2026-04-18",
-          "revocationDate": "2026-04-11"
+          "revocationDate": "2026-04-11",
+          "returnToCustodyDate": "2026-04-18"
         },
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
-      "UNLAWFULLY_AT_LARGE": [
-        {
-          "appliesToSentencesFrom": "2024-09-02",
-          "numberOfDays": 6,
-          "fromDate": "2026-04-12",
-          "toDate": "2026-04-17"
-        }
-      ],
       "RECALL_REMAND": [
         {
           "appliesToSentencesFrom": "2024-09-02",
@@ -40,8 +37,20 @@
           "fromDate": "2024-08-13",
           "toDate": "2024-09-01"
         }
+      ],
+      "UNLAWFULLY_AT_LARGE": [
+        {
+          "appliesToSentencesFrom": "2024-09-02",
+          "numberOfDays": 6,
+          "fromDate": "2026-04-12",
+          "toDate": "2026-04-17"
+        }
       ]
     },
     "returnToCustodyDate": "2026-04-18"
-  }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params"
 }

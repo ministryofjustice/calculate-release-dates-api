@@ -16,10 +16,12 @@
           }
         },
         "sentencedAt": "2023-01-13",
-        "identifier": "049d0de4-ae35-49b6-a942-ee8fd9f417d2",
-        "isSDSPlus": true,
-        "isSDSPlusEligibleSentenceTypeLengthAndOffence": true,
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": true,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": true,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {

@@ -17,12 +17,16 @@
           }
         },
         "sentencedAt": "2023-11-23",
-        "identifier": "717ce361-06e9-4748-9be0-26eb7fcd69b3",
         "recall": {
           "recallType": "FIXED_TERM_RECALL_14",
           "returnToCustodyDate": "2024-04-02"
         },
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -36,15 +40,27 @@
           }
         },
         "sentencedAt": "2024-01-29",
-        "identifier": "66f5c933-90c2-47ce-b7f5-bea5f17f9458",
         "recall": {
           "recallType": "FIXED_TERM_RECALL_14",
           "returnToCustodyDate": "2024-04-02"
         },
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
+      "RECALL_REMAND": [
+        {
+          "appliesToSentencesFrom": "2023-11-23",
+          "numberOfDays": 36,
+          "fromDate": "2023-10-18",
+          "toDate": "2023-11-22"
+        }
+      ],
       "UNLAWFULLY_AT_LARGE": [
         {
           "appliesToSentencesFrom": "2024-01-27",
@@ -58,14 +74,6 @@
           "fromDate": "2024-03-27",
           "toDate": "2024-04-01"
         }
-      ],
-      "RECALL_REMAND": [
-        {
-          "appliesToSentencesFrom": "2023-11-23",
-          "numberOfDays": 36,
-          "fromDate": "2023-10-18",
-          "toDate": "2023-11-22"
-        }
       ]
     },
     "returnToCustodyDate": "2024-04-02",
@@ -74,6 +82,9 @@
       "returnToCustodyDate": "2024-04-02",
       "recallLength": 14
     }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-50"
 }

@@ -20,8 +20,7 @@
             "YEARS": 5
           }
         },
-        "sentencedAt": "2015-01-13",
-        "identifier": "80dfb55b-998e-48d3-97e3-9e2dc6ff3964"
+        "sentencedAt": "2015-01-13"
       },
       {
         "type": "ExtendedDeterminateSentence",
@@ -57,13 +56,15 @@
           }
         },
         "sentencedAt": "2020-12-02",
-        "identifier": "094ea767-e799-485d-a4ae-faf4003c8922",
         "consecutiveSentenceUUIDs": [
           "e40f48b6-92df-49d0-af99-507194c380fa"
         ]
       }
     ],
     "adjustments": {}
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-50"
 }

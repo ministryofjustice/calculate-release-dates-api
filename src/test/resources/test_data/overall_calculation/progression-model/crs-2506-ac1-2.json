@@ -9,8 +9,7 @@
       {
         "type": "StandardSentence",
         "offence": {
-          "committedAt": "2027-03-02",
-          "code": "PH97011"
+          "committedAt": "2027-03-02"
         },
         "duration": {
           "durationElements": {
@@ -18,10 +17,18 @@
           }
         },
         "sentencedAt": "2027-03-02",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {}
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-progression-model"
 }

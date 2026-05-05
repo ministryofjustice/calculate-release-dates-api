@@ -17,8 +17,14 @@
           }
         },
         "sentencedAt": "2024-06-04",
-        "hasAnSDSEarlyReleaseExclusion": "SEXUAL",
-        "section250": true
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [
+            "SEXUAL"
+          ],
+          "isSection250": true
+        }
       }
     ],
     "adjustments": {}

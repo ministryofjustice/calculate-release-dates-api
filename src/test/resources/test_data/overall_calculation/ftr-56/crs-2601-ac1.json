@@ -6,6 +6,7 @@
     },
     "sentences": [
       {
+        "type": "StandardSentence",
         "offence": {
           "committedAt": "2019-11-26",
           "offenceCode": "TH68023"
@@ -20,9 +21,16 @@
           "recallType": "FIXED_TERM_RECALL_56",
           "revocationDate": "2025-04-09",
           "returnToCustodyDate": "2025-04-10"
+        },
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
         }
       },
       {
+        "type": "StandardSentence",
         "offence": {
           "committedAt": "2022-12-26",
           "offenceCode": "TH68036"
@@ -37,9 +45,16 @@
           "recallType": "FIXED_TERM_RECALL_56",
           "revocationDate": "2025-04-09",
           "returnToCustodyDate": "2025-04-10"
+        },
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
         }
       },
       {
+        "type": "StandardSentence",
         "offence": {
           "committedAt": "2022-12-26",
           "offenceCode": "TH68013A"
@@ -54,9 +69,16 @@
           "recallType": "FIXED_TERM_RECALL_56",
           "revocationDate": "2025-04-09",
           "returnToCustodyDate": "2025-04-10"
+        },
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
         }
       },
       {
+        "type": "StandardSentence",
         "offence": {
           "committedAt": "2022-12-26",
           "offenceCode": "TH68026A"
@@ -71,9 +93,16 @@
           "recallType": "FIXED_TERM_RECALL_56",
           "revocationDate": "2025-04-09",
           "returnToCustodyDate": "2025-04-10"
+        },
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
         }
       },
       {
+        "type": "StandardSentence",
         "offence": {
           "committedAt": "2018-05-20",
           "offenceCode": "TH68023"
@@ -89,9 +118,17 @@
           "revocationDate": "2025-04-09",
           "returnToCustodyDate": "2025-04-10"
         },
-        "hasAnSDSEarlyReleaseExclusion": "VIOLENT"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [
+            "VIOLENT"
+          ],
+          "isSection250": false
+        }
       },
       {
+        "type": "StandardSentence",
         "offence": {
           "committedAt": "2025-04-04",
           "offenceCode": "MD71210"
@@ -101,7 +138,13 @@
             "WEEKS": 4
           }
         },
-        "sentencedAt": "2025-10-16"
+        "sentencedAt": "2025-10-16",
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {

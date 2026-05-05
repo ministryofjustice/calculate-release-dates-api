@@ -20,9 +20,7 @@
             "YEARS": 1
           }
         },
-        "sentencedAt": "2019-02-06",
-        "identifier": "8bb9da28-dc94-4190-a4ef-ae0b084a38b1",
-        "lineSequence": 1
+        "sentencedAt": "2019-02-06"
       },
       {
         "type": "StandardSentence",
@@ -36,11 +34,19 @@
           }
         },
         "sentencedAt": "2024-07-30",
-        "identifier": "730224c0-f340-494b-8b0b-e2d2b3a38be4",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {}
   },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params",
   "assertSds40": true
 }

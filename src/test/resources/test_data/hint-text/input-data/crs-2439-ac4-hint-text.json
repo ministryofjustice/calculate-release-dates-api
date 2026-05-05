@@ -20,7 +20,6 @@
             "MONTHS": 6
           }
         },
-        "isSDSPlus": false,
         "identifier": "1b9c2ba0-9523-36d3-bdae-4ac1f76d273a",
         "recall": null,
         "sentencedAt": "2018-12-19",
@@ -31,8 +30,12 @@
           "sentenceSequence": 1
         },
         "consecutiveSentenceUUIDs": [],
-        "hasAnSDSEarlyReleaseExclusion": "NO",
-        "isSDSPlusEligibleSentenceTypeLengthAndOffence": false
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -48,7 +51,6 @@
             "MONTHS": 18
           }
         },
-        "isSDSPlus": false,
         "identifier": "08f06750-16fe-3120-b2c3-f95744b62d45",
         "recall": null,
         "sentencedAt": "2018-12-19",
@@ -59,8 +61,12 @@
           "sentenceSequence": 2
         },
         "consecutiveSentenceUUIDs": [],
-        "hasAnSDSEarlyReleaseExclusion": "NO",
-        "isSDSPlusEligibleSentenceTypeLengthAndOffence": false
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -76,7 +82,6 @@
             "MONTHS": 12
           }
         },
-        "isSDSPlus": false,
         "identifier": "262b54a5-b4b2-3b75-b672-1e2b6bb8dd43",
         "recall": null,
         "sentencedAt": "2018-12-19",
@@ -87,8 +92,12 @@
           "sentenceSequence": 3
         },
         "consecutiveSentenceUUIDs": [],
-        "hasAnSDSEarlyReleaseExclusion": "NO",
-        "isSDSPlusEligibleSentenceTypeLengthAndOffence": false
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {

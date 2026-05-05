@@ -20,7 +20,12 @@
         "identifier": "bbc02024-5f84-44c8-bcb7-7944ed6302dc",
         "caseSequence": 1,
         "lineSequence": 1,
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {

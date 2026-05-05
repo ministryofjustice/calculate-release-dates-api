@@ -17,12 +17,16 @@
           }
         },
         "sentencedAt": "2024-05-08",
-        "identifier": "0835e503-18f2-49aa-8d43-d9b92b93781c",
         "recall": {
           "recallType": "FIXED_TERM_RECALL_14",
           "returnToCustodyDate": "2024-06-14"
         },
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -41,7 +45,12 @@
           "recallType": "FIXED_TERM_RECALL_14",
           "returnToCustodyDate": "2024-06-14"
         },
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -55,7 +64,6 @@
           }
         },
         "sentencedAt": "2024-01-15",
-        "identifier": "273a22c9-09de-4fde-b98a-83a80517352b",
         "consecutiveSentenceUUIDs": [
           "e12b8f4f-81e8-31c2-ab24-7b626cdff444"
         ],
@@ -63,24 +71,29 @@
           "recallType": "FIXED_TERM_RECALL_14",
           "returnToCustodyDate": "2024-06-14"
         },
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
-      "UNLAWFULLY_AT_LARGE": [
-        {
-          "appliesToSentencesFrom": "2024-06-07",
-          "numberOfDays": 7,
-          "fromDate": "2024-06-07",
-          "toDate": "2024-06-13"
-        }
-      ],
       "RECALL_REMAND": [
         {
           "appliesToSentencesFrom": "2024-01-15",
           "numberOfDays": 46,
           "fromDate": "2023-11-30",
           "toDate": "2024-01-14"
+        }
+      ],
+      "UNLAWFULLY_AT_LARGE": [
+        {
+          "appliesToSentencesFrom": "2024-06-07",
+          "numberOfDays": 7,
+          "fromDate": "2024-06-07",
+          "toDate": "2024-06-13"
         }
       ]
     },
@@ -90,6 +103,9 @@
       "returnToCustodyDate": "2024-06-14",
       "recallLength": 14
     }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-50"
 }

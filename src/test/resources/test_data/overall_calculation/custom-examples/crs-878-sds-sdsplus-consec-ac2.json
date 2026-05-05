@@ -18,9 +18,12 @@
         },
         "sentencedAt": "2022-05-05",
         "identifier": "e40f48b6-92df-49d0-af99-507194c380fa",
-        "isSDSPlus": true,
-        "isSDSPlusEligibleSentenceTypeLengthAndOffence": true,
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": true,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": true,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -37,7 +40,12 @@
         "consecutiveSentenceUUIDs": [
           "e40f48b6-92df-49d0-af99-507194c380fa"
         ],
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -54,9 +62,12 @@
         "consecutiveSentenceUUIDs": [
           "5538ee77-0a1a-4f7f-a19b-9bc9c6cd3f66"
         ],
-        "isSDSPlus": true,
-        "isSDSPlusEligibleSentenceTypeLengthAndOffence": true,
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": true,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": true,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -69,14 +80,21 @@
           }
         },
         "sentencedAt": "2022-05-05",
-        "identifier": "7099b80d-5d9e-4c37-96f3-83e9e7bdac38",
         "consecutiveSentenceUUIDs": [
           "d1faebe3-0ddf-4e87-bf0f-4f270e3f779b"
         ],
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {}
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-50"
 }

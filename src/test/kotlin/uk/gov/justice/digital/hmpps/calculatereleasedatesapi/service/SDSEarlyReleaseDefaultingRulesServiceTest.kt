@@ -30,7 +30,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Recall
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateTypes
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
@@ -143,8 +143,12 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
       identifier = UUID.randomUUID(),
       caseSequence = 1,
       lineSequence = 1,
-      isSDSPlus = false,
-      hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
+      releaseArrangements = SDSReleaseArrangements(
+        isSDSPlus = false,
+        isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+        isSection250 = false,
+        sdsEarlyReleaseExclusions = emptyList(),
+      ),
       recall = Recall(RecallType.STANDARD_RECALL),
     ).apply { releaseMultiplier = ReleaseMultiplier.ONE_HALF }
     sentence.releaseDateTypes = ReleaseDateTypes(listOf(ReleaseDateType.TUSED), sentence, testOffender)
@@ -197,8 +201,12 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
       identifier = UUID.randomUUID(),
       caseSequence = 1,
       lineSequence = 1,
-      isSDSPlus = false,
-      hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
+      releaseArrangements = SDSReleaseArrangements(
+        isSDSPlus = false,
+        isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+        isSection250 = false,
+        sdsEarlyReleaseExclusions = emptyList(),
+      ),
       recall = Recall(RecallType.STANDARD_RECALL),
     ).apply { releaseMultiplier = ReleaseMultiplier.ONE_HALF }
     sentence.releaseDateTypes = ReleaseDateTypes(listOf(ReleaseDateType.TUSED), sentence, testOffender)
@@ -379,8 +387,12 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
       identifier = UUID.randomUUID(),
       caseSequence = 1,
       lineSequence = 1,
-      isSDSPlus = false,
-      hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
+      releaseArrangements = SDSReleaseArrangements(
+        isSDSPlus = false,
+        isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+        isSection250 = false,
+        sdsEarlyReleaseExclusions = emptyList(),
+      ),
     ).apply { releaseMultiplier = ReleaseMultiplier.ONE_HALF }
     sentence.identificationTrack = identificationTrack
     sentence.releaseDateTypes = ReleaseDateTypes(

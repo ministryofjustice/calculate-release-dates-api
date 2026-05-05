@@ -25,6 +25,7 @@
         "identifier": "c1373dbd-4efb-31f1-a84e-ebf7983e7c5b"
       },
       {
+        "type": "StandardSentence",
         "offence": {
           "committedAt": "2022-12-17",
           "offenceCode": "PR52043"
@@ -38,9 +39,16 @@
         "identifier": "40ef6c5e-bcc7-3028-b3e0-b466519e9a96",
         "consecutiveSentenceUUIDs": [
           "c1373dbd-4efb-31f1-a84e-ebf7983e7c5b"
-        ]
+        ],
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
+        "type": "StandardSentence",
         "offence": {
           "committedAt": "2023-01-13",
           "offenceCode": "PR52043"
@@ -54,9 +62,16 @@
         "identifier": "f447fb41-303d-3177-a681-846bc77662e4",
         "consecutiveSentenceUUIDs": [
           "40ef6c5e-bcc7-3028-b3e0-b466519e9a96"
-        ]
+        ],
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
+        "type": "StandardSentence",
         "offence": {
           "committedAt": "2022-12-05",
           "offenceCode": "PR52043"
@@ -69,16 +84,22 @@
         "sentencedAt": "2024-02-27",
         "consecutiveSentenceUUIDs": [
           "f447fb41-303d-3177-a681-846bc77662e4"
-        ]
+        ],
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
-      "RESTORATION_OF_ADDITIONAL_DAYS_AWARDED": [
+      "REMAND": [
         {
-          "appliesToSentencesFrom": "2025-01-23",
-          "numberOfDays": 70,
-          "fromDate": "2025-01-23",
-          "toDate": "2025-04-02"
+          "appliesToSentencesFrom": "2018-05-23",
+          "numberOfDays": 240,
+          "fromDate": "2017-09-25",
+          "toDate": "2018-05-22"
         }
       ],
       "ADDITIONAL_DAYS_AWARDED": [
@@ -113,14 +134,18 @@
           "toDate": "2022-12-29"
         }
       ],
-      "REMAND": [
+      "RESTORATION_OF_ADDITIONAL_DAYS_AWARDED": [
         {
-          "appliesToSentencesFrom": "2018-05-23",
-          "numberOfDays": 240,
-          "fromDate": "2017-09-25",
-          "toDate": "2018-05-22"
+          "appliesToSentencesFrom": "2025-01-23",
+          "numberOfDays": 70,
+          "fromDate": "2025-01-23",
+          "toDate": "2025-04-02"
         }
       ]
     }
-  }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params"
 }

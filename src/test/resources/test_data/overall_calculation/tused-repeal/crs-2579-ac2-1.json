@@ -6,7 +6,7 @@
     },
     "sentences": [
       {
-        "type": "StandardDeterminateSentence",
+        "type": "StandardSentence",
         "offence": {
           "committedAt": "2025-01-05",
           "offenceCode": "CJ03524"
@@ -17,7 +17,12 @@
           }
         },
         "sentencedAt": "2025-01-05",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {}

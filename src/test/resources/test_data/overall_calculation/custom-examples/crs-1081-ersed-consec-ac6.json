@@ -34,13 +34,15 @@
           }
         },
         "sentencedAt": "2021-11-03",
-        "identifier": "11091021-cd2d-467d-8327-c0fcbfa4b8ce",
         "consecutiveSentenceUUIDs": [
           "5dfde034-b7d7-4c54-a86c-67d42a1fd669"
         ],
-        "isSDSPlus": true,
-        "isSDSPlusEligibleSentenceTypeLengthAndOffence": true,
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": true,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": true,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {}

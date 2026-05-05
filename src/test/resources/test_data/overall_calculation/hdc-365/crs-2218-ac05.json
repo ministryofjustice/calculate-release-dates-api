@@ -21,10 +21,7 @@
             "YEARS": 1
           }
         },
-        "sentencedAt": "2022-11-01",
-        "identifier": "7eee9010-1a84-36ee-b28e-978d9b8fc3fd",
-        "caseSequence": 1,
-        "lineSequence": 1
+        "sentencedAt": "2022-11-01"
       },
       {
         "type": "StandardSentence",
@@ -39,13 +36,20 @@
           }
         },
         "sentencedAt": "2022-11-01",
-        "identifier": "22386d4e-cdab-3aab-9b10-73160ec9655a",
-        "caseSequence": 1,
-        "lineSequence": 2,
-        "hasAnSDSEarlyReleaseExclusion": "VIOLENT"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [
+            "VIOLENT"
+          ],
+          "isSection250": false
+        }
       }
     ],
-    "adjustments": {},
-    "bookingId": 1223164
-  }
+    "adjustments": {}
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params"
 }

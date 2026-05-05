@@ -17,8 +17,12 @@
           }
         },
         "sentencedAt": "2024-02-16",
-        "identifier": "df7fc70d-6a21-4fb1-a248-80a595e824ee",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -32,8 +36,12 @@
           }
         },
         "sentencedAt": "2024-04-16",
-        "identifier": "726b8487-6e78-4b80-b953-36c7d77a11ab",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
@@ -47,5 +55,9 @@
       ]
     }
   },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params",
   "expectedValidationException": "REMAND_OVERLAPS_WITH_SENTENCE"
 }

@@ -17,11 +17,15 @@
           }
         },
         "sentencedAt": "2023-04-03",
-        "identifier": "d3faf94a-0877-4f85-b61a-a891ea7fcdea",
         "consecutiveSentenceUUIDs": [
           "21f1c16a-9a4c-4cb5-a8a3-fc8db63507d8"
         ],
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -39,7 +43,12 @@
         "consecutiveSentenceUUIDs": [
           "7a4e7182-3370-4db8-8b4b-d8f86c2ae2e8"
         ],
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -57,7 +66,12 @@
         "consecutiveSentenceUUIDs": [
           "1d7a23a8-f99e-44b0-8b15-4e45b799501d"
         ],
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -75,7 +89,12 @@
         "consecutiveSentenceUUIDs": [
           "35b1de4b-9882-4967-a624-f16d89fbd224"
         ],
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -91,7 +110,12 @@
         },
         "sentencedAt": "2023-04-03",
         "identifier": "35b1de4b-9882-4967-a624-f16d89fbd224",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
@@ -105,5 +129,9 @@
       ]
     }
   },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params",
   "assertSds40": true
 }

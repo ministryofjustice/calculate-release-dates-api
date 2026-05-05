@@ -16,10 +16,13 @@
             "DAYS": 14
           }
         },
-        "sentencedAt": "2023-11-17",
-        "identifier": "63d549a5-4c98-4508-a7c4-ca8f4b3b2984"
+        "sentencedAt": "2023-11-17"
       }
     ],
     "adjustments": {}
-  }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params"
 }

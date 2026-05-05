@@ -17,12 +17,16 @@
           }
         },
         "sentencedAt": "2024-05-08",
-        "identifier": "b6f6a371-acb0-4fd7-8b3f-df65868b4cc9",
         "recall": {
           "recallType": "FIXED_TERM_RECALL_14",
           "returnToCustodyDate": "2024-07-27"
         },
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -36,8 +40,12 @@
           }
         },
         "sentencedAt": "2024-07-29",
-        "identifier": "3e88445b-d9d1-42be-8645-09a73515add6",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -51,8 +59,12 @@
           }
         },
         "sentencedAt": "2024-07-29",
-        "identifier": "ab0a30db-c688-434d-b3c0-a0cdf6758f6c",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {},
@@ -62,5 +74,9 @@
       "returnToCustodyDate": "2024-07-27",
       "recallLength": 14
     }
-  }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params"
 }

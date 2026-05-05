@@ -17,11 +17,15 @@
           }
         },
         "sentencedAt": "2019-03-19",
-        "identifier": "3979a5d7-cf78-4263-92c8-605732be3364",
         "recall": {
           "recallType": "STANDARD_RECALL"
         },
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -34,11 +38,18 @@
           }
         },
         "sentencedAt": "2022-04-04",
-        "identifier": "376b286b-31d9-4631-9fe9-c26b32c13a32",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {}
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-50"
 }

@@ -35,11 +35,15 @@
           }
         },
         "sentencedAt": "2021-07-27",
-        "identifier": "a345c8b7-0dd5-46d4-af84-d1083586b4ed",
         "consecutiveSentenceUUIDs": [
           "5dfde034-b7d7-4c54-a86c-67d42a1fd669"
         ],
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {}

@@ -16,8 +16,12 @@
           }
         },
         "sentencedAt": "2024-02-19",
-        "identifier": "f16b0c93-c38b-4b4c-ba32-1c0eca9133f6",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "SopcSentence",
@@ -34,11 +38,13 @@
             "YEARS": 1
           }
         },
-        "sentencedAt": "2024-02-19",
-        "identifier": "6aa26c07-1c5b-48eb-a773-ddc08c37cc92"
+        "sentencedAt": "2024-02-19"
       }
     ],
     "adjustments": {}
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-50"
 }

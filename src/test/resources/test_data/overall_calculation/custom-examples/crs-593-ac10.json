@@ -17,8 +17,12 @@
           }
         },
         "sentencedAt": "2019-04-03",
-        "identifier": "8950533a-3e33-45a9-bf78-46265d369086",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -31,25 +35,15 @@
           }
         },
         "sentencedAt": "2020-10-21",
-        "identifier": "7a623b45-7d1d-421b-88df-dc8a3a4236e9",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
-      "RESTORATION_OF_ADDITIONAL_DAYS_AWARDED": [
-        {
-          "appliesToSentencesFrom": "2020-10-08",
-          "numberOfDays": 4,
-          "fromDate": "2020-10-08",
-          "toDate": "2020-10-11"
-        },
-        {
-          "appliesToSentencesFrom": "2021-09-08",
-          "numberOfDays": 9,
-          "fromDate": "2021-09-08",
-          "toDate": "2021-09-16"
-        }
-      ],
       "ADDITIONAL_DAYS_AWARDED": [
         {
           "appliesToSentencesFrom": "2020-01-25",
@@ -63,8 +57,25 @@
           "fromDate": "2020-04-17",
           "toDate": "2020-05-14"
         }
+      ],
+      "RESTORATION_OF_ADDITIONAL_DAYS_AWARDED": [
+        {
+          "appliesToSentencesFrom": "2020-10-08",
+          "numberOfDays": 4,
+          "fromDate": "2020-10-08",
+          "toDate": "2020-10-11"
+        },
+        {
+          "appliesToSentencesFrom": "2021-09-08",
+          "numberOfDays": 9,
+          "fromDate": "2021-09-08",
+          "toDate": "2021-09-16"
+        }
       ]
     }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-50"
 }

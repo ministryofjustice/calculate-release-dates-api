@@ -20,7 +20,12 @@
         "caseSequence": 1,
         "lineSequence": 1,
         "caseReference": "S20220422",
-        "hasAnSDSEarlyReleaseExclusion": "DOMESTIC_ABUSE"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": ["DOMESTIC_ABUSE"],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -40,7 +45,12 @@
         "caseSequence": 1,
         "lineSequence": 2,
         "caseReference": "S20220422",
-        "hasAnSDSEarlyReleaseExclusion": "DOMESTIC_ABUSE"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": ["DOMESTIC_ABUSE"],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -60,7 +70,12 @@
         "caseSequence": 1,
         "lineSequence": 3,
         "caseReference": "S20220422",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -77,7 +92,12 @@
         "caseSequence": 1,
         "lineSequence": 4,
         "caseReference": "S20220422",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -94,7 +114,12 @@
         "caseSequence": 1,
         "lineSequence": 5,
         "caseReference": "S20220422",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -111,7 +136,12 @@
         "caseSequence": 1,
         "lineSequence": 6,
         "caseReference": "S20220422",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -128,7 +158,12 @@
         "caseSequence": 1,
         "lineSequence": 6,
         "caseReference": "S20220422",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -145,7 +180,12 @@
         "caseSequence": 1,
         "lineSequence": 6,
         "caseReference": "S20220422",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {

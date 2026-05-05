@@ -16,11 +16,10 @@
             "MONTHS": 12
           }
         },
-        "sentencedAt": "2025-09-02",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "sentencedAt": "2025-09-02"
       },
       {
-        "type": "StandardDeterminateSentence",
+        "type": "StandardSentence",
         "offence": {
           "committedAt": "2026-02-27",
           "offenceCode": "CJ03524"
@@ -31,7 +30,12 @@
           }
         },
         "sentencedAt": "2026-02-27",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {}

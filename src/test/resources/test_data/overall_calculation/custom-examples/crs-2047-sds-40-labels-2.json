@@ -20,7 +20,12 @@
         "identifier": "731f7b85-cacc-40f5-9d55-15496d419307",
         "caseSequence": 1,
         "lineSequence": 1,
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {}

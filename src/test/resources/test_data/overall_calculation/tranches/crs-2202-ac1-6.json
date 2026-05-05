@@ -17,16 +17,26 @@
           }
         },
         "sentencedAt": "2024-09-16",
-        "identifier": "b2f27173-af49-46a7-ae57-2d5265b5db13",
         "recall": {
           "recallType": "FIXED_TERM_RECALL_28",
           "returnToCustodyDate": "2027-06-01"
         },
-        "hasAnSDSEarlyReleaseExclusion": "VIOLENT"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [
+            "VIOLENT"
+          ],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {},
     "returnToCustodyDate": "2027-06-01"
   },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params",
   "assertSds40": true
 }

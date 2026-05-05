@@ -18,11 +18,21 @@
           }
         },
         "sentencedAt": "2024-02-06",
-        "identifier": "9824a90b-ab4b-360d-8003-a7c8f53b8114",
-        "hasAnSDSEarlyReleaseExclusion": "SEXUAL"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [
+            "SEXUAL"
+          ],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {}
   },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params",
   "expectedValidationException": "UNABLE_TO_DETERMINE_SHPO_RELEASE_PROVISIONS"
 }

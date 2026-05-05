@@ -21,7 +21,12 @@
         "recall": {
           "recallType": "STANDARD_RECALL"
         },
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -35,11 +40,15 @@
           }
         },
         "sentencedAt": "2016-04-12",
-        "identifier": "f4d107c7-1b4c-4e25-9787-e513621e276b",
         "recall": {
           "recallType": "STANDARD_RECALL"
         },
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -53,14 +62,18 @@
           }
         },
         "sentencedAt": "2016-10-07",
-        "identifier": "8bad15e0-b82b-4416-b16e-65767586ace0",
         "consecutiveSentenceUUIDs": [
           "8d36aa01-5b4f-3c21-9a94-1653b2f0f6fb"
         ],
         "recall": {
           "recallType": "STANDARD_RECALL"
         },
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -74,8 +87,12 @@
           }
         },
         "sentencedAt": "2023-01-26",
-        "identifier": "affeb429-4ea4-4271-88b7-0d148c16276d",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -89,8 +106,12 @@
           }
         },
         "sentencedAt": "2023-01-26",
-        "identifier": "5d42bf07-8ef3-48bc-a23b-89b3eacbcde8",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -104,10 +125,18 @@
           }
         },
         "sentencedAt": "2023-01-26",
-        "identifier": "bba3fc03-6c8d-448a-82fd-168b8fe9094c",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {}
-  }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params"
 }

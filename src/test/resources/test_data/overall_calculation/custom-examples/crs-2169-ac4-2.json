@@ -18,7 +18,14 @@
         },
         "sentencedAt": "2024-10-25",
         "identifier": "0549ff5e-93b1-3f22-8095-a97ab6c60f4b",
-        "hasAnSDSEarlyReleaseExclusion": "SEXUAL_T3"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [
+            "SEXUAL_T3"
+          ],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -32,13 +39,23 @@
           }
         },
         "sentencedAt": "2024-10-25",
-        "identifier": "e331720c-7758-4747-9406-b8f124f0efcc",
         "consecutiveSentenceUUIDs": [
           "0549ff5e-93b1-3f22-8095-a97ab6c60f4b"
         ],
-        "hasAnSDSEarlyReleaseExclusion": "SEXUAL_T3"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [
+            "SEXUAL_T3"
+          ],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {}
-  }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params"
 }

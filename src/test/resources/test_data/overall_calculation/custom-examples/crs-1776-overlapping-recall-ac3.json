@@ -17,12 +17,16 @@
           }
         },
         "sentencedAt": "2024-02-20",
-        "identifier": "b9901ddc-0ff2-4c65-be3c-db3cfe543e14",
         "recall": {
           "recallType": "FIXED_TERM_RECALL_14",
           "returnToCustodyDate": "2024-05-20"
         },
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -36,15 +40,33 @@
           }
         },
         "sentencedAt": "2024-03-28",
-        "identifier": "82bfc426-adac-4968-9f63-22b4b8bae97b",
         "recall": {
           "recallType": "FIXED_TERM_RECALL_14",
           "returnToCustodyDate": "2024-05-20"
         },
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
+      "RECALL_REMAND": [
+        {
+          "appliesToSentencesFrom": "2024-02-20",
+          "numberOfDays": 17,
+          "fromDate": "2024-02-03",
+          "toDate": "2024-02-19"
+        },
+        {
+          "appliesToSentencesFrom": "2024-02-20",
+          "numberOfDays": 116,
+          "fromDate": "2023-05-06",
+          "toDate": "2023-08-29"
+        }
+      ],
       "UNLAWFULLY_AT_LARGE": [
         {
           "appliesToSentencesFrom": "2024-05-01",
@@ -64,23 +86,12 @@
           "fromDate": "2024-05-18",
           "toDate": "2024-05-19"
         }
-      ],
-      "RECALL_REMAND": [
-        {
-          "appliesToSentencesFrom": "2024-02-20",
-          "numberOfDays": 17,
-          "fromDate": "2024-02-03",
-          "toDate": "2024-02-19"
-        },
-        {
-          "appliesToSentencesFrom": "2024-02-20",
-          "numberOfDays": 116,
-          "fromDate": "2023-05-06",
-          "toDate": "2023-08-29"
-        }
       ]
     },
     "returnToCustodyDate": "2024-05-20"
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-50"
 }

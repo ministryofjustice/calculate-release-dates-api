@@ -41,7 +41,6 @@
         },
         "automaticRelease": true,
         "sentencedAt": "2013-01-04",
-        "identifier": "04e12765-5040-484c-ae53-3b183e5a688f",
         "consecutiveSentenceUUIDs": [
           "e40f48b6-92df-49d0-af99-507194c380fa"
         ]
@@ -57,6 +56,9 @@
         }
       ]
     }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-50"
 }

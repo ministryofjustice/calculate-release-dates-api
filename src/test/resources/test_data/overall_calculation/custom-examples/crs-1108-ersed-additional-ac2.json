@@ -16,8 +16,12 @@
           }
         },
         "sentencedAt": "2021-08-24",
-        "identifier": "2a8d7bae-8e19-4fc3-a686-ea805c702ce8",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {

@@ -16,8 +16,12 @@
           }
         },
         "sentencedAt": "2022-03-20",
-        "identifier": "9099d84c-e513-46e8-a212-fd43cc5b7c35",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "AFineSentence",
@@ -30,19 +34,10 @@
           }
         },
         "sentencedAt": "2022-10-01",
-        "identifier": "89e6e4e5-6e3c-4971-8e67-0f4c268a03a2",
         "fineAmount": 3E+3
       }
     ],
     "adjustments": {
-      "ADDITIONAL_DAYS_AWARDED": [
-        {
-          "appliesToSentencesFrom": "2022-05-18",
-          "numberOfDays": 5,
-          "fromDate": "2022-05-18",
-          "toDate": "2022-05-22"
-        }
-      ],
       "REMAND": [
         {
           "appliesToSentencesFrom": "2022-03-20",
@@ -50,8 +45,19 @@
           "fromDate": "2022-02-18",
           "toDate": "2022-03-19"
         }
+      ],
+      "ADDITIONAL_DAYS_AWARDED": [
+        {
+          "appliesToSentencesFrom": "2022-05-18",
+          "numberOfDays": 5,
+          "fromDate": "2022-05-18",
+          "toDate": "2022-05-22"
+        }
       ]
     }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-50"
 }

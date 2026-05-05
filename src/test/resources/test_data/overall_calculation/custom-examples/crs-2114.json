@@ -6,6 +6,7 @@
     },
     "sentences": [
       {
+        "type": "StandardSentence",
         "offence": {
           "committedAt": "2018-11-03",
           "offenceCode": "FI68059C"
@@ -19,9 +20,16 @@
         "sentencedAt": "2021-12-02",
         "recall": {
           "recallType": "STANDARD_RECALL"
+        },
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
         }
       },
       {
+        "type": "StandardSentence",
         "offence": {
           "committedAt": "2023-04-29",
           "offenceCode": "MD71230"
@@ -32,9 +40,16 @@
           }
         },
         "sentencedAt": "2023-06-06",
-        "identifier": "de073f94-c485-3801-b877-742a92707ef0"
+        "identifier": "de073f94-c485-3801-b877-742a92707ef0",
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
+        "type": "StandardSentence",
         "offence": {
           "committedAt": "2023-04-29",
           "offenceCode": "RT88333"
@@ -47,9 +62,16 @@
         "sentencedAt": "2023-06-06",
         "consecutiveSentenceUUIDs": [
           "de073f94-c485-3801-b877-742a92707ef0"
-        ]
+        ],
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
+        "type": "StandardSentence",
         "offence": {
           "committedAt": "2023-04-29",
           "offenceCode": "PC02021"
@@ -59,16 +81,20 @@
             "MONTHS": 4
           }
         },
-        "sentencedAt": "2023-06-06"
+        "sentencedAt": "2023-06-06",
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
-      "REMAND": [
+      "RECALL_TAGGED_BAIL": [
         {
-          "appliesToSentencesFrom": "2023-06-06",
-          "numberOfDays": 1,
-          "fromDate": "2023-05-01",
-          "toDate": "2023-05-01"
+          "appliesToSentencesFrom": "2021-12-02",
+          "numberOfDays": 88
         }
       ],
       "RECALL_REMAND": [
@@ -81,12 +107,18 @@
           "numberOfDays": 13
         }
       ],
-      "RECALL_TAGGED_BAIL": [
+      "REMAND": [
         {
-          "appliesToSentencesFrom": "2021-12-02",
-          "numberOfDays": 88
+          "appliesToSentencesFrom": "2023-06-06",
+          "numberOfDays": 1,
+          "fromDate": "2023-05-01",
+          "toDate": "2023-05-01"
         }
       ]
     }
-  }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params"
 }

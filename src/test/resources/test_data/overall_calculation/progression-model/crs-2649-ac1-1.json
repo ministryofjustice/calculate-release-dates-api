@@ -16,11 +16,18 @@
           }
         },
         "sentencedAt": "2026-08-28",
-        "hasAnSDSEarlyReleaseExclusion": "NO",
-        "section250": true
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": true
+        }
       }
     ],
     "adjustments": {}
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-progression-model"
 }
