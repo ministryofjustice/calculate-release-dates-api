@@ -6,6 +6,7 @@
     },
     "sentences": [
       {
+        "type": "StandardSentence",
         "offence": {
           "committedAt": "2023-06-28",
           "offenceCode": "MD71170"
@@ -16,9 +17,16 @@
             "MONTHS": 8
           }
         },
-        "sentencedAt": "2024-04-26"
+        "sentencedAt": "2024-04-26",
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
+        "type": "StandardSentence",
         "offence": {
           "committedAt": "2023-06-26",
           "offenceCode": "ID10001"
@@ -28,24 +36,30 @@
             "MONTHS": 4
           }
         },
-        "sentencedAt": "2024-04-26"
+        "sentencedAt": "2024-04-26",
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
-      "REMAND": [
-        {
-          "appliesToSentencesFrom": "2024-04-26",
-          "numberOfDays": 303,
-          "fromDate": "2023-06-28",
-          "toDate": "2024-04-25"
-        }
-      ],
       "UNLAWFULLY_AT_LARGE": [
         {
           "appliesToSentencesFrom": "2024-09-06",
           "numberOfDays": 8,
           "fromDate": "2024-09-06",
           "toDate": "2024-09-13"
+        }
+      ],
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2024-04-26",
+          "numberOfDays": 303,
+          "fromDate": "2023-06-28",
+          "toDate": "2024-04-25"
         }
       ]
     },
@@ -68,8 +82,8 @@
     ]
   },
   "userInputs": {
-    "useOffenceIndicators": true,
-    "calculateErsed": true
+    "calculateErsed": true,
+    "useOffenceIndicators": true
   },
   "params": "calculation-params"
 }

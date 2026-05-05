@@ -6,6 +6,7 @@
     },
     "sentences": [
       {
+        "type": "StandardSentence",
         "offence": {
           "committedAt": "2005-05-27",
           "offenceCode": "FI68068"
@@ -18,9 +19,16 @@
         "sentencedAt": "2005-12-21",
         "recall": {
           "recallType": "STANDARD_RECALL"
+        },
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
         }
       },
       {
+        "type": "StandardSentence",
         "offence": {
           "committedAt": "2005-02-01",
           "offenceCode": "CE79028"
@@ -33,30 +41,40 @@
         "sentencedAt": "2005-12-21",
         "recall": {
           "recallType": "STANDARD_RECALL"
+        },
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
         }
       }
-        ],
-        "adjustments": {
-          "RECALL_REMAND": [
-            {
-              "appliesToSentencesFrom": "2005-12-21",
-              "numberOfDays": 208
-            }
-          ],
-          "UNLAWFULLY_AT_LARGE": [
-            {
-              "appliesToSentencesFrom": "2013-06-26",
-              "numberOfDays": 1100,
-              "fromDate": "2013-06-26",
-              "toDate": "2016-06-29"
-            },
-            {
-              "appliesToSentencesFrom": "2024-08-08",
-              "numberOfDays": 2,
-              "fromDate": "2024-08-08",
-              "toDate": "2024-08-09"
-            }
-          ]
+    ],
+    "adjustments": {
+      "UNLAWFULLY_AT_LARGE": [
+        {
+          "appliesToSentencesFrom": "2013-06-26",
+          "numberOfDays": 1100,
+          "fromDate": "2013-06-26",
+          "toDate": "2016-06-29"
+        },
+        {
+          "appliesToSentencesFrom": "2024-08-08",
+          "numberOfDays": 2,
+          "fromDate": "2024-08-08",
+          "toDate": "2024-08-09"
         }
-      }
+      ],
+      "RECALL_REMAND": [
+        {
+          "appliesToSentencesFrom": "2005-12-21",
+          "numberOfDays": 208
+        }
+      ]
     }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params"
+}

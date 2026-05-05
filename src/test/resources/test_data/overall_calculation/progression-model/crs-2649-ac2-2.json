@@ -16,9 +16,15 @@
           }
         },
         "sentencedAt": "2025-03-26",
-        "hasAnSDSEarlyReleaseExclusion": "SEXUAL",
-        "section250": true,
-        "identifier": "d211f333-aa1a-3e25-ac8d-0459c1f98868"
+        "identifier": "d211f333-aa1a-3e25-ac8d-0459c1f98868",
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [
+            "SEXUAL"
+          ],
+          "isSection250": true
+        }
       },
       {
         "type": "StandardSentence",
@@ -31,15 +37,21 @@
           }
         },
         "sentencedAt": "2025-03-26",
-        "hasAnSDSEarlyReleaseExclusion": "NO",
-        "section250": true,
-        "identifier": "023e388e-1673-3bbc-9f13-1b1d915f3b73",
         "consecutiveSentenceUUIDs": [
           "d211f333-aa1a-3e25-ac8d-0459c1f98868"
-        ]
+        ],
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": true
+        }
       }
     ],
     "adjustments": {}
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-progression-model"
 }

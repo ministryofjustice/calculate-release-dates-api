@@ -18,9 +18,12 @@
         },
         "sentencedAt": "2023-07-07",
         "identifier": "c1de11aa-e45f-3f76-ac92-83a08b759c72",
-        "caseSequence": 1,
-        "lineSequence": 1,
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -34,16 +37,21 @@
           }
         },
         "sentencedAt": "2023-07-07",
-        "identifier": "644ecbf5-56ac-33e0-9905-591708da91da",
         "consecutiveSentenceUUIDs": [
           "c1de11aa-e45f-3f76-ac92-83a08b759c72"
         ],
-        "caseSequence": 1,
-        "lineSequence": 2,
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
-    "adjustments": {},
-    "bookingId": 1223129
-  }
+    "adjustments": {}
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params"
 }

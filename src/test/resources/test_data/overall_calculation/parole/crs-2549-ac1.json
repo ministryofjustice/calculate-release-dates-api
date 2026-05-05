@@ -21,9 +21,7 @@
             "YEARS": 1
           }
         },
-        "sentencedAt": "2023-05-05",
-        "identifier": "cce245c0-a952-390c-9f37-e0f887eca15e",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "sentencedAt": "2023-05-05"
       },
       {
         "type": "StandardSentence",
@@ -37,9 +35,20 @@
           }
         },
         "sentencedAt": "2023-11-20",
-        "identifier": "cce245c0-a952-390c-9f37-e0f887eca15f",
-        "hasAnSDSEarlyReleaseExclusion": "SEXUAL"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [
+            "SEXUAL"
+          ],
+          "isSection250": false
+        }
       }
-    ]
-  }
+    ],
+    "adjustments": {}
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params"
 }

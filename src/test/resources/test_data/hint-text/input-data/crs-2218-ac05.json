@@ -42,7 +42,12 @@
         "identifier": "22386d4e-cdab-3aab-9b10-73160ec9655a",
         "caseSequence": 1,
         "lineSequence": 2,
-        "hasAnSDSEarlyReleaseExclusion": "VIOLENT"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": ["VIOLENT"],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {},

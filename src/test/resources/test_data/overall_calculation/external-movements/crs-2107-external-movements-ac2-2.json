@@ -17,8 +17,12 @@
           }
         },
         "sentencedAt": "2024-05-18",
-        "identifier": "f3f33a7f-9d6f-3382-8bd4-7e1abefce2cf",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -33,7 +37,12 @@
         },
         "sentencedAt": "2024-08-25",
         "identifier": "a76a4b3d-1c07-3684-b839-a2616c87ae34",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -51,7 +60,12 @@
         "consecutiveSentenceUUIDs": [
           "a76a4b3d-1c07-3684-b839-a2616c87ae34"
         ],
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -65,11 +79,15 @@
           }
         },
         "sentencedAt": "2024-08-25",
-        "identifier": "a31d5d02-611f-43b0-8b1a-4b1edc955e7e",
         "consecutiveSentenceUUIDs": [
           "b71e09b6-3728-3b80-8e86-b1c40d52c812"
         ],
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -83,8 +101,14 @@
           }
         },
         "sentencedAt": "2024-11-14",
-        "identifier": "d84a2c6a-e11c-3f2c-885e-ca04b55451e5",
-        "hasAnSDSEarlyReleaseExclusion": "SEXUAL"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [
+            "SEXUAL"
+          ],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
@@ -116,5 +140,9 @@
         "direction": "OUT"
       }
     ]
-  }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params"
 }

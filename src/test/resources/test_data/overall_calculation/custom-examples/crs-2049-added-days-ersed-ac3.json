@@ -16,17 +16,15 @@
           }
         },
         "sentencedAt": "2024-11-07",
-        "identifier": "3bfc5a03-8863-4884-8947-632e2dbe3b92",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
-      "ADDITIONAL_DAYS_AWARDED": [
-        {
-          "appliesToSentencesFrom": "2024-10-07",
-          "numberOfDays": 20
-        }
-      ],
       "REMAND": [
         {
           "appliesToSentencesFrom": "2024-11-07",
@@ -34,11 +32,18 @@
           "fromDate": "2024-07-02",
           "toDate": "2024-11-06"
         }
+      ],
+      "ADDITIONAL_DAYS_AWARDED": [
+        {
+          "appliesToSentencesFrom": "2024-10-07",
+          "numberOfDays": 20
+        }
       ]
     }
   },
   "userInputs": {
     "calculateErsed": true,
     "useOffenceIndicators": true
-  }
+  },
+  "params": "calculation-params"
 }

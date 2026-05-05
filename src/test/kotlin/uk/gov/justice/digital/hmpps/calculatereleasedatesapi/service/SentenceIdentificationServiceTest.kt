@@ -13,6 +13,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Senten
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource.JsonTransformation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.sentence.SentenceIdentificationService
@@ -226,14 +227,14 @@ class SentenceIdentificationServiceTest {
     "false,false,SEXUAL,SDS",
     "true,false,VIOLENT,SDS",
     "false,false,VIOLENT,SDS",
-    "false,true,NO,SDS_PLUS",
+    "false,true,,SDS_PLUS",
     "false,true,SEXUAL,SDS_PLUS",
     "false,true,VIOLENT,SDS_PLUS",
   )
   fun `Identify SDS early release correctly`(
     beforeCjaLaspo: Boolean,
     sdsPlus: Boolean,
-    exclusion: SDSEarlyReleaseExclusionType,
+    exclusion: SDSEarlyReleaseExclusionType?,
     expected: SentenceIdentificationTrack,
   ) {
     val (offenceDate, sentenceDate) = if (beforeCjaLaspo) {
@@ -245,8 +246,12 @@ class SentenceIdentificationServiceTest {
       Offence(offenceDate),
       Duration(mutableMapOf(DAYS to 0L, WEEKS to 0L, MONTHS to 0L, YEARS to 5L)),
       sentenceDate,
-      isSDSPlus = sdsPlus,
-      hasAnSDSEarlyReleaseExclusion = exclusion,
+      releaseArrangements = SDSReleaseArrangements(
+        isSDSPlus = sdsPlus,
+        isSDSPlusEligibleSentenceTypeLengthAndOffence = sdsPlus,
+        isSection250 = false,
+        sdsEarlyReleaseExclusions = listOfNotNull(exclusion),
+      ),
     )
     sentenceIdentificationService.identify(
       sentence,

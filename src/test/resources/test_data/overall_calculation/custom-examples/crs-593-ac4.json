@@ -16,8 +16,12 @@
           }
         },
         "sentencedAt": "2021-03-17",
-        "identifier": "b51ea0f8-acd5-482f-b843-153bbc23877b",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -30,23 +34,21 @@
           }
         },
         "sentencedAt": "2021-03-17",
-        "identifier": "d4cbac2c-5297-4b45-95ed-41f652d4d5f3",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
-      "RESTORATION_OF_ADDITIONAL_DAYS_AWARDED": [
+      "REMAND": [
         {
-          "appliesToSentencesFrom": "2021-02-26",
-          "numberOfDays": 3,
-          "fromDate": "2021-02-26",
-          "toDate": "2021-02-28"
-        },
-        {
-          "appliesToSentencesFrom": "2021-05-17",
-          "numberOfDays": 10,
-          "fromDate": "2021-05-17",
-          "toDate": "2021-05-26"
+          "appliesToSentencesFrom": "2021-03-17",
+          "numberOfDays": 44,
+          "fromDate": "2021-02-01",
+          "toDate": "2021-03-16"
         }
       ],
       "ADDITIONAL_DAYS_AWARDED": [
@@ -63,15 +65,24 @@
           "toDate": "2021-03-23"
         }
       ],
-      "REMAND": [
+      "RESTORATION_OF_ADDITIONAL_DAYS_AWARDED": [
         {
-          "appliesToSentencesFrom": "2021-03-17",
-          "numberOfDays": 44,
-          "fromDate": "2021-02-01",
-          "toDate": "2021-03-16"
+          "appliesToSentencesFrom": "2021-02-26",
+          "numberOfDays": 3,
+          "fromDate": "2021-02-26",
+          "toDate": "2021-02-28"
+        },
+        {
+          "appliesToSentencesFrom": "2021-05-17",
+          "numberOfDays": 10,
+          "fromDate": "2021-05-17",
+          "toDate": "2021-05-26"
         }
       ]
     }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-50"
 }

@@ -17,7 +17,12 @@
         },
         "sentencedAt": "2020-09-20",
         "identifier": "70b10e6a-a5b2-43e7-a5db-3694d75bedec",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -30,28 +35,18 @@
           }
         },
         "sentencedAt": "2021-07-15",
-        "identifier": "0613cc96-c50e-4975-b5f4-29d75dbc5b7c",
         "consecutiveSentenceUUIDs": [
           "70b10e6a-a5b2-43e7-a5db-3694d75bedec"
         ],
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
-      "RESTORATION_OF_ADDITIONAL_DAYS_AWARDED": [
-        {
-          "appliesToSentencesFrom": "2020-11-23",
-          "numberOfDays": 4,
-          "fromDate": "2020-11-23",
-          "toDate": "2020-11-26"
-        },
-        {
-          "appliesToSentencesFrom": "2022-03-05",
-          "numberOfDays": 11,
-          "fromDate": "2022-03-05",
-          "toDate": "2022-03-15"
-        }
-      ],
       "ADDITIONAL_DAYS_AWARDED": [
         {
           "appliesToSentencesFrom": "2020-10-14",
@@ -65,8 +60,25 @@
           "fromDate": "2022-01-18",
           "toDate": "2022-01-25"
         }
+      ],
+      "RESTORATION_OF_ADDITIONAL_DAYS_AWARDED": [
+        {
+          "appliesToSentencesFrom": "2020-11-23",
+          "numberOfDays": 4,
+          "fromDate": "2020-11-23",
+          "toDate": "2020-11-26"
+        },
+        {
+          "appliesToSentencesFrom": "2022-03-05",
+          "numberOfDays": 11,
+          "fromDate": "2022-03-05",
+          "toDate": "2022-03-15"
+        }
       ]
     }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-50"
 }

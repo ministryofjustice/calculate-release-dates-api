@@ -39,13 +39,15 @@
           }
         },
         "sentencedAt": "2022-07-29",
-        "identifier": "1d6ac5a7-4027-4630-80a5-705a84fc0446",
         "consecutiveSentenceUUIDs": [
           "58db00dc-ee5e-310b-b586-a8db41558557"
         ]
       }
     ],
     "adjustments": {}
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-50"
 }

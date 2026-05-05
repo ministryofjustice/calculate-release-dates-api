@@ -6,6 +6,7 @@
     },
     "sentences": [
       {
+        "type": "StandardSentence",
         "offence": {
           "committedAt": "2021-10-06",
           "offenceCode": "OF61102"
@@ -16,9 +17,16 @@
           }
         },
         "sentencedAt": "2021-12-09",
-        "identifier": "4f33b065-a40e-3d2e-ac0d-57b0785c0043"
+        "identifier": "4f33b065-a40e-3d2e-ac0d-57b0785c0043",
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
+        "type": "StandardSentence",
         "offence": {
           "committedAt": "2021-10-07",
           "offenceCode": "OF61102"
@@ -28,9 +36,16 @@
             "MONTHS": 9
           }
         },
-        "sentencedAt": "2021-12-09"
+        "sentencedAt": "2021-12-09",
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
+        "type": "StandardSentence",
         "offence": {
           "committedAt": "2021-10-08",
           "offenceCode": "PH97012"
@@ -41,9 +56,17 @@
           }
         },
         "sentencedAt": "2021-12-09",
-        "hasAnSDSEarlyReleaseExclusion": "DOMESTIC_ABUSE"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [
+            "DOMESTIC_ABUSE"
+          ],
+          "isSection250": false
+        }
       },
       {
+        "type": "StandardSentence",
         "offence": {
           "committedAt": "2021-10-06",
           "offenceCode": "CD71047"
@@ -53,9 +76,16 @@
             "MONTHS": 1
           }
         },
-        "sentencedAt": "2021-12-09"
+        "sentencedAt": "2021-12-09",
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
+        "type": "StandardSentence",
         "offence": {
           "committedAt": "2021-10-06",
           "offenceCode": "CJ88116"
@@ -65,7 +95,13 @@
             "MONTHS": 3
           }
         },
-        "sentencedAt": "2021-12-09"
+        "sentencedAt": "2021-12-09",
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "ExtendedDeterminateSentence",
@@ -90,28 +126,6 @@
       }
     ],
     "adjustments": {
-      "RESTORATION_OF_ADDITIONAL_DAYS_AWARDED": [
-        {
-          "appliesToSentencesFrom": "2022-08-19",
-          "numberOfDays": 8,
-          "fromDate": "2022-08-19",
-          "toDate": "2022-08-27"
-        }
-      ],
-      "ADDITIONAL_DAYS_AWARDED": [
-        {
-          "appliesToSentencesFrom": "2022-08-09",
-          "numberOfDays": 16,
-          "fromDate": "2022-08-09",
-          "toDate": "2022-08-24"
-        }
-      ],
-      "TAGGED_BAIL": [
-        {
-          "appliesToSentencesFrom": "2021-12-09",
-          "numberOfDays": 62
-        }
-      ],
       "REMAND": [
         {
           "appliesToSentencesFrom": "2021-12-09",
@@ -130,6 +144,28 @@
           "numberOfDays": 34,
           "fromDate": "2021-11-05",
           "toDate": "2021-12-08"
+        }
+      ],
+      "TAGGED_BAIL": [
+        {
+          "appliesToSentencesFrom": "2021-12-09",
+          "numberOfDays": 62
+        }
+      ],
+      "ADDITIONAL_DAYS_AWARDED": [
+        {
+          "appliesToSentencesFrom": "2022-08-09",
+          "numberOfDays": 16,
+          "fromDate": "2022-08-09",
+          "toDate": "2022-08-24"
+        }
+      ],
+      "RESTORATION_OF_ADDITIONAL_DAYS_AWARDED": [
+        {
+          "appliesToSentencesFrom": "2022-08-19",
+          "numberOfDays": 8,
+          "fromDate": "2022-08-19",
+          "toDate": "2022-08-27"
         }
       ]
     },

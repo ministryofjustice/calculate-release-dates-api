@@ -17,8 +17,12 @@
           }
         },
         "sentencedAt": "2024-12-20",
-        "identifier": "9d2d486d-4a7d-4bb7-8e34-9e4ef59af237",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -33,7 +37,12 @@
         },
         "sentencedAt": "2025-05-28",
         "identifier": "cb304745-d781-47d3-b931-4baa31551fc5",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -47,22 +56,18 @@
           }
         },
         "sentencedAt": "2025-06-03",
-        "identifier": "5752c983-3811-4f4e-ab09-606fb3a05ffb",
         "consecutiveSentenceUUIDs": [
           "cb304745-d781-47d3-b931-4baa31551fc5"
         ],
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
-      "ADDITIONAL_DAYS_AWARDED": [
-        {
-          "appliesToSentencesFrom": "2025-06-05",
-          "numberOfDays": 20,
-          "fromDate": "2025-06-05",
-          "toDate": "2025-06-24"
-        }
-      ],
       "REMAND": [
         {
           "appliesToSentencesFrom": "2024-12-20",
@@ -70,7 +75,19 @@
           "fromDate": "2024-08-22",
           "toDate": "2024-12-19"
         }
+      ],
+      "ADDITIONAL_DAYS_AWARDED": [
+        {
+          "appliesToSentencesFrom": "2025-06-05",
+          "numberOfDays": 20,
+          "fromDate": "2025-06-05",
+          "toDate": "2025-06-24"
+        }
       ]
     }
-  }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params"
 }

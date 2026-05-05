@@ -16,8 +16,7 @@
             "WEEKS": 16
           }
         },
-        "sentencedAt": "2023-11-17",
-        "identifier": "b48769ab-0581-4cf0-a53e-db6558866532"
+        "sentencedAt": "2023-11-17"
       },
       {
         "type": "DetentionAndTrainingOrderSentence",
@@ -65,7 +64,6 @@
           }
         },
         "sentencedAt": "2023-11-17",
-        "identifier": "4b46343f-ada3-4e31-864b-4006e513d20e",
         "consecutiveSentenceUUIDs": [
           "3d7f58e0-2352-34d6-8b18-a2e7eec98aac"
         ]
@@ -96,19 +94,15 @@
           }
         },
         "sentencedAt": "2024-06-21",
-        "identifier": "98393aa2-82a6-46d9-8ac4-cddbe3ad231e",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
-      "ADDITIONAL_DAYS_AWARDED": [
-        {
-          "appliesToSentencesFrom": "2024-10-09",
-          "numberOfDays": 25,
-          "fromDate": "2024-10-09",
-          "toDate": "2024-11-02"
-        }
-      ],
       "REMAND": [
         {
           "appliesToSentencesFrom": "2023-11-17",
@@ -122,7 +116,19 @@
           "fromDate": "2023-11-03",
           "toDate": "2023-11-16"
         }
+      ],
+      "ADDITIONAL_DAYS_AWARDED": [
+        {
+          "appliesToSentencesFrom": "2024-10-09",
+          "numberOfDays": 25,
+          "fromDate": "2024-10-09",
+          "toDate": "2024-11-02"
+        }
       ]
     }
-  }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params"
 }

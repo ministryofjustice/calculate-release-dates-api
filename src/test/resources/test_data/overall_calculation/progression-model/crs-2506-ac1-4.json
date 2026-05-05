@@ -9,39 +9,48 @@
       {
         "type": "StandardSentence",
         "offence": {
-          "committedAt": "2026-11-20",
-          "code": "FI68035"
+          "committedAt": "2026-11-20"
         },
         "duration": {
           "durationElements": {
             "YEARS": 3
           }
         },
-        "section250": true,
-        "identifier": "cb304745-d781-47d3-b931-4baa31551fc5",
         "sentencedAt": "2026-11-20",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "identifier": "cb304745-d781-47d3-b931-4baa31551fc5",
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": true
+        }
       },
       {
         "type": "StandardSentence",
         "offence": {
-          "committedAt": "2027-03-05",
-          "code": "COML022"
+          "committedAt": "2027-03-05"
         },
         "duration": {
           "durationElements": {
             "YEARS": 2
           }
         },
-        "identifier": "493019e8-36ba-442d-90d6-315ead9dcf51",
+        "sentencedAt": "2027-03-05",
         "consecutiveSentenceUUIDs": [
           "cb304745-d781-47d3-b931-4baa31551fc5"
         ],
-        "sentencedAt": "2027-03-05",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {}
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-progression-model"
 }

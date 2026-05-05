@@ -15,8 +15,7 @@
             "MONTHS": 18
           }
         },
-        "sentencedAt": "2022-03-18",
-        "identifier": "10e25a89-0631-4362-8a75-48fb79bb75e7"
+        "sentencedAt": "2022-03-18"
       },
       {
         "type": "StandardSentence",
@@ -29,11 +28,18 @@
           }
         },
         "sentencedAt": "2022-03-18",
-        "identifier": "3aca453c-ef94-4871-a363-ce85e651a063",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {}
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-50"
 }

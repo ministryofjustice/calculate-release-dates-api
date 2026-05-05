@@ -16,12 +16,16 @@
           }
         },
         "sentencedAt": "2021-02-12",
-        "identifier": "57207ad0-5d25-46f7-97e1-fca41cd5f302",
         "recall": {
           "recallType": "FIXED_TERM_RECALL_28",
           "returnToCustodyDate": "2022-02-03"
         },
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -34,12 +38,16 @@
           }
         },
         "sentencedAt": "2021-02-12",
-        "identifier": "09cdb05f-269b-4e36-8bb5-dc7cb7bf373e",
         "recall": {
           "recallType": "FIXED_TERM_RECALL_28",
           "returnToCustodyDate": "2022-02-03"
         },
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
@@ -53,6 +61,9 @@
       ]
     },
     "returnToCustodyDate": "2022-02-03"
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-50"
 }

@@ -17,8 +17,13 @@
           }
         },
         "sentencedAt": "2025-12-15",
-        "hasAnSDSEarlyReleaseExclusion": "NO",
-        "identifier": "d211f333-aa1a-3e25-ac8d-0459c1f98868"
+        "identifier": "d211f333-aa1a-3e25-ac8d-0459c1f98868",
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -32,11 +37,16 @@
           }
         },
         "sentencedAt": "2025-12-15",
-        "hasAnSDSEarlyReleaseExclusion": "NO",
         "identifier": "023e388e-1673-3bbc-9f13-1b1d915f3b73",
         "consecutiveSentenceUUIDs": [
           "d211f333-aa1a-3e25-ac8d-0459c1f98868"
-        ]
+        ],
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -50,14 +60,21 @@
           }
         },
         "sentencedAt": "2026-09-15",
-        "hasAnSDSEarlyReleaseExclusion": "NO",
-        "identifier": "6a9c4c95-e6ce-3065-accd-07ce90d39ba0",
         "consecutiveSentenceUUIDs": [
           "023e388e-1673-3bbc-9f13-1b1d915f3b73"
-        ]
+        ],
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {}
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-progression-model"
 }

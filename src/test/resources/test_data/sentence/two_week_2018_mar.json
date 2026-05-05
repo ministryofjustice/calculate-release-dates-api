@@ -7,5 +7,11 @@
       "WEEKS": 2
     }
   },
-  "sentencedAt": "2018-03-09"
+  "sentencedAt": "2018-03-09",
+  "releaseArrangements": {
+    "isSDSPlus": false,
+    "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+    "sdsEarlyReleaseExclusions": [],
+    "isSection250": false
+  }
 }

@@ -16,8 +16,12 @@
           }
         },
         "sentencedAt": "2021-05-01",
-        "identifier": "1ef84829-bce7-4020-9dcb-493b772f08e4",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -30,31 +34,21 @@
           }
         },
         "sentencedAt": "2021-07-29",
-        "identifier": "cf779aa3-aa3f-4190-9009-9d99dee390d7",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
-      "RESTORATION_OF_ADDITIONAL_DAYS_AWARDED": [
+      "UNLAWFULLY_AT_LARGE": [
         {
-          "appliesToSentencesFrom": "2021-06-22",
-          "numberOfDays": 7,
-          "fromDate": "2021-06-22",
-          "toDate": "2021-06-28"
-        }
-      ],
-      "ADDITIONAL_DAYS_AWARDED": [
-        {
-          "appliesToSentencesFrom": "2021-05-30",
-          "numberOfDays": 37,
-          "fromDate": "2021-05-30",
-          "toDate": "2021-06-28"
-        }
-      ],
-      "TAGGED_BAIL": [
-        {
-          "appliesToSentencesFrom": "2021-05-01",
-          "numberOfDays": 5
+          "appliesToSentencesFrom": "2021-05-03",
+          "numberOfDays": 45,
+          "fromDate": "2021-05-03",
+          "toDate": "2021-05-22"
         }
       ],
       "REMAND": [
@@ -65,15 +59,32 @@
           "toDate": "2021-04-30"
         }
       ],
-      "UNLAWFULLY_AT_LARGE": [
+      "TAGGED_BAIL": [
         {
-          "appliesToSentencesFrom": "2021-05-03",
-          "numberOfDays": 45,
-          "fromDate": "2021-05-03",
-          "toDate": "2021-05-22"
+          "appliesToSentencesFrom": "2021-05-01",
+          "numberOfDays": 5
+        }
+      ],
+      "ADDITIONAL_DAYS_AWARDED": [
+        {
+          "appliesToSentencesFrom": "2021-05-30",
+          "numberOfDays": 37,
+          "fromDate": "2021-05-30",
+          "toDate": "2021-06-28"
+        }
+      ],
+      "RESTORATION_OF_ADDITIONAL_DAYS_AWARDED": [
+        {
+          "appliesToSentencesFrom": "2021-06-22",
+          "numberOfDays": 7,
+          "fromDate": "2021-06-22",
+          "toDate": "2021-06-28"
         }
       ]
     }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-50"
 }

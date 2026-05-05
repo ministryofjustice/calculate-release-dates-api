@@ -97,7 +97,7 @@ class ConsecutiveSentence(val orderedSentences: List<AbstractSentence>) : Calcul
 
   fun isMadeUpOfOnlyAfterCjaLaspoSentences(): Boolean = hasAfterCjaLaspo() && !hasBeforeCjaLaspo()
 
-  fun isMadeUpOfOnlySdsPlusSentences(): Boolean = orderedSentences.all { it is StandardDeterminateSentence && it.isSDSPlus }
+  fun isMadeUpOfOnlySdsPlusSentences(): Boolean = orderedSentences.all { it is StandardDeterminateSentence && it.releaseArrangements.isSDSPlus }
 
   fun hasDiscretionaryRelease(): Boolean = orderedSentences.any { it is ExtendedDeterminateSentence && !it.automaticRelease }
 

@@ -15,11 +15,13 @@
             "MONTHS": 18
           }
         },
-        "sentencedAt": "2021-05-23",
-        "identifier": "8e103934-90a8-498c-a091-33a45515a2f9"
+        "sentencedAt": "2021-05-23"
       }
     ],
     "adjustments": {}
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-50"
 }

@@ -49,7 +49,7 @@ class SHPOContaingSx03OffencesValidator(private val trancheConfiguration: SDS40T
    */
   private fun filterSXOffences(sentence: CalculableSentence): Boolean = sentence.sentenceParts().any {
     it is StandardDeterminateSentence &&
-      !it.isSDSPlus &&
+      !it.releaseArrangements.isSDSPlus &&
       shpoSX03OffenceCodes.contains(it.offence.offenceCode) &&
       (it.offence.committedAt?.isAfterOrEqualTo(SHPO_BREACH_OFFENCE_FROM_DATE) == true && it.offence.committedAt.isBeforeOrEqualTo(trancheConfiguration.trancheThreeCommencementDate))
   }

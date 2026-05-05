@@ -7,6 +7,7 @@
     },
     "sentences": [
       {
+        "type": "StandardSentence",
         "offence": {
           "committedAt": "2023-11-18",
           "offenceCode": "SX03245"
@@ -20,9 +21,17 @@
         "recall": {
           "recallType": "STANDARD_RECALL"
         },
-        "hasAnSDSEarlyReleaseExclusion": "SEXUAL"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [
+            "SEXUAL"
+          ],
+          "isSection250": false
+        }
       },
       {
+        "type": "StandardSentence",
         "offence": {
           "committedAt": "2023-07-01",
           "offenceCode": "CJ88001"
@@ -35,38 +44,40 @@
         "sentencedAt": "2024-02-15",
         "recall": {
           "recallType": "STANDARD_RECALL"
+        },
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
         }
       }
-        ],
-        "adjustments": {
-          "RECALL_REMAND": [
-            {
-              "appliesToSentencesFrom": "2024-02-15",
-              "numberOfDays": 87,
-              "fromDate": "2023-11-20",
-              "toDate": "2024-02-14"
-            }
-          ]
-        },
-        "externalMovements": [
-          {
-            "movementDate": "2024-10-17",
-            "movementReason": "CRD",
-            "direction": "OUT"
-          },
-          {
-            "movementDate": "2024-10-22",
-            "movementReason": "RECALL_ADMISSION",
-            "direction": "IN"
-          }
-        ]
-      },
-      "userInputs"
-      :
+    ],
+    "adjustments": {
+      "RECALL_REMAND": [
+        {
+          "appliesToSentencesFrom": "2024-02-15",
+          "numberOfDays": 87,
+          "fromDate": "2023-11-20",
+          "toDate": "2024-02-14"
+        }
+      ]
+    },
+    "externalMovements": [
       {
-        "useOffenceIndicators": true
+        "movementDate": "2024-10-17",
+        "movementReason": "CRD",
+        "direction": "OUT"
       },
-      "params"
-      :
-      "calculation-params"
+      {
+        "movementDate": "2024-10-22",
+        "movementReason": "RECALL_ADMISSION",
+        "direction": "IN"
       }
+    ]
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params"
+}

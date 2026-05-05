@@ -16,8 +16,12 @@
           }
         },
         "sentencedAt": "2021-12-22",
-        "identifier": "40c1f548-af56-4d77-8d20-8501873621f9",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -31,11 +35,15 @@
           }
         },
         "sentencedAt": "2020-01-09",
-        "identifier": "db54fb54-da2d-4f12-a533-0b31b0901681",
         "recall": {
           "recallType": "STANDARD_RECALL"
         },
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -48,17 +56,21 @@
           }
         },
         "sentencedAt": "2022-02-25",
-        "identifier": "3e673832-2430-47b5-b47d-ad27700a8a44",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
-      "RECALL_REMAND": [
+      "UNLAWFULLY_AT_LARGE": [
         {
-          "appliesToSentencesFrom": "2020-01-09",
-          "numberOfDays": 31,
-          "fromDate": "2019-12-09",
-          "toDate": "2020-01-08"
+          "appliesToSentencesFrom": "2021-02-05",
+          "numberOfDays": 2,
+          "fromDate": "2021-02-05",
+          "toDate": "2021-02-06"
         }
       ],
       "TAGGED_BAIL": [
@@ -67,15 +79,18 @@
           "numberOfDays": 2
         }
       ],
-      "UNLAWFULLY_AT_LARGE": [
+      "RECALL_REMAND": [
         {
-          "appliesToSentencesFrom": "2021-02-05",
-          "numberOfDays": 2,
-          "fromDate": "2021-02-05",
-          "toDate": "2021-02-06"
+          "appliesToSentencesFrom": "2020-01-09",
+          "numberOfDays": 31,
+          "fromDate": "2019-12-09",
+          "toDate": "2020-01-08"
         }
       ]
     }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-50"
 }

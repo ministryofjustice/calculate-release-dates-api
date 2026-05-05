@@ -17,8 +17,14 @@
           }
         },
         "sentencedAt": "2022-09-27",
-        "identifier": "b95ac672-8d69-4db8-aa9e-78e1bec3e339",
-        "hasAnSDSEarlyReleaseExclusion": "VIOLENT"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [
+            "VIOLENT"
+          ],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -32,17 +38,19 @@
           }
         },
         "sentencedAt": "2024-09-23",
-        "identifier": "dbbde9bf-7b45-48bb-8ffb-0c3842f5cd65",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
-      "ADDITIONAL_DAYS_AWARDED": [
+      "TAGGED_BAIL": [
         {
-          "appliesToSentencesFrom": "2023-04-27",
-          "numberOfDays": 10,
-          "fromDate": "2023-04-27",
-          "toDate": "2023-05-06"
+          "appliesToSentencesFrom": "2022-09-27",
+          "numberOfDays": 101
         }
       ],
       "UNLAWFULLY_AT_LARGE": [
@@ -53,10 +61,12 @@
           "toDate": "2024-09-22"
         }
       ],
-      "TAGGED_BAIL": [
+      "ADDITIONAL_DAYS_AWARDED": [
         {
-          "appliesToSentencesFrom": "2022-09-27",
-          "numberOfDays": 101
+          "appliesToSentencesFrom": "2023-04-27",
+          "numberOfDays": 10,
+          "fromDate": "2023-04-27",
+          "toDate": "2023-05-06"
         }
       ]
     },
@@ -76,5 +86,6 @@
   "userInputs": {
     "calculateErsed": true,
     "useOffenceIndicators": true
-  }
+  },
+  "params": "calculation-params"
 }

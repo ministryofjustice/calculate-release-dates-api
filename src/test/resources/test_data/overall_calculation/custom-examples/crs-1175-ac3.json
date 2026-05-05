@@ -15,8 +15,7 @@
             "MONTHS": 12
           }
         },
-        "sentencedAt": "2022-07-19",
-        "identifier": "f674166a-1933-4f00-8a3c-6ff7f42b2d37"
+        "sentencedAt": "2022-07-19"
       },
       {
         "type": "ExtendedDeterminateSentence",
@@ -33,8 +32,7 @@
             "YEARS": 4
           }
         },
-        "sentencedAt": "2021-12-10",
-        "identifier": "287c679c-8dde-4aed-ae7b-563090f14a09"
+        "sentencedAt": "2021-12-10"
       }
     ],
     "adjustments": {

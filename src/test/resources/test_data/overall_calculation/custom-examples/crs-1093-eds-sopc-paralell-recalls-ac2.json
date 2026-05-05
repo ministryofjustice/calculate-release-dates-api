@@ -22,7 +22,6 @@
           }
         },
         "sentencedAt": "2014-12-08",
-        "identifier": "533d3fd2-658d-4b06-8020-476d41b904bc",
         "recall": {
           "recallType": "STANDARD_RECALL"
         }
@@ -42,8 +41,7 @@
             "YEARS": 5
           }
         },
-        "sentencedAt": "2022-04-22",
-        "identifier": "50a2068d-e9a2-48f2-9259-88fa5e2c07c8"
+        "sentencedAt": "2022-04-22"
       },
       {
         "type": "StandardSentence",
@@ -56,8 +54,12 @@
           }
         },
         "sentencedAt": "2022-04-22",
-        "identifier": "d4165986-fca7-4561-b6b0-2650a7b27a6b",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {

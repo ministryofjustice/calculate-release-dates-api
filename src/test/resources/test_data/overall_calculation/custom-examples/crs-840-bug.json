@@ -16,21 +16,19 @@
           }
         },
         "sentencedAt": "2019-03-25",
-        "identifier": "3aa363a8-d856-4324-8a60-06f98a2574e3",
         "recall": {
           "recallType": "FIXED_TERM_RECALL_28",
           "returnToCustodyDate": "2022-03-15"
         },
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
-      "RECALL_TAGGED_BAIL": [
-        {
-          "appliesToSentencesFrom": "2019-03-25",
-          "numberOfDays": 121
-        }
-      ],
       "UNLAWFULLY_AT_LARGE": [
         {
           "appliesToSentencesFrom": "2022-03-12",
@@ -38,9 +36,18 @@
           "fromDate": "2022-03-12",
           "toDate": "2022-03-14"
         }
+      ],
+      "RECALL_TAGGED_BAIL": [
+        {
+          "appliesToSentencesFrom": "2019-03-25",
+          "numberOfDays": 121
+        }
       ]
     },
     "returnToCustodyDate": "2022-03-15"
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-50"
 }

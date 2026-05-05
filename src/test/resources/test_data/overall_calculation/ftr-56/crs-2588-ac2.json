@@ -16,13 +16,18 @@
           }
         },
         "sentencedAt": "2014-10-07",
+        "identifier": "0de48d91-c0de-37d4-940a-9b1ec02eaac5",
         "recall": {
           "recallType": "FIXED_TERM_RECALL_56",
-          "returnToCustodyDate": "2020-09-19",
-          "revocationDate": "2020-09-19"
+          "revocationDate": "2020-09-19",
+          "returnToCustodyDate": "2020-09-19"
         },
-        "hasAnSDSEarlyReleaseExclusion": "NO",
-        "identifier": "0de48d91-c0de-37d4-940a-9b1ec02eaac5"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -35,16 +40,20 @@
           }
         },
         "sentencedAt": "2014-10-07",
-        "recall": {
-          "recallType": "FIXED_TERM_RECALL_56",
-          "returnToCustodyDate": "2020-09-19",
-          "revocationDate": "2020-09-19"
-        },
-        "hasAnSDSEarlyReleaseExclusion": "NO",
-        "identifier": "0de48d91-c0de-37d4-940a-9b1ec02eaac6",
         "consecutiveSentenceUUIDs": [
           "0de48d91-c0de-37d4-940a-9b1ec02eaac5"
-        ]
+        ],
+        "recall": {
+          "recallType": "FIXED_TERM_RECALL_56",
+          "revocationDate": "2020-09-19",
+          "returnToCustodyDate": "2020-09-19"
+        },
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -59,13 +68,22 @@
         "sentencedAt": "2023-01-13",
         "recall": {
           "recallType": "FIXED_TERM_RECALL_56",
-          "returnToCustodyDate": "2025-09-08",
-          "revocationDate": "2025-09-08"
+          "revocationDate": "2025-09-08",
+          "returnToCustodyDate": "2025-09-08"
         },
-        "hasAnSDSEarlyReleaseExclusion": "NO",
-        "identifier": "0de48d91-c0de-37d4-940a-9b1ec02eaac7"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
+    "adjustments": {},
     "returnToCustodyDate": "2025-09-08"
-  }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params"
 }

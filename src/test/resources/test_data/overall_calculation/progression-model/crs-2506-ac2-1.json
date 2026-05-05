@@ -8,8 +8,7 @@
       {
         "type": "StandardSentence",
         "offence": {
-          "committedAt": "2026-11-04",
-          "code": "COML022"
+          "committedAt": "2026-11-04"
         },
         "duration": {
           "durationElements": {
@@ -17,12 +16,18 @@
           }
         },
         "sentencedAt": "2026-11-04",
-        "isSDSPlus": true,
-        "isSDSPlusEligibleSentenceTypeLengthAndOffence": true,
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": true,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": true,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {}
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-progression-model"
 }

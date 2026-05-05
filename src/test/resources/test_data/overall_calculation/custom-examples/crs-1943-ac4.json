@@ -16,8 +16,12 @@
           }
         },
         "sentencedAt": "2019-08-26",
-        "identifier": "7d49a42f-2df6-4048-9604-879ff8aaafdf",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "ExtendedDeterminateSentence",
@@ -35,8 +39,7 @@
             "YEARS": 1
           }
         },
-        "sentencedAt": "2019-05-20",
-        "identifier": "c6387f38-7972-4de2-a2b5-de79afa5758d"
+        "sentencedAt": "2019-05-20"
       },
       {
         "type": "BotusSentence",
@@ -48,11 +51,13 @@
             "DAYS": 8
           }
         },
-        "sentencedAt": "2020-04-09",
-        "identifier": "7ea099f2-a7f5-4e05-88a2-3b2f4448a2a2"
+        "sentencedAt": "2020-04-09"
       }
     ],
     "adjustments": {}
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-50"
 }

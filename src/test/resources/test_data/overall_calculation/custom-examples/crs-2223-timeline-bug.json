@@ -18,9 +18,12 @@
         },
         "sentencedAt": "2022-12-13",
         "identifier": "d227e8f2-2273-3943-a06d-9300539b8ba1",
-        "isSDSPlus": true,
-        "isSDSPlusEligibleSentenceTypeLengthAndOffence": true,
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": true,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": true,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -34,8 +37,12 @@
           }
         },
         "sentencedAt": "2024-11-28",
-        "identifier": "94959f6d-9f90-4f7f-bd13-3aaf4a13ef28",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -50,11 +57,15 @@
           }
         },
         "sentencedAt": "2024-11-28",
-        "identifier": "1e437bd9-9f7a-48f9-a250-1ec2ea4dad76",
         "consecutiveSentenceUUIDs": [
           "d227e8f2-2273-3943-a06d-9300539b8ba1"
         ],
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -68,8 +79,12 @@
           }
         },
         "sentencedAt": "2024-11-28",
-        "identifier": "20f18bd1-d9bd-4868-bc6e-f66712a9ff9c",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -83,8 +98,12 @@
           }
         },
         "sentencedAt": "2024-11-28",
-        "identifier": "1b28b760-b938-41a8-a9a4-7bf3a00cec1c",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
@@ -97,5 +116,9 @@
         }
       ]
     }
-  }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params"
 }

@@ -89,7 +89,7 @@ class BookingAnonymiser {
       ) {
         return@distinctBy "${it.identifier}"
       } else if (it is StandardDeterminateSentence) {
-        return@distinctBy "${it.duration}${it.sentencedAt}${it.recallType}${it.isSDSPlus}${it.hasAnSDSEarlyReleaseExclusion}${it.consecutiveSentenceUUIDs.firstOrNull()}"
+        return@distinctBy "${it.duration}${it.sentencedAt}${it.recallType}${it.releaseArrangements}${it.consecutiveSentenceUUIDs.firstOrNull()}"
       } else if (it is ExtendedDeterminateSentence) {
         return@distinctBy "${it.custodialDuration}${it.extensionDuration}${it.sentencedAt}${it.recallType}${it.consecutiveSentenceUUIDs.firstOrNull()}"
       } else {

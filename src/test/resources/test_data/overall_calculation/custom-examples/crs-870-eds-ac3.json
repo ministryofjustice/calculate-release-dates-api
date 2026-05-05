@@ -21,8 +21,7 @@
           }
         },
         "automaticRelease": true,
-        "sentencedAt": "2013-01-21",
-        "identifier": "673d6872-7d02-46e7-a396-af4db5479e00"
+        "sentencedAt": "2013-01-21"
       },
       {
         "type": "ExtendedDeterminateSentence",
@@ -40,11 +39,13 @@
           }
         },
         "automaticRelease": true,
-        "sentencedAt": "2013-01-21",
-        "identifier": "fc4d3295-dabd-4d73-a65c-15e84620dfd0"
+        "sentencedAt": "2013-01-21"
       }
     ],
     "adjustments": {}
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-50"
 }

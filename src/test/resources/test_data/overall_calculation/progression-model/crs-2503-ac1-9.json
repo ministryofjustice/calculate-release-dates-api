@@ -17,7 +17,12 @@
           }
         },
         "sentencedAt": "2024-05-15",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -31,14 +36,22 @@
           }
         },
         "sentencedAt": "2009-03-12",
-        "hasAnSDSEarlyReleaseExclusion": "NO",
         "recall": {
           "recallType": "STANDARD_RECALL",
           "revocationDate": "2015-01-01"
+        },
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
         }
       }
     ],
     "adjustments": {}
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-progression-model"
 }

@@ -16,8 +16,14 @@
           }
         },
         "sentencedAt": "2024-03-22",
-        "identifier": "bc181ba6-0d2b-4588-a438-8c1e1a622dc1",
-        "hasAnSDSEarlyReleaseExclusion": "NATIONAL_SECURITY"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [
+            "NATIONAL_SECURITY"
+          ],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {}
@@ -25,5 +31,6 @@
   "userInputs": {
     "calculateErsed": true,
     "useOffenceIndicators": true
-  }
+  },
+  "params": "calculation-params"
 }

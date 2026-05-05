@@ -15,8 +15,7 @@
             "MONTHS": 4
           }
         },
-        "sentencedAt": "2021-01-29",
-        "identifier": "4354439b-f328-41c3-8112-7a3c3de78579"
+        "sentencedAt": "2021-01-29"
       },
       {
         "type": "StandardSentence",
@@ -29,8 +28,12 @@
           }
         },
         "sentencedAt": "2021-10-14",
-        "identifier": "3ddd0b2d-b8a0-40a7-a688-b7f1e2373980",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -43,8 +46,12 @@
           }
         },
         "sentencedAt": "2021-10-14",
-        "identifier": "cf92c934-cdd9-474a-a8db-266946c68b53",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -57,10 +64,12 @@
           }
         },
         "sentencedAt": "2021-10-14",
-        "identifier": "244076f1-8d14-48e0-b710-f03ede7be72c",
-        "isSDSPlus": true,
-        "isSDSPlusEligibleSentenceTypeLengthAndOffence": true,
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": true,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": true,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -73,8 +82,12 @@
           }
         },
         "sentencedAt": "2021-10-14",
-        "identifier": "9aaebb25-788e-4fba-b5ae-6dd7a6f0b393",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "DetentionAndTrainingOrderSentence",
@@ -86,8 +99,7 @@
             "MONTHS": 4
           }
         },
-        "sentencedAt": "2021-05-07",
-        "identifier": "e884443c-1dea-4a12-bcbd-6e4a0f5f1b6c"
+        "sentencedAt": "2021-05-07"
       },
       {
         "type": "DetentionAndTrainingOrderSentence",
@@ -99,19 +111,10 @@
             "MONTHS": 12
           }
         },
-        "sentencedAt": "2021-05-07",
-        "identifier": "51904721-6b35-4b3a-bf9b-b40e3990ecf8"
+        "sentencedAt": "2021-05-07"
       }
     ],
     "adjustments": {
-      "ADDITIONAL_DAYS_AWARDED": [
-        {
-          "appliesToSentencesFrom": "2021-10-14",
-          "numberOfDays": 12,
-          "fromDate": "2023-03-06",
-          "toDate": "2023-03-17"
-        }
-      ],
       "REMAND": [
         {
           "appliesToSentencesFrom": "2021-10-14",
@@ -125,8 +128,19 @@
           "fromDate": "2020-01-22",
           "toDate": "2021-01-28"
         }
+      ],
+      "ADDITIONAL_DAYS_AWARDED": [
+        {
+          "appliesToSentencesFrom": "2021-10-14",
+          "numberOfDays": 12,
+          "fromDate": "2023-03-06",
+          "toDate": "2023-03-17"
+        }
       ]
     }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-50"
 }

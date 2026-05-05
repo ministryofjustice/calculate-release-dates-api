@@ -17,7 +17,12 @@
         },
         "sentencedAt": "2012-12-17",
         "identifier": "e40f48b6-92df-49d0-af99-507194c380fa",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "ExtendedDeterminateSentence",
@@ -36,7 +41,6 @@
         },
         "automaticRelease": true,
         "sentencedAt": "2012-12-17",
-        "identifier": "c8f8c9c0-cb00-4fdd-92a2-3260e3393843",
         "consecutiveSentenceUUIDs": [
           "e40f48b6-92df-49d0-af99-507194c380fa"
         ]
@@ -52,6 +56,9 @@
         }
       ]
     }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-50"
 }

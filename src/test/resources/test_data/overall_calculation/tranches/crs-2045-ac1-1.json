@@ -16,8 +16,14 @@
           }
         },
         "sentencedAt": "2024-03-22",
-        "identifier": "64045aa9-7b3c-4f3e-be3c-a73a7e5bc024",
-        "hasAnSDSEarlyReleaseExclusion": "DOMESTIC_ABUSE"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [
+            "DOMESTIC_ABUSE"
+          ],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {}
@@ -25,5 +31,6 @@
   "userInputs": {
     "calculateErsed": true,
     "useOffenceIndicators": true
-  }
+  },
+  "params": "calculation-params"
 }

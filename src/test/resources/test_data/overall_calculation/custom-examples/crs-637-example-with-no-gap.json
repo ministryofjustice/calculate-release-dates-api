@@ -17,7 +17,12 @@
         },
         "sentencedAt": "2021-05-01",
         "identifier": "6c3ab422-0fb7-39ff-8ece-4f5c4be759f3",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -32,11 +37,15 @@
           }
         },
         "sentencedAt": "2021-05-01",
-        "identifier": "a145d4fb-5ca4-4ab9-a0f1-234bb4f06ad7",
         "consecutiveSentenceUUIDs": [
           "6c3ab422-0fb7-39ff-8ece-4f5c4be759f3"
         ],
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -51,8 +60,12 @@
           }
         },
         "sentencedAt": "2021-06-01",
-        "identifier": "47d49493-80d8-4bc1-8860-2e62490a2ba1",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -65,8 +78,12 @@
           }
         },
         "sentencedAt": "2021-06-01",
-        "identifier": "a5a4fa9f-b31f-4a52-8087-6e6afe336aad",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -80,11 +97,18 @@
           }
         },
         "sentencedAt": "2021-07-01",
-        "identifier": "d3eab438-9dd8-4f19-ab94-69effccb843f",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {}
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-50"
 }

@@ -15,8 +15,7 @@
             "MONTHS": 6
           }
         },
-        "sentencedAt": "2022-07-02",
-        "identifier": "e8b2d515-6488-400d-9c37-ab4aa4e4dd48"
+        "sentencedAt": "2022-07-02"
       },
       {
         "type": "DetentionAndTrainingOrderSentence",
@@ -28,8 +27,7 @@
             "MONTHS": 6
           }
         },
-        "sentencedAt": "2022-07-02",
-        "identifier": "b25ed30a-4fe0-4524-bafc-f95ac5938bb3"
+        "sentencedAt": "2022-07-02"
       }
     ],
     "adjustments": {
@@ -42,6 +40,9 @@
         }
       ]
     }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-50"
 }

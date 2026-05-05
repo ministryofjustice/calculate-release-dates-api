@@ -20,8 +20,7 @@
             "YEARS": 5
           }
         },
-        "sentencedAt": "2013-01-21",
-        "identifier": "621b6768-6de8-4f5c-94fe-3aa409e7a56e"
+        "sentencedAt": "2013-01-21"
       }
     ],
     "adjustments": {
@@ -32,6 +31,9 @@
         }
       ]
     }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-50"
 }

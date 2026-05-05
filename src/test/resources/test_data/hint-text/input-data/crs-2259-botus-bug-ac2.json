@@ -21,7 +21,12 @@
         "caseSequence": 2,
         "lineSequence": 2,
         "caseReference": "52sb0807924",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "BotusSentence",

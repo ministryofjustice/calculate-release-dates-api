@@ -16,13 +16,14 @@
           }
         },
         "sentencedAt": "2024-10-12",
-        "identifier": "1623b7c1-4cea-4ea4-b16d-50a9cd0b63dd",
-        "caseSequence": 1,
-        "lineSequence": 1,
         "latestTusedDate": "2025-05-14",
         "latestTusedSource": "NOMIS_OVERRIDDEN"
       }
     ],
     "adjustments": {}
-  }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params"
 }

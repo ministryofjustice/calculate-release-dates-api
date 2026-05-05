@@ -6,6 +6,7 @@
     },
     "sentences": [
       {
+        "type": "StandardSentence",
         "offence": {
           "committedAt": "2024-04-19",
           "offenceCode": "PL96003"
@@ -15,9 +16,16 @@
             "WEEKS": 4
           }
         },
-        "sentencedAt": "2024-05-17"
+        "sentencedAt": "2024-05-17",
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
+        "type": "StandardSentence",
         "offence": {
           "committedAt": "2024-04-19",
           "offenceCode": "FC81008"
@@ -27,9 +35,16 @@
             "MONTHS": 8
           }
         },
-        "sentencedAt": "2024-05-17"
+        "sentencedAt": "2024-05-17",
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
+        "type": "StandardSentence",
         "offence": {
           "committedAt": "2024-04-19",
           "offenceCode": "IM71132"
@@ -39,24 +54,30 @@
             "MONTHS": 12
           }
         },
-        "sentencedAt": "2024-05-17"
+        "sentencedAt": "2024-05-17",
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
-      "REMAND": [
-        {
-          "appliesToSentencesFrom": "2024-05-17",
-          "numberOfDays": 27,
-          "fromDate": "2024-04-20",
-          "toDate": "2024-05-16"
-        }
-      ],
       "UNLAWFULLY_AT_LARGE": [
         {
           "appliesToSentencesFrom": "2024-08-24",
           "numberOfDays": 15,
           "fromDate": "2024-08-24",
           "toDate": "2024-09-07"
+        }
+      ],
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2024-05-17",
+          "numberOfDays": 27,
+          "fromDate": "2024-04-20",
+          "toDate": "2024-05-16"
         }
       ]
     },
@@ -79,8 +100,8 @@
     ]
   },
   "userInputs": {
-    "useOffenceIndicators": true,
-    "calculateErsed": true
+    "calculateErsed": true,
+    "useOffenceIndicators": true
   },
   "params": "calculation-params"
 }

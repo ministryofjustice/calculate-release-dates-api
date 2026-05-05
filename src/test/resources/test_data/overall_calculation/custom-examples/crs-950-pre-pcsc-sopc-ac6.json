@@ -39,13 +39,15 @@
           }
         },
         "sentencedAt": "2020-04-17",
-        "identifier": "3f0ad294-66e1-4a5c-88f8-94162e44b935",
         "consecutiveSentenceUUIDs": [
           "bf99f1c1-341e-33cb-84bb-7d67dfd03680"
         ]
       }
     ],
     "adjustments": {}
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-50"
 }

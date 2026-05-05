@@ -17,15 +17,16 @@
           }
         },
         "sentencedAt": "2025-09-16",
-        "identifier": "6709e448-dc88-3986-9f9d-22aa536ae5e5",
-        "caseSequence": 1,
-        "lineSequence": 1,
-        "caseReference": "C1",
         "recall": {
           "recallType": "FIXED_TERM_RECALL_28",
           "returnToCustodyDate": "2026-06-02"
         },
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {},
@@ -34,5 +35,9 @@
       "returnToCustodyDate": "2026-06-02",
       "recallLength": 28
     }
-  }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params"
 }

@@ -16,9 +16,7 @@
           }
         },
         "sentencedAt": "2024-03-01",
-        "identifier": "8c4ba56a-0eac-4641-b7e8-ae4c1498069d",
-        "caseSequence": 1,
-        "lineSequence": 1
+        "identifier": "8c4ba56a-0eac-4641-b7e8-ae4c1498069d"
       },
       {
         "type": "BotusSentence",
@@ -31,12 +29,9 @@
           }
         },
         "sentencedAt": "2024-03-05",
-        "identifier": "b2cc9626-40cb-4069-afd8-16e7ace370b4",
         "consecutiveSentenceUUIDs": [
           "8c4ba56a-0eac-4641-b7e8-ae4c1498069d"
-        ],
-        "caseSequence": 1,
-        "lineSequence": 2
+        ]
       }
     ],
     "adjustments": {
@@ -49,5 +44,9 @@
         }
       ]
     }
-  }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params"
 }

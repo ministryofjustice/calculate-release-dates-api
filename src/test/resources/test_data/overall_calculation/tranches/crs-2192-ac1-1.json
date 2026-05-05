@@ -17,8 +17,14 @@
           }
         },
         "sentencedAt": "2024-04-29",
-        "identifier": "70f8f394-1974-483d-8762-d904eb132673",
-        "hasAnSDSEarlyReleaseExclusion": "SEXUAL_T3"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [
+            "SEXUAL_T3"
+          ],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
@@ -31,5 +37,9 @@
         }
       ]
     }
-  }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params"
 }

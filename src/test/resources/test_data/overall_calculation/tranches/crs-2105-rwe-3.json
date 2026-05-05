@@ -19,7 +19,14 @@
         },
         "sentencedAt": "2024-06-28",
         "identifier": "f3837ea1-7b3b-3d7a-8392-a5dc18354abf",
-        "hasAnSDSEarlyReleaseExclusion": "SEXUAL"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [
+            "SEXUAL"
+          ],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -33,8 +40,14 @@
           }
         },
         "sentencedAt": "2024-06-28",
-        "identifier": "47dac7ed-5d05-4480-a689-c9c4d8ac70ed",
-        "hasAnSDSEarlyReleaseExclusion": "SEXUAL"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [
+            "SEXUAL"
+          ],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -52,7 +65,14 @@
         "consecutiveSentenceUUIDs": [
           "f3837ea1-7b3b-3d7a-8392-a5dc18354abf"
         ],
-        "hasAnSDSEarlyReleaseExclusion": "SEXUAL"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [
+            "SEXUAL"
+          ],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -66,11 +86,17 @@
           }
         },
         "sentencedAt": "2024-06-28",
-        "identifier": "9039412f-9b0f-4141-9df4-6566704cadd7",
         "consecutiveSentenceUUIDs": [
           "6a35e7fd-13d3-324f-ab3b-37fa226d091b"
         ],
-        "hasAnSDSEarlyReleaseExclusion": "SEXUAL"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [
+            "SEXUAL"
+          ],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
@@ -84,5 +110,9 @@
       ]
     }
   },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params",
   "assertSds40": true
 }

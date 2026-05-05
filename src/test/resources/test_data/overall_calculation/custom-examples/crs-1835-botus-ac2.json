@@ -15,10 +15,7 @@
             "DAYS": 12
           }
         },
-        "sentencedAt": "2020-03-30",
-        "identifier": "420f2cc5-ccaf-4725-8e57-4ec16bb033f7",
-        "caseSequence": 1,
-        "lineSequence": 1
+        "sentencedAt": "2020-03-30"
       }
     ],
     "adjustments": {
@@ -31,6 +28,9 @@
         }
       ]
     }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-50"
 }

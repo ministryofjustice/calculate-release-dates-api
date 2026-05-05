@@ -17,12 +17,18 @@
           }
         },
         "sentencedAt": "2024-10-11",
-        "identifier": "a1260613-20fe-4059-845c-824e64d9b7da",
         "recall": {
           "recallType": "FIXED_TERM_RECALL_14",
           "returnToCustodyDate": "2024-12-20"
         },
-        "hasAnSDSEarlyReleaseExclusion": "SEXUAL_T3"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [
+            "SEXUAL_T3"
+          ],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
@@ -35,5 +41,9 @@
     },
     "returnToCustodyDate": "2024-12-20"
   },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params",
   "assertSds40": true
 }

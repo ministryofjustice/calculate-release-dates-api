@@ -34,11 +34,15 @@
           }
         },
         "sentencedAt": "2025-10-11",
-        "hasAnSDSEarlyReleaseExclusion": "NO",
-        "identifier": "09a755e1-c13a-4dc4-81b6-baed0f9724bd",
         "consecutiveSentenceUUIDs": [
           "70b10e6a-a5b2-43e7-a5db-3694d75bedec"
-        ]
+        ],
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
@@ -51,5 +55,9 @@
         }
       ]
     }
-  }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params"
 }

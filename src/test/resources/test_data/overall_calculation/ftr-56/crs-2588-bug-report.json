@@ -6,6 +6,7 @@
     },
     "sentences": [
       {
+        "type": "StandardSentence",
         "offence": {
           "committedAt": "2016-10-15",
           "offenceCode": "OF61016"
@@ -21,9 +22,17 @@
           "revocationDate": "2024-11-07",
           "returnToCustodyDate": "2024-11-23"
         },
-        "hasAnSDSEarlyReleaseExclusion": "VIOLENT"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [
+            "VIOLENT"
+          ],
+          "isSection250": false
+        }
       },
       {
+        "type": "StandardSentence",
         "offence": {
           "committedAt": "2021-05-20",
           "offenceCode": "MD71526"
@@ -38,24 +47,30 @@
           "recallType": "FIXED_TERM_RECALL_56",
           "revocationDate": "2024-11-07",
           "returnToCustodyDate": "2024-11-23"
+        },
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
         }
       }
     ],
     "adjustments": {
-      "ADDITIONAL_DAYS_AWARDED": [
-        {
-          "appliesToSentencesFrom": "2024-04-09",
-          "numberOfDays": 36,
-          "fromDate": "2024-04-09",
-          "toDate": "2024-05-14"
-        }
-      ],
       "UNLAWFULLY_AT_LARGE": [
         {
           "appliesToSentencesFrom": "2024-11-08",
           "numberOfDays": 15,
           "fromDate": "2024-11-08",
           "toDate": "2024-11-22"
+        }
+      ],
+      "ADDITIONAL_DAYS_AWARDED": [
+        {
+          "appliesToSentencesFrom": "2024-04-09",
+          "numberOfDays": 36,
+          "fromDate": "2024-04-09",
+          "toDate": "2024-05-14"
         }
       ]
     },

@@ -16,10 +16,13 @@
             "WEEKS": 16
           }
         },
-        "sentencedAt": "2023-11-17",
-        "identifier": "e2b5f2fa-396d-4cfe-b258-ab6641ede512"
+        "sentencedAt": "2023-11-17"
       }
     ],
     "adjustments": {}
-  }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params"
 }

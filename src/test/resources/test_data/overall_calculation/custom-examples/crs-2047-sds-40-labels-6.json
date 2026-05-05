@@ -21,10 +21,7 @@
             "YEARS": 1
           }
         },
-        "sentencedAt": "2022-11-17",
-        "identifier": "23f51087-c39a-402c-b66a-6c9cde0d3d9f",
-        "caseSequence": 1,
-        "lineSequence": 1
+        "sentencedAt": "2022-11-17"
       }
     ],
     "adjustments": {}
@@ -32,5 +29,6 @@
   "userInputs": {
     "calculateErsed": true,
     "useOffenceIndicators": true
-  }
+  },
+  "params": "calculation-params"
 }

@@ -6,6 +6,7 @@
     },
     "sentences": [
       {
+        "type": "StandardSentence",
         "offence": {
           "committedAt": "2000-03-17",
           "offenceCode": "TH68010"
@@ -15,7 +16,13 @@
             "MONTHS": 20
           }
         },
-        "sentencedAt": "2000-04-29"
+        "sentencedAt": "2000-04-29",
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
@@ -29,5 +36,9 @@
       ]
     }
   },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params",
   "expectedValidationException": "REMAND_OVERLAPS_WITH_SENTENCE"
 }

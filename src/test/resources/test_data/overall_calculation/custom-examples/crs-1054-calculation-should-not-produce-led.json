@@ -16,8 +16,12 @@
           }
         },
         "sentencedAt": "2022-02-11",
-        "identifier": "2ec016d2-8b25-4122-80cd-13feb6c280e6",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -30,11 +34,15 @@
           }
         },
         "sentencedAt": "2022-02-11",
-        "identifier": "e6576b88-184b-49ee-9102-3033de9c3a3a",
         "recall": {
           "recallType": "STANDARD_RECALL"
         },
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "AFineSentence",
@@ -47,8 +55,7 @@
             "MONTHS": 6
           }
         },
-        "sentencedAt": "2022-07-19",
-        "identifier": "b753d058-983a-413d-93d2-322e3a9162b1"
+        "sentencedAt": "2022-07-19"
       }
     ],
     "adjustments": {
@@ -61,6 +68,9 @@
         }
       ]
     }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-50"
 }

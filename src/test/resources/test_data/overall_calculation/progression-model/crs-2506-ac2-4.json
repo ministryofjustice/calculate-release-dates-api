@@ -8,8 +8,7 @@
       {
         "type": "StandardSentence",
         "offence": {
-          "committedAt": "2026-12-05",
-          "code": "COML025A"
+          "committedAt": "2026-12-05"
         },
         "duration": {
           "durationElements": {
@@ -17,16 +16,17 @@
           }
         },
         "sentencedAt": "2026-12-05",
-        "isSDSPlus": true,
-        "isSDSPlusEligibleSentenceTypeLengthAndOffence": true,
-        "hasAnSDSEarlyReleaseExclusion": "NO",
-        "section250": true
+        "releaseArrangements": {
+          "isSDSPlus": true,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": true,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": true
+        }
       },
       {
         "type": "StandardSentence",
         "offence": {
-          "committedAt": "2027-01-02",
-          "code": "OF61017"
+          "committedAt": "2027-01-02"
         },
         "duration": {
           "durationElements": {
@@ -34,12 +34,18 @@
           }
         },
         "sentencedAt": "2027-01-02",
-        "isSDSPlus": true,
-        "isSDSPlusEligibleSentenceTypeLengthAndOffence": true,
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": true,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": true,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {}
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-progression-model"
 }

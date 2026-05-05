@@ -21,7 +21,12 @@
         "recall": {
           "recallType": "STANDARD_RECALL"
         },
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -35,14 +40,18 @@
           }
         },
         "sentencedAt": "2022-02-24",
-        "identifier": "b7c4a18d-734a-49c1-9d50-da71fa3548c9",
         "consecutiveSentenceUUIDs": [
           "f36bc182-5c02-3cc3-a4bf-df55a1a41fb4"
         ],
         "recall": {
           "recallType": "STANDARD_RECALL"
         },
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "AFineSentence",
@@ -56,22 +65,10 @@
           }
         },
         "sentencedAt": "2022-04-25",
-        "identifier": "0ee7aa2d-46f8-449c-b625-859e4dbba867",
-        "caseSequence": 4,
-        "lineSequence": 3,
-        "caseReference": "ABC123L",
         "fineAmount": 919.72
       }
     ],
     "adjustments": {
-      "UNLAWFULLY_AT_LARGE": [
-        {
-          "appliesToSentencesFrom": "2022-02-25",
-          "numberOfDays": 3,
-          "fromDate": "2022-02-25",
-          "toDate": "2022-02-27"
-        }
-      ],
       "RECALL_REMAND": [
         {
           "appliesToSentencesFrom": "2022-02-24",
@@ -85,8 +82,19 @@
           "fromDate": "2022-02-12",
           "toDate": "2022-02-23"
         }
+      ],
+      "UNLAWFULLY_AT_LARGE": [
+        {
+          "appliesToSentencesFrom": "2022-02-25",
+          "numberOfDays": 3,
+          "fromDate": "2022-02-25",
+          "toDate": "2022-02-27"
+        }
       ]
     }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-50"
 }

@@ -21,8 +21,7 @@
             "MONTHS": 6
           }
         },
-        "sentencedAt": "2021-04-28",
-        "identifier": "0e6ce60c-c2ec-4430-a413-61a5d219f290"
+        "sentencedAt": "2021-04-28"
       },
       {
         "type": "ExtendedDeterminateSentence",
@@ -39,17 +38,10 @@
             "YEARS": 2
           }
         },
-        "sentencedAt": "2021-06-03",
-        "identifier": "55b46375-f1e5-4e0f-ad5a-d59a73234fa7"
+        "sentencedAt": "2021-06-03"
       }
     ],
     "adjustments": {
-      "ADDITIONAL_DAYS_AWARDED": [
-        {
-          "appliesToSentencesFrom": "2021-04-28",
-          "numberOfDays": 4
-        }
-      ],
       "REMAND": [
         {
           "appliesToSentencesFrom": "2021-04-28",
@@ -57,8 +49,17 @@
           "fromDate": "2021-03-27",
           "toDate": "2021-04-27"
         }
+      ],
+      "ADDITIONAL_DAYS_AWARDED": [
+        {
+          "appliesToSentencesFrom": "2021-04-28",
+          "numberOfDays": 4
+        }
       ]
     }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-50"
 }

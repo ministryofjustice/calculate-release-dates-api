@@ -17,7 +17,12 @@
         },
         "sentencedAt": "2021-03-01",
         "identifier": "1a009aca-e295-310f-8508-8e918792064a",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -30,20 +35,27 @@
           }
         },
         "sentencedAt": "2021-03-01",
-        "identifier": "6878a036-97b0-4e58-ad34-a16dbe216751",
         "consecutiveSentenceUUIDs": [
           "1a009aca-e295-310f-8508-8e918792064a"
         ],
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
-      "RESTORATION_OF_ADDITIONAL_DAYS_AWARDED": [
+      "REMAND": [
         {
-          "appliesToSentencesFrom": "2021-03-01"
+          "appliesToSentencesFrom": "2021-03-01",
+          "numberOfDays": 174,
+          "fromDate": "2020-09-07",
+          "toDate": "2021-02-28"
         }
       ],
-      "ADDITIONAL_DAYS_AWARDED": [
+      "TAGGED_BAIL": [
         {
           "appliesToSentencesFrom": "2021-03-01"
         }
@@ -53,20 +65,20 @@
           "appliesToSentencesFrom": "2021-03-01"
         }
       ],
-      "TAGGED_BAIL": [
+      "ADDITIONAL_DAYS_AWARDED": [
         {
           "appliesToSentencesFrom": "2021-03-01"
         }
       ],
-      "REMAND": [
+      "RESTORATION_OF_ADDITIONAL_DAYS_AWARDED": [
         {
-          "appliesToSentencesFrom": "2021-03-01",
-          "numberOfDays": 174,
-          "fromDate": "2020-09-07",
-          "toDate": "2021-02-28"
+          "appliesToSentencesFrom": "2021-03-01"
         }
       ]
     }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-50"
 }

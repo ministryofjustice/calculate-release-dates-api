@@ -17,8 +17,15 @@
           }
         },
         "sentencedAt": "2025-06-30",
-        "hasAnSDSEarlyReleaseExclusion": "SEXUAL",
-        "identifier": "d211f333-aa1a-3e25-ac8d-0459c1f98868"
+        "identifier": "d211f333-aa1a-3e25-ac8d-0459c1f98868",
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [
+            "SEXUAL"
+          ],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -31,22 +38,20 @@
           }
         },
         "sentencedAt": "2025-06-30",
-        "hasAnSDSEarlyReleaseExclusion": "SEXUAL",
-        "identifier": "023e388e-1673-3bbc-9f13-1b1d915f3b73",
         "consecutiveSentenceUUIDs": [
           "d211f333-aa1a-3e25-ac8d-0459c1f98868"
-        ]
+        ],
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [
+            "SEXUAL"
+          ],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
-      "REMAND": [
-        {
-          "appliesToSentencesFrom": "2025-06-30",
-          "numberOfDays": 120,
-          "fromDate": "2025-03-02",
-          "toDate": "2025-06-29"
-        }
-      ],
       "UNLAWFULLY_AT_LARGE": [
         {
           "appliesToSentencesFrom": "2025-06-30",
@@ -58,9 +63,19 @@
             "reason": "ESCAPE"
           }
         }
+      ],
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2025-06-30",
+          "numberOfDays": 120,
+          "fromDate": "2025-03-02",
+          "toDate": "2025-06-29"
+        }
       ]
-
     }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-progression-model",
   "featureToggles": {

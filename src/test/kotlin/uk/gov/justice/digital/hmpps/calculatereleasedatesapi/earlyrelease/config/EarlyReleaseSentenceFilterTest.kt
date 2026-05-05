@@ -8,6 +8,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Senten
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit.DAYS
@@ -26,9 +27,12 @@ class EarlyReleaseSentenceFilterTest {
         committedAt = LocalDate.of(2000, 1, 1),
         offenceCode = "123",
       ),
-      isSDSPlus = true,
-      section250 = false,
-      hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
+      releaseArrangements = SDSReleaseArrangements(
+        isSDSPlus = true,
+        isSDSPlusEligibleSentenceTypeLengthAndOffence = true,
+        isSection250 = false,
+        sdsEarlyReleaseExclusions = emptyList(),
+      ),
     )
     sentence.identificationTrack = SentenceIdentificationTrack.SDS_PLUS
     assertThat(EarlyReleaseSentenceFilter.SDS_40_EXCLUSIONS.isIncluded(sentence)).isFalse
@@ -43,9 +47,12 @@ class EarlyReleaseSentenceFilterTest {
         committedAt = LocalDate.of(2000, 1, 1),
         offenceCode = "123",
       ),
-      isSDSPlus = false,
-      section250 = true,
-      hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
+      releaseArrangements = SDSReleaseArrangements(
+        isSDSPlus = false,
+        isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+        isSection250 = true,
+        sdsEarlyReleaseExclusions = emptyList(),
+      ),
     )
     sentence.identificationTrack = SentenceIdentificationTrack.SDS
     assertThat(EarlyReleaseSentenceFilter.SDS_40_EXCLUSIONS.isIncluded(sentence)).isTrue
@@ -61,9 +68,12 @@ class EarlyReleaseSentenceFilterTest {
         committedAt = LocalDate.of(2000, 1, 1),
         offenceCode = "123",
       ),
-      isSDSPlus = false,
-      section250 = false,
-      hasAnSDSEarlyReleaseExclusion = exclusion,
+      releaseArrangements = SDSReleaseArrangements(
+        isSDSPlus = false,
+        isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+        isSection250 = false,
+        sdsEarlyReleaseExclusions = listOf(exclusion),
+      ),
     )
     sentence.identificationTrack = SentenceIdentificationTrack.SDS
 
@@ -93,9 +103,12 @@ class EarlyReleaseSentenceFilterTest {
         committedAt = LocalDate.of(2000, 1, 1),
         offenceCode = "123",
       ),
-      isSDSPlus = false,
-      section250 = false,
-      hasAnSDSEarlyReleaseExclusion = exclusion,
+      releaseArrangements = SDSReleaseArrangements(
+        isSDSPlus = false,
+        isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+        isSection250 = false,
+        sdsEarlyReleaseExclusions = listOf(exclusion),
+      ),
     )
     sentence.identificationTrack = SentenceIdentificationTrack.SDS
 
@@ -124,9 +137,12 @@ class EarlyReleaseSentenceFilterTest {
         committedAt = LocalDate.of(2000, 1, 1),
         offenceCode = "123",
       ),
-      isSDSPlus = true,
-      section250 = false,
-      hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
+      releaseArrangements = SDSReleaseArrangements(
+        isSDSPlus = true,
+        isSDSPlusEligibleSentenceTypeLengthAndOffence = true,
+        isSection250 = false,
+        sdsEarlyReleaseExclusions = emptyList(),
+      ),
     )
     sentence.identificationTrack = SentenceIdentificationTrack.SDS_PLUS
     assertThat(EarlyReleaseSentenceFilter.SDS_PROGRESSION_MODEL.isIncluded(sentence)).isTrue
@@ -141,9 +157,12 @@ class EarlyReleaseSentenceFilterTest {
         committedAt = LocalDate.of(2000, 1, 1),
         offenceCode = "123",
       ),
-      isSDSPlus = false,
-      section250 = true,
-      hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
+      releaseArrangements = SDSReleaseArrangements(
+        isSDSPlus = false,
+        isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+        isSection250 = true,
+        sdsEarlyReleaseExclusions = emptyList(),
+      ),
     )
     sentence.identificationTrack = SentenceIdentificationTrack.SDS
     assertThat(EarlyReleaseSentenceFilter.SDS_PROGRESSION_MODEL.isIncluded(sentence)).isFalse

@@ -6,6 +6,7 @@
     },
     "sentences": [
       {
+        "type": "StandardSentence",
         "offence": {
           "committedAt": "2025-04-28",
           "offenceCode": "VG24018"
@@ -15,9 +16,16 @@
             "MONTHS": 2
           }
         },
-        "sentencedAt": "2025-08-22"
+        "sentencedAt": "2025-08-22",
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
+        "type": "StandardSentence",
         "offence": {
           "committedAt": "2024-11-09",
           "offenceCode": "COML030"
@@ -28,9 +36,16 @@
           }
         },
         "sentencedAt": "2025-08-27",
-        "identifier": "0de48d91-c0de-37d4-940a-9b1ec02eaac5"
+        "identifier": "0de48d91-c0de-37d4-940a-9b1ec02eaac5",
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
+        "type": "StandardSentence",
         "offence": {
           "committedAt": "2025-03-24",
           "offenceCode": "FA06001"
@@ -43,9 +58,16 @@
         "sentencedAt": "2025-08-27",
         "consecutiveSentenceUUIDs": [
           "0de48d91-c0de-37d4-940a-9b1ec02eaac5"
-        ]
+        ],
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
+        "type": "StandardSentence",
         "offence": {
           "committedAt": "2025-03-24",
           "offenceCode": "TH68072"
@@ -55,28 +77,34 @@
             "MONTHS": 3
           }
         },
-        "sentencedAt": "2025-08-27"
+        "sentencedAt": "2025-08-27",
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
       "REMAND": [
         {
-          "toDate": "2025-05-23",
-          "fromDate": "2025-04-29",
+          "appliesToSentencesFrom": "2025-08-22",
           "numberOfDays": 25,
-          "appliesToSentencesFrom": "2025-08-22"
+          "fromDate": "2025-04-29",
+          "toDate": "2025-05-23"
         },
         {
-          "toDate": "2025-07-09",
-          "fromDate": "2025-05-24",
+          "appliesToSentencesFrom": "2025-08-27",
           "numberOfDays": 47,
-          "appliesToSentencesFrom": "2025-08-27"
+          "fromDate": "2025-05-24",
+          "toDate": "2025-07-09"
         },
         {
-          "toDate": "2025-08-26",
-          "fromDate": "2025-08-13",
+          "appliesToSentencesFrom": "2025-08-27",
           "numberOfDays": 14,
-          "appliesToSentencesFrom": "2025-08-27"
+          "fromDate": "2025-08-13",
+          "toDate": "2025-08-26"
         }
       ]
     }

@@ -15,13 +15,13 @@
             "DAYS": 7
           }
         },
-        "sentencedAt": "2021-02-01",
-        "identifier": "3502c25d-d183-4b89-bd3c-3ac6efd6a285",
-        "caseSequence": 1,
-        "lineSequence": 1
+        "sentencedAt": "2021-02-01"
       }
     ],
     "adjustments": {}
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-50"
 }

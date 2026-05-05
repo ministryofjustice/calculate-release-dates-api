@@ -17,8 +17,12 @@
           }
         },
         "sentencedAt": "2000-04-29",
-        "identifier": "4dcfc78a-fcbd-4b04-b1d2-c6c3c9f89bd0",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
@@ -32,5 +36,9 @@
       ]
     }
   },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params",
   "expectedValidationException": "REMAND_OVERLAPS_WITH_SENTENCE"
 }

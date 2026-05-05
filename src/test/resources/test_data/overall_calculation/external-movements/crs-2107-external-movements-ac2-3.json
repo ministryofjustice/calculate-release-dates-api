@@ -21,8 +21,7 @@
             "YEARS": 1
           }
         },
-        "sentencedAt": "2018-09-15",
-        "identifier": "137a026c-4393-4470-bca2-fb644731ae00"
+        "sentencedAt": "2018-09-15"
       },
       {
         "type": "AFineSentence",
@@ -36,8 +35,7 @@
           }
         },
         "sentencedAt": "2024-05-23",
-        "identifier": "9953825a-71e3-4011-8118-b8a1ea0e4f74",
-        "fineAmount": 250000
+        "fineAmount": 2.5E+5
       }
     ],
     "adjustments": {
@@ -55,5 +53,9 @@
         "direction": "OUT"
       }
     ]
-  }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params"
 }

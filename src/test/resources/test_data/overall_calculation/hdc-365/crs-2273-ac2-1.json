@@ -19,7 +19,12 @@
         },
         "sentencedAt": "2025-04-15",
         "identifier": "cb304745-d781-47d3-b931-4baa31551fc5",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -33,18 +38,24 @@
           }
         },
         "sentencedAt": "2025-07-17",
-        "identifier": "41533276-5785-408f-a007-3a6e307be10a",
         "consecutiveSentenceUUIDs": [
           "cb304745-d781-47d3-b931-4baa31551fc5"
         ],
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
-      "TAGGED_BAIL": [
+      "ADDITIONAL_DAYS_AWARDED": [
         {
-          "appliesToSentencesFrom": "2025-04-15",
-          "numberOfDays": 30
+          "appliesToSentencesFrom": "2025-06-05",
+          "numberOfDays": 20,
+          "fromDate": "2025-06-05",
+          "toDate": "2025-06-24"
         }
       ],
       "RESTORATION_OF_ADDITIONAL_DAYS_AWARDED": [
@@ -55,14 +66,16 @@
           "toDate": "2025-07-05"
         }
       ],
-      "ADDITIONAL_DAYS_AWARDED": [
+      "TAGGED_BAIL": [
         {
-          "appliesToSentencesFrom": "2025-06-05",
-          "numberOfDays": 20,
-          "fromDate": "2025-06-05",
-          "toDate": "2025-06-24"
+          "appliesToSentencesFrom": "2025-04-15",
+          "numberOfDays": 30
         }
       ]
     }
-  }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params"
 }

@@ -61,7 +61,6 @@
           }
         },
         "sentencedAt": "2013-09-09",
-        "identifier": "eed4e6be-3356-4803-aa92-3c10d7e602ed",
         "consecutiveSentenceUUIDs": [
           "7d5e417b-ae8c-3765-923d-658b1d220eca"
         ]
@@ -77,8 +76,14 @@
           }
         },
         "sentencedAt": "2013-09-09",
-        "identifier": "38c3577e-72ae-47fc-8f65-5c505db9ead7",
-        "hasAnSDSEarlyReleaseExclusion": "SEXUAL"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [
+            "SEXUAL"
+          ],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -91,17 +96,15 @@
           }
         },
         "sentencedAt": "2013-09-09",
-        "identifier": "dfe6b099-c5c9-4ee2-934e-ca19cb2cefce",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
-      "TAGGED_BAIL": [
-        {
-          "appliesToSentencesFrom": "2013-09-09",
-          "numberOfDays": 47
-        }
-      ],
       "REMAND": [
         {
           "appliesToSentencesFrom": "2013-09-09",
@@ -109,8 +112,18 @@
           "fromDate": "2013-03-25",
           "toDate": "2013-09-08"
         }
+      ],
+      "TAGGED_BAIL": [
+        {
+          "appliesToSentencesFrom": "2013-09-09",
+          "numberOfDays": 47
+        }
       ]
     }
   },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params",
   "assertSds40": true
 }

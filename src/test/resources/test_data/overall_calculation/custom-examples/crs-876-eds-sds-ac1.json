@@ -20,8 +20,7 @@
             "YEARS": 5
           }
         },
-        "sentencedAt": "2012-12-17",
-        "identifier": "70e8ce40-ec5b-413c-b126-44434ab8950d"
+        "sentencedAt": "2012-12-17"
       },
       {
         "type": "StandardSentence",
@@ -34,11 +33,18 @@
           }
         },
         "sentencedAt": "2017-05-10",
-        "identifier": "459ae5a7-acde-43d6-bd2e-98460deb8e0e",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {}
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-50"
 }

@@ -39,14 +39,18 @@
           }
         },
         "sentencedAt": "2019-03-11",
-        "identifier": "a92d024e-d026-43a7-9955-f53f23ca6a14",
         "consecutiveSentenceUUIDs": [
           "70b10e6a-a5b2-43e7-a5db-3694d75bedec"
         ],
         "recall": {
           "recallType": "STANDARD_RECALL"
         },
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
@@ -59,6 +63,9 @@
         }
       ]
     }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-50"
 }

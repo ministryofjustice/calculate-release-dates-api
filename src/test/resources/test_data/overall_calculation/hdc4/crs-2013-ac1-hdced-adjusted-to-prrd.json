@@ -16,8 +16,12 @@
           }
         },
         "sentencedAt": "2024-06-07",
-        "identifier": "0c65dcb6-ea9b-4cf2-8b7b-a43c5074e491",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -31,22 +35,18 @@
           }
         },
         "sentencedAt": "2022-01-10",
-        "identifier": "ee30cdfe-44bc-443c-89ba-75f91a1f710b",
         "recall": {
           "recallType": "STANDARD_RECALL"
         },
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
-      "REMAND": [
-        {
-          "appliesToSentencesFrom": "2024-06-07",
-          "numberOfDays": 1,
-          "fromDate": "2024-03-07",
-          "toDate": "2024-03-07"
-        }
-      ],
       "UNLAWFULLY_AT_LARGE": [
         {
           "appliesToSentencesFrom": "2022-01-10",
@@ -54,8 +54,19 @@
           "fromDate": "2023-11-25",
           "toDate": "2023-11-29"
         }
+      ],
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2024-06-07",
+          "numberOfDays": 1,
+          "fromDate": "2024-03-07",
+          "toDate": "2024-03-07"
+        }
       ]
     }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-50"
 }

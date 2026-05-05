@@ -18,7 +18,12 @@
         },
         "sentencedAt": "2024-03-01",
         "identifier": "d84a2c6a-e11c-3f2c-885e-ca04b55451e5",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -32,8 +37,12 @@
           }
         },
         "sentencedAt": "2024-03-01",
-        "identifier": "542ac7a4-40ac-48de-b89b-9eff26990136",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -47,8 +56,12 @@
           }
         },
         "sentencedAt": "2024-03-01",
-        "identifier": "ba150f6f-d8cf-4752-bc41-abc86312f899",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -62,11 +75,17 @@
           }
         },
         "sentencedAt": "2024-03-01",
-        "identifier": "ddf035e0-6128-464e-88b7-7d0ed6dbc6a9",
         "consecutiveSentenceUUIDs": [
           "d84a2c6a-e11c-3f2c-885e-ca04b55451e5"
         ],
-        "hasAnSDSEarlyReleaseExclusion": "DOMESTIC_ABUSE"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [
+            "DOMESTIC_ABUSE"
+          ],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -80,8 +99,12 @@
           }
         },
         "sentencedAt": "2024-03-01",
-        "identifier": "94d48b7d-9f49-472d-a5e1-9b604f54c037",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
@@ -95,5 +118,9 @@
       ]
     }
   },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params",
   "assertSds40": true
 }

@@ -16,11 +16,18 @@
           }
         },
         "sentencedAt": "2023-09-25",
-        "hasAnSDSEarlyReleaseExclusion": "VIOLENT",
         "recall": {
           "recallType": "FIXED_TERM_RECALL_56",
-          "returnToCustodyDate": "2026-01-08",
-          "revocationDate": "2026-01-07"
+          "revocationDate": "2026-01-07",
+          "returnToCustodyDate": "2026-01-08"
+        },
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [
+            "VIOLENT"
+          ],
+          "isSection250": false
         }
       },
       {
@@ -36,11 +43,22 @@
         "sentencedAt": "2025-08-22",
         "recall": {
           "recallType": "FIXED_TERM_RECALL_56",
-          "returnToCustodyDate": "2026-01-08",
-          "revocationDate": "2026-01-07"
+          "revocationDate": "2026-01-07",
+          "returnToCustodyDate": "2026-01-08"
+        },
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
         }
       }
     ],
+    "adjustments": {},
     "returnToCustodyDate": "2026-01-08"
-  }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params"
 }

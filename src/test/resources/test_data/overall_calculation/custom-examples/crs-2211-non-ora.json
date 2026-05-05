@@ -17,19 +17,15 @@
           }
         },
         "sentencedAt": "2024-07-12",
-        "identifier": "f3a6566c-f724-3ed5-b263-35c3f8090d71",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
-      "ADDITIONAL_DAYS_AWARDED": [
-        {
-          "appliesToSentencesFrom": "2024-07-12",
-          "numberOfDays": 35,
-          "fromDate": "2024-07-05",
-          "toDate": "2024-08-09"
-        }
-      ],
       "REMAND": [
         {
           "appliesToSentencesFrom": "2024-07-12",
@@ -37,7 +33,19 @@
           "fromDate": "2024-04-23",
           "toDate": "2024-07-11"
         }
+      ],
+      "ADDITIONAL_DAYS_AWARDED": [
+        {
+          "appliesToSentencesFrom": "2024-07-12",
+          "numberOfDays": 35,
+          "fromDate": "2024-07-05",
+          "toDate": "2024-08-09"
+        }
       ]
     }
-  }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params"
 }

@@ -22,8 +22,7 @@
           }
         },
         "automaticRelease": true,
-        "sentencedAt": "2015-04-12",
-        "identifier": "ed4b52ab-b458-4d4b-8103-c9e412784e01"
+        "sentencedAt": "2015-04-12"
       },
       {
         "type": "ExtendedDeterminateSentence",
@@ -59,7 +58,6 @@
           }
         },
         "sentencedAt": "2016-02-03",
-        "identifier": "3fe36d49-1d14-4e44-a18c-3134528f6f7d",
         "consecutiveSentenceUUIDs": [
           "e40f48b6-92df-49d0-af99-507194c380fa"
         ]
@@ -73,6 +71,9 @@
         }
       ]
     }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-50"
 }

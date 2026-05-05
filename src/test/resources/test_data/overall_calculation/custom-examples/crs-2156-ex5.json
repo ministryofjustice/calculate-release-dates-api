@@ -21,7 +21,12 @@
         "recall": {
           "recallType": "STANDARD_RECALL"
         },
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -35,11 +40,15 @@
           }
         },
         "sentencedAt": "2022-11-29",
-        "identifier": "ca5bccdb-d9e1-4aa6-bbd8-946e24a351dd",
         "recall": {
           "recallType": "STANDARD_RECALL"
         },
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -60,7 +69,12 @@
         "recall": {
           "recallType": "STANDARD_RECALL"
         },
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -81,7 +95,12 @@
         "recall": {
           "recallType": "STANDARD_RECALL"
         },
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -95,14 +114,18 @@
           }
         },
         "sentencedAt": "2022-11-29",
-        "identifier": "c3f5bb17-04fd-4005-a26c-bfe3f1c574b8",
         "consecutiveSentenceUUIDs": [
           "d6d8fe9b-3800-3485-9f76-da1a76151fba"
         ],
         "recall": {
           "recallType": "STANDARD_RECALL"
         },
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -116,25 +139,15 @@
           }
         },
         "sentencedAt": "2024-10-03",
-        "identifier": "f4efa99b-8d71-4daf-b96d-21608a5850e2",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
-      "UNLAWFULLY_AT_LARGE": [
-        {
-          "appliesToSentencesFrom": "2024-07-06",
-          "numberOfDays": 38,
-          "fromDate": "2024-07-06",
-          "toDate": "2024-08-12"
-        },
-        {
-          "appliesToSentencesFrom": "2024-02-27",
-          "numberOfDays": 10,
-          "fromDate": "2024-02-27",
-          "toDate": "2024-03-07"
-        }
-      ],
       "RECALL_REMAND": [
         {
           "appliesToSentencesFrom": "2022-11-29",
@@ -154,7 +167,25 @@
           "fromDate": "2022-08-13",
           "toDate": "2022-11-28"
         }
+      ],
+      "UNLAWFULLY_AT_LARGE": [
+        {
+          "appliesToSentencesFrom": "2024-07-06",
+          "numberOfDays": 38,
+          "fromDate": "2024-07-06",
+          "toDate": "2024-08-12"
+        },
+        {
+          "appliesToSentencesFrom": "2024-02-27",
+          "numberOfDays": 10,
+          "fromDate": "2024-02-27",
+          "toDate": "2024-03-07"
+        }
       ]
     }
-  }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params"
 }

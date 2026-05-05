@@ -6,6 +6,7 @@
     },
     "sentences": [
       {
+        "type": "StandardSentence",
         "offence": {
           "committedAt": "2023-03-03",
           "offenceCode": "CJ88160"
@@ -18,9 +19,16 @@
         "sentencedAt": "2023-04-03",
         "consecutiveSentenceUUIDs": [
           "21f1c16a-9a4c-4cb5-a8a3-fc8db63507d8"
-        ]
+        ],
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
+        "type": "StandardSentence",
         "offence": {
           "committedAt": "2023-03-03",
           "offenceCode": "CJ88160"
@@ -34,9 +42,16 @@
         "identifier": "21f1c16a-9a4c-4cb5-a8a3-fc8db63507d8",
         "consecutiveSentenceUUIDs": [
           "7a4e7182-3370-4db8-8b4b-d8f86c2ae2e8"
-        ]
+        ],
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
+        "type": "StandardSentence",
         "offence": {
           "committedAt": "2023-03-03",
           "offenceCode": "CJ88160"
@@ -50,9 +65,16 @@
         "identifier": "7a4e7182-3370-4db8-8b4b-d8f86c2ae2e8",
         "consecutiveSentenceUUIDs": [
           "1d7a23a8-f99e-44b0-8b15-4e45b799501d"
-        ]
+        ],
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
+        "type": "StandardSentence",
         "offence": {
           "committedAt": "2023-03-03",
           "offenceCode": "CJ88160"
@@ -66,9 +88,16 @@
         "identifier": "1d7a23a8-f99e-44b0-8b15-4e45b799501d",
         "consecutiveSentenceUUIDs": [
           "35b1de4b-9882-4967-a624-f16d89fbd224"
-        ]
+        ],
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
+        "type": "StandardSentence",
         "offence": {
           "committedAt": "2023-03-03",
           "offenceCode": "CJ88160"
@@ -79,7 +108,13 @@
           }
         },
         "sentencedAt": "2023-04-03",
-        "identifier": "35b1de4b-9882-4967-a624-f16d89fbd224"
+        "identifier": "35b1de4b-9882-4967-a624-f16d89fbd224",
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
@@ -92,5 +127,9 @@
         }
       ]
     }
-  }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params"
 }

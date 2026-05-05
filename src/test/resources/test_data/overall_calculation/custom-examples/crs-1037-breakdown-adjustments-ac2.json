@@ -20,8 +20,7 @@
             "YEARS": 1
           }
         },
-        "sentencedAt": "2020-09-11",
-        "identifier": "2b9ec65b-17ef-4329-b5c7-00f9f8cf8847"
+        "sentencedAt": "2020-09-11"
       },
       {
         "type": "StandardSentence",
@@ -35,8 +34,12 @@
           }
         },
         "sentencedAt": "2021-05-15",
-        "identifier": "c0060d4a-96e7-4d31-be78-d00fe35a86ee",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "AFineSentence",
@@ -49,11 +52,13 @@
           }
         },
         "sentencedAt": "2022-09-02",
-        "identifier": "76fc6300-3581-4d69-b886-314525ca7cf1",
         "fineAmount": 4E+2
       }
     ],
     "adjustments": {}
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-50"
 }

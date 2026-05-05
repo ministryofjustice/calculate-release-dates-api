@@ -6,6 +6,7 @@
     },
     "sentences": [
       {
+        "type": "StandardSentence",
         "offence": {
           "committedAt": "2022-03-14",
           "offenceCode": "MD71130"
@@ -15,9 +16,16 @@
             "MONTHS": 40
           }
         },
-        "sentencedAt": "2023-02-03"
+        "sentencedAt": "2023-02-03",
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
+    "adjustments": {},
     "externalMovements": [
       {
         "movementDate": "2023-02-03",

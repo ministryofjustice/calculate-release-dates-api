@@ -6,6 +6,7 @@
     },
     "sentences": [
       {
+        "type": "StandardSentence",
         "offence": {
           "committedAt": "2020-01-01",
           "offenceCode": "SF75097"
@@ -16,9 +17,16 @@
           }
         },
         "sentencedAt": "2022-02-05",
-        "identifier": "21806ce8-df28-3c60-b461-bb9739b2240b"
+        "identifier": "21806ce8-df28-3c60-b461-bb9739b2240b",
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
+        "type": "StandardSentence",
         "offence": {
           "committedAt": "2021-09-01",
           "offenceCode": "WA15086"
@@ -29,9 +37,16 @@
           }
         },
         "sentencedAt": "2022-04-01",
-        "identifier": "9553e81f-6d4f-34bf-ab7e-a6e793009a0e"
+        "identifier": "9553e81f-6d4f-34bf-ab7e-a6e793009a0e",
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
+        "type": "StandardSentence",
         "offence": {
           "committedAt": "2019-01-12",
           "offenceCode": "DR91023"
@@ -45,7 +60,13 @@
         "identifier": "8686af20-d6b6-3d16-a202-25c3964cdc5f",
         "consecutiveSentenceUUIDs": [
           "9553e81f-6d4f-34bf-ab7e-a6e793009a0e"
-        ]
+        ],
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {}

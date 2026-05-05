@@ -19,12 +19,17 @@
         "sentencedAt": "2021-03-30",
         "recall": {
           "recallType": "FIXED_TERM_RECALL_56",
-          "returnToCustodyDate": "2025-08-18",
-          "revocationDate": "2025-06-22"
+          "revocationDate": "2025-06-22",
+          "returnToCustodyDate": "2025-08-18"
+        },
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
         }
       }
     ],
-    "returnToCustodyDate": "2025-08-18",
     "adjustments": {
       "UNLAWFULLY_AT_LARGE": [
         {
@@ -40,6 +45,11 @@
           "toDate": "2025-08-17"
         }
       ]
-    }
-  }
+    },
+    "returnToCustodyDate": "2025-08-18"
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params"
 }

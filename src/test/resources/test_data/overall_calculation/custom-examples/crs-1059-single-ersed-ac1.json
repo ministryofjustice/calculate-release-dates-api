@@ -16,8 +16,12 @@
           }
         },
         "sentencedAt": "2010-08-31",
-        "identifier": "bd3a10c0-0bb1-4d1e-8194-447ad9eec090",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {}

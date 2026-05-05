@@ -6,6 +6,7 @@
     },
     "sentences": [
       {
+        "type": "StandardSentence",
         "offence": {
           "committedAt": "2019-01-01"
         },
@@ -15,9 +16,16 @@
           }
         },
         "sentencedAt": "2020-10-01",
-        "identifier": "a31d5d02-611f-43b0-8b1a-4b1edc955e7e"
+        "identifier": "a31d5d02-611f-43b0-8b1a-4b1edc955e7e",
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
+        "type": "StandardSentence",
         "offence": {
           "committedAt": "2019-01-01"
         },
@@ -29,9 +37,16 @@
         "sentencedAt": "2020-10-01",
         "consecutiveSentenceUUIDs": [
           "a31d5d02-611f-43b0-8b1a-4b1edc955e7e"
-        ]
+        ],
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
+        "type": "StandardSentence",
         "offence": {
           "committedAt": "2019-01-01"
         },
@@ -40,7 +55,13 @@
             "DAYS": 10
           }
         },
-        "sentencedAt": "2020-10-01"
+        "sentencedAt": "2020-10-01",
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
@@ -54,5 +75,9 @@
       ]
     }
   },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params",
   "expectedValidationException": "CUSTODIAL_PERIOD_EXTINGUISHED_REMAND"
 }

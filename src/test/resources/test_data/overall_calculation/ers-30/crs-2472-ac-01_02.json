@@ -18,9 +18,12 @@
         },
         "sentencedAt": "2024-12-06",
         "identifier": "cb304745-d781-47d3-b931-4baa31551fc5",
-        "isSDSPlus": true,
-        "isSDSPlusEligibleSentenceTypeLengthAndOffence": true,
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": true,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": true,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -34,23 +37,18 @@
           }
         },
         "sentencedAt": "2025-10-02",
-        "identifier": "493019e8-36ba-442d-90d6-315ead9dcf51",
         "consecutiveSentenceUUIDs": [
           "cb304745-d781-47d3-b931-4baa31551fc5"
         ],
-        "isSDSPlus": false,
-        "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
-      "ADDITIONAL_DAYS_AWARDED": [
-        {
-          "appliesToSentencesFrom": "2024-12-06",
-          "numberOfDays": 10,
-          "fromDate": "2024-12-06"
-        }
-      ],
       "REMAND": [
         {
           "appliesToSentencesFrom": "2024-12-06",
@@ -58,10 +56,19 @@
           "fromDate": "2024-11-05",
           "toDate": "2024-12-05"
         }
+      ],
+      "ADDITIONAL_DAYS_AWARDED": [
+        {
+          "appliesToSentencesFrom": "2024-12-06",
+          "numberOfDays": 10,
+          "fromDate": "2024-12-06"
+        }
       ]
     }
   },
   "userInputs": {
-    "calculateErsed": true
-  }
+    "calculateErsed": true,
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params"
 }

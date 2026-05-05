@@ -17,12 +17,16 @@
           }
         },
         "sentencedAt": "2024-12-11",
-        "identifier": "9824a90b-ab4b-360d-8003-a7c8f53b81b3",
         "recall": {
           "recallType": "FIXED_TERM_RECALL_28",
           "returnToCustodyDate": "2025-11-27"
         },
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -36,12 +40,16 @@
           }
         },
         "sentencedAt": "2025-02-06",
-        "identifier": "9824a90b-ab4b-360d-8003-a7c8f53b81b4",
         "recall": {
           "recallType": "FIXED_TERM_RECALL_28",
           "returnToCustodyDate": "2025-11-27"
         },
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {},
@@ -52,5 +60,9 @@
       "recallLength": 14
     }
   },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params",
   "expectedValidationException": "FTR_TYPE_28_DAYS_SENTENCE_GAP_LT_14_DAYS"
 }

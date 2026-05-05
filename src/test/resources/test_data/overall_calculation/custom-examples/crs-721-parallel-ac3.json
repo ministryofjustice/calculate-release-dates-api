@@ -16,12 +16,16 @@
           }
         },
         "sentencedAt": "2020-01-03",
-        "identifier": "b08d6a64-3151-4b6e-b127-657f9b7e2696",
         "recall": {
           "recallType": "FIXED_TERM_RECALL_28",
           "returnToCustodyDate": "2022-01-07"
         },
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -34,11 +38,21 @@
           }
         },
         "sentencedAt": "2022-02-03",
-        "identifier": "b621fc24-487a-48bb-ba80-6fae595e76e8",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
+      "RECALL_REMAND": [
+        {
+          "appliesToSentencesFrom": "2020-01-03",
+          "numberOfDays": 3
+        }
+      ],
       "REMAND": [
         {
           "appliesToSentencesFrom": "2022-02-03",
@@ -46,15 +60,12 @@
           "fromDate": "2022-01-06",
           "toDate": "2022-01-06"
         }
-      ],
-      "RECALL_REMAND": [
-        {
-          "appliesToSentencesFrom": "2020-01-03",
-          "numberOfDays": 3
-        }
       ]
     },
     "returnToCustodyDate": "2022-01-07"
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-50"
 }

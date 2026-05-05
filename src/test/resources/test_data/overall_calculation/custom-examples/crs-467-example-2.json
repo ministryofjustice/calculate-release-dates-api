@@ -16,8 +16,12 @@
           }
         },
         "sentencedAt": "2017-02-17",
-        "identifier": "3e0cf400-a8a7-4584-a5cf-792cbdd31c88",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -30,17 +34,15 @@
           }
         },
         "sentencedAt": "2019-05-23",
-        "identifier": "ed5881f4-ae66-4068-9cef-d6e32e485606",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
-      "ADDITIONAL_DAYS_AWARDED": [
-        {
-          "appliesToSentencesFrom": "2017-02-17",
-          "numberOfDays": 131
-        }
-      ],
       "REMAND": [
         {
           "appliesToSentencesFrom": "2017-02-17",
@@ -48,8 +50,17 @@
           "fromDate": "2016-11-23",
           "toDate": "2017-02-16"
         }
+      ],
+      "ADDITIONAL_DAYS_AWARDED": [
+        {
+          "appliesToSentencesFrom": "2017-02-17",
+          "numberOfDays": 131
+        }
       ]
     }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-50"
 }

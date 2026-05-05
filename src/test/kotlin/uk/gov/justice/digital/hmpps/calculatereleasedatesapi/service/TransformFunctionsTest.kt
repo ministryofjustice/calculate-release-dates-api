@@ -47,6 +47,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SopcSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
@@ -128,9 +129,12 @@ class TransformFunctionsTest {
         lineSequence = lineSequence,
         caseSequence = caseSequence,
         externalSentenceId = ExternalSentenceId(sequence, bookingId),
-        isSDSPlus = true,
-        isSDSPlusEligibleSentenceTypeLengthAndOffence = true,
-        hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
+        releaseArrangements = SDSReleaseArrangements(
+          isSDSPlus = true,
+          isSDSPlusEligibleSentenceTypeLengthAndOffence = true,
+          isSection250 = false,
+          sdsEarlyReleaseExclusions = emptyList(),
+        ),
       ),
     )
   }

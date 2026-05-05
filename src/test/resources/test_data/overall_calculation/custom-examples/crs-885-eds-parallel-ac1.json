@@ -16,11 +16,15 @@
           }
         },
         "sentencedAt": "2017-08-28",
-        "identifier": "c0893d2b-4547-4e96-b03b-ed3115e41f23",
         "recall": {
           "recallType": "STANDARD_RECALL"
         },
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "ExtendedDeterminateSentence",
@@ -38,8 +42,7 @@
             "YEARS": 2
           }
         },
-        "sentencedAt": "2019-03-20",
-        "identifier": "bbc8949a-e65e-4a5e-8fb5-e46c62b34935"
+        "sentencedAt": "2019-03-20"
       }
     ],
     "adjustments": {
@@ -52,6 +55,9 @@
         }
       ]
     }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-50"
 }

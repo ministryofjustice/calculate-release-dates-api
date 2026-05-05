@@ -18,6 +18,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Recall
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustment
@@ -152,8 +153,12 @@ class BookingServiceTest {
             caseSequence = caseSequence,
             externalSentenceId = ExternalSentenceId(sentenceSequence = sequence, bookingId = bookingId),
             recall = Recall(RecallType.FIXED_TERM_RECALL_28, returnToCustodyDate = returnToCustodyDate.returnToCustodyDate),
-            isSDSPlus = false,
-            hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
+            releaseArrangements = SDSReleaseArrangements(
+              isSDSPlus = false,
+              isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+              isSection250 = false,
+              sdsEarlyReleaseExclusions = emptyList(),
+            ),
           ),
         ),
         adjustments = Adjustments(
@@ -209,8 +214,12 @@ class BookingServiceTest {
             caseSequence = caseSequence,
             externalSentenceId = ExternalSentenceId(sentenceSequence = sequence, bookingId = bookingId),
             recall = Recall(RecallType.FIXED_TERM_RECALL_28, returnToCustodyDate = returnToCustodyDate.returnToCustodyDate),
-            isSDSPlus = false,
-            hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
+            releaseArrangements = SDSReleaseArrangements(
+              isSDSPlus = false,
+              isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+              isSection250 = false,
+              sdsEarlyReleaseExclusions = emptyList(),
+            ),
           ),
         ),
         adjustments = Adjustments(
@@ -268,8 +277,12 @@ class BookingServiceTest {
             caseSequence = caseSequence,
             externalSentenceId = ExternalSentenceId(sentenceSequence = sequence, bookingId = bookingId),
             recall = Recall(RecallType.FIXED_TERM_RECALL_28, returnToCustodyDate = returnToCustodyDate.returnToCustodyDate),
-            isSDSPlus = false,
-            hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
+            releaseArrangements = SDSReleaseArrangements(
+              isSDSPlus = false,
+              isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+              isSection250 = false,
+              sdsEarlyReleaseExclusions = emptyList(),
+            ),
           ),
         ),
         adjustments = Adjustments(
@@ -325,8 +338,12 @@ class BookingServiceTest {
             caseSequence = caseSequence,
             externalSentenceId = ExternalSentenceId(sentenceSequence = sequence, bookingId = bookingId),
             recall = Recall(RecallType.FIXED_TERM_RECALL_28, returnToCustodyDate = returnToCustodyDate.returnToCustodyDate),
-            isSDSPlus = false,
-            hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
+            releaseArrangements = SDSReleaseArrangements(
+              isSDSPlus = false,
+              isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+              isSection250 = false,
+              sdsEarlyReleaseExclusions = emptyList(),
+            ),
           ),
         ),
         adjustments = Adjustments(
@@ -382,8 +399,12 @@ class BookingServiceTest {
             caseSequence = caseSequence,
             externalSentenceId = ExternalSentenceId(sentenceSequence = sequence, bookingId = bookingId),
             recall = Recall(RecallType.FIXED_TERM_RECALL_28, returnToCustodyDate = returnToCustodyDate.returnToCustodyDate),
-            isSDSPlus = false,
-            hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
+            releaseArrangements = SDSReleaseArrangements(
+              isSDSPlus = false,
+              isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+              isSection250 = false,
+              sdsEarlyReleaseExclusions = emptyList(),
+            ),
           ),
         ),
         adjustments = Adjustments(

@@ -20,8 +20,7 @@
             "MONTHS": 12
           }
         },
-        "sentencedAt": "2023-06-29",
-        "identifier": "402e16af-0222-4d0a-a893-2a843b47c004"
+        "sentencedAt": "2023-06-29"
       }
     ],
     "adjustments": {
@@ -34,6 +33,9 @@
         }
       ]
     }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-50"
 }

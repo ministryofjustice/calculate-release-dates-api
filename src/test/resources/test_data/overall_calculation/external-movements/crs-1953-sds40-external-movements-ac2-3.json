@@ -6,6 +6,7 @@
     },
     "sentences": [
       {
+        "type": "StandardSentence",
         "offence": {
           "committedAt": "2023-12-29",
           "offenceCode": "TH68027"
@@ -16,9 +17,16 @@
           }
         },
         "sentencedAt": "2024-06-19",
-        "identifier": "b17f4a7e-d9dd-37a2-be64-f057ba9bf874"
+        "identifier": "b17f4a7e-d9dd-37a2-be64-f057ba9bf874",
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
+        "type": "StandardSentence",
         "offence": {
           "committedAt": "2024-01-20",
           "offenceCode": "TH68010"
@@ -32,9 +40,16 @@
         "identifier": "581e5932-4d2b-3f3a-bc6d-12936230fe7a",
         "consecutiveSentenceUUIDs": [
           "b17f4a7e-d9dd-37a2-be64-f057ba9bf874"
-        ]
+        ],
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
+        "type": "StandardSentence",
         "offence": {
           "committedAt": "2023-11-28",
           "offenceCode": "TH68010"
@@ -44,9 +59,16 @@
             "MONTHS": 2
           }
         },
-        "sentencedAt": "2024-06-19"
+        "sentencedAt": "2024-06-19",
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
+        "type": "StandardSentence",
         "offence": {
           "committedAt": "2024-01-10",
           "offenceCode": "TH68027"
@@ -60,9 +82,16 @@
         "identifier": "0fed2db7-6ab9-3016-b3f9-01304e27cc8f",
         "consecutiveSentenceUUIDs": [
           "581e5932-4d2b-3f3a-bc6d-12936230fe7a"
-        ]
+        ],
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
+        "type": "StandardSentence",
         "offence": {
           "committedAt": "2023-10-25",
           "offenceCode": "CJ88144"
@@ -72,9 +101,16 @@
             "MONTHS": 4
           }
         },
-        "sentencedAt": "2024-06-19"
+        "sentencedAt": "2024-06-19",
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
+        "type": "StandardSentence",
         "offence": {
           "committedAt": "2024-01-15",
           "offenceCode": "TH68010"
@@ -88,9 +124,16 @@
         "identifier": "c4ce93d6-f388-3523-a246-9cf10195de4e",
         "consecutiveSentenceUUIDs": [
           "0fed2db7-6ab9-3016-b3f9-01304e27cc8f"
-        ]
+        ],
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
+        "type": "StandardSentence",
         "offence": {
           "committedAt": "2024-02-02",
           "offenceCode": "TH68010"
@@ -104,9 +147,16 @@
         "identifier": "380594c4-599c-3f09-b944-e2ccf8030400",
         "consecutiveSentenceUUIDs": [
           "c4ce93d6-f388-3523-a246-9cf10195de4e"
-        ]
+        ],
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
+        "type": "StandardSentence",
         "offence": {
           "committedAt": "2024-02-22",
           "offenceCode": "TH68010"
@@ -119,7 +169,13 @@
         "sentencedAt": "2024-06-19",
         "consecutiveSentenceUUIDs": [
           "380594c4-599c-3f09-b944-e2ccf8030400"
-        ]
+        ],
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {

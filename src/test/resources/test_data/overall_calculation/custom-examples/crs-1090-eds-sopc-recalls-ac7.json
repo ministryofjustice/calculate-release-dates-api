@@ -21,7 +21,12 @@
         "recall": {
           "recallType": "STANDARD_RECALL"
         },
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "ExtendedDeterminateSentence",
@@ -39,7 +44,6 @@
           }
         },
         "sentencedAt": "2019-01-28",
-        "identifier": "d8577759-9988-4ee0-83fa-fa3476ad8e0b",
         "consecutiveSentenceUUIDs": [
           "70b10e6a-a5b2-43e7-a5db-3694d75bedec"
         ],
@@ -47,10 +51,11 @@
           "recallType": "STANDARD_RECALL"
         }
       }
-        ],
-        "adjustments": {}
-      },
-      "params"
-      :
-      "sds-50"
-      }
+    ],
+    "adjustments": {}
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "sds-50"
+}

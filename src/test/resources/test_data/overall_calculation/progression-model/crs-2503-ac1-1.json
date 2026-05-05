@@ -8,8 +8,7 @@
       {
         "type": "StandardSentence",
         "offence": {
-          "committedAt": "2025-01-01",
-          "code": "CJ08001"
+          "committedAt": "2025-01-01"
         },
         "duration": {
           "durationElements": {
@@ -17,7 +16,14 @@
           }
         },
         "sentencedAt": "2026-01-01",
-        "hasAnSDSEarlyReleaseExclusion": "SEXUAL"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [
+            "SEXUAL"
+          ],
+          "isSection250": false
+        }
       },
       {
         "type": "DetentionAndTrainingOrderSentence",
@@ -34,6 +40,9 @@
       }
     ],
     "adjustments": {}
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-progression-model"
 }

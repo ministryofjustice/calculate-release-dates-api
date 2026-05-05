@@ -16,11 +16,15 @@
           }
         },
         "sentencedAt": "2021-12-24",
-        "identifier": "28ea9a9a-73dc-4964-8316-1d2e96c85ac1",
         "recall": {
           "recallType": "STANDARD_RECALL"
         },
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -33,8 +37,12 @@
           }
         },
         "sentencedAt": "2022-01-24",
-        "identifier": "cdf4c901-bc92-427f-be4f-c03e3c078ccc",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {

@@ -18,7 +18,12 @@
         },
         "sentencedAt": "2024-09-01",
         "identifier": "cb304745-d781-47d3-b931-4baa31551fc5",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -32,20 +37,29 @@
           }
         },
         "sentencedAt": "2024-09-01",
-        "identifier": "e87ca8b6-aeca-4ac9-b2dc-5720bfa22e21",
         "consecutiveSentenceUUIDs": [
           "cb304745-d781-47d3-b931-4baa31551fc5"
         ],
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
-      "REMAND": [
+      "ADDITIONAL_DAYS_AWARDED": [
         {
           "appliesToSentencesFrom": "2024-09-01",
-          "numberOfDays": 20,
-          "fromDate": "2024-01-01",
-          "toDate": "2024-01-20"
+          "numberOfDays": 40,
+          "fromDate": "2024-12-01"
+        }
+      ],
+      "RESTORATION_OF_ADDITIONAL_DAYS_AWARDED": [
+        {
+          "appliesToSentencesFrom": "2024-09-01",
+          "numberOfDays": 10
         }
       ],
       "UNLAWFULLY_AT_LARGE": [
@@ -55,19 +69,18 @@
           "fromDate": "2024-11-15"
         }
       ],
-      "RESTORATION_OF_ADDITIONAL_DAYS_AWARDED": [
+      "REMAND": [
         {
           "appliesToSentencesFrom": "2024-09-01",
-          "numberOfDays": 10
-        }
-      ],
-      "ADDITIONAL_DAYS_AWARDED": [
-        {
-          "appliesToSentencesFrom": "2024-09-01",
-          "numberOfDays": 40,
-          "fromDate": "2024-12-01"
+          "numberOfDays": 20,
+          "fromDate": "2024-01-01",
+          "toDate": "2024-01-20"
         }
       ]
     }
-  }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params"
 }

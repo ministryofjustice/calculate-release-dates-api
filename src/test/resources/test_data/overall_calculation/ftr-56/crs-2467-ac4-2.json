@@ -1,4 +1,4 @@
-  {
+{
   "booking": {
     "offender": {
       "reference": "ABC123",
@@ -18,11 +18,22 @@
         "sentencedAt": "2022-11-12",
         "recall": {
           "recallType": "FIXED_TERM_RECALL_56",
-          "returnToCustodyDate": "2025-12-03",
-          "revocationDate": "2025-12-02"
+          "revocationDate": "2025-12-02",
+          "returnToCustodyDate": "2025-12-03"
+        },
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
         }
       }
     ],
+    "adjustments": {},
     "returnToCustodyDate": "2025-12-03"
-  }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params"
 }

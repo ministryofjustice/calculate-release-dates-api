@@ -17,8 +17,12 @@
           }
         },
         "sentencedAt": "2022-10-26",
-        "identifier": "5b343153-b917-42d0-881b-963e70eae90f",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "DetentionAndTrainingOrderSentence",
@@ -30,8 +34,7 @@
             "MONTHS": 4
           }
         },
-        "sentencedAt": "2022-11-22",
-        "identifier": "e4439d35-116f-473f-b148-442b7dcfa1d7"
+        "sentencedAt": "2022-11-22"
       }
     ],
     "adjustments": {
@@ -44,6 +47,9 @@
         }
       ]
     }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-50"
 }

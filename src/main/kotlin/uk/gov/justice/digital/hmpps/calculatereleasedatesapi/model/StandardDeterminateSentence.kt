@@ -7,7 +7,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDa
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ReleaseMultiplier
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
 import java.time.LocalDate
-import java.util.*
+import java.util.UUID
 
 data class StandardDeterminateSentence(
   override val offence: Offence,
@@ -20,10 +20,7 @@ data class StandardDeterminateSentence(
   override val externalSentenceId: ExternalSentenceId? = null,
   override val caseReference: String? = null,
   override val recall: Recall? = null,
-  val isSDSPlus: Boolean,
-  val isSDSPlusEligibleSentenceTypeLengthAndOffence: Boolean = isSDSPlus,
-  val hasAnSDSEarlyReleaseExclusion: SDSEarlyReleaseExclusionType,
-  val section250: Boolean = false,
+  val releaseArrangements: SDSReleaseArrangements,
 ) : AbstractSentence(offence, sentencedAt, identifier, consecutiveSentenceUUIDs, caseSequence, lineSequence, externalSentenceId, caseReference, recall) {
 
   @JsonIgnore

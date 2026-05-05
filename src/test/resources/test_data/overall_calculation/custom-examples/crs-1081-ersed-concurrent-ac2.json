@@ -16,8 +16,12 @@
           }
         },
         "sentencedAt": "2022-01-19",
-        "identifier": "5adbb66f-c49b-4684-8adf-7187e096db88",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "AFineSentence",
@@ -31,7 +35,6 @@
           }
         },
         "sentencedAt": "2022-01-19",
-        "identifier": "15652ed5-1f20-40b4-ad2d-e6f7c70746ba",
         "fineAmount": 4E+3
       }
     ],

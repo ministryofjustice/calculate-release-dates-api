@@ -18,25 +18,35 @@
         "sentencedAt": "2022-10-06",
         "recall": {
           "recallType": "FIXED_TERM_RECALL_56",
-          "returnToCustodyDate": "2024-12-03",
-          "revocationDate": "2024-12-02"
+          "revocationDate": "2024-12-02",
+          "returnToCustodyDate": "2024-12-03"
+        },
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
         }
       }
     ],
     "adjustments": {
-      "ADDITIONAL_DAYS_AWARDED": [
-        {
-          "appliesToSentencesFrom": "2023-05-18",
-          "numberOfDays": 6
-        }
-      ],
       "RECALL_TAGGED_BAIL": [
         {
           "appliesToSentencesFrom": "2022-10-06",
           "numberOfDays": 15
         }
+      ],
+      "ADDITIONAL_DAYS_AWARDED": [
+        {
+          "appliesToSentencesFrom": "2023-05-18",
+          "numberOfDays": 6
+        }
       ]
     },
     "returnToCustodyDate": "2024-12-03"
-  }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params"
 }

@@ -6,6 +6,7 @@
     },
     "sentences": [
       {
+        "type": "StandardSentence",
         "offence": {
           "committedAt": "2019-01-01"
         },
@@ -14,7 +15,13 @@
             "MONTHS": 12
           }
         },
-        "sentencedAt": "2020-10-01"
+        "sentencedAt": "2020-10-01",
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
@@ -28,5 +35,9 @@
       ]
     }
   },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params",
   "expectedValidationException": "CUSTODIAL_PERIOD_EXTINGUISHED_REMAND"
 }

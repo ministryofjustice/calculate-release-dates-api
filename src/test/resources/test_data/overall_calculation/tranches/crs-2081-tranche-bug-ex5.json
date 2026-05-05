@@ -17,11 +17,15 @@
           }
         },
         "sentencedAt": "2018-09-21",
-        "identifier": "7029953f-8425-4287-b5b3-084510ceb6f4",
         "recall": {
           "recallType": "STANDARD_RECALL"
         },
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -36,8 +40,12 @@
           }
         },
         "sentencedAt": "2024-05-01",
-        "identifier": "bd792bb5-e22b-41e2-9c3f-32f923ee8b96",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -51,15 +59,21 @@
           }
         },
         "sentencedAt": "2024-05-01",
-        "identifier": "fc876f89-9645-4620-b143-e6177a8bcea5",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
-      "RECALL_TAGGED_BAIL": [
+      "REMAND": [
         {
-          "appliesToSentencesFrom": "2018-09-21",
-          "numberOfDays": 102
+          "appliesToSentencesFrom": "2024-05-01",
+          "numberOfDays": 3,
+          "fromDate": "2023-10-11",
+          "toDate": "2023-10-13"
         }
       ],
       "RECALL_REMAND": [
@@ -70,15 +84,17 @@
           "toDate": "2018-09-20"
         }
       ],
-      "REMAND": [
+      "RECALL_TAGGED_BAIL": [
         {
-          "appliesToSentencesFrom": "2024-05-01",
-          "numberOfDays": 3,
-          "fromDate": "2023-10-11",
-          "toDate": "2023-10-13"
+          "appliesToSentencesFrom": "2018-09-21",
+          "numberOfDays": 102
         }
       ]
     }
   },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params",
   "assertSds40": true
 }

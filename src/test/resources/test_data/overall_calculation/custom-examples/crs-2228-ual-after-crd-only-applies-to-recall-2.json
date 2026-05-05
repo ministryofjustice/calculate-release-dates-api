@@ -17,8 +17,12 @@
           }
         },
         "sentencedAt": "2024-02-06",
-        "identifier": "91ca68c1-75a4-4e2e-b97d-5196b6d57ff2",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -32,12 +36,16 @@
           }
         },
         "sentencedAt": "2023-12-11",
-        "identifier": "42e5dfd6-2e01-494b-8343-feafe6f261b1",
         "recall": {
           "recallType": "FIXED_TERM_RECALL_28",
           "returnToCustodyDate": "2024-12-12"
         },
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
@@ -51,5 +59,9 @@
       ]
     },
     "returnToCustodyDate": "2024-12-12"
-  }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params"
 }

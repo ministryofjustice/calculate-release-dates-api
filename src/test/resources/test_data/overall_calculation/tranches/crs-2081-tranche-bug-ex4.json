@@ -17,11 +17,15 @@
           }
         },
         "sentencedAt": "2020-08-13",
-        "identifier": "7254eb64-af11-43d0-98f9-c75981c6b6db",
         "recall": {
           "recallType": "STANDARD_RECALL"
         },
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -35,8 +39,12 @@
           }
         },
         "sentencedAt": "2024-07-16",
-        "identifier": "247d743c-9d06-4ce1-a53f-dc666aee3967",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -50,11 +58,23 @@
           }
         },
         "sentencedAt": "2024-07-16",
-        "identifier": "bc3e3405-1980-4006-82a6-20677eaa0e78",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2024-07-16",
+          "numberOfDays": 1,
+          "fromDate": "2024-05-22",
+          "toDate": "2024-05-22"
+        }
+      ],
       "RECALL_REMAND": [
         {
           "appliesToSentencesFrom": "2020-08-13",
@@ -68,16 +88,12 @@
           "fromDate": "2019-10-02",
           "toDate": "2019-11-13"
         }
-      ],
-      "REMAND": [
-        {
-          "appliesToSentencesFrom": "2024-07-16",
-          "numberOfDays": 1,
-          "fromDate": "2024-05-22",
-          "toDate": "2024-05-22"
-        }
       ]
     }
   },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params",
   "assertSds40": true
 }

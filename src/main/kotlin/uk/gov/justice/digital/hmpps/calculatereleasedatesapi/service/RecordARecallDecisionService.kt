@@ -251,7 +251,7 @@ class RecordARecallDecisionService(
     externalMovements: List<ExternalMovement>,
     revocationDate: LocalDate,
   ): List<Recall.RecallType> {
-    val onlyYouthSentences = recallableSentences.all { it.second.sentenceParts().all { sentence -> sentence is StandardDeterminateSentence && sentence.section250 } }
+    val onlyYouthSentences = recallableSentences.all { it.second.sentenceParts().all { sentence -> sentence is StandardDeterminateSentence && sentence.releaseArrangements.isSection250 } }
     if (onlyYouthSentences) {
       return findExpectedRecallTypesForFtr(recallableSentences, externalMovements, revocationDate)
     } else {

@@ -21,11 +21,13 @@
           }
         },
         "automaticRelease": true,
-        "sentencedAt": "2015-03-06",
-        "identifier": "5d11c13e-06aa-4ff5-98b1-456eb446bcf3"
+        "sentencedAt": "2015-03-06"
       }
     ],
     "adjustments": {}
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-50"
 }

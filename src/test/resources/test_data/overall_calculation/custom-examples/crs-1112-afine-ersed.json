@@ -16,8 +16,12 @@
           }
         },
         "sentencedAt": "2022-08-03",
-        "identifier": "d3b328cb-b40d-4140-ad2e-37d8360c9334",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {

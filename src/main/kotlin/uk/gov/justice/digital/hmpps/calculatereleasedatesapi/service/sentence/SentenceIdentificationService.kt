@@ -316,7 +316,7 @@ class SentenceIdentificationService(
     releaseDateTypes: MutableList<ReleaseDateType>,
   ) {
     sentence.identificationTrack = when {
-      sentence is StandardDeterminateSentence && sentence.isSDSPlus -> SDS_PLUS
+      sentence is StandardDeterminateSentence && sentence.releaseArrangements.isSDSPlus -> SDS_PLUS
       else -> SDS
     }
 

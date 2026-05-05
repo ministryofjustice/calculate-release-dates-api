@@ -16,8 +16,12 @@
           }
         },
         "sentencedAt": "2015-08-06",
-        "identifier": "d195e32e-5e5f-46c6-9897-7837311bfe6e",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {

@@ -17,11 +17,15 @@
           }
         },
         "sentencedAt": "2024-10-29",
-        "identifier": "b4397227-ee59-4318-ae66-6cf216cede20",
         "consecutiveSentenceUUIDs": [
           "7728bb3d-cade-3d2b-bec6-5a502ab325a4"
         ],
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -35,8 +39,12 @@
           }
         },
         "sentencedAt": "2024-10-29",
-        "identifier": "84cc516d-0453-4937-a268-3eb9cca3cbb6",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -51,7 +59,12 @@
         },
         "sentencedAt": "2024-10-29",
         "identifier": "7728bb3d-cade-3d2b-bec6-5a502ab325a4",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -65,8 +78,12 @@
           }
         },
         "sentencedAt": "2024-10-29",
-        "identifier": "070c9bd2-18e5-4888-b69d-82e46f82dba9",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
@@ -80,5 +97,9 @@
       ]
     }
   },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params",
   "assertSds40": true
 }

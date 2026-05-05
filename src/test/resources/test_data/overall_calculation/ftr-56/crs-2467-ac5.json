@@ -16,12 +16,18 @@
           }
         },
         "sentencedAt": "2021-01-14",
+        "identifier": "0de48d91-c0de-37d4-940a-9b1ec02eaac5",
         "recall": {
           "recallType": "FIXED_TERM_RECALL_56",
-          "returnToCustodyDate": "2024-09-03",
-          "revocationDate": "2024-08-27"
+          "revocationDate": "2024-08-27",
+          "returnToCustodyDate": "2024-09-03"
         },
-        "identifier": "0de48d91-c0de-37d4-940a-9b1ec02eaac5"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -34,24 +40,27 @@
           }
         },
         "sentencedAt": "2021-01-14",
-        "recall": {
-          "recallType": "FIXED_TERM_RECALL_56",
-          "returnToCustodyDate": "2024-09-03",
-          "revocationDate": "2024-08-27"
-        },
         "consecutiveSentenceUUIDs": [
           "0de48d91-c0de-37d4-940a-9b1ec02eaac5"
-        ]
+        ],
+        "recall": {
+          "recallType": "FIXED_TERM_RECALL_56",
+          "revocationDate": "2024-08-27",
+          "returnToCustodyDate": "2024-09-03"
+        },
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
-    "returnToCustodyDate": "2024-09-03",
     "adjustments": {
-      "UNLAWFULLY_AT_LARGE": [
+      "RESTORATION_OF_ADDITIONAL_DAYS_AWARDED": [
         {
-          "appliesToSentencesFrom": "2024-08-28",
-          "numberOfDays": 6,
-          "fromDate": "2024-08-28",
-          "toDate": "2024-09-02"
+          "appliesToSentencesFrom": "2025-10-10",
+          "numberOfDays": 5
         }
       ],
       "ADDITIONAL_DAYS_AWARDED": [
@@ -60,12 +69,19 @@
           "numberOfDays": 20
         }
       ],
-      "RESTORATION_OF_ADDITIONAL_DAYS_AWARDED": [
+      "UNLAWFULLY_AT_LARGE": [
         {
-          "appliesToSentencesFrom": "2025-10-10",
-          "numberOfDays": 5
+          "appliesToSentencesFrom": "2024-08-28",
+          "numberOfDays": 6,
+          "fromDate": "2024-08-28",
+          "toDate": "2024-09-02"
         }
       ]
-    }
-  }
+    },
+    "returnToCustodyDate": "2024-09-03"
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params"
 }

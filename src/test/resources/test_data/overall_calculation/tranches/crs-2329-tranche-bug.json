@@ -36,8 +36,12 @@
           }
         },
         "sentencedAt": "2021-10-20",
-        "identifier": "92abaa29-f925-4967-98dc-4ba92fed75bd",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -51,11 +55,15 @@
           }
         },
         "sentencedAt": "2024-11-27",
-        "identifier": "76e27393-4b05-4fbe-89b7-25c022930458",
         "consecutiveSentenceUUIDs": [
           "8fd83cfb-ee0e-3421-8bc7-ef154cb83045"
         ],
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -69,8 +77,12 @@
           }
         },
         "sentencedAt": "2024-11-27",
-        "identifier": "f0782629-47bc-4560-be50-7897ed55217c",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -84,11 +96,23 @@
           }
         },
         "sentencedAt": "2024-11-27",
-        "identifier": "dd64ccb2-de39-4252-a621-1df3b20196ef",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2021-10-20",
+          "numberOfDays": 189,
+          "fromDate": "2021-04-14",
+          "toDate": "2021-10-19"
+        }
+      ],
       "ADDITIONAL_DAYS_AWARDED": [
         {
           "appliesToSentencesFrom": "2023-03-07",
@@ -126,16 +150,12 @@
           "fromDate": "2021-08-25",
           "toDate": "2021-09-13"
         }
-      ],
-      "REMAND": [
-        {
-          "appliesToSentencesFrom": "2021-10-20",
-          "numberOfDays": 189,
-          "fromDate": "2021-04-14",
-          "toDate": "2021-10-19"
-        }
       ]
     }
   },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params",
   "expectedValidationMessage": "TRUE"
 }

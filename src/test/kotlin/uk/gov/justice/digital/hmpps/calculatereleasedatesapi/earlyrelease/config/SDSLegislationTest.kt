@@ -12,7 +12,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeter
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Recall
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SopcSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ReleaseMultiplier
@@ -42,9 +42,12 @@ class SDSLegislationTest {
           committedAt = LocalDate.of(2000, 1, 1),
           offenceCode = "123",
         ),
-        isSDSPlus = false,
-        section250 = false,
-        hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
+        releaseArrangements = SDSReleaseArrangements(
+          isSDSPlus = false,
+          isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+          isSection250 = false,
+          sdsEarlyReleaseExclusions = emptyList(),
+        ),
       )
       sentence.identificationTrack = SentenceIdentificationTrack.SDS
 
@@ -60,9 +63,12 @@ class SDSLegislationTest {
           committedAt = LocalDate.of(2000, 1, 1),
           offenceCode = "123",
         ),
-        isSDSPlus = true,
-        section250 = false,
-        hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
+        releaseArrangements = SDSReleaseArrangements(
+          isSDSPlus = true,
+          isSDSPlusEligibleSentenceTypeLengthAndOffence = true,
+          isSection250 = false,
+          sdsEarlyReleaseExclusions = emptyList(),
+        ),
       )
       sentence.identificationTrack = SentenceIdentificationTrack.SDS_PLUS
 
@@ -78,9 +84,12 @@ class SDSLegislationTest {
           committedAt = LocalDate.of(2000, 1, 1),
           offenceCode = "123",
         ),
-        isSDSPlus = false,
-        section250 = true,
-        hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
+        releaseArrangements = SDSReleaseArrangements(
+          isSDSPlus = false,
+          isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+          isSection250 = true,
+          sdsEarlyReleaseExclusions = emptyList(),
+        ),
       )
       sentence.identificationTrack = SentenceIdentificationTrack.SDS
 
@@ -96,9 +105,12 @@ class SDSLegislationTest {
           committedAt = LocalDate.of(2000, 1, 1),
           offenceCode = "123",
         ),
-        isSDSPlus = true,
-        section250 = true,
-        hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
+        releaseArrangements = SDSReleaseArrangements(
+          isSDSPlus = true,
+          isSDSPlusEligibleSentenceTypeLengthAndOffence = true,
+          isSection250 = true,
+          sdsEarlyReleaseExclusions = emptyList(),
+        ),
       )
       sentence.identificationTrack = SentenceIdentificationTrack.SDS_PLUS
 
@@ -114,9 +126,12 @@ class SDSLegislationTest {
           committedAt = LocalDate.of(2000, 1, 1),
           offenceCode = "123",
         ),
-        isSDSPlus = false,
-        section250 = false,
-        hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
+        releaseArrangements = SDSReleaseArrangements(
+          isSDSPlus = false,
+          isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+          isSection250 = false,
+          sdsEarlyReleaseExclusions = emptyList(),
+        ),
         recall = Recall(RecallType.FIXED_TERM_RECALL_56),
       )
       sentence.identificationTrack = SentenceIdentificationTrack.SDS

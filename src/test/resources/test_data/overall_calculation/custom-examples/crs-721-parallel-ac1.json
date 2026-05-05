@@ -16,11 +16,15 @@
           }
         },
         "sentencedAt": "2021-06-14",
-        "identifier": "83803231-b1b4-4e42-9f62-5cdfde596e2c",
         "recall": {
           "recallType": "STANDARD_RECALL"
         },
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -33,19 +37,15 @@
           }
         },
         "sentencedAt": "2021-12-13",
-        "identifier": "f8cb0573-491a-41de-81fd-9c0b192788dc",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
-      "REMAND": [
-        {
-          "appliesToSentencesFrom": "2021-12-13",
-          "numberOfDays": 2,
-          "fromDate": "2021-10-04",
-          "toDate": "2021-10-05"
-        }
-      ],
       "RECALL_REMAND": [
         {
           "appliesToSentencesFrom": "2021-06-14",
@@ -53,8 +53,19 @@
           "fromDate": "2021-03-01",
           "toDate": "2021-06-13"
         }
+      ],
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2021-12-13",
+          "numberOfDays": 2,
+          "fromDate": "2021-10-04",
+          "toDate": "2021-10-05"
+        }
       ]
     }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-50"
 }

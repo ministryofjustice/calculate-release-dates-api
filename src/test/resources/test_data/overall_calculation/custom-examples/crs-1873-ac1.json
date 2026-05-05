@@ -16,8 +16,12 @@
           }
         },
         "sentencedAt": "2024-04-26",
-        "identifier": "9fd7aa2b-ab3f-43e9-ace4-0cf68193c796",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "BotusSentence",
@@ -29,11 +33,13 @@
             "DAYS": 14
           }
         },
-        "sentencedAt": "2024-04-26",
-        "identifier": "adccecad-31f2-4d53-ad2a-329b2ad89288"
+        "sentencedAt": "2024-04-26"
       }
     ],
     "adjustments": {}
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-50"
 }

@@ -58,7 +58,7 @@ class HdcedCalculator(
     return true
   }
 
-  fun hasSdsPlus(sentence: CalculableSentence): Boolean = sentence.sentenceParts().any { it is StandardDeterminateSentence && it.isSDSPlusEligibleSentenceTypeLengthAndOffence }
+  fun hasSdsPlus(sentence: CalculableSentence): Boolean = sentence.sentenceParts().any { it is StandardDeterminateSentence && it.releaseArrangements.isSDSPlusEligibleSentenceTypeLengthAndOffence }
 
   private data class HdcedCalculationInput(
     val custodialPeriodDecimal: BigDecimal,
