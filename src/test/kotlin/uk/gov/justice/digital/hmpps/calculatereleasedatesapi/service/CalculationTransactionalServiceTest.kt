@@ -246,7 +246,6 @@ class CalculationTransactionalServiceTest {
     ).thenReturn(
       fakeSourceData,
     )
-    println("XXX" + TestUtil.objectMapper().writeValueAsString(BOOKING))
     whenever(bookingService.getBooking(fakeSourceData)).thenReturn(BOOKING)
     whenever(calculationRequestRepository.save(any<CalculationRequest>())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
     whenever(calculationRequestRepository.findById(CALCULATION_REQUEST_ID)).thenReturn(
