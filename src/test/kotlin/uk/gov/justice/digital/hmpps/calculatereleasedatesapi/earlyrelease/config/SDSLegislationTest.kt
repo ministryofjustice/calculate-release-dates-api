@@ -12,6 +12,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeter
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Recall
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SopcSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
@@ -182,6 +183,48 @@ class SDSLegislationTest {
           offenceCode = "123",
         ),
       )
+
+      assertThat(progressionModelLegislation.isSentenceSubjectToTraches(sentence)).isFalse
+    }
+
+    @Test
+    fun `Would be SDS+ sentences should not be subject tranches`() {
+      val sentence = StandardDeterminateSentence(
+        sentencedAt = LocalDate.of(2000, 1, 1),
+        duration = FIVE_YEAR_DURATION,
+        offence = Offence(
+          committedAt = LocalDate.of(2000, 1, 1),
+          offenceCode = "123",
+        ),
+        releaseArrangements = SDSReleaseArrangements(
+          isSDSPlus = false,
+          isSDSPlusEligibleSentenceTypeLengthAndOffence = true,
+          isSection250 = false,
+          sdsEarlyReleaseExclusions = emptyList(),
+        ),
+      )
+      sentence.identificationTrack = SentenceIdentificationTrack.SDS
+
+      assertThat(progressionModelLegislation.isSentenceSubjectToTraches(sentence)).isFalse
+    }
+
+    @Test
+    fun `SDS sentence with Schedule 13 Part 3 exclusion should not be subject tranches`() {
+      val sentence = StandardDeterminateSentence(
+        sentencedAt = LocalDate.of(2000, 1, 1),
+        duration = FIVE_YEAR_DURATION,
+        offence = Offence(
+          committedAt = LocalDate.of(2000, 1, 1),
+          offenceCode = "123",
+        ),
+        releaseArrangements = SDSReleaseArrangements(
+          isSDSPlus = false,
+          isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+          isSection250 = false,
+          sdsEarlyReleaseExclusions = listOf(SDSEarlyReleaseExclusionType.PROGRESSION_MODEL_SCHEDULE_13_PART_3),
+        ),
+      )
+      sentence.identificationTrack = SentenceIdentificationTrack.SDS
 
       assertThat(progressionModelLegislation.isSentenceSubjectToTraches(sentence)).isFalse
     }
