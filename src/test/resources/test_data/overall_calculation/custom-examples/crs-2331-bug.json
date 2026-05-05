@@ -84,7 +84,6 @@
         ],
         "isSDSPlus": true,
         "isSDSPlusEligibleSentenceTypeLengthAndOffence": true,
-        "isSDSPlusOffenceInPeriod": true,
         "hasAnSDSEarlyReleaseExclusion": "NO"
       },
       {
@@ -137,7 +136,6 @@
         "consecutiveSentenceUUIDs": [
           "d288b9c6-fc77-3e2f-8276-8689526df9c9"
         ],
-        "isSDSPlusOffenceInPeriod": true,
         "hasAnSDSEarlyReleaseExclusion": "NO"
       },
       {

@@ -33,7 +33,6 @@
         "sentencedAt": "2026-12-05",
         "isSDSPlus": true,
         "isSDSPlusEligibleSentenceTypeLengthAndOffence": true,
-        "isSDSPlusOffenceInPeriod": true,
         "hasAnSDSEarlyReleaseExclusion": "NO"
       }
     ],

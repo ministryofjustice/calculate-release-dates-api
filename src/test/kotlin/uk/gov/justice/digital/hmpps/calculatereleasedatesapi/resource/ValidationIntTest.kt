@@ -5,9 +5,9 @@ import org.junit.jupiter.api.Test
 import org.springframework.http.MediaType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.MockManageOffencesClient
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.manageoffencesapi.model.PcscMarkers
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.manageoffencesapi.model.SdsOffenceDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SupportedValidationResponse
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.manageoffencesapi.OffencePcscMarkers
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.manageoffencesapi.PcscMarkers
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.ADJUSTMENT_AFTER_RELEASE_ADA
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.ADJUSTMENT_AFTER_RELEASE_RADA
@@ -62,25 +62,25 @@ class ValidationIntTest(private val mockManageOffencesClient: MockManageOffences
 
   @Test
   fun `Run validation for DTO concurrent to recall`() {
-    mockManageOffencesClient.noneInPCSC(listOf("CD71040", "CJ88117"))
+    mockManageOffencesClient.notSDSPlusAndNoExclusions(listOf("CD71040", "CJ88117"))
     runValidationAndCheckMessages("CRS-1145-AC1", listOf(ValidationMessage(code = UNSUPPORTED_CALCULATION_DTO_WITH_RECALL)))
   }
 
   @Test
   fun `Run validation on future dated adjustments`() {
-    mockManageOffencesClient.noneInPCSC(listOf("CD98075", "CJ88144", "CJ88148", "OF61016", "TH68037"))
+    mockManageOffencesClient.notSDSPlusAndNoExclusions(listOf("CD98075", "CJ88144", "CJ88148", "OF61016", "TH68037"))
     runValidationAndCheckMessages("CRS-1044", listOf(ValidationMessage(ADJUSTMENT_FUTURE_DATED_RADA)))
   }
 
   @Test
   fun `Run validation for overlapping remand and custodial period`() {
-    mockManageOffencesClient.noneInPCSC(listOf("MD71526", "MD71530", "MD71533", "PC02021"))
+    mockManageOffencesClient.notSDSPlusAndNoExclusions(listOf("MD71526", "MD71530", "MD71533", "PC02021"))
     runValidationAndCheckMessages("CRS-1394", listOf())
   }
 
   @Test
   fun `Run validation on invalid data`() {
-    mockManageOffencesClient.noneInPCSC(listOf("GBH", "SX03014"))
+    mockManageOffencesClient.notSDSPlusAndNoExclusions(listOf("GBH", "SX03014"))
     runValidationAndCheckMessages(
       VALIDATION_PRISONER_ID,
       listOf(
@@ -172,7 +172,7 @@ class ValidationIntTest(private val mockManageOffencesClient: MockManageOffences
 
   @Test
   fun `Run validation on extinguished crd booking`() {
-    mockManageOffencesClient.noneInPCSC(listOf("CT94012", "TH68003A", "TH68045"))
+    mockManageOffencesClient.notSDSPlusAndNoExclusions(listOf("CT94012", "TH68003A", "TH68045"))
     runValidationAndCheckMessages(
       "EXTINGUISH",
       listOf(
@@ -193,7 +193,7 @@ class ValidationIntTest(private val mockManageOffencesClient: MockManageOffences
 
   @Test
   fun `Run validation on adjustment after release date 1`() {
-    mockManageOffencesClient.noneInPCSC(listOf("MD71134", "MD71191"))
+    mockManageOffencesClient.notSDSPlusAndNoExclusions(listOf("MD71134", "MD71191"))
     runValidationAndCheckMessages(
       "CRS-796-1",
       listOf(
@@ -205,7 +205,7 @@ class ValidationIntTest(private val mockManageOffencesClient: MockManageOffences
 
   @Test
   fun `Run validation on adjustment after release date 1 with more RADA and ADA`() {
-    mockManageOffencesClient.noneInPCSC(listOf("MD71134", "MD71191"))
+    mockManageOffencesClient.notSDSPlusAndNoExclusions(listOf("MD71134", "MD71191"))
     runValidationAndCheckMessages(
       "CRS-796-1-more-adas-radas",
       listOf(
@@ -217,22 +217,23 @@ class ValidationIntTest(private val mockManageOffencesClient: MockManageOffences
 
   @Test
   fun `Run validation on adjustment after release date 2`() {
-    mockManageOffencesClient.noneInPCSC(listOf("CD71040", "FI68247", "FI68410"))
+    mockManageOffencesClient.notSDSPlusAndNoExclusions(listOf("CD71040", "FI68247", "FI68410"))
     runValidationAndCheckMessages("CRS-796-2", listOf(ValidationMessage(ADJUSTMENT_AFTER_RELEASE_ADA)))
   }
 
   @Test
   fun `Run validation on adjustment after release with a term`() {
-    mockManageOffencesClient.noneInPCSC(listOf("RT88333", "TH68013"))
+    mockManageOffencesClient.notSDSPlusAndNoExclusions(listOf("RT88333", "TH68013"))
     runValidationAndCheckMessages("CRS-1191-1", listOf(ValidationMessage(ADJUSTMENT_AFTER_RELEASE_ADA)))
   }
 
   @Test
   fun `Run validation on rada after ada adjustment extends release date`() {
-    mockManageOffencesClient.withPCSCMarkersResponse(
-      OffencePcscMarkers(
+    mockManageOffencesClient.withSdsOffenceDetailsResponse(
+      SdsOffenceDetails(
         offenceCode = "TR68132",
         pcscMarkers = PcscMarkers(inListA = true, inListB = true, inListC = true, inListD = true),
+        earlyReleaseExclusions = emptyList(),
       ),
       offences = "TR68132",
     )
@@ -268,7 +269,7 @@ class ValidationIntTest(private val mockManageOffencesClient: MockManageOffences
 
   @Test
   fun `Run validation for multiple sentences consecutive to the same parent`() {
-    mockManageOffencesClient.noneInPCSC(listOf("AW06005B", "HP25001", "PU86003B", "RF96105", "TM94004B"))
+    mockManageOffencesClient.notSDSPlusAndNoExclusions(listOf("AW06005B", "HP25001", "PU86003B", "RF96105", "TM94004B"))
     runValidationAndCheckMessages(
       "CRS-2283-1",
       listOf(
@@ -276,7 +277,7 @@ class ValidationIntTest(private val mockManageOffencesClient: MockManageOffences
       ),
     )
 
-    mockManageOffencesClient.noneInPCSC(listOf("CJ91015", "DX56013A", "PH98001", "RD78005", "SZ07011"))
+    mockManageOffencesClient.notSDSPlusAndNoExclusions(listOf("CJ91015", "DX56013A", "PH98001", "RD78005", "SZ07011"))
     runValidationAndCheckMessages(
       "CRS-2283-2",
       listOf(
@@ -284,7 +285,7 @@ class ValidationIntTest(private val mockManageOffencesClient: MockManageOffences
       ),
     )
 
-    mockManageOffencesClient.noneInPCSC(listOf("CJ91015", "DX56013A", "PH98001", "RD78005", "SZ07011"))
+    mockManageOffencesClient.notSDSPlusAndNoExclusions(listOf("CJ91015", "DX56013A", "PH98001", "RD78005", "SZ07011"))
     runValidationAndCheckMessages(
       "CRS-2283-3",
       emptyList(),

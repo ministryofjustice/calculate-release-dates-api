@@ -40,7 +40,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DiscrepancyCa
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.MismatchType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.PersonComparisonInputs
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ComparisonInput
@@ -555,10 +555,12 @@ class ComparisonServiceTest {
       courtDescription = null,
       courtTypeCode = null,
       fineAmount = null,
-      isSDSPlus = true,
-      isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-      isSDSPlusOffenceInPeriod = false,
-      hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
+      sdsReleaseArrangements = SDSReleaseArrangements(
+        isSDSPlus = true,
+        isSDSPlusEligibleSentenceTypeLengthAndOffence = true,
+        sdsEarlyReleaseExclusions = emptyList(),
+        isSection250 = false,
+      ),
     )
     val person = ComparisonPerson(
       1,

@@ -23,9 +23,6 @@ interface CalculableSentence {
   val sentencedAt: LocalDate
   val offence: Offence
   var identificationTrack: SentenceIdentificationTrack
-  val isSDSPlus: Boolean
-  val isSDSPlusEligibleSentenceTypeLengthAndOffence: Boolean
-  val isSDSPlusOffenceInPeriod: Boolean
 
   val recallType: RecallType?
     @JsonIgnore

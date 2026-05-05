@@ -158,6 +158,9 @@ enum class SentenceCalculationType(
   //endregion
   ;
 
+  fun isSDS(): Boolean = this.sentenceType == StandardDeterminate
+  fun isSection250(): Boolean = this.sdsPlusEligibilityType == SDSPlusEligibilityType.SECTION250
+
   companion object {
 
     fun from(sentenceCalculationType: String): SentenceCalculationType = entries.firstOrNull { it.primaryName == sentenceCalculationType }

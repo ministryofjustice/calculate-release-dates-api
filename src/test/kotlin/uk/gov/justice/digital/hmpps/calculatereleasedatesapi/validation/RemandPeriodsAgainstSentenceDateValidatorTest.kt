@@ -119,7 +119,6 @@ class RemandPeriodsAgainstSentenceDateValidatorTest {
       ),
       false,
       false,
-      false,
       SDSEarlyReleaseExclusionType.NO,
     )
 
