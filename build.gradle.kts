@@ -7,10 +7,10 @@ import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 plugins {
   id("uk.gov.justice.hmpps.gradle-spring-boot") version "10.2.3"
   id("org.springdoc.openapi-gradle-plugin") version "1.9.0"
-  kotlin("plugin.spring") version "2.3.20"
-  kotlin("plugin.jpa") version "2.3.20"
+  kotlin("plugin.spring") version "2.3.21"
+  kotlin("plugin.jpa") version "2.3.21"
   id("jacoco")
-  id("org.openapi.generator") version "7.21.0"
+  id("org.openapi.generator") version "7.22.0"
 }
 
 configurations {
@@ -60,15 +60,15 @@ dependencies {
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.3")
 
   implementation("com.amazonaws:amazon-sqs-java-messaging-lib:2.1.4")
-  implementation("io.awspring.cloud:spring-cloud-aws-starter:4.0.0")
-  implementation("io.awspring.cloud:spring-cloud-aws-core:4.0.0")
-  implementation("io.awspring.cloud:spring-cloud-aws-sns:4.0.0")
-  implementation("io.awspring.cloud:spring-cloud-aws-sqs:4.0.0")
+  implementation("io.awspring.cloud:spring-cloud-aws-starter:4.0.2")
+  implementation("io.awspring.cloud:spring-cloud-aws-core:4.0.2")
+  implementation("io.awspring.cloud:spring-cloud-aws-sns:4.0.2")
+  implementation("io.awspring.cloud:spring-cloud-aws-sqs:4.0.2")
   implementation("org.springframework:spring-jms:7.0.7")
   implementation("org.apache.commons:commons-text:1.15.0")
 
   // SQS
-  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:7.3.0")
+  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:7.3.1")
 
   // Test dependencies
   testImplementation("org.wiremock:wiremock-standalone:3.13.2")
