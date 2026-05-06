@@ -17,11 +17,15 @@
           }
         },
         "sentencedAt": "2024-05-08",
-        "identifier": "b2f5fc34-4871-4c69-8f7a-bb07c9a437e8",
         "recall": {
           "recallType": "STANDARD_RECALL"
         },
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -36,7 +40,12 @@
         },
         "sentencedAt": "2025-04-26",
         "identifier": "cb304745-d781-47d3-b931-4baa31551fc5",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -50,22 +59,18 @@
           }
         },
         "sentencedAt": "2025-06-13",
-        "identifier": "ef9b37c5-913e-424a-9100-eb8c50a9a184",
         "consecutiveSentenceUUIDs": [
           "cb304745-d781-47d3-b931-4baa31551fc5"
         ],
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
-      "UNLAWFULLY_AT_LARGE": [
-        {
-          "appliesToSentencesFrom": "2025-06-07",
-          "numberOfDays": 5,
-          "fromDate": "2025-06-07",
-          "toDate": "2025-06-11"
-        }
-      ],
       "REMAND": [
         {
           "appliesToSentencesFrom": "2025-04-26",
@@ -73,7 +78,19 @@
           "fromDate": "2024-03-05",
           "toDate": "2024-03-12"
         }
+      ],
+      "UNLAWFULLY_AT_LARGE": [
+        {
+          "appliesToSentencesFrom": "2025-06-07",
+          "numberOfDays": 5,
+          "fromDate": "2025-06-07",
+          "toDate": "2025-06-11"
+        }
       ]
     }
-  }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params"
 }

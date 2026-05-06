@@ -20,8 +20,7 @@
             "MONTHS": 12
           }
         },
-        "sentencedAt": "2023-01-17",
-        "identifier": "bce6c7b5-ec00-4722-906c-fe4ec95b4f0b"
+        "sentencedAt": "2023-01-17"
       },
       {
         "type": "SopcSentence",
@@ -38,19 +37,10 @@
             "MONTHS": 12
           }
         },
-        "sentencedAt": "2023-01-17",
-        "identifier": "7a72fa04-6265-473c-a538-c9c3149e69e0"
+        "sentencedAt": "2023-01-17"
       }
     ],
     "adjustments": {
-      "ADDITIONAL_DAYS_AWARDED": [
-        {
-          "appliesToSentencesFrom": "2023-01-17",
-          "numberOfDays": 10,
-          "fromDate": "2023-10-01",
-          "toDate": "2023-10-10"
-        }
-      ],
       "UNLAWFULLY_AT_LARGE": [
         {
           "appliesToSentencesFrom": "2023-01-17",
@@ -58,8 +48,19 @@
           "fromDate": "2023-03-01",
           "toDate": "2023-03-03"
         }
+      ],
+      "ADDITIONAL_DAYS_AWARDED": [
+        {
+          "appliesToSentencesFrom": "2023-01-17",
+          "numberOfDays": 10,
+          "fromDate": "2023-10-01",
+          "toDate": "2023-10-10"
+        }
       ]
     }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-50"
 }

@@ -17,8 +17,12 @@
           }
         },
         "sentencedAt": "2025-06-27",
-        "hasAnSDSEarlyReleaseExclusion": "NO",
-        "isSDSPlus": false
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -31,8 +35,12 @@
           }
         },
         "sentencedAt": "2026-09-03",
-        "hasAnSDSEarlyReleaseExclusion": "NO",
-        "isSDSPlus": false
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
@@ -45,6 +53,9 @@
         }
       ]
     }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-progression-model",
   "featureToggles": {

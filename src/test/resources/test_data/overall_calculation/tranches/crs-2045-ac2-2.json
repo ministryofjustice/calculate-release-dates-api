@@ -16,8 +16,14 @@
           }
         },
         "sentencedAt": "2024-03-22",
-        "identifier": "b11a0835-ed5e-4ab6-bdc4-3f3f37556f57",
-        "hasAnSDSEarlyReleaseExclusion": "NATIONAL_SECURITY"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [
+            "NATIONAL_SECURITY"
+          ],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -30,8 +36,12 @@
           }
         },
         "sentencedAt": "2024-03-22",
-        "identifier": "61ea6d4a-74a6-443c-bba8-1f2dc35d7ab0",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
@@ -44,5 +54,9 @@
         }
       ]
     }
-  }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params"
 }

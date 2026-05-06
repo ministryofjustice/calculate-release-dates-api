@@ -17,8 +17,12 @@
           }
         },
         "sentencedAt": "2016-04-21",
-        "identifier": "9d17cd47-b2bc-49f9-bc50-f2b3fa143924",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -31,15 +35,31 @@
           }
         },
         "sentencedAt": "2021-06-21",
-        "identifier": "dda95063-a5c7-4513-a803-d745721618f0",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
-      "RESTORATION_OF_ADDITIONAL_DAYS_AWARDED": [
+      "REMAND": [
         {
           "appliesToSentencesFrom": "2016-04-21",
-          "numberOfDays": 7
+          "numberOfDays": 236,
+          "fromDate": "2015-08-28",
+          "toDate": "2016-04-20"
+        }
+      ],
+      "TAGGED_BAIL": [
+        {
+          "appliesToSentencesFrom": "2016-04-21"
+        }
+      ],
+      "UNLAWFULLY_AT_LARGE": [
+        {
+          "appliesToSentencesFrom": "2016-04-21"
         }
       ],
       "ADDITIONAL_DAYS_AWARDED": [
@@ -48,25 +68,16 @@
           "numberOfDays": 42
         }
       ],
-      "UNLAWFULLY_AT_LARGE": [
-        {
-          "appliesToSentencesFrom": "2016-04-21"
-        }
-      ],
-      "TAGGED_BAIL": [
-        {
-          "appliesToSentencesFrom": "2016-04-21"
-        }
-      ],
-      "REMAND": [
+      "RESTORATION_OF_ADDITIONAL_DAYS_AWARDED": [
         {
           "appliesToSentencesFrom": "2016-04-21",
-          "numberOfDays": 236,
-          "fromDate": "2015-08-28",
-          "toDate": "2016-04-20"
+          "numberOfDays": 7
         }
       ]
     }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-50"
 }

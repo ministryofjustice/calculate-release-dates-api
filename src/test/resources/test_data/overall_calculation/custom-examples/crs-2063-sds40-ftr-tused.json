@@ -22,7 +22,14 @@
           "recallType": "FIXED_TERM_RECALL_14",
           "returnToCustodyDate": "2024-06-14"
         },
-        "hasAnSDSEarlyReleaseExclusion": "DOMESTIC_ABUSE"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [
+            "DOMESTIC_ABUSE"
+          ],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -36,7 +43,6 @@
           }
         },
         "sentencedAt": "2024-03-22",
-        "identifier": "e5fd2b0f-600e-440c-87b9-e77790bd590b",
         "consecutiveSentenceUUIDs": [
           "38a0376c-44c9-3f5d-9f67-e83d1cd345a3"
         ],
@@ -44,7 +50,14 @@
           "recallType": "FIXED_TERM_RECALL_14",
           "returnToCustodyDate": "2024-06-14"
         },
-        "hasAnSDSEarlyReleaseExclusion": "DOMESTIC_ABUSE"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [
+            "DOMESTIC_ABUSE"
+          ],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -58,12 +71,18 @@
           }
         },
         "sentencedAt": "2024-03-22",
-        "identifier": "f82549df-6d99-46fc-97d9-d8dc26e458d9",
         "recall": {
           "recallType": "FIXED_TERM_RECALL_14",
           "returnToCustodyDate": "2024-06-14"
         },
-        "hasAnSDSEarlyReleaseExclusion": "DOMESTIC_ABUSE"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [
+            "DOMESTIC_ABUSE"
+          ],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {},
@@ -73,5 +92,9 @@
       "returnToCustodyDate": "2024-06-14",
       "recallLength": 14
     }
-  }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params"
 }

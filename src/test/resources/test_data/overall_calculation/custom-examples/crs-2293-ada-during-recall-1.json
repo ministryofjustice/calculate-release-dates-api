@@ -21,7 +21,12 @@
         "recall": {
           "recallType": "STANDARD_RECALL"
         },
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -35,14 +40,18 @@
           }
         },
         "sentencedAt": "2021-03-30",
-        "identifier": "7f2272bd-cdff-46ab-b683-0b056a56342e",
         "consecutiveSentenceUUIDs": [
           "3b291084-5be9-3c58-bdc7-7909f832efb4"
         ],
         "recall": {
           "recallType": "STANDARD_RECALL"
         },
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -56,11 +65,15 @@
           }
         },
         "sentencedAt": "2021-03-30",
-        "identifier": "265427b5-20e1-4722-a391-deff3de55e5b",
         "recall": {
           "recallType": "STANDARD_RECALL"
         },
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -74,11 +87,15 @@
           }
         },
         "sentencedAt": "2021-03-30",
-        "identifier": "77ec19cd-a792-495b-bea7-10f7c58a722f",
         "recall": {
           "recallType": "STANDARD_RECALL"
         },
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -93,8 +110,12 @@
           }
         },
         "sentencedAt": "2024-07-05",
-        "identifier": "d61e3fc6-2051-4a05-bc0d-159d010d9f4d",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -108,17 +129,21 @@
           }
         },
         "sentencedAt": "2024-07-05",
-        "identifier": "77aaa3be-5677-4318-8740-245f3f8a7c85",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
-      "ADDITIONAL_DAYS_AWARDED": [
+      "RECALL_REMAND": [
         {
-          "appliesToSentencesFrom": "2023-12-11",
-          "numberOfDays": 7,
-          "fromDate": "2023-12-11",
-          "toDate": "2023-12-17"
+          "appliesToSentencesFrom": "2021-03-30",
+          "numberOfDays": 61,
+          "fromDate": "2021-01-28",
+          "toDate": "2021-03-29"
         }
       ],
       "UNLAWFULLY_AT_LARGE": [
@@ -129,14 +154,18 @@
           "toDate": "2023-06-08"
         }
       ],
-      "RECALL_REMAND": [
+      "ADDITIONAL_DAYS_AWARDED": [
         {
-          "appliesToSentencesFrom": "2021-03-30",
-          "numberOfDays": 61,
-          "fromDate": "2021-01-28",
-          "toDate": "2021-03-29"
+          "appliesToSentencesFrom": "2023-12-11",
+          "numberOfDays": 7,
+          "fromDate": "2023-12-11",
+          "toDate": "2023-12-17"
         }
       ]
     }
-  }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params"
 }

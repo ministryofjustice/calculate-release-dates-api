@@ -16,8 +16,7 @@
             "DAYS": 14
           }
         },
-        "sentencedAt": "2023-11-17",
-        "identifier": "4ec53d77-3821-437c-ae21-5bb1abdac84d"
+        "sentencedAt": "2023-11-17"
       }
     ],
     "adjustments": {
@@ -30,5 +29,9 @@
         }
       ]
     }
-  }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params"
 }

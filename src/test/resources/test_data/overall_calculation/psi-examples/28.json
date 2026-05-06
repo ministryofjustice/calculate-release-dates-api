@@ -16,17 +16,15 @@
           }
         },
         "sentencedAt": "2009-10-09",
-        "identifier": "8f2c7c1c-ba8a-4ea1-b666-a11d702fd613",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
-      "TAGGED_BAIL": [
-        {
-          "appliesToSentencesFrom": "2009-10-09",
-          "numberOfDays": 10
-        }
-      ],
       "REMAND": [
         {
           "appliesToSentencesFrom": "2009-10-09",
@@ -34,8 +32,17 @@
           "fromDate": "2009-09-18",
           "toDate": "2009-10-08"
         }
+      ],
+      "TAGGED_BAIL": [
+        {
+          "appliesToSentencesFrom": "2009-10-09",
+          "numberOfDays": 10
+        }
       ]
     }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-50"
 }

@@ -6,6 +6,7 @@
     },
     "sentences": [
       {
+        "type": "StandardSentence",
         "offence": {
           "committedAt": "2024-06-06"
         },
@@ -14,7 +15,13 @@
             "MONTHS": 6
           }
         },
-        "sentencedAt": "2024-06-07"
+        "sentencedAt": "2024-06-07",
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {

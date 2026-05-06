@@ -21,7 +21,12 @@
         "identifier": "56e7326e-1c7e-3079-a29b-3fd40175fa3b",
         "caseSequence": 1,
         "lineSequence": 1,
-        "hasAnSDSEarlyReleaseExclusion": "VIOLENT"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": ["VIOLENT"],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -38,7 +43,12 @@
         "identifier": "20e90caa-e0f0-3804-a39b-392c43ed9c33",
         "caseSequence": 2,
         "lineSequence": 2,
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {

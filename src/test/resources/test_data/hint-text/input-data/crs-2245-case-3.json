@@ -20,7 +20,12 @@
         "caseSequence": 1,
         "lineSequence": 1,
         "caseReference": "T20197284",
-        "hasAnSDSEarlyReleaseExclusion": "VIOLENT"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": ["VIOLENT"],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {

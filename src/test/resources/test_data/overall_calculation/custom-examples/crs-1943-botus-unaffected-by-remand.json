@@ -15,8 +15,7 @@
             "DAYS": 12
           }
         },
-        "sentencedAt": "2016-12-20",
-        "identifier": "c278a4f1-b10b-4cbc-a5c8-bd478add28b6"
+        "sentencedAt": "2016-12-20"
       }
     ],
     "adjustments": {
@@ -29,6 +28,9 @@
         }
       ]
     }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-50"
 }

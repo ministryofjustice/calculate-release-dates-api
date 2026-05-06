@@ -16,8 +16,12 @@
           }
         },
         "sentencedAt": "2022-04-20",
-        "identifier": "3c1fd337-f913-495d-a725-2bdc28920ff3",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -30,15 +34,27 @@
           }
         },
         "sentencedAt": "2022-07-11",
-        "identifier": "3a481250-5d6a-48d6-9f05-01f42d6857c8",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
-      "UNLAWFULLY_AT_LARGE": [
+      "REMAND": [
         {
-          "appliesToSentencesFrom": "2022-11-01",
-          "numberOfDays": 5
+          "appliesToSentencesFrom": "2022-04-20",
+          "numberOfDays": 10,
+          "fromDate": "2022-04-10",
+          "toDate": "2022-04-19"
+        }
+      ],
+      "TAGGED_BAIL": [
+        {
+          "appliesToSentencesFrom": "2022-04-20",
+          "numberOfDays": 1
         }
       ],
       "ADDITIONAL_DAYS_AWARDED": [
@@ -49,21 +65,16 @@
           "toDate": "2022-08-03"
         }
       ],
-      "TAGGED_BAIL": [
+      "UNLAWFULLY_AT_LARGE": [
         {
-          "appliesToSentencesFrom": "2022-04-20",
-          "numberOfDays": 1
-        }
-      ],
-      "REMAND": [
-        {
-          "appliesToSentencesFrom": "2022-04-20",
-          "numberOfDays": 10,
-          "fromDate": "2022-04-10",
-          "toDate": "2022-04-19"
+          "appliesToSentencesFrom": "2022-11-01",
+          "numberOfDays": 5
         }
       ]
     }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-50"
 }

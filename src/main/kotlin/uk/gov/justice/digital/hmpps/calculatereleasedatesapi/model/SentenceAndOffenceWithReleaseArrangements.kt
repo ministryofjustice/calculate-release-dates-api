@@ -60,36 +60,31 @@ data class SentenceAndOffenceWithReleaseArrangements(
     SDSReleaseArrangements(
       isSDSPlus = isSdsPlus,
       isSDSPlusEligibleSentenceTypeLengthAndOffence = isSDSPlusEligibleSentenceTypeLengthAndOffence,
-      sdsEarlyReleaseExclusions = listOf(hasAnSDSExclusion),
+      sdsEarlyReleaseExclusions = if (hasAnSDSExclusion == SDSEarlyReleaseExclusionType.NO) emptyList() else listOf(hasAnSDSExclusion),
       isSection250 = SentenceCalculationType.from(source.sentenceCalculationType).isSection250(),
     ),
   )
 
-  constructor(sdsPlusCheckResult: SDSPlusCheckResult, hasAnSDSExclusion: SDSEarlyReleaseExclusionType) : this(
-    sdsPlusCheckResult.sentenceAndOffence.bookingId,
-    sdsPlusCheckResult.sentenceAndOffence.sentenceSequence,
-    sdsPlusCheckResult.sentenceAndOffence.lineSequence,
-    sdsPlusCheckResult.sentenceAndOffence.caseSequence,
-    sdsPlusCheckResult.sentenceAndOffence.consecutiveToSequence,
-    sdsPlusCheckResult.sentenceAndOffence.sentenceStatus,
-    sdsPlusCheckResult.sentenceAndOffence.sentenceCategory,
-    sdsPlusCheckResult.sentenceAndOffence.sentenceCalculationType,
-    sdsPlusCheckResult.sentenceAndOffence.sentenceTypeDescription,
-    sdsPlusCheckResult.sentenceAndOffence.sentenceDate,
-    sdsPlusCheckResult.sentenceAndOffence.terms,
-    sdsPlusCheckResult.sentenceAndOffence.offence,
-    sdsPlusCheckResult.sentenceAndOffence.caseReference,
-    sdsPlusCheckResult.sentenceAndOffence.courtId,
-    sdsPlusCheckResult.sentenceAndOffence.courtDescription,
-    sdsPlusCheckResult.sentenceAndOffence.courtTypeCode,
-    sdsPlusCheckResult.sentenceAndOffence.fineAmount,
-    sdsPlusCheckResult.sentenceAndOffence.revocationDates,
-    SDSReleaseArrangements(
-      isSDSPlus = sdsPlusCheckResult.isSDSPlus,
-      isSDSPlusEligibleSentenceTypeLengthAndOffence = sdsPlusCheckResult.isSDSPlusEligibleSentenceTypeLengthAndOffence,
-      sdsEarlyReleaseExclusions = listOf(hasAnSDSExclusion),
-      isSection250 = SentenceCalculationType.from(sdsPlusCheckResult.sentenceAndOffence.sentenceCalculationType).isSection250(),
-    ),
+  constructor(sentenceAndOffence: SentenceAndOffence, releaseArrangements: SDSReleaseArrangements?) : this(
+    bookingId = sentenceAndOffence.bookingId,
+    sentenceSequence = sentenceAndOffence.sentenceSequence,
+    lineSequence = sentenceAndOffence.lineSequence,
+    caseSequence = sentenceAndOffence.caseSequence,
+    consecutiveToSequence = sentenceAndOffence.consecutiveToSequence,
+    sentenceStatus = sentenceAndOffence.sentenceStatus,
+    sentenceCategory = sentenceAndOffence.sentenceCategory,
+    sentenceCalculationType = sentenceAndOffence.sentenceCalculationType,
+    sentenceTypeDescription = sentenceAndOffence.sentenceTypeDescription,
+    sentenceDate = sentenceAndOffence.sentenceDate,
+    terms = sentenceAndOffence.terms,
+    offence = sentenceAndOffence.offence,
+    caseReference = sentenceAndOffence.caseReference,
+    courtId = sentenceAndOffence.courtId,
+    courtDescription = sentenceAndOffence.courtDescription,
+    courtTypeCode = sentenceAndOffence.courtTypeCode,
+    fineAmount = sentenceAndOffence.fineAmount,
+    revocationDates = sentenceAndOffence.revocationDates,
+    sdsReleaseArrangements = releaseArrangements,
   )
 
   constructor(
@@ -120,7 +115,7 @@ data class SentenceAndOffenceWithReleaseArrangements(
     sdsReleaseArrangements = SDSReleaseArrangements(
       isSDSPlus = isSdsPlus,
       isSDSPlusEligibleSentenceTypeLengthAndOffence = isSDSPlusEligibleSentenceTypeLengthAndOffence,
-      sdsEarlyReleaseExclusions = listOf(hasAnSDSExclusion),
+      sdsEarlyReleaseExclusions = if (hasAnSDSExclusion == SDSEarlyReleaseExclusionType.NO) emptyList() else listOf(hasAnSDSExclusion),
       isSection250 = SentenceCalculationType.from(source.sentenceCalculationType).isSection250(),
     ),
   )

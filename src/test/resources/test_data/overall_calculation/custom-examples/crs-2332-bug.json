@@ -19,8 +19,14 @@
         },
         "sentencedAt": "2017-12-18",
         "identifier": "1be23489-5d8a-3603-a02c-6718ece03b1b",
-        "isSDSPlusEligibleSentenceTypeLengthAndOffence": true,
-        "hasAnSDSEarlyReleaseExclusion": "VIOLENT"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": true,
+          "sdsEarlyReleaseExclusions": [
+            "VIOLENT"
+          ],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -39,7 +45,12 @@
         "consecutiveSentenceUUIDs": [
           "1be23489-5d8a-3603-a02c-6718ece03b1b"
         ],
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -57,7 +68,12 @@
         "consecutiveSentenceUUIDs": [
           "a9c0130c-d12b-3f52-926b-701de17c68e6"
         ],
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -71,11 +87,15 @@
           }
         },
         "sentencedAt": "2017-12-18",
-        "identifier": "e581326f-c5eb-4f42-9912-c984b225fb12",
         "consecutiveSentenceUUIDs": [
           "82bea930-0281-37e7-ba63-4808a34c59eb"
         ],
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -94,7 +114,14 @@
         "recall": {
           "recallType": "STANDARD_RECALL"
         },
-        "hasAnSDSEarlyReleaseExclusion": "VIOLENT"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [
+            "VIOLENT"
+          ],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -116,7 +143,12 @@
         "recall": {
           "recallType": "STANDARD_RECALL"
         },
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -137,7 +169,12 @@
         "recall": {
           "recallType": "STANDARD_RECALL"
         },
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -151,14 +188,18 @@
           }
         },
         "sentencedAt": "2017-12-18",
-        "identifier": "b83750e2-d51e-4dc1-beb8-4e2d467cc91b",
         "consecutiveSentenceUUIDs": [
           "a5af2e50-e679-3ed5-b92e-c5b5c70f347a"
         ],
         "recall": {
           "recallType": "STANDARD_RECALL"
         },
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "AFineSentence",
@@ -172,12 +213,11 @@
           }
         },
         "sentencedAt": "2023-12-20",
-        "identifier": "02f77df0-a753-40b3-8dc4-d62876aa03e7",
         "fineAmount": 4772.36
       }
     ],
     "adjustments": {
-      "RECALL_REMAND": [
+      "REMAND": [
         {
           "appliesToSentencesFrom": "2017-12-18",
           "numberOfDays": 22,
@@ -191,7 +231,7 @@
           "toDate": "2017-12-17"
         }
       ],
-      "REMAND": [
+      "RECALL_REMAND": [
         {
           "appliesToSentencesFrom": "2017-12-18",
           "numberOfDays": 22,
@@ -206,5 +246,9 @@
         }
       ]
     }
-  }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params"
 }

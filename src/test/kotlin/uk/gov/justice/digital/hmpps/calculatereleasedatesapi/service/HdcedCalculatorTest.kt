@@ -25,7 +25,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateTypes
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
@@ -50,8 +50,12 @@ class HdcedCalculatorTest {
       offence,
       duration,
       sentencedAt,
-      isSDSPlus = false,
-      hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
+      releaseArrangements = SDSReleaseArrangements(
+        isSDSPlus = false,
+        isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+        isSection250 = false,
+        sdsEarlyReleaseExclusions = emptyList(),
+      ),
     ).apply { releaseMultiplier = ReleaseMultiplier.ONE_HALF }
     val sentenceCalculation = sentenceCalculation(sentence, 150, 75)
 
@@ -69,8 +73,12 @@ class HdcedCalculatorTest {
       offence,
       duration,
       sentencedAt,
-      isSDSPlus = false,
-      hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
+      releaseArrangements = SDSReleaseArrangements(
+        isSDSPlus = false,
+        isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+        isSection250 = false,
+        sdsEarlyReleaseExclusions = emptyList(),
+      ),
     ).apply { releaseMultiplier = ReleaseMultiplier.ONE_HALF }
     val sentenceCalculation = sentenceCalculation(sentence, 77, 39)
 
@@ -88,8 +96,12 @@ class HdcedCalculatorTest {
       offence,
       duration,
       sentencedAt,
-      isSDSPlus = false,
-      hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
+      releaseArrangements = SDSReleaseArrangements(
+        isSDSPlus = false,
+        isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+        isSection250 = false,
+        sdsEarlyReleaseExclusions = emptyList(),
+      ),
     ).apply { releaseMultiplier = ReleaseMultiplier.ONE_HALF }
     val sentenceCalculation = sentenceCalculation(
       sentence,
@@ -124,8 +136,12 @@ class HdcedCalculatorTest {
       offence,
       duration,
       sentencedAt,
-      isSDSPlus = false,
-      hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
+      releaseArrangements = SDSReleaseArrangements(
+        isSDSPlus = false,
+        isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+        isSection250 = false,
+        sdsEarlyReleaseExclusions = emptyList(),
+      ),
     ).apply { releaseMultiplier = ReleaseMultiplier.ONE_HALF }
     val sentenceCalculation =
       sentenceCalculation(sentence, sentenceLength, numberOfDaysToDeterminateRelease)
@@ -148,8 +164,12 @@ class HdcedCalculatorTest {
       offence,
       duration,
       sentencedAt,
-      isSDSPlus = false,
-      hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
+      releaseArrangements = SDSReleaseArrangements(
+        isSDSPlus = false,
+        isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+        isSection250 = false,
+        sdsEarlyReleaseExclusions = emptyList(),
+      ),
     ).apply { releaseMultiplier = ReleaseMultiplier.ONE_HALF }
     val sentenceCalculation = sentenceCalculation(sentence, 1825, 913)
 
@@ -167,8 +187,12 @@ class HdcedCalculatorTest {
       offence,
       duration,
       sentencedAt,
-      isSDSPlus = false,
-      hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
+      releaseArrangements = SDSReleaseArrangements(
+        isSDSPlus = false,
+        isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+        isSection250 = false,
+        sdsEarlyReleaseExclusions = emptyList(),
+      ),
     ).apply { releaseMultiplier = ReleaseMultiplier.ONE_HALF }
 
     val withLargeRemand = SentenceAdjustments(remand = 70)
@@ -188,8 +212,12 @@ class HdcedCalculatorTest {
       offence,
       duration,
       sentencedAt,
-      isSDSPlus = false,
-      hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
+      releaseArrangements = SDSReleaseArrangements(
+        isSDSPlus = false,
+        isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+        isSection250 = false,
+        sdsEarlyReleaseExclusions = emptyList(),
+      ),
     ).apply { releaseMultiplier = ReleaseMultiplier.ONE_HALF }
 
     val sentenceCalculation = sentenceCalculation(sentence, 140, 70)
@@ -232,8 +260,12 @@ class HdcedCalculatorTest {
       offence,
       duration,
       sentencedAt,
-      isSDSPlus = false,
-      hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
+      releaseArrangements = SDSReleaseArrangements(
+        isSDSPlus = false,
+        isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+        isSection250 = false,
+        sdsEarlyReleaseExclusions = emptyList(),
+      ),
     ).apply { releaseMultiplier = ReleaseMultiplier.ONE_HALF }
 
     val sentenceCalculation =
@@ -259,8 +291,12 @@ class HdcedCalculatorTest {
       offence,
       duration,
       sentencedAt,
-      isSDSPlus = false,
-      hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
+      releaseArrangements = SDSReleaseArrangements(
+        isSDSPlus = false,
+        isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+        isSection250 = false,
+        sdsEarlyReleaseExclusions = emptyList(),
+      ),
     ).apply { releaseMultiplier = ReleaseMultiplier.ONE_HALF }
 
     val sentenceCalculation = sentenceCalculation(sentence, 106, 53)
@@ -291,8 +327,12 @@ class HdcedCalculatorTest {
       offence,
       duration,
       sentencedAt,
-      isSDSPlus = false,
-      hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
+      releaseArrangements = SDSReleaseArrangements(
+        isSDSPlus = false,
+        isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+        isSection250 = false,
+        sdsEarlyReleaseExclusions = emptyList(),
+      ),
     ).apply { releaseMultiplier = ReleaseMultiplier.ONE_HALF }
 
     val minus25DayAdjustments = SentenceAdjustments(remand = 25)
@@ -324,8 +364,12 @@ class HdcedCalculatorTest {
       offence,
       duration,
       sentencedAt,
-      isSDSPlus = false,
-      hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
+      releaseArrangements = SDSReleaseArrangements(
+        isSDSPlus = false,
+        isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+        isSection250 = false,
+        sdsEarlyReleaseExclusions = emptyList(),
+      ),
     ).apply { releaseMultiplier = ReleaseMultiplier.ONE_HALF }
 
     val sentenceCalculation = sentenceCalculation(sentence, 722, 361)
@@ -356,8 +400,12 @@ class HdcedCalculatorTest {
       offence,
       duration,
       sentencedAt,
-      isSDSPlus = false,
-      hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
+      releaseArrangements = SDSReleaseArrangements(
+        isSDSPlus = false,
+        isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+        isSection250 = false,
+        sdsEarlyReleaseExclusions = emptyList(),
+      ),
     ).apply { releaseMultiplier = ReleaseMultiplier.ONE_HALF }
 
     val sentenceCalculation =
@@ -381,8 +429,12 @@ class HdcedCalculatorTest {
       offence,
       duration,
       sentencedAt,
-      isSDSPlus = false,
-      hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
+      releaseArrangements = SDSReleaseArrangements(
+        isSDSPlus = false,
+        isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+        isSection250 = false,
+        sdsEarlyReleaseExclusions = emptyList(),
+      ),
     ).apply { releaseMultiplier = ReleaseMultiplier.ONE_HALF }
 
     val adjustedLessThanMinCustodialPeriod = SentenceAdjustments(remand = 180)
@@ -414,15 +466,23 @@ class HdcedCalculatorTest {
       offence,
       duration,
       sentencedAt,
-      isSDSPlus = false,
-      hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
+      releaseArrangements = SDSReleaseArrangements(
+        isSDSPlus = false,
+        isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+        isSection250 = false,
+        sdsEarlyReleaseExclusions = emptyList(),
+      ),
     ).apply { releaseMultiplier = ReleaseMultiplier.ONE_HALF }
     val secondSentence = StandardDeterminateSentence(
       offence,
       duration,
       sentencedAt,
-      isSDSPlus = false,
-      hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
+      releaseArrangements = SDSReleaseArrangements(
+        isSDSPlus = false,
+        isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+        isSection250 = false,
+        sdsEarlyReleaseExclusions = emptyList(),
+      ),
     ).apply { releaseMultiplier = ReleaseMultiplier.ONE_HALF }
     val consecSentence = ConsecutiveSentence(listOf(firstSentence, secondSentence))
 
@@ -444,15 +504,23 @@ class HdcedCalculatorTest {
       offence,
       duration,
       sentencedAt,
-      isSDSPlus = false,
-      hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
+      releaseArrangements = SDSReleaseArrangements(
+        isSDSPlus = false,
+        isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+        isSection250 = false,
+        sdsEarlyReleaseExclusions = emptyList(),
+      ),
     ).apply { releaseMultiplier = ReleaseMultiplier.ONE_HALF }
     val secondSentence = StandardDeterminateSentence(
       offence,
       duration,
       sentencedAt,
-      isSDSPlus = false,
-      hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
+      releaseArrangements = SDSReleaseArrangements(
+        isSDSPlus = false,
+        isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+        isSection250 = false,
+        sdsEarlyReleaseExclusions = emptyList(),
+      ),
     ).apply { releaseMultiplier = ReleaseMultiplier.ONE_HALF }
     val consecSentence = ConsecutiveSentence(listOf(firstSentence, secondSentence))
 
@@ -497,22 +565,34 @@ class HdcedCalculatorTest {
       offence,
       Duration(mapOf(ChronoUnit.MONTHS to 1L)),
       sentencedAt,
-      isSDSPlus = false,
-      hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
+      releaseArrangements = SDSReleaseArrangements(
+        isSDSPlus = false,
+        isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+        isSection250 = false,
+        sdsEarlyReleaseExclusions = emptyList(),
+      ),
     ).apply { releaseMultiplier = ReleaseMultiplier.ONE_HALF }
     val secondSentence = StandardDeterminateSentence(
       offence,
       Duration(mapOf(ChronoUnit.MONTHS to 1L)),
       sentencedAt,
-      isSDSPlus = false,
-      hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
+      releaseArrangements = SDSReleaseArrangements(
+        isSDSPlus = false,
+        isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+        isSection250 = false,
+        sdsEarlyReleaseExclusions = emptyList(),
+      ),
     ).apply { releaseMultiplier = ReleaseMultiplier.ONE_HALF }
     val thirdSentence = StandardDeterminateSentence(
       offence,
       Duration(mapOf(ChronoUnit.YEARS to 6L)),
       sentencedAt,
-      isSDSPlus = true,
-      hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
+      releaseArrangements = SDSReleaseArrangements(
+        isSDSPlus = true,
+        isSDSPlusEligibleSentenceTypeLengthAndOffence = true,
+        isSection250 = false,
+        sdsEarlyReleaseExclusions = emptyList(),
+      ),
     ).apply { releaseMultiplier = ReleaseMultiplier.ONE_HALF }
     val consecSentence = ConsecutiveSentence(listOf(firstSentence, secondSentence, thirdSentence))
 

@@ -18,8 +18,12 @@
           }
         },
         "sentencedAt": "2020-11-23",
-        "identifier": "1ccf0172-1236-42d0-8c91-2b549ba9a564",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -33,24 +37,28 @@
           }
         },
         "sentencedAt": "2022-03-02",
-        "identifier": "9c83c355-8506-4a70-9cd6-fec9a3082c32",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
-      "UNLAWFULLY_AT_LARGE": [
-        {
-          "appliesToSentencesFrom": "2022-01-30",
-          "numberOfDays": 3,
-          "fromDate": "2022-01-30"
-        }
-      ],
       "REMAND": [
         {
           "appliesToSentencesFrom": "2020-11-23",
           "numberOfDays": 350,
           "fromDate": "2019-12-09",
           "toDate": "2020-11-22"
+        }
+      ],
+      "UNLAWFULLY_AT_LARGE": [
+        {
+          "appliesToSentencesFrom": "2022-01-30",
+          "numberOfDays": 3,
+          "fromDate": "2022-01-30"
         }
       ]
     },
@@ -80,5 +88,6 @@
   "userInputs": {
     "calculateErsed": true,
     "useOffenceIndicators": true
-  }
+  },
+  "params": "calculation-params"
 }

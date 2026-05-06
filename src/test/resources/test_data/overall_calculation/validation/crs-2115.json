@@ -17,14 +17,22 @@
           }
         },
         "sentencedAt": "2024-05-08",
-        "identifier": "f05f0250-874a-4c94-9dbd-d1661d341f8e",
         "recall": {
           "recallType": "FIXED_TERM_RECALL_14"
         },
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {}
   },
-  "error": "NoValidReturnToCustodyDateException"
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "error": "NoValidReturnToCustodyDateException",
+  "params": "calculation-params"
 }

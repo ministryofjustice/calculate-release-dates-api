@@ -17,8 +17,14 @@
           }
         },
         "sentencedAt": "2023-05-23",
-        "identifier": "e3b65bdd-6bf3-444e-913a-61bfad29238a",
-        "hasAnSDSEarlyReleaseExclusion": "DOMESTIC_ABUSE_T3"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [
+            "DOMESTIC_ABUSE_T3"
+          ],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -33,10 +39,18 @@
           }
         },
         "sentencedAt": "2023-05-23",
-        "identifier": "bd867352-4405-45fb-a1ce-a554e04f3f7d",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {}
-  }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params"
 }

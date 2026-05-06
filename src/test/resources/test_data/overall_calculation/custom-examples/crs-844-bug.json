@@ -17,11 +17,15 @@
           }
         },
         "sentencedAt": "2018-04-19",
-        "identifier": "b7fd4844-63a3-42c1-a360-4b0fd9372c66",
         "recall": {
           "recallType": "STANDARD_RECALL"
         },
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -34,8 +38,12 @@
           }
         },
         "sentencedAt": "2020-01-06",
-        "identifier": "532d0e31-d33f-4895-a5b7-d9619c1dd2f1",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -49,8 +57,12 @@
           }
         },
         "sentencedAt": "2021-03-12",
-        "identifier": "11122319-d3a3-4d48-88fb-df2688fc52e0",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -63,17 +75,21 @@
           }
         },
         "sentencedAt": "2021-03-12",
-        "identifier": "676d5f25-1bcc-4fa2-9e9d-dcb69144c8cd",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
-      "REMAND": [
+      "RECALL_REMAND": [
         {
-          "appliesToSentencesFrom": "2020-01-06",
-          "numberOfDays": 1,
-          "fromDate": "2019-12-16",
-          "toDate": "2019-12-16"
+          "appliesToSentencesFrom": "2018-04-19",
+          "numberOfDays": 229,
+          "fromDate": "2017-09-02",
+          "toDate": "2018-04-18"
         }
       ],
       "RECALL_TAGGED_BAIL": [
@@ -82,15 +98,18 @@
           "numberOfDays": 40
         }
       ],
-      "RECALL_REMAND": [
+      "REMAND": [
         {
-          "appliesToSentencesFrom": "2018-04-19",
-          "numberOfDays": 229,
-          "fromDate": "2017-09-02",
-          "toDate": "2018-04-18"
+          "appliesToSentencesFrom": "2020-01-06",
+          "numberOfDays": 1,
+          "fromDate": "2019-12-16",
+          "toDate": "2019-12-16"
         }
       ]
     }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-50"
 }

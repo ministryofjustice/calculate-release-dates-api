@@ -17,7 +17,12 @@
         },
         "sentencedAt": "2024-06-28",
         "identifier": "c683f357-0652-4f0c-a3f0-353fad6b3aff",
-        "hasAnSDSEarlyReleaseExclusion": "TERRORISM"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": ["TERRORISM"],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {

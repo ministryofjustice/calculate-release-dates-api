@@ -17,8 +17,12 @@
           }
         },
         "sentencedAt": "2023-07-07",
-        "identifier": "ffd5e707-abd7-40a8-ab7c-dc540d708294",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -32,8 +36,12 @@
           }
         },
         "sentencedAt": "2023-07-07",
-        "identifier": "67acd1a7-1f00-434a-8cd8-1f60338f915d",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -47,8 +55,12 @@
           }
         },
         "sentencedAt": "2024-08-15",
-        "identifier": "beaa32ff-d7db-4d03-a3b9-c1af16108d1c",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
@@ -73,5 +85,9 @@
         "direction": "IN"
       }
     ]
-  }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params"
 }

@@ -39,14 +39,18 @@
           }
         },
         "sentencedAt": "2018-07-19",
-        "identifier": "ace6bf10-0f80-47ec-8402-cc0378235710",
         "consecutiveSentenceUUIDs": [
           "49edac49-781b-3265-a766-6b8e6919639c"
         ],
         "recall": {
           "recallType": "STANDARD_RECALL"
         },
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -60,14 +64,18 @@
           }
         },
         "sentencedAt": "2021-01-08",
-        "identifier": "035e33a5-f7c2-462d-8bfa-ad1b86eaa566",
         "consecutiveSentenceUUIDs": [
           "49edac49-781b-3265-a766-6b8e6919639c"
         ],
         "recall": {
           "recallType": "STANDARD_RECALL"
         },
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -81,19 +89,15 @@
           }
         },
         "sentencedAt": "2024-11-13",
-        "identifier": "0a6d338d-1290-43d4-85f1-0087c65bf06b",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
-      "UNLAWFULLY_AT_LARGE": [
-        {
-          "appliesToSentencesFrom": "2021-01-08",
-          "numberOfDays": 10,
-          "fromDate": "2021-01-08",
-          "toDate": "2021-01-18"
-        }
-      ],
       "RECALL_REMAND": [
         {
           "appliesToSentencesFrom": "2017-09-29",
@@ -101,7 +105,19 @@
           "fromDate": "2016-09-26",
           "toDate": "2017-09-28"
         }
+      ],
+      "UNLAWFULLY_AT_LARGE": [
+        {
+          "appliesToSentencesFrom": "2021-01-08",
+          "numberOfDays": 10,
+          "fromDate": "2021-01-08",
+          "toDate": "2021-01-18"
+        }
       ]
     }
-  }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params"
 }

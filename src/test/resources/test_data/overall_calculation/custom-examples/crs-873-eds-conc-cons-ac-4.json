@@ -21,8 +21,7 @@
           }
         },
         "automaticRelease": true,
-        "sentencedAt": "2015-02-01",
-        "identifier": "bea52a32-2762-4c9e-a974-7737294cbe44"
+        "sentencedAt": "2015-02-01"
       },
       {
         "type": "ExtendedDeterminateSentence",
@@ -58,21 +57,12 @@
           }
         },
         "sentencedAt": "2020-04-20",
-        "identifier": "7e5eea95-bbb3-4866-9d13-fee1a5ba6e60",
         "consecutiveSentenceUUIDs": [
           "e40f48b6-92df-49d0-af99-507194c380fa"
         ]
       }
     ],
     "adjustments": {
-      "UNLAWFULLY_AT_LARGE": [
-        {
-          "appliesToSentencesFrom": "2021-03-01",
-          "numberOfDays": 20,
-          "fromDate": "2021-03-01",
-          "toDate": "2021-03-20"
-        }
-      ],
       "ADDITIONAL_DAYS_AWARDED": [
         {
           "appliesToSentencesFrom": "2015-02-01",
@@ -80,8 +70,19 @@
           "fromDate": "2022-01-01",
           "toDate": "2022-01-25"
         }
+      ],
+      "UNLAWFULLY_AT_LARGE": [
+        {
+          "appliesToSentencesFrom": "2021-03-01",
+          "numberOfDays": 20,
+          "fromDate": "2021-03-01",
+          "toDate": "2021-03-20"
+        }
       ]
     }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-50"
 }

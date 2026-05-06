@@ -21,8 +21,7 @@
           }
         },
         "sdopcu18": true,
-        "sentencedAt": "2022-07-15",
-        "identifier": "89408f49-eec4-47f9-abbb-5fe2886f923d"
+        "sentencedAt": "2022-07-15"
       }
     ],
     "adjustments": {
@@ -33,6 +32,9 @@
         }
       ]
     }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-50"
 }

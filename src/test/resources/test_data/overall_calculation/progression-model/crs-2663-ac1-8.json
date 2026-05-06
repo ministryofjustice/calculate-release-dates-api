@@ -17,18 +17,17 @@
           }
         },
         "sentencedAt": "2024-11-10",
-        "hasAnSDSEarlyReleaseExclusion": "SEXUAL"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [
+            "SEXUAL"
+          ],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
-      "REMAND": [
-        {
-          "appliesToSentencesFrom": "2024-11-10",
-          "numberOfDays": 69,
-          "fromDate": "2023-09-02",
-          "toDate": "2023-11-09"
-        }
-      ],
       "UNLAWFULLY_AT_LARGE": [
         {
           "appliesToSentencesFrom": "2024-11-10",
@@ -40,8 +39,19 @@
             "reason": "RELEASE_IN_ERROR"
           }
         }
+      ],
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2024-11-10",
+          "numberOfDays": 69,
+          "fromDate": "2023-09-02",
+          "toDate": "2023-11-09"
+        }
       ]
     }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-progression-model",
   "featureToggles": {

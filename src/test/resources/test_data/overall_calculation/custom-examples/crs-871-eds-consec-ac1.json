@@ -39,7 +39,6 @@
           }
         },
         "sentencedAt": "2022-02-10",
-        "identifier": "5224a022-671b-481a-b2f6-219f4b57c015",
         "consecutiveSentenceUUIDs": [
           "e40f48b6-92df-49d0-af99-507194c380fa"
         ]
@@ -55,6 +54,9 @@
         }
       ]
     }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-50"
 }

@@ -14,7 +14,7 @@ class SDSReleaseArrangementsTest {
       isSection250 = false,
     )
     assertThat(arrangements.hasSDS40EarlyReleaseExclusion()).describedAs("hasSDS40EarlyReleaseExclusion").isFalse()
-    assertThat(arrangements.hasSDS40AdditionalExcludedOffencesExclusion()).describedAs("hasSDS40AdditionalExcludedOffencesExclusion").isFalse()
+    assertThat(arrangements.hasSDS40AdditionalExcludedOffences()).describedAs("hasSDS40AdditionalExcludedOffencesExclusion").isFalse()
     assertThat(arrangements.hasProgressionModelExclusion()).describedAs("hasProgressionModelExclusion").isFalse()
   }
 
@@ -27,7 +27,7 @@ class SDSReleaseArrangementsTest {
       isSection250 = false,
     )
     assertThat(arrangements.hasSDS40EarlyReleaseExclusion()).describedAs("hasSDS40EarlyReleaseExclusion").isFalse()
-    assertThat(arrangements.hasSDS40AdditionalExcludedOffencesExclusion()).describedAs("hasSDS40AdditionalExcludedOffencesExclusion").isFalse()
+    assertThat(arrangements.hasSDS40AdditionalExcludedOffences()).describedAs("hasSDS40AdditionalExcludedOffencesExclusion").isFalse()
     assertThat(arrangements.hasProgressionModelExclusion()).describedAs("hasProgressionModelExclusion").isFalse()
   }
 
@@ -40,7 +40,7 @@ class SDSReleaseArrangementsTest {
       isSection250 = false,
     )
     assertThat(arrangements.hasSDS40EarlyReleaseExclusion()).describedAs("hasSDS40EarlyReleaseExclusion").isTrue()
-    assertThat(arrangements.hasSDS40AdditionalExcludedOffencesExclusion()).describedAs("hasSDS40AdditionalExcludedOffencesExclusion").isFalse()
+    assertThat(arrangements.hasSDS40AdditionalExcludedOffences()).describedAs("hasSDS40AdditionalExcludedOffencesExclusion").isFalse()
     assertThat(arrangements.hasProgressionModelExclusion()).describedAs("hasProgressionModelExclusion").isFalse()
   }
 
@@ -53,7 +53,7 @@ class SDSReleaseArrangementsTest {
       isSection250 = false,
     )
     assertThat(arrangements.hasSDS40EarlyReleaseExclusion()).describedAs("hasSDS40EarlyReleaseExclusion").isFalse()
-    assertThat(arrangements.hasSDS40AdditionalExcludedOffencesExclusion()).describedAs("hasSDS40AdditionalExcludedOffencesExclusion").isTrue()
+    assertThat(arrangements.hasSDS40AdditionalExcludedOffences()).describedAs("hasSDS40AdditionalExcludedOffencesExclusion").isTrue()
     assertThat(arrangements.hasProgressionModelExclusion()).describedAs("hasProgressionModelExclusion").isFalse()
   }
 
@@ -66,7 +66,7 @@ class SDSReleaseArrangementsTest {
       isSection250 = false,
     )
     assertThat(arrangements.hasSDS40EarlyReleaseExclusion()).describedAs("hasSDS40EarlyReleaseExclusion").isFalse()
-    assertThat(arrangements.hasSDS40AdditionalExcludedOffencesExclusion()).describedAs("hasSDS40AdditionalExcludedOffencesExclusion").isFalse()
+    assertThat(arrangements.hasSDS40AdditionalExcludedOffences()).describedAs("hasSDS40AdditionalExcludedOffencesExclusion").isFalse()
     assertThat(arrangements.hasProgressionModelExclusion()).describedAs("hasProgressionModelExclusion").isTrue()
   }
 
@@ -79,7 +79,7 @@ class SDSReleaseArrangementsTest {
       isSection250 = false,
     )
     assertThat(arrangements.hasSDS40EarlyReleaseExclusion()).describedAs("hasSDS40EarlyReleaseExclusion").isTrue()
-    assertThat(arrangements.hasSDS40AdditionalExcludedOffencesExclusion()).describedAs("hasSDS40AdditionalExcludedOffencesExclusion").isFalse()
+    assertThat(arrangements.hasSDS40AdditionalExcludedOffences()).describedAs("hasSDS40AdditionalExcludedOffencesExclusion").isFalse()
     assertThat(arrangements.hasProgressionModelExclusion()).describedAs("hasProgressionModelExclusion").isTrue()
   }
 
@@ -92,7 +92,7 @@ class SDSReleaseArrangementsTest {
       isSection250 = false,
     )
     assertThat(arrangements.hasSDS40EarlyReleaseExclusion()).describedAs("hasSDS40EarlyReleaseExclusion").isFalse()
-    assertThat(arrangements.hasSDS40AdditionalExcludedOffencesExclusion()).describedAs("hasSDS40AdditionalExcludedOffencesExclusion").isTrue()
+    assertThat(arrangements.hasSDS40AdditionalExcludedOffences()).describedAs("hasSDS40AdditionalExcludedOffencesExclusion").isTrue()
     assertThat(arrangements.hasProgressionModelExclusion()).describedAs("hasProgressionModelExclusion").isTrue()
   }
 }

@@ -266,11 +266,7 @@ fun transform(
         externalSentenceId = externalSentenceId,
         caseReference = sentence.caseReference,
         recall = recall,
-        // TODO change SDS to use sdsReleaseArrangements directly
-        isSDSPlus = sentence.sdsReleaseArrangements?.isSDSPlus == true,
-        isSDSPlusEligibleSentenceTypeLengthAndOffence = sentence.sdsReleaseArrangements?.isSDSPlusEligibleSentenceTypeLengthAndOffence == true,
-        hasAnSDSEarlyReleaseExclusion = sentence.sdsReleaseArrangements?.sdsEarlyReleaseExclusions?.firstOrNull() ?: SDSEarlyReleaseExclusionType.NO,
-        section250 = sentenceCalculationType.isSection250(),
+        releaseArrangements = requireNotNull(sentence.sdsReleaseArrangements) { "SDS must have release arrangements populated" },
       )
     }
   }

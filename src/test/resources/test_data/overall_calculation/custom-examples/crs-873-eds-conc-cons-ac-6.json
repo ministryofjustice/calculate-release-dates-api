@@ -20,8 +20,7 @@
             "YEARS": 2
           }
         },
-        "sentencedAt": "2020-12-30",
-        "identifier": "eadd7969-b643-4b69-8f5f-d7c19a8e1246"
+        "sentencedAt": "2020-12-30"
       },
       {
         "type": "ExtendedDeterminateSentence",
@@ -61,7 +60,6 @@
         },
         "automaticRelease": true,
         "sentencedAt": "2015-04-12",
-        "identifier": "5ea6b374-646e-449e-97be-0a53461313e4",
         "consecutiveSentenceUUIDs": [
           "e40f48b6-92df-49d0-af99-507194c380fa"
         ]
@@ -77,6 +75,9 @@
         }
       ]
     }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-50"
 }

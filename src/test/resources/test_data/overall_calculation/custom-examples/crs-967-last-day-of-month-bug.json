@@ -35,11 +35,15 @@
           }
         },
         "sentencedAt": "2019-05-16",
-        "identifier": "3ec19eac-dbf8-42f4-8ff4-7ebca34bbd8e",
         "consecutiveSentenceUUIDs": [
           "34b2830c-c069-3fab-a768-dbdf7e38e800"
         ],
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
@@ -52,6 +56,9 @@
         }
       ]
     }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-50"
 }

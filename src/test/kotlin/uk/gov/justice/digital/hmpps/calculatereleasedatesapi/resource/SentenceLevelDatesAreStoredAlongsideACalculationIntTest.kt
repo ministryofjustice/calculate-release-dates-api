@@ -46,7 +46,7 @@ class SentenceLevelDatesAreStoredAlongsideACalculationIntTest(private val mockPr
         NomisCalculationReason("NEW", "New Sentence"),
       ),
     )
-    mockManageOffencesClient.noneInPCSC(listOf("AR97001", "CE79046", "FI68002"))
+    mockManageOffencesClient.notSDSPlusAndNoExclusions(listOf("AR97001", "CE79046", "FI68002"))
   }
 
   @Test

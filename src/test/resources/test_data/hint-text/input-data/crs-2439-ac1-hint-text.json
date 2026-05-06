@@ -20,7 +20,6 @@
             "MONTHS": 99
           }
         },
-        "isSDSPlus": true,
         "identifier": "1f90b983-e59b-3ce3-8b16-252c124730d2",
         "recall": null,
         "sentencedAt": "2022-10-26",
@@ -33,8 +32,12 @@
         "consecutiveSentenceUUIDs": [
           "ae231a2d-0f2a-3366-a4c7-c347b636e491"
         ],
-        "hasAnSDSEarlyReleaseExclusion": "NO",
-        "isSDSPlusEligibleSentenceTypeLengthAndOffence": true
+        "releaseArrangements": {
+          "isSDSPlus": true,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": true,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -50,7 +53,6 @@
             "MONTHS": 32
           }
         },
-        "isSDSPlus": false,
         "identifier": "40bf31f2-c773-314e-aa0a-ec638690758a",
         "recall": null,
         "sentencedAt": "2022-10-26",
@@ -61,8 +63,12 @@
           "sentenceSequence": 2
         },
         "consecutiveSentenceUUIDs": [],
-        "hasAnSDSEarlyReleaseExclusion": "NO",
-        "isSDSPlusEligibleSentenceTypeLengthAndOffence": false
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -78,7 +84,6 @@
             "MONTHS": 0
           }
         },
-        "isSDSPlus": false,
         "identifier": "ae231a2d-0f2a-3366-a4c7-c347b636e491",
         "recall": null,
         "sentencedAt": "2022-10-26",
@@ -89,8 +94,12 @@
           "sentenceSequence": 3
         },
         "consecutiveSentenceUUIDs": [],
-        "hasAnSDSEarlyReleaseExclusion": "NO",
-        "isSDSPlusEligibleSentenceTypeLengthAndOffence": false
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {

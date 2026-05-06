@@ -17,8 +17,12 @@
           }
         },
         "sentencedAt": "2023-05-23",
-        "identifier": "69223792-506e-4c83-8489-6536173fcd98",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -32,8 +36,12 @@
           }
         },
         "sentencedAt": "2023-05-23",
-        "identifier": "70408c93-cbd6-489e-a7e6-f729ed28f1c1",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -48,8 +56,12 @@
           }
         },
         "sentencedAt": "2023-05-23",
-        "identifier": "f11380c6-02a0-4f2f-903c-aaf5756f6262",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "AFineSentence",
@@ -63,7 +75,6 @@
           }
         },
         "sentencedAt": "2023-07-25",
-        "identifier": "493019e8-36ba-442d-90d6-315ead9dcf51",
         "fineAmount": 1014
       }
     ],
@@ -77,5 +88,9 @@
         }
       ]
     }
-  }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params"
 }

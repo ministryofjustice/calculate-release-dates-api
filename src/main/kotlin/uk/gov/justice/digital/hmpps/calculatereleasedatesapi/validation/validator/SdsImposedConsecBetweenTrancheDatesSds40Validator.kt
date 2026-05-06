@@ -26,7 +26,7 @@ class SdsImposedConsecBetweenTrancheDatesSds40Validator(private val trancheConfi
       calculationOutput.sentences.filterIsInstance<ConsecutiveSentence>().any { consecutiveSentence ->
         consecutiveSentence.orderedSentences.any {
           it is StandardDeterminateSentence &&
-            !it.isSDSPlus &&
+            !it.releaseArrangements.isSDSPlus &&
             it.sentencedAt.isAfterOrEqualTo(trancheConfiguration.trancheOneCommencementDate) &&
             it.sentencedAt.isBefore(trancheConfiguration.trancheTwoCommencementDate)
         }

@@ -20,7 +20,12 @@
         "recall": {
           "recallType": "STANDARD_RECALL"
         },
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -40,7 +45,12 @@
         "recall": {
           "recallType": "STANDARD_RECALL"
         },
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -53,25 +63,21 @@
           }
         },
         "sentencedAt": "2023-01-06",
-        "identifier": "a812e4e2-2bc5-4903-8eb1-128e88193841",
         "consecutiveSentenceUUIDs": [
           "ee91a161-dde2-3a7b-8611-624d255542a8"
         ],
         "recall": {
           "recallType": "STANDARD_RECALL"
         },
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
-      "UNLAWFULLY_AT_LARGE": [
-        {
-          "appliesToSentencesFrom": "2023-02-12",
-          "numberOfDays": 19,
-          "fromDate": "2023-02-11",
-          "toDate": "2023-03-01"
-        }
-      ],
       "RECALL_REMAND": [
         {
           "appliesToSentencesFrom": "2023-01-06",
@@ -79,8 +85,19 @@
           "fromDate": "2023-01-02",
           "toDate": "2023-01-05"
         }
+      ],
+      "UNLAWFULLY_AT_LARGE": [
+        {
+          "appliesToSentencesFrom": "2023-02-12",
+          "numberOfDays": 19,
+          "fromDate": "2023-02-11",
+          "toDate": "2023-03-01"
+        }
       ]
     }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-50"
 }

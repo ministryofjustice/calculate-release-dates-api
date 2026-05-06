@@ -33,11 +33,18 @@
           }
         },
         "sentencedAt": "2021-04-01",
-        "hasAnSDSEarlyReleaseExclusion": "NO",
-        "isSDSPlus": true
+        "releaseArrangements": {
+          "isSDSPlus": true,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": true,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {}
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-progression-model"
 }

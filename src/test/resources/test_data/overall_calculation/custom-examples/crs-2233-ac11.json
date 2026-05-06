@@ -22,8 +22,7 @@
             "YEARS": 7
           }
         },
-        "sentencedAt": "2024-11-08",
-        "identifier": "6d742a77-ac13-4682-a58d-8a4355620e9d"
+        "sentencedAt": "2024-11-08"
       },
       {
         "type": "StandardSentence",
@@ -38,9 +37,12 @@
         },
         "sentencedAt": "2024-11-08",
         "identifier": "6b30da2d-79fc-3793-85a5-558d12ba0502",
-        "isSDSPlus": true,
-        "isSDSPlusEligibleSentenceTypeLengthAndOffence": true,
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": true,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": true,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -55,7 +57,14 @@
         },
         "sentencedAt": "2024-11-08",
         "identifier": "6b30da2d-79fc-3793-85a5-558d12ba0502",
-        "hasAnSDSEarlyReleaseExclusion": "SEXUAL"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [
+            "SEXUAL"
+          ],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -69,8 +78,14 @@
           }
         },
         "sentencedAt": "2024-11-08",
-        "identifier": "f7088b0b-0236-4ddd-93eb-4841aae4a786",
-        "hasAnSDSEarlyReleaseExclusion": "SEXUAL"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [
+            "SEXUAL"
+          ],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
@@ -84,5 +99,9 @@
       ]
     }
   },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params",
   "assertSds40": true
 }

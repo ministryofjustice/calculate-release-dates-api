@@ -16,11 +16,15 @@
           }
         },
         "sentencedAt": "2021-10-18",
-        "identifier": "94d719cb-acbe-4921-bce5-b347eacee314",
         "recall": {
           "recallType": "STANDARD_RECALL"
         },
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -33,11 +37,15 @@
           }
         },
         "sentencedAt": "2021-10-18",
-        "identifier": "d09b3ddf-fbfd-47df-aae6-3b55edec3599",
         "recall": {
           "recallType": "STANDARD_RECALL"
         },
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -50,8 +58,12 @@
           }
         },
         "sentencedAt": "2022-01-07",
-        "identifier": "103166ab-a409-4ea4-9c74-ee20c47c00c4",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -64,25 +76,15 @@
           }
         },
         "sentencedAt": "2022-01-17",
-        "identifier": "bec69c57-aeb2-435f-a839-5acae9bbe11a",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
-      "UNLAWFULLY_AT_LARGE": [
-        {
-          "appliesToSentencesFrom": "2021-11-03",
-          "numberOfDays": 36,
-          "fromDate": "2021-11-03",
-          "toDate": "2021-12-08"
-        }
-      ],
-      "RECALL_TAGGED_BAIL": [
-        {
-          "appliesToSentencesFrom": "2021-10-18",
-          "numberOfDays": 30
-        }
-      ],
       "RECALL_REMAND": [
         {
           "appliesToSentencesFrom": "2021-10-18",
@@ -92,9 +94,26 @@
           "appliesToSentencesFrom": "2021-10-18",
           "numberOfDays": 32
         }
+      ],
+      "RECALL_TAGGED_BAIL": [
+        {
+          "appliesToSentencesFrom": "2021-10-18",
+          "numberOfDays": 30
+        }
+      ],
+      "UNLAWFULLY_AT_LARGE": [
+        {
+          "appliesToSentencesFrom": "2021-11-03",
+          "numberOfDays": 36,
+          "fromDate": "2021-11-03",
+          "toDate": "2021-12-08"
+        }
       ]
     },
     "returnToCustodyDate": "2022-01-07"
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-50"
 }

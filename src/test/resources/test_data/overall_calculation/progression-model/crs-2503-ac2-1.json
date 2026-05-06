@@ -16,8 +16,7 @@
           }
         },
         "sentencedAt": "2022-02-03",
-        "identifier": "6a9c4c95-e6ce-3065-accd-07ce90d39ba0",
-        "fineAmount": 3000
+        "fineAmount": 3E+3
       },
       {
         "type": "SopcSentence",
@@ -48,14 +47,21 @@
           }
         },
         "sentencedAt": "2022-03-27",
-        "hasAnSDSEarlyReleaseExclusion": "NO",
-        "identifier": "023e388e-1673-3bbc-9f13-1b1d915f3b73",
         "consecutiveSentenceUUIDs": [
           "d211f333-aa1a-3e25-ac8d-0459c1f98868"
-        ]
+        ],
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {}
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-progression-model"
 }

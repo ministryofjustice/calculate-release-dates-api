@@ -17,11 +17,15 @@
           }
         },
         "sentencedAt": "2018-10-18",
-        "identifier": "582d281a-00c8-4086-8a7b-0520eea11c05",
         "recall": {
           "recallType": "STANDARD_RECALL"
         },
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "StandardSentence",
@@ -35,11 +39,23 @@
           }
         },
         "sentencedAt": "2024-10-17",
-        "identifier": "08a34537-53bd-4a9e-bb06-3202ad3f2230",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
+      "RECALL_REMAND": [
+        {
+          "appliesToSentencesFrom": "2018-10-18",
+          "numberOfDays": 342,
+          "fromDate": "2017-11-10",
+          "toDate": "2018-10-17"
+        }
+      ],
       "ADDITIONAL_DAYS_AWARDED": [
         {
           "appliesToSentencesFrom": "2024-12-03",
@@ -53,15 +69,11 @@
           "fromDate": "2025-01-30",
           "toDate": "2025-02-19"
         }
-      ],
-      "RECALL_REMAND": [
-        {
-          "appliesToSentencesFrom": "2018-10-18",
-          "numberOfDays": 342,
-          "fromDate": "2017-11-10",
-          "toDate": "2018-10-17"
-        }
       ]
     }
-  }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params"
 }

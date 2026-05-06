@@ -17,17 +17,15 @@
           }
         },
         "sentencedAt": "2023-11-29",
-        "hasAnSDSEarlyReleaseExclusion": "NO",
-        "isSDSPlus": true
+        "releaseArrangements": {
+          "isSDSPlus": true,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": true,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
-      "TAGGED_BAIL": [
-        {
-          "appliesToSentencesFrom": "2023-11-29",
-          "numberOfDays": 13
-        }
-      ],
       "UNLAWFULLY_AT_LARGE": [
         {
           "appliesToSentencesFrom": "2023-11-29",
@@ -39,8 +37,17 @@
             "reason": "RELEASE_IN_ERROR"
           }
         }
+      ],
+      "TAGGED_BAIL": [
+        {
+          "appliesToSentencesFrom": "2023-11-29",
+          "numberOfDays": 13
+        }
       ]
     }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-progression-model",
   "featureToggles": {

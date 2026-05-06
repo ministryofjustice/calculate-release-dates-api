@@ -16,9 +16,6 @@
           }
         },
         "sentencedAt": "2025-10-12",
-        "identifier": "d5ed5a21-b615-4ff0-92ad-c53dc57ebdb6",
-        "caseSequence": 1,
-        "lineSequence": 1,
         "latestTusedDate": "2024-05-14",
         "latestTusedSource": "NOMIS_OVERRIDDEN"
       }
@@ -28,6 +25,9 @@
       "tused": "2024-05-14",
       "historicalTusedSource": "NOMIS_OVERRIDDEN"
     }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "calculation-params",
   "featureToggles": {

@@ -40,7 +40,12 @@
         "identifier": "f026066a-c49f-32d3-9e32-e3a0b5dc9b99",
         "caseSequence": 2,
         "lineSequence": 2,
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
         "type": "AFineSentence",

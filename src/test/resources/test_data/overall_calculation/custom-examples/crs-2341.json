@@ -6,6 +6,7 @@
     },
     "sentences": [
       {
+        "type": "StandardSentence",
         "offence": {
           "committedAt": "2019-10-31",
           "offenceCode": "OF61016"
@@ -18,10 +19,15 @@
         },
         "sentencedAt": "2020-11-13",
         "identifier": "28f7a391-5b92-307a-8caa-f2a4a10ff268",
-        "isSDSPlus": true,
-        "isSDSPlusEligibleSentenceTypeLengthAndOffence": true
+        "releaseArrangements": {
+          "isSDSPlus": true,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": true,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
+        "type": "StandardSentence",
         "offence": {
           "committedAt": "2019-11-04",
           "offenceCode": "COML020C"
@@ -35,9 +41,16 @@
         "identifier": "c266e68f-0e04-39b8-a26c-129ea5b5b081",
         "consecutiveSentenceUUIDs": [
           "28f7a391-5b92-307a-8caa-f2a4a10ff268"
-        ]
+        ],
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
+        "type": "StandardSentence",
         "offence": {
           "committedAt": "2019-10-03",
           "offenceCode": "OF61131"
@@ -48,9 +61,17 @@
           }
         },
         "sentencedAt": "2024-09-23",
-        "hasAnSDSEarlyReleaseExclusion": "VIOLENT"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [
+            "VIOLENT"
+          ],
+          "isSection250": false
+        }
       },
       {
+        "type": "StandardSentence",
         "offence": {
           "committedAt": "2018-12-04",
           "offenceCode": "MD71533"
@@ -63,9 +84,16 @@
         "sentencedAt": "2021-03-03",
         "consecutiveSentenceUUIDs": [
           "c266e68f-0e04-39b8-a26c-129ea5b5b081"
-        ]
+        ],
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       },
       {
+        "type": "StandardSentence",
         "offence": {
           "committedAt": "2018-12-04",
           "offenceCode": "MD71533"
@@ -75,7 +103,13 @@
             "MONTHS": 6
           }
         },
-        "sentencedAt": "2021-03-03"
+        "sentencedAt": "2021-03-03",
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
@@ -89,5 +123,9 @@
       ]
     }
   },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params",
   "expectedValidationException": "UNSUPPORTED_SDS40_CONSECUTIVE_SDS_BETWEEN_TRANCHE_COMMENCEMENTS"
 }

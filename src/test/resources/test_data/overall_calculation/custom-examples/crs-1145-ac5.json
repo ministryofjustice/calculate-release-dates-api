@@ -21,8 +21,7 @@
             "YEARS": 2
           }
         },
-        "sentencedAt": "2021-12-10",
-        "identifier": "71921dcb-85bc-47cc-be1a-286f8c75af92"
+        "sentencedAt": "2021-12-10"
       },
       {
         "type": "DetentionAndTrainingOrderSentence",
@@ -34,8 +33,7 @@
             "YEARS": 2
           }
         },
-        "sentencedAt": "2022-07-26",
-        "identifier": "4f641d8b-7fa0-4c8f-abcd-e65295c5e75c"
+        "sentencedAt": "2022-07-26"
       }
     ],
     "adjustments": {
@@ -48,6 +46,9 @@
         }
       ]
     }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-50"
 }

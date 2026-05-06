@@ -16,12 +16,20 @@
           }
         },
         "sentencedAt": "2022-08-30",
-        "isSDSPlus": true,
-        "hasAnSDSEarlyReleaseExclusion": "SEXUAL",
-        "section250": true
+        "releaseArrangements": {
+          "isSDSPlus": true,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": true,
+          "sdsEarlyReleaseExclusions": [
+            "SEXUAL"
+          ],
+          "isSection250": true
+        }
       }
     ],
     "adjustments": {}
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
   },
   "params": "sds-progression-model"
 }

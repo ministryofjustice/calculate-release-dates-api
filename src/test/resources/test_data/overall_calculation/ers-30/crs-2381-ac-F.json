@@ -17,16 +17,21 @@
           }
         },
         "sentencedAt": "2025-05-09",
-        "identifier": "cb304745-d781-47d3-b931-4baa31551fc5",
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
-      "UNLAWFULLY_AT_LARGE": [
+      "REMAND": [
         {
           "appliesToSentencesFrom": "2025-05-09",
-          "numberOfDays": 25,
-          "fromDate": "2025-05-10"
+          "numberOfDays": 90,
+          "fromDate": "2025-02-07",
+          "toDate": "2025-05-08"
         }
       ],
       "ADDITIONAL_DAYS_AWARDED": [
@@ -36,17 +41,18 @@
           "fromDate": "2025-05-09"
         }
       ],
-      "REMAND": [
+      "UNLAWFULLY_AT_LARGE": [
         {
           "appliesToSentencesFrom": "2025-05-09",
-          "numberOfDays": 90,
-          "fromDate": "2025-02-07",
-          "toDate": "2025-05-08"
+          "numberOfDays": 25,
+          "fromDate": "2025-05-10"
         }
       ]
     }
   },
   "userInputs": {
-    "calculateErsed": true
-  }
+    "calculateErsed": true,
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params"
 }

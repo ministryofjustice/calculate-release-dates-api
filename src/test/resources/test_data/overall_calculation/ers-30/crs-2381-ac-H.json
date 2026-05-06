@@ -18,19 +18,20 @@
           }
         },
         "sentencedAt": "2020-10-19",
-        "identifier": "cb304745-d781-47d3-b931-4baa31551fc5",
-        "isSDSPlus": true,
-        "isSDSPlusEligibleSentenceTypeLengthAndOffence": true,
-        "hasAnSDSEarlyReleaseExclusion": "NO"
+        "releaseArrangements": {
+          "isSDSPlus": true,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": true,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {
-      "REMAND": [
+      "RESTORATION_OF_ADDITIONAL_DAYS_AWARDED": [
         {
           "appliesToSentencesFrom": "2020-10-19",
-          "numberOfDays": 439,
-          "fromDate": "2019-08-06",
-          "toDate": "2020-10-18"
+          "numberOfDays": 30,
+          "fromDate": "2020-10-19"
         }
       ],
       "ADDITIONAL_DAYS_AWARDED": [
@@ -40,16 +41,19 @@
           "fromDate": "2020-10-19"
         }
       ],
-      "RESTORATION_OF_ADDITIONAL_DAYS_AWARDED": [
+      "REMAND": [
         {
           "appliesToSentencesFrom": "2020-10-19",
-          "numberOfDays": 30,
-          "fromDate": "2020-10-19"
+          "numberOfDays": 439,
+          "fromDate": "2019-08-06",
+          "toDate": "2020-10-18"
         }
       ]
     }
   },
   "userInputs": {
-    "calculateErsed": true
-  }
+    "calculateErsed": true,
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params"
 }
