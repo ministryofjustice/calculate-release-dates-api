@@ -19,7 +19,7 @@ enum class SDSEarlyReleaseExclusionType(
   SEXUAL_T3(sds40Exclusion = false, sds40AdditionalExcludedOffence = true, progressionModelExclusion = false),
   DOMESTIC_ABUSE_T3(sds40Exclusion = false, sds40AdditionalExcludedOffence = true, progressionModelExclusion = false),
   MURDER_T3(sds40Exclusion = false, sds40AdditionalExcludedOffence = true, progressionModelExclusion = false),
-  SCHEDULE_13_PART_3(sds40Exclusion = false, sds40AdditionalExcludedOffence = false, progressionModelExclusion = true),
+  PROGRESSION_MODEL_SCHEDULE_13_PART_3(sds40Exclusion = false, sds40AdditionalExcludedOffence = false, progressionModelExclusion = true),
   NO(sds40Exclusion = false, sds40AdditionalExcludedOffence = false, progressionModelExclusion = false),
 }
 

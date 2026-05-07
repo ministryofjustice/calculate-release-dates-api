@@ -87,7 +87,7 @@ class EarlyReleaseSentenceFilterTest {
       SDSEarlyReleaseExclusionType.SEXUAL_T3 -> true
       SDSEarlyReleaseExclusionType.DOMESTIC_ABUSE_T3 -> true
       SDSEarlyReleaseExclusionType.MURDER_T3 -> true
-      SDSEarlyReleaseExclusionType.SCHEDULE_13_PART_3 -> true
+      SDSEarlyReleaseExclusionType.PROGRESSION_MODEL_SCHEDULE_13_PART_3 -> true
       SDSEarlyReleaseExclusionType.NO -> true
     }
     assertThat(isIncluded).describedAs("isIncluded expected to be $expected for $exclusion").isEqualTo(expected)
@@ -122,7 +122,7 @@ class EarlyReleaseSentenceFilterTest {
       SDSEarlyReleaseExclusionType.SEXUAL_T3 -> true
       SDSEarlyReleaseExclusionType.DOMESTIC_ABUSE_T3 -> true
       SDSEarlyReleaseExclusionType.MURDER_T3 -> true
-      SDSEarlyReleaseExclusionType.SCHEDULE_13_PART_3 -> false
+      SDSEarlyReleaseExclusionType.PROGRESSION_MODEL_SCHEDULE_13_PART_3 -> false
       SDSEarlyReleaseExclusionType.NO -> false
     }
     assertThat(isIncluded).describedAs("isIncluded expected to be $expected for $exclusion").isEqualTo(expected)
@@ -166,6 +166,41 @@ class EarlyReleaseSentenceFilterTest {
     )
     sentence.identificationTrack = SentenceIdentificationTrack.SDS
     assertThat(EarlyReleaseSentenceFilter.SDS_PROGRESSION_MODEL.isIncluded(sentence)).isFalse
+  }
+
+  @ParameterizedTest
+  @EnumSource(SDSEarlyReleaseExclusionType::class)
+  fun `SDS Progression Model should exclude only Schedule 13 Part 3`(exclusion: SDSEarlyReleaseExclusionType) {
+    val sentence = StandardDeterminateSentence(
+      sentencedAt = LocalDate.of(2000, 1, 1),
+      duration = FIVE_YEAR_DURATION,
+      offence = Offence(
+        committedAt = LocalDate.of(2000, 1, 1),
+        offenceCode = "123",
+      ),
+      releaseArrangements = SDSReleaseArrangements(
+        isSDSPlus = false,
+        isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+        isSection250 = false,
+        sdsEarlyReleaseExclusions = listOf(exclusion),
+      ),
+    )
+    sentence.identificationTrack = SentenceIdentificationTrack.SDS
+
+    val isIncluded = EarlyReleaseSentenceFilter.SDS_PROGRESSION_MODEL.isIncluded(sentence)
+    val expected = when (exclusion) {
+      SDSEarlyReleaseExclusionType.SEXUAL -> true
+      SDSEarlyReleaseExclusionType.VIOLENT -> true
+      SDSEarlyReleaseExclusionType.DOMESTIC_ABUSE -> true
+      SDSEarlyReleaseExclusionType.NATIONAL_SECURITY -> true
+      SDSEarlyReleaseExclusionType.TERRORISM -> true
+      SDSEarlyReleaseExclusionType.SEXUAL_T3 -> true
+      SDSEarlyReleaseExclusionType.DOMESTIC_ABUSE_T3 -> true
+      SDSEarlyReleaseExclusionType.MURDER_T3 -> true
+      SDSEarlyReleaseExclusionType.PROGRESSION_MODEL_SCHEDULE_13_PART_3 -> false
+      SDSEarlyReleaseExclusionType.NO -> true
+    }
+    assertThat(isIncluded).describedAs("isIncluded expected to be $expected for $exclusion").isEqualTo(expected)
   }
 
   companion object {
