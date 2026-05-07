@@ -1,21 +1,22 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.validator
 
 import org.springframework.stereotype.Component
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.SDSLegislationConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOutput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExternalMovementDirection
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExternalMovementReason
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessage
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationOrder
 
 @Component
-class HdcedRepealValidator(val featureToggles: FeatureToggles) : PostCalculationValidator {
+class HdcedRepealValidator(val sdsLegislationConfiguration: SDSLegislationConfiguration) : PostCalculationValidator {
 
   override fun validate(calculationOutput: CalculationOutput, booking: Booking): List<ValidationMessage> {
-    if (!featureToggles.hdcRepeal) return emptyList()
+    if (sdsLegislationConfiguration.progressionModelLegislation == null) return emptyList()
 
     if (calculationOutput.calculationResult.dates.contains(ReleaseDateType.HDCED)) {
       val hdcedDate = calculationOutput.calculationResult.dates[ReleaseDateType.HDCED]
@@ -27,7 +28,7 @@ class HdcedRepealValidator(val featureToggles: FeatureToggles) : PostCalculation
       if (
         lastHdcRelease != null &&
         booking.externalMovements.none {
-          it.direction == ExternalMovementDirection.IN && it.movementDate.isAfter(lastHdcRelease.movementDate)
+          it.direction == ExternalMovementDirection.IN && it.movementDate.isAfterOrEqualTo(lastHdcRelease.movementDate)
         }
       ) {
         return listOf(

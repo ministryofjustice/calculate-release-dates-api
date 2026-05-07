@@ -19,6 +19,12 @@
         },
         "sentencedAt": "2024-03-29",
         "identifier": "cb304745-d781-47d3-b931-4baa31551fc5",
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        },
         "hasAnSDSEarlyReleaseExclusion": "NO"
       },
       {
@@ -37,6 +43,12 @@
         "consecutiveSentenceUUIDs": [
           "cb304745-d781-47d3-b931-4baa31551fc5"
         ],
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        },
         "hasAnSDSEarlyReleaseExclusion": "NO"
       }
     ],
@@ -89,9 +101,6 @@
       }
     ]
   },
-  "params": "calculation-params",
-  "featureToggles": {
-    "hdcRepeal": true
-  },
+  "params": "sds-progression-model",
   "expectedValidationException": "HDCED_REPEAL"
 }

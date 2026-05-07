@@ -7,7 +7,6 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.File
 import java.util.stream.Stream
-import kotlin.test.Test
 
 class StandardConfigurationTests : CalculationExampleTests() {
 
@@ -33,11 +32,6 @@ class StandardConfigurationTests : CalculationExampleTests() {
     example: String,
   ) {
     `Test Sentence Level Dates Example`(example)
-  }
-
-  @Test
-  fun blah() {
-    `Test Example`("validation/crs-2691-ac1")
   }
 
   companion object {
