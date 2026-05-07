@@ -105,6 +105,7 @@ class ValidationCodeTest {
         "REPATRIATED_PRISONER",
         "CONSECUTIVE_TO_SENTENCE_IMPOSED_AFTER",
         "REVOCATION_DATE_IN_THE_FUTURE",
+        "HDCED_REPEAL",
       ),
     )
   }
