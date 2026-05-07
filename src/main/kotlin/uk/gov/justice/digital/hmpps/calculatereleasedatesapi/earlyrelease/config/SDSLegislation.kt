@@ -101,6 +101,6 @@ sealed interface SDSLegislation : Legislation {
 
     override fun commencementDate(): LocalDate = tranches.minOf { it.date }
 
-    override fun isSentenceSubjectToTraches(sentence: CalculableSentence) = sentence is StandardDeterminateSentence && filter.isIncluded(sentence) && !sentence.isRecall()
+    override fun isSentenceSubjectToTraches(sentence: CalculableSentence) = sentence is StandardDeterminateSentence && filter.isIncluded(sentence)
   }
 }

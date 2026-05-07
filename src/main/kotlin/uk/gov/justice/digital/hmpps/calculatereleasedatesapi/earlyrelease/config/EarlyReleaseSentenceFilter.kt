@@ -16,7 +16,10 @@ enum class EarlyReleaseSentenceFilter {
   SDS_PROGRESSION_MODEL {
     override fun isIncluded(part: AbstractSentence): Boolean = part is StandardDeterminateSentence &&
       !part.releaseArrangements.isSection250 &&
-      listOf(SentenceIdentificationTrack.SDS, SentenceIdentificationTrack.SDS_PLUS).contains(part.identificationTrack)
+      listOf(SentenceIdentificationTrack.SDS, SentenceIdentificationTrack.SDS_PLUS).contains(part.identificationTrack) &&
+      !part.isRecall() &&
+      !part.releaseArrangements.wouldBeSDSPlusIfSentencedToday() &&
+      !part.releaseArrangements.hasProgressionModelExclusion()
   },
   SDS_OR_SDS_PLUS {
     override fun isIncluded(part: AbstractSentence): Boolean = listOf(SentenceIdentificationTrack.SDS, SentenceIdentificationTrack.SDS_PLUS).contains(part.identificationTrack)
