@@ -4,6 +4,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
@@ -14,6 +15,8 @@ import org.mockito.kotlin.never
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.SDSLegislation
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.SDSLegislationConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.manageoffencesapi.model.OffenceSdsExclusionIndicator
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.manageoffencesapi.model.PcscMarkers
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.manageoffencesapi.model.SdsOffenceDetails
@@ -27,8 +30,20 @@ import java.time.LocalDate
 class ReleaseArrangementLookupServiceTest {
 
   private val mockManageOffencesService = mock<ManageOffencesService>()
-  private val sdsEarlyReleaseExclusionMappingService = SDSEarlyReleaseExclusionMappingService()
+  private val progressionModelLegislation = mock<SDSLegislation.ProgressionModelLegislation>()
+  private val sdsLegislationConfiguration = SDSLegislationConfiguration(
+    defaultLegislation = mock(),
+    sds40Legislation = mock(),
+    sds40AdditionalExcludedOffencesLegislation = mock(),
+    progressionModelLegislation = progressionModelLegislation,
+  )
+  private val sdsEarlyReleaseExclusionMappingService = SDSEarlyReleaseExclusionMappingService(sdsLegislationConfiguration)
   private val underTest = ReleaseArrangementLookupService(sdsEarlyReleaseExclusionMappingService, mockManageOffencesService)
+
+  @BeforeEach
+  fun setUp() {
+    whenever(progressionModelLegislation.commencementDate()).thenReturn(LocalDate.of(2026, 9, 2))
+  }
 
   @Test
   fun `SDS+ Marker set when sentenced after SDS and before PCSC and sentence longer than 7 Years with singular offence - List A`() {
@@ -296,19 +311,25 @@ class ReleaseArrangementLookupServiceTest {
     verify(mockManageOffencesService).getSdsOffenceDetailsForOffenceCodes(listOf(OFFENCE_CODE_NON_SDS_PLUS))
   }
 
-  @Test
-  fun `should set has an SDS exclusion if offence is schedule 13 part 3`() {
+  @ParameterizedTest
+  @CsvSource(
+    "2026-09-01,true",
+    "2026-09-02,false",
+    "2026-09-03,false",
+  )
+  fun `should set has an SDS exclusion if offence is schedule 13 part 3 sentenced before progression commencement but not on or after commencement`(sentenceDate: LocalDate, shouldBeExcluded: Boolean) {
     whenever(mockManageOffencesService.getSdsOffenceDetailsForOffenceCodes(listOf(OFFENCE_CODE_NON_SDS_PLUS))).thenReturn(
       listOf(
         nonSdsPlusExclusion(OFFENCE_CODE_NON_SDS_PLUS, listOf(OffenceSdsExclusionIndicator.SCHEDULE_13_PART_3)),
       ),
     )
 
-    val withReleaseArrangements = underTest.populateReleaseArrangements(listOf(nonSDSPlusSentenceAndOffenceFourYears))
-    assertThat(withReleaseArrangements[0].sdsReleaseArrangements!!.isSDSPlus).isFalse()
-    assertThat(withReleaseArrangements[0].sdsReleaseArrangements!!.sdsEarlyReleaseExclusions.firstOrNull()).isEqualTo(SDSEarlyReleaseExclusionType.SCHEDULE_13_PART_3)
-
-    verify(mockManageOffencesService).getSdsOffenceDetailsForOffenceCodes(listOf(OFFENCE_CODE_NON_SDS_PLUS))
+    val withReleaseArrangements = underTest.populateReleaseArrangements(listOf(nonSDSPlusSentenceAndOffenceFourYears.copy(sentenceDate = sentenceDate)))
+    if (shouldBeExcluded) {
+      assertThat(withReleaseArrangements[0].sdsReleaseArrangements!!.sdsEarlyReleaseExclusions.firstOrNull()).isEqualTo(SDSEarlyReleaseExclusionType.PROGRESSION_MODEL_SCHEDULE_13_PART_3)
+    } else {
+      assertThat(withReleaseArrangements[0].sdsReleaseArrangements!!.sdsEarlyReleaseExclusions).isEmpty()
+    }
   }
 
   @Test
@@ -337,7 +358,7 @@ class ReleaseArrangementLookupServiceTest {
     val nonSDSPlusSentenceLessThanFourYears = nonSDSPlusSentenceAndOffenceFourYears.copy(terms = listOf(SentenceTerms(3, 11, 0, 0)))
     val withReleaseArrangements = underTest.populateReleaseArrangements(listOf(nonSDSPlusSentenceLessThanFourYears))
     assertThat(withReleaseArrangements[0].sdsReleaseArrangements!!.isSDSPlus).isFalse()
-    assertThat(withReleaseArrangements[0].sdsReleaseArrangements!!.sdsEarlyReleaseExclusions.firstOrNull()).isEqualTo(SDSEarlyReleaseExclusionType.NO)
+    assertThat(withReleaseArrangements[0].sdsReleaseArrangements!!.sdsEarlyReleaseExclusions).isEmpty()
 
     verify(mockManageOffencesService, times(1)).getSdsOffenceDetailsForOffenceCodes(listOf(OFFENCE_CODE_NON_SDS_PLUS))
   }

@@ -62,7 +62,7 @@ class SDSReleaseArrangementsTest {
     val arrangements = SDSReleaseArrangements(
       isSDSPlus = false,
       isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-      sdsEarlyReleaseExclusions = listOf(SDSEarlyReleaseExclusionType.SCHEDULE_13_PART_3),
+      sdsEarlyReleaseExclusions = listOf(SDSEarlyReleaseExclusionType.PROGRESSION_MODEL_SCHEDULE_13_PART_3),
       isSection250 = false,
     )
     assertThat(arrangements.hasSDS40EarlyReleaseExclusion()).describedAs("hasSDS40EarlyReleaseExclusion").isFalse()
@@ -75,7 +75,7 @@ class SDSReleaseArrangementsTest {
     val arrangements = SDSReleaseArrangements(
       isSDSPlus = false,
       isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-      sdsEarlyReleaseExclusions = listOf(SDSEarlyReleaseExclusionType.SEXUAL, SDSEarlyReleaseExclusionType.SCHEDULE_13_PART_3),
+      sdsEarlyReleaseExclusions = listOf(SDSEarlyReleaseExclusionType.SEXUAL, SDSEarlyReleaseExclusionType.PROGRESSION_MODEL_SCHEDULE_13_PART_3),
       isSection250 = false,
     )
     assertThat(arrangements.hasSDS40EarlyReleaseExclusion()).describedAs("hasSDS40EarlyReleaseExclusion").isTrue()
@@ -88,7 +88,7 @@ class SDSReleaseArrangementsTest {
     val arrangements = SDSReleaseArrangements(
       isSDSPlus = false,
       isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-      sdsEarlyReleaseExclusions = listOf(SDSEarlyReleaseExclusionType.SEXUAL_T3, SDSEarlyReleaseExclusionType.SCHEDULE_13_PART_3),
+      sdsEarlyReleaseExclusions = listOf(SDSEarlyReleaseExclusionType.SEXUAL_T3, SDSEarlyReleaseExclusionType.PROGRESSION_MODEL_SCHEDULE_13_PART_3),
       isSection250 = false,
     )
     assertThat(arrangements.hasSDS40EarlyReleaseExclusion()).describedAs("hasSDS40EarlyReleaseExclusion").isFalse()
