@@ -607,7 +607,7 @@ class TransformFunctionsTest {
         ),
         sentenceStatus = "IMP",
         sentenceCategory = "CAT",
-        sentenceCalculationType = SentenceCalculationType.ADIMP.name,
+        sentenceCalculationType = type.name,
         sentenceTypeDescription = "Generic",
         offences = listOf(offence),
         lineSequence = lineSequence,
