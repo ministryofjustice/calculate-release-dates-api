@@ -57,12 +57,16 @@ data class SentenceAndOffenceWithReleaseArrangements(
     source.courtTypeCode,
     source.fineAmount,
     source.revocationDates,
-    SDSReleaseArrangements(
-      isSDSPlus = isSdsPlus,
-      isSDSPlusEligibleSentenceTypeLengthAndOffence = isSDSPlusEligibleSentenceTypeLengthAndOffence,
-      sdsEarlyReleaseExclusions = if (hasAnSDSExclusion == SDSEarlyReleaseExclusionType.NO) emptyList() else listOf(hasAnSDSExclusion),
-      isSection250 = SentenceCalculationType.from(source.sentenceCalculationType).isSection250(),
-    ),
+    if (SentenceCalculationType.from(source.sentenceCalculationType).isSDS()) {
+      SDSReleaseArrangements(
+        isSDSPlus = isSdsPlus,
+        isSDSPlusEligibleSentenceTypeLengthAndOffence = isSDSPlusEligibleSentenceTypeLengthAndOffence,
+        sdsEarlyReleaseExclusions = if (hasAnSDSExclusion == SDSEarlyReleaseExclusionType.NO) emptyList() else listOf(hasAnSDSExclusion),
+        isSection250 = SentenceCalculationType.from(source.sentenceCalculationType).isSection250(),
+      )
+    } else {
+      null
+    },
   )
 
   constructor(sentenceAndOffence: SentenceAndOffence, releaseArrangements: SDSReleaseArrangements?) : this(
@@ -112,11 +116,15 @@ data class SentenceAndOffenceWithReleaseArrangements(
     courtTypeCode = source.courtTypeCode,
     fineAmount = source.fineAmount,
     revocationDates = source.revocationDates,
-    sdsReleaseArrangements = SDSReleaseArrangements(
-      isSDSPlus = isSdsPlus,
-      isSDSPlusEligibleSentenceTypeLengthAndOffence = isSDSPlusEligibleSentenceTypeLengthAndOffence,
-      sdsEarlyReleaseExclusions = if (hasAnSDSExclusion == SDSEarlyReleaseExclusionType.NO) emptyList() else listOf(hasAnSDSExclusion),
-      isSection250 = SentenceCalculationType.from(source.sentenceCalculationType).isSection250(),
-    ),
+    sdsReleaseArrangements = if (SentenceCalculationType.from(source.sentenceCalculationType).isSDS()) {
+      SDSReleaseArrangements(
+        isSDSPlus = isSdsPlus,
+        isSDSPlusEligibleSentenceTypeLengthAndOffence = isSDSPlusEligibleSentenceTypeLengthAndOffence,
+        sdsEarlyReleaseExclusions = if (hasAnSDSExclusion == SDSEarlyReleaseExclusionType.NO) emptyList() else listOf(hasAnSDSExclusion),
+        isSection250 = SentenceCalculationType.from(source.sentenceCalculationType).isSection250(),
+      )
+    } else {
+      null
+    },
   )
 }

@@ -10,4 +10,8 @@ data class SDSReleaseArrangements(
   fun hasSDS40AdditionalExcludedOffences(): Boolean = sdsEarlyReleaseExclusions.any { it.sds40AdditionalExcludedOffence }
   fun hasProgressionModelExclusion(): Boolean = sdsEarlyReleaseExclusions.any { it.progressionModelExclusion }
   fun wouldBeSDSPlusIfSentencedToday(): Boolean = !isSDSPlus && isSDSPlusEligibleSentenceTypeLengthAndOffence
+
+  companion object {
+    fun default() = SDSReleaseArrangements(isSDSPlus = false, isSDSPlusEligibleSentenceTypeLengthAndOffence = false, sdsEarlyReleaseExclusions = emptyList(), isSection250 = false)
+  }
 }
