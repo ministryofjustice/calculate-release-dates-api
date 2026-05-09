@@ -94,6 +94,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Recall
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceAnalysis
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SopcSentence
@@ -252,9 +253,7 @@ fun transform(
         recall = recall,
       )
     }
-
-    // Fallback Sentence
-    else -> {
+    StandardDeterminateSentence::class.java -> {
       StandardDeterminateSentence(
         sentencedAt = sentence.sentenceDate,
         duration = transform(sentence.terms.firstOrNull() ?: SentenceTerms()),
@@ -267,6 +266,22 @@ fun transform(
         caseReference = sentence.caseReference,
         recall = recall,
         releaseArrangements = requireNotNull(sentence.sdsReleaseArrangements) { "SDS must have release arrangements populated" },
+      )
+    }
+    else -> {
+      // Fall back to standard determinate sentence with default release arrangements
+      StandardDeterminateSentence(
+        sentencedAt = sentence.sentenceDate,
+        duration = transform(sentence.terms.firstOrNull() ?: SentenceTerms()),
+        offence = offence,
+        identifier = generateUUIDForSentence(sentence.bookingId, sentence.sentenceSequence),
+        consecutiveSentenceUUIDs = consecutiveSentenceUUIDs,
+        caseSequence = sentence.caseSequence,
+        lineSequence = sentence.lineSequence,
+        externalSentenceId = externalSentenceId,
+        caseReference = sentence.caseReference,
+        recall = recall,
+        releaseArrangements = SDSReleaseArrangements.default(),
       )
     }
   }
