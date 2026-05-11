@@ -46,7 +46,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NormalisedSen
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SopcSentence
@@ -56,7 +55,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Book
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderKeyDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustmentType
@@ -95,28 +93,33 @@ class TransformFunctionsTest {
       offenceDescription = "Littering",
     )
     val request = SentenceAndOffenceWithReleaseArrangements(
-      PrisonApiSentenceAndOffences(
-        bookingId = bookingId,
-        sentenceSequence = sequence,
-        consecutiveToSequence = consecutiveTo,
-        sentenceDate = FIRST_JAN_2015,
-        terms = listOf(
-          SentenceTerms(
-            years = 5,
-          ),
+      bookingId = bookingId,
+      sentenceSequence = sequence,
+      consecutiveToSequence = consecutiveTo,
+      sentenceDate = FIRST_JAN_2015,
+      terms = listOf(
+        SentenceTerms(
+          years = 5,
         ),
-        sentenceStatus = "IMP",
-        sentenceCategory = "CAT",
-        sentenceCalculationType = SentenceCalculationType.ADIMP.name,
-        sentenceTypeDescription = "Standard Determinate",
-        offences = listOf(offence),
-        lineSequence = lineSequence,
-        caseSequence = caseSequence,
       ),
-      offence,
-      isSdsPlus = true,
-      isSDSPlusEligibleSentenceTypeLengthAndOffence = true,
-      hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
+      sentenceStatus = "IMP",
+      sentenceCategory = "CAT",
+      sentenceCalculationType = SentenceCalculationType.ADIMP.name,
+      sentenceTypeDescription = "Standard Determinate",
+      lineSequence = lineSequence,
+      caseSequence = caseSequence,
+      offence = offence,
+      caseReference = null,
+      courtId = null,
+      courtDescription = null,
+      courtTypeCode = null,
+      fineAmount = null,
+      sdsReleaseArrangements = SDSReleaseArrangements(
+        isSDSPlus = true,
+        isSDSPlusEligibleSentenceTypeLengthAndOffence = true,
+        sdsEarlyReleaseExclusions = emptyList(),
+        isSection250 = false,
+      ),
     )
 
     assertThat(transform(request, null)).isEqualTo(
@@ -592,57 +595,74 @@ class TransformFunctionsTest {
       offenceDescription = "Littering",
     )
     val request = SentenceAndOffenceWithReleaseArrangements(
-      PrisonApiSentenceAndOffences(
-        bookingId = BOOKING_ID,
-        sentenceSequence = sequence,
-        sentenceDate = FIRST_JAN_2015,
-        terms = listOf(
-          SentenceTerms(
-            years = 1,
-          ),
-          SentenceTerms(
-            years = 1,
-            code = SentenceTerms.LICENCE_TERM_CODE,
-          ),
+      bookingId = BOOKING_ID,
+      sentenceSequence = sequence,
+      lineSequence = lineSequence,
+      caseSequence = caseSequence,
+      consecutiveToSequence = null,
+      sentenceDate = FIRST_JAN_2015,
+      terms = listOf(
+        SentenceTerms(
+          years = 1,
         ),
-        sentenceStatus = "IMP",
-        sentenceCategory = "CAT",
-        sentenceCalculationType = type.name,
-        sentenceTypeDescription = "Generic",
-        offences = listOf(offence),
-        lineSequence = lineSequence,
-        caseSequence = caseSequence,
+        SentenceTerms(
+          years = 1,
+          code = SentenceTerms.LICENCE_TERM_CODE,
+        ),
       ),
-      offence,
-      isSdsPlus = true,
-      isSDSPlusEligibleSentenceTypeLengthAndOffence = true,
-      hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
+      sentenceStatus = "IMP",
+      sentenceCategory = "CAT",
+      sentenceCalculationType = type.name,
+      sentenceTypeDescription = "Generic",
+      offence = offence,
+      caseReference = null,
+      courtId = null,
+      courtDescription = null,
+      courtTypeCode = null,
+      fineAmount = null,
+      sdsReleaseArrangements = if (type.isSDS()) {
+        SDSReleaseArrangements(
+          isSDSPlus = false,
+          isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+          sdsEarlyReleaseExclusions = emptyList(),
+          isSection250 = type.isSection250(),
+        )
+      } else {
+        null
+      },
     )
 
-    val sentenceInstance = transform(request.copy(sentenceCalculationType = type.name), null)
+    val sentenceInstance = transform(request, null)
 
     when (type.sentenceType) {
       ExtendedDeterminate -> {
         assertThat(sentenceInstance).isInstanceOf(ExtendedDeterminateSentence::class.java)
       }
+
       Sopc -> {
         assertThat(sentenceInstance).isInstanceOf(SopcSentence::class.java)
       }
+
       AFine -> {
         assertThat(sentenceInstance).isInstanceOf(AFineSentence::class.java)
       }
+
       DetentionAndTrainingOrder -> {
         assertThat(sentenceInstance).isInstanceOf(DetentionAndTrainingOrderSentence::class.java)
       }
+
       Botus -> {
         assertThat(sentenceInstance).isInstanceOf(BotusSentence::class.java)
       }
+
       StandardDeterminate -> {
         assertThat(sentenceInstance).isInstanceOf(StandardDeterminateSentence::class.java)
       }
+
       Indeterminate -> {
         assertThat(sentenceInstance).isInstanceOf(StandardDeterminateSentence::class.java)
       }
+
       null -> {
         assertThat(sentenceInstance).isInstanceOf(StandardDeterminateSentence::class.java)
       }
@@ -662,27 +682,33 @@ class TransformFunctionsTest {
       offenceDescription = "Littering",
     )
     val request = SentenceAndOffenceWithReleaseArrangements(
-      PrisonApiSentenceAndOffences(
-        bookingId = BOOKING_ID,
-        sentenceSequence = sequence,
-        sentenceDate = FIRST_JAN_2015,
-        terms = listOf(
-          SentenceTerms(
-            years = 1,
-          ),
+      bookingId = BOOKING_ID,
+      sentenceSequence = sequence,
+      sentenceDate = FIRST_JAN_2015,
+      terms = listOf(
+        SentenceTerms(
+          years = 1,
         ),
-        sentenceStatus = "IMP",
-        sentenceCategory = "CAT",
-        sentenceCalculationType = SentenceCalculationType.ADIMP.name,
-        sentenceTypeDescription = "Generic",
-        offences = listOf(offence),
-        lineSequence = lineSequence,
-        caseSequence = caseSequence,
       ),
-      offence,
-      isSdsPlus = true,
-      isSDSPlusEligibleSentenceTypeLengthAndOffence = true,
-      hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
+      sentenceStatus = "IMP",
+      sentenceCategory = "CAT",
+      sentenceCalculationType = SentenceCalculationType.ADIMP.name,
+      sentenceTypeDescription = "Generic",
+      lineSequence = lineSequence,
+      caseSequence = caseSequence,
+      offence = offence,
+      consecutiveToSequence = null,
+      caseReference = null,
+      courtId = null,
+      courtDescription = null,
+      courtTypeCode = null,
+      fineAmount = null,
+      sdsReleaseArrangements = SDSReleaseArrangements(
+        isSDSPlus = true,
+        isSDSPlusEligibleSentenceTypeLengthAndOffence = true,
+        sdsEarlyReleaseExclusions = emptyList(),
+        isSection250 = false,
+      ),
     )
 
     for ((sentenceType, recallType) in SentenceRecallTypePairs) {
