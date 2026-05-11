@@ -192,10 +192,14 @@ class BookingExtractionService(
     val latestTUSEDAndBreakdown = if (latestLicenceExpiryDate != null) {
       extractManyTopUpSuperVisionDate(sentences, latestLicenceExpiryDate)
     } else if (isTusedableDtos(sentences, offender)) {
-      val latestTUSEDSentence = sentences
-        .filter { it.sentenceCalculation.topUpSupervisionDate != null }
-        .maxByOrNull { it.sentenceCalculation.topUpSupervisionDate!! }
-      latestTUSEDSentence?.sentenceCalculation?.topUpSupervisionDate!! to latestTUSEDSentence.sentenceCalculation.breakdownByReleaseDateType[TUSED]!!
+      sentences.filter { it.sentenceCalculation.topUpSupervisionDate != null }
+        .maxByOrNull { it.sentenceCalculation.topUpSupervisionDate!! }?.let { latestTUSEDSentence ->
+          latestTUSEDSentence.sentenceCalculation.topUpSupervisionDate?.let { tusedDate ->
+            latestTUSEDSentence.sentenceCalculation.breakdownByReleaseDateType[TUSED]?.let { breakdown ->
+              tusedDate to breakdown
+            }
+          }
+        }
     } else {
       null
     }
