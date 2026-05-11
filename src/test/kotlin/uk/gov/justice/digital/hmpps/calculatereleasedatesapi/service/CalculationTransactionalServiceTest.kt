@@ -60,7 +60,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManuallyEnter
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.PreviouslyRecordedSLED
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
@@ -69,7 +68,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmittedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderKeyDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustmentType
@@ -366,7 +364,7 @@ class CalculationTransactionalServiceTest {
         BOOKING_CALCULATION,
         emptyList(),
       )
-    } catch (ex: Exception) {
+    } catch (_: Exception) {
       fail("Exception was thrown!")
     }
   }
@@ -593,21 +591,6 @@ class CalculationTransactionalServiceTest {
   }
 
   companion object {
-    private val originalSentence = PrisonApiSentenceAndOffences(
-      bookingId = 1L,
-      sentenceSequence = 3,
-      lineSequence = 2,
-      caseSequence = 1,
-      sentenceDate = ImportantDates.PCSC_COMMENCEMENT_DATE.minusDays(1),
-      terms = listOf(
-        SentenceTerms(years = 8),
-      ),
-      sentenceStatus = "IMP",
-      sentenceCategory = "CAT",
-      sentenceCalculationType = SentenceCalculationType.ADIMP.name,
-      sentenceTypeDescription = "ADMIP",
-      offences = listOf(OffenderOffence(1L, LocalDate.of(2015, 1, 1), null, "ADIMP_ORA", "description", listOf("A"))),
-    )
     private val prisonerDetails = PrisonerDetails(
       1,
       "asd",
@@ -632,11 +615,31 @@ class CalculationTransactionalServiceTest {
       CalculationSourceData(
         listOf(
           SentenceAndOffenceWithReleaseArrangements(
-            originalSentence,
-            originalSentence.offences[0],
-            isSdsPlus = false,
-            isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-            hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
+            bookingId = 1L,
+            sentenceSequence = 3,
+            lineSequence = 2,
+            caseSequence = 1,
+            sentenceDate = ImportantDates.PCSC_COMMENCEMENT_DATE.minusDays(1),
+            terms = listOf(
+              SentenceTerms(years = 8),
+            ),
+            sentenceStatus = "IMP",
+            sentenceCategory = "CAT",
+            sentenceCalculationType = SentenceCalculationType.ADIMP.name,
+            sentenceTypeDescription = "ADMIP",
+            offence = OffenderOffence(1L, LocalDate.of(2015, 1, 1), null, "ADIMP_ORA", "description", listOf("A")),
+            consecutiveToSequence = null,
+            caseReference = null,
+            courtId = null,
+            courtDescription = null,
+            courtTypeCode = null,
+            fineAmount = null,
+            sdsReleaseArrangements = SDSReleaseArrangements(
+              isSDSPlus = true,
+              isSDSPlusEligibleSentenceTypeLengthAndOffence = true,
+              sdsEarlyReleaseExclusions = emptyList(),
+              isSection250 = false,
+            ),
           ),
         ),
         prisonerDetails,
