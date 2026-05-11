@@ -1,6 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external
 
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import java.math.BigDecimal
 import java.time.LocalDate
@@ -27,11 +27,34 @@ data class PrisonApiSentenceAndOffences(
 ) {
   fun toLatest(): List<SentenceAndOffenceWithReleaseArrangements> = offences.map { offence ->
     SentenceAndOffenceWithReleaseArrangements(
-      source = this,
+      bookingId = this.bookingId,
+      sentenceSequence = this.sentenceSequence,
+      lineSequence = this.lineSequence,
+      caseSequence = this.caseSequence,
+      consecutiveToSequence = this.consecutiveToSequence,
+      sentenceStatus = this.sentenceStatus,
+      sentenceCategory = this.sentenceCategory,
+      sentenceCalculationType = this.sentenceCalculationType,
+      sentenceTypeDescription = this.sentenceTypeDescription,
+      sentenceDate = this.sentenceDate,
+      terms = this.terms,
       offence = offence,
-      isSdsPlus = false,
-      isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-      hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
+      caseReference = this.caseReference,
+      courtId = this.courtId,
+      courtDescription = this.courtDescription,
+      courtTypeCode = this.courtTypeCode,
+      fineAmount = this.fineAmount,
+      revocationDates = this.revocationDates,
+      sdsReleaseArrangements = if (SentenceCalculationType.from(this.sentenceCalculationType).isSDS()) {
+        SDSReleaseArrangements(
+          isSDSPlus = false,
+          isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+          sdsEarlyReleaseExclusions = emptyList(),
+          isSection250 = SentenceCalculationType.from(this.sentenceCalculationType).isSection250(),
+        )
+      } else {
+        null
+      },
     )
   }
 }
