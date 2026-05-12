@@ -1,0 +1,65 @@
+{
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "2000-01-01"
+    },
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2023-01-09"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 6
+          }
+        },
+        "sentencedAt": "2023-01-09",
+        "releaseArrangements": {
+          "isSDSPlus": true,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": true,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
+      }
+    ],
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2023-01-09",
+          "numberOfDays": 21,
+          "fromDate": "2022-12-19",
+          "toDate": "2023-01-08"
+        }
+      ],
+      "ADDITIONAL_DAYS_AWARDED": [
+        {
+          "appliesToSentencesFrom": "2023-03-01",
+          "numberOfDays": 22,
+          "fromDate": "2023-03-01"
+        },
+        {
+          "appliesToSentencesFrom": "2023-09-01",
+          "numberOfDays": 22,
+          "fromDate": "2023-09-01"
+        },
+        {
+          "appliesToSentencesFrom": "2024-03-01",
+          "numberOfDays": 22,
+          "fromDate": "2024-03-01"
+        },
+        {
+          "appliesToSentencesFrom": "2024-09-01",
+          "numberOfDays": 22,
+          "fromDate": "2024-09-01"
+        }
+      ]
+
+    }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "sds-progression-model"
+}
