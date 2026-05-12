@@ -41,7 +41,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmittedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderKeyDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.UpdateOffenderDates
@@ -478,23 +477,29 @@ class ManualCalculationServiceTest {
     whenever(prisonService.getSentencesAndOffences(anyLong(), eq(true))).thenReturn(
       listOf(
         SentenceAndOffenceWithReleaseArrangements(
-          source = PrisonApiSentenceAndOffences(
-            bookingId = 1,
-            sentenceSequence = 1,
-            lineSequence = 1,
-            caseSequence = 1,
-            consecutiveToSequence = null,
-            sentenceStatus = "A",
-            sentenceCategory = "A",
-            sentenceCalculationType = "LIFE",
-            sentenceTypeDescription = "",
-            sentenceDate = LocalDate.now(),
-            offences = listOf(offence),
-          ),
+          bookingId = 1,
+          sentenceSequence = 1,
+          lineSequence = 1,
+          caseSequence = 1,
+          consecutiveToSequence = null,
+          sentenceStatus = "A",
+          sentenceCategory = "A",
+          sentenceCalculationType = "LIFE",
+          sentenceTypeDescription = "",
+          sentenceDate = LocalDate.now(),
+          terms = emptyList(),
           offence = offence,
-          isSdsPlus = false,
-          isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-          hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
+          caseReference = null,
+          courtId = null,
+          courtDescription = null,
+          courtTypeCode = null,
+          fineAmount = null,
+          sdsReleaseArrangements = SDSReleaseArrangements(
+            isSDSPlus = true,
+            isSDSPlusEligibleSentenceTypeLengthAndOffence = true,
+            sdsEarlyReleaseExclusions = emptyList(),
+            isSection250 = false,
+          ),
         ),
       ),
     )
