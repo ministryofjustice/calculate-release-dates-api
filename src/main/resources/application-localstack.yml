@@ -17,4 +17,6 @@ hmpps.sqs:
       dlqMaxReceiveCount: 3
       visibilityTimeout: 120
 
-bulk.calculation.process: true
+bulk.calculation:
+  process: true
+  concurrency: 5
