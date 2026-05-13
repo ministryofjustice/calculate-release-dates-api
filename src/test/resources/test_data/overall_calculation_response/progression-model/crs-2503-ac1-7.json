@@ -1,5 +1,10 @@
 {
-  "skipAssertingDates": true,
+  "dates": {
+    "SLED": "2038-09-02",
+    "CRD": "2030-09-02",
+    "ESED": "2038-09-02"
+  },
+  "effectiveSentenceLength": "P14Y3M11D",
   "trancheAllocationByLegislationName": {
     "SDS_40": "TRANCHE_2",
     "SDS_PROGRESSION_MODEL": "TRANCHE_7"

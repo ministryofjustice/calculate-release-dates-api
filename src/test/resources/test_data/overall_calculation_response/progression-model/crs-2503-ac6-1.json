@@ -1,4 +1,9 @@
 {
-  "skipAssertingDates": true,
+  "dates": {
+    "SLED": "2032-09-02",
+    "CRD": "2029-09-02",
+    "ESED": "2032-09-02"
+  },
+  "effectiveSentenceLength": "P6Y1D",
   "trancheAllocationByLegislationName": {}
 }

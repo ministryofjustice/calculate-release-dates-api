@@ -1,4 +1,10 @@
 {
-  "skipAssertingDates": true,
+  "dates": {
+    "SLED": "2034-08-29",
+    "CRD": "2032-08-29",
+    "PED": "2030-08-30",
+    "ESED": "2034-08-29"
+  },
+  "effectiveSentenceLength": "P8Y7M7D",
   "trancheAllocationByLegislationName": {}
 }

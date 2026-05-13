@@ -2,7 +2,8 @@
   "booking": {
     "offender": {
       "reference": "ABC123",
-      "dateOfBirth": "2000-01-01"
+      "dateOfBirth": "2000-01-01",
+      "isActiveSexOffender": true
     },
     "sentences": [
       {
@@ -52,5 +53,8 @@
   "userInputs": {
     "useOffenceIndicators": true
   },
-  "params": "sds-progression-model"
+  "params": "sds-progression-model",
+  "featureToggles": {
+    "applyPostRecallRepealRules": true
+  }
 }
