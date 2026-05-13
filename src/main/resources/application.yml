@@ -170,3 +170,7 @@ feature-toggles:
   storeSentenceLevelDates: ${STORE_SENTECE_LEVEL_DATES:false}
 
 prisonsWithNomisCalcDisabled: ${PRISONS_WITH_NOMIS_CALC_DISABLED:}
+
+bulk.calculation:
+  process: SQS
+  concurrency: ${BULK_CALC_CONCURRENCY:5}

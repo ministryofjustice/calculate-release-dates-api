@@ -19,7 +19,7 @@ import uk.gov.justice.hmpps.sqs.HmppsSqsProperties
 import uk.gov.justice.hmpps.sqs.countMessagesOnQueue
 import java.time.Duration
 
-@SpringBootTest(webEnvironment = RANDOM_PORT, properties = ["bulk.calculation.process=sqs"])
+@SpringBootTest(webEnvironment = RANDOM_PORT, properties = ["bulk.calculation.process=SQS", "bulk.calculation.concurrency=5"])
 @ActiveProfiles("sqs-test")
 class SqsIntegrationTestBase : IntegrationTestBase() {
   protected val awaitAtMost30Secs: ConditionFactory get() = await.atMost(Duration.ofSeconds(30))
