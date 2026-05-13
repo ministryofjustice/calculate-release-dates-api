@@ -17,4 +17,6 @@ spring:
 feature-toggles:
   dto: false
 
-bulk.calculation.process: notsqs
+bulk.calculation:
+  process: notsqs
+  concurrency: 5
