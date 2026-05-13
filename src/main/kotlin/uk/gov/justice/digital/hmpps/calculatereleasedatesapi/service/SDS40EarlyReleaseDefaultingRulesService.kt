@@ -6,7 +6,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.LegislationWithTranches
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.PreLegislationCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.SDSLegislation
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.SDSLegislationConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.TrancheName
@@ -18,9 +17,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeter
 import java.time.LocalDate
 
 @Service
-class SDSEarlyReleaseDefaultingRulesService(
-  val earlyReleaseConfigurations: SDSLegislationConfiguration,
-) {
+class SDS40EarlyReleaseDefaultingRulesService {
   fun applySDSEarlyReleaseRulesAndFinalizeDates(
     earlyReleaseResult: CalculationResult,
     preLegislationCalculation: PreLegislationCalculation,
