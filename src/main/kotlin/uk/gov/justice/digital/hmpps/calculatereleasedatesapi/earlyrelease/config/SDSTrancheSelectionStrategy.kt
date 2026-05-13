@@ -32,14 +32,14 @@ abstract class SDSTrancheSelectionStrategy : TrancheSelectionStrategy {
       legislation: Legislation,
     ): Boolean {
       require(legislation is SDSLegislation.ProgressionModelLegislation) { "Tried to allocate incorrect legislation using SDSProgressionModelTrancheSelectionStrategy" }
-      val sentencesWithReleaseAfterTrancheCommencement = (timelineTrackingData.currentSentenceGroup + timelineTrackingData.licenceSentences).filter {
+      val sentencesWithReleaseAfterTrancheCommencement = (timelineTrackingData.currentSentenceGroup + timelineTrackingData.licenceSentences).filter { sentence ->
         // UAL awarded during custody for this sentence will have already been applied but if the UAL is on or after commencement then it shouldn't be
         // considered for tranche eligibility so subtract it from the calculated CRD
         val ualThatHasNotOccurredYet = timelineTrackingData.previousUalPeriods
           .filter { ual -> ual.first.isAfterOrEqualTo(legislation.commencementDate()) }
           .sumOf { ual -> ChronoUnit.DAYS.between(ual.first, ual.second) }
-        val adjustedDeterminateReleaseDateExcludingFutureUAL = it.sentenceCalculation.adjustedDeterminateReleaseDate.minusDays(ualThatHasNotOccurredYet)
-        adjustedDeterminateReleaseDateExcludingFutureUAL.isAfterOrEqualTo(legislation.commencementDate())
+        val adjustedDeterminateReleaseDateExcludingFutureUALAndAwardedDays = sentence.sentenceCalculation.releaseDateWithoutAwarded.minusDays(ualThatHasNotOccurredYet)
+        adjustedDeterminateReleaseDateExcludingFutureUALAndAwardedDays.isAfterOrEqualTo(legislation.commencementDate())
       }
       return sentencesWithReleaseAfterTrancheCommencement.any { sentence ->
         sentence.sentenceParts().any { sentencePart ->

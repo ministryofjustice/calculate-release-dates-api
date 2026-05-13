@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.FTRLegislationConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.LegislationName
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.SDSLegislation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.SDSLegislationConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.ADDITIONAL_DAYS_AWARDED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.RECALL_REMAND
@@ -22,7 +23,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOu
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExternalMovement
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceGroup
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.SDSEarlyReleaseDefaultingRulesService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.SDSProgressionModelFinalDatesService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.WorkingDayService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculationEvent.AwardedAdjustmentTimelineCalculationEvent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculationEvent.ExternalMovementTimelineCalculationEvent
@@ -45,7 +46,6 @@ import java.time.LocalDate
 @Service
 class BookingTimelineService(
   private val workingDayService: WorkingDayService,
-  private val sdsEarlyReleaseDefaultingRulesService: SDSEarlyReleaseDefaultingRulesService,
   private val timelineCalculator: TimelineCalculator,
   private val timelineAwardedAdjustmentCalculationHandler: TimelineAwardedAdjustmentCalculationHandler,
   private val timelineSDSTrancheCalculationHandler: TimelineSDSTrancheCalculationHandler,
@@ -53,7 +53,8 @@ class BookingTimelineService(
   private val timelineSentenceCalculationHandler: TimelineSentenceCalculationHandler,
   private val timelineUalAdjustmentCalculationHandler: TimelineUalAdjustmentCalculationHandler,
   private val timelineExternalMovementCalculationHandler: TimelineExternalMovementCalculationHandler,
-  private val timelinePostTrancheAdjustmentService: TimelinePostTrancheAdjustmentService,
+  private val sds40FinalDatesService: SDS40FinalDatesService,
+  private val sdsProgressionModelFinalDatesService: SDSProgressionModelFinalDatesService,
   private val timelineSDSLegislationCommencementHandler: TimelineSDSLegislationCommencementHandler,
   private val timelineSDSLegislationAmendmentHandler: TimelineSDSLegislationAmendmentHandler,
   private val sdsLegislationConfiguration: SDSLegislationConfiguration,
@@ -143,20 +144,12 @@ class BookingTimelineService(
           returnToCustodyDate,
         )
 
-      if (beforeTrancheCalculation != null) {
+      beforeTrancheCalculation?.let { preLegislationCalculation ->
         val allSentences = releasedSentenceGroups.flatMap { it.sentences }
-        latestCalculation = sdsEarlyReleaseDefaultingRulesService.applySDSEarlyReleaseRulesAndFinalizeDates(
-          latestCalculation,
-          beforeTrancheCalculation!!,
-          allSentences,
-        )
-        val earliestApplicableDate = beforeTrancheCalculation?.legislationApplied?.earliestApplicableDate
-        if (earliestApplicableDate != null) {
-          latestCalculation = timelinePostTrancheAdjustmentService.applyTrancheAdjustmentLogic(
-            latestCalculation,
-            adjustments,
-            earliestApplicableDate,
-          )
+        latestCalculation = when (preLegislationCalculation.legislationApplied.legislation) {
+          is SDSLegislation.SDS40Legislation -> sds40FinalDatesService.applyFinalDates(latestCalculation, preLegislationCalculation, adjustments, allSentences)
+          is SDSLegislation.ProgressionModelLegislation -> sdsProgressionModelFinalDatesService.applyFinalDates(latestCalculation, preLegislationCalculation, adjustments)
+          else -> latestCalculation
         }
       }
 
