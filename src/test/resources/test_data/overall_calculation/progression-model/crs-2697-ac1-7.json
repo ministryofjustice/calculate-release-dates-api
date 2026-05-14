@@ -2,27 +2,13 @@
   "booking": {
     "offender": {
       "reference": "ABC123",
-      "dateOfBirth": "2000-01-01",
-      "isActiveSexOffender": true
+      "dateOfBirth": "2000-01-01"
     },
     "sentences": [
       {
-        "type": "AFineSentence",
+        "type": "ExtendedDeterminateSentence",
         "offence": {
-          "committedAt": "2022-02-03"
-        },
-        "duration": {
-          "durationElements": {
-            "YEARS": 8
-          }
-        },
-        "sentencedAt": "2022-02-03",
-        "fineAmount": 3E+3
-      },
-      {
-        "type": "SopcSentence",
-        "offence": {
-          "committedAt": "2022-03-27"
+          "committedAt": "2023-02-22"
         },
         "custodialDuration": {
           "durationElements": {
@@ -31,41 +17,52 @@
         },
         "extensionDuration": {
           "durationElements": {
-            "YEARS": 1
+            "YEARS": 2
           }
         },
-        "sentencedAt": "2022-03-27",
+        "sentencedAt": "2023-02-22",
         "identifier": "d211f333-aa1a-3e25-ac8d-0459c1f98868"
       },
       {
         "type": "StandardSentence",
         "offence": {
-          "committedAt": "2022-03-27"
+          "committedAt": "2023-02-22"
         },
         "duration": {
           "durationElements": {
-            "MONTHS": 18
+            "YEARS": 2
           }
         },
-        "sentencedAt": "2022-03-27",
-        "consecutiveSentenceUUIDs": [
-          "d211f333-aa1a-3e25-ac8d-0459c1f98868"
-        ],
+        "sentencedAt": "2023-02-22",
         "releaseArrangements": {
           "isSDSPlus": false,
           "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
           "sdsEarlyReleaseExclusions": [],
           "isSection250": false
-        }
+        },
+        "consecutiveSentenceUUIDs": [
+          "d211f333-aa1a-3e25-ac8d-0459c1f98868"
+        ]
       }
     ],
-    "adjustments": {}
+    "adjustments": {
+      "ADDITIONAL_DAYS_AWARDED": [
+        {
+          "appliesToSentencesFrom": "2024-08-12",
+          "numberOfDays": 10,
+          "fromDate": "2024-08-12"
+        },
+        {
+          "appliesToSentencesFrom": "2026-09-26",
+          "numberOfDays": 10,
+          "fromDate": "2026-09-26"
+        }
+      ]
+
+    }
   },
   "userInputs": {
     "useOffenceIndicators": true
   },
-  "params": "sds-progression-model",
-  "featureToggles": {
-    "applyPostRecallRepealRules": true
-  }
+  "params": "sds-progression-model"
 }

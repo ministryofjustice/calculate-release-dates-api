@@ -9,48 +9,59 @@
       {
         "type": "StandardSentence",
         "offence": {
-          "committedAt": "2025-05-16"
+          "committedAt": "2025-10-23"
         },
         "duration": {
           "durationElements": {
-            "YEARS": 1,
-            "MONTHS": 6
+            "MONTHS": 19
           }
         },
-        "sentencedAt": "2025-05-16",
-        "identifier": "d211f333-aa1a-3e25-ac8d-0459c1f98868",
+        "sentencedAt": "2025-10-23",
         "releaseArrangements": {
           "isSDSPlus": false,
           "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
           "sdsEarlyReleaseExclusions": [],
           "isSection250": false
-        }
+        },
+        "identifier": "d211f333-aa1a-3e25-ac8d-0459c1f98868"
       },
       {
         "type": "StandardSentence",
         "offence": {
-          "committedAt": "2025-05-16"
+          "committedAt": "2025-10-23"
         },
         "duration": {
           "durationElements": {
-            "YEARS": 1,
-            "MONTHS": 9,
-            "WEEKS": 1
+            "MONTHS": 19
           }
         },
-        "sentencedAt": "2025-05-16",
-        "consecutiveSentenceUUIDs": [
-          "d211f333-aa1a-3e25-ac8d-0459c1f98868"
-        ],
+        "sentencedAt": "2025-10-23",
         "releaseArrangements": {
           "isSDSPlus": false,
           "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
           "sdsEarlyReleaseExclusions": [],
           "isSection250": false
-        }
+        },
+        "consecutiveSentenceUUIDs": [
+          "d211f333-aa1a-3e25-ac8d-0459c1f98868"
+        ]
       }
     ],
-    "adjustments": {}
+    "adjustments": {
+      "TAGGED_BAIL": [
+        {
+          "appliesToSentencesFrom": "2025-10-23",
+          "numberOfDays": 8
+        }
+      ],
+      "ADDITIONAL_DAYS_AWARDED": [
+        {
+          "appliesToSentencesFrom": "2026-03-12",
+          "numberOfDays": 5,
+          "fromDate": "2026-03-12"
+        }
+      ]
+    }
   },
   "userInputs": {
     "useOffenceIndicators": true

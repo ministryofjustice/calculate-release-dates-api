@@ -9,16 +9,18 @@
       {
         "type": "StandardSentence",
         "offence": {
-          "committedAt": "2025-05-16"
+          "committedAt": "2017-09-25"
         },
         "duration": {
           "durationElements": {
-            "YEARS": 1,
-            "MONTHS": 6
+            "YEARS": 9
           }
         },
-        "sentencedAt": "2025-05-16",
-        "identifier": "d211f333-aa1a-3e25-ac8d-0459c1f98868",
+        "sentencedAt": "2017-09-25",
+        "recall": {
+          "recallType": "STANDARD_RECALL",
+          "revocationDate": "2023-08-01"
+        },
         "releaseArrangements": {
           "isSDSPlus": false,
           "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
@@ -29,28 +31,36 @@
       {
         "type": "StandardSentence",
         "offence": {
-          "committedAt": "2025-05-16"
+          "committedAt": "2023-08-07"
         },
         "duration": {
           "durationElements": {
-            "YEARS": 1,
-            "MONTHS": 9,
-            "WEEKS": 1
+            "YEARS": 7
           }
         },
-        "sentencedAt": "2025-05-16",
-        "consecutiveSentenceUUIDs": [
-          "d211f333-aa1a-3e25-ac8d-0459c1f98868"
-        ],
+        "sentencedAt": "2023-08-07",
         "releaseArrangements": {
-          "isSDSPlus": false,
-          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "isSDSPlus": true,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": true,
           "sdsEarlyReleaseExclusions": [],
           "isSection250": false
         }
       }
     ],
-    "adjustments": {}
+    "adjustments": {
+      "ADDITIONAL_DAYS_AWARDED": [
+        {
+          "appliesToSentencesFrom": "2023-12-15",
+          "numberOfDays": 5,
+          "fromDate": "2023-12-15"
+        },
+        {
+          "appliesToSentencesFrom": "2026-10-07",
+          "numberOfDays": 5,
+          "fromDate": "2026-10-07"
+        }
+      ]
+    }
   },
   "userInputs": {
     "useOffenceIndicators": true

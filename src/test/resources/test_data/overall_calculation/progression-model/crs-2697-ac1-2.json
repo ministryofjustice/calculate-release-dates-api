@@ -9,47 +9,47 @@
       {
         "type": "StandardSentence",
         "offence": {
-          "committedAt": "2025-01-01"
+          "committedAt": "2024-07-22"
         },
         "duration": {
           "durationElements": {
-            "YEARS": 2,
-            "MONTHS": 6
+            "MONTHS": 54
           }
         },
-        "sentencedAt": "2025-11-18",
+        "sentencedAt": "2024-07-22",
         "releaseArrangements": {
           "isSDSPlus": false,
           "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
           "sdsEarlyReleaseExclusions": [
-            "TERRORISM"
+            "VIOLENT"
           ],
           "isSection250": false
         }
-      },
-      {
-        "type": "StandardSentence",
-        "offence": {
-          "committedAt": "2025-01-01"
-        },
-        "duration": {
-          "durationElements": {
-            "YEARS": 3,
-            "MONTHS": 4
-          }
-        },
-        "sentencedAt": "2026-03-12",
-        "releaseArrangements": {
-          "isSDSPlus": false,
-          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
-          "sdsEarlyReleaseExclusions": [
-            "DOMESTIC_ABUSE"
-          ],
-          "isSection250": true
-        }
       }
     ],
-    "adjustments": {}
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2024-07-22",
+          "numberOfDays": 56,
+          "fromDate": "2024-05-27",
+          "toDate": "2024-07-21"
+        }
+      ],
+      "ADDITIONAL_DAYS_AWARDED": [
+        {
+          "appliesToSentencesFrom": "2026-03-03",
+          "numberOfDays": 17,
+          "fromDate": "2026-03-03"
+        }
+      ],
+      "RESTORATION_OF_ADDITIONAL_DAYS_AWARDED": [
+        {
+          "appliesToSentencesFrom": "2026-06-12",
+          "numberOfDays": 5
+        }
+      ]
+    }
   },
   "userInputs": {
     "useOffenceIndicators": true

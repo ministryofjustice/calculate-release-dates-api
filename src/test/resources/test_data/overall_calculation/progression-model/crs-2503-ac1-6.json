@@ -2,13 +2,14 @@
   "booking": {
     "offender": {
       "reference": "ABC123",
-      "dateOfBirth": "2000-01-01"
+      "dateOfBirth": "2000-01-01",
+      "isActiveSexOffender": true
     },
     "sentences": [
       {
         "type": "StandardSentence",
         "offence": {
-          "committedAt": "2025-01-01"
+          "committedAt": "2024-10-29"
         },
         "duration": {
           "durationElements": {
@@ -27,7 +28,7 @@
       {
         "type": "ExtendedDeterminateSentence",
         "offence": {
-          "committedAt": "2017-07-16"
+          "committedAt": "2023-06-17"
         },
         "custodialDuration": {
           "durationElements": {
@@ -47,5 +48,8 @@
   "userInputs": {
     "useOffenceIndicators": true
   },
-  "params": "sds-progression-model"
+  "params": "sds-progression-model",
+  "featureToggles": {
+    "applyPostRecallRepealRules": true
+  }
 }
