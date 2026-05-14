@@ -171,3 +171,7 @@ feature-toggles:
   applyPostHdcedRepealRules: ${APPLY_POST_HDCED_REPEAL_RULES:false}
 
 prisonsWithNomisCalcDisabled: ${PRISONS_WITH_NOMIS_CALC_DISABLED:}
+
+bulk.calculation:
+  process: SQS
+  concurrency: ${BULK_CALC_CONCURRENCY:5}

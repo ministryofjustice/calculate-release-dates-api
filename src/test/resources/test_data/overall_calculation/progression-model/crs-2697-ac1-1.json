@@ -9,41 +9,31 @@
       {
         "type": "StandardSentence",
         "offence": {
-          "committedAt": "2025-06-20"
+          "committedAt": "2025-06-04"
         },
         "duration": {
           "durationElements": {
-            "YEARS": 2
+            "MONTHS": 36
           }
         },
-        "sentencedAt": "2025-06-20",
+        "sentencedAt": "2025-06-04",
         "releaseArrangements": {
           "isSDSPlus": false,
           "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
           "sdsEarlyReleaseExclusions": [],
           "isSection250": false
         }
-      },
-      {
-        "type": "StandardSentence",
-        "offence": {
-          "committedAt": "2023-12-12"
-        },
-        "duration": {
-          "durationElements": {
-            "YEARS": 4
-          }
-        },
-        "sentencedAt": "2023-12-12",
-        "releaseArrangements": {
-          "isSDSPlus": true,
-          "isSDSPlusEligibleSentenceTypeLengthAndOffence": true,
-          "sdsEarlyReleaseExclusions": [],
-          "isSection250": false
-        }
       }
     ],
-    "adjustments": {}
+    "adjustments": {
+      "ADDITIONAL_DAYS_AWARDED": [
+        {
+          "appliesToSentencesFrom": "2026-03-03",
+          "numberOfDays": 17,
+          "fromDate": "2026-03-03"
+        }
+      ]
+    }
   },
   "userInputs": {
     "useOffenceIndicators": true

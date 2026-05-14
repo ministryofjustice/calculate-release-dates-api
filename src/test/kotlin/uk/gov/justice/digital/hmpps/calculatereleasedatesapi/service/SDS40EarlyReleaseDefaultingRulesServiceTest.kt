@@ -12,7 +12,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseSentenceFilter
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.PreLegislationCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.SDSLegislation
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.SDSLegislationConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.TrancheConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.TrancheType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
@@ -44,7 +43,7 @@ import java.time.temporal.ChronoUnit.YEARS
 import java.util.UUID
 
 @ExtendWith(MockitoExtension::class)
-class SDSEarlyReleaseDefaultingRulesServiceTest {
+class SDS40EarlyReleaseDefaultingRulesServiceTest {
 
   private val testCommencementDate = LocalDate.of(2024, 7, 29)
   private val testTrancheTwoCommencementDate = LocalDate.of(2024, 10, 22)
@@ -64,13 +63,9 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
     testTrancheThreeCommencementDate,
   )
 
-  val sdsLegislationConfiguration = SDSLegislationConfiguration(
-    defaultLegislation = SDSLegislation.DefaultSDSLegislation(mapOf(SentenceIdentificationTrack.SDS to ReleaseMultiplier.ONE_HALF, SentenceIdentificationTrack.SDS_PLUS to ReleaseMultiplier.TWO_THIRDS), EarlyReleaseSentenceFilter.SDS_OR_SDS_PLUS),
-    sds40Legislation = SDSLegislation.SDS40Legislation(trancheConfiguration.getSds40Tranches(), mapOf(SentenceIdentificationTrack.SDS to ReleaseMultiplier.FORTY_PERCENT), EarlyReleaseSentenceFilter.SDS_40_EXCLUSIONS),
-    sds40AdditionalExcludedOffencesLegislation = SDSLegislation.SDS40AdditionalExcludedOffencesLegislation(trancheConfiguration.trancheThreeCommencementDate, mapOf(SentenceIdentificationTrack.SDS to ReleaseMultiplier.ONE_HALF, SentenceIdentificationTrack.SDS_PLUS to ReleaseMultiplier.TWO_THIRDS), EarlyReleaseSentenceFilter.SDS_40_ADDITIONAL_EXCLUDED_OFFENCES),
-    progressionModelLegislation = null,
-  )
-  private val service = SDSEarlyReleaseDefaultingRulesService(sdsLegislationConfiguration)
+  val sds40Legislation = SDSLegislation.SDS40Legislation(trancheConfiguration.getSds40Tranches(), mapOf(SentenceIdentificationTrack.SDS to ReleaseMultiplier.FORTY_PERCENT), EarlyReleaseSentenceFilter.SDS_40_EXCLUSIONS)
+
+  private val service = SDS40EarlyReleaseDefaultingRulesService()
 
   @ParameterizedTest
   @CsvSource(
@@ -103,7 +98,7 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
     assertThat(
       service.applySDSEarlyReleaseRulesAndFinalizeDates(
         early,
-        PreLegislationCalculation(standard, ApplicableLegislation(sdsLegislationConfiguration.sds40Legislation, earlyReleaseTrancheOne.date)),
+        PreLegislationCalculation(standard, ApplicableLegislation(sds40Legislation, earlyReleaseTrancheOne.date)),
         createBookingWithSDSSentenceOfType(SentenceIdentificationTrack.SDS).sentences,
       ),
     ).isEqualTo(
@@ -264,7 +259,7 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
     assertThat(
       service.applySDSEarlyReleaseRulesAndFinalizeDates(
         early,
-        PreLegislationCalculation(standard, ApplicableLegislation(sdsLegislationConfiguration.sds40Legislation, earlyReleaseTrancheOne.date)),
+        PreLegislationCalculation(standard, ApplicableLegislation(sds40Legislation, earlyReleaseTrancheOne.date)),
         createBookingWithSDSSentenceOfType(SentenceIdentificationTrack.SDS).sentences,
       ),
     ).isEqualTo(
@@ -316,7 +311,7 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
     assertThat(
       service.applySDSEarlyReleaseRulesAndFinalizeDates(
         early,
-        PreLegislationCalculation(standard, ApplicableLegislation(sdsLegislationConfiguration.sds40Legislation, earlyReleaseTrancheOne.date)),
+        PreLegislationCalculation(standard, ApplicableLegislation(sds40Legislation, earlyReleaseTrancheOne.date)),
         createBookingWithSDSSentenceOfType(SentenceIdentificationTrack.SDS).sentences,
       ),
     ).isEqualTo(
@@ -362,7 +357,7 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
     assertThat(
       service.applySDSEarlyReleaseRulesAndFinalizeDates(
         early,
-        PreLegislationCalculation(standard, ApplicableLegislation(sdsLegislationConfiguration.sds40Legislation, earlyReleaseTrancheOne.date)),
+        PreLegislationCalculation(standard, ApplicableLegislation(sds40Legislation, earlyReleaseTrancheOne.date)),
         createBookingWithSDSSentenceOfType(
           SentenceIdentificationTrack.SDS,
           listOf(ReleaseDateType.CRD, ReleaseDateType.SLED),
