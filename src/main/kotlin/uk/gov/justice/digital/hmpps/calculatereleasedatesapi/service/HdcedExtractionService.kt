@@ -32,8 +32,8 @@ class HdcedExtractionService(
    * - The final release date for the prisoner is after their calculated HDCED.
    *
    * Additionally, under the "Post HDCED Repeal" rules (controlled by a feature toggle), the HDCED may be nullified if:
-   * - The sentences are of a type affected by the repeal.
-   * - The calculation is being performed on or after the progression commencement date, OR the calculated HDCED falls on or after that date.
+   * - The list of sentences include more than SEC250 or Term based sentences. SEC250 nnd Terms retain HDCED eligibility.
+   *   And the calculation is being performed on or after the progression commencement date, OR the calculated HDCED falls on or after that date.
    */
   fun extractManyHomeDetentionCurfewEligibilityDate(
     sentences: List<CalculableSentence>,
