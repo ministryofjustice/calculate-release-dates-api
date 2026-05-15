@@ -310,6 +310,76 @@ class PrisonServiceTest {
     )
   }
 
+  @Test
+  fun `Should get earliest sentence date of active sentences by booking id`() {
+    val offence1 = OffenderOffence(1L, LocalDate.of(2015, 1, 1), null, "ADIMP", "description", listOf("A"))
+    val offence2 = OffenderOffence(2L, LocalDate.of(2015, 2, 2), null, "ADIMP", "description", listOf("NOTA"))
+    val offence3 = OffenderOffence(3L, LocalDate.of(2015, 3, 3), null, "ADIMP", "description", listOf("A"))
+    val latest = PrisonApiSentenceAndOffences(
+      1,
+      1,
+      1,
+      1,
+      null,
+      "A",
+      "A",
+      "LIFE",
+      "",
+      LocalDate.of(2015, 1, 1),
+      offences = listOf(offence1),
+    )
+    val earliestButInactive = PrisonApiSentenceAndOffences(
+      1,
+      1,
+      1,
+      1,
+      null,
+      "NOTA",
+      "A",
+      "LIFE",
+      "",
+      LocalDate.of(2013, 1, 1),
+      offences = listOf(offence2),
+    )
+    val earliestActive = PrisonApiSentenceAndOffences(
+      1,
+      1,
+      1,
+      1,
+      null,
+      "A",
+      "A",
+      "LIFE",
+      "",
+      LocalDate.of(2014, 1, 1),
+      offences = listOf(offence3),
+    )
+
+    whenever(prisonApiClient.getSentencesAndOffences(1)).thenReturn(listOf(latest, earliestButInactive, earliestActive))
+    assertThat(prisonService.getEarliestSentenceDate(1)).isEqualTo(LocalDate.of(2014, 1, 1))
+  }
+
+  @Test
+  fun `Should get null for earliest sentence date if there are no active sentences`() {
+    val offence = OffenderOffence(2L, LocalDate.of(2015, 2, 2), null, "ADIMP", "description", listOf("NOTA"))
+    val inactive = PrisonApiSentenceAndOffences(
+      1,
+      1,
+      1,
+      1,
+      null,
+      "NOTA",
+      "A",
+      "LIFE",
+      "",
+      LocalDate.of(2013, 1, 1),
+      offences = listOf(offence),
+    )
+
+    whenever(prisonApiClient.getSentencesAndOffences(1)).thenReturn(listOf(inactive))
+    assertThat(prisonService.getEarliestSentenceDate(1)).isNull()
+  }
+
   companion object {
 
     val firstPage = RestResponsePage<CalculablePrisoner>(

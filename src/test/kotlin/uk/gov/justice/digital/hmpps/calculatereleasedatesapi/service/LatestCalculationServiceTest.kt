@@ -14,7 +14,6 @@ import org.mockito.kotlin.whenever
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.client.ManageUsersApiClient
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
@@ -59,7 +58,6 @@ class LatestCalculationServiceTest {
     calculationBreakdownService,
     historicOverrideRepository,
     sourceDataMapper,
-    FeatureToggles(),
     manageUsersApiClient,
   )
   private val objectMapper = TestUtil.objectMapper()

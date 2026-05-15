@@ -21,6 +21,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.pris
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.PrisonApiExternalMovement
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.PrisonerInPrisonSummary
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.prisonapi.model.CalculablePrisoner
+import java.time.LocalDate
 
 @Service
 class PrisonService(
@@ -75,6 +76,10 @@ class PrisonService(
       .filter { !filterActive || it.sentenceStatus == "A" }
     return releaseArrangementLookupService.populateReleaseArrangements(sentencesAndOffences)
   }
+
+  fun getEarliestSentenceDate(bookingId: Long): LocalDate? = prisonApiClient.getSentencesAndOffences(bookingId)
+    .filter { it.sentenceStatus == "A" }
+    .minOfOrNull { it.sentenceDate }
 
   fun postReleaseDates(bookingId: Long, updateOffenderDates: UpdateOffenderDates) = prisonApiClient.postReleaseDates(bookingId, updateOffenderDates)
 

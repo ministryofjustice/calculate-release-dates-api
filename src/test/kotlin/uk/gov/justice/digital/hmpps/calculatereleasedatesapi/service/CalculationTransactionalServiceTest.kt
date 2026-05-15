@@ -80,6 +80,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.Calculat
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationReasonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.OperativeSentenceEnvelopeRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.TrancheOutcomeRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.service.ValidationService
 import java.time.LocalDate
@@ -118,6 +119,7 @@ class CalculationTransactionalServiceTest {
   private val sourceDataMapper = mock<SourceDataMapper>()
   private val calculationService = mock<CalculationService>()
   private val sentenceLevelDatesService = mock<SentenceLevelDatesService>()
+  private val operativeSentenceEnvelopeRepository = mock<OperativeSentenceEnvelopeRepository>()
   private val calculationTransactionalService = CalculationTransactionalService(
     calculationRequestRepository,
     calculationOutcomeRepository,
@@ -135,6 +137,7 @@ class CalculationTransactionalServiceTest {
     trancheOutcomeRepository,
     FeatureToggles(storeSentenceLevelDates = true),
     sentenceLevelDatesService,
+    operativeSentenceEnvelopeRepository,
   )
 
   private val fakeSourceData = CalculationSourceData(

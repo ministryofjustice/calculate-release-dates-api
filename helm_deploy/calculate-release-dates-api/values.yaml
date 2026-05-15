@@ -34,6 +34,7 @@ generic-service:
     PRISONS_WITH_NOMIS_CALC_DISABLED: "PNI,KMI,WMI,TSI,MKI,BCI,GHI,HVI,HII,LFI,LPI,MRI,RSI,STI,TCI"
     USE_ADJUSTMENTS_API: "true"
     STORE_SENTECE_LEVEL_DATES: "true"
+    STORE_OPERATIVE_SENTENCE_ENVELOPE: "false"
 
   # Pre-existing kubernetes secrets to load as environment variables in the deployment.
   # namespace_secrets:
