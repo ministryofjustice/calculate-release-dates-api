@@ -170,6 +170,7 @@ feature-toggles:
   storeSentenceLevelDates: ${STORE_SENTECE_LEVEL_DATES:false}
   applyPostHdcedRepealRules: ${APPLY_POST_HDCED_REPEAL_RULES:false}
   adultHdcSuspended: ${ADULT_HDC_SUSPENDED:false}
+  storeOperativeSentenceEnvelope: ${STORE_OPERATIVE_SENTENCE_ENVELOPE:false}
 
 prisonsWithNomisCalcDisabled: ${PRISONS_WITH_NOMIS_CALC_DISABLED:}
 
