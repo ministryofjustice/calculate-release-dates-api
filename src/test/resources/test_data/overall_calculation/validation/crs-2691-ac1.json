@@ -102,5 +102,8 @@
     ]
   },
   "params": "sds-progression-model",
+  "featureToggles": {
+    "applyPostHdcedRepealRules": true
+  },
   "expectedValidationException": "HDCED_REPEAL"
 }

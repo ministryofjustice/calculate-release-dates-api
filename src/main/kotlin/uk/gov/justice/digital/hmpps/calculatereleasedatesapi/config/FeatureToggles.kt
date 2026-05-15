@@ -10,4 +10,6 @@ data class FeatureToggles(
   var recordARecallFtr56Rules: Boolean = false,
   var storeSentenceLevelDates: Boolean = false,
   var storeOperativeSentenceEnvelope: Boolean = false,
+  var applyPostHdcedRepealRules: Boolean = false,
+  var adultHdcSuspended: Boolean = false,
 )
