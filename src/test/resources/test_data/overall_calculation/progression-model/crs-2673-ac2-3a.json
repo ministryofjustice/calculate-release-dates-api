@@ -1,0 +1,55 @@
+{
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "2000-01-01"
+    },
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2025-09-13"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 3,
+            "MONTHS": 1
+          }
+        },
+        "sentencedAt": "2025-09-14",
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": true
+        }
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2026-06-13"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 18
+          }
+        },
+        "sentencedAt": "2026-06-14",
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
+      }
+    ],
+    "adjustments": {}
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "featureToggles": {
+    "applyPostHdcedRepealRules": true
+  },
+  "params": "sds-progression-model"
+}

@@ -1,7 +1,7 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.validator
 
 import org.springframework.stereotype.Component
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.SDSLegislationConfiguration
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOutput
@@ -13,10 +13,10 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.Validati
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationOrder
 
 @Component
-class HdcedRepealValidator(val sdsLegislationConfiguration: SDSLegislationConfiguration) : PostCalculationValidator {
+class HdcedRepealValidator(private val featureToggles: FeatureToggles) : PostCalculationValidator {
 
   override fun validate(calculationOutput: CalculationOutput, booking: Booking): List<ValidationMessage> {
-    if (sdsLegislationConfiguration.progressionModelLegislation == null) return emptyList()
+    if (!featureToggles.applyPostHdcedRepealRules) return emptyList()
 
     if (calculationOutput.calculationResult.dates.contains(ReleaseDateType.HDCED)) {
       val hdcedDate = calculationOutput.calculationResult.dates[ReleaseDateType.HDCED]

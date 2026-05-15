@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.HDCED
@@ -8,40 +9,58 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSen
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Term
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.PROGRESSION_COMMENCEMENT_DATE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.sentence.SentencesExtractionService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 
 @Service
 class HdcedExtractionService(
   val extractionService: SentencesExtractionService,
+  val featureToggles: FeatureToggles,
 ) {
 
+  /**
+   * Extracts the Home Detention Curfew Eligibility Date (HDCED) from a list of sentences.
+   *
+   * The HDCED will be considered for the booking only if all the following are true:
+   * - The booking contains no SDS+ sentences.
+   * - The latest eligible sentence has a calculated HDCED.
+   * - A valid HDCED sentence exists after applying a 14-day rule.
+   * - The final release date for the prisoner is after their calculated HDCED.
+   *
+   * Additionally, under the "Post HDCED Repeal" rules (controlled by a feature toggle), the HDCED may be nullified if:
+   * - The list of sentences include more than SEC250 or Term based sentences. SEC250 nnd Terms retain HDCED eligibility.
+   *   And the calculation is being performed on or after the progression commencement date, OR the calculated HDCED falls on or after that date.
+   */
   fun extractManyHomeDetentionCurfewEligibilityDate(
     sentences: List<CalculableSentence>,
     mostRecentSentencesByReleaseDate: List<CalculableSentence>,
   ): Pair<LocalDate, ReleaseDateCalculationBreakdown>? {
+    if (sentences.any { it is StandardDeterminateSentence && it.releaseArrangements.isSDSPlusEligibleSentenceTypeLengthAndOffence }) return null
+    if (!hasLatestEligibleSentenceGotHdcedDate(getLatestHdcedEligibleSentence(sentences))) return null
+
     val latestAdjustedReleaseDate = getLatestAdjustedReleaseDate(mostRecentSentencesByReleaseDate)
+    val hdcedSentence = getMostRecentHDCEDSentenceApplying14DayRule(sentences, latestAdjustedReleaseDate) ?: return null
+    val hdcDate = hdcedSentence.sentenceCalculation.homeDetentionCurfewEligibilityDate ?: return null
+    val conflictingSentence = getLatestConflictingNonHdcSentence(sentences, hdcDate, hdcedSentence)
 
-    if (sentences.none { it is StandardDeterminateSentence && it.releaseArrangements.isSDSPlusEligibleSentenceTypeLengthAndOffence }) {
-      val latestEligibleSentence = getLatestHdcedEligibleSentence(sentences)
+    if (latestAdjustedReleaseDateIsAfterHdced(hdcedSentence.sentenceCalculation, latestAdjustedReleaseDate)) {
+      val hdcedResult = resolveEligibilityDate(hdcedSentence, conflictingSentence)
 
-      if (hasLatestEligibleSentenceGotHdcedDate(latestEligibleSentence)) {
-        val hdcedSentence = getMostRecentHDCEDSentenceApplying14DayRule(sentences, latestAdjustedReleaseDate)
-        val hdcDate = hdcedSentence?.sentenceCalculation?.homeDetentionCurfewEligibilityDate
-
-        if (hdcedSentence != null && hdcDate != null) {
-          val conflictingSentence = getLatestConflictingNonHdcSentence(
-            sentences,
-            hdcDate,
-            hdcedSentence,
-          )
-          if (latestAdjustedReleaseDateIsAfterHdced(hdcedSentence.sentenceCalculation, latestAdjustedReleaseDate)) {
-            return resolveEligibilityDate(hdcedSentence, conflictingSentence)
-          }
-        }
+      if (featureToggles.adultHdcSuspended && sentences.any { isAdultSentence(it) }) {
+        return null
       }
+
+      if (featureToggles.applyPostHdcedRepealRules && sentences.any { isAdultSentence(it) } && hdcedResult.first.isAfterOrEqualTo(PROGRESSION_COMMENCEMENT_DATE)) {
+        return null
+      }
+
+      return hdcedResult
     }
+
     return null
   }
 
@@ -53,11 +72,23 @@ class HdcedExtractionService(
     return hdcedDate?.let { latestReleaseDate.isAfter(it) } ?: false
   }
 
-  fun releaseDateIsAfterHdced(sentenceCalculation: SentenceCalculation): Boolean {
+  fun hdcedIsApplicable(sentenceCalculation: SentenceCalculation): Boolean {
     val releaseDate = sentenceCalculation.releaseDate
     val hdcedDate = sentenceCalculation.homeDetentionCurfewEligibilityDate
-    return hdcedDate?.let { releaseDate.isAfter(it) } ?: false
+    if (hdcedDate?.let { releaseDate.isAfter(it) } != true) return false
+
+    if (featureToggles.adultHdcSuspended && isAdultSentence(sentenceCalculation.sentence)) {
+      return false
+    }
+
+    if (featureToggles.applyPostHdcedRepealRules && isAdultSentence(sentenceCalculation.sentence) && hdcedDate.isAfterOrEqualTo(PROGRESSION_COMMENCEMENT_DATE)) {
+      return false
+    }
+
+    return true
   }
+
+  private fun isAdultSentence(sentence: CalculableSentence): Boolean = !(sentence is StandardDeterminateSentence && sentence.releaseArrangements.isSection250 || sentence is Term)
 
   private fun getLatestConflictingSentence(
     sentenceGroup: List<CalculableSentence>,

@@ -4,11 +4,8 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
-import org.mockito.kotlin.whenever
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.SDSLegislation
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.SDSLegislationConfiguration
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOutput
@@ -23,12 +20,6 @@ import java.time.Period
 
 @ExtendWith(MockitoExtension::class)
 class HdcedRepealValidatorTest {
-
-  @Mock
-  lateinit var sdsLegislationConfiguration: SDSLegislationConfiguration
-
-  @Mock
-  lateinit var progressionModelLegislation: SDSLegislation.ProgressionModelLegislation
 
   private lateinit var validator: HdcedRepealValidator
 
@@ -45,12 +36,12 @@ class HdcedRepealValidatorTest {
 
   @BeforeEach
   fun setUp() {
-    validator = HdcedRepealValidator(sdsLegislationConfiguration)
+    validator = HdcedRepealValidator(FeatureToggles(applyPostHdcedRepealRules = true))
   }
 
   @Test
   fun `should return no messages when progression model legislation is inactive`() {
-    whenever(sdsLegislationConfiguration.progressionModelLegislation).thenReturn(null)
+    validator = HdcedRepealValidator(FeatureToggles(applyPostHdcedRepealRules = false))
     val calculationOutput = CalculationOutput(
       calculationResult = calculationResult,
       sentences = emptyList(),
@@ -65,7 +56,6 @@ class HdcedRepealValidatorTest {
 
   @Test
   fun `should return no messages when calculation output does not contain HDCED`() {
-    whenever(sdsLegislationConfiguration.progressionModelLegislation).thenReturn(progressionModelLegislation)
     val calculationOutput = CalculationOutput(
       calculationResult = calculationResultNoHdced,
       sentences = emptyList(),
@@ -80,7 +70,6 @@ class HdcedRepealValidatorTest {
 
   @Test
   fun `should return no messages when there are no previous HDC releases`() {
-    whenever(sdsLegislationConfiguration.progressionModelLegislation).thenReturn(progressionModelLegislation)
     val calculationOutput = CalculationOutput(
       calculationResult = calculationResult,
       sentences = emptyList(),
@@ -105,7 +94,6 @@ class HdcedRepealValidatorTest {
 
   @Test
   fun `should return no messages when prisoner was returned to custody after last HDC release`() {
-    whenever(sdsLegislationConfiguration.progressionModelLegislation).thenReturn(progressionModelLegislation)
     val lastHdcReleaseDate = LocalDate.of(2025, 1, 1)
     val calculationOutput = CalculationOutput(
       calculationResult = calculationResult,
@@ -136,7 +124,6 @@ class HdcedRepealValidatorTest {
 
   @Test
   fun `should return validation message when prisoner was not returned to custody after last HDC release`() {
-    whenever(sdsLegislationConfiguration.progressionModelLegislation).thenReturn(progressionModelLegislation)
     val lastHdcReleaseDate = LocalDate.of(2025, 1, 1)
     val calculationOutput = CalculationOutput(
       calculationResult = calculationResult,
@@ -166,7 +153,6 @@ class HdcedRepealValidatorTest {
 
   @Test
   fun `should correctly identify the last HDC release among multiple movements`() {
-    whenever(sdsLegislationConfiguration.progressionModelLegislation).thenReturn(progressionModelLegislation)
     val firstHdcReleaseDate = LocalDate.of(2024, 5, 1)
     val latestHdcReleaseDate = LocalDate.of(2025, 1, 1)
     val calculationOutput = CalculationOutput(
@@ -207,7 +193,6 @@ class HdcedRepealValidatorTest {
 
   @Test
   fun `should return no messages when IN movement is on the same day as the last HDC release`() {
-    whenever(sdsLegislationConfiguration.progressionModelLegislation).thenReturn(progressionModelLegislation)
     val hdcMovementDate = LocalDate.of(2025, 1, 1)
     val calculationOutput = CalculationOutput(
       calculationResult = calculationResult,

@@ -113,7 +113,8 @@ class OffenderKeyDatesService(
       comment = nomisOffenderKeyDates.comment,
       releaseDates = detailsReleaseDates,
       calculatedByUsername = nomisOffenderKeyDates.calculatedByUserId,
-      calculatedByDisplayName = nomisOffenderKeyDates.calculatedByUserId?.let { manageUsersApiClient.getUserByUsername(it)?.name } ?: nomisOffenderKeyDates.calculatedByUserId,
+      calculatedByDisplayName = nomisOffenderKeyDates.calculatedByUserId.let { manageUsersApiClient.getUserByUsername(it)?.name }
+        ?: nomisOffenderKeyDates.calculatedByUserId,
     )
   }
 
