@@ -35,6 +35,7 @@ generic-service:
     USE_ADJUSTMENTS_API: "true"
     STORE_SENTECE_LEVEL_DATES: "true"
     APPLY_POST_HDCED_REPEAL_RULES: "false"
+    ADULT_HDC_SUSPENDED: "false"
 
   # Pre-existing kubernetes secrets to load as environment variables in the deployment.
   # namespace_secrets:

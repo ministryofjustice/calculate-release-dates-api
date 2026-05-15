@@ -50,12 +50,12 @@ class HdcedExtractionService(
     if (latestAdjustedReleaseDateIsAfterHdced(hdcedSentence.sentenceCalculation, latestAdjustedReleaseDate)) {
       val hdcedResult = resolveEligibilityDate(hdcedSentence, conflictingSentence)
 
-      if (featureToggles.applyPostHdcedRepealRules) {
-        val sentencesAffectedByHdcedRepeal = sentences.any { !(it is StandardDeterminateSentence && it.releaseArrangements.isSection250 || it is Term) }
-        val today = LocalDate.now()
-        if (sentencesAffectedByHdcedRepeal && (today.isAfterOrEqualTo(PROGRESSION_COMMENCEMENT_DATE) || hdcedResult.first.isAfterOrEqualTo(PROGRESSION_COMMENCEMENT_DATE))) {
-          return null
-        }
+      if (featureToggles.adultHdcSuspended && sentences.any { isAdultSentence(it) }) {
+        return null
+      }
+
+      if (featureToggles.applyPostHdcedRepealRules && sentences.any { isAdultSentence(it) } && hdcedResult.first.isAfterOrEqualTo(PROGRESSION_COMMENCEMENT_DATE)) {
+        return null
       }
 
       return hdcedResult
@@ -72,11 +72,23 @@ class HdcedExtractionService(
     return hdcedDate?.let { latestReleaseDate.isAfter(it) } ?: false
   }
 
-  fun releaseDateIsAfterHdced(sentenceCalculation: SentenceCalculation): Boolean {
+  fun hdcedIsApplicable(sentenceCalculation: SentenceCalculation): Boolean {
     val releaseDate = sentenceCalculation.releaseDate
     val hdcedDate = sentenceCalculation.homeDetentionCurfewEligibilityDate
-    return hdcedDate?.let { releaseDate.isAfter(it) } ?: false
+    if (hdcedDate?.let { releaseDate.isAfter(it) } != true) return false
+
+    if (featureToggles.adultHdcSuspended && isAdultSentence(sentenceCalculation.sentence)) {
+      return false
+    }
+
+    if (featureToggles.applyPostHdcedRepealRules && isAdultSentence(sentenceCalculation.sentence) && hdcedDate.isAfterOrEqualTo(PROGRESSION_COMMENCEMENT_DATE)) {
+      return false
+    }
+
+    return true
   }
+
+  private fun isAdultSentence(sentence: CalculableSentence): Boolean = !(sentence is StandardDeterminateSentence && sentence.releaseArrangements.isSection250 || sentence is Term)
 
   private fun getLatestConflictingSentence(
     sentenceGroup: List<CalculableSentence>,

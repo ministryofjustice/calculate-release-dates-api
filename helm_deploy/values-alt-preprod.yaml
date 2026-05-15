@@ -23,6 +23,7 @@ generic-service:
     NOMIS-SYNC-MAPPING_API_URL: https://nomis-sync-prisoner-mapping-preprod.hmpps.service.justice.gov.uk
     MANAGE-USERS_API_URL: https://manage-users-api-preprod.hmpps.service.justice.gov.uk
     BULK_CALC_CONCURRENCY: "7"
+    APPLY_POST_HDCED_REPEAL_RULES: "true"
 
   serviceAccountName: calculate-release-dates-api-preprod
 
