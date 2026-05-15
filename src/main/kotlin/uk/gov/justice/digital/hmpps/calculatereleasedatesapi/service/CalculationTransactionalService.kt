@@ -15,6 +15,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationO
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.OperativeSentenceEnvelopeEntity
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.TrancheOutcome
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.CONFIRMED
@@ -45,6 +46,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.Calculat
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationReasonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.OperativeSentenceEnvelopeRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.TrancheOutcomeRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationOrder
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.service.ValidationService
@@ -68,6 +70,7 @@ class CalculationTransactionalService(
   private val trancheOutcomeRepository: TrancheOutcomeRepository,
   private val featureToggles: FeatureToggles,
   private val sentenceLevelDatesService: SentenceLevelDatesService,
+  private val operativeSentenceEnvelopeRepository: OperativeSentenceEnvelopeRepository,
 ) {
 
   @Transactional
@@ -233,6 +236,18 @@ class CalculationTransactionalService(
         historicCalculationOutcomeDate = it.previouslyRecordedSLEDDate,
       )
       calculationOutcomeHistoricOverrideRepository.save(overrideRecord)
+    }
+
+    calculationOutput.operativeSentenceEnvelope?.let { operativeSentenceEnvelope ->
+      operativeSentenceEnvelopeRepository.save(
+        OperativeSentenceEnvelopeEntity(
+          calculationRequestId = calculationRequest.id(),
+          envelopeLengthDays = operativeSentenceEnvelope.sentenceEnvelopeLengthInDays,
+          earliestSentenceDate = operativeSentenceEnvelope.earliestSentenceStartDate,
+          isPostRecall = requireNotNull(operativeSentenceEnvelope.isPostRecallSentenceEnvelope) { "should not be null if persisting from CRDS calc" },
+          containsSdsPlusSentence = requireNotNull(operativeSentenceEnvelope.containsAnSDSPlusSentence) { "should not be null if persisting from CRDS calc" },
+        ),
+      )
     }
 
     if (featureToggles.storeSentenceLevelDates) {
