@@ -5,4 +5,5 @@ data class CalculationOutput(
   val sentenceGroup: List<SentenceGroup>,
   val calculationResult: CalculationResult,
   val sentenceLevelDates: List<SentenceLevelDates> = emptyList(),
+  val operativeSentenceEnvelope: OperativeSentenceEnvelope? = null,
 )
