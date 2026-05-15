@@ -9,14 +9,14 @@
       {
         "type": "StandardSentence",
         "offence": {
-          "committedAt": "2025-08-29"
+          "committedAt": "2025-08-14"
         },
         "duration": {
           "durationElements": {
-            "MONTHS": 33
+            "MONTHS": 40
           }
         },
-        "sentencedAt": "2025-08-29",
+        "sentencedAt": "2025-08-14",
         "releaseArrangements": {
           "isSDSPlus": false,
           "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
@@ -28,10 +28,20 @@
     "adjustments": {
       "UNLAWFULLY_AT_LARGE": [
         {
-          "appliesToSentencesFrom": "2026-08-30",
+          "appliesToSentencesFrom": "2025-12-04",
           "numberOfDays": 4,
-          "fromDate": "2026-08-30",
-          "toDate": "2026-09-02",
+          "fromDate": "2025-12-04",
+          "toDate": "2025-12-07",
+          "additionalInfo": {
+            "type": "UAL",
+            "reason": "ESCAPE"
+          }
+        },
+        {
+          "appliesToSentencesFrom": "2026-10-06",
+          "numberOfDays": 5,
+          "fromDate": "2026-10-06",
+          "toDate": "2026-10-10",
           "additionalInfo": {
             "type": "UAL",
             "reason": "ESCAPE"
@@ -44,7 +54,6 @@
     "useOffenceIndicators": true
   },
   "params": "sds-progression-model",
-  "expectedValidationException": "UNSUPPORTED_OUT_OF_CUSTODY_AT_PROGRESSION_MODEL_COMMENCEMENT",
   "featureToggles": {
     "applyPostRecallRepealRules": true
   }
