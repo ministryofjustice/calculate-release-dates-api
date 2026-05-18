@@ -33,7 +33,7 @@ class OperativeSentenceEnvelopeController(private val operativeSentenceEnvelopeS
   )
   @ApiResponses(
     value = [
-      ApiResponse(responseCode = "200", description = "Operational sentence envelope data"),
+      ApiResponse(responseCode = "200", description = "Operative sentence envelope data"),
       ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
       ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
       ApiResponse(responseCode = "404", description = "Could not locate an appropriate source of data to determine the operative sentence envelope"),

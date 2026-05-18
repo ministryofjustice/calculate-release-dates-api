@@ -13,7 +13,7 @@
         },
         "duration": {
           "durationElements": {
-            "MONTHS": 30
+            "MONTHS": 33
           }
         },
         "sentencedAt": "2025-08-29",
@@ -28,7 +28,7 @@
     "adjustments": {
       "UNLAWFULLY_AT_LARGE": [
         {
-          "appliesToSentencesFrom": "2025-08-29",
+          "appliesToSentencesFrom": "2026-09-01",
           "numberOfDays": 4,
           "fromDate": "2026-09-01",
           "toDate": "2026-09-04",
