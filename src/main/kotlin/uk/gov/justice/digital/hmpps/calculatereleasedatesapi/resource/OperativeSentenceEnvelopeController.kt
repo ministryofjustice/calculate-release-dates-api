@@ -75,7 +75,7 @@ class OperativeSentenceEnvelopeController(private val operativeSentenceEnvelopeS
       ApiResponse(responseCode = "404", description = "Could not locate an appropriate source of data to determine the operative sentence envelope"),
     ],
   )
-  fun getOperationalSentenceEnvelopeForPrisoner(
+  fun getOperativeSentenceEnvelopeForPrisoner(
     @Parameter(required = true, example = "ABC123", description = "The id of the prisoner")
     @PathVariable("prisonerId")
     prisonerId: String,
