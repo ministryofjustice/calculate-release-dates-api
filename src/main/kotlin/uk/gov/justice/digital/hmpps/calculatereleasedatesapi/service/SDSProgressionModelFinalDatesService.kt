@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.PreLegislationCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.HDCED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
 import java.time.LocalDate
@@ -20,9 +21,17 @@ class SDSProgressionModelFinalDatesService {
     val earliestApplicableDate = preLegislationCalculation.legislationApplied.earliestApplicableDate
     val commencementDate = preLegislationCalculation.legislationApplied.legislation.commencementDate()
 
-    // default to the early release dates in the scenario no defaulting is required or there is no applicable tranche
+    // default to the early release dates for when there is no applicable tranche or further adjustment of dates required
     val mergedDates = earlyReleaseCalculation.dates.toMutableMap()
     val mergedBreakdown = earlyReleaseCalculation.breakdownByReleaseDateType.toMutableMap()
+
+   /*
+    * use the standard release date for HDC to support the operational recalculation period where progression model will
+    * be enabled but offenders can still be released on their HDCs calculated at 40% or 50% before commencement. Once
+    * progression model has commenced, calculation of HDC will be disabled for adult sentences.
+    */
+    standardReleaseCalculation.dates[HDCED]?.let { mergedDates[HDCED] = it }
+    standardReleaseCalculation.breakdownByReleaseDateType[HDCED]?.let { mergedBreakdown[HDCED] = it }
 
     if (earliestApplicableDate != null) {
       DATE_TYPES_TO_ADJUST_TO_COMMENCEMENT_DATE.forEach { releaseDateType ->
