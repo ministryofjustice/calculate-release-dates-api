@@ -17,36 +17,39 @@ class SDSProgressionModelFinalDatesService {
     adjustments: Adjustments,
   ): CalculationResult {
     val standardReleaseCalculation = preLegislationCalculation.beforeLegislationAppliedCalculationResult
-    val mergedDates = earlyReleaseCalculation.dates.toMutableMap()
-    val mergedBreakdown = earlyReleaseCalculation.breakdownByReleaseDateType.toMutableMap()
     val earliestApplicableDate = preLegislationCalculation.legislationApplied.earliestApplicableDate
     val commencementDate = preLegislationCalculation.legislationApplied.legislation.commencementDate()
 
-    // if there is no tranche then just accept the early release dates as-is
+    // default to the early release dates in the scenario no defaulting is required or there is no applicable tranche
+    val mergedDates = earlyReleaseCalculation.dates.toMutableMap()
+    val mergedBreakdown = earlyReleaseCalculation.breakdownByReleaseDateType.toMutableMap()
+
     if (earliestApplicableDate != null) {
       DATE_TYPES_TO_ADJUST_TO_COMMENCEMENT_DATE.forEach { releaseDateType ->
         val early = earlyReleaseCalculation.dates[releaseDateType]
         val standard = standardReleaseCalculation.dates[releaseDateType]
-        val awardedDays = getAwardedDays(adjustments)
 
-        if (standard != null && standard.minusDays(awardedDays).isBefore(earliestApplicableDate)) {
-          // use the standard date as-is if it's before the tranche date unless they are serving ADAs over the tranche date in which case tranche defaulting applies
+        /*
+         * ADAs and UAL occurring post progression should always be included in the final release dates. We remove them when comparing
+         * to the standard release date as if they would be due for release without them then they are not eligible for early release.
+         * We remove them when deciding whether to default to the tranche commencement date as they will be added to the tranche commencement
+         * date if they are defaulted and could be served twice in this scenario. If we did not add them to the tranche date then they
+         * may not be fully served.
+         */
+        val additionalDaysToBeAppliedPostCommencement = getAwardedDays(adjustments) + getUalPostProgression(adjustments, commencementDate)
+
+        if (standard != null && standard.minusDays(additionalDaysToBeAppliedPostCommencement).isBefore(earliestApplicableDate)) {
           mergedDates[releaseDateType] = standard
           standardReleaseCalculation.breakdownByReleaseDateType[releaseDateType]?.let { standardBreakdown -> mergedBreakdown[releaseDateType] = standardBreakdown }
-        } else if (early != null) {
-          // only default to tranche date if the release date excluding awarded is earlier. Awarded days are applied to the tranche date
-          if (early.minusDays(awardedDays).isBefore(earliestApplicableDate)) {
-            val ualPostProgression = getUalPostProgression(adjustments, commencementDate)
-            val earlyDefaultedToTracheWithAwarded = earliestApplicableDate.plusDays(awardedDays).plusDays(ualPostProgression)
-            mergedDates[releaseDateType] = earlyDefaultedToTracheWithAwarded
-            earlyReleaseCalculation.breakdownByReleaseDateType[releaseDateType]?.let { earlyBreakdown ->
-              mergedBreakdown[releaseDateType] = earlyBreakdown.copy(
-                releaseDate = earlyDefaultedToTracheWithAwarded,
-              )
-            }
+        } else if (early != null && early.minusDays(additionalDaysToBeAppliedPostCommencement).isBefore(earliestApplicableDate)) {
+          val earlyDefaultedToTracheWithAwarded = earliestApplicableDate.plusDays(additionalDaysToBeAppliedPostCommencement)
+          mergedDates[releaseDateType] = earlyDefaultedToTracheWithAwarded
+          earlyReleaseCalculation.breakdownByReleaseDateType[releaseDateType]?.let { earlyBreakdown ->
+            mergedBreakdown[releaseDateType] = earlyBreakdown.copy(
+              releaseDate = earlyDefaultedToTracheWithAwarded,
+            )
           }
         }
-        // the default is just to use the early release date
       }
     }
 
