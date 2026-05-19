@@ -3,6 +3,8 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource
 import arrow.core.getOrElse
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
+import io.swagger.v3.oas.annotations.media.Content
+import io.swagger.v3.oas.annotations.media.ExampleObject
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
@@ -33,7 +35,41 @@ class OperativeSentenceEnvelopeController(private val operativeSentenceEnvelopeS
   )
   @ApiResponses(
     value = [
-      ApiResponse(responseCode = "200", description = "Operative sentence envelope data"),
+      ApiResponse(
+        responseCode = "200",
+        description = "Operative sentence envelope data",
+        content = [
+          Content(
+            mediaType = MediaType.APPLICATION_JSON_VALUE,
+            examples = [
+              ExampleObject(
+                name = "Sourced from CRDS",
+                value = """
+{
+  "sentenceEnvelopeLengthInDays": 365,
+  "earliestSentenceStartDate": "2013-06-21",
+  "isPostRecallSentenceEnvelope": true,
+  "containsAnSDSPlusSentence": false,
+  "sentenceEnvelopeSource": "CRDS"
+}
+  """,
+              ),
+              ExampleObject(
+                name = "Sourced from NOMIS",
+                value = """
+{
+  "sentenceEnvelopeLengthInDays": 365,
+  "earliestSentenceStartDate": "2013-06-21",
+  "isPostRecallSentenceEnvelope": null,
+  "containsAnSDSPlusSentence": null,
+  "sentenceEnvelopeSource": "NOMIS"
+}
+  """,
+              ),
+            ],
+          ),
+        ],
+      ),
       ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
       ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
       ApiResponse(responseCode = "404", description = "Could not locate an appropriate source of data to determine the operative sentence envelope"),
