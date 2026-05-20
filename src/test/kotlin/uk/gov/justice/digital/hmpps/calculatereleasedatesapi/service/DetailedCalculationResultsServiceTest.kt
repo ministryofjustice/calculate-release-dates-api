@@ -15,6 +15,11 @@ import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.client.ManageUsersApiClient
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.LegislationName
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.SDSLegislation
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.SDSLegislationConfiguration
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.TrancheConfiguration
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.TrancheType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ApprovedDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ApprovedDatesSubmission
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcome
@@ -26,6 +31,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Calcul
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.TrancheName
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Agency
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AllocatedTranche
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BreakdownMissingReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationContext
@@ -62,6 +68,9 @@ class DetailedCalculationResultsServiceTest {
   private val historicOverrideRepository = mock<CalculationOutcomeHistoricOverrideRepository>()
   private val manageUsersApiClient = mock<ManageUsersApiClient>()
   private val prisonService = mock<PrisonService>()
+  private val sdsLegislationConfiguration = mock<SDSLegislationConfiguration>()
+  private val sds40Legislation = mock<SDSLegislation.SDS40Legislation>()
+  private val progressionModelLegislation = mock<SDSLegislation.ProgressionModelLegislation>()
   private val service = DetailedCalculationResultsService(
     calculationBreakdownService,
     sourceDataMapper,
@@ -71,6 +80,7 @@ class DetailedCalculationResultsServiceTest {
     FeatureToggles(),
     manageUsersApiClient,
     prisonService,
+    sdsLegislationConfiguration,
   )
   private val objectMapper = TestUtil.objectMapper()
 
@@ -78,6 +88,22 @@ class DetailedCalculationResultsServiceTest {
   fun setUp() {
     val agencies = listOf(Agency("BXI", "Brixton (HMP)"))
     whenever(prisonService.getAgenciesByType("INST")).thenReturn(agencies)
+
+    whenever(sdsLegislationConfiguration.sds40Legislation).thenReturn(sds40Legislation)
+    whenever(sdsLegislationConfiguration.progressionModelLegislation).thenReturn(progressionModelLegislation)
+    whenever(sds40Legislation.tranches).thenReturn(
+      listOf(
+        TrancheConfiguration(TrancheType.FINAL, LocalDate.of(2024, 9, 10), name = TrancheName.TRANCHE_1),
+        TrancheConfiguration(TrancheType.FINAL, LocalDate.of(2024, 10, 22), name = TrancheName.TRANCHE_2),
+        TrancheConfiguration(TrancheType.FINAL, LocalDate.of(2024, 12, 3), name = TrancheName.FTR_56_TRANCHE_1),
+        TrancheConfiguration(TrancheType.FINAL, LocalDate.of(2025, 1, 3), name = TrancheName.FTR_56_TRANCHE_4),
+      ),
+    )
+    whenever(progressionModelLegislation.tranches).thenReturn(
+      listOf(
+        TrancheConfiguration(TrancheType.FINAL, LocalDate.of(2026, 9, 2), name = TrancheName.TRANCHE_10),
+      ),
+    )
   }
 
   @Test
@@ -164,6 +190,10 @@ class DetailedCalculationResultsServiceTest {
         TrancheName.TRANCHE_1,
         TrancheName.FTR_56_TRANCHE_1,
         TrancheName.TRANCHE_10,
+        listOf(
+          AllocatedTranche(LegislationName.FTR_56, TrancheName.FTR_56_TRANCHE_1, LocalDate.of(2024, 12, 3)),
+          AllocatedTranche(LegislationName.SDS_PROGRESSION_MODEL, TrancheName.TRANCHE_10, LocalDate.of(2026, 9, 2)),
+        ),
       ),
     )
     verify(calculationResultEnrichmentService).addDetailToCalculationDates(
@@ -227,8 +257,106 @@ class DetailedCalculationResultsServiceTest {
         sds40Tranche = TrancheName.TRANCHE_2,
         ftr56Tranche = TrancheName.FTR_56_TRANCHE_4,
         progressionModelTranche = TrancheName.TRANCHE_10,
+        allocatedTranches = listOf(
+          AllocatedTranche(LegislationName.FTR_56, TrancheName.FTR_56_TRANCHE_4, LocalDate.of(2025, 1, 3)),
+          AllocatedTranche(LegislationName.SDS_PROGRESSION_MODEL, TrancheName.TRANCHE_10, LocalDate.of(2026, 9, 2)),
+        ),
       ),
     )
+  }
+
+  @Test
+  fun `should include SDS40 allocated tranche when affected by SDS40`() {
+    val base = calculationRequestWithOutcomes().copy(
+      prisonerDetails = objectToJson(prisonerDetails, objectMapper),
+      sentenceAndOffences = objectToJson(listOf(originalSentence), objectMapper),
+      adjustments = objectToJson(adjustments, objectMapper),
+      calculationOutcomes = listOf(
+        CalculationOutcome(calculationRequestId = CALCULATION_REQUEST_ID, calculationDateType = "CRD", outcomeDate = LocalDate.of(2026, 6, 26)),
+      ),
+      calculatedByUsername = "username",
+      prisonerLocation = "BXI",
+    )
+    val request = base.copy(
+      allocatedSDSTranche = TrancheOutcome(
+        calculationRequest = base,
+        tranche = TrancheName.TRANCHE_2,
+        allocatedTranche = TrancheName.TRANCHE_2,
+        affectedBySds40 = true,
+        ftr56Tranche = TrancheName.FTR_56_TRANCHE_0,
+        progressionModelTranche = TrancheName.TRANCHE_0,
+      ),
+    )
+    val enrichedReleaseDates = mapOf(ReleaseDateType.CRD to DetailedDate(ReleaseDateType.CRD, ReleaseDateType.CRD.description, LocalDate.of(2026, 6, 26), emptyList()))
+    val expectedBreakdown = CalculationBreakdown(emptyList(), null, mapOf(ReleaseDateType.CRD to ReleaseDateCalculationBreakdown(emptySet())), mapOf(ReleaseDateType.PRRD to LocalDate.of(2026, 6, 27)))
+    whenever(calculationRequestRepository.findById(CALCULATION_REQUEST_ID)).thenReturn(Optional.of(request))
+    whenever(sourceDataMapper.mapSentencesAndOffences(request)).thenReturn(listOf(originalSentence))
+    whenever(sourceDataMapper.mapPrisonerDetails(request)).thenReturn(prisonerDetails)
+    whenever(sourceDataMapper.mapBookingAndSentenceAdjustments(request)).thenReturn(adjustments)
+    whenever(
+      calculationResultEnrichmentService.addDetailToCalculationDates(
+        toReleaseDates(request),
+        listOf(originalSentence),
+        expectedBreakdown,
+        null,
+        null,
+        null,
+      ),
+    ).thenReturn(enrichedReleaseDates)
+    whenever(calculationBreakdownService.getBreakdownSafely(any())).thenReturn(expectedBreakdown.right())
+    whenever(manageUsersApiClient.getUserByUsername("username")).thenReturn(UserDetails("username", "User Name"))
+
+    val results = service.findDetailedCalculationResults(CALCULATION_REQUEST_ID)
+
+    assertThat(results.allocatedTranches).containsExactly(
+      AllocatedTranche(LegislationName.SDS_40, TrancheName.TRANCHE_2, LocalDate.of(2024, 10, 22)),
+    )
+  }
+
+  @Test
+  fun `should return no allocated tranches for default tranche values`() {
+    val base = calculationRequestWithOutcomes().copy(
+      prisonerDetails = objectToJson(prisonerDetails, objectMapper),
+      sentenceAndOffences = objectToJson(listOf(originalSentence), objectMapper),
+      adjustments = objectToJson(adjustments, objectMapper),
+      calculationOutcomes = listOf(
+        CalculationOutcome(calculationRequestId = CALCULATION_REQUEST_ID, calculationDateType = "CRD", outcomeDate = LocalDate.of(2026, 6, 26)),
+      ),
+      calculatedByUsername = "username",
+      prisonerLocation = "BXI",
+    )
+    val request = base.copy(
+      allocatedSDSTranche = TrancheOutcome(
+        calculationRequest = base,
+        tranche = TrancheName.TRANCHE_0,
+        allocatedTranche = TrancheName.TRANCHE_0,
+        affectedBySds40 = false,
+        ftr56Tranche = TrancheName.FTR_56_TRANCHE_0,
+        progressionModelTranche = TrancheName.TRANCHE_0,
+      ),
+    )
+    val enrichedReleaseDates = mapOf(ReleaseDateType.CRD to DetailedDate(ReleaseDateType.CRD, ReleaseDateType.CRD.description, LocalDate.of(2026, 6, 26), emptyList()))
+    val expectedBreakdown = CalculationBreakdown(emptyList(), null, mapOf(ReleaseDateType.CRD to ReleaseDateCalculationBreakdown(emptySet())), mapOf(ReleaseDateType.PRRD to LocalDate.of(2026, 6, 27)))
+    whenever(calculationRequestRepository.findById(CALCULATION_REQUEST_ID)).thenReturn(Optional.of(request))
+    whenever(sourceDataMapper.mapSentencesAndOffences(request)).thenReturn(listOf(originalSentence))
+    whenever(sourceDataMapper.mapPrisonerDetails(request)).thenReturn(prisonerDetails)
+    whenever(sourceDataMapper.mapBookingAndSentenceAdjustments(request)).thenReturn(adjustments)
+    whenever(
+      calculationResultEnrichmentService.addDetailToCalculationDates(
+        toReleaseDates(request),
+        listOf(originalSentence),
+        expectedBreakdown,
+        null,
+        null,
+        null,
+      ),
+    ).thenReturn(enrichedReleaseDates)
+    whenever(calculationBreakdownService.getBreakdownSafely(any())).thenReturn(expectedBreakdown.right())
+    whenever(manageUsersApiClient.getUserByUsername("username")).thenReturn(UserDetails("username", "User Name"))
+
+    val results = service.findDetailedCalculationResults(CALCULATION_REQUEST_ID)
+
+    assertThat(results.allocatedTranches).isEmpty()
   }
 
   @Test
