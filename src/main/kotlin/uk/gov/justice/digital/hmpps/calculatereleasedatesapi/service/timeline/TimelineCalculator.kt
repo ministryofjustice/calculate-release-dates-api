@@ -138,6 +138,7 @@ class TimelineCalculator(
         awardedAfterDeterminateRelease = existingAdjustments.awardedAfterDeterminateRelease + adjustments.awardedAfterDeterminateRelease,
         ualAfterDeterminateRelease = existingAdjustments.ualAfterDeterminateRelease + adjustments.ualAfterDeterminateRelease,
         ualAfterFtr = existingAdjustments.ualAfterFtr + adjustments.ualAfterFtr,
+        ualAfterProgressionModel = existingAdjustments.ualAfterProgressionModel + adjustments.ualAfterProgressionModel,
 
         servedAdaDays = existingAdjustments.servedAdaDays + adjustments.servedAdaDays,
         unusedAdaDays = existingAdjustments.unusedAdaDays + adjustments.unusedAdaDays,
