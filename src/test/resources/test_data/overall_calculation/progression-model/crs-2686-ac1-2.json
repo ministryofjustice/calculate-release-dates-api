@@ -1,0 +1,56 @@
+{
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "2000-01-01",
+      "isActiveSexOffender": true
+    },
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2025-09-14"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 3
+          }
+        },
+        "sentencedAt": "2025-09-14",
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        },
+        "recall": {
+          "recallType": "STANDARD_RECALL",
+          "returnToCustodyDate": "2027-01-08",
+          "revocationDate": "2027-01-05"
+        }
+      }
+    ],
+    "adjustments": {
+      "UNLAWFULLY_AT_LARGE": [
+        {
+          "appliesToSentencesFrom": "2027-01-06",
+          "numberOfDays": 2,
+          "fromDate": "2027-01-06",
+          "toDate": "2027-01-07",
+          "additionalInfo": {
+            "type": "UAL",
+            "reason": "RECALL"
+          }
+        }
+      ]
+
+    }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "sds-progression-model",
+  "featureToggles": {
+    "applyPostRecallRepealRules": true
+  }
+}
