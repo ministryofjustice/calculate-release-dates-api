@@ -25,6 +25,12 @@ sealed interface SDSLegislation : Legislation {
 
   fun appliesToSentence(part: AbstractSentence) = filter.isIncluded(part)
 
+  fun applyDefaulting(calculatedDate: LocalDate, earliestApplicableDate: LocalDate?, awardedDays: Long, ualPostProgression: Long): DefaultingResult = if (earliestApplicableDate != null && earliestApplicableDate.isAfter(calculatedDate)) {
+    DefaultingResult(earliestApplicableDate, DefaultingOutcome.DEFAULTED)
+  } else {
+    DefaultingResult(calculatedDate, DefaultingOutcome.RETAINED)
+  }
+
   data class DefaultSDSLegislation(
     override val releaseMultiplier: Map<SentenceIdentificationTrack, ReleaseMultiplier>,
     override val filter: EarlyReleaseSentenceFilter,
@@ -102,5 +108,21 @@ sealed interface SDSLegislation : Legislation {
     override fun commencementDate(): LocalDate = tranches.minOf { it.date }
 
     override fun isSentenceSubjectToTraches(sentence: CalculableSentence) = sentence is StandardDeterminateSentence && filter.isIncluded(sentence)
+
+    /*
+     * ADAs and UAL occurring post progression should always be included in the final release dates. We remove them when comparing
+     * to the standard release date as if they would be due for release without them then they are not eligible for early release.
+     * We remove them when deciding whether to default to the tranche commencement date as they will be added to the tranche commencement
+     * date if they are defaulted and could be served twice in this scenario. If we did not add them to the tranche date then they
+     * may not be fully served.
+     */
+    override fun applyDefaulting(calculatedDate: LocalDate, earliestApplicableDate: LocalDate?, awardedDays: Long, ualPostProgression: Long): DefaultingResult {
+      val calculatedDateMinusAwardedAndUalPostProgression = calculatedDate.minusDays(awardedDays).minusDays(ualPostProgression)
+      return if (earliestApplicableDate != null && earliestApplicableDate.isAfter(calculatedDateMinusAwardedAndUalPostProgression)) {
+        DefaultingResult(earliestApplicableDate.plusDays(awardedDays).plusDays(ualPostProgression), DefaultingOutcome.DEFAULTED)
+      } else {
+        DefaultingResult(calculatedDate, DefaultingOutcome.RETAINED)
+      }
+    }
   }
 }

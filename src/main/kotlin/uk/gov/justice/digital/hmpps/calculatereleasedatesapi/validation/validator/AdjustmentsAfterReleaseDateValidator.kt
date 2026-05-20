@@ -35,6 +35,7 @@ class AdjustmentsAfterReleaseDateValidator : PostCalculationValidator {
     }
     return messages.toList()
   }
+
   private fun getSortedAdjustments(booking: Booking): List<Pair<AdjustmentType, Adjustment>> {
     val adas = booking.adjustments.getOrEmptyList(AdjustmentType.ADDITIONAL_DAYS_AWARDED)
       .map { AdjustmentType.ADDITIONAL_DAYS_AWARDED to it }
@@ -44,5 +45,6 @@ class AdjustmentsAfterReleaseDateValidator : PostCalculationValidator {
 
     return (adas + radas).sortedBy { it.second.appliesToSentencesFrom }
   }
+
   override fun validationOrder() = ValidationOrder.INVALID
 }
