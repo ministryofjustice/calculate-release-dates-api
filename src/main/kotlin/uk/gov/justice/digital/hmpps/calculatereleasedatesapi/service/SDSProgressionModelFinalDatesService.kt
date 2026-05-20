@@ -1,7 +1,9 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.DefaultingOutcome
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.PreLegislationCalculation
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.SDSLegislation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.HDCED
@@ -19,17 +21,19 @@ class SDSProgressionModelFinalDatesService {
   ): CalculationResult {
     val standardReleaseCalculation = preLegislationCalculation.beforeLegislationAppliedCalculationResult
     val earliestApplicableDate = preLegislationCalculation.legislationApplied.earliestApplicableDate
-    val commencementDate = preLegislationCalculation.legislationApplied.legislation.commencementDate()
+    val legislation = preLegislationCalculation.legislationApplied.legislation
+    require(legislation is SDSLegislation.ProgressionModelLegislation) { "Using progression model defaulting rules for non-progression model legislation" }
+    val commencementDate = legislation.commencementDate()
 
     // default to the early release dates for when there is no applicable tranche or further adjustment of dates required
     val mergedDates = earlyReleaseCalculation.dates.toMutableMap()
     val mergedBreakdown = earlyReleaseCalculation.breakdownByReleaseDateType.toMutableMap()
 
-   /*
-    * use the standard release date for HDC to support the operational recalculation period where progression model will
-    * be enabled but offenders can still be released on their HDCs calculated at 40% or 50% before commencement. Once
-    * progression model has commenced, calculation of HDC will be disabled for adult sentences.
-    */
+    /*
+     * use the standard release date for HDC to support the operational recalculation period where progression model will
+     * be enabled but offenders can still be released on their HDCs calculated at 40% or 50% before commencement. Once
+     * progression model has commenced, calculation of HDC will be disabled for adult sentences.
+     */
     standardReleaseCalculation.dates[HDCED]?.let { mergedDates[HDCED] = it }
     standardReleaseCalculation.breakdownByReleaseDateType[HDCED]?.let { mergedBreakdown[HDCED] = it }
 
@@ -38,24 +42,19 @@ class SDSProgressionModelFinalDatesService {
         val early = earlyReleaseCalculation.dates[releaseDateType]
         val standard = standardReleaseCalculation.dates[releaseDateType]
 
-        /*
-         * ADAs and UAL occurring post progression should always be included in the final release dates. We remove them when comparing
-         * to the standard release date as if they would be due for release without them then they are not eligible for early release.
-         * We remove them when deciding whether to default to the tranche commencement date as they will be added to the tranche commencement
-         * date if they are defaulted and could be served twice in this scenario. If we did not add them to the tranche date then they
-         * may not be fully served.
-         */
-        val additionalDaysToBeAppliedPostCommencement = getAwardedDays(adjustments) + getUalPostProgression(adjustments, commencementDate)
+        val awardedDays = getAwardedDays(adjustments)
+        val ualPostProgression = getUalPostProgression(adjustments, commencementDate)
 
-        if (standard != null && standard.minusDays(additionalDaysToBeAppliedPostCommencement).isBefore(earliestApplicableDate)) {
+        // if the standard date is defaulted using PM rules then it was before the tranche date and should be retained here.
+        if (standard != null && legislation.applyDefaulting(standard, earliestApplicableDate, awardedDays, ualPostProgression).outcome == DefaultingOutcome.DEFAULTED) {
           mergedDates[releaseDateType] = standard
           standardReleaseCalculation.breakdownByReleaseDateType[releaseDateType]?.let { standardBreakdown -> mergedBreakdown[releaseDateType] = standardBreakdown }
-        } else if (early != null && early.minusDays(additionalDaysToBeAppliedPostCommencement).isBefore(earliestApplicableDate)) {
-          val earlyDefaultedToTracheWithAwarded = earliestApplicableDate.plusDays(additionalDaysToBeAppliedPostCommencement)
-          mergedDates[releaseDateType] = earlyDefaultedToTracheWithAwarded
+        } else if (early != null) {
+          val defaultingResult = legislation.applyDefaulting(early, earliestApplicableDate, awardedDays, ualPostProgression)
+          mergedDates[releaseDateType] = defaultingResult.date
           earlyReleaseCalculation.breakdownByReleaseDateType[releaseDateType]?.let { earlyBreakdown ->
             mergedBreakdown[releaseDateType] = earlyBreakdown.copy(
-              releaseDate = earlyDefaultedToTracheWithAwarded,
+              releaseDate = defaultingResult.date,
             )
           }
         }
