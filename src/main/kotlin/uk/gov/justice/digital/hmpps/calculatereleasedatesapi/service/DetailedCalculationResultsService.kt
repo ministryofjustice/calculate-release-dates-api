@@ -5,10 +5,14 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.client.ManageUsersApiClient
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.LegislationName
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.SDSLegislationConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ApprovedDatesSubmission
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.TrancheName
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AllocatedTranche
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationContext
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOriginalData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationReasonDto
@@ -31,6 +35,7 @@ open class DetailedCalculationResultsService(
   private val featureToggles: FeatureToggles,
   private val manageUsersApiClient: ManageUsersApiClient,
   private val prisonService: PrisonService,
+  private val sdsLegislationConfiguration: SDSLegislationConfiguration,
 ) {
 
   @Transactional(readOnly = true)
@@ -67,6 +72,7 @@ open class DetailedCalculationResultsService(
       sds40Tranche = calculationRequest.allocatedSDSTranche?.tranche,
       ftr56Tranche = calculationRequest.allocatedSDSTranche?.ftr56Tranche,
       progressionModelTranche = calculationRequest.allocatedSDSTranche?.progressionModelTranche,
+      allocatedTranches = resolveTranches(calculationRequest),
       usedPreviouslyRecordedSLED = historicSledOverride?.let {
         PreviouslyRecordedSLED(
           previouslyRecordedSLEDDate = it.historicCalculationOutcomeDate,
@@ -114,5 +120,49 @@ open class DetailedCalculationResultsService(
 
   private fun getCalculationRequest(calculationRequestId: Long): CalculationRequest = calculationRequestRepository.findById(calculationRequestId).orElseThrow {
     EntityNotFoundException("No calculation results exist for calculationRequestId $calculationRequestId")
+  }
+
+  private fun resolveTranches(calculationRequest: CalculationRequest): List<AllocatedTranche> {
+    val allocated = calculationRequest.allocatedSDSTranche ?: return emptyList()
+    val tranches = mutableListOf<AllocatedTranche>()
+
+    if (allocated.ftr56Tranche != null && allocated.ftr56Tranche !== TrancheName.FTR_56_TRANCHE_0) {
+      tranches.add(
+        AllocatedTranche(
+          legislationName = LegislationName.FTR_56,
+          trancheName = allocated.ftr56Tranche!!,
+          trancheDate = sdsLegislationConfiguration.sds40Legislation.tranches
+            .firstOrNull { it.name == allocated.ftr56Tranche }
+            ?.date,
+        ),
+      )
+    }
+
+    if (allocated.progressionModelTranche != null && allocated.progressionModelTranche !== TrancheName.TRANCHE_0) {
+      tranches.add(
+        AllocatedTranche(
+          legislationName = LegislationName.SDS_PROGRESSION_MODEL,
+          trancheName = allocated.progressionModelTranche!!,
+          trancheDate = sdsLegislationConfiguration.progressionModelLegislation
+            ?.tranches
+            ?.firstOrNull { it.name == allocated.progressionModelTranche }
+            ?.date,
+        ),
+      )
+    }
+
+    if (allocated.tranche !== TrancheName.TRANCHE_0 && allocated.affectedBySds40) {
+      tranches.add(
+        AllocatedTranche(
+          legislationName = LegislationName.SDS_40,
+          trancheName = allocated.tranche,
+          trancheDate = sdsLegislationConfiguration.sds40Legislation.tranches
+            .firstOrNull { it.name == allocated.tranche }
+            ?.date,
+        ),
+      )
+    }
+
+    return tranches
   }
 }

@@ -13,5 +13,6 @@ data class DetailedCalculationResults(
   val sds40Tranche: TrancheName? = null,
   val ftr56Tranche: TrancheName? = null,
   val progressionModelTranche: TrancheName? = null,
+  val allocatedTranches: List<AllocatedTranche> = emptyList(),
   val usedPreviouslyRecordedSLED: PreviouslyRecordedSLED? = null,
 )
