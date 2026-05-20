@@ -13,7 +13,7 @@ generic-service:
       SecAction "id:900000,phase:1,nolog,pass,t:none,setvar:tx.paranoia_level=2"
 
   env:
-    SPRING_PROFILES_ACTIVE: "calculation-params"
+    SPRING_PROFILES_ACTIVE: "calculation-params,sds-progression-model"
     APPLICATIONINSIGHTS_CONFIGURATION_FILE: applicationinsights.json
     HMPPS_AUTH_URL: https://sign-in-preprod.hmpps.service.justice.gov.uk/auth
     PRISON_API_URL: https://prison-api-preprod.prison.service.justice.gov.uk
@@ -22,6 +22,7 @@ generic-service:
     NOMIS-SYNC-MAPPING_API_URL: https://nomis-sync-prisoner-mapping-preprod.hmpps.service.justice.gov.uk
     MANAGE-USERS_API_URL: https://manage-users-api-preprod.hmpps.service.justice.gov.uk
     STORE_OPERATIVE_SENTENCE_ENVELOPE: "true"
+    APPLY_POST_HDCED_REPEAL_RULES: "true"
 
   allowlist:
     penetration-test-ip-1: 54.37.241.156/30
