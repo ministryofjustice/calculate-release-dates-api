@@ -20,8 +20,10 @@ class RemandOverlappingSentenceValidator(private val validationUtilities: Valida
     if (remandPeriods.isNotEmpty()) {
       val remandRanges = remandPeriods.map { LocalDateRange.of(it.fromDate, it.toDate) }
 
-      val sentenceRanges = calculationOutput.sentenceGroup.filter { period -> period.sentences.none { it.isRecall() } }
-        .filter { it.from != it.to }.map { LocalDateRange.of(it.from, it.to) }
+      val sentenceRanges = calculationOutput.sentenceGroup
+        .filter { period -> period.sentences.none { it.isRecall() } }
+        .filter { it.from.isBefore(it.to) }
+        .map { LocalDateRange.of(it.from, it.to) }
 
       remandRanges.forEach { remandRange ->
         sentenceRanges.forEach { sentenceRange ->
