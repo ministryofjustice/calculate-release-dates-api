@@ -2,11 +2,13 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.confi
 
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.SDSTrancheSelectionStrategy.SDS40TrancheSelectionStrategy
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.SDSTrancheSelectionStrategy.SDSProgressionModelTrancheSelectionStrategy
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AbstractSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExternalMovementReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ReleaseMultiplier
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.ExternalMovementTimeline
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculationEvent
@@ -16,6 +18,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.Ti
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineTrackingData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
 import java.time.LocalDate
+import java.time.temporal.ChronoUnit
 
 sealed interface SDSLegislation : Legislation {
   val releaseMultiplier: Map<SentenceIdentificationTrack, ReleaseMultiplier>
@@ -30,6 +33,8 @@ sealed interface SDSLegislation : Legislation {
   } else {
     DefaultingResult(calculatedDate, DefaultingOutcome.RETAINED)
   }
+
+  fun modifyConditionalReleaseAndReleaseDateTypes(sentence: CalculableSentence) = Unit
 
   data class DefaultSDSLegislation(
     override val releaseMultiplier: Map<SentenceIdentificationTrack, ReleaseMultiplier>,
@@ -122,6 +127,22 @@ sealed interface SDSLegislation : Legislation {
         DefaultingResult(earliestApplicableDate.plusDays(awardedDays).plusDays(ualPostProgression), DefaultingOutcome.DEFAULTED)
       } else {
         DefaultingResult(calculatedDate, DefaultingOutcome.RETAINED)
+      }
+    }
+
+    /*
+     * Under progression model rules sentences of less than 12 months for offences committed before ORA are no longer
+     * eligible for unconditional release and should have CRD + SLED instead of ARD + SED.
+     */
+    override fun modifyConditionalReleaseAndReleaseDateTypes(sentence: CalculableSentence) {
+      if (sentence.durationIsLessThan(12, ChronoUnit.MONTHS) && sentence.offence.committedAt?.isBefore(ImportantDates.ORA_DATE) == true) {
+        sentence.sentenceCalculation.isReleaseDateConditional = true
+        val switchedArdAndSedForCrdAndSled = sentence.releaseDateTypes.initialTypes.toMutableList()
+        switchedArdAndSedForCrdAndSled += ReleaseDateType.SLED
+        switchedArdAndSedForCrdAndSled += ReleaseDateType.CRD
+        switchedArdAndSedForCrdAndSled -= ReleaseDateType.SED
+        switchedArdAndSedForCrdAndSled -= ReleaseDateType.ARD
+        sentence.releaseDateTypes = sentence.releaseDateTypes.copy(initialTypes = switchedArdAndSedForCrdAndSled)
       }
     }
   }
