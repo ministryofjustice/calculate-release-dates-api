@@ -3,7 +3,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import java.time.temporal.ChronoUnit.MONTHS
 
-class ReleaseDateTypes(
+data class ReleaseDateTypes(
   val initialTypes: List<ReleaseDateType>,
   private val sentence: CalculableSentence,
   private val offender: Offender,

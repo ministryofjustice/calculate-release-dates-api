@@ -20,6 +20,7 @@ data class ApplicableLegislation<T : Legislation>(
       sentence.sentenceCalculation.unadjustedReleaseDate.calculationTrigger = sentence.sentenceCalculation.unadjustedReleaseDate.calculationTrigger.copy(
         timelineCalculationDate = timelineCalculationDate,
       )
+      legislation.modifyConditionalReleaseAndReleaseDateTypes(sentence)
     }
   }
 }

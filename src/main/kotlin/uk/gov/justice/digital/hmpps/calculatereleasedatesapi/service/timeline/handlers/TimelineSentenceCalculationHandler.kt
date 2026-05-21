@@ -112,6 +112,7 @@ class TimelineSentenceCalculationHandler(
         )
         sentence.sentenceCalculation.applicableFtrLegislation = applicableFtrLegislation
         sentence.sentenceCalculation.applicableSdsLegislation = applicableSdsLegislation
+        applicableSdsLegislation?.legislation?.modifyConditionalReleaseAndReleaseDateTypes(sentence)
       }
     }
   }
