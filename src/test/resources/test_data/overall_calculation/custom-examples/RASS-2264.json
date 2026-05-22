@@ -1,0 +1,348 @@
+{
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
+      {
+        "offence": {
+          "committedAt": "2026-02-12",
+          "offenceCode": "MD71214"
+        },
+        "duration": {
+          "durationElements": {
+            "WEEKS": 2
+          }
+        },
+        "sentencedAt": "2026-04-01",
+        "identifier": "2590ad31-d7c4-3ef0-a1ae-a2a84ee8ba0e",
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
+      },
+      {
+        "offence": {
+          "committedAt": "2026-01-04",
+          "offenceCode": "TH68010A"
+        },
+        "duration": {
+          "durationElements": {
+            "WEEKS": 4
+          }
+        },
+        "sentencedAt": "2026-04-01",
+        "identifier": "19a9483f-b937-38a7-998f-c65456c563b4",
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
+      },
+      {
+        "offence": {
+          "committedAt": "2026-01-10",
+          "offenceCode": "TH68010"
+        },
+        "duration": {
+          "durationElements": {
+            "WEEKS": 4
+          }
+        },
+        "sentencedAt": "2026-04-01",
+        "identifier": "5887d30a-44da-34e1-8625-2b8a136bbb17",
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
+      },
+      {
+        "offence": {
+          "committedAt": "2026-01-18",
+          "offenceCode": "TH68010"
+        },
+        "duration": {
+          "durationElements": {
+            "WEEKS": 4
+          }
+        },
+        "sentencedAt": "2026-04-01",
+        "identifier": "c779d768-481d-3be4-a694-86dbcbd3cc18",
+        "consecutiveSentenceUUIDs": [
+          "5887d30a-44da-34e1-8625-2b8a136bbb17"
+        ],
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
+      },
+      {
+        "offence": {
+          "committedAt": "2026-02-09",
+          "offenceCode": "TH68010"
+        },
+        "duration": {
+          "durationElements": {
+            "WEEKS": 4
+          }
+        },
+        "sentencedAt": "2026-04-01",
+        "identifier": "da39423c-e695-392d-94fa-dbc976a329fc",
+        "consecutiveSentenceUUIDs": [
+          "c779d768-481d-3be4-a694-86dbcbd3cc18"
+        ],
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
+      },
+      {
+        "offence": {
+          "committedAt": "2026-02-12",
+          "offenceCode": "TH68010"
+        },
+        "duration": {
+          "durationElements": {
+            "WEEKS": 4
+          }
+        },
+        "sentencedAt": "2026-04-01",
+        "identifier": "c7192a7b-f840-3fc9-a775-7cf57ec22659",
+        "consecutiveSentenceUUIDs": [
+          "da39423c-e695-392d-94fa-dbc976a329fc"
+        ],
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
+      },
+      {
+        "offence": {
+          "committedAt": "2025-05-24",
+          "offenceCode": "TH68010"
+        },
+        "duration": {
+          "durationElements": {
+            "WEEKS": 12
+          }
+        },
+        "sentencedAt": "2025-08-13",
+        "identifier": "c4860984-cfba-3844-9c06-be238e8a5269",
+        "recall": {
+          "recallType": "FIXED_TERM_RECALL_14",
+          "revocationDate": "2025-12-19",
+          "returnToCustodyDate": "2025-12-19"
+        },
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
+      },
+      {
+        "offence": {
+          "committedAt": "2025-07-14",
+          "offenceCode": "TH68010"
+        },
+        "duration": {
+          "durationElements": {
+            "WEEKS": 10
+          }
+        },
+        "sentencedAt": "2025-08-13",
+        "identifier": "19bd2632-2390-34c4-ab31-2ad0b0377357",
+        "consecutiveSentenceUUIDs": [
+          "c4860984-cfba-3844-9c06-be238e8a5269"
+        ],
+        "recall": {
+          "recallType": "FIXED_TERM_RECALL_14",
+          "revocationDate": "2025-12-19",
+          "returnToCustodyDate": "2025-12-19"
+        },
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
+      },
+      {
+        "offence": {
+          "committedAt": "2025-06-04",
+          "offenceCode": "MD71210"
+        },
+        "duration": {
+          "durationElements": {
+            "WEEKS": 12
+          }
+        },
+        "sentencedAt": "2025-08-13",
+        "identifier": "0fcd04ed-23f1-3cd8-b31d-a547779df985",
+        "recall": {
+          "recallType": "FIXED_TERM_RECALL_14",
+          "revocationDate": "2025-12-19",
+          "returnToCustodyDate": "2025-12-19"
+        },
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
+      },
+      {
+        "offence": {
+          "committedAt": "2025-07-16",
+          "offenceCode": "TH68010"
+        },
+        "duration": {
+          "durationElements": {
+            "WEEKS": 10
+          }
+        },
+        "sentencedAt": "2025-08-13",
+        "identifier": "2debfec7-0476-3763-a00d-4d741b51e5f0",
+        "recall": {
+          "recallType": "FIXED_TERM_RECALL_14",
+          "revocationDate": "2025-12-19",
+          "returnToCustodyDate": "2025-12-19"
+        },
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
+      },
+      {
+        "offence": {
+          "committedAt": "2025-10-27",
+          "offenceCode": "TH68010"
+        },
+        "duration": {
+          "durationElements": {
+            "WEEKS": 4
+          }
+        },
+        "sentencedAt": "2025-12-19",
+        "identifier": "5077f96b-05a4-33e6-8ea8-b39d9ec57427",
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
+      }
+    ],
+    "adjustments": {
+      "UNLAWFULLY_AT_LARGE": [
+        {
+          "appliesToSentencesFrom": "2025-06-07",
+          "numberOfDays": 7,
+          "fromDate": "2025-06-07",
+          "toDate": "2025-06-13",
+          "additionalInfo": {
+            "type": "UAL",
+            "reason": "RECALL"
+          }
+        },
+        {
+          "appliesToSentencesFrom": "2025-11-08",
+          "numberOfDays": 4,
+          "fromDate": "2025-11-08",
+          "toDate": "2025-11-11",
+          "additionalInfo": {
+            "type": "UAL",
+            "reason": "RECALL"
+          }
+        },
+        {
+          "appliesToSentencesFrom": "2025-08-07",
+          "numberOfDays": 5,
+          "fromDate": "2025-08-07",
+          "toDate": "2025-08-11",
+          "additionalInfo": {
+            "type": "UAL",
+            "reason": "RECALL"
+          }
+        }
+      ],
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2026-04-01",
+          "numberOfDays": 45,
+          "fromDate": "2026-02-13",
+          "toDate": "2026-03-31",
+          "additionalInfo": {
+            "type": "NONE"
+          }
+        }
+      ]
+    },
+    "returnToCustodyDate": "2025-12-19",
+    "fixedTermRecallDetails": {
+      "bookingId": 3069605,
+      "returnToCustodyDate": "2025-12-19",
+      "recallLength": 14
+    },
+    "externalMovements": [
+      {
+        "movementDate": "2025-08-13",
+        "movementReason": "RECALL_ADMISSION",
+        "direction": "IN"
+      },
+      {
+        "movementDate": "2025-10-13",
+        "movementReason": "CRD",
+        "direction": "OUT"
+      },
+      {
+        "movementDate": "2025-11-13",
+        "movementReason": "RECALL_ADMISSION",
+        "direction": "IN"
+      },
+      {
+        "movementDate": "2025-11-25",
+        "movementReason": "RECALL_RELEASE",
+        "direction": "OUT"
+      },
+      {
+        "movementDate": "2025-12-19",
+        "movementReason": "SENTENCE",
+        "direction": "IN"
+      },
+      {
+        "movementDate": "2025-12-30",
+        "movementReason": "CRD",
+        "direction": "OUT"
+      },
+      {
+        "movementDate": "2026-02-13",
+        "movementReason": "REMAND",
+        "direction": "IN"
+      },
+      {
+        "movementDate": "2026-04-01",
+        "movementReason": "CRD",
+        "direction": "OUT"
+      }
+    ]
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "calculation-params"
+}
