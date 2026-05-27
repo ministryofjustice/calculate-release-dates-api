@@ -1,0 +1,60 @@
+{
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "2000-01-01",
+      "isActiveSexOffender": true
+    },
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2024-09-23"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 5
+          }
+        },
+        "sentencedAt": "2024-09-23",
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
+      }
+    ],
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2024-09-23",
+          "numberOfDays": 20,
+          "fromDate": "2024-09-03",
+          "toDate": "2024-09-22"
+        }
+      ]
+    },
+    "externalMovements": [
+      {
+        "movementDate": "2026-09-01",
+        "movementReason": "ERS",
+        "direction": "OUT"
+      },
+      {
+        "movementDate": "2026-09-18",
+        "movementReason": "ERS_BREACH",
+        "direction": "IN"
+      }
+    ]
+  },
+  "userInputs": {
+    "useOffenceIndicators": true,
+    "calculateErsed": true
+  },
+  "params": "sds-progression-model",
+  "expectedValidationException": "UNSUPPORTED_OUT_OF_CUSTODY_AT_PROGRESSION_MODEL_COMMENCEMENT",
+  "featureToggles": {
+    "applyPostRecallRepealRules": true
+  }
+}
