@@ -9,6 +9,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentAdd
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentAdditionalInfo.UALAdjustmentAdditionalInfo
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOutput
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExternalMovementDirection
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExternalMovementReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessage
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationOrder
@@ -25,8 +27,9 @@ class OutOfCustodyAtProgressionModelCommencementValidator(val sdsLegislationConf
 
   private fun wasAssignedAProgressionModelTranche(calculationOutput: CalculationOutput): Boolean = calculationOutput.calculationResult.trancheAllocationByLegislationName[LegislationName.SDS_PROGRESSION_MODEL] != null
 
-  // currently only considers UAL for out of custody check
-  private fun wasOutOfCustodyAtProgressionCommencement(booking: Booking): Boolean {
+  private fun wasOutOfCustodyAtProgressionCommencement(booking: Booking): Boolean = wasUALCustodyAtProgressionCommencement(booking) || wasOutOfCustodyOnERSOrParoleAtProgressionCommencement(booking)
+
+  private fun wasUALCustodyAtProgressionCommencement(booking: Booking): Boolean {
     val theDayBeforeProgressionCommencement = requireNotNull(sdsLegislationConfiguration.progressionModelLegislation?.commencementDate()?.minusDays(1)) { "Must be set if they were allocated a tranche" }
     val outOfCustodyPeriods = booking.adjustments.getOrEmptyList(AdjustmentType.UNLAWFULLY_AT_LARGE).mapNotNull {
       val reason = when (it.additionalInfo) {
@@ -53,7 +56,30 @@ class OutOfCustodyAtProgressionModelCommencementValidator(val sdsLegislationConf
     return outOfCustodyPeriods.any { it.from <= theDayBeforeProgressionCommencement && it.to > theDayBeforeProgressionCommencement }
   }
 
+  private fun wasOutOfCustodyOnERSOrParoleAtProgressionCommencement(booking: Booking): Boolean {
+    val commencementDate = requireNotNull(sdsLegislationConfiguration.progressionModelLegislation?.commencementDate()) { "Must be set if they were allocated a tranche" }
+
+    val movementsBeforeCommencement = booking.externalMovements
+      .sortedByDescending { it.movementDate }
+      .filter { movement -> movement.movementDate < commencementDate }
+
+    val latestRelease = movementsBeforeCommencement.firstOrNull { movement -> movement.direction == ExternalMovementDirection.OUT }
+    val latestAdmission = movementsBeforeCommencement.firstOrNull { it.direction == ExternalMovementDirection.IN }
+
+    return if (latestRelease != null && latestRelease.movementReason in ERS_OR_PAROLE_REASONS) {
+      // they weren't released or the latest admission was from a previous release
+      latestAdmission == null || latestAdmission.movementDate <= latestRelease.movementDate
+    } else {
+      // in custody or released for another reason
+      false
+    }
+  }
+
   override fun validationOrder() = ValidationOrder.UNSUPPORTED
 
   private data class OutOfCustodyPeriod(val from: LocalDate, val to: LocalDate)
+
+  companion object {
+    private val ERS_OR_PAROLE_REASONS = setOf(ExternalMovementReason.ERS, ExternalMovementReason.PAROLE)
+  }
 }
