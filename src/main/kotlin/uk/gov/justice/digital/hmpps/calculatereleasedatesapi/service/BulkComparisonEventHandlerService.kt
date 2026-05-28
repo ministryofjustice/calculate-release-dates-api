@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.reactive.function.client.WebClientResponseException
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonPerson
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
@@ -47,6 +48,12 @@ class BulkComparisonEventHandlerService(
   private val bookingService: BookingService,
 ) {
 
+  private val bulkCalculationReason: CalculationReason by lazy {
+    calculationReasonRepository.findTopByIsBulkTrue().orElseThrow {
+      EntityNotFoundException("The bulk calculation reason was not found.")
+    }
+  }
+
   @Transactional
   fun handleBulkComparisonMessage(message: InternalMessage<BulkComparisonMessageBody>) {
     val personId = message.body.personId
@@ -81,10 +88,6 @@ class BulkComparisonEventHandlerService(
     establishment: String?,
     username: String,
   ) {
-    val bulkCalculationReason = calculationReasonRepository.findTopByIsBulkTrue().orElseThrow {
-      EntityNotFoundException("The bulk calculation reason was not found.")
-    }
-
     val existingPerson = comparisonPersonRepository.findByComparisonIdAndPerson(comparison.id(), personId)
     if (existingPerson.isNotEmpty()) {
       // Already processed and this is a retry from timeout.
