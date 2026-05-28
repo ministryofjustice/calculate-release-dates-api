@@ -44,6 +44,7 @@ class ManualComparisonServiceTest {
   private val calculationTransactionalService = mock<CalculationTransactionalService>()
   private val comparisonDiscrepancyService = mock<ComparisonDiscrepancyService>()
   private val bulkComparisonEventSenderService = mock<BulkComparisonEventSenderService>()
+  private val comparisonService = mock<ComparisonService>()
 
   private val manualComparisonService: ManualComparisonService = ManualComparisonService(
     comparisonRepository,
@@ -54,6 +55,7 @@ class ManualComparisonServiceTest {
     calculationTransactionalService,
     comparisonDiscrepancyService,
     bulkComparisonEventSenderService,
+    comparisonService,
   )
 
   @Test
