@@ -81,6 +81,7 @@ class SDSProgressionModelFinalDatesService {
     private val DATE_TYPES_TO_ADJUST_TO_COMMENCEMENT_DATE = listOf(
       ReleaseDateType.CRD,
       ReleaseDateType.PED,
+      ReleaseDateType.ERSED,
     )
   }
 }

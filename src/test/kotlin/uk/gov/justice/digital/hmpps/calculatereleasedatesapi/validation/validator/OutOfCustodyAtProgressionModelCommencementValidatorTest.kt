@@ -4,7 +4,9 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.CsvSource
+import org.junit.jupiter.params.provider.MethodSource
 import org.mockito.Mockito.mock
 import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.adjustmentsapi.model.UnlawfullyAtLargeDto
@@ -20,6 +22,9 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOutput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExternalMovement
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExternalMovementDirection
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExternalMovementReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSReleaseArrangements
@@ -28,6 +33,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.Validati
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessage
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit.DAYS
+import java.util.stream.Stream
 
 class OutOfCustodyAtProgressionModelCommencementValidatorTest {
 
@@ -104,6 +110,21 @@ class OutOfCustodyAtProgressionModelCommencementValidatorTest {
     }
   }
 
+  @ParameterizedTest
+  @MethodSource("externalMovementCases")
+  fun `should be considered out of custody based on external movements`(scenario: String, externalMovements: List<ExternalMovement>, isOutOfCustody: Boolean) {
+    whenever(calculationResult.trancheAllocationByLegislationName).thenReturn(mapOf(LegislationName.SDS_PROGRESSION_MODEL to TrancheName.TRANCHE_5))
+    val errors = validator.validate(
+      calculationOutput,
+      BOOKING.copy(externalMovements = externalMovements),
+    )
+    if (isOutOfCustody) {
+      assertThat(errors).describedAs("Expected scenario '$scenario' to be out of custody").containsOnly(ValidationMessage(ValidationCode.UNSUPPORTED_OUT_OF_CUSTODY_AT_PROGRESSION_MODEL_COMMENCEMENT))
+    } else {
+      assertThat(errors).describedAs("Expected scenario '$scenario' to be in custody").isEmpty()
+    }
+  }
+
   @Test
   fun `should be not be sent to manual if not assigned a progression model tranche for example if sentence is ineligible for PM`() {
     whenever(calculationResult.trancheAllocationByLegislationName).thenReturn(emptyMap())
@@ -133,6 +154,70 @@ class OutOfCustodyAtProgressionModelCommencementValidatorTest {
   )
 
   companion object {
+    @JvmStatic
+    fun externalMovementCases(): Stream<Arguments> = Stream.of(
+      Arguments.of(
+        "ERS release and return to custody the day before commencement",
+        listOf(ExternalMovement(LocalDate.of(2026, 1, 1), ExternalMovementReason.ERS, ExternalMovementDirection.OUT), ExternalMovement(LocalDate.of(2026, 9, 1), ExternalMovementReason.ERS_BREACH, ExternalMovementDirection.IN)),
+        false,
+      ),
+      Arguments.of(
+        "ERS release and return to custody the day of commencement",
+        listOf(ExternalMovement(LocalDate.of(2026, 1, 1), ExternalMovementReason.ERS, ExternalMovementDirection.OUT), ExternalMovement(LocalDate.of(2026, 9, 2), ExternalMovementReason.ERS_BREACH, ExternalMovementDirection.IN)),
+        true,
+      ),
+      Arguments.of("ERS release with no return to custody", listOf(ExternalMovement(LocalDate.of(2026, 1, 1), ExternalMovementReason.ERS, ExternalMovementDirection.OUT)), true),
+      Arguments.of(
+        "ERS release with parole return to custody before commencement",
+        listOf(ExternalMovement(LocalDate.of(2026, 1, 1), ExternalMovementReason.ERS, ExternalMovementDirection.OUT), ExternalMovement(LocalDate.of(2026, 9, 1), ExternalMovementReason.REMAND, ExternalMovementDirection.IN)),
+        false,
+      ),
+      Arguments.of(
+        "ERS release with irrelevant return to custody before commencement",
+        listOf(ExternalMovement(LocalDate.of(2026, 1, 1), ExternalMovementReason.ERS, ExternalMovementDirection.OUT), ExternalMovement(LocalDate.of(2026, 9, 1), ExternalMovementReason.RECALL_ADMISSION, ExternalMovementDirection.IN)),
+        false,
+      ),
+      Arguments.of(
+        "ERS release and return followed by a different release which is no matched with an in movement",
+        listOf(
+          ExternalMovement(LocalDate.of(2026, 1, 1), ExternalMovementReason.ERS, ExternalMovementDirection.OUT),
+          ExternalMovement(LocalDate.of(2026, 6, 1), ExternalMovementReason.ERS_BREACH, ExternalMovementDirection.IN),
+          ExternalMovement(LocalDate.of(2026, 9, 1), ExternalMovementReason.CRD, ExternalMovementDirection.OUT),
+        ),
+        false,
+      ),
+      Arguments.of(
+        "Parole release and return to custody the day before commencement",
+        listOf(ExternalMovement(LocalDate.of(2026, 1, 1), ExternalMovementReason.PAROLE, ExternalMovementDirection.OUT), ExternalMovement(LocalDate.of(2026, 9, 1), ExternalMovementReason.REMAND, ExternalMovementDirection.IN)),
+        false,
+      ),
+      Arguments.of(
+        "Parole release and return to custody the day of commencement",
+        listOf(ExternalMovement(LocalDate.of(2026, 1, 1), ExternalMovementReason.PAROLE, ExternalMovementDirection.OUT), ExternalMovement(LocalDate.of(2026, 9, 2), ExternalMovementReason.REMAND, ExternalMovementDirection.IN)),
+        true,
+      ),
+      Arguments.of("Parole release with no return to custody", listOf(ExternalMovement(LocalDate.of(2026, 1, 1), ExternalMovementReason.PAROLE, ExternalMovementDirection.OUT)), true),
+      Arguments.of(
+        "Parole release with ERS return to custody before commencement",
+        listOf(ExternalMovement(LocalDate.of(2026, 1, 1), ExternalMovementReason.PAROLE, ExternalMovementDirection.OUT), ExternalMovement(LocalDate.of(2026, 9, 1), ExternalMovementReason.ERS_BREACH, ExternalMovementDirection.IN)),
+        false,
+      ),
+      Arguments.of(
+        "Parole release with irrelevant return to custody before commencement",
+        listOf(ExternalMovement(LocalDate.of(2026, 1, 1), ExternalMovementReason.PAROLE, ExternalMovementDirection.OUT), ExternalMovement(LocalDate.of(2026, 9, 1), ExternalMovementReason.RECALL_ADMISSION, ExternalMovementDirection.IN)),
+        false,
+      ),
+      Arguments.of(
+        "Parole release and return followed by a different release which is no matched with an in movement",
+        listOf(
+          ExternalMovement(LocalDate.of(2026, 1, 1), ExternalMovementReason.PAROLE, ExternalMovementDirection.OUT),
+          ExternalMovement(LocalDate.of(2026, 6, 1), ExternalMovementReason.REMAND, ExternalMovementDirection.IN),
+          ExternalMovement(LocalDate.of(2026, 9, 1), ExternalMovementReason.CRD, ExternalMovementDirection.OUT),
+        ),
+        false,
+      ),
+    )
+
     private val ONE_DAY_DURATION = Duration(mapOf(DAYS to 1L))
     private val OFFENCE = Offence(LocalDate.of(2020, 1, 1))
     private val STANDARD_SENTENCE = StandardDeterminateSentence(
