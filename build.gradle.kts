@@ -77,7 +77,7 @@ dependencies {
   testImplementation("org.springframework.boot:spring-boot-starter-security-test")
   testImplementation("org.springframework.boot:spring-boot-webtestclient")
   testImplementation("org.awaitility:awaitility-kotlin:4.3.0")
-  testImplementation("net.javacrumbs.json-unit:json-unit-assertj:5.1.1")
+  testImplementation("net.javacrumbs.json-unit:json-unit-assertj:5.1.2")
   testImplementation("io.swagger.parser.v3:swagger-parser-v2-converter:2.1.43")
   testImplementation("org.mockito:mockito-inline:5.2.0")
   testImplementation("org.junit.jupiter:junit-jupiter:6.1.0")
