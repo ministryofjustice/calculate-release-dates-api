@@ -11,8 +11,8 @@ import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.Table
+import jakarta.persistence.Transient
 import jakarta.validation.constraints.NotNull
-import org.hibernate.annotations.Formula
 import org.hibernate.annotations.Type
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonType
@@ -61,8 +61,8 @@ class Comparison(
 
   var numberOfPeopleComparisonFailedFor: Long = 0,
 
-  @Formula("(SELECT count(*) FROM comparison_person cp WHERE cp.comparison_id=id and cp.is_match = false and cp.is_fatal = false)")
-  val numberOfMismatches: Long = 0,
+  @Transient
+  var numberOfMismatches: Long = 0,
 ) {
   override fun toString(): String = "Comparison(id=$id, comparisonReference=$comparisonReference, comparisonShortReference='$comparisonShortReference', criteria=$criteria, prison=$prison, comparisonType=$comparisonType, calculatedAt=$calculatedAt, calculatedByUsername='$calculatedByUsername')"
 

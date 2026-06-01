@@ -33,6 +33,7 @@ class ManualComparisonService(
   private val calculationTransactionalService: CalculationTransactionalService,
   private val comparisonDiscrepancyService: ComparisonDiscrepancyService,
   private val bulkComparisonEventSenderService: BulkComparisonEventSenderService,
+  private val comparisonService: ComparisonService,
 ) {
 
   fun create(manualComparison: ManualComparisonInput, token: String): Comparison {
@@ -45,7 +46,10 @@ class ManualComparisonService(
     return initialComparisonCreated
   }
 
-  fun listManual(): List<ComparisonSummary> = comparisonRepository.findAllByComparisonTypeIsIn(manualComparisonTypes()).map { transform(it) }
+  fun listManual(): List<ComparisonSummary> = comparisonRepository.findAllByComparisonTypeIsIn(manualComparisonTypes()).map {
+    comparisonService.populateNumberOfMismatches(it)
+    transform(it)
+  }
 
   fun getCountOfPersonsInComparisonByComparisonReference(shortReference: String): Long = comparisonRepository.findByComparisonShortReference(shortReference)?.let {
     comparisonPersonRepository.countByComparisonId(it.id())
@@ -53,6 +57,7 @@ class ManualComparisonService(
 
   fun getComparisonByComparisonReference(comparisonReference: String): ComparisonOverview {
     val comparison = comparisonRepository.findByComparisonShortReference(comparisonReference) ?: throw EntityNotFoundException("No comparison results exist for comparisonReference $comparisonReference ")
+    comparisonService.populateNumberOfMismatches(comparison)
     val mismatches = comparisonPersonRepository.findByComparisonIdIsAndIsMatchFalse(comparison.id())
     return transform(comparison, mismatches, objectMapper)
   }
