@@ -6,4 +6,5 @@ interface SDSLegislationWithTranches :
   SDSLegislation,
   LegislationWithTranches {
   fun isSentenceSubjectToTraches(sentence: CalculableSentence): Boolean
+  override val trancheSelectionStrategy: SDSTrancheSelectionStrategy
 }

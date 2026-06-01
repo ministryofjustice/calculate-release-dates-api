@@ -171,6 +171,7 @@ feature-toggles:
   applyPostHdcedRepealRules: ${APPLY_POST_HDCED_REPEAL_RULES:false}
   adultHdcSuspended: ${ADULT_HDC_SUSPENDED:false}
   storeOperativeSentenceEnvelope: ${STORE_OPERATIVE_SENTENCE_ENVELOPE:false}
+  routePreProgressionExtinguishedSentenceToManual: ${ROUTE_PRE_PROGRESSION_EXTINGUISHED_SENTENCE_TO_MANUAL:false}
 
 prisonsWithNomisCalcDisabled: ${PRISONS_WITH_NOMIS_CALC_DISABLED:}
 
