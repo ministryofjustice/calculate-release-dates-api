@@ -28,4 +28,15 @@ interface ComparisonPersonRepository : JpaRepository<ComparisonPerson, Long> {
   fun getCalculationRequestFromComparisonPerson(comparisonShortReference: String, shortReference: String): CalculationRequest?
 
   fun findByComparisonId(comparisonId: Long): List<ComparisonPerson>
+
+  @Query(
+    """
+    SELECT COUNT(cp)
+    FROM ComparisonPerson cp
+    WHERE cp.comparisonId = :comparisonId
+      AND cp.isMatch = false
+      AND cp.isFatal = false
+  """,
+  )
+  fun countMismatches(comparisonId: Long): Long
 }

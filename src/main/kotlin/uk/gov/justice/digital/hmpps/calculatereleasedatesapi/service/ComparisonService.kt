@@ -67,7 +67,10 @@ class ComparisonService(
     return comparisonRepository.findAllByComparisonTypeIsInAndPrisonIsIn(
       nonManualComparisonTypes(),
       prisons,
-    ).map { transform(it) }
+    ).map {
+      populateNumberOfMismatches(it)
+      transform(it)
+    }
   }
 
   fun getCountOfPersonsInComparisonByComparisonReference(shortReference: String): Long {
@@ -106,6 +109,7 @@ class ComparisonService(
         }
       }
       val mismatchesSortedByReleaseDate = mismatchesAndCrdsDates.sortedWith(::establishmentAndReleaseDateComparator)
+      populateNumberOfMismatches(comparison)
       transform(comparison, mismatchesSortedByReleaseDate.map { it.first }, objectMapper)
     } else {
       throw CrdWebException("Forbidden", HttpStatus.FORBIDDEN, 403.toString())
@@ -255,6 +259,12 @@ class ComparisonService(
     }
 
     return earliestReleaseDateA.compareTo(earliestReleaseDateB)
+  }
+
+  fun populateNumberOfMismatches(comparison: Comparison): Comparison {
+    val mismatches = comparisonPersonRepository.countMismatches(comparison.id!!)
+    comparison.numberOfMismatches = mismatches
+    return comparison
   }
 
   companion object {
