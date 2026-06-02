@@ -63,6 +63,7 @@
   },
   "params": "sds-progression-model",
   "featureToggles": {
-    "applyPostRecallRepealRules": true
+    "applyPostRecallRepealRules": true,
+    "routePreProgressionExtinguishedSentenceToManual": true
   }
 }

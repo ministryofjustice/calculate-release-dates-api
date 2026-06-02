@@ -36,7 +36,7 @@ class TimelineSDSTrancheCalculationHandler(
   }
 
   private fun TimelineTrackingData.configureCalculationsForSentencesImpactedByThisTranche(
-    legislationToApply: SDSLegislation,
+    legislationToApply: SDSLegislationWithTranches,
     timelineCalculationDate: LocalDate,
   ): Boolean {
     val applicableLegislation = applicableSdsLegislations.getApplicableLegislation(legislationToApply.legislationName)

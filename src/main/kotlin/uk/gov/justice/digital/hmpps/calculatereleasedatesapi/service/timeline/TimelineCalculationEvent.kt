@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline
 
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.FTRLegislation.FTR56Legislation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.SDSLegislation
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.SDSLegislationWithTranches
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.TrancheConfiguration
 import java.time.LocalDate
 
@@ -35,7 +36,7 @@ sealed interface TimelineCalculationEvent {
     override val type: TimelineCalculationType = TimelineCalculationType.SDS_LEGISLATION_COMMENCEMENT
   }
 
-  data class SDSTrancheTimelineCalculationEvent(override val date: LocalDate, val legislation: SDSLegislation, val tranche: TrancheConfiguration) : TimelineCalculationEvent {
+  data class SDSTrancheTimelineCalculationEvent(override val date: LocalDate, val legislation: SDSLegislationWithTranches, val tranche: TrancheConfiguration) : TimelineCalculationEvent {
     override val type: TimelineCalculationType = TimelineCalculationType.EARLY_RELEASE_TRANCHE
   }
 }

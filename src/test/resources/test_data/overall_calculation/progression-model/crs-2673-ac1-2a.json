@@ -43,7 +43,8 @@
     "useOffenceIndicators": true
   },
   "featureToggles": {
-    "applyPostHdcedRepealRules": true
+    "applyPostHdcedRepealRules": true,
+    "routePreProgressionExtinguishedSentenceToManual": true
   },
   "params": "sds-progression-model"
 }
