@@ -43,7 +43,8 @@
     "useOffenceIndicators": true
   },
   "featureToggles": {
-    "adultHdcSuspended": true
+    "adultHdcSuspended": true,
+    "routePreProgressionExtinguishedSentenceToManual": true
   },
   "params": "sds-progression-model"
 }

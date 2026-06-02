@@ -51,7 +51,7 @@ sealed interface SDSLegislation : Legislation {
     override val filter: EarlyReleaseSentenceFilter,
   ) : SDSLegislationWithTranches {
     override val legislationName = LegislationName.SDS_40
-    override val trancheSelectionStrategy: TrancheSelectionStrategy = SDS40TrancheSelectionStrategy()
+    override val trancheSelectionStrategy: SDSTrancheSelectionStrategy = SDS40TrancheSelectionStrategy()
 
     override fun requiredTimelineCalculations(): List<TimelineCalculationEvent> = super.requiredTimelineCalculations() + tranches.map { tranche ->
       SDSTrancheTimelineCalculationEvent(tranche.date, legislation = this, tranche)
@@ -104,7 +104,7 @@ sealed interface SDSLegislation : Legislation {
   ) : SDSLegislationWithTranches {
     override val filter: EarlyReleaseSentenceFilter = EarlyReleaseSentenceFilter.SDS_PROGRESSION_MODEL
     override val legislationName = LegislationName.SDS_PROGRESSION_MODEL
-    override val trancheSelectionStrategy: TrancheSelectionStrategy = SDSProgressionModelTrancheSelectionStrategy()
+    override val trancheSelectionStrategy: SDSTrancheSelectionStrategy = SDSProgressionModelTrancheSelectionStrategy()
 
     override fun requiredTimelineCalculations(): List<TimelineCalculationEvent> = super.requiredTimelineCalculations() + tranches.map { tranche ->
       SDSTrancheTimelineCalculationEvent(tranche.date, legislation = this, tranche)

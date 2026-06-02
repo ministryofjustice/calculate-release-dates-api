@@ -12,4 +12,5 @@ data class FeatureToggles(
   var storeOperativeSentenceEnvelope: Boolean = false,
   var applyPostHdcedRepealRules: Boolean = false,
   var adultHdcSuspended: Boolean = false,
+  var routePreProgressionExtinguishedSentenceToManual: Boolean = false,
 )

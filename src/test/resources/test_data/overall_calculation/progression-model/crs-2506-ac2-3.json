@@ -60,5 +60,9 @@
   "userInputs": {
     "useOffenceIndicators": true
   },
-  "params": "sds-progression-model"
+  "params": "sds-progression-model",
+  "featureToggles": {
+    "applyPostRecallRepealRules": true,
+    "routePreProgressionExtinguishedSentenceToManual": true
+  }
 }

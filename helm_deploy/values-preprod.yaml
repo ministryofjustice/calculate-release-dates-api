@@ -23,6 +23,7 @@ generic-service:
     MANAGE-USERS_API_URL: https://manage-users-api-preprod.hmpps.service.justice.gov.uk
     STORE_OPERATIVE_SENTENCE_ENVELOPE: "true"
     APPLY_POST_HDCED_REPEAL_RULES: "true"
+    ROUTE_PRE_PROGRESSION_EXTINGUISHED_SENTENCE_TO_MANUAL: "true"
 
   allowlist:
     penetration-test-ip-1: 54.37.241.156/30
