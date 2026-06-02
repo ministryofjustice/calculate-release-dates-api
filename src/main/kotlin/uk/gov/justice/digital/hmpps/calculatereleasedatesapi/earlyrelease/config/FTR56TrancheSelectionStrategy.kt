@@ -45,9 +45,4 @@ object FTR56TrancheSelectionStrategy : TrancheSelectionStrategy {
     val isRevocationOnEarliestTranche = sentence.recall?.revocationDate == legislationCommencementDate
     return isRevocationOnEarliestTranche
   }
-
-  override fun sentenceDurationsWithinTrancheDuration(
-    trancheConfig: TrancheConfiguration,
-    durations: List<Long>,
-  ) = trancheConfig.duration is Int && durations.none { it > trancheConfig.duration }
 }

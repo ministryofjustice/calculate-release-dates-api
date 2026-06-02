@@ -6,7 +6,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.TrancheType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AFineSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineTrackingData
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
@@ -38,7 +37,8 @@ class TrancheAllocationService {
     val allSentences = legislation.trancheSelectionStrategy.sentencesToMatchOnSentenceLength(timelineTrackingData, legislation)
     val allocatedTranche = legislation.tranches.find {
       when (it.type) {
-        TrancheType.SENTENCE_LENGTH -> matchesSentenceLength(allSentences, legislation, it)
+        TrancheType.SENTENCE_LENGTH_LESS_THAN -> matchesSentenceLength(allSentences, legislation, it) { sentenceLength, trancheDuration -> sentenceLength >= trancheDuration }
+        TrancheType.SENTENCE_LENGTH_LESS_THAN_OR_EQUAL_TO -> matchesSentenceLength(allSentences, legislation, it) { sentenceLength, trancheDuration -> sentenceLength > trancheDuration }
         TrancheType.FINAL -> true // Not matched any other tranche, so must be in this one.
       }
     }
@@ -49,32 +49,26 @@ class TrancheAllocationService {
     sentencesConsideredForTrancheRules: List<CalculableSentence>,
     legislation: LegislationWithTranches,
     tranche: TrancheConfiguration,
+    isDurationTooLongForTranche: (sentenceLength: Long, trancheDuration: Int) -> Boolean,
   ): Boolean {
-    val sentenceDurations = getSentenceDurations(sentencesConsideredForTrancheRules, legislation.commencementDate(), tranche.unit!!)
-    return legislation.trancheSelectionStrategy.sentenceDurationsWithinTrancheDuration(tranche, sentenceDurations)
+    val durations = sentenceDurationsInTheUnitOfTheTrancheDuration(sentencesConsideredForTrancheRules, legislation.commencementDate(), tranche.unit!!)
+    return tranche.duration != null && durations.none { isDurationTooLongForTranche(it, tranche.duration) }
   }
 
-  private fun getSentenceDurations(
+  private fun sentenceDurationsInTheUnitOfTheTrancheDuration(
     sentences: List<CalculableSentence>,
     legislationCommencementDate: LocalDate,
     unit: ChronoUnit,
-  ) = sentences.map { sentenceDuration(it, legislationCommencementDate, unit) }
-
-  private fun sentenceDuration(
-    sentence: CalculableSentence,
-    legislationCommencementDate: LocalDate,
-    unit: ChronoUnit,
-  ): Long = when (sentence) {
-    is ConsecutiveSentence -> calculateConsecutiveDuration(sentence, legislationCommencementDate, unit)
-    else -> calculateSingleSentenceDuration(sentence, legislationCommencementDate, unit)
+  ) = sentences.map {
+    durationInUnit(legislationCommencementDate, unit, it.sentenceParts())
   }
 
-  private fun calculateConsecutiveDuration(
-    sentence: ConsecutiveSentence,
+  private fun durationInUnit(
     legislationCommencementDate: LocalDate,
     unit: ChronoUnit,
+    sentences: List<CalculableSentence>,
   ): Long {
-    val filteredSentences = sentence.orderedSentences
+    val filteredSentences = sentences
       .filter { filterOnType(it) && filterOnSentenceDate(it, legislationCommencementDate) }
 
     if (filteredSentences.isEmpty()) return 0
@@ -87,19 +81,6 @@ class TrancheAllocationService {
     }
 
     return unit.between(earliestSentencedAt, concurrentSentenceEndDate)
-  }
-
-  private fun calculateSingleSentenceDuration(
-    sentence: CalculableSentence,
-    legislationCommencementDate: LocalDate,
-    unit: ChronoUnit,
-  ): Long = if (filterOnType(sentence) && filterOnSentenceDate(sentence, legislationCommencementDate)) {
-    unit.between(
-      sentence.sentencedAt,
-      sentence.sentencedAt.plus(sentence.getLengthInDays().toLong(), ChronoUnit.DAYS).plusDays(1),
-    )
-  } else {
-    0
   }
 
   private fun filterOnType(sentence: CalculableSentence): Boolean = !sentence.isDto() && !sentence.isOrExclusivelyBotus() && sentence !is AFineSentence
