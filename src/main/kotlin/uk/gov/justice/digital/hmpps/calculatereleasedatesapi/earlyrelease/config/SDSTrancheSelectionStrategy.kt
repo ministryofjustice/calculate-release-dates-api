@@ -9,6 +9,13 @@ import java.time.temporal.ChronoUnit
 
 abstract class SDSTrancheSelectionStrategy : TrancheSelectionStrategy {
 
+  // common to SDS40 and Progression Model
+  override fun sentencesToMatchOnSentenceLength(
+    timelineTrackingData: TimelineTrackingData,
+    legislation: Legislation,
+  ): List<CalculableSentence> = (timelineTrackingData.licenceSentences + timelineTrackingData.currentSentenceGroup)
+    .filter { it.sentenceCalculation.adjustedExpiryDate.isAfterOrEqualTo(legislation.commencementDate()) }
+
   class SDS40TrancheSelectionStrategy : SDSTrancheSelectionStrategy() {
     override fun hasSentencesThatMightApplyToTheTranche(
       timelineTrackingData: TimelineTrackingData,
@@ -48,19 +55,6 @@ abstract class SDSTrancheSelectionStrategy : TrancheSelectionStrategy {
       }
     }
   }
-
-  override fun sentencesToMatchOnSentenceLength(
-    timelineTrackingData: TimelineTrackingData,
-    legislation: Legislation,
-  ): List<CalculableSentence> = (timelineTrackingData.licenceSentences + timelineTrackingData.currentSentenceGroup)
-    .filter { filterOnSentenceExpiryDates(it, legislation) }
-
-  private fun filterOnSentenceExpiryDates(sentence: CalculableSentence, legislation: Legislation): Boolean = sentence.sentenceCalculation.adjustedExpiryDate.isAfterOrEqualTo(legislation.commencementDate())
-
-  override fun sentenceDurationsWithinTrancheDuration(
-    trancheConfig: TrancheConfiguration,
-    durations: List<Long>,
-  ) = trancheConfig.duration is Int && durations.none { it >= trancheConfig.duration }
 
   companion object {
     private fun AbstractSentence.isInRangeOfEarlyRelease(commencementDate: LocalDate): Boolean = sentencedAt.isBefore(commencementDate)

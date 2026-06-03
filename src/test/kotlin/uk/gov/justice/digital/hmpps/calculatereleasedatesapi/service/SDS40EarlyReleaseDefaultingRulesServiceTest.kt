@@ -51,7 +51,7 @@ class SDS40EarlyReleaseDefaultingRulesServiceTest {
 
   private val earlyReleaseTrancheOne = TrancheConfiguration(
     date = testCommencementDate,
-    type = TrancheType.SENTENCE_LENGTH,
+    type = TrancheType.SENTENCE_LENGTH_LESS_THAN,
     unit = YEARS,
     duration = 5,
     name = TrancheName.TRANCHE_1,

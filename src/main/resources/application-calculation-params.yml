@@ -35,7 +35,7 @@ sds-legislations:
       SDS: ${release-point-multipliers.earlyReleasePoint}
     filter: SDS_40_EXCLUSIONS
     tranches:
-      - type: SENTENCE_LENGTH
+      - type: SENTENCE_LENGTH_LESS_THAN
         unit: YEARS
         duration: 5
         date: ${sds-40-early-release-tranches.tranche-one-date}
@@ -53,31 +53,31 @@ sds-legislations:
 ftr-legislations:
   ftr56-legislation:
     tranches:
-      - type: SENTENCE_LENGTH
+      - type: SENTENCE_LENGTH_LESS_THAN_OR_EQUAL_TO
         unit: DAYS
         duration: 1701
         date: 2026-03-31
         name: FTR_56_TRANCHE_1
 
-      - type: SENTENCE_LENGTH
+      - type: SENTENCE_LENGTH_LESS_THAN_OR_EQUAL_TO
         unit: DAYS
         duration: 2128
         date: 2026-04-14
         name: FTR_56_TRANCHE_2
 
-      - type: SENTENCE_LENGTH
+      - type: SENTENCE_LENGTH_LESS_THAN_OR_EQUAL_TO
         unit: DAYS
         duration: 2576
         date: 2026-04-21
         name: FTR_56_TRANCHE_3
 
-      - type: SENTENCE_LENGTH
+      - type: SENTENCE_LENGTH_LESS_THAN_OR_EQUAL_TO
         unit: DAYS
         duration: 3304
         date: 2026-04-28
         name: FTR_56_TRANCHE_4
 
-      - type: SENTENCE_LENGTH
+      - type: SENTENCE_LENGTH_LESS_THAN_OR_EQUAL_TO
         unit: DAYS
         duration: 4438
         date: 2026-05-05

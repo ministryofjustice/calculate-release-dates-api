@@ -1,7 +1,7 @@
 {
   "dates": {
     "SLED": "2027-10-31",
-    "CRD": "2026-09-02",
+    "CRD": "2026-10-13",
     "MTD": "2026-01-17",
     "ETD": "2025-11-17",
     "LTD": "2026-03-17",
@@ -9,6 +9,6 @@
   },
   "effectiveSentenceLength": "P2Y8M30D",
   "trancheAllocationByLegislationName": {
-    "SDS_PROGRESSION_MODEL": "TRANCHE_1"
+    "SDS_PROGRESSION_MODEL": "TRANCHE_2"
   }
 }

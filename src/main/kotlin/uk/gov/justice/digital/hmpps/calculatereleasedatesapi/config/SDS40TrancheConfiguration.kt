@@ -20,7 +20,7 @@ data class SDS40TrancheConfiguration(
 ) {
   fun getSds40Tranches() = listOf(
     TrancheConfiguration(
-      type = TrancheType.SENTENCE_LENGTH,
+      type = TrancheType.SENTENCE_LENGTH_LESS_THAN,
       date = trancheOneCommencementDate,
       duration = 5,
       unit = ChronoUnit.YEARS,

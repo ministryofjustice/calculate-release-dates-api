@@ -2,12 +2,12 @@
   "dates": {
     "SLED": "2032-02-21",
     "CRD": "2028-11-12",
-    "PED": "2027-03-29",
+    "PED": "2027-05-02",
     "ESED": "2032-02-21"
   },
   "effectiveSentenceLength": "P9Y",
   "trancheAllocationByLegislationName": {
     "SDS_40": "TRANCHE_2",
-    "SDS_PROGRESSION_MODEL": "TRANCHE_7"
+    "SDS_PROGRESSION_MODEL": "TRANCHE_8"
   }
 }
