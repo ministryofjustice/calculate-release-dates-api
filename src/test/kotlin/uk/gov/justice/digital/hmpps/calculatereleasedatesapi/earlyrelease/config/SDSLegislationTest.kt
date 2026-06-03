@@ -30,7 +30,7 @@ class SDSLegislationTest {
   inner class ProgressionModelTests {
 
     private val progressionModelLegislation = ProgressionModelLegislation(
-      tranches = listOf(TrancheConfiguration(TrancheType.SENTENCE_LENGTH, LocalDate.of(2026, 9, 2), 100, ChronoUnit.DAYS, TrancheName.TRANCHE_1)),
+      tranches = listOf(TrancheConfiguration(TrancheType.SENTENCE_LENGTH_LESS_THAN, LocalDate.of(2026, 9, 2), 100, ChronoUnit.DAYS, TrancheName.TRANCHE_1)),
       releaseMultiplier = mapOf(SentenceIdentificationTrack.SDS to ReleaseMultiplier.ONE_THIRD, SentenceIdentificationTrack.SDS_PLUS to ReleaseMultiplier.ONE_HALF),
     )
 
