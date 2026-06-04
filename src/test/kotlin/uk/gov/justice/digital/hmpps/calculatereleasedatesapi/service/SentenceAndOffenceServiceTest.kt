@@ -13,6 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AnalysedSentenceAndOffence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSDescriptions
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceAnalysis
@@ -72,6 +73,7 @@ class SentenceAndOffenceServiceTest {
       isSDSPlus = false,
       hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
       sentenceAndOffenceAnalysis = SentenceAndOffenceAnalysis.NEW,
+      sdsDescriptions = SDSDescriptions(null, null, null),
       revocationDates = listOf(LocalDate.of(2024, 1, 1)),
     )
     assertThat(response[0]).isEqualTo(analysedSentenceAndOffence)

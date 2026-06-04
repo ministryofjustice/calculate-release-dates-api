@@ -25,16 +25,17 @@ enum class SentenceCalculationType(
   val toreraEligibilityType: ToreraEligibilityType = ToreraEligibilityType.NONE,
   val sdsPlusEligibilityType: SDSPlusEligibilityType = SDSPlusEligibilityType.NONE,
   val displayName: String? = null,
+  val sdsPlusDisplayName: String? = null,
 ) {
   //region SDS / ORA Sentences
-  ADIMP(sentenceType = StandardDeterminate, toreraEligibilityType = ToreraEligibilityType.SDS, sdsPlusEligibilityType = SDSPlusEligibilityType.SDS),
-  ADIMP_ORA(sentenceType = StandardDeterminate, toreraEligibilityType = ToreraEligibilityType.SDS, sdsPlusEligibilityType = SDSPlusEligibilityType.SDS),
+  ADIMP(sentenceType = StandardDeterminate, toreraEligibilityType = ToreraEligibilityType.SDS, sdsPlusEligibilityType = SDSPlusEligibilityType.SDS, sdsPlusDisplayName = "SDS+"),
+  ADIMP_ORA(sentenceType = StandardDeterminate, toreraEligibilityType = ToreraEligibilityType.SDS, sdsPlusEligibilityType = SDSPlusEligibilityType.SDS, sdsPlusDisplayName = "SDS+"),
   SEC91_03(sentenceType = StandardDeterminate, sdsPlusEligibilityType = SDSPlusEligibilityType.SECTION250),
   SEC91_03_ORA(sentenceType = StandardDeterminate, sdsPlusEligibilityType = SDSPlusEligibilityType.SECTION250),
-  SEC250(sentenceType = StandardDeterminate, toreraEligibilityType = ToreraEligibilityType.SDS, sdsPlusEligibilityType = SDSPlusEligibilityType.SECTION250),
-  SEC250_ORA(sentenceType = StandardDeterminate, toreraEligibilityType = ToreraEligibilityType.SDS, sdsPlusEligibilityType = SDSPlusEligibilityType.SECTION250),
-  YOI(sentenceType = StandardDeterminate, toreraEligibilityType = ToreraEligibilityType.SDS, sdsPlusEligibilityType = SDSPlusEligibilityType.SDS, displayName = "Young offender institution"),
-  YOI_ORA(sentenceType = StandardDeterminate, toreraEligibilityType = ToreraEligibilityType.SDS, sdsPlusEligibilityType = SDSPlusEligibilityType.SDS),
+  SEC250(sentenceType = StandardDeterminate, toreraEligibilityType = ToreraEligibilityType.SDS, sdsPlusEligibilityType = SDSPlusEligibilityType.SECTION250, sdsPlusDisplayName = "S250+"),
+  SEC250_ORA(sentenceType = StandardDeterminate, toreraEligibilityType = ToreraEligibilityType.SDS, sdsPlusEligibilityType = SDSPlusEligibilityType.SECTION250, sdsPlusDisplayName = "S250+"),
+  YOI(sentenceType = StandardDeterminate, toreraEligibilityType = ToreraEligibilityType.SDS, sdsPlusEligibilityType = SDSPlusEligibilityType.SDS, displayName = "Young offender institution", sdsPlusDisplayName = "YOI+"),
+  YOI_ORA(sentenceType = StandardDeterminate, toreraEligibilityType = ToreraEligibilityType.SDS, sdsPlusEligibilityType = SDSPlusEligibilityType.SDS, sdsPlusDisplayName = "YOI+"),
   //endregion
 
   //region Extended Determinate Sentences

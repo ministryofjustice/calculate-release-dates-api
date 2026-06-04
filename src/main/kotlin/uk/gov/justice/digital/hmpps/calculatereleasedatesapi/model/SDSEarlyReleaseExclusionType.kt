@@ -10,17 +10,18 @@ enum class SDSEarlyReleaseExclusionType(
   val sds40Exclusion: Boolean,
   val sds40AdditionalExcludedOffence: Boolean,
   val progressionModelExclusion: Boolean,
+  val displayName: String?,
 ) {
-  SEXUAL(sds40Exclusion = true, sds40AdditionalExcludedOffence = false, progressionModelExclusion = false),
-  VIOLENT(sds40Exclusion = true, sds40AdditionalExcludedOffence = false, progressionModelExclusion = false),
-  DOMESTIC_ABUSE(sds40Exclusion = true, sds40AdditionalExcludedOffence = false, progressionModelExclusion = false),
-  NATIONAL_SECURITY(sds40Exclusion = true, sds40AdditionalExcludedOffence = false, progressionModelExclusion = false),
-  TERRORISM(sds40Exclusion = true, sds40AdditionalExcludedOffence = false, progressionModelExclusion = false),
-  SEXUAL_T3(sds40Exclusion = false, sds40AdditionalExcludedOffence = true, progressionModelExclusion = false),
-  DOMESTIC_ABUSE_T3(sds40Exclusion = false, sds40AdditionalExcludedOffence = true, progressionModelExclusion = false),
-  MURDER_T3(sds40Exclusion = false, sds40AdditionalExcludedOffence = true, progressionModelExclusion = false),
-  PROGRESSION_MODEL_SCHEDULE_13_PART_3(sds40Exclusion = false, sds40AdditionalExcludedOffence = false, progressionModelExclusion = true),
-  NO(sds40Exclusion = false, sds40AdditionalExcludedOffence = false, progressionModelExclusion = false),
+  SEXUAL(sds40Exclusion = true, sds40AdditionalExcludedOffence = false, progressionModelExclusion = false, displayName = "Sexual"),
+  VIOLENT(sds40Exclusion = true, sds40AdditionalExcludedOffence = false, progressionModelExclusion = false, displayName = "Violent"),
+  DOMESTIC_ABUSE(sds40Exclusion = true, sds40AdditionalExcludedOffence = false, progressionModelExclusion = false, displayName = "Domestic Abuse"),
+  NATIONAL_SECURITY(sds40Exclusion = true, sds40AdditionalExcludedOffence = false, progressionModelExclusion = false, displayName = "National Security"),
+  TERRORISM(sds40Exclusion = true, sds40AdditionalExcludedOffence = false, progressionModelExclusion = false, displayName = "Terrorism"),
+  SEXUAL_T3(sds40Exclusion = false, sds40AdditionalExcludedOffence = true, progressionModelExclusion = false, displayName = "Sexual (for prisoners in custody on or after the 16th Dec 2024)"),
+  DOMESTIC_ABUSE_T3(sds40Exclusion = false, sds40AdditionalExcludedOffence = true, progressionModelExclusion = false, displayName = "Domestic Abuse (for prisoners in custody on or after the 16th Dec 2024)"),
+  MURDER_T3(sds40Exclusion = false, sds40AdditionalExcludedOffence = true, progressionModelExclusion = false, displayName = "Murder (for prisoners in custody on or after the 16th Dec 2024)"),
+  PROGRESSION_MODEL_SCHEDULE_13_PART_3(sds40Exclusion = false, sds40AdditionalExcludedOffence = false, progressionModelExclusion = true, displayName = "Schedule 13 Part 3"),
+  NO(sds40Exclusion = false, sds40AdditionalExcludedOffence = false, progressionModelExclusion = false, displayName = null),
 }
 
 class SDSEarlyReleaseExclusionTypeDeserializer : StdDeserializer<SDSEarlyReleaseExclusionType>(SDSEarlyReleaseExclusionType::class.java) {
