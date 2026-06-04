@@ -24,5 +24,6 @@ data class AnalysedSentenceAndOffence(
   val sentenceAndOffenceAnalysis: SentenceAndOffenceAnalysis = SentenceAndOffenceAnalysis.SAME,
   val isSDSPlus: Boolean,
   val hasAnSDSEarlyReleaseExclusion: SDSEarlyReleaseExclusionType,
+  val sdsDescriptions: SDSDescriptions?,
   val revocationDates: List<LocalDate>,
 )

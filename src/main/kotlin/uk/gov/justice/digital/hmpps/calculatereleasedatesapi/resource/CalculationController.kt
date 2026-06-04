@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.adjustmentsapi.model.AdjustmentDto
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.NoActiveBookingException
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AnalysedSentenceAndOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationRequestModel
@@ -30,6 +31,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NomisCalculat
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDatesAndCalculationContext
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RelevantRemandCalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RelevantRemandCalculationResult
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceAnalysis
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmitCalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
@@ -41,6 +43,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.DetailedCal
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.LatestCalculationService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.OffenderKeyDatesService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.RelevantRemandService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.transform
 
 @RestController
 @RequestMapping("/calculation", produces = [MediaType.APPLICATION_JSON_VALUE])
@@ -233,6 +236,30 @@ class CalculationController(
   ): List<SentenceAndOffenceWithReleaseArrangements> {
     log.info("Request received to get sentences and offences from $calculationRequestId calculation")
     return calculationTransactionalService.findSentenceAndOffencesFromCalculation(calculationRequestId)
+  }
+
+  @GetMapping(value = ["/sentence-and-offence-information/{calculationRequestId}"])
+  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR', 'CALCULATE_RELEASE_DATES__RECALL__CALCULATE__RW', 'CALCULATE_RELEASE_DATES__CALCULATE__RW', 'CALCULATE_RELEASE_DATES__CALCULATE__RO')")
+  @ResponseBody
+  @Operation(
+    summary = "Get sentences and offence information for display for a calculationRequestId",
+    description = "This endpoint will return the sentences and offence information for display based on a calculationRequestId",
+  )
+  @ApiResponses(
+    value = [
+      ApiResponse(responseCode = "200", description = "Returns sentences and offences"),
+      ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
+      ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
+      ApiResponse(responseCode = "404", description = "No calculation exists for this calculationRequestId"),
+    ],
+  )
+  fun getSentenceAndOffenceInformation(
+    @Parameter(required = true, example = "123456", description = "The calculationRequestId of the calculation")
+    @PathVariable("calculationRequestId")
+    calculationRequestId: Long,
+  ): List<AnalysedSentenceAndOffence> {
+    log.info("Request received to get sentences and offence information from $calculationRequestId calculation")
+    return transform(SentenceAndOffenceAnalysis.SAME, calculationTransactionalService.findSentenceAndOffencesFromCalculation(calculationRequestId))
   }
 
   @GetMapping(value = ["/prisoner-details/{calculationRequestId}"])
