@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpStatus
-import org.springframework.http.MediaType
+import org.springframework.http.MediaType.APPLICATION_JSON
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.adjustmentsapi.model.AdjustmentDto
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.ErrorResponse
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
@@ -34,6 +34,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremoc
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.manageoffencesapi.model.OffenceSdsExclusionIndicator
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.manageoffencesapi.model.PcscMarkers
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.manageoffencesapi.model.SdsOffenceDetails
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AnalysedSentenceAndOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationFragments
@@ -45,6 +46,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RelevantReman
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RelevantRemandCalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RelevantRemandCalculationResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RelevantRemandSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSDescriptions
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmitCalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmittedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.UserInputType
@@ -114,11 +117,11 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
 
     val result = webTestClient.get()
       .uri("/calculation/results/$PRISONER_ID/$BOOKING_ID")
-      .accept(MediaType.APPLICATION_JSON)
+      .accept(APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
       .exchange()
       .expectStatus().isOk
-      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectHeader().contentType(APPLICATION_JSON)
       .expectBody(CalculatedReleaseDates::class.java)
       .returnResult().responseBody
 
@@ -142,11 +145,11 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
 
     val result = webTestClient.get()
       .uri("/calculationReference/${resultCalculation.calculationReference}")
-      .accept(MediaType.APPLICATION_JSON)
+      .accept(APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
       .exchange()
       .expectStatus().isOk
-      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectHeader().contentType(APPLICATION_JSON)
       .expectBody(CalculatedReleaseDates::class.java)
       .returnResult().responseBody
 
@@ -170,11 +173,11 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
 
     val result = webTestClient.get()
       .uri("/calculationReference/${resultCalculation.calculationReference}?checkForChange=true")
-      .accept(MediaType.APPLICATION_JSON)
+      .accept(APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
       .exchange()
       .expectStatus().isOk
-      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectHeader().contentType(APPLICATION_JSON)
       .expectBody(CalculatedReleaseDates::class.java)
       .returnResult().responseBody
 
@@ -195,11 +198,11 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
   fun `Get the results for a calc that causes an error `() {
     val result = webTestClient.post()
       .uri("/calculation/$PRISONER_ERROR_ID")
-      .accept(MediaType.APPLICATION_JSON).bodyValue(calculationRequestModel)
+      .accept(APPLICATION_JSON).bodyValue(calculationRequestModel)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
       .exchange()
       .expectStatus().is5xxServerError
-      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectHeader().contentType(APPLICATION_JSON)
       .expectBody(ErrorResponse::class.java)
       .returnResult().responseBody
 
@@ -219,7 +222,7 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
   fun `Attempt to get the results for a confirmed calculation where no confirmed calculation exists`() {
     webTestClient.get()
       .uri("/calculation/results/$PRISONER_ID/$BOOKING_ID_DOESNT_EXIST")
-      .accept(MediaType.APPLICATION_JSON)
+      .accept(APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
       .exchange()
       .expectStatus().is4xxClientError
@@ -239,11 +242,11 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
 
     val result = webTestClient.get()
       .uri("/calculation/breakdown/${calc.calculationRequestId}")
-      .accept(MediaType.APPLICATION_JSON)
+      .accept(APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
       .exchange()
       .expectStatus().isOk
-      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectHeader().contentType(APPLICATION_JSON)
       .expectBody(CalculationBreakdown::class.java)
       .returnResult().responseBody!!
 
@@ -268,11 +271,11 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
     assertThat(calc).isNotNull
     val result = webTestClient.get()
       .uri("/calculation/results/$PRISONER_ID/$BOOKING_ID")
-      .accept(MediaType.APPLICATION_JSON)
+      .accept(APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
       .exchange()
       .expectStatus().isOk
-      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectHeader().contentType(APPLICATION_JSON)
       .expectBody(CalculatedReleaseDates::class.java)
       .returnResult().responseBody
     assertThat(result!!.approvedDates).isNotNull
@@ -319,12 +322,12 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
   fun `Run calculation on inactive data`() {
     val calculatedReleaseDates: CalculatedReleaseDates = webTestClient.post()
       .uri("/calculation/$INACTIVE_PRISONER_ID")
-      .accept(MediaType.APPLICATION_JSON)
+      .accept(APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
       .bodyValue(calculationRequestModel)
       .exchange()
       .expectStatus().isOk
-      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectHeader().contentType(APPLICATION_JSON)
       .expectBody(CalculatedReleaseDates::class.java)
       .returnResult().responseBody!!
 
@@ -332,11 +335,11 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
 
     val result = webTestClient.get()
       .uri("/calculation/breakdown/${calculatedReleaseDates.calculationRequestId}")
-      .accept(MediaType.APPLICATION_JSON)
+      .accept(APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
       .exchange()
       .expectStatus().isOk
-      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectHeader().contentType(APPLICATION_JSON)
       .expectBody(CalculationBreakdown::class.java)
       .returnResult().responseBody!!
 
@@ -351,27 +354,47 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
 
     val results = webTestClient.get()
       .uri("/calculation/results/${calc.calculationRequestId}")
-      .accept(MediaType.APPLICATION_JSON)
+      .accept(APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
       .exchange()
       .expectStatus().isOk
-      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectHeader().contentType(APPLICATION_JSON)
       .expectBody(CalculatedReleaseDates::class.java)
       .returnResult().responseBody!!
 
     assertThat(results.calculationFragments?.breakdownHtml).isEqualTo("<p>BREAKDOWN</p>")
 
-    val sentenceAndOffences = getSentencesAndOffencesForCalculation(calc.calculationRequestId)
-
-    assertThat(sentenceAndOffences).isNotNull
-
-    val prisonerDetails = webTestClient.get()
-      .uri("/calculation/prisoner-details/${calc.calculationRequestId}")
-      .accept(MediaType.APPLICATION_JSON)
+    // old API returns SentenceAndOffenceWithReleaseArrangements
+    val sentenceAndOffences = webTestClient.get()
+      .uri("/calculation/sentence-and-offences/${calc.calculationRequestId}")
+      .accept(APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
       .exchange()
       .expectStatus().isOk
-      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectHeader().contentType(APPLICATION_JSON)
+      .expectBody(object : ParameterizedTypeReference<List<SentenceAndOffenceWithReleaseArrangements>>() {})
+      .returnResult().responseBody!!
+    assertThat(sentenceAndOffences).isNotNull
+
+    // new API returns SentenceAndOffenceWithReleaseArrangements
+    val newSentenceAndOffencesWithMetaData = webTestClient.get()
+      .uri("/calculation/sentence-and-offence-information/${calc.calculationRequestId}")
+      .accept(APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+      .exchange()
+      .expectStatus().isOk
+      .expectHeader().contentType(APPLICATION_JSON)
+      .expectBody(object : ParameterizedTypeReference<List<AnalysedSentenceAndOffence>>() {})
+      .returnResult().responseBody!!
+    assertThat(newSentenceAndOffencesWithMetaData).isNotNull
+
+    val prisonerDetails = webTestClient.get()
+      .uri("/calculation/prisoner-details/${calc.calculationRequestId}")
+      .accept(APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+      .exchange()
+      .expectStatus().isOk
+      .expectHeader().contentType(APPLICATION_JSON)
       .expectBody(PrisonerDetails::class.java)
       .returnResult().responseBody!!
 
@@ -379,11 +402,11 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
 
     val bookingAndSentenceAdjustments = webTestClient.get()
       .uri("/calculation/adjustments/${calc.calculationRequestId}")
-      .accept(MediaType.APPLICATION_JSON)
+      .accept(APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
       .exchange()
       .expectStatus().isOk
-      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectHeader().contentType(APPLICATION_JSON)
       .expectBody(BookingAndSentenceAdjustments::class.java)
       .returnResult().responseBody!!
 
@@ -391,11 +414,11 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
 
     val adjustments = webTestClient.get()
       .uri("/calculation/adjustments/${calc.calculationRequestId}?adjustments-api=true")
-      .accept(MediaType.APPLICATION_JSON)
+      .accept(APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
       .exchange()
       .expectStatus().isOk
-      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectHeader().contentType(APPLICATION_JSON)
       .expectBody(object : ParameterizedTypeReference<List<AdjustmentDto>>() {})
       .returnResult().responseBody!!
 
@@ -405,11 +428,11 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
 
     val returnToCustody = webTestClient.get()
       .uri("/calculation/return-to-custody/${calc.calculationRequestId}")
-      .accept(MediaType.APPLICATION_JSON)
+      .accept(APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
       .exchange()
       .expectStatus().isOk
-      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectHeader().contentType(APPLICATION_JSON)
       .expectBody(ReturnToCustodyDate::class.java)
       .returnResult().responseBody!!
 
@@ -417,15 +440,81 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
   }
 
   @Test
+  fun `Get the source sentence data with metadata for a booking or a calculation`() {
+    val userInput = CalculationUserInputs(useOffenceIndicators = true)
+
+    mockManageOffencesClient.withSdsOffenceDetailsResponse(
+      SdsOffenceDetails(
+        offenceCode = "TH68007A",
+        pcscMarkers = PcscMarkers(inListA = false, inListB = false, inListC = false, inListD = false),
+        earlyReleaseExclusions = listOf(OffenceSdsExclusionIndicator.SEXUAL),
+      ),
+      SdsOffenceDetails(
+        offenceCode = "TR68132",
+        pcscMarkers = PcscMarkers(inListA = false, inListB = false, inListC = false, inListD = false),
+        earlyReleaseExclusions = listOf(OffenceSdsExclusionIndicator.SEXUAL),
+      ),
+      SdsOffenceDetails(
+        offenceCode = "SX03001",
+        pcscMarkers = PcscMarkers(inListA = true, inListB = false, inListC = false, inListD = false),
+        earlyReleaseExclusions = emptyList(),
+      ),
+      offences = "SX03001,TH68007A,TR68132",
+    )
+
+    val calculation: CalculatedReleaseDates = webTestClient.post()
+      .uri("/calculation/CRS-872")
+      .accept(APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+      .contentType(APPLICATION_JSON)
+      .bodyValue(CalculationRequestModel(userInput, 1L))
+      .exchange()
+      .expectStatus().isOk
+      .expectHeader().contentType(APPLICATION_JSON)
+      .expectBody(CalculatedReleaseDates::class.java)
+      .returnResult().responseBody!!
+
+    val bookingSentenceAndOffences = webTestClient.get()
+      .uri("/sentence-and-offence-information/${calculation.bookingId}")
+      .accept(APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+      .exchange()
+      .expectStatus().isOk
+      .expectHeader().contentType(APPLICATION_JSON)
+      .expectBody(object : ParameterizedTypeReference<List<AnalysedSentenceAndOffence>>() {})
+      .returnResult().responseBody!!
+
+    val calculationSentenceAndOffences = webTestClient.get()
+      .uri("/calculation/sentence-and-offence-information/${calculation.calculationRequestId}")
+      .accept(APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+      .exchange()
+      .expectStatus().isOk
+      .expectHeader().contentType(APPLICATION_JSON)
+      .expectBody(object : ParameterizedTypeReference<List<AnalysedSentenceAndOffence>>() {})
+      .returnResult().responseBody!!
+
+    val sdsPlusFromBooking = bookingSentenceAndOffences.find { it.offence.offenceCode == "SX03001" }!!
+    val sdsPlusFromCalculation = calculationSentenceAndOffences.find { it.offence.offenceCode == "SX03001" }!!
+    assertThat(sdsPlusFromBooking.sdsDescriptions).isEqualTo(SDSDescriptions(null, null, "SDS+"))
+    assertThat(sdsPlusFromBooking).usingRecursiveComparison().ignoringFields("sentenceAndOffenceAnalysis").isEqualTo(sdsPlusFromCalculation)
+
+    val sexualExclusionFromBooking = bookingSentenceAndOffences.find { it.offence.offenceCode == "TR68132" }!!
+    val sexualExclusionFromCalculation = calculationSentenceAndOffences.find { it.offence.offenceCode == "TR68132" }!!
+    assertThat(sexualExclusionFromBooking.sdsDescriptions).isEqualTo(SDSDescriptions("Sexual", null, null))
+    assertThat(sexualExclusionFromBooking).usingRecursiveComparison().ignoringFields("sentenceAndOffenceAnalysis").isEqualTo(sexualExclusionFromCalculation)
+  }
+
+  @Test
   fun `Run calculation on recall`() {
     val calculation: CalculatedReleaseDates = webTestClient.post()
       .uri("/calculation/RECALL")
-      .accept(MediaType.APPLICATION_JSON)
+      .accept(APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
       .bodyValue(calculationRequestModel)
       .exchange()
       .expectStatus().isOk
-      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectHeader().contentType(APPLICATION_JSON)
       .expectBody(CalculatedReleaseDates::class.java)
       .returnResult().responseBody!!
 
@@ -438,12 +527,12 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
   fun `Run calculation on 14 day fixed term recall`() {
     val calculation: CalculatedReleaseDates = webTestClient.post()
       .uri("/calculation/14FTR")
-      .accept(MediaType.APPLICATION_JSON)
+      .accept(APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
       .bodyValue(calculationRequestModel)
       .exchange()
       .expectStatus().isOk
-      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectHeader().contentType(APPLICATION_JSON)
       .expectBody(CalculatedReleaseDates::class.java)
       .returnResult().responseBody!!
 
@@ -456,12 +545,12 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
   fun `Run calculation on 28 day fixed term recall`() {
     val calculation: CalculatedReleaseDates = webTestClient.post()
       .uri("/calculation/28FTR")
-      .accept(MediaType.APPLICATION_JSON)
+      .accept(APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
       .bodyValue(calculationRequestModel)
       .exchange()
       .expectStatus().isOk
-      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectHeader().contentType(APPLICATION_JSON)
       .expectBody(CalculatedReleaseDates::class.java)
       .returnResult().responseBody!!
 
@@ -474,7 +563,7 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
   fun `Run calculation on 14 day fixed term recall with no returntocustodydate`() {
     webTestClient.post()
       .uri("/calculation/BLANKFTR")
-      .accept(MediaType.APPLICATION_JSON)
+      .accept(APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
       .bodyValue(calculationRequestModel)
       .exchange()
@@ -492,12 +581,12 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
     mockManageOffencesClient.notSDSPlusAndNoExclusions(listOf("FI68421", "MD71131C", "MD71230", "MD71239"))
     val calculation: CalculatedReleaseDates = webTestClient.post()
       .uri("/calculation/CRS-829-1")
-      .accept(MediaType.APPLICATION_JSON)
+      .accept(APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
       .bodyValue(calculationRequestModel)
       .exchange()
       .expectStatus().isOk
-      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectHeader().contentType(APPLICATION_JSON)
       .expectBody(CalculatedReleaseDates::class.java)
       .returnResult().responseBody!!
 
@@ -513,12 +602,12 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
   fun `Run calculation on pre prod bug where adjustments are applied to wrong sentences CRS-829 AC-2`() {
     val calculation: CalculatedReleaseDates = webTestClient.post()
       .uri("/calculation/CRS-829-2")
-      .accept(MediaType.APPLICATION_JSON)
+      .accept(APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
       .bodyValue(calculationRequestModel)
       .exchange()
       .expectStatus().isOk
-      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectHeader().contentType(APPLICATION_JSON)
       .expectBody(CalculatedReleaseDates::class.java)
       .returnResult().responseBody!!
 
@@ -557,13 +646,13 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
 
     val calculation: CalculatedReleaseDates = webTestClient.post()
       .uri("/calculation/CRS-872")
-      .accept(MediaType.APPLICATION_JSON)
+      .accept(APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
-      .contentType(MediaType.APPLICATION_JSON)
+      .contentType(APPLICATION_JSON)
       .bodyValue(CalculationRequestModel(userInput, 1L))
       .exchange()
       .expectStatus().isOk
-      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectHeader().contentType(APPLICATION_JSON)
       .expectBody(CalculatedReleaseDates::class.java)
       .returnResult().responseBody!!
 
@@ -592,12 +681,12 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
 
     val calculation: CalculatedReleaseDates = webTestClient.post()
       .uri("/calculation/CRS-2321-1")
-      .accept(MediaType.APPLICATION_JSON)
+      .accept(APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
       .bodyValue(CalculationRequestModel(userInput, 1L))
       .exchange()
       .expectStatus().isOk
-      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectHeader().contentType(APPLICATION_JSON)
       .expectBody(CalculatedReleaseDates::class.java)
       .returnResult().responseBody!!
 
@@ -621,12 +710,12 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
 
     val calculation: CalculatedReleaseDates = webTestClient.post()
       .uri("/calculation/CRS-2321-2")
-      .accept(MediaType.APPLICATION_JSON)
+      .accept(APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
       .bodyValue(CalculationRequestModel(userInput, 1L))
       .exchange()
       .expectStatus().isOk
-      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectHeader().contentType(APPLICATION_JSON)
       .expectBody(CalculatedReleaseDates::class.java)
       .returnResult().responseBody!!
 
@@ -650,12 +739,12 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
 
     val calculation: CalculatedReleaseDates = webTestClient.post()
       .uri("/calculation/CRS-2321-3")
-      .accept(MediaType.APPLICATION_JSON)
+      .accept(APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
       .bodyValue(CalculationRequestModel(userInput, 1L))
       .exchange()
       .expectStatus().isOk
-      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectHeader().contentType(APPLICATION_JSON)
       .expectBody(CalculatedReleaseDates::class.java)
       .returnResult().responseBody!!
 
@@ -679,12 +768,12 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
 
     val calculation: CalculatedReleaseDates = webTestClient.post()
       .uri("/calculation/CRS-2321-4")
-      .accept(MediaType.APPLICATION_JSON)
+      .accept(APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
       .bodyValue(CalculationRequestModel(userInput, 1L))
       .exchange()
       .expectStatus().isOk
-      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectHeader().contentType(APPLICATION_JSON)
       .expectBody(CalculatedReleaseDates::class.java)
       .returnResult().responseBody!!
 
@@ -696,12 +785,12 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
     mockManageOffencesClient.notSDSPlusAndNoExclusions(listOf("CD79009", "TR68132"))
     val calculation: CalculatedReleaseDates = webTestClient.post()
       .uri("/calculation/EDS")
-      .accept(MediaType.APPLICATION_JSON)
+      .accept(APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
       .bodyValue(calculationRequestModel)
       .exchange()
       .expectStatus().isOk
-      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectHeader().contentType(APPLICATION_JSON)
       .expectBody(CalculatedReleaseDates::class.java)
       .returnResult().responseBody!!
 
@@ -720,12 +809,12 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
   fun `Run calculation on SOPC sentence`() {
     val calculation: CalculatedReleaseDates = webTestClient.post()
       .uri("/calculation/SOPC")
-      .accept(MediaType.APPLICATION_JSON)
+      .accept(APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
       .bodyValue(calculationRequestModel)
       .exchange()
       .expectStatus().isOk
-      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectHeader().contentType(APPLICATION_JSON)
       .expectBody(CalculatedReleaseDates::class.java)
       .returnResult().responseBody!!
 
@@ -744,12 +833,12 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
   fun `Run calculation on adjustment linked to inactive sentence CRS-892`() {
     val calculation: CalculatedReleaseDates = webTestClient.post()
       .uri("/calculation/CRS-892")
-      .accept(MediaType.APPLICATION_JSON)
+      .accept(APPLICATION_JSON)
       .bodyValue(calculationRequestModel)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
       .exchange()
       .expectStatus().isOk
-      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectHeader().contentType(APPLICATION_JSON)
       .expectBody(CalculatedReleaseDates::class.java)
       .returnResult().responseBody!!
 
@@ -773,13 +862,13 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
     )
     val calculation: CalculatedReleaseDates = webTestClient.post()
       .uri("/calculation/SEC250")
-      .accept(MediaType.APPLICATION_JSON)
-      .contentType(MediaType.APPLICATION_JSON)
+      .accept(APPLICATION_JSON)
+      .contentType(APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
       .bodyValue(CalculationRequestModel(userInput, 1L))
       .exchange()
       .expectStatus().isOk
-      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectHeader().contentType(APPLICATION_JSON)
       .expectBody(CalculatedReleaseDates::class.java)
       .returnResult().responseBody!!
 
@@ -796,12 +885,12 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
     webTestClient = webTestClient.mutate().responseTimeout(Duration.ofMinutes(5)).build()
     val calculation: CalculatedReleaseDates = webTestClient.post()
       .uri("/calculation/CRS-1184")
-      .accept(MediaType.APPLICATION_JSON)
+      .accept(APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
       .bodyValue(calculationRequestModel)
       .exchange()
       .expectStatus().isOk
-      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectHeader().contentType(APPLICATION_JSON)
       .expectBody(CalculatedReleaseDates::class.java)
       .returnResult().responseBody!!
     assertThat(calculation.dates[SED]).isEqualTo("2022-11-22")
@@ -815,12 +904,12 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
   fun `Run calculation on A FINE sentence`() {
     val calculation: CalculatedReleaseDates = webTestClient.post()
       .uri("/calculation/AFINE")
-      .accept(MediaType.APPLICATION_JSON)
+      .accept(APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
       .bodyValue(calculationRequestModel)
       .exchange()
       .expectStatus().isOk
-      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectHeader().contentType(APPLICATION_JSON)
       .expectBody(CalculatedReleaseDates::class.java)
       .returnResult().responseBody!!
 
@@ -837,12 +926,12 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
     mockManageOffencesClient.notSDSPlusAndNoExclusions(listOf("A1234BC"))
     val calculation: CalculatedReleaseDates = webTestClient.post()
       .uri("/calculation/EDSRECALL")
-      .accept(MediaType.APPLICATION_JSON)
+      .accept(APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
       .bodyValue(calculationRequestModel)
       .exchange()
       .expectStatus().isOk
-      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectHeader().contentType(APPLICATION_JSON)
       .expectBody(CalculatedReleaseDates::class.java)
       .returnResult().responseBody!!
 
@@ -877,19 +966,19 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
 
     val calculation: CalculatedReleaseDates = webTestClient.post()
       .uri("/calculation/SDSPERR")
-      .accept(MediaType.APPLICATION_JSON)
+      .accept(APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
       .bodyValue(calculationRequestModel)
       .exchange()
       .expectStatus().isOk
-      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectHeader().contentType(APPLICATION_JSON)
       .expectBody(CalculatedReleaseDates::class.java)
       .returnResult().responseBody!!
 
     webTestClient.post()
       .uri("/calculation/confirm/${calculation.calculationRequestId}")
-      .accept(MediaType.APPLICATION_JSON)
-      .contentType(MediaType.APPLICATION_JSON)
+      .accept(APPLICATION_JSON)
+      .contentType(APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
       .bodyValue(
         objectMapper.writeValueAsString(
@@ -901,7 +990,7 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
       )
       .exchange()
       .expectStatus().isOk
-      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectHeader().contentType(APPLICATION_JSON)
       .expectBody(CalculatedReleaseDates::class.java)
       .returnResult().responseBody!!
   }
@@ -940,13 +1029,13 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
     )
     val calculation: RelevantRemandCalculationResult = webTestClient.post()
       .uri("/calculation/relevant-remand/RELREM")
-      .accept(MediaType.APPLICATION_JSON)
-      .contentType(MediaType.APPLICATION_JSON)
+      .accept(APPLICATION_JSON)
+      .contentType(APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
       .bodyValue(objectMapper.writeValueAsString(request))
       .exchange()
       .expectStatus().isOk
-      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectHeader().contentType(APPLICATION_JSON)
       .expectBody(RelevantRemandCalculationResult::class.java)
       .returnResult().responseBody!!
 
@@ -990,13 +1079,13 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
     )
     val calculation: RelevantRemandCalculationResult = webTestClient.post()
       .uri("/calculation/relevant-remand/RELREM")
-      .accept(MediaType.APPLICATION_JSON)
-      .contentType(MediaType.APPLICATION_JSON)
+      .accept(APPLICATION_JSON)
+      .contentType(APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
       .bodyValue(objectMapper.writeValueAsString(request))
       .exchange()
       .expectStatus().isOk
-      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectHeader().contentType(APPLICATION_JSON)
       .expectBody(RelevantRemandCalculationResult::class.java)
       .returnResult().responseBody!!
 
@@ -1033,13 +1122,13 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
     )
     val calculation: RelevantRemandCalculationResult = webTestClient.post()
       .uri("/calculation/relevant-remand/RELREMT")
-      .accept(MediaType.APPLICATION_JSON)
-      .contentType(MediaType.APPLICATION_JSON)
+      .accept(APPLICATION_JSON)
+      .contentType(APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
       .bodyValue(objectMapper.writeValueAsString(request))
       .exchange()
       .expectStatus().isOk
-      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectHeader().contentType(APPLICATION_JSON)
       .expectBody(RelevantRemandCalculationResult::class.java)
       .returnResult().responseBody!!
 
@@ -1070,13 +1159,13 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
     )
     val calculation: RelevantRemandCalculationResult = webTestClient.post()
       .uri("/calculation/relevant-remand/RELREMR")
-      .accept(MediaType.APPLICATION_JSON)
-      .contentType(MediaType.APPLICATION_JSON)
+      .accept(APPLICATION_JSON)
+      .contentType(APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
       .bodyValue(objectMapper.writeValueAsString(request))
       .exchange()
       .expectStatus().isOk
-      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectHeader().contentType(APPLICATION_JSON)
       .expectBody(RelevantRemandCalculationResult::class.java)
       .returnResult().responseBody!!
 
@@ -1106,13 +1195,13 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
     )
     val calculation: RelevantRemandCalculationResult = webTestClient.post()
       .uri("/calculation/relevant-remand/RELREMV")
-      .accept(MediaType.APPLICATION_JSON)
-      .contentType(MediaType.APPLICATION_JSON)
+      .accept(APPLICATION_JSON)
+      .contentType(APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
       .bodyValue(objectMapper.writeValueAsString(request))
       .exchange()
       .expectStatus().isOk
-      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectHeader().contentType(APPLICATION_JSON)
       .expectBody(RelevantRemandCalculationResult::class.java)
       .returnResult().responseBody!!
 
@@ -1141,13 +1230,13 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
     )
     val calculation: RelevantRemandCalculationResult = webTestClient.post()
       .uri("/calculation/relevant-remand/RELREMI")
-      .accept(MediaType.APPLICATION_JSON)
-      .contentType(MediaType.APPLICATION_JSON)
+      .accept(APPLICATION_JSON)
+      .contentType(APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
       .bodyValue(objectMapper.writeValueAsString(request))
       .exchange()
       .expectStatus().isOk
-      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectHeader().contentType(APPLICATION_JSON)
       .expectBody(RelevantRemandCalculationResult::class.java)
       .returnResult().responseBody!!
 
@@ -1159,12 +1248,12 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
   fun `Run calculation with external movements`() {
     val calculation: CalculatedReleaseDates = webTestClient.post()
       .uri("/calculation/crs-2107")
-      .accept(MediaType.APPLICATION_JSON)
+      .accept(APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
       .bodyValue(calculationRequestModel)
       .exchange()
       .expectStatus().isOk
-      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectHeader().contentType(APPLICATION_JSON)
       .expectBody(CalculatedReleaseDates::class.java)
       .returnResult().responseBody!!
 
@@ -1180,12 +1269,12 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
   fun `Run calculation with ERS return external movements`() {
     val calculation: CalculatedReleaseDates = webTestClient.post()
       .uri("/calculation/ERSRETURN")
-      .accept(MediaType.APPLICATION_JSON)
+      .accept(APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
       .bodyValue(calculationRequestModel.copy(calculationUserInputs = CalculationUserInputs(calculateErsed = true)))
       .exchange()
       .expectStatus().isOk
-      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectHeader().contentType(APPLICATION_JSON)
       .expectBody(CalculatedReleaseDates::class.java)
       .returnResult().responseBody!!
 
@@ -1201,11 +1290,11 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
 
     val breakdown = webTestClient.get()
       .uri("/calculation/breakdown/${calculation.calculationRequestId}")
-      .accept(MediaType.APPLICATION_JSON)
+      .accept(APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
       .exchange()
       .expectStatus().isOk
-      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectHeader().contentType(APPLICATION_JSON)
       .expectBody(CalculationBreakdown::class.java)
       .returnResult().responseBody!!
 

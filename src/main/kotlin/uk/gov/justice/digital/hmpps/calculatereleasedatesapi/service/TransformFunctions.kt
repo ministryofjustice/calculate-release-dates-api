@@ -93,6 +93,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Recall
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSDescriptions
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceAnalysis
@@ -905,6 +906,7 @@ fun transform(
   sentenceAndOffenceAnalysis,
   sentenceAndOffences.sdsReleaseArrangements?.isSDSPlus == true,
   sentenceAndOffences.sdsReleaseArrangements?.sdsEarlyReleaseExclusions?.firstOrNull() ?: SDSEarlyReleaseExclusionType.NO,
+  SDSDescriptions.from(sentenceAndOffences),
   sentenceAndOffences.revocationDates,
 )
 
