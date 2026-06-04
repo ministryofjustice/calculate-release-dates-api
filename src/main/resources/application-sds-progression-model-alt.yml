@@ -5,55 +5,55 @@ sds-legislations:
       SDS: ONE_THIRD
       SDS_PLUS: ONE_HALF
     tranches:
-      - type: SENTENCE_LENGTH
+      - type: SENTENCE_LENGTH_LESS_THAN_OR_EQUAL_TO
         unit: DAYS
         duration: 729
         date: 2026-03-03
         name: TRANCHE_1
 
-      - type: SENTENCE_LENGTH
+      - type: SENTENCE_LENGTH_LESS_THAN_OR_EQUAL_TO
         unit: DAYS
         duration: 1094
         date: 2026-04-07
         name: TRANCHE_2
 
-      - type: SENTENCE_LENGTH
+      - type: SENTENCE_LENGTH_LESS_THAN_OR_EQUAL_TO
         unit: DAYS
         duration: 1460
         date: 2026-05-05
         name: TRANCHE_3
 
-      - type: SENTENCE_LENGTH
+      - type: SENTENCE_LENGTH_LESS_THAN_OR_EQUAL_TO
         unit: DAYS
         duration: 1825
         date: 2026-06-09
         name: TRANCHE_4
 
-      - type: SENTENCE_LENGTH
+      - type: SENTENCE_LENGTH_LESS_THAN_OR_EQUAL_TO
         unit: DAYS
         duration: 2190
         date: 2026-07-07
         name: TRANCHE_5
 
-      - type: SENTENCE_LENGTH
+      - type: SENTENCE_LENGTH_LESS_THAN_OR_EQUAL_TO
         unit: DAYS
         duration: 2921
         date: 2026-08-11
         name: TRANCHE_6
 
-      - type: SENTENCE_LENGTH
+      - type: SENTENCE_LENGTH_LESS_THAN_OR_EQUAL_TO
         unit: DAYS
         duration: 3651
         date: 2026-09-08
         name: TRANCHE_7
 
-      - type: SENTENCE_LENGTH
+      - type: SENTENCE_LENGTH_LESS_THAN_OR_EQUAL_TO
         unit: DAYS
         duration: 4747
         date: 2026-10-06
         name: TRANCHE_8
 
-      - type: SENTENCE_LENGTH
+      - type: SENTENCE_LENGTH_LESS_THAN_OR_EQUAL_TO
         unit: DAYS
         duration: 6208
         date: 2026-11-10
