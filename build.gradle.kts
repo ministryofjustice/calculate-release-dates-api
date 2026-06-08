@@ -7,8 +7,8 @@ import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 plugins {
   id("uk.gov.justice.hmpps.gradle-spring-boot") version "10.3.1"
   id("org.springdoc.openapi-gradle-plugin") version "1.9.0"
-  kotlin("plugin.spring") version "2.3.21"
-  kotlin("plugin.jpa") version "2.3.21"
+  kotlin("plugin.spring") version "2.4.0"
+  kotlin("plugin.jpa") version "2.4.0"
   id("jacoco")
   id("org.openapi.generator") version "7.22.0"
 }
@@ -41,10 +41,10 @@ dependencies {
   implementation("uk.gov.service.notify:notifications-java-client:6.0.0-RELEASE")
 
   // Enable kotlin reflect
-  implementation("org.jetbrains.kotlin:kotlin-reflect:2.3.21")
+  implementation("org.jetbrains.kotlin:kotlin-reflect:2.4.0")
 
   // Three Ten Date Calculations
-  implementation("org.threeten:threeten-extra:1.8.0")
+  implementation("org.threeten:threeten-extra:1.9.0")
 
   compileOnly("javax.servlet:javax.servlet-api:4.0.1")
 
@@ -53,8 +53,8 @@ dependencies {
   runtimeOnly("org.flywaydb:flyway-database-postgresql")
   runtimeOnly("org.postgresql:postgresql:42.7.11")
 
-  implementation("io.arrow-kt:arrow-core:2.2.2.1")
-  implementation("io.hypersistence:hypersistence-utils-hibernate-71:3.15.2")
+  implementation("io.arrow-kt:arrow-core:2.2.3")
+  implementation("io.hypersistence:hypersistence-utils-hibernate-71:3.15.3")
 
   // OpenAPI
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.3")
@@ -97,7 +97,7 @@ dependencies {
 
 jacoco {
   // You may modify the Jacoco version here
-  toolVersion = "0.8.14"
+  toolVersion = "0.8.15"
 }
 
 tasks.jacocoTestCoverageVerification {
