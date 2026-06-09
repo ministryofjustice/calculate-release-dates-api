@@ -17,6 +17,7 @@ data class CalculationResult(
   val sdsEarlyReleaseAllocatedTranche: TrancheName = TrancheName.TRANCHE_0,
   val sdsEarlyReleaseTranche: TrancheName = TrancheName.TRANCHE_0,
   val affectedBySds40: Boolean = false,
+  val affectedByProgressionModel: Boolean = false,
   val showSds40Hints: Boolean = true,
   val usedPreviouslyRecordedSLED: PreviouslyRecordedSLED? = null,
   val trancheAllocationByLegislationName: Map<LegislationName, TrancheName> = emptyMap(),

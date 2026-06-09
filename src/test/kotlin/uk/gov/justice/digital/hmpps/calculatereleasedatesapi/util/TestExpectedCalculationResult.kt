@@ -14,6 +14,7 @@ data class TestExpectedCalculationResult(
   val affectedBySds40: Boolean? = null,
   val trancheAllocationByLegislationName: Map<LegislationName, TrancheName>? = null,
   val skipAssertingDates: Boolean? = null,
+  val affectedByProgressionModel: Boolean? = null,
 ) {
   init {
     require(dates != null || skipAssertingDates == true) { "dates are missing but you have not skipped asserting dates" }
