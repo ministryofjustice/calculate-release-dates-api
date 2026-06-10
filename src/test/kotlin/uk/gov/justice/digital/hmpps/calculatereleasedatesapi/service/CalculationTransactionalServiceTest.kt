@@ -164,11 +164,11 @@ class CalculationTransactionalServiceTest {
       ),
     )
 
-    val bookingCalculation = calculationTransactionalService.findCalculationResults(CALCULATION_REQUEST_ID)
+    val calculationRequestionToCalculationResults = calculationTransactionalService.findCalculationRequestAndResults(CALCULATION_REQUEST_ID)
 
     assertEquals(
-      bookingCalculation,
-      BOOKING_CALCULATION,
+      calculationRequestionToCalculationResults,
+      CALCULATION_REQUEST_WITH_OUTCOMES to BOOKING_CALCULATION,
     )
   }
 
