@@ -119,6 +119,11 @@ abstract class CalculationExampleTests : SpringTestBase() {
           calculatedReleaseDates.calculationResult.trancheAllocationByLegislationName,
         )
       }
+      if (expectedResult.affectedByProgressionModel != null) {
+        assertThat(calculatedReleaseDates.calculationResult.affectedByProgressionModel)
+          .describedAs("affectedByProgressionModel")
+          .isEqualTo(expectedResult.affectedByProgressionModel)
+      }
     }
   }
 

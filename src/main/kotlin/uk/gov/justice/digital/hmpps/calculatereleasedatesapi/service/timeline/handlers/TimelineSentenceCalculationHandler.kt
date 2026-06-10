@@ -14,6 +14,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.Ti
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineHandleResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineTrackingData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.getSentencePartIdentifiers
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 
@@ -96,9 +97,18 @@ class TimelineSentenceCalculationHandler(
     with(timelineTrackingData) {
       newSentencesToCalculate.forEach { sentence ->
         // Find the latest applicable legislation at the consecutive or single sentence level so that tranche defaulting
-        // occurs correctly even if the sentence parts might have different legislation applied.
+        // occurs correctly even if the sentence parts might have different legislation applied. If it was sentenced on or
+        // after commencement then tranche defaulting should not be applied.
         val applicableSdsLegislation = applicableSdsLegislations.legislationByCommencementDate()
           .find { (legislation, _) -> sentence.sentenceParts().any { part -> legislation.appliesToSentence(part) } }
+          ?.let {
+            if (it.earliestApplicableDate != null && timelineCalculationDate.isAfterOrEqualTo(it.legislation.commencementDate())) {
+              it.copy(earliestApplicableDate = null)
+            } else {
+              it
+            }
+          }
+
         sentence.sentenceCalculation = SentenceCalculation(
           UnadjustedReleaseDate(
             sentence,
