@@ -1,0 +1,2 @@
+ALTER TABLE tranche_outcome ADD COLUMN affected_by_progression_model BOOLEAN NOT NULL DEFAULT false;
+COMMENT ON COLUMN tranche_outcome.affected_by_progression_model IS E'Description: Whether the release dates were affected by progression model. \nSource System: CRDS';

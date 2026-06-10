@@ -2,16 +2,25 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
+import org.springframework.test.context.jdbc.Sql
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualCalculationResponse
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualEntryRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManuallyEnteredDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmittedDate
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 import java.time.LocalDate
+import kotlin.jvm.optionals.getOrElse
+import kotlin.test.junit5.JUnit5Asserter.fail
 
+@Sql(scripts = ["classpath:/test_data/reset-base-data.sql", "classpath:/test_data/load-base-data.sql"])
 class ManualCalculationIntTest : IntegrationTestBase() {
+
+  @Autowired
+  lateinit var calculationRequestRepository: CalculationRequestRepository
 
   @Test
   fun `Check if booking has indeterminate sentences`() {
@@ -67,6 +76,10 @@ class ManualCalculationIntTest : IntegrationTestBase() {
       .expectBody(ManualCalculationResponse::class.java)
       .returnResult().responseBody!!
     assertThat(response.calculationRequestId).isNotNull
+    val calcRequest = calculationRequestRepository.findById(response.calculationRequestId).getOrElse { fail("couldn't find calc request") }
+    assertThat(calcRequest.allocatedSDSTranche)
+      .describedAs("CRS-2657 AC1.5 - Manual calculation should not store any tranche information")
+      .isNull()
   }
 
   @Test

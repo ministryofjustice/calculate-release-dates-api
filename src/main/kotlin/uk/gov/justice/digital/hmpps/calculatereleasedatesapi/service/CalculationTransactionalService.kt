@@ -223,6 +223,7 @@ class CalculationTransactionalService(
         allocatedTranche = sds40TrancheName,
         tranche = sds40TrancheName,
         affectedBySds40 = calculationResult.affectedBySds40,
+        affectedByProgressionModel = calculationResult.affectedByProgressionModel,
         ftr56Tranche = calculationResult.trancheAllocationByLegislationName[LegislationName.FTR_56] ?: TrancheName.FTR_56_TRANCHE_0,
         progressionModelTranche = calculationResult.trancheAllocationByLegislationName[LegislationName.SDS_PROGRESSION_MODEL] ?: TrancheName.TRANCHE_0,
       ),

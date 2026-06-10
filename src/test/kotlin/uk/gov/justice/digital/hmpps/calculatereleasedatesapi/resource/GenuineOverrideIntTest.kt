@@ -66,12 +66,18 @@ class GenuineOverrideIntTest(private val mockPrisonService: MockPrisonService) :
     assertThat(originalRequest.genuineOverrideReason).isEqualTo(GenuineOverrideReason.AGGRAVATING_FACTOR_OFFENCE)
     assertThat(originalRequest.genuineOverrideReasonFurtherDetail).isNull()
     assertThat(originalRequest.calculationStatus).isEqualTo(CalculationStatus.OVERRIDDEN.name)
+    assertThat(originalRequest.allocatedSDSTranche)
+      .describedAs("CRS-2657 AC1.8 - Genuine override should store original tranche information")
+      .isNotNull()
 
     assertThat(newRequest.overridesCalculationRequestId).isEqualTo(originalRequest.id)
     assertThat(newRequest.overriddenByCalculationRequestId).isNull()
     assertThat(newRequest.genuineOverrideReason).isEqualTo(GenuineOverrideReason.AGGRAVATING_FACTOR_OFFENCE)
     assertThat(newRequest.genuineOverrideReasonFurtherDetail).isNull()
     assertThat(newRequest.calculationStatus).isEqualTo(CalculationStatus.CONFIRMED.name)
+    assertThat(newRequest.allocatedSDSTranche)
+      .describedAs("CRS-2657 AC1.8 - Genuine override should not store any tranche information on manual entered calculation")
+      .isNull()
 
     // Check the latest results are from the override
     val result = webTestClient.get()

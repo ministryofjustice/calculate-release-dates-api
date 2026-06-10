@@ -1,7 +1,5 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule.ERSED_ADJUSTED_TO_MTD
@@ -138,6 +136,7 @@ class BookingExtractionService(
       false,
       historicalTusedSource,
       affectedBySds40 = isAffectedBySds40(sentence),
+      affectedByProgressionModel = isAffectedByProgressionModel(sentence),
       sentencesImpactingFinalReleaseDate = sentence.sentenceParts(),
     )
   }
@@ -336,7 +335,7 @@ class BookingExtractionService(
      *  --- PED ---
      *  only extract PED if date belongs to the active sentence
      **/
-    if (activeSentenceCalculation.releaseDateTypes.contains(PED)) {
+    val pedExtractionResult = if (activeSentenceCalculation.releaseDateTypes.contains(PED)) {
       extractPedForBooking(
         latestExtendedDeterminateParoleEligibilityDate,
         mostRecentSentenceByAdjustedDeterminateReleaseDate,
@@ -344,6 +343,8 @@ class BookingExtractionService(
         dates,
         breakdownByReleaseDateType,
       )
+    } else {
+      PedExtractionResult.NO_PED_REQUIRED
     }
 
     /** --- ERSED --- **/
@@ -371,13 +372,25 @@ class BookingExtractionService(
     /** --- ESED --- **/
     dates[ESED] = latestUnadjustedExpiryDate
 
-    val sds40EligibleReleaseTypes = listOf(CRD, ARD, HDCED, TUSED, PED, ERSED)
-
     val isAnyRelevantSentenceAffectedBySds40 = sentences.any { sentence ->
       isAffectedBySds40(sentence) &&
-        sds40EligibleReleaseTypes.any { type ->
-          val targetDate = dates[type] // only include the eligible types of dates
+        SDS40_ELIGIBLE_RELEASE_TYPES.any { type ->
+          val targetDate = dates[type]
           targetDate != null && sentence.sentenceCalculation.getDateByType(type) == targetDate
+        }
+    }
+
+    val isAnyRelevantSentenceAffectedByProgressionModel = sentences.any { sentence ->
+      isAffectedByProgressionModel(sentence) &&
+        PROGRESSION_MODEL_ELIGIBLE_RELEASE_TYPES.any { type ->
+          val targetDate = dates[type]
+          val targetType = if (type == ReleaseDateType.PED && pedExtractionResult == PedExtractionResult.PED_ADJUSTED_TO_NON_PED_RELEASE) {
+            // if the PED was adjusted to the CRD and the CRD was affected by progression model then the calculation was affected by progression
+            CRD
+          } else {
+            type
+          }
+          targetDate != null && sentence.sentenceCalculation.getDateByType(targetType) == targetDate
         }
     }
 
@@ -388,12 +401,16 @@ class BookingExtractionService(
       effectiveSentenceLength,
       ersedNotApplicableDueToDtoLaterThanCrd,
       affectedBySds40 = isAnyRelevantSentenceAffectedBySds40,
+      affectedByProgressionModel = isAnyRelevantSentenceAffectedByProgressionModel,
       sentencesImpactingFinalReleaseDate = sentencesImpactingFinalReleaseDate,
     )
   }
 
   private fun isAffectedBySds40(sentence: CalculableSentence): Boolean = !sentence.isRecall() &&
     sentence.isAffectedBySds40EarlyRelease()
+
+  private fun isAffectedByProgressionModel(sentence: CalculableSentence): Boolean = !sentence.isRecall() &&
+    sentence.isAffectedBySdsProgressionModel()
 
   fun extractCrdOrArd(
     mostRecentSentencesByReleaseDate: List<CalculableSentence>,
@@ -425,7 +442,7 @@ class BookingExtractionService(
     sentences: List<CalculableSentence>,
     dates: MutableMap<ReleaseDateType, LocalDate>,
     breakdownByReleaseDateType: MutableMap<ReleaseDateType, ReleaseDateCalculationBreakdown>,
-  ) {
+  ): PedExtractionResult {
     if (latestExtendedDeterminateParoleEligibilityDate != null) {
       val mostRecentReleaseSentenceParoleDate =
         mostRecentSentenceByAdjustedDeterminateReleaseDate.sentenceCalculation.extendedDeterminateParoleEligibilityDate
@@ -441,6 +458,7 @@ class BookingExtractionService(
           )
         ) {
           // SDS release is after PED, so no PED required.
+          return PedExtractionResult.SDS_RELEASE_AFTER_PED
         } else {
           if (latestNonPedRelease != null && latestExtendedDeterminateParoleEligibilityDate.isBefore(latestNonPedRelease)) {
             dates[PED] = latestNonPedRelease
@@ -455,16 +473,19 @@ class BookingExtractionService(
               releaseDate = dates[PED]!!,
               unadjustedDate = latestExtendedDeterminateParoleEligibilityDate,
             )
+            return PedExtractionResult.PED_ADJUSTED_TO_NON_PED_RELEASE
           } else {
             dates[PED] = latestExtendedDeterminateParoleEligibilityDate
             breakdownByReleaseDateType[PED] = ReleaseDateCalculationBreakdown(
               releaseDate = dates[PED]!!,
               unadjustedDate = latestExtendedDeterminateParoleEligibilityDate,
             )
+            return PedExtractionResult.LATEST_PED_USED
           }
         }
       }
     }
+    return PedExtractionResult.NO_PED_REQUIRED
   }
 
   private fun extractErsedAndNotApplicableDueToDtoLaterThanCrdFlag(
@@ -703,7 +724,15 @@ class BookingExtractionService(
     val canHaveLicenceExpiry: Boolean,
   )
 
+  private enum class PedExtractionResult {
+    NO_PED_REQUIRED,
+    PED_ADJUSTED_TO_NON_PED_RELEASE,
+    LATEST_PED_USED,
+    SDS_RELEASE_AFTER_PED,
+  }
+
   companion object {
-    val log: Logger = LoggerFactory.getLogger(this::class.java)
+    private val SDS40_ELIGIBLE_RELEASE_TYPES = listOf(CRD, ARD, HDCED, TUSED, PED, ERSED)
+    private val PROGRESSION_MODEL_ELIGIBLE_RELEASE_TYPES = listOf(CRD, PED, ERSED)
   }
 }

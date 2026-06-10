@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 import com.fasterxml.jackson.annotation.JsonIgnore
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.LegislationName
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ReleaseMultiplier
@@ -188,5 +189,11 @@ interface CalculableSentence {
   fun isAffectedBySds40EarlyRelease(): Boolean = this.sentenceParts().any {
     it.identificationTrack == SentenceIdentificationTrack.SDS &&
       sentenceCalculation.unadjustedReleaseDate.multiplierForSentence(it) == ReleaseMultiplier.FORTY_PERCENT
+  }
+
+  @JsonIgnore
+  fun isAffectedBySdsProgressionModel(): Boolean = this.sentenceParts().any {
+    (it.identificationTrack == SentenceIdentificationTrack.SDS || it.identificationTrack == SentenceIdentificationTrack.SDS_PLUS) &&
+      sentenceCalculation.applicableSdsLegislation?.legislation?.legislationName == LegislationName.SDS_PROGRESSION_MODEL
   }
 }

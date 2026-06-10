@@ -45,5 +45,8 @@ data class TrancheOutcome(
   @NotNull
   val affectedBySds40: Boolean = false,
 
+  @NotNull
+  val affectedByProgressionModel: Boolean = false,
+
   val outcomeDate: LocalDate? = LocalDate.now(),
 )
