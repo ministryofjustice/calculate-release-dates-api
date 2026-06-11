@@ -163,7 +163,7 @@ class CalculationController(
     calculationRequestId: Long,
   ): CalculatedReleaseDates {
     log.info("Request received return calculation results for calculationRequestId {}", calculationRequestId)
-    return calculationTransactionalService.findCalculationResults(calculationRequestId)
+    return calculationTransactionalService.findCalculationRequestAndResults(calculationRequestId).second
   }
 
   @GetMapping(value = ["/detailed-results/{calculationRequestId}"])

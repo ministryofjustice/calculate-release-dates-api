@@ -54,6 +54,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.TERSED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.TUSED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.Tariff
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.TrancheName
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AFineSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AbstractSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustment
@@ -88,6 +89,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeter
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExternalMovement
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExternalSentenceId
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.HistoricalTusedData
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.LatestCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManuallyEnteredDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
@@ -839,6 +841,8 @@ fun transform(
   sdsSentencesIdentified: List<SentenceAndOffenceWithReleaseArrangements>,
   hasDiscrepancyRecorded: Boolean,
   objectMapper: ObjectMapper,
+  latestCalculation: LatestCalculation?,
+  progressionModelTranche: TrancheName?,
 ): ComparisonPersonOverview = ComparisonPersonOverview(
   personId = comparisonPerson.person,
   lastName = comparisonPerson.lastName,
@@ -858,6 +862,9 @@ fun transform(
   sdsSentencesIdentified = sdsSentencesIdentified,
   fatalException = comparisonPerson.fatalException,
   calculationRequestId = comparisonPerson.calculationRequestId,
+  latestCalculationReason = latestCalculation?.reason,
+  latestCalculationReasonFurtherDetail = latestCalculation?.reasonFurtherDetail,
+  progressionModelTranche = progressionModelTranche,
 )
 
 fun transform(discrepancy: ComparisonPersonDiscrepancy): ComparisonDiscrepancySummary = transform(discrepancy, discrepancy.causes)

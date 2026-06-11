@@ -9,6 +9,7 @@ data class LatestCalculation(
   val calculationRequestId: Long?,
   val establishment: String?,
   val reason: String,
+  val reasonFurtherDetail: String?,
   val source: CalculationSource,
   val dates: List<DetailedDate>,
   val calculatedByUsername: String,

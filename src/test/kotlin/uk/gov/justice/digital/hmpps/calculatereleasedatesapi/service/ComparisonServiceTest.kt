@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
+import arrow.core.right
 import com.fasterxml.jackson.databind.node.JsonNodeFactory
 import jakarta.persistence.EntityNotFoundException
 import org.assertj.core.api.Assertions.assertThat
@@ -22,6 +23,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonPe
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonPersonDiscrepancy
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonPersonDiscrepancyImpact
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonPersonDiscrepancyPriority
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.TrancheOutcome
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.DiscrepancyCategory
@@ -29,14 +31,18 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Discre
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.DiscrepancyPriority
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.DiscrepancySubCategory
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.TrancheName
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CrdWebException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentsSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Agency
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationSource
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonDiscrepancySummary
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonPersonOverview
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CreateComparisonDiscrepancyRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DiscrepancyCause
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.LatestCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.MismatchType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.PersonComparisonInputs
@@ -71,6 +77,7 @@ class ComparisonServiceTest {
   private val bulkComparisonEventSenderService = mock<BulkComparisonEventSenderService>()
   private val sourceDataMapper = mock<SourceDataMapper>()
   private val bookingService = mock<BookingService>()
+  private val latestCalculationService = mock<LatestCalculationService>()
 
   private val comparisonService = ComparisonService(
     calculationOutcomeRepository,
@@ -85,6 +92,7 @@ class ComparisonServiceTest {
     bulkComparisonEventSenderService,
     sourceDataMapper,
     bookingService,
+    latestCalculationService,
   )
 
   @BeforeEach
@@ -590,9 +598,24 @@ class ComparisonServiceTest {
       criteria = emptyObjectNode,
       prison = "all",
     )
+    val latestCalculation = LatestCalculation("foo", 1L, LocalDateTime.now(), 1L, "BXI", "Other", "Further detail", CalculationSource.CRDS, emptyList(), "user1", "User One")
     whenever(comparisonRepository.findByComparisonShortReference(any())).thenReturn(comparison)
     whenever(comparisonPersonRepository.findByComparisonIdAndShortReference(any(), any())).thenReturn(person)
     whenever(comparisonPersonDiscrepancyRepository.existsByComparisonPerson(any())).thenReturn(false)
+    whenever(latestCalculationService.latestCalculationForPrisoner("foo")).thenReturn(latestCalculation.right())
+    whenever(calculationTransactionalService.findCalculationRequestAndResults(99L)).thenReturn(
+      CalculationRequest(
+        allocatedSDSTranche = TrancheOutcome(
+          id = 1L,
+          allocatedTranche = TrancheName.TRANCHE_0,
+          tranche = TrancheName.TRANCHE_0,
+          ftr56Tranche = TrancheName.FTR_56_TRANCHE_0,
+          progressionModelTranche = TrancheName.TRANCHE_10,
+          affectedBySds40 = false,
+          affectedByProgressionModel = true,
+        ),
+      ) to mock<CalculatedReleaseDates>(),
+    )
     val result = comparisonService.getComparisonPersonByShortReference("ABCD1234", "FOO")
     assertThat(result).isEqualTo(
       ComparisonPersonOverview(
@@ -614,6 +637,9 @@ class ComparisonServiceTest {
         sdsSentencesIdentified = listOf(sdsPlusSentence),
         fatalException = person.fatalException,
         calculationRequestId = 99L,
+        latestCalculationReason = "Other",
+        latestCalculationReasonFurtherDetail = "Further detail",
+        progressionModelTranche = TrancheName.TRANCHE_10,
       ),
     )
   }

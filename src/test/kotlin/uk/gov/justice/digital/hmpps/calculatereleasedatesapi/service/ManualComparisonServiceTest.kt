@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
+import arrow.core.right
 import com.fasterxml.jackson.databind.ObjectMapper
 import jakarta.persistence.EntityNotFoundException
 import org.assertj.core.api.Assertions.assertThat
@@ -12,12 +13,18 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonPerson
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.TrancheOutcome
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.TrancheName
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.manualComparisonTypes
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationSource
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonPersonOverview
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.LatestCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualComparisonInput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.MismatchType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSReleaseArrangements
@@ -45,6 +52,7 @@ class ManualComparisonServiceTest {
   private val comparisonDiscrepancyService = mock<ComparisonDiscrepancyService>()
   private val bulkComparisonEventSenderService = mock<BulkComparisonEventSenderService>()
   private val comparisonService = mock<ComparisonService>()
+  private val latestCalculationService = mock<LatestCalculationService>()
 
   private val manualComparisonService: ManualComparisonService = ManualComparisonService(
     comparisonRepository,
@@ -56,6 +64,7 @@ class ManualComparisonServiceTest {
     comparisonDiscrepancyService,
     bulkComparisonEventSenderService,
     comparisonService,
+    latestCalculationService,
   )
 
   @Test
@@ -208,9 +217,24 @@ class ManualComparisonServiceTest {
       comparisonType = ComparisonType.MANUAL,
       criteria = emptyObjectNode,
     )
+    val latestCalculation = LatestCalculation("foo", 1L, LocalDateTime.now(), 1L, "BXI", "Other", "Further detail", CalculationSource.CRDS, emptyList(), "user1", "User One")
     whenever(comparisonRepository.findByComparisonShortReference(any())).thenReturn(comparison)
     whenever(comparisonPersonRepository.findByComparisonIdAndShortReference(any(), any())).thenReturn(person)
     whenever(comparisonPersonDiscrepancyRepository.existsByComparisonPerson(any())).thenReturn(false)
+    whenever(latestCalculationService.latestCalculationForPrisoner("foo")).thenReturn(latestCalculation.right())
+    whenever(calculationTransactionalService.findCalculationRequestAndResults(99L)).thenReturn(
+      CalculationRequest(
+        allocatedSDSTranche = TrancheOutcome(
+          id = 1L,
+          allocatedTranche = TrancheName.TRANCHE_0,
+          tranche = TrancheName.TRANCHE_0,
+          ftr56Tranche = TrancheName.FTR_56_TRANCHE_0,
+          progressionModelTranche = TrancheName.TRANCHE_10,
+          affectedBySds40 = false,
+          affectedByProgressionModel = true,
+        ),
+      ) to mock<CalculatedReleaseDates>(),
+    )
     val result = manualComparisonService.getComparisonPersonByShortReference("ABCD1234", "FOO")
     assertThat(result).isEqualTo(
       ComparisonPersonOverview(
@@ -232,6 +256,9 @@ class ManualComparisonServiceTest {
         sdsSentencesIdentified = listOf(sdsPlusSentence),
         fatalException = person.fatalException,
         calculationRequestId = 99L,
+        latestCalculationReason = "Other",
+        latestCalculationReasonFurtherDetail = "Further detail",
+        progressionModelTranche = TrancheName.TRANCHE_10,
       ),
     )
   }

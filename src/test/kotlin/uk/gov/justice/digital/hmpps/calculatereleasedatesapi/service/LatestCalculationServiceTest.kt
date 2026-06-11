@@ -127,6 +127,7 @@ class LatestCalculationServiceTest {
         null,
         null,
         "New Sentence",
+        null,
         CalculationSource.NOMIS,
         emptyList(),
         "username",
@@ -150,6 +151,7 @@ class LatestCalculationServiceTest {
         null,
         null,
         "New Sentence",
+        null,
         CalculationSource.NOMIS,
         emptyList(),
         "username",
@@ -173,6 +175,7 @@ class LatestCalculationServiceTest {
         null,
         null,
         "New Sentence",
+        null,
         CalculationSource.NOMIS,
         emptyList(),
         "username",
@@ -196,6 +199,7 @@ class LatestCalculationServiceTest {
         null,
         null,
         "New Sentence",
+        null,
         CalculationSource.NOMIS,
         emptyList(),
         "username",
@@ -218,6 +222,7 @@ class LatestCalculationServiceTest {
         null,
         null,
         "FOO",
+        null,
         CalculationSource.NOMIS,
         emptyList(),
         "username",
@@ -274,6 +279,7 @@ class LatestCalculationServiceTest {
         654321,
         null,
         "Some reason",
+        null,
         CalculationSource.CRDS,
         detailedDates,
         "username",
@@ -331,6 +337,7 @@ class LatestCalculationServiceTest {
         654321,
         null,
         "Some reason",
+        null,
         CalculationSource.CRDS,
         detailedDates,
         "username",
@@ -377,6 +384,45 @@ class LatestCalculationServiceTest {
   }
 
   @Test
+  fun `Should provide calculation reason further detail if there is some for the CRDS calc`() {
+    val calculationReference = UUID.randomUUID()
+    val calculatedAt = LocalDateTime.now()
+
+    whenever(prisonService.getOffenderDetail(prisonerId)).thenReturn(prisonerDetails)
+    whenever(prisonService.getOffenderKeyDates(bookingId)).thenReturn(
+      OffenderKeyDates(
+        conditionalReleaseDate = LocalDate.of(2025, 1, 7),
+        reasonCode = "NEW",
+        calculatedAt = calculatedAt,
+        comment = "Some stuff and then the ref: $calculationReference",
+        calculatedByUserId = "user1",
+        calculatedByFirstName = "User",
+        calculatedByLastName = "One",
+      ).right(),
+    )
+    whenever(calculationRequestRepository.findFirstByPrisonerIdAndCalculationStatusOrderByCalculatedAtDesc(prisonerId)).thenReturn(
+      Optional.of(
+        CalculationRequest(
+          id = 654321,
+          calculationReference = calculationReference,
+          calculatedAt = calculatedAt,
+          reasonForCalculation = CalculationReason(0, false, true, "Other", false, null, null, null, false, false, true, null),
+          otherReasonForCalculation = "Some further details",
+        ),
+      ),
+    )
+
+    val dates = listOf(
+      ReleaseDate(LocalDate.of(2025, 1, 7), ReleaseDateType.CRD),
+    )
+    val detailedDates = toDetailedDates(dates)
+    whenever(calculationResultEnrichmentService.addDetailToCalculationDates(dates, null, null, null, null, null)).thenReturn(detailedDates.associateBy { it.type })
+    whenever(calculationBreakdownService.getBreakdownSafely(any())).thenReturn(BreakdownMissingReason.UNSUPPORTED_CALCULATION_BREAKDOWN.left())
+    assertThat(service.latestCalculationForPrisoner(prisonerId).getOrNull()!!.reason).isEqualTo("Other")
+    assertThat(service.latestCalculationForPrisoner(prisonerId).getOrNull()!!.reasonFurtherDetail).isEqualTo("Some further details")
+  }
+
+  @Test
   fun `Should lookup the location if there is one set on CRDS`() {
     val calculationReference = UUID.randomUUID()
     val calculatedAt = LocalDateTime.now()
@@ -413,6 +459,7 @@ class LatestCalculationServiceTest {
         654321,
         "HMP ABC",
         "Not entered",
+        null,
         CalculationSource.CRDS,
         detailedDates,
         "username",
@@ -458,6 +505,7 @@ class LatestCalculationServiceTest {
         654321,
         "XYZ",
         "Not entered",
+        null,
         CalculationSource.CRDS,
         detailedDates,
         "username",
@@ -502,6 +550,7 @@ class LatestCalculationServiceTest {
         654321,
         "HMP ABC",
         "Not entered",
+        null,
         CalculationSource.CRDS,
         detailedDates,
         "username",
@@ -545,6 +594,7 @@ class LatestCalculationServiceTest {
         654321,
         "HMP ABC",
         "Not entered",
+        null,
         CalculationSource.CRDS,
         detailedDates,
         "username",
@@ -588,6 +638,7 @@ class LatestCalculationServiceTest {
         654321,
         "HMP ABC",
         "Not entered",
+        null,
         CalculationSource.CRDS,
         detailedDates,
         "username",

@@ -34,6 +34,7 @@ class ManualComparisonService(
   private val comparisonDiscrepancyService: ComparisonDiscrepancyService,
   private val bulkComparisonEventSenderService: BulkComparisonEventSenderService,
   private val comparisonService: ComparisonService,
+  private val latestCalculationService: LatestCalculationService,
 ) {
 
   fun create(manualComparison: ManualComparisonInput, token: String): Comparison {
@@ -66,12 +67,23 @@ class ManualComparisonService(
     val comparison = comparisonRepository.findByComparisonShortReference(comparisonReference) ?: throw EntityNotFoundException("No comparison results exist for comparisonReference $comparisonReference ")
     val comparisonPerson = comparisonPersonRepository.findByComparisonIdAndShortReference(comparison.id(), comparisonPersonReference) ?: throw EntityNotFoundException("No comparison person results exist for comparisonReference $comparisonReference and comparisonPersonReference $comparisonPersonReference ")
     val hasDiscrepancyRecord = comparisonPersonDiscrepancyRepository.existsByComparisonPerson(comparisonPerson)
-    val calculatedReleaseDates = comparisonPerson.calculationRequestId?.let { calculationTransactionalService.findCalculationResults(it) }
+    val (calculationRequest, calculatedReleaseDates) = comparisonPerson.calculationRequestId?.let { calculationTransactionalService.findCalculationRequestAndResults(it) } ?: (null to null)
     val nomisDates = objectMapper.convertValue(comparisonPerson.nomisDates, object : TypeReference<Map<ReleaseDateType, LocalDate?>>() {})
     val overrideDates = objectMapper.convertValue(comparisonPerson.overrideDates, object : TypeReference<Map<ReleaseDateType, LocalDate?>>() {})
     val breakdownByReleaseDateType = objectMapper.convertValue(comparisonPerson.breakdownByReleaseDateType, object : TypeReference<Map<ReleaseDateType, ReleaseDateCalculationBreakdown>>() {})
     val sdsPlusSentences = if (comparisonPerson.sdsPlusSentencesIdentified.isEmpty) emptyList() else objectMapper.convertValue(comparisonPerson.sdsPlusSentencesIdentified, object : TypeReference<List<SentenceAndOffenceWithReleaseArrangements>>() {})
-    return transform(comparisonPerson, nomisDates, calculatedReleaseDates, overrideDates, breakdownByReleaseDateType, sdsPlusSentences, hasDiscrepancyRecord, objectMapper)
+    return transform(
+      comparisonPerson,
+      nomisDates,
+      calculatedReleaseDates,
+      overrideDates,
+      breakdownByReleaseDateType,
+      sdsPlusSentences,
+      hasDiscrepancyRecord,
+      objectMapper,
+      latestCalculationService.latestCalculationForPrisoner(comparisonPerson.person).getOrNull(),
+      calculationRequest?.allocatedSDSTranche?.progressionModelTranche,
+    )
   }
 
   fun createDiscrepancy(comparisonReference: String, comparisonPersonReference: String, discrepancyInput: CreateComparisonDiscrepancyRequest): ComparisonDiscrepancySummary {

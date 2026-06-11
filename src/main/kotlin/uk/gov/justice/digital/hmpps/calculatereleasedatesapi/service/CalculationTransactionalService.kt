@@ -311,7 +311,10 @@ class CalculationTransactionalService(
   }
 
   @Transactional(readOnly = true)
-  fun findCalculationResults(calculationRequestId: Long): CalculatedReleaseDates = transform(getCalculationRequest(calculationRequestId))
+  fun findCalculationRequestAndResults(calculationRequestId: Long): Pair<CalculationRequest, CalculatedReleaseDates> {
+    val calculationRequest = getCalculationRequest(calculationRequestId)
+    return calculationRequest to transform(calculationRequest)
+  }
 
   @Transactional(readOnly = true)
   fun findUserInput(calculationRequestId: Long): CalculationUserInputs {
