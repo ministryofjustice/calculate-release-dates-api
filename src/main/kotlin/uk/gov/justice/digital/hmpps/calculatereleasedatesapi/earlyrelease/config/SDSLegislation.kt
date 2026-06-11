@@ -28,7 +28,7 @@ sealed interface SDSLegislation : Legislation {
 
   fun appliesToSentence(part: AbstractSentence) = filter.isIncluded(part)
 
-  fun applyDefaulting(calculatedDate: LocalDate, earliestApplicableDate: LocalDate?, awardedDays: Long, ualPostProgression: Long): DefaultingResult = if (earliestApplicableDate != null && earliestApplicableDate.isAfter(calculatedDate)) {
+  fun applyDefaulting(calculatedDate: LocalDate, earliestApplicableDate: LocalDate?, awardedDays: Long): DefaultingResult = if (earliestApplicableDate != null && earliestApplicableDate.isAfter(calculatedDate)) {
     DefaultingResult(earliestApplicableDate, DefaultingOutcome.DEFAULTED)
   } else {
     DefaultingResult(calculatedDate, DefaultingOutcome.RETAINED)
@@ -115,16 +115,15 @@ sealed interface SDSLegislation : Legislation {
     override fun isSentenceSubjectToTraches(sentence: CalculableSentence) = sentence is StandardDeterminateSentence && filter.isIncluded(sentence)
 
     /*
-     * ADAs and UAL occurring post progression should always be included in the final release dates. We remove them when comparing
-     * to the standard release date as if they would be due for release without them then they are not eligible for early release.
-     * We remove them when deciding whether to default to the tranche commencement date as they will be added to the tranche commencement
-     * date if they are defaulted and could be served twice in this scenario. If we did not add them to the tranche date then they
-     * may not be fully served.
+     * ADAs should always be included in the final release dates. We remove them when comparing to the standard release date as if they would be due for
+     * release without them then they are not eligible for early release.
+     * We also remove ADAs when deciding whether to default to the tranche commencement date for the same reason and in the case they are defaulted to tranche
+     * commencement the ADAs are then added onto it.
      */
-    override fun applyDefaulting(calculatedDate: LocalDate, earliestApplicableDate: LocalDate?, awardedDays: Long, ualPostProgression: Long): DefaultingResult {
-      val calculatedDateMinusAwardedAndUalPostProgression = calculatedDate.minusDays(awardedDays).minusDays(ualPostProgression)
+    override fun applyDefaulting(calculatedDate: LocalDate, earliestApplicableDate: LocalDate?, awardedDays: Long): DefaultingResult {
+      val calculatedDateMinusAwardedAndUalPostProgression = calculatedDate.minusDays(awardedDays)
       return if (earliestApplicableDate != null && earliestApplicableDate.isAfter(calculatedDateMinusAwardedAndUalPostProgression)) {
-        DefaultingResult(earliestApplicableDate.plusDays(awardedDays).plusDays(ualPostProgression), DefaultingOutcome.DEFAULTED)
+        DefaultingResult(earliestApplicableDate.plusDays(awardedDays), DefaultingOutcome.DEFAULTED)
       } else {
         DefaultingResult(calculatedDate, DefaultingOutcome.RETAINED)
       }
