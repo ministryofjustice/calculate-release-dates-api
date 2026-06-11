@@ -43,6 +43,7 @@ class ComparisonService(
   private val bulkComparisonEventSenderService: BulkComparisonEventSenderService,
   private val sourceDataMapper: SourceDataMapper,
   private val bookingService: BookingService,
+  private val latestCalculationService: LatestCalculationService,
 ) {
 
   fun create(comparisonInput: ComparisonInput, token: String): Comparison {
@@ -127,8 +128,8 @@ class ComparisonService(
         comparisonPersonRepository.findByComparisonIdAndShortReference(comparison.id(), comparisonPersonReference)
           ?: throw EntityNotFoundException("No comparison person results exist for comparisonReference $comparisonReference and comparisonPersonReference $comparisonPersonReference ")
       val hasDiscrepancyRecorded = comparisonPersonDiscrepancyRepository.existsByComparisonPerson(comparisonPerson)
-      val calculatedReleaseDates =
-        comparisonPerson.calculationRequestId?.let { calculationTransactionalService.findCalculationResults(it) }
+      val (calculationRequest, calculatedReleaseDates) =
+        comparisonPerson.calculationRequestId?.let { calculationTransactionalService.findCalculationRequestAndResults(it) } ?: (null to null)
       val nomisDates = objectMapper.convertValue(
         comparisonPerson.nomisDates,
         object : TypeReference<Map<ReleaseDateType, LocalDate?>>() {},
@@ -159,6 +160,8 @@ class ComparisonService(
         sdsPlusSentences,
         hasDiscrepancyRecorded,
         objectMapper,
+        latestCalculationService.latestCalculationForPrisoner(comparisonPerson.person).getOrNull(),
+        calculationRequest?.allocatedSDSTranche?.progressionModelTranche,
       )
     } else {
       throw CrdWebException("Forbidden", HttpStatus.FORBIDDEN, 403.toString())
