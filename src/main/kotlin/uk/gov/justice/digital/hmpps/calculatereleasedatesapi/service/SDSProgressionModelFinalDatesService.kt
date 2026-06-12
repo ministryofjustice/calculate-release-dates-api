@@ -9,7 +9,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.HDCED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
-import java.time.LocalDate
 
 @Service
 class SDSProgressionModelFinalDatesService {
@@ -43,14 +42,13 @@ class SDSProgressionModelFinalDatesService {
         val standard = standardReleaseCalculation.dates[releaseDateType]
 
         val awardedDays = getAwardedDays(adjustments)
-        val ualPostProgression = getUalPostProgression(adjustments, commencementDate)
 
         // if the standard date is defaulted using PM rules then it was before the tranche date and should be retained here.
-        if (standard != null && legislation.applyDefaulting(standard, earliestApplicableDate, awardedDays, ualPostProgression).outcome == DefaultingOutcome.DEFAULTED) {
+        if (standard != null && legislation.applyDefaulting(standard, earliestApplicableDate, awardedDays).outcome == DefaultingOutcome.DEFAULTED) {
           mergedDates[releaseDateType] = standard
           standardReleaseCalculation.breakdownByReleaseDateType[releaseDateType]?.let { standardBreakdown -> mergedBreakdown[releaseDateType] = standardBreakdown }
         } else if (early != null) {
-          val defaultingResult = legislation.applyDefaulting(early, earliestApplicableDate, awardedDays, ualPostProgression)
+          val defaultingResult = legislation.applyDefaulting(early, earliestApplicableDate, awardedDays)
           mergedDates[releaseDateType] = defaultingResult.date
           earlyReleaseCalculation.breakdownByReleaseDateType[releaseDateType]?.let { earlyBreakdown ->
             mergedBreakdown[releaseDateType] = earlyBreakdown.copy(
@@ -72,11 +70,6 @@ class SDSProgressionModelFinalDatesService {
   }
 
   private fun getAwardedDays(adjustments: Adjustments): Long = (adjustments.getOrEmptyList(AdjustmentType.ADDITIONAL_DAYS_AWARDED).sumOf { it.numberOfDays } - adjustments.getOrEmptyList(AdjustmentType.RESTORATION_OF_ADDITIONAL_DAYS_AWARDED).sumOf { it.numberOfDays }).toLong()
-
-  fun getUalPostProgression(adjustments: Adjustments, commencementDate: LocalDate) = adjustments.getOrEmptyList(AdjustmentType.UNLAWFULLY_AT_LARGE)
-    .filter { it.appliesToSentencesFrom >= commencementDate }
-    .sumOf { it.numberOfDays }
-    .toLong()
 
   companion object {
     private val DATE_TYPES_TO_ADJUST_TO_COMMENCEMENT_DATE = listOf(

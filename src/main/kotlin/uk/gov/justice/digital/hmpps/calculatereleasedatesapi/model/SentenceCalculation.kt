@@ -203,7 +203,7 @@ data class SentenceCalculation(
       // PRRD is already adjusted for FTR56 commencement
       adjustedPostRecallReleaseDate!!
     } else if (applicableSdsLegislation != null && applicableSdsLegislation.earliestApplicableDate != null) {
-      applicableSdsLegislation.legislation.applyDefaulting(adjustedDeterminateReleaseDate, applicableSdsLegislation.earliestApplicableDate, adjustments.awardedDuringCustody, adjustments.ualAfterProgressionModel).date
+      applicableSdsLegislation.legislation.applyDefaulting(adjustedDeterminateReleaseDate, applicableSdsLegislation.earliestApplicableDate, adjustments.awardedDuringCustody).date
     } else {
       adjustedDeterminateReleaseDate
     }

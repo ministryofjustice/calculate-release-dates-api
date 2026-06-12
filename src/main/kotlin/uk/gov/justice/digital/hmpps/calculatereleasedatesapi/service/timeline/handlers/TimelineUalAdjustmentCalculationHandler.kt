@@ -1,7 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers
 
 import org.springframework.stereotype.Service
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.SDSLegislationConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculationEvent.UALTimelineCalculationEvent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculator
@@ -12,10 +11,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isBeforeOrEqua
 import java.time.LocalDate
 
 @Service
-class TimelineUalAdjustmentCalculationHandler(
-  timelineCalculator: TimelineCalculator,
-  private val sdsLegislationConfiguration: SDSLegislationConfiguration,
-) : TimelineCalculationHandler<UALTimelineCalculationEvent>(timelineCalculator) {
+class TimelineUalAdjustmentCalculationHandler(timelineCalculator: TimelineCalculator) : TimelineCalculationHandler<UALTimelineCalculationEvent>(timelineCalculator) {
   override fun handle(event: UALTimelineCalculationEvent, timelineTrackingData: TimelineTrackingData): TimelineHandleResult {
     with(timelineTrackingData) {
       val ual = futureData.ual.filter { it.appliesToSentencesFrom == event.date }
@@ -69,16 +65,6 @@ class TimelineUalAdjustmentCalculationHandler(
           ualAfterFtr = sentenceCalculation.adjustments.ualAfterFtr + ualAfterFtr,
         )
         sentenceCalculation.lastDayOfUal = lastDayOfUal
-      }
-
-      val progressionModelCommencementDate = sdsLegislationConfiguration.progressionModelLegislation?.commencementDate()
-      if (progressionModelCommencementDate != null && timelineCalculationDate.isAfterOrEqualTo(progressionModelCommencementDate)) {
-        sentencesAfterReleaseDate.forEach { sentence ->
-          val sentenceCalculation = sentence.sentenceCalculation
-          sentenceCalculation.adjustments = sentenceCalculation.adjustments.copy(
-            ualAfterProgressionModel = sentenceCalculation.adjustments.ualAfterProgressionModel + ualDays,
-          )
-        }
       }
     }
   }
