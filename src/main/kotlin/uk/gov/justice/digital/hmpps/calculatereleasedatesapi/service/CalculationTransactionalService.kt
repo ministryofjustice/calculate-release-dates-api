@@ -21,6 +21,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Calcul
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.CONFIRMED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.ERROR
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.PRELIMINARY
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.SECOND_CHECK_CONFIRMED
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.SECOND_CHECK_INITIATED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.HistoricalTusedSource
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.TrancheName
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.BreakdownChangedSinceLastCalculation
@@ -113,9 +115,9 @@ class CalculationTransactionalService(
     submitCalculationRequest: SubmitCalculationRequest,
   ): CalculatedReleaseDates {
     val calculationRequest =
-      calculationRequestRepository.findByIdAndCalculationStatus(
+      calculationRequestRepository.findByIdAndCalculationStatusIn(
         calculationRequestId,
-        PRELIMINARY.name,
+        listOf(PRELIMINARY.name, SECOND_CHECK_INITIATED.name),
       ).orElseThrow {
         EntityNotFoundException("No preliminary calculation exists for calculationRequestId $calculationRequestId")
       }
@@ -155,9 +157,21 @@ class CalculationTransactionalService(
     reasonForCalculation: CalculationReason?,
     otherReasonForCalculation: String?,
     historicalTusedSource: HistoricalTusedSource? = null,
-  ): CalculatedReleaseDates {
-    try {
-      val calculation = calculate(
+  ): CalculatedReleaseDates = try {
+    if (reasonForCalculation != null && reasonForCalculation.id == 18L) {
+      calculate(
+        booking,
+        SECOND_CHECK_CONFIRMED,
+        sourceData,
+        reasonForCalculation,
+        userInput,
+        otherReasonForCalculation,
+        calculationFragments,
+        CalculationType.CALCULATED,
+        historicalTusedSource,
+      )
+    } else {
+      val calc = calculate(
         booking,
         CONFIRMED,
         sourceData,
@@ -169,14 +183,14 @@ class CalculationTransactionalService(
         historicalTusedSource,
       )
       if (!approvedDates.isNullOrEmpty()) {
-        calculationConfirmationService.storeApprovedDates(calculation, approvedDates)
+        calculationConfirmationService.storeApprovedDates(calc, approvedDates)
       }
-      calculationConfirmationService.writeToNomisAndPublishEvent(prisonerId, booking, calculation, approvedDates)
-      return calculation
-    } catch (error: Exception) {
-      recordError(booking, sourceData, userInput, reasonForCalculation, otherReasonForCalculation)
-      throw error
+      calculationConfirmationService.writeToNomisAndPublishEvent(prisonerId, booking, calc, approvedDates)
+      calc
     }
+  } catch (error: Exception) {
+    recordError(booking, sourceData, userInput, reasonForCalculation, otherReasonForCalculation)
+    throw error
   }
 
   @Transactional

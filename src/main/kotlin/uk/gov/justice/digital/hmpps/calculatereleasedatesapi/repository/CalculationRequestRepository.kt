@@ -24,7 +24,13 @@ interface CalculationRequestRepository : JpaRepository<CalculationRequest, Long>
   fun findByIdAndCalculationStatus(calculationRequestId: Long, calculationStatus: String): Optional<CalculationRequest>
 
   @EntityGraph(value = "CalculationRequest.detail", type = EntityGraphType.LOAD)
+  fun findByIdAndCalculationStatusIn(calculationRequestId: Long, calculationStatuses: List<String>): Optional<CalculationRequest>
+
+  @EntityGraph(value = "CalculationRequest.detail", type = EntityGraphType.LOAD)
   fun findByCalculationReference(calculationReference: UUID): Optional<CalculationRequest>
+
+  @EntityGraph(value = "CalculationRequest.detail", type = EntityGraphType.LOAD)
+  fun findAllByPrisonerIdAndCalculationStatusIn(prisonerId: String, calculationStatuses: List<String>): List<CalculationRequest>
 
   @EntityGraph(value = "CalculationRequest.detail", type = EntityGraphType.LOAD)
   fun findAllByPrisonerIdAndCalculationStatus(prisonerId: String, calculationStatus: String): List<CalculationRequest>

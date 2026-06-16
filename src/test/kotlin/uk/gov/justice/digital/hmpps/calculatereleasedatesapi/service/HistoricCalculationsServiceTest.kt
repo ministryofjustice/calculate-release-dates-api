@@ -4,6 +4,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import org.mockito.ArgumentMatchers.anyList
 import org.mockito.ArgumentMatchers.anySet
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.InjectMocks
@@ -76,7 +77,7 @@ class HistoricCalculationsServiceTest {
       calculationReference = UUID.randomUUID(),
       reasonForCalculation = CalculationReason(id = 1, isActive = true, isOther = false, displayName = "calc reason", isBulk = false, nomisReason = null, nomisComment = null, displayRank = 1, useForApprovedDates = false, eligibleForPreviouslyRecordedSled = false, requiresFurtherDetail = false, furtherDetailDescription = null),
     )
-    whenever(calculationRequestRepository.findAllByPrisonerIdAndCalculationStatus(anyString(), anyString())).thenReturn(listOf(calcRequest1, calcRequest2))
+    whenever(calculationRequestRepository.findAllByPrisonerIdAndCalculationStatusIn(anyString(), anyList())).thenReturn(listOf(calcRequest1, calcRequest2))
 
     val sentenceCalculationSummary1 = sentenceCalculationSummary("comment $reference")
     val sentenceCalculationSummary2 = sentenceCalculationSummary1.copy(bookingId = 3, commentText = "comment: ${calcRequest2.calculationReference}")
@@ -95,8 +96,60 @@ class HistoricCalculationsServiceTest {
   }
 
   @Test
+  fun `Test second check for CRDS `() {
+    val calcRequest1 = calculationRequest()
+    val calcRequest2 = calcRequest1.copy(
+      prisonerLocation = "KTI",
+      calculationStatus = CalculationStatus.SECOND_CHECK_CONFIRMED.name,
+      calculationReference = UUID.randomUUID(),
+      calculatedAt = LocalDateTime.now().plusSeconds(1),
+      reasonForCalculation = CalculationReason(id = 18, isActive = true, isOther = false, displayName = "Second Check", isBulk = false, nomisReason = null, nomisComment = null, displayRank = 1, useForApprovedDates = false, eligibleForPreviouslyRecordedSled = false, requiresFurtherDetail = false, furtherDetailDescription = null),
+    )
+    whenever(calculationRequestRepository.findAllByPrisonerIdAndCalculationStatusIn(anyString(), anyList())).thenReturn(listOf(calcRequest1, calcRequest2))
+
+    val sentenceCalculationSummary1 = sentenceCalculationSummary("comment $reference")
+    whenever(prisonService.getCalculationsForAPrisonerId(anyString())).thenReturn(listOf(sentenceCalculationSummary1))
+    val result = underTest.getHistoricCalculationsForPrisoner("123")
+    assertThat(result).hasSize(2)
+    assertThat(result[1].calculationSource).isEqualTo(CalculationSource.CRDS)
+    assertThat(result[1].calculationViewConfiguration).isEqualTo(CalculationViewConfiguration(reference.toString(), 1))
+    assertThat(result[1].establishment).isEqualTo("Chelmsford (HMP)")
+    assertThat(result[1].calculationReason).isNull()
+
+    assertThat(result[0].calculationSource).isEqualTo(CalculationSource.CRDS)
+    assertThat(result[0].calculationViewConfiguration).isEqualTo(CalculationViewConfiguration(calcRequest2.calculationReference.toString(), 1))
+    assertThat(result[0].establishment).isEqualTo("HMP KENNET")
+    assertThat(result[0].calculationReason).isEqualTo(calcRequest2.reasonForCalculation?.displayName)
+  }
+
+  @Test
+  fun `Test second check for CRDS with NOMIS history`() {
+    val calcRequest1 = calculationRequest()
+    val calcRequest2 = calcRequest1.copy(
+      prisonerLocation = "KTI",
+      calculationStatus = CalculationStatus.SECOND_CHECK_CONFIRMED.name,
+      calculationReference = UUID.randomUUID(),
+      calculatedAt = LocalDateTime.now().plusSeconds(1),
+      reasonForCalculation = CalculationReason(id = 18, isActive = true, isOther = false, displayName = "Second Check", isBulk = false, nomisReason = null, nomisComment = null, displayRank = 1, useForApprovedDates = false, eligibleForPreviouslyRecordedSled = false, requiresFurtherDetail = false, furtherDetailDescription = null),
+    )
+    whenever(calculationRequestRepository.findAllByPrisonerIdAndCalculationStatusIn(anyString(), anyList())).thenReturn(listOf(calcRequest2))
+
+    val sentenceCalculationSummary1 = sentenceCalculationSummary("test comment")
+    whenever(prisonService.getCalculationsForAPrisonerId(anyString())).thenReturn(listOf(sentenceCalculationSummary1))
+    val result = underTest.getHistoricCalculationsForPrisoner("123")
+    assertThat(result).hasSize(2)
+    assertThat(result[1].calculationSource).isEqualTo(CalculationSource.NOMIS)
+    assertThat(result[1].calculationReason).isEqualTo("reason")
+
+    assertThat(result[0].calculationSource).isEqualTo(CalculationSource.CRDS)
+    assertThat(result[0].calculationViewConfiguration).isEqualTo(CalculationViewConfiguration(calcRequest2.calculationReference.toString(), 1))
+    assertThat(result[0].establishment).isEqualTo("HMP KENNET")
+    assertThat(result[0].calculationReason).isEqualTo(calcRequest2.reasonForCalculation?.displayName)
+  }
+
+  @Test
   fun `Test source set to NOMIS if calculation not found in database`() {
-    whenever(calculationRequestRepository.findAllByPrisonerIdAndCalculationStatus(anyString(), anyString())).thenReturn(listOf(calculationRequest()))
+    whenever(calculationRequestRepository.findAllByPrisonerIdAndCalculationStatusIn(anyString(), anyList())).thenReturn(listOf(calculationRequest()))
     whenever(prisonService.getCalculationsForAPrisonerId(anyString())).thenReturn(listOf(sentenceCalculationSummary("comment")))
     whenever(manageUsersApiClient.getUsersByUsernames(anySet())).thenReturn(usersDetails)
     val result = underTest.getHistoricCalculationsForPrisoner("123")
@@ -117,7 +170,7 @@ class HistoricCalculationsServiceTest {
       genuineOverrideReason = GenuineOverrideReason.OTHER,
       genuineOverrideReasonFurtherDetail = "Some more details",
     )
-    whenever(calculationRequestRepository.findAllByPrisonerIdAndCalculationStatus(anyString(), anyString())).thenReturn(listOf(calcRequest1, calcRequest2))
+    whenever(calculationRequestRepository.findAllByPrisonerIdAndCalculationStatusIn(anyString(), anyList())).thenReturn(listOf(calcRequest1, calcRequest2))
 
     val sentenceCalculationSummary1 = sentenceCalculationSummary("comment $reference")
     val sentenceCalculationSummary2 = sentenceCalculationSummary1.copy(bookingId = 3, commentText = "comment: ${calcRequest2.calculationReference}", calculatedByUserId = "user1")

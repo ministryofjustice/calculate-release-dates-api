@@ -5,6 +5,7 @@ import org.springframework.transaction.annotation.Transactional
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.client.ManageUsersApiClient
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.CONFIRMED
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.SECOND_CHECK_CONFIRMED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationSource
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationViewConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.GenuineOverrideReason
@@ -20,11 +21,34 @@ class HistoricCalculationsService(
 
   @Transactional(readOnly = true)
   fun getHistoricCalculationsForPrisoner(prisonerId: String): List<HistoricCalculation> {
-    val calculations = calculationRequestRepository.findAllByPrisonerIdAndCalculationStatus(prisonerId, CONFIRMED.name)
+    val calculations = calculationRequestRepository.findAllByPrisonerIdAndCalculationStatusIn(prisonerId, listOf(CONFIRMED.name, SECOND_CHECK_CONFIRMED.name))
+    val secondChecks = calculations.filter { it.calculationStatus == SECOND_CHECK_CONFIRMED.name }
     val nomisCalculations = prisonService.getCalculationsForAPrisonerId(prisonerId)
     val agencyIdToDescriptionMap = prisonService.getAgenciesByType("INST").associateBy { it.agencyId }
     val uniqueUsers: Set<String> = nomisCalculations.mapNotNull { it.calculatedByUserId?.uppercase() }.toSet()
     val userDetails = manageUsersApiClient.getUsersByUsernames(uniqueUsers)
+    val secondCheckReason = "Second Check"
+    val secondCheckCalculations = secondChecks.map { secondCheck ->
+      val userDetail = userDetails?.get(secondCheck.calculatedByUsername?.uppercase())
+      val calculatedByDisplayName = listOfNotNull(userDetail?.firstName, userDetail?.lastName).joinToString(" ")
+      HistoricCalculation(
+        offenderNo = prisonerId,
+        calculationDate = secondCheck.calculatedAt,
+        calculationSource = CalculationSource.CRDS,
+        calculationViewConfiguration = CalculationViewConfiguration(secondCheck.calculationReference.toString(), secondCheck.id()),
+        commentText = secondCheckReason,
+        calculationType = secondCheck.calculationType,
+        establishment = agencyIdToDescriptionMap[secondCheck.prisonerLocation]?.description,
+        calculationRequestId = secondCheck.id,
+        calculationReason = "Second Check",
+        offenderSentCalculationId = 0L,
+        genuineOverrideReasonCode = secondCheck.genuineOverrideReason,
+        genuineOverrideReasonDescription = secondCheck.genuineOverrideReasonFurtherDetail
+          ?: secondCheck.genuineOverrideReason?.description,
+        calculatedByUsername = secondCheck.calculatedByUsername.uppercase(),
+        calculatedByDisplayName = calculatedByDisplayName,
+      )
+    }
     val historicCalculations = nomisCalculations.map { nomisCalculation ->
       var source = CalculationSource.NOMIS
       var calculationViewData: CalculationViewConfiguration? = null
@@ -68,6 +92,7 @@ class HistoricCalculationsService(
         calculatedByDisplayName = calculatedByDisplayName,
       )
     }
-    return historicCalculations
+    val historicDPSAndNomisCalculation: List<HistoricCalculation> = (historicCalculations + secondCheckCalculations).sortedByDescending { it.calculationDate }
+    return historicDPSAndNomisCalculation
   }
 }

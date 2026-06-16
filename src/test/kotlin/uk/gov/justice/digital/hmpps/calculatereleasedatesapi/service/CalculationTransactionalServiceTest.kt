@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.ArgumentCaptor
+import org.mockito.ArgumentMatchers.anyList
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Captor
 import org.mockito.Mockito
@@ -34,6 +35,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationR
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequestUserInput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.CONFIRMED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.PRELIMINARY
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.SECOND_CHECK_INITIATED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.APD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.CRD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ERSED
@@ -175,9 +177,9 @@ class CalculationTransactionalServiceTest {
   @Test
   fun `Test validation of a confirm calculation request fails if the booking data has changed since the PRELIM calc`() {
     whenever(
-      calculationRequestRepository.findByIdAndCalculationStatus(
+      calculationRequestRepository.findByIdAndCalculationStatusIn(
         CALCULATION_REQUEST_ID,
-        PRELIMINARY.name,
+        listOf(PRELIMINARY.name, SECOND_CHECK_INITIATED.name),
       ),
     ).thenReturn(
       Optional.of(
@@ -208,9 +210,9 @@ class CalculationTransactionalServiceTest {
   @Test
   fun `Test validation of a confirm calculation request fails if there is no PRELIM calc`() {
     whenever(
-      calculationRequestRepository.findByIdAndCalculationStatus(
+      calculationRequestRepository.findByIdAndCalculationStatusIn(
         CALCULATION_REQUEST_ID,
-        PRELIMINARY.name,
+        listOf(PRELIMINARY.name, SECOND_CHECK_INITIATED.name),
       ),
     ).thenReturn(Optional.empty())
     whenever(
@@ -237,7 +239,7 @@ class CalculationTransactionalServiceTest {
   @Test
   fun `Test validation succeeds if the PRELIMINARY calculation matches the one being confirmed`() {
     whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
-    whenever(calculationRequestRepository.findByIdAndCalculationStatus(CALCULATION_REQUEST_ID, PRELIMINARY.name))
+    whenever(calculationRequestRepository.findByIdAndCalculationStatusIn(CALCULATION_REQUEST_ID, listOf(PRELIMINARY.name, SECOND_CHECK_INITIATED.name)))
       .thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES.copy(inputData = INPUT_DATA)))
     whenever(
       calculationSourceDataService.getCalculationSourceData(
@@ -382,7 +384,7 @@ class CalculationTransactionalServiceTest {
     )
     val calculationTransactionalService = calculationTransactionalService
     whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
-    whenever(calculationRequestRepository.findByIdAndCalculationStatus(any(), any()))
+    whenever(calculationRequestRepository.findByIdAndCalculationStatusIn(any(), anyList()))
       .thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES.copy(inputData = INPUT_DATA, calculationRequestUserInput = CalculationRequestUserInput(usePreviouslyRecordedSLEDIfFound = true))))
     whenever(
       calculationSourceDataService.getCalculationSourceData(
@@ -440,7 +442,7 @@ class CalculationTransactionalServiceTest {
   @Test
   fun `Test that if approved dates are submitted then they get submitted to the database`() {
     whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
-    whenever(calculationRequestRepository.findByIdAndCalculationStatus(CALCULATION_REQUEST_ID, PRELIMINARY.name))
+    whenever(calculationRequestRepository.findByIdAndCalculationStatusIn(CALCULATION_REQUEST_ID, listOf(PRELIMINARY.name, SECOND_CHECK_INITIATED.name)))
       .thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES.copy(inputData = INPUT_DATA)))
     whenever(calculationSourceDataService.getCalculationSourceData(CALCULATION_REQUEST_WITH_OUTCOMES.prisonerId, SourceDataLookupOptions.default())).thenReturn(
       fakeSourceData,

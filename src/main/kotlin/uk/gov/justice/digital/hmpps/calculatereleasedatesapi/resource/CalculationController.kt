@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.adjustmentsapi.model.AdjustmentDto
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.NoActiveBookingException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AnalysedSentenceAndOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
@@ -43,6 +44,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.DetailedCal
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.LatestCalculationService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.OffenderKeyDatesService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.RelevantRemandService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.SourceDataLookupOptions
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.transform
 
 @RestController
@@ -80,6 +82,9 @@ class CalculationController(
     calculationRequestModel: CalculationRequestModel,
   ): CalculatedReleaseDates {
     log.info("Request received to calculate release dates for $prisonerId")
+    if (calculationRequestModel.calculationReasonId == 18L) {
+      return calculationTransactionalService.calculate(prisonerId, calculationRequestModel, SourceDataLookupOptions.default(), CalculationStatus.SECOND_CHECK_INITIATED)
+    }
     return calculationTransactionalService.calculate(prisonerId, calculationRequestModel)
   }
 
