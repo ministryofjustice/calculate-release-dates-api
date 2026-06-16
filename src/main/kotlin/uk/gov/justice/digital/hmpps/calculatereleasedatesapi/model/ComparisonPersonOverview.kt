@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.TrancheName
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessage
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -24,4 +25,7 @@ data class ComparisonPersonOverview(
   val sdsSentencesIdentified: List<SentenceAndOffenceWithReleaseArrangements>,
   val fatalException: String?,
   val calculationRequestId: Long?,
+  val latestCalculationReason: String?,
+  val latestCalculationReasonFurtherDetail: String?,
+  val progressionModelTranche: TrancheName?,
 )

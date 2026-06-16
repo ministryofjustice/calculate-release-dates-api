@@ -5,12 +5,12 @@ import org.jlleitschuh.gradle.ktlint.tasks.KtLintFormatTask
 import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "10.3.1"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "10.5.0"
   id("org.springdoc.openapi-gradle-plugin") version "1.9.0"
   kotlin("plugin.spring") version "2.4.0"
   kotlin("plugin.jpa") version "2.4.0"
   id("jacoco")
-  id("org.openapi.generator") version "7.22.0"
+  id("org.openapi.generator") version "7.23.0"
 }
 
 configurations {
@@ -64,11 +64,11 @@ dependencies {
   implementation("io.awspring.cloud:spring-cloud-aws-core:4.0.2")
   implementation("io.awspring.cloud:spring-cloud-aws-sns:4.0.2")
   implementation("io.awspring.cloud:spring-cloud-aws-sqs:4.0.2")
-  implementation("org.springframework:spring-jms:7.0.7")
+  implementation("org.springframework:spring-jms:7.0.8")
   implementation("org.apache.commons:commons-text:1.15.0")
 
   // SQS
-  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:7.3.2")
+  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:7.4.0")
 
   // Test dependencies
   testImplementation("org.wiremock:wiremock-standalone:3.13.2")
@@ -78,7 +78,7 @@ dependencies {
   testImplementation("org.springframework.boot:spring-boot-webtestclient")
   testImplementation("org.awaitility:awaitility-kotlin:4.3.0")
   testImplementation("net.javacrumbs.json-unit:json-unit-assertj:5.1.2")
-  testImplementation("io.swagger.parser.v3:swagger-parser-v2-converter:2.1.43")
+  testImplementation("io.swagger.parser.v3:swagger-parser-v2-converter:2.1.44")
   testImplementation("org.mockito:mockito-inline:5.2.0")
   testImplementation("org.junit.jupiter:junit-jupiter:6.1.0")
   testImplementation("org.testcontainers:testcontainers:2.0.5")

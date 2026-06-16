@@ -7,6 +7,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import org.mockito.Mockito.mock
 import org.mockito.Mockito.reset
 import org.mockito.kotlin.any
 import org.mockito.kotlin.times
@@ -31,6 +32,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.ControllerAdvice
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.ErrorResponse
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationReason
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.CONFIRMED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.PRELIMINARY
@@ -279,8 +281,8 @@ class CalculationControllerTest {
       calculationDate = LocalDate.of(2024, 1, 1),
     )
 
-    whenever(calculationTransactionalService.findCalculationResults(calculationRequestId)).thenReturn(
-      calculatedReleaseDates,
+    whenever(calculationTransactionalService.findCalculationRequestAndResults(calculationRequestId)).thenReturn(
+      mock<CalculationRequest>() to calculatedReleaseDates,
     )
 
     val result = mvc.perform(get("/calculation/results/$calculationRequestId").accept(APPLICATION_JSON))
@@ -291,7 +293,7 @@ class CalculationControllerTest {
     assertThat(mapper.readValue(result.response.contentAsString, CalculatedReleaseDates::class.java)).isEqualTo(
       calculatedReleaseDates,
     )
-    verify(calculationTransactionalService, times(1)).findCalculationResults(calculationRequestId)
+    verify(calculationTransactionalService, times(1)).findCalculationRequestAndResults(calculationRequestId)
   }
 
   @Test
@@ -308,8 +310,8 @@ class CalculationControllerTest {
       calculationReason = CalculationReasonDto.from(calculationReason),
       calculationDate = LocalDate.of(2024, 1, 1),
     )
-    whenever(calculationTransactionalService.findCalculationResults(calculationRequestId)).thenReturn(
-      calculatedReleaseDates,
+    whenever(calculationTransactionalService.findCalculationRequestAndResults(calculationRequestId)).thenReturn(
+      mock<CalculationRequest>() to calculatedReleaseDates,
     )
 
     val result = mvc.perform(get("/calculation/results/$calculationRequestId").accept(APPLICATION_JSON))
@@ -320,7 +322,7 @@ class CalculationControllerTest {
     assertThat(mapper.readValue(result.response.contentAsString, CalculatedReleaseDates::class.java)).isEqualTo(
       calculatedReleaseDates,
     )
-    verify(calculationTransactionalService, times(1)).findCalculationResults(calculationRequestId)
+    verify(calculationTransactionalService, times(1)).findCalculationRequestAndResults(calculationRequestId)
   }
 
   @Test
@@ -395,6 +397,7 @@ class CalculationControllerTest {
       654321,
       "HMP Belfast",
       "Other",
+      "Some custom text",
       CalculationSource.CRDS,
       listOf(DetailedDate(ReleaseDateType.CRD, ReleaseDateType.CRD.description, LocalDate.of(2024, 1, 1), emptyList())),
       "username",

@@ -237,6 +237,7 @@ class CalculationTransactionalService(
         allocatedTranche = sds40TrancheName,
         tranche = sds40TrancheName,
         affectedBySds40 = calculationResult.affectedBySds40,
+        affectedByProgressionModel = calculationResult.affectedByProgressionModel,
         ftr56Tranche = calculationResult.trancheAllocationByLegislationName[LegislationName.FTR_56] ?: TrancheName.FTR_56_TRANCHE_0,
         progressionModelTranche = calculationResult.trancheAllocationByLegislationName[LegislationName.SDS_PROGRESSION_MODEL] ?: TrancheName.TRANCHE_0,
       ),
@@ -324,7 +325,10 @@ class CalculationTransactionalService(
   }
 
   @Transactional(readOnly = true)
-  fun findCalculationResults(calculationRequestId: Long): CalculatedReleaseDates = transform(getCalculationRequest(calculationRequestId))
+  fun findCalculationRequestAndResults(calculationRequestId: Long): Pair<CalculationRequest, CalculatedReleaseDates> {
+    val calculationRequest = getCalculationRequest(calculationRequestId)
+    return calculationRequest to transform(calculationRequest)
+  }
 
   @Transactional(readOnly = true)
   fun findUserInput(calculationRequestId: Long): CalculationUserInputs {
