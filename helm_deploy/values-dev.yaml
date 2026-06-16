@@ -23,6 +23,7 @@ generic-service:
     NOMIS-SYNC-MAPPING_API_URL: https://nomis-sync-prisoner-mapping-dev.hmpps.service.justice.gov.uk
     MANAGE-USERS_API_URL: https://manage-users-api-dev.hmpps.service.justice.gov.uk
     STORE_OPERATIVE_SENTENCE_ENVELOPE: "true"
+    PRISONS_WITH_NOMIS_CALC_DISABLED: "PNI,KMI,WMI,TSI,MKI,BCI,GHI,HVI,HII,LFI,LPI,MRI,RSI,STI,TCI,ACI,FBI,ALI"
 
   # Switches off the allow list in the DEV env only.
   allowlist: null
