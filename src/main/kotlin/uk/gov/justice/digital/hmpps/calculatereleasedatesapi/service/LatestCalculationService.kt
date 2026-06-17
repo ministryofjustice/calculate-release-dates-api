@@ -43,6 +43,7 @@ class LatestCalculationService(
           bookingId,
           prisonerCalculation,
           nomisReason,
+          latestCrdsCalc.orElse(null)?.calculationType?.name ?: "Unknown",
         )
       } else {
         val calculationRequest = latestCrdsCalc.get()
@@ -64,6 +65,7 @@ class LatestCalculationService(
           breakdown,
           calculationRequest.historicalTusedSource,
           calculationRequest.calculatedByUsername,
+          calculationRequest.calculationType.name,
         )
       }
     }
@@ -96,6 +98,7 @@ class LatestCalculationService(
     breakdown: CalculationBreakdown?,
     historicalTusedSource: HistoricalTusedSource? = null,
     calculatedByUsername: String,
+    calculationType: String,
   ): LatestCalculation {
     val dates = offenderKeyDatesService.releaseDates(prisonerCalculation)
     val historicSledOverride = calculationOutcomeHistoricOverrideRepository.findByCalculationRequestId(calculationRequestId)
@@ -110,6 +113,7 @@ class LatestCalculationService(
       source = CalculationSource.CRDS,
       calculatedByUsername = calculatedByUsername,
       calculatedByDisplayName = manageUsersApiClient.getUserByUsername(calculatedByUsername)?.name ?: calculatedByUsername,
+      calculationType = calculationType,
       dates = calculationResultEnrichmentService.addDetailToCalculationDates(
         dates,
         sentenceAndOffences,
@@ -126,6 +130,7 @@ class LatestCalculationService(
     bookingId: Long,
     prisonerCalculation: OffenderKeyDates,
     reason: String,
+    calculationType: String,
   ): LatestCalculation {
     val dates = offenderKeyDatesService.releaseDates(prisonerCalculation)
     return LatestCalculation(
@@ -139,6 +144,7 @@ class LatestCalculationService(
       source = CalculationSource.NOMIS,
       calculatedByUsername = prisonerCalculation.calculatedByUserId,
       calculatedByDisplayName = prisonerCalculation.calculatedByUserId.let { manageUsersApiClient.getUserByUsername(it)?.name } ?: prisonerCalculation.calculatedByUserId,
+      calculationType = calculationType,
       dates = calculationResultEnrichmentService.addDetailToCalculationDates(
         dates,
         null,

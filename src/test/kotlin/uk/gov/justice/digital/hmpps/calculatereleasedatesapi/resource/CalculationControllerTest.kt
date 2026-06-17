@@ -402,6 +402,7 @@ class CalculationControllerTest {
       listOf(DetailedDate(ReleaseDateType.CRD, ReleaseDateType.CRD.description, LocalDate.of(2024, 1, 1), emptyList())),
       "username",
       "User Name",
+      calculationType = CalculationType.CALCULATED.name,
     )
 
     whenever(latestCalculationService.latestCalculationForPrisoner(prisonerId)).thenReturn(expected.right())

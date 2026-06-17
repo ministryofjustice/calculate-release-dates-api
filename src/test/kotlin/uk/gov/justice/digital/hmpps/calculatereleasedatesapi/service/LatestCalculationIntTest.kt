@@ -6,6 +6,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.http.MediaType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.MockManageUsersClient
@@ -101,6 +102,7 @@ class LatestCalculationIntTest(private val mockPrisonService: MockPrisonService,
         ),
         "user1",
         "User Name",
+        calculationType = "Unknown",
       ),
     )
   }
@@ -170,6 +172,7 @@ class LatestCalculationIntTest(private val mockPrisonService: MockPrisonService,
         ),
         "test-client",
         "Test Client",
+        calculationType = CalculationType.CALCULATED.name,
       ),
     )
   }

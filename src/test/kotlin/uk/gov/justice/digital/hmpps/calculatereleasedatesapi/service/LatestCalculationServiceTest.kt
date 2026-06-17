@@ -16,6 +16,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.client.ManageUsersApiClient
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Agency
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BreakdownMissingReason
@@ -132,6 +133,7 @@ class LatestCalculationServiceTest {
         emptyList(),
         "username",
         "User Name",
+        calculationType = "Unknown",
       ).right(),
     )
   }
@@ -156,6 +158,7 @@ class LatestCalculationServiceTest {
         emptyList(),
         "username",
         "User Name",
+        calculationType = "Unknown",
       ).right(),
     )
   }
@@ -180,6 +183,7 @@ class LatestCalculationServiceTest {
         emptyList(),
         "username",
         "User Name",
+        calculationType = CalculationType.CALCULATED.name,
       ).right(),
     )
   }
@@ -204,6 +208,7 @@ class LatestCalculationServiceTest {
         emptyList(),
         "username",
         "User Name",
+        calculationType = CalculationType.CALCULATED.name,
       ).right(),
     )
   }
@@ -227,6 +232,7 @@ class LatestCalculationServiceTest {
         emptyList(),
         "username",
         "User Name",
+        calculationType = CalculationType.CALCULATED.name,
       ).right(),
     )
   }
@@ -284,6 +290,7 @@ class LatestCalculationServiceTest {
         detailedDates,
         "username",
         "User Name",
+        calculationType = CalculationType.CALCULATED.name,
       ).right(),
     )
   }
@@ -342,6 +349,7 @@ class LatestCalculationServiceTest {
         detailedDates,
         "username",
         "username",
+        calculationType = CalculationType.CALCULATED.name,
       ).right(),
     )
   }
@@ -464,6 +472,7 @@ class LatestCalculationServiceTest {
         detailedDates,
         "username",
         "User Name",
+        calculationType = CalculationType.CALCULATED.name,
       ).right(),
     )
   }
@@ -510,6 +519,7 @@ class LatestCalculationServiceTest {
         detailedDates,
         "username",
         "User Name",
+        calculationType = CalculationType.CALCULATED.name,
       ).right(),
     )
   }
@@ -555,6 +565,7 @@ class LatestCalculationServiceTest {
         detailedDates,
         "username",
         "User Name",
+        calculationType = CalculationType.CALCULATED.name,
       ).right(),
     )
   }
@@ -599,6 +610,7 @@ class LatestCalculationServiceTest {
         detailedDates,
         "username",
         "User Name",
+        calculationType = CalculationType.CALCULATED.name,
       ).right(),
     )
   }
@@ -643,6 +655,7 @@ class LatestCalculationServiceTest {
         detailedDates,
         "username",
         "User Name",
+        calculationType = CalculationType.CALCULATED.name,
       ).right(),
     )
     verify(sourceDataMapper, never()).mapSentencesAndOffences(calculationRequest)
