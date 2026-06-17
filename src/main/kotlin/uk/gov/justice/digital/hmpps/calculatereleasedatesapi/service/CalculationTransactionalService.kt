@@ -127,14 +127,16 @@ class CalculationTransactionalService(
     val currentBookingJson = objectToJson(booking, objectMapper)
     val preliminaryBookingJson = calculationRequest.inputData
 
-    if (preliminaryBookingJson.hashCode() != currentBookingJson.hashCode()) {
-      throw PreconditionFailedException("The booking data used for the preliminary calculation has changed")
-    }
+    if (calculationRequest.reasonForCalculation?.id != 18L) {
+      if (preliminaryBookingJson.hashCode() != currentBookingJson.hashCode()) {
+        throw PreconditionFailedException("The booking data used for the preliminary calculation has changed")
+      }
 
-    val validationErrors = validationService.validate(sourceData, userInput, ValidationOrder.INVALID)
+      val validationErrors = validationService.validate(sourceData, userInput, ValidationOrder.INVALID)
 
-    if (validationErrors.any { !it.type.excludedInSave() }) {
-      throw CrdWebException(message = "The booking now fails validation", status = HttpStatus.INTERNAL_SERVER_ERROR)
+      if (validationErrors.any { !it.type.excludedInSave() }) {
+        throw CrdWebException(message = "The booking now fails validation", status = HttpStatus.INTERNAL_SERVER_ERROR)
+      }
     }
 
     return confirmCalculation(
