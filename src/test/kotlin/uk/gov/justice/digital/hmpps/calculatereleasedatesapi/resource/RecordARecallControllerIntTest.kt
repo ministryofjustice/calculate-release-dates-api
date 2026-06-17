@@ -165,6 +165,22 @@ class RecordARecallControllerIntTest(private val mockManageOffencesClient: MockM
       assertThat(sentencesFromOlderBooking.size).isEqualTo(1)
       assertThat(sentencesFromOlderBooking[0].sentenceSequence).isEqualTo(3)
     }
+
+    @Test
+    fun `RASS 2306 sentences in the same sentence group are recalled`() {
+      mockManageOffencesClient.notSDSPlusAndNoExclusions(listOf("CE79046", "FI68002"))
+
+      val result = createCalculationForRecordARecall(
+        "RASS-2306",
+        RecordARecallRequest(revocationDate = LocalDate.of(2025, 3, 1)),
+      )
+
+      assertThat(result.decision).isEqualTo(RecordARecallDecision.AUTOMATED)
+      assertThat(result.automatedCalculationData?.recallableSentences).hasSize(2)
+      assertThat(result.automatedCalculationData?.expiredSentences).hasSize(0)
+      assertThat(result.automatedCalculationData?.ineligibleSentences).hasSize(0)
+      assertThat(result.automatedCalculationData?.sentencesBeforeInitialRelease).hasSize(0)
+    }
   }
 
   @Nested
