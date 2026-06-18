@@ -1,0 +1,68 @@
+{
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "2000-01-01",
+      "isActiveSexOffender": false
+    },
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2024-12-02",
+          "offenceCode": "MD71130C"
+        },
+        "duration": {
+          "durationElements": {
+            "DAYS": 0,
+            "WEEKS": 0,
+            "MONTHS": 9,
+            "YEARS": 7
+          }
+        },
+        "sentencedAt": "2026-05-27",
+        "identifier": "7ca0d297-7ac7-3491-a057-b82d7c6015d7",
+        "consecutiveSentenceUUIDs": [],
+        "caseSequence": 1,
+        "lineSequence": 1,
+        "externalSentenceId": {
+          "sentenceSequence": 1,
+          "bookingId": 1111111
+        },
+        "caseReference": "ABCDEF24",
+        "recall": null,
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
+      }
+    ],
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2026-05-27",
+          "numberOfDays": 540,
+          "fromDate": "2024-12-03",
+          "toDate": "2026-05-26",
+          "additionalInfo": {
+            "type": "NONE"
+          }
+        }
+      ]
+    },
+    "returnToCustodyDate": null,
+    "fixedTermRecallDetails": null,
+    "bookingId": 1111111,
+    "historicalTusedData": null,
+    "externalMovements": []
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "sds-progression-model",
+  "featureToggles": {
+    "applyPostHdcedRepealRules": true
+  }
+}
