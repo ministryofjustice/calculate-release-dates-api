@@ -46,5 +46,6 @@ data class CalculationReason(
   val requiresFurtherDetail: Boolean,
   val furtherDetailDescription: String?,
 ) {
+  @JsonIgnore
   fun isSecondCheck(): Boolean = this.id == 18L
 }
