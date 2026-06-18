@@ -45,4 +45,6 @@ data class CalculationReason(
   @param:NotNull
   val requiresFurtherDetail: Boolean,
   val furtherDetailDescription: String?,
-)
+) {
+  fun isSecondCheck(): Boolean = this.id == 18L
+}
