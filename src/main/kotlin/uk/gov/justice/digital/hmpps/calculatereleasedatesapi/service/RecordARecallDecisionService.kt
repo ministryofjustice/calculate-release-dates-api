@@ -188,7 +188,7 @@ class RecordARecallDecisionService(
     val (sentenceGroupsReleasedBeforeRevocation, sentenceGroupsReleasedAfterRevocation) = output.sentenceGroup.partition { it.to.isBeforeOrEqualTo(recordARecallRequest.revocationDate) }
     val sentencesAndTheirGroups = sentenceGroupsReleasedBeforeRevocation.flatMap { it.sentences.map { sentence -> it to sentence } }
     val (eligibleSentences, ineligibleSentences) = sentencesAndTheirGroups.partition { it.second.sentenceParts().none { part -> part is Term } && it.second.sentenceCalculation.licenceExpiryDate != null }
-    val (recallableSentences, expiredSentences) = recallExpiredSentencesOnSameCaseAsRecallableSentences(eligibleSentences, recordARecallRequest.revocationDate)
+    val (recallableSentences, expiredSentences) = findRecallableSentencesAndExpired(eligibleSentences, recordARecallRequest.revocationDate)
 
     if (recallableSentences.isEmpty()) {
       return RecordARecallDecisionResult(
@@ -216,11 +216,29 @@ class RecordARecallDecisionService(
     )
   }
 
-  private fun recallExpiredSentencesOnSameCaseAsRecallableSentences(
+  /*
+   * This function finds which sentences are recallable and expired.
+   * The function takes a list of sentences which are eligible for recall.
+   * A sentence should be recalled if
+   *
+   * 1. The revocation date is before its sentence group release date (CRD or External movement release)
+   * OR
+   * 2. The sentence belongs to the same sentence group as 1
+   * OR
+   * 3. The sentence exists on the same court case as a sentence from 1 or 2.
+   *
+   * Otherwise it is expired.
+   *
+   */
+  private fun findRecallableSentencesAndExpired(
     sentences: List<Pair<SentenceGroup, CalculableSentence>>,
     revocationDate: LocalDate,
   ): Pair<List<Pair<SentenceGroup, CalculableSentence>>, List<Pair<SentenceGroup, CalculableSentence>>> {
-    val (recallableSentences, expiredSentences) = sentences.partition { it.second.sentenceCalculation.licenceExpiryDate!!.isAfter(revocationDate) }
+    val (nonExpiredSentences, expiredSentences) = sentences.partition { it.second.sentenceCalculation.licenceExpiryDate!!.isAfter(revocationDate) }
+    val recallableSentences = nonExpiredSentences.toMutableList()
+
+    val sentencesInSameSentenceGroup = expiredSentences.filter { expired -> nonExpiredSentences.any { recallable -> recallable.first.sentences.contains(expired.second) } }
+    recallableSentences += sentencesInSameSentenceGroup
 
     val recallableCases = recallableSentences.flatMap {
       it.second.sentenceParts().map { sentence ->
@@ -234,7 +252,9 @@ class RecordARecallDecisionService(
       }
     }
 
-    return (recallableSentences + expiredSentencesToBeRecalled) to expiredSentences.filterNot { expiredSentencesToBeRecalled.contains(it) }
+    recallableSentences += expiredSentencesToBeRecalled
+
+    return recallableSentences to expiredSentences.filterNot { recallableSentences.contains(it) }
   }
 
   private fun findUnexpectedRecallTypes(
