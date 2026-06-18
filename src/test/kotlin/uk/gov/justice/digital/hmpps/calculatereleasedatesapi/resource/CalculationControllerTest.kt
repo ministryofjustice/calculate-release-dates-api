@@ -507,7 +507,7 @@ class CalculationControllerTest {
         "A1234AB",
         CONFIRMED,
         UUID.randomUUID(),
-        CalculationReasonDto(-1, isOther = false, displayName = "14 day check", useForApprovedDates = false, requiresFurtherDetail = false),
+        CalculationReasonDto(-1, isOther = false, displayName = "14 day check", useForApprovedDates = false, requiresFurtherDetail = false, isSecondCheck = false),
         null,
         LocalDate.of(2024, 1, 1),
         CalculationType.CALCULATED,
