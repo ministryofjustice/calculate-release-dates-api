@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseSentenceFilter
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.HDCED
@@ -54,7 +55,7 @@ class HdcedExtractionService(
         return null
       }
 
-      if (featureToggles.applyPostHdcedRepealRules && sentences.any { isAdultSentence(it) } && hdcedResult.first.isAfterOrEqualTo(PROGRESSION_COMMENCEMENT_DATE)) {
+      if (shouldExcludePostHdcedRepeal(sentences, hdcedResult.first, hdcedSentence)) {
         return null
       }
 
@@ -81,12 +82,23 @@ class HdcedExtractionService(
       return false
     }
 
-    if (featureToggles.applyPostHdcedRepealRules && isAdultSentence(sentenceCalculation.sentence) && hdcedDate.isAfterOrEqualTo(PROGRESSION_COMMENCEMENT_DATE)) {
+    if (shouldExcludePostHdcedRepeal(listOf(sentenceCalculation.sentence), hdcedDate, sentenceCalculation.sentence)) {
       return false
     }
 
     return true
   }
+
+  private fun shouldExcludePostHdcedRepeal(
+    sentences: List<CalculableSentence>,
+    hdcedDate: LocalDate,
+    hdcedSentence: CalculableSentence,
+  ): Boolean = featureToggles.applyPostHdcedRepealRules &&
+    sentences.any { isAdultSentence(it) } &&
+    (
+      hdcedDate.isAfterOrEqualTo(PROGRESSION_COMMENCEMENT_DATE) ||
+        hdcedSentence.sentenceCalculation.applicableSdsLegislation?.legislation?.filter == EarlyReleaseSentenceFilter.SDS_PROGRESSION_MODEL
+      )
 
   private fun isAdultSentence(sentence: CalculableSentence): Boolean = !(sentence is StandardDeterminateSentence && sentence.releaseArrangements.isSection250 || sentence is Term)
 
