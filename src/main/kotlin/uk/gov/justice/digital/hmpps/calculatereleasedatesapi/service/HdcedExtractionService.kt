@@ -2,7 +2,6 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.EarlyReleaseSentenceFilter
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.HDCED
@@ -95,10 +94,7 @@ class HdcedExtractionService(
     hdcedSentence: CalculableSentence,
   ): Boolean = featureToggles.applyPostHdcedRepealRules &&
     sentences.any { isAdultSentence(it) } &&
-    (
-      hdcedDate.isAfterOrEqualTo(PROGRESSION_COMMENCEMENT_DATE) ||
-        hdcedSentence.sentenceCalculation.applicableSdsLegislation?.legislation?.filter == EarlyReleaseSentenceFilter.SDS_PROGRESSION_MODEL
-      )
+    (hdcedDate.isAfterOrEqualTo(PROGRESSION_COMMENCEMENT_DATE) || hdcedSentence.isAffectedBySdsProgressionModel())
 
   private fun isAdultSentence(sentence: CalculableSentence): Boolean = !(sentence is StandardDeterminateSentence && sentence.releaseArrangements.isSection250 || sentence is Term)
 
