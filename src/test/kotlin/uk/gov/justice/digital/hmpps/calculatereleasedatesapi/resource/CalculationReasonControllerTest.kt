@@ -56,6 +56,7 @@ class CalculationReasonControllerTest {
         eligibleForPreviouslyRecordedSled = false,
         requiresFurtherDetail = false,
         furtherDetailDescription = null,
+        isSecondCheck = false,
       ),
       CalculationReason(
         2,
@@ -70,6 +71,7 @@ class CalculationReasonControllerTest {
         eligibleForPreviouslyRecordedSled = false,
         requiresFurtherDetail = false,
         furtherDetailDescription = null,
+        isSecondCheck = false,
       ),
       CalculationReason(
         3,
@@ -84,6 +86,7 @@ class CalculationReasonControllerTest {
         eligibleForPreviouslyRecordedSled = false,
         requiresFurtherDetail = true,
         furtherDetailDescription = "the reason for the calculation",
+        isSecondCheck = false,
       ),
       CalculationReason(
         4,
@@ -98,6 +101,7 @@ class CalculationReasonControllerTest {
         eligibleForPreviouslyRecordedSled = false,
         requiresFurtherDetail = false,
         furtherDetailDescription = null,
+        isSecondCheck = false,
       ),
     )
 

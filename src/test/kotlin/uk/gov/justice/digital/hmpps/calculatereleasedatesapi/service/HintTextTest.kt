@@ -215,6 +215,7 @@ class HintTextTest : SpringTestBase() {
         false,
         false,
         null,
+        isSecondCheck = false,
       )
 
     private val SOURCE_DATA = CalculationSourceData(

@@ -74,7 +74,7 @@ class HistoricCalculationsServiceTest {
     val calcRequest2 = calcRequest1.copy(
       prisonerLocation = "KTI",
       calculationReference = UUID.randomUUID(),
-      reasonForCalculation = CalculationReason(id = 1, isActive = true, isOther = false, displayName = "calc reason", isBulk = false, nomisReason = null, nomisComment = null, displayRank = 1, useForApprovedDates = false, eligibleForPreviouslyRecordedSled = false, requiresFurtherDetail = false, furtherDetailDescription = null),
+      reasonForCalculation = CalculationReason(id = 1, isActive = true, isOther = false, displayName = "calc reason", isBulk = false, nomisReason = null, nomisComment = null, displayRank = 1, useForApprovedDates = false, eligibleForPreviouslyRecordedSled = false, requiresFurtherDetail = false, furtherDetailDescription = null, isSecondCheck = false),
     )
     whenever(calculationRequestRepository.findAllByPrisonerIdAndCalculationStatus(anyString(), anyString())).thenReturn(listOf(calcRequest1, calcRequest2))
 
@@ -102,7 +102,7 @@ class HistoricCalculationsServiceTest {
       calculationStatus = CalculationStatus.CONFIRMED.name,
       calculationReference = UUID.randomUUID(),
       calculatedAt = LocalDateTime.now().plusSeconds(1),
-      reasonForCalculation = CalculationReason(id = 18, isActive = true, isOther = false, displayName = "Second Check", isBulk = false, nomisReason = null, nomisComment = null, displayRank = 1, useForApprovedDates = false, eligibleForPreviouslyRecordedSled = false, requiresFurtherDetail = false, furtherDetailDescription = null),
+      reasonForCalculation = CalculationReason(id = 18, isActive = true, isOther = false, displayName = "Second Check", isBulk = false, nomisReason = null, nomisComment = null, displayRank = 1, useForApprovedDates = false, eligibleForPreviouslyRecordedSled = false, requiresFurtherDetail = false, furtherDetailDescription = null, isSecondCheck = true),
     )
     whenever(calculationRequestRepository.findAllByPrisonerIdAndCalculationStatus(anyString(), anyString())).thenReturn(listOf(calcRequest1, calcRequest2))
 
@@ -129,7 +129,7 @@ class HistoricCalculationsServiceTest {
       calculationStatus = CalculationStatus.CONFIRMED.name,
       calculationReference = UUID.randomUUID(),
       calculatedAt = LocalDateTime.now().plusSeconds(1),
-      reasonForCalculation = CalculationReason(id = 18, isActive = true, isOther = false, displayName = "Second Check", isBulk = false, nomisReason = null, nomisComment = null, displayRank = 1, useForApprovedDates = false, eligibleForPreviouslyRecordedSled = false, requiresFurtherDetail = false, furtherDetailDescription = null),
+      reasonForCalculation = CalculationReason(id = 18, isActive = true, isOther = false, displayName = "Second Check", isBulk = false, nomisReason = null, nomisComment = null, displayRank = 1, useForApprovedDates = false, eligibleForPreviouslyRecordedSled = false, requiresFurtherDetail = false, furtherDetailDescription = null, isSecondCheck = true),
     )
     whenever(calculationRequestRepository.findAllByPrisonerIdAndCalculationStatus(anyString(), anyString())).thenReturn(listOf(calcRequest2))
 
@@ -165,7 +165,7 @@ class HistoricCalculationsServiceTest {
     val calcRequest2 = calcRequest1.copy(
       prisonerLocation = "KTI",
       calculationReference = UUID.randomUUID(),
-      reasonForCalculation = CalculationReason(id = 1, isActive = true, isOther = false, displayName = "calc reason", isBulk = false, nomisReason = null, nomisComment = null, displayRank = 1, useForApprovedDates = false, eligibleForPreviouslyRecordedSled = false, requiresFurtherDetail = false, furtherDetailDescription = null),
+      reasonForCalculation = CalculationReason(id = 1, isActive = true, isOther = false, displayName = "calc reason", isBulk = false, nomisReason = null, nomisComment = null, displayRank = 1, useForApprovedDates = false, eligibleForPreviouslyRecordedSled = false, requiresFurtherDetail = false, furtherDetailDescription = null, isSecondCheck = false),
       genuineOverrideReason = GenuineOverrideReason.OTHER,
       genuineOverrideReasonFurtherDetail = "Some more details",
     )

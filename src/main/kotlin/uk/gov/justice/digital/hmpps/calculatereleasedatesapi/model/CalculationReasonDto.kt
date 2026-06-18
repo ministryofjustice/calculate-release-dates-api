@@ -8,6 +8,7 @@ data class CalculationReasonDto(
   val displayName: String,
   val useForApprovedDates: Boolean,
   val requiresFurtherDetail: Boolean,
+  val isSecondCheck: Boolean
 ) {
   companion object {
     fun from(entity: CalculationReason) = CalculationReasonDto(
@@ -16,6 +17,7 @@ data class CalculationReasonDto(
       entity.displayName,
       entity.useForApprovedDates,
       entity.requiresFurtherDetail,
+      entity.isSecondCheck
     )
   }
 }

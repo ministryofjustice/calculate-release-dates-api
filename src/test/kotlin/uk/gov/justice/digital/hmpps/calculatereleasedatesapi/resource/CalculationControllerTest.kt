@@ -568,5 +568,5 @@ class CalculationControllerTest {
       )
   }
 
-  private val calculationReason = CalculationReason(-1, false, false, "Reason", false, null, null, null, false, false, false, null)
+  private val calculationReason = CalculationReason(-1, false, false, "Reason", false, null, null, null, false, false, false, null, isSecondCheck = false)
 }

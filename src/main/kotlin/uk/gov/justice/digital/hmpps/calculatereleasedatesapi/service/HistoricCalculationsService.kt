@@ -21,7 +21,7 @@ class HistoricCalculationsService(
   @Transactional(readOnly = true)
   fun getHistoricCalculationsForPrisoner(prisonerId: String): List<HistoricCalculation> {
     val calculations = calculationRequestRepository.findAllByPrisonerIdAndCalculationStatus(prisonerId, CONFIRMED.name)
-    val secondChecks = calculations.filter { it.reasonForCalculation?.isSecondCheck() == true }
+    val secondChecks = calculations.filter { it.reasonForCalculation?.isSecondCheck == true }
     val nomisCalculations = prisonService.getCalculationsForAPrisonerId(prisonerId)
     val agencyIdToDescriptionMap = prisonService.getAgenciesByType("INST").associateBy { it.agencyId }
     val uniqueUsers: Set<String> = nomisCalculations.mapNotNull { it.calculatedByUserId?.uppercase() }.toSet()
