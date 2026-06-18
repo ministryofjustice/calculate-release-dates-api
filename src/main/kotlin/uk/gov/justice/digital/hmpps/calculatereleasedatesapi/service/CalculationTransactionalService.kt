@@ -125,7 +125,7 @@ class CalculationTransactionalService(
     val currentBookingJson = objectToJson(booking, objectMapper)
     val preliminaryBookingJson = calculationRequest.inputData
 
-    if (calculationRequest.reasonForCalculation?.isSecondCheck() == true) {
+    if (calculationRequest.reasonForCalculation?.isSecondCheck() == false) {
       if (preliminaryBookingJson.hashCode() != currentBookingJson.hashCode()) {
         throw PreconditionFailedException("The booking data used for the preliminary calculation has changed")
       }
