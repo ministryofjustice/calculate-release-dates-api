@@ -6,6 +6,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.LegislationName
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.PreLegislationCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.TrancheName
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOptions
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
@@ -30,11 +31,12 @@ data class TimelineTrackingData(
   val previousUalPeriods: MutableList<Pair<LocalDate, LocalDate>> = mutableListOf(),
 
   var padas: Long = 0,
-  var beforeTrancheCalculation: PreLegislationCalculation? = null,
+  var beforeTrancheCalculations: MutableMap<LegislationName, PreLegislationCalculation> = mutableMapOf(),
 
   var applicableFtrLegislation: ApplicableLegislation<FTRLegislation>? = null,
   val applicableSdsLegislations: ApplicableSDSLegislations = ApplicableSDSLegislations(),
   val trancheAllocationByLegislationName: MutableMap<LegislationName, TrancheName> = mutableMapOf(),
+  val originalAdjustments: Adjustments,
 ) {
 
   lateinit var latestCalculation: CalculationResult
