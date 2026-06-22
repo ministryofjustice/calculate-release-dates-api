@@ -1,0 +1,50 @@
+{
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2026-06-17",
+          "offenceCode": "BA76001"
+        },
+        "duration": {
+          "durationElements": {
+            "DAYS": 2,
+            "WEEKS": 0,
+            "MONTHS": 0,
+            "YEARS": 0
+          }
+        },
+        "sentencedAt": "2026-06-18",
+        "identifier": "91827262-2a89-3fe5-bfe7-e9e46103dc92",
+        "consecutiveSentenceUUIDs": [],
+        "caseSequence": 1,
+        "lineSequence": 1,
+        "externalSentenceId": {
+          "sentenceSequence": 1,
+          "bookingId": 100000
+        },
+        "recall": null,
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
+      }
+    ],
+    "adjustments": {},
+    "returnToCustodyDate": null,
+    "fixedTermRecallDetails": null,
+    "bookingId": 100000,
+    "historicalTusedData": null,
+    "externalMovements": []
+  },
+  "userInputs": {
+    "calculateErsed": true
+  }
+}
