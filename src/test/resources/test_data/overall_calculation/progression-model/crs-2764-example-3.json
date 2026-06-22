@@ -1,0 +1,124 @@
+{
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
+      {
+        "type": "ExtendedDeterminateSentence",
+        "offence": {
+          "committedAt": "2018-08-08",
+          "offenceCode": "OF61017"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "MONTHS": 8,
+            "YEARS": 8
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "YEARS": 2
+          }
+        },
+        "automaticRelease": false,
+        "sentencedAt": "2018-10-15",
+        "identifier": "e4c5d74c-cea6-33a5-ba59-20d35ba5d664",
+        "caseReference": null
+      },
+      {
+        "offence": {
+          "committedAt": "2018-08-07",
+          "offenceCode": "OF61102"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 18
+          }
+        },
+        "sentencedAt": "2018-10-15",
+        "identifier": "2411de62-f06c-38cc-ad00-22c8755ec244",
+        "caseReference": null,
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
+      },
+      {
+        "offence": {
+          "committedAt": "2017-11-06",
+          "offenceCode": "TH68036"
+        },
+        "duration": {
+          "durationElements": {
+            "WEEKS": 26
+          }
+        },
+        "sentencedAt": "2018-10-15",
+        "identifier": "588757ac-e419-3baf-9285-7c57bb97b6ff",
+        "caseReference": null,
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
+      },
+      {
+        "offence": {
+          "committedAt": "2024-06-04",
+          "offenceCode": "COML005"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 3
+          }
+        },
+        "sentencedAt": "2024-07-12",
+        "identifier": "a37b1d86-f191-36b6-8062-c262721087fd",
+        "consecutiveSentenceUUIDs": [
+          "e4c5d74c-cea6-33a5-ba59-20d35ba5d664"
+        ],
+        "caseReference": null,
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
+      }
+    ],
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2018-10-15",
+          "numberOfDays": 67,
+          "fromDate": "2018-08-09",
+          "toDate": "2018-10-14",
+          "additionalInfo": {
+            "type": "NONE"
+          }
+        }
+      ],
+      "UNLAWFULLY_AT_LARGE": [
+        {
+          "appliesToSentencesFrom": "2024-06-04",
+          "numberOfDays": 1,
+          "fromDate": "2024-06-04",
+          "toDate": "2024-06-04",
+          "additionalInfo": {
+            "type": "UAL"
+          }
+        }
+      ]
+    }
+  },
+  "params": "sds-progression-model",
+  "featureToggles": {
+    "applyPostRecallRepealRules": true,
+    "routePreProgressionExtinguishedSentenceToManual": true
+  }
+}

@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.FTRLegislationConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.LegislationName
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.SDSLegislation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.SDSLegislationConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.ADDITIONAL_DAYS_AWARDED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.RECALL_REMAND
@@ -87,13 +86,14 @@ class BookingTimelineService(
     val externalMovementTimeline = ExternalMovementTimeline(externalMovements)
 
     val timelineTrackingData = TimelineTrackingData(
-      futureData,
-      calculationsByDate,
+      futureData = futureData,
+      calculationsByDate = calculationsByDate,
       latestRelease = earliestSentence.sentencedAt to earliestSentence,
-      returnToCustodyDate,
-      offender,
-      options,
-      externalMovementTimeline,
+      returnToCustodyDate = returnToCustodyDate,
+      offender = offender,
+      options = options,
+      externalMovements = externalMovementTimeline,
+      originalAdjustments = adjustments,
     )
 
     calculationsByDate.forEach { (timelineCalculationDate, calculations) ->
@@ -144,13 +144,11 @@ class BookingTimelineService(
           returnToCustodyDate,
         )
 
-      beforeTrancheCalculation?.let { preLegislationCalculation ->
-        val allSentences = releasedSentenceGroups.flatMap { it.sentences }
-        latestCalculation = when (preLegislationCalculation.legislationApplied.legislation) {
-          is SDSLegislation.SDS40Legislation -> sds40FinalDatesService.applyFinalDates(latestCalculation, preLegislationCalculation, adjustments, allSentences)
-          is SDSLegislation.ProgressionModelLegislation -> sdsProgressionModelFinalDatesService.applyFinalDates(latestCalculation, preLegislationCalculation, adjustments)
-          else -> latestCalculation
-        }
+      val allSentences = releasedSentenceGroups.flatMap { it.sentences }
+      if (LegislationName.SDS_PROGRESSION_MODEL in beforeTrancheCalculations) {
+        latestCalculation = sdsProgressionModelFinalDatesService.applyFinalDates(latestCalculation, beforeTrancheCalculations[LegislationName.SDS_PROGRESSION_MODEL]!!, adjustments)
+      } else if (LegislationName.SDS_40 in beforeTrancheCalculations) {
+        latestCalculation = sds40FinalDatesService.applyFinalDates(latestCalculation, beforeTrancheCalculations[LegislationName.SDS_40]!!, adjustments, allSentences)
       }
 
       val sds40TrancheName = timelineTrackingData.trancheAllocationByLegislationName[LegislationName.SDS_40] ?: TrancheName.TRANCHE_0
