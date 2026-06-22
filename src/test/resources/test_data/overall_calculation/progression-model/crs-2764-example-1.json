@@ -1,0 +1,192 @@
+{
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
+      {
+        "type": "ExtendedDeterminateSentence",
+        "offence": {
+          "committedAt": "2012-07-30",
+          "offenceCode": "SX03002"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "YEARS": 16
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "YEARS": 4
+          }
+        },
+        "automaticRelease": false,
+        "sentencedAt": "2013-06-21",
+        "identifier": "d5c31584-7eb7-336c-bf41-6e3824b0ea4a",
+        "caseReference": null
+      },
+      {
+        "type": "ExtendedDeterminateSentence",
+        "offence": {
+          "committedAt": "2012-07-30",
+          "offenceCode": "SX03002"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "YEARS": 16
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "YEARS": 4
+          }
+        },
+        "automaticRelease": false,
+        "sentencedAt": "2013-06-21",
+        "identifier": "2843e74e-bcfe-3e0f-b027-ffd455011e83",
+        "caseReference": null
+      },
+      {
+        "offence": {
+          "committedAt": "2004-09-12",
+          "offenceCode": "COML017"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 3
+          }
+        },
+        "sentencedAt": "2013-06-21",
+        "identifier": "f86a9af5-c62c-3464-93e6-5a5e3b7ce5aa",
+        "caseReference": null,
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
+      },
+      {
+        "offence": {
+          "committedAt": "2012-07-30",
+          "offenceCode": "COML017"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 2
+          }
+        },
+        "sentencedAt": "2013-06-21",
+        "identifier": "0fbe656b-2b34-3b8b-af3c-e974f6a7a726",
+        "caseReference": null,
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
+      },
+      {
+        "offence": {
+          "committedAt": "2012-07-30",
+          "offenceCode": "SX03007"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 2
+          }
+        },
+        "sentencedAt": "2013-06-21",
+        "identifier": "90647994-5daa-3d6c-8b78-8ef310b382c2",
+        "caseReference": null,
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [
+            "SEXUAL"
+          ],
+          "isSection250": false
+        }
+      },
+      {
+        "offence": {
+          "committedAt": "2004-09-12",
+          "offenceCode": "SX03002"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 16
+          }
+        },
+        "sentencedAt": "2013-06-21",
+        "identifier": "898d67cf-5c03-31f5-8c96-6a59e5cd38a4",
+        "caseReference": null,
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": true,
+          "sdsEarlyReleaseExclusions": [
+            "SEXUAL"
+          ],
+          "isSection250": false
+        }
+      },
+      {
+        "offence": {
+          "committedAt": "2014-04-07",
+          "offenceCode": "CD71017"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 3
+          }
+        },
+        "sentencedAt": "2015-01-09",
+        "identifier": "7105d0bf-bf1b-3e43-9233-1d7a1e338d2e",
+        "consecutiveSentenceUUIDs": [
+          "d5c31584-7eb7-336c-bf41-6e3824b0ea4a"
+        ],
+        "caseReference": null,
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
+      }
+    ],
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2013-06-21",
+          "numberOfDays": 185,
+          "fromDate": "2012-12-18",
+          "toDate": "2013-06-20",
+          "additionalInfo": {
+            "type": "NONE"
+          }
+        }
+      ]
+    },
+    "externalMovements": [
+      {
+        "movementDate": "2015-06-04",
+        "movementReason": "SENTENCE",
+        "direction": "IN"
+      },
+      {
+        "movementDate": "2016-07-04",
+        "movementReason": "SENTENCE",
+        "direction": "IN"
+      }
+    ]
+  },
+  "userInputs": {
+    "calculateErsed": true
+  },
+  "params": "sds-progression-model",
+  "featureToggles": {
+    "applyPostRecallRepealRules": true,
+    "routePreProgressionExtinguishedSentenceToManual": true
+  }
+}

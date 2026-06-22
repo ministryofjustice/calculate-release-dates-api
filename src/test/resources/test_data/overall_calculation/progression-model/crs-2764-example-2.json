@@ -1,0 +1,117 @@
+{
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
+      {
+        "type": "ExtendedDeterminateSentence",
+        "offence": {
+          "committedAt": "2013-09-21",
+          "offenceCode": "TH68023"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "YEARS": 9
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "YEARS": 3
+          }
+        },
+        "automaticRelease": false,
+        "sentencedAt": "2014-01-24",
+        "identifier": "c3dadd1a-6469-3991-919b-7375109b1259",
+        "caseReference": null
+      },
+      {
+        "type": "ExtendedDeterminateSentence",
+        "offence": {
+          "committedAt": "2013-09-22",
+          "offenceCode": "FI68076"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "YEARS": 6
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "YEARS": 2
+          }
+        },
+        "automaticRelease": false,
+        "sentencedAt": "2014-01-24",
+        "identifier": "754dbff1-97cd-3456-af56-52a1d1f8b84d",
+        "consecutiveSentenceUUIDs": [
+          "c3dadd1a-6469-3991-919b-7375109b1259"
+        ],
+        "caseReference": null
+      },
+      {
+        "type": "ExtendedDeterminateSentence",
+        "offence": {
+          "committedAt": "2013-09-20",
+          "offenceCode": "TH68023"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "YEARS": 5
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "YEARS": 3
+          }
+        },
+        "automaticRelease": false,
+        "sentencedAt": "2014-01-24",
+        "identifier": "c512b733-09eb-3cce-bbcd-df81d9b1da09",
+        "caseReference": null
+      },
+      {
+        "offence": {
+          "committedAt": "2016-04-08",
+          "offenceCode": "CJ91015-034N"
+        },
+        "duration": {
+          "durationElements": {
+            "WEEKS": 8
+          }
+        },
+        "sentencedAt": "2016-11-22",
+        "identifier": "a8f6b33d-2afb-3321-b2c4-13b69440a334",
+        "consecutiveSentenceUUIDs": [
+          "754dbff1-97cd-3456-af56-52a1d1f8b84d"
+        ],
+        "caseReference": null,
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
+      }
+    ],
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2014-01-24",
+          "numberOfDays": 122,
+          "fromDate": "2013-09-24",
+          "toDate": "2014-01-23",
+          "additionalInfo": {
+            "type": "NONE"
+          }
+        }
+      ]
+    }
+  },
+  "params": "sds-progression-model",
+  "featureToggles": {
+    "applyPostRecallRepealRules": true,
+    "routePreProgressionExtinguishedSentenceToManual": true
+  }
+}
