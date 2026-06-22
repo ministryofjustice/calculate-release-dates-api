@@ -123,8 +123,9 @@ class ErsedCalculator(
       params.sentenceCalculation.adjustedDeterminateReleaseDate
     }
 
-    val unadjustedEffectiveRelease = params.sentenceCalculation.unadjustedExtendedDeterminateParoleEligibilityDate
-      ?: params.sentenceCalculation.unadjustedReleaseDate.unadjustedDeterminateReleaseDate
+    val unadjustedEffectiveRelease =
+      params.sentenceCalculation.unadjustedExtendedDeterminateParoleEligibilityDate
+        ?: params.sentenceCalculation.unadjustedReleaseDate.unadjustedDeterminateReleaseDate
 
     val maxEffectiveErsed = effectiveRelease.minus(params.maxPeriodAmount, params.maxPeriodUnit)
 
@@ -141,11 +142,15 @@ class ErsedCalculator(
       ),
     )
 
-    val daysUntilRelease = ChronoUnit.DAYS.between(params.sentence.sentencedAt, unadjustedEffectiveRelease).plus(1).toInt()
+    val daysUntilRelease =
+      ChronoUnit.DAYS.between(params.sentence.sentencedAt, unadjustedEffectiveRelease).plus(1).toInt()
+
     val unadjustedMinimumErsed = params.sentence.sentencedAt
       .plusDays(BigDecimal.valueOf(daysUntilRelease.toLong()).multiply(params.releaseMultiplier).toLongReleaseDays())
+
     val minimumEffectiveErsed = unadjustedMinimumErsed
       .plusDays(params.sentenceCalculation.adjustments.adjustmentsForInitialRelease())
+      .coerceAtMost(effectiveRelease)
 
     val minimumEffectiveErsedBreakdown = ReleaseDateCalculationBreakdown(
       rules = setOf(CalculationRule.ERSED_MIN_EFFECTIVE_DATE),
