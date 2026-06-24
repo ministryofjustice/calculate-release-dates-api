@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil.Companion.overrideFeatureTogglesForTest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.calculation.CalculationExampleTests
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.SDSLegislationConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcomeHistoricSledOverride
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.PRELIMINARY
@@ -57,6 +58,9 @@ class HintTextTest : SpringTestBase() {
 
   @Autowired
   private lateinit var featureToggles: FeatureToggles
+
+  @Autowired
+  private lateinit var sdsLegislationConfiguration: SDSLegislationConfiguration
 
   @Test
   fun `Historic SLED date`() {
@@ -171,7 +175,7 @@ class HintTextTest : SpringTestBase() {
       NonFridayReleaseDay(releaseDate.date)
     }
     val calculationResultEnrichmentService =
-      CalculationResultEnrichmentService(nonFridayReleaseService, workingDayService, clock)
+      CalculationResultEnrichmentService(nonFridayReleaseService, workingDayService, sdsLegislationConfiguration, clock)
 
     return calculationResultEnrichmentService.addDetailToCalculationDates(
       releaseDates = dates.map { ReleaseDate(date = it.value, type = it.key) },
