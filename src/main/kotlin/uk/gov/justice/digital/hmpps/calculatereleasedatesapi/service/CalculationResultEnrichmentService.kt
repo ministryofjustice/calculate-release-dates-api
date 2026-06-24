@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.SDSLegislationConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcomeHistoricSledOverride
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.HistoricalTusedSource
@@ -23,6 +24,7 @@ import java.time.format.DateTimeFormatter
 class CalculationResultEnrichmentService(
   private val nonFridayReleaseService: NonFridayReleaseService,
   private val workingDayService: WorkingDayService,
+  private val sdsLegislationConfiguration: SDSLegislationConfiguration,
   private val clock: Clock,
 ) {
 
@@ -108,7 +110,7 @@ class CalculationResultEnrichmentService(
     sentenceAndOffences: List<SentenceAndOffenceWithReleaseArrangements>,
     calculationBreakdown: CalculationBreakdown,
   ): Boolean {
-    if (!calculationBreakdown.showSds40Hints) return false
+    if (!calculationBreakdown.showSds40Hints || sdsLegislationConfiguration.progressionModelLegislation != null) return false
 
     return sentenceAndOffences.none {
       it.sdsReleaseArrangements?.isSDSPlus != true &&
