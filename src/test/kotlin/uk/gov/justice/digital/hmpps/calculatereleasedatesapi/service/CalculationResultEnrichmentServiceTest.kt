@@ -11,6 +11,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.SDSLegislationConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcomeHistoricSledOverride
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.HistoricalTusedSource
@@ -35,6 +36,7 @@ class CalculationResultEnrichmentServiceTest {
 
   private val nonFridayReleaseService = mock<NonFridayReleaseService>()
   private val workingDayService = mock<WorkingDayService>()
+  private val sdsLegislationConfiguration = mock<SDSLegislationConfiguration>()
 
   @Test
   fun `should add the full release date type name for all release dates`() {
@@ -914,6 +916,34 @@ class CalculationResultEnrichmentServiceTest {
   }
 
   @Test
+  fun `SDS hints do not show when progression model is enabled`() {
+    val (crdDate, crdType) = getReleaseDateAndStubAdjustments(ReleaseDateType.CRD, LocalDate.of(2021, 2, 3))
+    whenever(sdsLegislationConfiguration.progressionModelLegislation).thenReturn(mock())
+    val releaseDates = listOf(ReleaseDate(crdDate, crdType))
+    val calculationBreakdown = CalculationBreakdown(
+      emptyList(),
+      null,
+      mapOf(ReleaseDateType.CRD to ReleaseDateCalculationBreakdown(setOf(CalculationRule.SDS_EARLY_RELEASE_APPLIES))),
+    )
+    val results = calculationResultEnrichmentService()
+      .addDetailToCalculationDates(
+        releaseDates,
+        listOf(
+          sentenceAndOffenceWithReleaseArrangements,
+          sentenceAndOffenceWithReleaseArrangements.copy(
+            sentenceCalculationType = SentenceCalculationType.ADIMP_ORA.name,
+          ),
+        ),
+        calculationBreakdown,
+        null,
+        null,
+        null,
+      )
+
+    assertThat(results[crdType]?.hints).isEmpty()
+  }
+
+  @Test
   fun `SDS Hints do not show with SDS sentenced at 17-1-24 and SDS sentenced at 17-9-24`() {
     val (crdDate, crdType) = getReleaseDateAndStubAdjustments(ReleaseDateType.CRD, LocalDate.of(2021, 2, 3))
     val releaseDates = listOf(ReleaseDate(crdDate, crdType))
@@ -1251,7 +1281,7 @@ class CalculationResultEnrichmentServiceTest {
 
   private fun calculationResultEnrichmentService(today: LocalDate = LocalDate.of(2000, 1, 1)): CalculationResultEnrichmentService {
     val clock = Clock.fixed(today.atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault())
-    return CalculationResultEnrichmentService(nonFridayReleaseService, workingDayService, clock)
+    return CalculationResultEnrichmentService(nonFridayReleaseService, workingDayService, sdsLegislationConfiguration, clock)
   }
 
   private companion object {

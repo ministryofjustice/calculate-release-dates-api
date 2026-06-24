@@ -15,6 +15,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.TrancheSelectionStrategy
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.TrancheType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.TrancheName
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOptions
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
@@ -50,6 +51,7 @@ class TrancheAllocationServiceTest {
     offender = Offender("AB1234C", LocalDate.of(1980, 1, 1)),
     options = CalculationOptions(calculateErsed = false),
     externalMovements = ExternalMovementTimeline(emptyList()),
+    originalAdjustments = Adjustments(),
   )
 
   @BeforeEach
