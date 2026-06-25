@@ -64,6 +64,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSReleaseArr
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmitCalculationRequest
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmitSecondCheckRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmittedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderKeyDates
@@ -81,6 +82,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.Calculat
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationReasonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.OperativeSentenceEnvelopeRepository
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.SecondCheckRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.TrancheOutcomeRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.service.ValidationService
 import java.time.LocalDate
@@ -108,6 +110,7 @@ class CalculationTransactionalServiceTest {
   private val nomisCommentService = mock<NomisCommentService>()
   private val bankHolidayService = mock<BankHolidayService>()
   private val trancheOutcomeRepository = mock<TrancheOutcomeRepository>()
+  private val secondCheckRepository = mock<SecondCheckRepository>()
   private val calculationConfirmationService = CalculationConfirmationService(
     calculationRequestRepository,
     serviceUserService,
@@ -138,6 +141,7 @@ class CalculationTransactionalServiceTest {
     FeatureToggles(storeSentenceLevelDates = true),
     sentenceLevelDatesService,
     operativeSentenceEnvelopeRepository,
+    secondCheckRepository,
   )
 
   private val fakeSourceData = CalculationSourceData(
@@ -232,6 +236,22 @@ class CalculationTransactionalServiceTest {
     assertThat(exception)
       .isInstanceOf(EntityNotFoundException::class.java)
       .withFailMessage("No preliminary calculation exists for calculationRequestId $CALCULATION_REQUEST_ID")
+  }
+
+  @Test
+  fun `Test second check is confirmed on a success path`() {
+    whenever(calculationRequestRepository.findById(CALCULATION_REQUEST_ID)).thenReturn(
+      Optional.of(
+        CALCULATION_REQUEST_WITH_OUTCOMES,
+      ),
+    )
+
+    assertDoesNotThrow {
+      calculationTransactionalService.confirmSecondCheck(
+        CALCULATION_REQUEST_ID,
+        SubmitSecondCheckRequest(prisonerId = "A1234AJ", checkedByUsername = "user1"),
+      )
+    }
   }
 
   @Test

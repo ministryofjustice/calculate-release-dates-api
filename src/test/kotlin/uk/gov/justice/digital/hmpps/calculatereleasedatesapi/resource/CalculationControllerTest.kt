@@ -394,6 +394,7 @@ class CalculationControllerTest {
       prisonerId,
       123456,
       LocalDateTime.now(),
+      null,
       654321,
       "HMP Belfast",
       "Other",
@@ -401,7 +402,9 @@ class CalculationControllerTest {
       CalculationSource.CRDS,
       listOf(DetailedDate(ReleaseDateType.CRD, ReleaseDateType.CRD.description, LocalDate.of(2024, 1, 1), emptyList())),
       "username",
+      null,
       "User Name",
+      null,
       calculationType = CalculationType.CALCULATED.name,
     )
 

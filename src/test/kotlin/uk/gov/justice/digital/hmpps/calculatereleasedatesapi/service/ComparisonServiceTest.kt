@@ -599,7 +599,7 @@ class ComparisonServiceTest {
       criteria = emptyObjectNode,
       prison = "all",
     )
-    val latestCalculation = LatestCalculation("foo", 1L, LocalDateTime.now(), 1L, "BXI", "Other", "Further detail", CalculationSource.CRDS, emptyList(), "user1", "User One", calculationType = CalculationType.CALCULATED.name)
+    val latestCalculation = LatestCalculation("foo", 1L, LocalDateTime.now(), null, 1L, "BXI", "Other", "Further detail", CalculationSource.CRDS, emptyList(), "user1", null, "User One", null, calculationType = CalculationType.CALCULATED.name)
     whenever(comparisonRepository.findByComparisonShortReference(any())).thenReturn(comparison)
     whenever(comparisonPersonRepository.findByComparisonIdAndShortReference(any(), any())).thenReturn(person)
     whenever(comparisonPersonDiscrepancyRepository.existsByComparisonPerson(any())).thenReturn(false)

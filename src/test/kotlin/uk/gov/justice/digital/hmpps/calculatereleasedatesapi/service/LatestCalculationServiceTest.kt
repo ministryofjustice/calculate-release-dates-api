@@ -16,6 +16,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.client.ManageUsersApiClient
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequestSecondCheck
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Agency
@@ -36,6 +37,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Sent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.manageusers.UserDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeHistoricOverrideRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.SecondCheckRepository
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.Optional
@@ -48,6 +50,7 @@ class LatestCalculationServiceTest {
   private val calculationResultEnrichmentService: CalculationResultEnrichmentService = mock()
   private val calculationBreakdownService: CalculationBreakdownService = mock()
   private val historicOverrideRepository = mock<CalculationOutcomeHistoricOverrideRepository>()
+  private val secondCheckRepository = mock<SecondCheckRepository>()
   private val sourceDataMapper: SourceDataMapper = mock()
   private val offenderKeyDatesService: OffenderKeyDatesService = mock()
   private val manageUsersApiClient: ManageUsersApiClient = mock()
@@ -60,6 +63,7 @@ class LatestCalculationServiceTest {
     historicOverrideRepository,
     sourceDataMapper,
     manageUsersApiClient,
+    secondCheckRepository,
   )
   private val objectMapper = TestUtil.objectMapper()
   private val prisonerId = "ABC123"
@@ -127,12 +131,15 @@ class LatestCalculationServiceTest {
         now,
         null,
         null,
+        null,
         "New Sentence",
         null,
         CalculationSource.NOMIS,
         emptyList(),
         "username",
+        null,
         "User Name",
+        null,
         calculationType = "Unknown",
       ).right(),
     )
@@ -152,12 +159,15 @@ class LatestCalculationServiceTest {
         now,
         null,
         null,
+        null,
         "New Sentence",
         null,
         CalculationSource.NOMIS,
         emptyList(),
         "username",
+        null,
         "User Name",
+        null,
         calculationType = "Unknown",
       ).right(),
     )
@@ -177,12 +187,15 @@ class LatestCalculationServiceTest {
         now,
         null,
         null,
+        null,
         "New Sentence",
         null,
         CalculationSource.NOMIS,
         emptyList(),
         "username",
+        null,
         "User Name",
+        null,
         calculationType = CalculationType.CALCULATED.name,
       ).right(),
     )
@@ -202,12 +215,15 @@ class LatestCalculationServiceTest {
         now,
         null,
         null,
+        null,
         "New Sentence",
         null,
         CalculationSource.NOMIS,
         emptyList(),
         "username",
+        null,
         "User Name",
+        null,
         calculationType = CalculationType.CALCULATED.name,
       ).right(),
     )
@@ -226,12 +242,15 @@ class LatestCalculationServiceTest {
         now,
         null,
         null,
+        null,
         "FOO",
         null,
         CalculationSource.NOMIS,
         emptyList(),
         "username",
+        null,
         "User Name",
+        null,
         calculationType = CalculationType.CALCULATED.name,
       ).right(),
     )
@@ -282,6 +301,7 @@ class LatestCalculationServiceTest {
         prisonerId,
         bookingId,
         calculatedAt,
+        null,
         654321,
         null,
         "Some reason",
@@ -289,7 +309,9 @@ class LatestCalculationServiceTest {
         CalculationSource.CRDS,
         detailedDates,
         "username",
+        null,
         "User Name",
+        null,
         calculationType = CalculationType.CALCULATED.name,
       ).right(),
     )
@@ -313,6 +335,7 @@ class LatestCalculationServiceTest {
 
     whenever(prisonService.getOffenderDetail(prisonerId)).thenReturn(prisonerDetails)
     whenever(prisonService.getOffenderKeyDates(bookingId)).thenReturn(offenderKeyDates.right())
+    whenever(secondCheckRepository.findAllByPrisonerId(prisonerId)).thenReturn(emptyList())
 
     whenever(calculationRequestRepository.findFirstByPrisonerIdAndCalculationStatusOrderByCalculatedAtDesc(prisonerId)).thenReturn(
       Optional.of(
@@ -341,6 +364,7 @@ class LatestCalculationServiceTest {
         prisonerId,
         bookingId,
         calculatedAt,
+        null,
         654321,
         null,
         "Some reason",
@@ -348,7 +372,9 @@ class LatestCalculationServiceTest {
         CalculationSource.CRDS,
         detailedDates,
         "username",
+        null,
         "username",
+        null,
         calculationType = CalculationType.CALCULATED.name,
       ).right(),
     )
@@ -464,6 +490,7 @@ class LatestCalculationServiceTest {
         prisonerId,
         bookingId,
         calculatedAt,
+        null,
         654321,
         "HMP ABC",
         "Not entered",
@@ -471,7 +498,9 @@ class LatestCalculationServiceTest {
         CalculationSource.CRDS,
         detailedDates,
         "username",
+        null,
         "User Name",
+        null,
         calculationType = CalculationType.CALCULATED.name,
       ).right(),
     )
@@ -511,6 +540,7 @@ class LatestCalculationServiceTest {
         prisonerId,
         bookingId,
         calculatedAt,
+        null,
         654321,
         "XYZ",
         "Not entered",
@@ -518,7 +548,9 @@ class LatestCalculationServiceTest {
         CalculationSource.CRDS,
         detailedDates,
         "username",
+        null,
         "User Name",
+        null,
         calculationType = CalculationType.CALCULATED.name,
       ).right(),
     )
@@ -548,6 +580,15 @@ class LatestCalculationServiceTest {
     whenever(calculationBreakdownService.getBreakdownSafely(calculationRequest)).thenReturn(expectedBreakdown.right())
     whenever(sourceDataMapper.mapSentencesAndOffences(calculationRequest)).thenReturn(listOf(someSentence))
 
+    val secondCheck = CalculationRequestSecondCheck(
+      id = 1L,
+      calculationRequest = calculationRequest,
+      prisonerId = prisonerId,
+      checkedByUsername = "username",
+      checkedAt = LocalDateTime.now(),
+    )
+    whenever(secondCheckRepository.findAllByPrisonerId(prisonerId)).thenReturn(listOf(secondCheck))
+
     val dates = listOf(ReleaseDate(LocalDate.of(2025, 1, 1), ReleaseDateType.SED))
     whenever(offenderKeyDatesService.releaseDates(offenderKeyDates)).thenReturn(dates)
     val detailedDates = toDetailedDates(dates)
@@ -557,6 +598,7 @@ class LatestCalculationServiceTest {
         prisonerId,
         bookingId,
         calculatedAt,
+        secondCheck.checkedAt,
         654321,
         "HMP ABC",
         "Not entered",
@@ -564,6 +606,8 @@ class LatestCalculationServiceTest {
         CalculationSource.CRDS,
         detailedDates,
         "username",
+        secondCheck.checkedByUsername,
+        "User Name",
         "User Name",
         calculationType = CalculationType.CALCULATED.name,
       ).right(),
@@ -602,6 +646,7 @@ class LatestCalculationServiceTest {
         prisonerId,
         bookingId,
         calculatedAt,
+        null,
         654321,
         "HMP ABC",
         "Not entered",
@@ -609,7 +654,9 @@ class LatestCalculationServiceTest {
         CalculationSource.CRDS,
         detailedDates,
         "username",
+        null,
         "User Name",
+        null,
         calculationType = CalculationType.CALCULATED.name,
       ).right(),
     )
@@ -647,6 +694,7 @@ class LatestCalculationServiceTest {
         prisonerId,
         bookingId,
         calculatedAt,
+        null,
         654321,
         "HMP ABC",
         "Not entered",
@@ -654,7 +702,9 @@ class LatestCalculationServiceTest {
         CalculationSource.CRDS,
         detailedDates,
         "username",
+        null,
         "User Name",
+        null,
         calculationType = CalculationType.CALCULATED.name,
       ).right(),
     )

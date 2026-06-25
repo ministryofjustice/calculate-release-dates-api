@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.client.ManageUsersApiClient
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequestSecondCheck
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.CONFIRMED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationSource
@@ -10,41 +11,41 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationVi
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.GenuineOverrideReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.HistoricCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.SecondCheckRepository
 
 @Service
 class HistoricCalculationsService(
   private val prisonService: PrisonService,
   private val calculationRequestRepository: CalculationRequestRepository,
   private val manageUsersApiClient: ManageUsersApiClient,
+  private val secondCheckRepository: SecondCheckRepository,
 ) {
 
   @Transactional(readOnly = true)
   fun getHistoricCalculationsForPrisoner(prisonerId: String): List<HistoricCalculation> {
     val calculations = calculationRequestRepository.findAllByPrisonerIdAndCalculationStatus(prisonerId, CONFIRMED.name)
-    val secondChecks = calculations.filter { it.reasonForCalculation?.isSecondCheck == true }
+    val secondChecks: List<CalculationRequestSecondCheck> = secondCheckRepository.findAllByPrisonerId(prisonerId)
     val nomisCalculations = prisonService.getCalculationsForAPrisonerId(prisonerId)
     val agencyIdToDescriptionMap = prisonService.getAgenciesByType("INST").associateBy { it.agencyId }
     val uniqueUsers: Set<String> = nomisCalculations.mapNotNull { it.calculatedByUserId?.uppercase() }.toSet()
     val userDetails = manageUsersApiClient.getUsersByUsernames(uniqueUsers)
-    val secondCheckReason = "Second Check"
-    val secondCheckCalculations = secondChecks.map { secondCheck ->
-      val userDetail = userDetails?.get(secondCheck.calculatedByUsername?.uppercase())
+    val secondCheckCalculations = secondChecks.map { secondCheck: CalculationRequestSecondCheck ->
+      val userDetail = userDetails?.get(secondCheck.checkedByUsername.uppercase())
       val calculatedByDisplayName = listOfNotNull(userDetail?.firstName, userDetail?.lastName).joinToString(" ")
       HistoricCalculation(
         offenderNo = prisonerId,
-        calculationDate = secondCheck.calculatedAt,
+        calculationDate = secondCheck.checkedAt,
         calculationSource = CalculationSource.CRDS,
-        calculationViewConfiguration = CalculationViewConfiguration(secondCheck.calculationReference.toString(), secondCheck.id()),
-        commentText = secondCheckReason,
-        calculationType = secondCheck.calculationType,
-        establishment = agencyIdToDescriptionMap[secondCheck.prisonerLocation]?.description,
-        calculationRequestId = secondCheck.id,
-        calculationReason = "Second Check",
+        calculationViewConfiguration = null,
+        commentText = CalculationType.SECOND_CHECK.name,
+        calculationType = CalculationType.SECOND_CHECK,
+        establishment = agencyIdToDescriptionMap[secondCheck.calculationRequest.prisonerLocation]?.description,
+        calculationRequestId = secondCheck.calculationRequest.id(),
+        calculationReason = CalculationType.SECOND_CHECK.name,
         offenderSentCalculationId = 0L,
-        genuineOverrideReasonCode = secondCheck.genuineOverrideReason,
-        genuineOverrideReasonDescription = secondCheck.genuineOverrideReasonFurtherDetail
-          ?: secondCheck.genuineOverrideReason?.description,
-        calculatedByUsername = secondCheck.calculatedByUsername.uppercase(),
+        calculatedByUsername = secondCheck.checkedByUsername.uppercase(),
+        genuineOverrideReasonCode = null,
+        genuineOverrideReasonDescription = null,
         calculatedByDisplayName = calculatedByDisplayName,
       )
     }

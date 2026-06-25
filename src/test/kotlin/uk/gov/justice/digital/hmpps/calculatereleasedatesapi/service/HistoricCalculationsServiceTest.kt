@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
+import io.hypersistence.utils.hibernate.type.json.internal.JacksonUtil
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -13,6 +14,7 @@ import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.client.ManageUsersApiClient
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequestSecondCheck
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.manageusersapi.model.PrisonUserBasicDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Agency
@@ -21,6 +23,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationVi
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.GenuineOverrideReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculationSummary
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.SecondCheckRepository
 import java.time.LocalDateTime
 import java.util.UUID
 
@@ -28,6 +31,9 @@ import java.util.UUID
 class HistoricCalculationsServiceTest {
   @Mock
   lateinit var calculationRequestRepository: CalculationRequestRepository
+
+  @Mock
+  lateinit var secondCheckRepository: SecondCheckRepository
 
   @Mock
   lateinit var prisonService: PrisonService
@@ -97,14 +103,11 @@ class HistoricCalculationsServiceTest {
   @Test
   fun `Test second check for CRDS `() {
     val calcRequest1 = calculationRequest()
-    val calcRequest2 = calcRequest1.copy(
-      prisonerLocation = "KTI",
-      calculationStatus = CalculationStatus.CONFIRMED.name,
-      calculationReference = UUID.randomUUID(),
-      calculatedAt = LocalDateTime.now().plusSeconds(1),
-      reasonForCalculation = CalculationReason(id = 18, isActive = true, isOther = false, displayName = "Second Check", isBulk = false, nomisReason = null, nomisComment = null, displayRank = 1, useForApprovedDates = false, eligibleForPreviouslyRecordedSled = false, requiresFurtherDetail = false, furtherDetailDescription = null, isSecondCheck = true),
+    val calcRequest2 = secondCheckRecord().copy(
+      checkedAt = LocalDateTime.now().plusSeconds(1),
     )
-    whenever(calculationRequestRepository.findAllByPrisonerIdAndCalculationStatus(anyString(), anyString())).thenReturn(listOf(calcRequest1, calcRequest2))
+    whenever(calculationRequestRepository.findAllByPrisonerIdAndCalculationStatus(anyString(), anyString())).thenReturn(listOf(calcRequest1))
+    whenever(secondCheckRepository.findAllByPrisonerId(anyString())).thenReturn(listOf(calcRequest2))
 
     val sentenceCalculationSummary1 = sentenceCalculationSummary("comment $reference")
     whenever(prisonService.getCalculationsForAPrisonerId(anyString())).thenReturn(listOf(sentenceCalculationSummary1))
@@ -116,22 +119,19 @@ class HistoricCalculationsServiceTest {
     assertThat(result[1].calculationReason).isNull()
 
     assertThat(result[0].calculationSource).isEqualTo(CalculationSource.CRDS)
-    assertThat(result[0].calculationViewConfiguration).isEqualTo(CalculationViewConfiguration(calcRequest2.calculationReference.toString(), 1))
+    assertThat(result[0].calculationViewConfiguration).isNull()
     assertThat(result[0].establishment).isEqualTo("HMP KENNET")
-    assertThat(result[0].calculationReason).isEqualTo(calcRequest2.reasonForCalculation?.displayName)
+    assertThat(result[0].calculationReason).isEqualTo("SECOND_CHECK")
   }
 
   @Test
   fun `Test second check for CRDS with NOMIS history`() {
     val calcRequest1 = calculationRequest()
-    val calcRequest2 = calcRequest1.copy(
-      prisonerLocation = "KTI",
-      calculationStatus = CalculationStatus.CONFIRMED.name,
-      calculationReference = UUID.randomUUID(),
-      calculatedAt = LocalDateTime.now().plusSeconds(1),
-      reasonForCalculation = CalculationReason(id = 18, isActive = true, isOther = false, displayName = "Second Check", isBulk = false, nomisReason = null, nomisComment = null, displayRank = 1, useForApprovedDates = false, eligibleForPreviouslyRecordedSled = false, requiresFurtherDetail = false, furtherDetailDescription = null, isSecondCheck = true),
+    val calcRequest2 = secondCheckRecord().copy(
+      checkedAt = LocalDateTime.now().plusSeconds(1),
     )
-    whenever(calculationRequestRepository.findAllByPrisonerIdAndCalculationStatus(anyString(), anyString())).thenReturn(listOf(calcRequest2))
+    whenever(calculationRequestRepository.findAllByPrisonerIdAndCalculationStatus(anyString(), anyString())).thenReturn(listOf(calcRequest1))
+    whenever(secondCheckRepository.findAllByPrisonerId(anyString())).thenReturn(listOf(calcRequest2))
 
     val sentenceCalculationSummary1 = sentenceCalculationSummary("test comment")
     whenever(prisonService.getCalculationsForAPrisonerId(anyString())).thenReturn(listOf(sentenceCalculationSummary1))
@@ -141,9 +141,9 @@ class HistoricCalculationsServiceTest {
     assertThat(result[1].calculationReason).isEqualTo("reason")
 
     assertThat(result[0].calculationSource).isEqualTo(CalculationSource.CRDS)
-    assertThat(result[0].calculationViewConfiguration).isEqualTo(CalculationViewConfiguration(calcRequest2.calculationReference.toString(), 1))
+    assertThat(result[0].calculationViewConfiguration).isNull()
     assertThat(result[0].establishment).isEqualTo("HMP KENNET")
-    assertThat(result[0].calculationReason).isEqualTo(calcRequest2.reasonForCalculation?.displayName)
+    assertThat(result[0].calculationReason).isEqualTo("SECOND_CHECK")
   }
 
   @Test
@@ -196,4 +196,39 @@ class HistoricCalculationsServiceTest {
   private fun sentenceCalculationSummary(comment: String): SentenceCalculationSummary = SentenceCalculationSummary(456, "123", "bob", "davies", "RNI", "Ranby (HMP)", 1, LocalDateTime.now(), 4, comment, "reason", "user", "User", "One")
 
   private fun calculationRequest(): CalculationRequest = CalculationRequest(1, reference, "123", 4565, CalculationStatus.CONFIRMED.name, calculatedAt = LocalDateTime.now(), prisonerLocation = "CDI")
+  private fun secondCheckRecord(): CalculationRequestSecondCheck = CalculationRequestSecondCheck(1, calculationRequest, "123", checkedByUsername = "CRD_TEST_USER")
+
+  val calculationReason = CalculationReason(
+    id = 18,
+    isActive = true,
+    isOther = false,
+    isBulk = false,
+    displayName = "Reason",
+    nomisReason = "UPDATE",
+    nomisComment = "NOMIS_COMMENT",
+    displayRank = null,
+    useForApprovedDates = false,
+    eligibleForPreviouslyRecordedSled = false,
+    requiresFurtherDetail = false,
+    furtherDetailDescription = null,
+    isSecondCheck = false,
+  )
+
+  val calculationRequestWithOutcomes = CalculationRequest(
+    id = 234L,
+    calculationReference = UUID.randomUUID(),
+    prisonerId = "123",
+    prisonerLocation = "KTI",
+    bookingId = 123L,
+    calculationOutcomes = listOf(),
+    calculationStatus = CalculationStatus.CONFIRMED.name,
+    inputData = JacksonUtil.toJsonNode(
+      "{" + "\"offender\":{" + "\"reference\":\"ABC123D\"," +
+        "\"dateOfBirth\":\"1970-03-03\"" + "}," + "\"sentences\":[" +
+        "{" + "\"caseSequence\":1," + "\"lineSequence\":2," +
+        "\"offence\":{" + "\"committedAt\":\"2013-09-19\"" + "}," + "\"duration\":{" +
+        "\"durationElements\":{" + "\"YEARS\":2" + "}" + "}," + "\"sentencedAt\":\"2013-09-21\"" + "}" + "]" + "}",
+    ),
+    reasonForCalculation = calculationReason,
+  )
 }

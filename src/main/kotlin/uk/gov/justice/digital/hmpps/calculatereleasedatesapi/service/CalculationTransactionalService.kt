@@ -14,6 +14,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcomeHistoricSledOverride
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequestSecondCheck
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.OperativeSentenceEnvelopeEntity
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.TrancheOutcome
@@ -38,6 +39,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManuallyEnteredDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmitCalculationRequest
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmitSecondCheckRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ReturnToCustodyDate
@@ -47,6 +49,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.Calculat
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationReasonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.OperativeSentenceEnvelopeRepository
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.SecondCheckRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.TrancheOutcomeRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationOrder
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.service.ValidationService
@@ -71,6 +74,7 @@ class CalculationTransactionalService(
   private val featureToggles: FeatureToggles,
   private val sentenceLevelDatesService: SentenceLevelDatesService,
   private val operativeSentenceEnvelopeRepository: OperativeSentenceEnvelopeRepository,
+  private val secondCheckRepository: SecondCheckRepository,
 ) {
 
   @Transactional
@@ -104,6 +108,22 @@ class CalculationTransactionalService(
         calculationRequestModel.otherReasonDescription,
       )
       throw error
+    }
+  }
+
+  @Transactional
+  fun confirmSecondCheck(calculationRequestId: Long, submitSecondCheck: SubmitSecondCheckRequest): Boolean {
+    val foundCalculation = calculationRequestRepository.findById(calculationRequestId)
+    if (foundCalculation.isPresent) {
+      val secondCheckSubmission = CalculationRequestSecondCheck(
+        calculationRequest = foundCalculation.get(),
+        prisonerId = submitSecondCheck.prisonerId,
+        checkedByUsername = submitSecondCheck.checkedByUsername,
+      )
+      secondCheckRepository.save(secondCheckSubmission)
+      return true
+    } else {
+      throw EntityNotFoundException("No calculation request id found to confirm the second check")
     }
   }
 
@@ -158,7 +178,7 @@ class CalculationTransactionalService(
     otherReasonForCalculation: String?,
     historicalTusedSource: HistoricalTusedSource? = null,
   ): CalculatedReleaseDates = try {
-    val calc = calculate(
+    val calculation = calculate(
       booking,
       CONFIRMED,
       sourceData,
@@ -169,13 +189,11 @@ class CalculationTransactionalService(
       CalculationType.CALCULATED,
       historicalTusedSource,
     )
-    if (reasonForCalculation?.isSecondCheck == false) {
-      if (!approvedDates.isNullOrEmpty()) {
-        calculationConfirmationService.storeApprovedDates(calc, approvedDates)
-      }
-      calculationConfirmationService.writeToNomisAndPublishEvent(prisonerId, booking, calc, approvedDates)
+    if (!approvedDates.isNullOrEmpty()) {
+      calculationConfirmationService.storeApprovedDates(calculation, approvedDates)
     }
-    calc
+    calculationConfirmationService.writeToNomisAndPublishEvent(prisonerId, booking, calculation, approvedDates)
+    calculation
   } catch (error: Exception) {
     recordError(booking, sourceData, userInput, reasonForCalculation, otherReasonForCalculation)
     throw error
