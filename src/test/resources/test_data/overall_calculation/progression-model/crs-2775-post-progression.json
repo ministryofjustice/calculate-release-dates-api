@@ -1,0 +1,75 @@
+{
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
+      {
+        "offence": {
+          "committedAt": "2023-09-28",
+          "offenceCode": "MD71529"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 21
+          }
+        },
+        "identifier": "48b3e18e-5aaa-3b12-8101-bb97b715b5d1",
+        "sentencedAt": "2024-01-25",
+        "caseReference": null,
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSection250": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false
+        }
+      }
+    ],
+    "adjustments": {
+      "REMAND": [
+        {
+          "toDate": "2024-01-24",
+          "fromDate": "2023-09-29",
+          "numberOfDays": 118,
+          "additionalInfo": {
+            "type": "NONE"
+          },
+          "appliesToSentencesFrom": "2024-01-25"
+        }
+      ],
+      "UNLAWFULLY_AT_LARGE": [
+        {
+          "toDate": "2026-06-06",
+          "fromDate": "2024-03-09",
+          "numberOfDays": 820,
+          "additionalInfo": {
+            "type": "UAL",
+            "reason": "IMMIGRATION_DETENTION"
+          },
+          "appliesToSentencesFrom": "2024-03-09"
+        }
+      ]
+    },
+    "externalMovements": [
+      {
+        "direction": "OUT",
+        "movementDate": "2024-03-08",
+        "movementReason": "ERS"
+      },
+      {
+        "direction": "IN",
+        "movementDate": "2026-06-08",
+        "movementReason": "RECALL_ADMISSION"
+      }
+    ]
+  },
+  "userInputs": {
+    "calculateErsed": true
+  },
+  "params": "sds-progression-model",
+  "featureToggles": {
+    "applyPostRecallRepealRules": true,
+    "routePreProgressionExtinguishedSentenceToManual": true
+  }
+}
