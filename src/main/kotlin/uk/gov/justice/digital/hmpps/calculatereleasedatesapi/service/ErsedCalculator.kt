@@ -108,7 +108,7 @@ class ErsedCalculator(
           adjustedDays = addedDays,
           rules = setOf(CalculationRule.ERSED_BEFORE_SENTENCE_DATE),
         ),
-        params.sentence.sentencedAt,
+        params.sentence.sentencedAt.plusDays(params.sentenceCalculation.adjustments.ualDuringCustody),
       )
     } else {
       Result(ersed, adjustedErsed.plusDays(params.sentenceCalculation.adjustments.ualDuringCustody))
