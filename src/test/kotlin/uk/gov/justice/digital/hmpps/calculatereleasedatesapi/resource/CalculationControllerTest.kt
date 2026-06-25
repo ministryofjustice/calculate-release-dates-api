@@ -50,13 +50,14 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationRe
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationRequestModel
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationSource
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConfirmSecondCheckResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedCalculationResults
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.LatestCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NomisCalculationSummary
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDatesAndCalculationContext
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmitCalculationRequest
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConfirmSecondCheckResult
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmitSecondCheckRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationBreakdownService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationTransactionalService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.DetailedCalculationResultsService
@@ -167,7 +168,7 @@ class CalculationControllerTest {
 
     val submitSecondCheckRequest = SubmitSecondCheckRequest(
       prisonerId = prisonerId,
-      checkedByUsername = "username"
+      checkedByUsername = "username",
     )
     val expectedSecondCheckResult = ConfirmSecondCheckResult(
       success = true,
