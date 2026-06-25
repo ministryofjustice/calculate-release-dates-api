@@ -120,7 +120,7 @@ class HistoricCalculationsServiceTest {
 
     assertThat(result[0].calculationSource).isEqualTo(CalculationSource.CRDS)
     assertThat(result[0].calculationViewConfiguration).isNull()
-    assertThat(result[0].establishment).isEqualTo("HMP KENNET")
+    assertThat(result[0].establishment).isEqualTo("Chelmsford (HMP)")
     assertThat(result[0].calculationReason).isEqualTo("SECOND_CHECK")
   }
 
@@ -142,7 +142,7 @@ class HistoricCalculationsServiceTest {
 
     assertThat(result[0].calculationSource).isEqualTo(CalculationSource.CRDS)
     assertThat(result[0].calculationViewConfiguration).isNull()
-    assertThat(result[0].establishment).isEqualTo("HMP KENNET")
+    assertThat(result[0].establishment).isEqualTo("Chelmsford (HMP)")
     assertThat(result[0].calculationReason).isEqualTo("SECOND_CHECK")
   }
 
