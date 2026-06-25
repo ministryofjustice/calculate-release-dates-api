@@ -56,6 +56,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.LatestCalcula
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NomisCalculationSummary
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDatesAndCalculationContext
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmitCalculationRequest
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConfirmSecondCheckResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationBreakdownService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationTransactionalService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.DetailedCalculationResultsService
@@ -157,6 +158,37 @@ class CalculationControllerTest {
       calculatedReleaseDates,
     )
     verify(calculationTransactionalService, times(1)).calculate(prisonerId, calculationRequestModel)
+  }
+
+  @Test
+  fun `Test POST of a confirm second check`() {
+    val prisonerId = "A1234AB"
+    val calcRequestId = 123L
+
+    val submitSecondCheckRequest = SubmitSecondCheckRequest(
+      prisonerId = prisonerId,
+      checkedByUsername = "username"
+    )
+    val expectedSecondCheckResult = ConfirmSecondCheckResult(
+      success = true,
+    )
+
+    whenever(calculationTransactionalService.confirmSecondCheck(calcRequestId, submitSecondCheckRequest)).thenReturn(true)
+
+    val result = mvc.perform(
+      post("/calculation/confirm/second-check/$calcRequestId")
+        .accept(APPLICATION_JSON)
+        .contentType(APPLICATION_JSON)
+        .content(mapper.writeValueAsString(submitSecondCheckRequest)),
+    )
+      .andExpect(status().isOk)
+      .andExpect(content().contentType(APPLICATION_JSON))
+      .andReturn()
+
+    assertThat(mapper.readValue(result.response.contentAsString, ConfirmSecondCheckResult::class.java)).isEqualTo(
+      expectedSecondCheckResult,
+    )
+    verify(calculationTransactionalService, times(1)).confirmSecondCheck(calcRequestId, submitSecondCheckRequest)
   }
 
   @Test
