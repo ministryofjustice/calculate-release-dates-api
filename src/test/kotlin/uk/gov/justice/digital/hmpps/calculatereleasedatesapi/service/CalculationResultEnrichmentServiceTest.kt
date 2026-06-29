@@ -11,9 +11,13 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.client.ManageUsersApiClient
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.SDSLegislationConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcomeHistoricSledOverride
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequestSecondCheck
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.HistoricalTusedSource
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
@@ -23,20 +27,28 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateHint
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSReleaseArrangements
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SecondCheckDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.WorkingDay
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.manageusers.UserDetails
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.SecondCheckRepository
 import java.time.Clock
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.ZoneId
+import java.util.*
 
 class CalculationResultEnrichmentServiceTest {
 
   private val nonFridayReleaseService = mock<NonFridayReleaseService>()
+  private val secondCheckRepository = mock<SecondCheckRepository>()
+  private val manageUsersApiClient = mock<ManageUsersApiClient>()
   private val workingDayService = mock<WorkingDayService>()
   private val sdsLegislationConfiguration = mock<SDSLegislationConfiguration>()
+  val reference: UUID = UUID.randomUUID()
 
   @Test
   fun `should add the full release date type name for all release dates`() {
@@ -1200,6 +1212,33 @@ class CalculationResultEnrichmentServiceTest {
     assertThat(results[sledType]?.hints).isEqualTo(listOf(ReleaseDateHint("SLED from a previous period of custody")))
   }
 
+  @Test
+  fun `SecondCheck not found success path`() {
+    whenever(secondCheckRepository.findLatestByCalculationRequestId(any())).thenReturn(null)
+    whenever(manageUsersApiClient.getUserByUsername("username")).thenReturn(UserDetails("username", "User Name"))
+
+    val results: SecondCheckDetails? = calculationResultEnrichmentService().getSecondCheckDetails(calculationRequest().id())
+    assertThat(results).isNull()
+  }
+
+  @Test
+  fun `SecondCheck found success path`() {
+    val calcRequest2 = secondCheckRecord().copy(
+      checkedAt = LocalDateTime.now().plusSeconds(1),
+    )
+    whenever(secondCheckRepository.findLatestByCalculationRequestId(any())).thenReturn(calcRequest2)
+    whenever(manageUsersApiClient.getUserByUsername("username")).thenReturn(UserDetails("username", "User Name"))
+
+    val results: SecondCheckDetails? = calculationResultEnrichmentService().getSecondCheckDetails(calculationRequest().id())
+    assertThat(results?.checkedAt).isEqualTo(calcRequest2.checkedAt)
+    assertThat(results?.checkedByUsername).isEqualTo(calcRequest2.checkedByUsername)
+    assertThat(results?.checkedByDisplayName).isEqualTo("User Name")
+  }
+
+  private fun calculationRequest(): CalculationRequest = CalculationRequest(1, reference, "123", 4565, CalculationStatus.CONFIRMED.name, calculatedAt = LocalDateTime.now(), prisonerLocation = "CDI")
+
+  private fun secondCheckRecord(): CalculationRequestSecondCheck = CalculationRequestSecondCheck(1, calculationRequest(), "123", checkedByUsername = "username")
+
   private fun getReleaseDateAndStubAdjustments(type: ReleaseDateType, date: LocalDate): ReleaseDate {
     whenever(nonFridayReleaseService.getDate(ReleaseDate(date, type))).thenReturn(NonFridayReleaseDay(date, false))
     whenever(workingDayService.previousWorkingDay(date)).thenReturn(WorkingDay(date, adjustedForWeekend = false, adjustedForBankHoliday = false))
@@ -1281,7 +1320,7 @@ class CalculationResultEnrichmentServiceTest {
 
   private fun calculationResultEnrichmentService(today: LocalDate = LocalDate.of(2000, 1, 1)): CalculationResultEnrichmentService {
     val clock = Clock.fixed(today.atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault())
-    return CalculationResultEnrichmentService(nonFridayReleaseService, workingDayService, sdsLegislationConfiguration, clock)
+    return CalculationResultEnrichmentService(nonFridayReleaseService, workingDayService, sdsLegislationConfiguration, clock, secondCheckRepository, manageUsersApiClient)
   }
 
   private companion object {

@@ -64,7 +64,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSReleaseArr
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmitCalculationRequest
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmitSecondCheckRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmittedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderKeyDates
@@ -245,11 +244,11 @@ class CalculationTransactionalServiceTest {
         CALCULATION_REQUEST_WITH_OUTCOMES,
       ),
     )
+    whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
 
     assertDoesNotThrow {
       calculationTransactionalService.confirmSecondCheck(
         CALCULATION_REQUEST_ID,
-        SubmitSecondCheckRequest(prisonerId = "A1234AJ", checkedByUsername = "user1"),
       )
     }
   }

@@ -39,7 +39,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManuallyEnteredDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmitCalculationRequest
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmitSecondCheckRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ReturnToCustodyDate
@@ -112,13 +111,14 @@ class CalculationTransactionalService(
   }
 
   @Transactional
-  fun confirmSecondCheck(calculationRequestId: Long, submitSecondCheck: SubmitSecondCheckRequest): Boolean {
+  fun confirmSecondCheck(calculationRequestId: Long): Boolean {
     val foundCalculation = calculationRequestRepository.findById(calculationRequestId)
     if (foundCalculation.isPresent) {
+      val calculationRequest = foundCalculation.get()
       val secondCheckSubmission = CalculationRequestSecondCheck(
-        calculationRequest = foundCalculation.get(),
-        prisonerId = submitSecondCheck.prisonerId,
-        checkedByUsername = submitSecondCheck.checkedByUsername,
+        calculationRequest = calculationRequest,
+        prisonerId = calculationRequest.prisonerId,
+        checkedByUsername = serviceUserService.getUsername(),
       )
       secondCheckRepository.save(secondCheckSubmission)
       return true
@@ -145,16 +145,14 @@ class CalculationTransactionalService(
     val currentBookingJson = objectToJson(booking, objectMapper)
     val preliminaryBookingJson = calculationRequest.inputData
 
-    if (calculationRequest.reasonForCalculation?.isSecondCheck == false) {
-      if (preliminaryBookingJson.hashCode() != currentBookingJson.hashCode()) {
-        throw PreconditionFailedException("The booking data used for the preliminary calculation has changed")
-      }
+    if (preliminaryBookingJson.hashCode() != currentBookingJson.hashCode()) {
+      throw PreconditionFailedException("The booking data used for the preliminary calculation has changed")
+    }
 
-      val validationErrors = validationService.validate(sourceData, userInput, ValidationOrder.INVALID)
+    val validationErrors = validationService.validate(sourceData, userInput, ValidationOrder.INVALID)
 
-      if (validationErrors.any { !it.type.excludedInSave() }) {
-        throw CrdWebException(message = "The booking now fails validation", status = HttpStatus.INTERNAL_SERVER_ERROR)
-      }
+    if (validationErrors.any { !it.type.excludedInSave() }) {
+      throw CrdWebException(message = "The booking now fails validation", status = HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
     return confirmCalculation(

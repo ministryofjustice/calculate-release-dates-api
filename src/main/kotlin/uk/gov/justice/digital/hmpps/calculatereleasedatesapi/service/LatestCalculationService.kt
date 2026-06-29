@@ -18,7 +18,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OffenderKeyDa
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeHistoricOverrideRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.SecondCheckRepository
 
 @Component
 class LatestCalculationService(
@@ -30,7 +29,6 @@ class LatestCalculationService(
   private val calculationOutcomeHistoricOverrideRepository: CalculationOutcomeHistoricOverrideRepository,
   private val sourceDataMapper: SourceDataMapper,
   private val manageUsersApiClient: ManageUsersApiClient,
-  private val secondCheckRepository: SecondCheckRepository,
 ) {
 
   @Transactional(readOnly = true)
@@ -102,12 +100,7 @@ class LatestCalculationService(
     calculatedByUsername: String,
     calculationType: String,
   ): LatestCalculation {
-    val latestSecondCheck = secondCheckRepository.findAllByPrisonerId(prisonerId).maxByOrNull { it.checkedAt }
-    val checkedByUsername = latestSecondCheck?.checkedByUsername ?: null
-    val checkedAt = latestSecondCheck?.checkedAt ?: null
-    val checkedByDisplayName = latestSecondCheck?.let {
-      it.checkedByUsername?.let { username -> manageUsersApiClient.getUserByUsername(username)?.name }
-    } ?: null
+    val secondCheckDetails = calculationResultEnrichmentService.getSecondCheckDetails(calculationRequestId)
     val dates = offenderKeyDatesService.releaseDates(prisonerCalculation)
     val historicSledOverride = calculationOutcomeHistoricOverrideRepository.findByCalculationRequestId(calculationRequestId)
     return LatestCalculation(
@@ -120,10 +113,10 @@ class LatestCalculationService(
       reasonFurtherDetail = reasonFurtherDetail,
       source = CalculationSource.CRDS,
       calculatedByUsername = calculatedByUsername,
-      checkedByUsername = checkedByUsername,
-      checkedAt = checkedAt,
+      checkedByUsername = secondCheckDetails?.checkedByUsername,
+      checkedAt = secondCheckDetails?.checkedAt,
       calculatedByDisplayName = manageUsersApiClient.getUserByUsername(calculatedByUsername)?.name ?: calculatedByUsername,
-      checkedByDisplayName = checkedByDisplayName,
+      checkedByDisplayName = secondCheckDetails?.checkedByDisplayName,
       calculationType = calculationType,
       dates = calculationResultEnrichmentService.addDetailToCalculationDates(
         dates,

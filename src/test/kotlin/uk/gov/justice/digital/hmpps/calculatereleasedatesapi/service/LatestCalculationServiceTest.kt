@@ -16,7 +16,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.client.ManageUsersApiClient
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequestSecondCheck
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Agency
@@ -29,6 +28,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NomisCalculat
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OffenderKeyDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSReleaseArrangements
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SecondCheckDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
@@ -37,7 +37,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Sent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.manageusers.UserDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeHistoricOverrideRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.SecondCheckRepository
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.Optional
@@ -50,7 +49,6 @@ class LatestCalculationServiceTest {
   private val calculationResultEnrichmentService: CalculationResultEnrichmentService = mock()
   private val calculationBreakdownService: CalculationBreakdownService = mock()
   private val historicOverrideRepository = mock<CalculationOutcomeHistoricOverrideRepository>()
-  private val secondCheckRepository = mock<SecondCheckRepository>()
   private val sourceDataMapper: SourceDataMapper = mock()
   private val offenderKeyDatesService: OffenderKeyDatesService = mock()
   private val manageUsersApiClient: ManageUsersApiClient = mock()
@@ -63,7 +61,6 @@ class LatestCalculationServiceTest {
     historicOverrideRepository,
     sourceDataMapper,
     manageUsersApiClient,
-    secondCheckRepository,
   )
   private val objectMapper = TestUtil.objectMapper()
   private val prisonerId = "ABC123"
@@ -321,6 +318,7 @@ class LatestCalculationServiceTest {
   fun `Should map CRDS additional fields excluding user display name if the user was not found`() {
     val calculationReference = UUID.randomUUID()
     val calculatedAt = LocalDateTime.now()
+    val calcRequestId = 654321L
     val offenderKeyDates = OffenderKeyDates(
       sentenceExpiryDate = LocalDate.of(2025, 1, 1),
       licenceExpiryDate = LocalDate.of(2025, 1, 2),
@@ -335,12 +333,12 @@ class LatestCalculationServiceTest {
 
     whenever(prisonService.getOffenderDetail(prisonerId)).thenReturn(prisonerDetails)
     whenever(prisonService.getOffenderKeyDates(bookingId)).thenReturn(offenderKeyDates.right())
-    whenever(secondCheckRepository.findAllByPrisonerId(prisonerId)).thenReturn(emptyList())
+    whenever(calculationResultEnrichmentService.getSecondCheckDetails(calcRequestId)).thenReturn(null)
 
     whenever(calculationRequestRepository.findFirstByPrisonerIdAndCalculationStatusOrderByCalculatedAtDesc(prisonerId)).thenReturn(
       Optional.of(
         CalculationRequest(
-          id = 654321,
+          id = calcRequestId,
           calculationReference = calculationReference,
           calculatedAt = calculatedAt,
           reasonForCalculation = CalculationReason(0, false, false, "Some reason", false, null, null, null, false, false, false, null, isSecondCheck = false),
@@ -580,14 +578,12 @@ class LatestCalculationServiceTest {
     whenever(calculationBreakdownService.getBreakdownSafely(calculationRequest)).thenReturn(expectedBreakdown.right())
     whenever(sourceDataMapper.mapSentencesAndOffences(calculationRequest)).thenReturn(listOf(someSentence))
 
-    val secondCheck = CalculationRequestSecondCheck(
-      id = 1L,
-      calculationRequest = calculationRequest,
-      prisonerId = prisonerId,
+    val secondCheck = SecondCheckDetails(
+      checkedByDisplayName = "User Name",
       checkedByUsername = "username",
       checkedAt = LocalDateTime.now(),
     )
-    whenever(secondCheckRepository.findAllByPrisonerId(prisonerId)).thenReturn(listOf(secondCheck))
+    whenever(calculationResultEnrichmentService.getSecondCheckDetails(calculationRequest.id())).thenReturn(secondCheck)
 
     val dates = listOf(ReleaseDate(LocalDate.of(2025, 1, 1), ReleaseDateType.SED))
     whenever(offenderKeyDatesService.releaseDates(offenderKeyDates)).thenReturn(dates)

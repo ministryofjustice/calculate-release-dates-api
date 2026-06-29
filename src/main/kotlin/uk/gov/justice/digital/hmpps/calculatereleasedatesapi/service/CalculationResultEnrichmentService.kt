@@ -1,8 +1,10 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.client.ManageUsersApiClient
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.SDSLegislationConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcomeHistoricSledOverride
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequestSecondCheck
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.HistoricalTusedSource
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
@@ -12,9 +14,11 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OffenderKeyDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateHint
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SecondCheckDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.SecondCheckRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.SDS_40_COMMENCEMENT_DATE
 import java.time.Clock
 import java.time.LocalDate
@@ -26,7 +30,22 @@ class CalculationResultEnrichmentService(
   private val workingDayService: WorkingDayService,
   private val sdsLegislationConfiguration: SDSLegislationConfiguration,
   private val clock: Clock,
+  private val secondCheckRepository: SecondCheckRepository,
+  private val manageUsersApiClient: ManageUsersApiClient,
 ) {
+
+  fun getSecondCheckDetails(calculationRequestId: Long): SecondCheckDetails? {
+    val latestSecondCheckForCalcId: CalculationRequestSecondCheck? = secondCheckRepository.findLatestByCalculationRequestId(calculationRequestId)
+    val checkedByUsername = latestSecondCheckForCalcId?.checkedByUsername ?: null
+    val checkedAt = latestSecondCheckForCalcId?.checkedAt ?: null
+    val checkedByDisplayName = latestSecondCheckForCalcId?.let {
+      it.checkedByUsername?.let { username -> manageUsersApiClient.getUserByUsername(username)?.name }
+    } ?: null
+    if (checkedByUsername != null) {
+      return SecondCheckDetails(checkedByUsername, checkedByDisplayName, checkedAt)
+    }
+    return null
+  }
 
   fun addDetailToCalculationDates(
     releaseDates: List<ReleaseDate>,

@@ -43,6 +43,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.GenuineOverri
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSReleaseArrangements
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SecondCheckDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
@@ -156,6 +157,11 @@ class DetailedCalculationResultsServiceTest {
     )
     val enrichedReleaseDates = mapOf(ReleaseDateType.CRD to DetailedDate(ReleaseDateType.CRD, ReleaseDateType.CRD.description, LocalDate.of(2026, 6, 26), emptyList()))
     val expectedBreakdown = CalculationBreakdown(emptyList(), null, mapOf(ReleaseDateType.CRD to ReleaseDateCalculationBreakdown(emptySet())), mapOf(ReleaseDateType.PRRD to LocalDate.of(2026, 6, 27)))
+    val secondCheck = SecondCheckDetails(
+      checkedByDisplayName = "User Name",
+      checkedByUsername = "username",
+      checkedAt = LocalDateTime.now(),
+    )
     whenever(calculationRequestRepository.findById(CALCULATION_REQUEST_ID)).thenReturn(Optional.of(calculationRequestWithApprovedDates))
     whenever(sourceDataMapper.mapSentencesAndOffences(calculationRequestWithApprovedDates)).thenReturn(listOf(originalSentence))
     whenever(sourceDataMapper.mapPrisonerDetails(calculationRequestWithApprovedDates)).thenReturn(prisonerDetails)
@@ -172,6 +178,7 @@ class DetailedCalculationResultsServiceTest {
     ).thenReturn(enrichedReleaseDates)
     whenever(calculationBreakdownService.getBreakdownSafely(any())).thenReturn(expectedBreakdown.right())
     whenever(manageUsersApiClient.getUserByUsername("username")).thenReturn(UserDetails("username", "User Name"))
+    whenever(calculationResultEnrichmentService.getSecondCheckDetails(calculationRequestWithApprovedDates.id())).thenReturn(secondCheck)
     val results = service.findDetailedCalculationResults(CALCULATION_REQUEST_ID)
     assertThat(results).isEqualTo(
       DetailedCalculationResults(
@@ -181,6 +188,7 @@ class DetailedCalculationResultsServiceTest {
           ReleaseDateType.HDCAD to DetailedDate(ReleaseDateType.HDCAD, ReleaseDateType.HDCAD.description, LocalDate.of(2024, 1, 2), emptyList()),
           ReleaseDateType.ROTL to DetailedDate(ReleaseDateType.ROTL, ReleaseDateType.ROTL.description, LocalDate.of(2024, 1, 2), emptyList()),
         ),
+        secondCheckDetails = secondCheck,
         CalculationOriginalData(
           prisonerDetails,
           listOf(originalSentence),
@@ -251,6 +259,7 @@ class DetailedCalculationResultsServiceTest {
         context = expectedCalcContext,
         dates = enrichedReleaseDates,
         approvedDates = null,
+        secondCheckDetails = null,
         calculationOriginalData = CalculationOriginalData(prisonerDetails, listOf(originalSentence)),
         calculationBreakdown = expectedBreakdown,
         breakdownMissingReason = null,
@@ -496,6 +505,7 @@ class DetailedCalculationResultsServiceTest {
           ReleaseDateType.HDCAD to DetailedDate(ReleaseDateType.HDCAD, ReleaseDateType.HDCAD.description, LocalDate.of(2024, 1, 2), emptyList()),
           ReleaseDateType.ROTL to DetailedDate(ReleaseDateType.ROTL, ReleaseDateType.ROTL.description, LocalDate.of(2024, 1, 2), emptyList()),
         ),
+        secondCheckDetails = null,
         CalculationOriginalData(
           prisonerDetails,
           listOf(originalSentence),

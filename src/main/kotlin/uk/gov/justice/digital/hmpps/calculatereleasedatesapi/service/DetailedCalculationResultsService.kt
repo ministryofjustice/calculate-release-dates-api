@@ -40,6 +40,7 @@ open class DetailedCalculationResultsService(
 
   @Transactional(readOnly = true)
   fun findDetailedCalculationResults(calculationRequestId: Long): DetailedCalculationResults {
+    val secondCheckDetails = calculationResultEnrichmentService.getSecondCheckDetails(calculationRequestId)
     val calculationRequest = getCalculationRequest(calculationRequestId)
     val sentenceAndOffences = calculationRequest.sentenceAndOffences?.let { sourceDataMapper.mapSentencesAndOffences(calculationRequest) }
     val prisonerDetails = calculationRequest.prisonerDetails?.let { sourceDataMapper.mapPrisonerDetails(calculationRequest) }
@@ -62,6 +63,7 @@ open class DetailedCalculationResultsService(
         null,
         historicSledOverride,
       ),
+      secondCheckDetails = secondCheckDetails,
       approvedDates = approvedDates(calculationRequest.approvedDatesSubmissions.firstOrNull()),
       calculationOriginalData = CalculationOriginalData(
         prisonerDetails,

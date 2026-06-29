@@ -35,7 +35,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RelevantReman
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceAnalysis
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmitCalculationRequest
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmitSecondCheckRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ReturnToCustodyDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.BookingAndSentenceAdjustments
@@ -134,11 +133,10 @@ class CalculationController(
   )
   fun confirmSecondCheck(
     @PathVariable("calculationRequestId") calculationRequestId: Long,
-    @RequestBody submitSecondCheckRequest: SubmitSecondCheckRequest,
   ): ConfirmSecondCheckResult {
     log.info("Request received to confirm second check for calculationRequestId: {}", calculationRequestId)
     try {
-      calculationTransactionalService.confirmSecondCheck(calculationRequestId, submitSecondCheckRequest)
+      calculationTransactionalService.confirmSecondCheck(calculationRequestId)
       return ConfirmSecondCheckResult(success = true)
     } catch (e: EntityNotFoundException) {
       log.error("Error confirming second check for calculationRequestId {}: {}", calculationRequestId, e.message)
