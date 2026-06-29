@@ -30,7 +30,7 @@ class AdjustmentsBeforeCalculationValidator(private val validationUtilities: Val
       validateRemandOverlappingRemand(
         adjustments.sentenceAdjustments
           .filter { it.type == SentenceAdjustmentType.REMAND && it.fromDate != null && it.toDate != null }
-          .map { LocalDateRange.of(it.fromDate, it.toDate) },
+          .map { LocalDateRange.of(it.fromDate!!, it.toDate!!) },
       ),
     )
   }
@@ -42,7 +42,7 @@ class AdjustmentsBeforeCalculationValidator(private val validationUtilities: Val
       validateRemandOverlappingRemand(
         adjustments
           .filter { it.adjustmentType == AdjustmentDto.AdjustmentType.REMAND && it.fromDate != null && it.toDate != null }
-          .map { LocalDateRange.of(it.fromDate, it.toDate) },
+          .map { LocalDateRange.of(it.fromDate!!, it.toDate!!) },
       ),
     )
   }

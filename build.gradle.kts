@@ -5,7 +5,7 @@ import org.jlleitschuh.gradle.ktlint.tasks.KtLintFormatTask
 import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "10.5.0"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "10.5.3"
   id("org.springdoc.openapi-gradle-plugin") version "1.9.0"
   kotlin("plugin.spring") version "2.4.0"
   kotlin("plugin.jpa") version "2.4.0"
@@ -44,7 +44,7 @@ dependencies {
   implementation("org.jetbrains.kotlin:kotlin-reflect:2.4.0")
 
   // Three Ten Date Calculations
-  implementation("org.threeten:threeten-extra:1.9.0")
+  implementation("org.threeten:threeten-extra:1.10.0")
 
   compileOnly("javax.servlet:javax.servlet-api:4.0.1")
 
@@ -78,7 +78,7 @@ dependencies {
   testImplementation("org.springframework.boot:spring-boot-webtestclient")
   testImplementation("org.awaitility:awaitility-kotlin:4.3.0")
   testImplementation("net.javacrumbs.json-unit:json-unit-assertj:5.1.2")
-  testImplementation("io.swagger.parser.v3:swagger-parser-v2-converter:2.1.44")
+  testImplementation("io.swagger.parser.v3:swagger-parser-v2-converter:2.1.45")
   testImplementation("org.mockito:mockito-inline:5.2.0")
   testImplementation("org.junit.jupiter:junit-jupiter:6.1.0")
   testImplementation("org.testcontainers:testcontainers:2.0.5")

@@ -152,7 +152,7 @@ class RecordARecallDecisionService(
       .filter { it.bookingId == sourceData.prisonerDetails.bookingId }
       .filter { it.fromDate != null && it.toDate != null }
       .filterNot { it.recallId != null && recordARecallRequest.recallId != null && it.recallId == recordARecallRequest.recallId }
-      .map { it.id to LocalDateRange.ofClosed(it.fromDate, it.toDate) }
+      .map { it.id to LocalDateRange.ofClosed(it.fromDate!!, it.toDate!!) }
 
     val revPlusOne = recordARecallRequest.revocationDate.plusDays(1)
     val rtcMinusOne = recordARecallRequest.returnToCustodyDate?.minusDays(1)
