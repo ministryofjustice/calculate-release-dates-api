@@ -70,6 +70,7 @@ feature-toggles:
   support-inactive-sentences-and-adjustments: false
   applyPostRecallRepealRules: false
   applyPostHdcedRepealRules: false
+  isSecondCheckEnabled: true
 
 hdced4:
   hdc4-commencement-date: 2025-01-01

@@ -18,6 +18,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OffenderKeyDa
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeHistoricOverrideRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.SecondCheckRepository
 
 @Component
 class LatestCalculationService(
@@ -29,6 +30,7 @@ class LatestCalculationService(
   private val calculationOutcomeHistoricOverrideRepository: CalculationOutcomeHistoricOverrideRepository,
   private val sourceDataMapper: SourceDataMapper,
   private val manageUsersApiClient: ManageUsersApiClient,
+  private val secondCheckRepository: SecondCheckRepository,
 ) {
 
   @Transactional(readOnly = true)
@@ -43,7 +45,7 @@ class LatestCalculationService(
           bookingId,
           prisonerCalculation,
           nomisReason,
-          latestCrdsCalc.orElse(null)?.calculationType?.name ?: "Unknown",
+          "Unknown",
         )
       } else {
         val calculationRequest = latestCrdsCalc.get()
@@ -100,7 +102,18 @@ class LatestCalculationService(
     calculatedByUsername: String,
     calculationType: String,
   ): LatestCalculation {
-    val secondCheckDetails = calculationResultEnrichmentService.getSecondCheckDetails(calculationRequestId)
+    val secondCheck = secondCheckRepository.findLatestByCalculationRequestId(calculationRequestId)
+    val uniqueUsers: Set<String> = listOfNotNull(
+      secondCheck?.checkedByUsername?.uppercase(),
+      calculatedByUsername?.uppercase(),
+    ).toSet()
+    val userDetails = manageUsersApiClient.getUsersByUsernames(uniqueUsers)
+    val checkedByUserDetail = secondCheck?.checkedByUsername?.uppercase()?.let { username ->
+      userDetails?.get(username)
+    }
+    val calculatedByUserDetail = calculatedByUsername?.uppercase()?.let { username ->
+      userDetails?.get(username)
+    }
     val dates = offenderKeyDatesService.releaseDates(prisonerCalculation)
     val historicSledOverride = calculationOutcomeHistoricOverrideRepository.findByCalculationRequestId(calculationRequestId)
     return LatestCalculation(
@@ -113,10 +126,10 @@ class LatestCalculationService(
       reasonFurtherDetail = reasonFurtherDetail,
       source = CalculationSource.CRDS,
       calculatedByUsername = calculatedByUsername,
-      checkedByUsername = secondCheckDetails?.checkedByUsername,
-      checkedAt = secondCheckDetails?.checkedAt,
-      calculatedByDisplayName = manageUsersApiClient.getUserByUsername(calculatedByUsername)?.name ?: calculatedByUsername,
-      checkedByDisplayName = secondCheckDetails?.checkedByDisplayName,
+      checkedByUsername = secondCheck?.checkedByUsername,
+      checkedAt = secondCheck?.checkedAt,
+      calculatedByDisplayName = listOfNotNull(calculatedByUserDetail?.firstName, calculatedByUserDetail?.lastName).joinToString(" "),
+      checkedByDisplayName = listOfNotNull(checkedByUserDetail?.firstName, checkedByUserDetail?.lastName).joinToString(" "),
       calculationType = calculationType,
       dates = calculationResultEnrichmentService.addDetailToCalculationDates(
         dates,

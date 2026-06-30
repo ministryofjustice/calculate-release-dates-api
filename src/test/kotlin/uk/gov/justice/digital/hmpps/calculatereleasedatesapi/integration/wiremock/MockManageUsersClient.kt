@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 import com.github.tomakehurst.wiremock.client.WireMock.get
+import com.github.tomakehurst.wiremock.client.WireMock.post
 import com.github.tomakehurst.wiremock.client.WireMock.urlMatching
 import org.junit.jupiter.api.extension.AfterAllCallback
 import org.junit.jupiter.api.extension.BeforeAllCallback
@@ -12,6 +13,7 @@ import org.junit.jupiter.api.extension.ExtensionContext
 import org.junit.jupiter.api.extension.ParameterContext
 import org.junit.jupiter.api.extension.ParameterResolver
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.manageusersapi.model.PrisonUserBasicDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.manageusers.UserDetails
 
 class ManageUsersApiExtension :
@@ -57,6 +59,21 @@ class MockManageUsersClient(private val manageUsersApi: ManageUsersMockServer, p
     )
     return this
   }
+
+  fun withUsers(users: List<PrisonUserBasicDetails>): MockManageUsersClient {
+    val usersMap = users.associateBy { it.username }
+    manageUsersApi.stubFor(
+      post(urlMatching("/prisonusers/find-by-usernames"))
+        .willReturn(
+          aResponse()
+            .withHeader("Content-Type", "application/json")
+            .withBody(objectMapper.writeValueAsString(usersMap))
+            .withStatus(200),
+        ),
+    )
+    return this
+  }
+
   fun withNotFoundUser(username: String): MockManageUsersClient {
     manageUsersApi.stubFor(
       get(urlMatching("/users/$username"))

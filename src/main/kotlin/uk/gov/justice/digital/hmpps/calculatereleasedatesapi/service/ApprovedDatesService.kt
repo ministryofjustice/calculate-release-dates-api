@@ -43,7 +43,6 @@ class ApprovedDatesService(
     } else {
       when (latestCalculationRequest.calculationType) {
         CalculationType.MANUAL_DETERMINATE, CalculationType.MANUAL_INDETERMINATE -> unavailable(ApprovedDatesUnavailableReason.PREVIOUS_CALCULATION_MANUAL)
-        CalculationType.SECOND_CHECK -> unavailable(ApprovedDatesUnavailableReason.SECOND_CHECK)
         CalculationType.GENUINE_OVERRIDE -> unavailable(ApprovedDatesUnavailableReason.PREVIOUS_CALCULATION_GENUINE_OVERRIDE)
         CalculationType.CALCULATED -> handlePreviousIsCalculated(latestCalculationRequest)
       }

@@ -116,7 +116,7 @@ class CalculationTransactionalService(
     if (foundCalculation.isPresent) {
       val calculationRequest = foundCalculation.get()
       val secondCheckSubmission = CalculationRequestSecondCheck(
-        calculationRequest = calculationRequest,
+        calculationRequestId = calculationRequest.id(),
         prisonerId = calculationRequest.prisonerId,
         checkedByUsername = serviceUserService.getUsername(),
       )

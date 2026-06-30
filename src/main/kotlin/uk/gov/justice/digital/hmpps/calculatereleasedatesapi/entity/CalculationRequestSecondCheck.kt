@@ -5,7 +5,6 @@ import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.JoinColumn
-import jakarta.persistence.ManyToOne
 import jakarta.persistence.Table
 import jakarta.validation.constraints.NotNull
 import java.time.LocalDateTime
@@ -17,9 +16,8 @@ data class CalculationRequestSecondCheck(
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   val id: Long? = null,
   @NotNull
-  @ManyToOne(optional = false)
   @JoinColumn(name = "calculationRequestId", nullable = false, updatable = false)
-  val calculationRequest: CalculationRequest,
+  val calculationRequestId: Long,
   @NotNull
   val prisonerId: String,
   @NotNull

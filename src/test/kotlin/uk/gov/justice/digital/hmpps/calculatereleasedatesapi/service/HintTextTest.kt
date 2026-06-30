@@ -183,7 +183,7 @@ class HintTextTest : SpringTestBase() {
       NonFridayReleaseDay(releaseDate.date)
     }
     val calculationResultEnrichmentService =
-      CalculationResultEnrichmentService(nonFridayReleaseService, workingDayService, sdsLegislationConfiguration, clock, secondCheckRepository, manageUsersApiClient)
+      CalculationResultEnrichmentService(nonFridayReleaseService, workingDayService, sdsLegislationConfiguration, clock)
 
     return calculationResultEnrichmentService.addDetailToCalculationDates(
       releaseDates = dates.map { ReleaseDate(date = it.value, type = it.key) },

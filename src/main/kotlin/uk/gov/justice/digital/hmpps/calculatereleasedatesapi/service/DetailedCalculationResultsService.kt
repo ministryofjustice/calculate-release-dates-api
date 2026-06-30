@@ -20,8 +20,10 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedCalcu
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.PreviouslyRecordedSLED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDate
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SecondCheckDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeHistoricOverrideRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.SecondCheckRepository
 
 @Service
 @Transactional(readOnly = true)
@@ -36,11 +38,19 @@ open class DetailedCalculationResultsService(
   private val manageUsersApiClient: ManageUsersApiClient,
   private val prisonService: PrisonService,
   private val sdsLegislationConfiguration: SDSLegislationConfiguration,
+  private val secondCheckRepository: SecondCheckRepository,
 ) {
 
   @Transactional(readOnly = true)
   fun findDetailedCalculationResults(calculationRequestId: Long): DetailedCalculationResults {
-    val secondCheckDetails = calculationResultEnrichmentService.getSecondCheckDetails(calculationRequestId)
+    val secondCheck = secondCheckRepository.findLatestByCalculationRequestId(calculationRequestId)
+    val secondCheckDetails = secondCheck?.let {
+      SecondCheckDetails(
+        checkedByUsername = it.checkedByUsername,
+        checkedByDisplayName = manageUsersApiClient.getUserByUsername(it.checkedByUsername)?.name ?: it.checkedByUsername,
+        checkedAt = it.checkedAt,
+      )
+    }
     val calculationRequest = getCalculationRequest(calculationRequestId)
     val sentenceAndOffences = calculationRequest.sentenceAndOffences?.let { sourceDataMapper.mapSentencesAndOffences(calculationRequest) }
     val prisonerDetails = calculationRequest.prisonerDetails?.let { sourceDataMapper.mapPrisonerDetails(calculationRequest) }

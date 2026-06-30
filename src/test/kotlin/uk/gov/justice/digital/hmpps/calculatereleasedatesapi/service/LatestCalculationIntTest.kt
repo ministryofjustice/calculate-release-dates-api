@@ -11,6 +11,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.MockManageUsersClient
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.MockPrisonService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.manageusersapi.model.PrisonUserBasicDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Agency
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationSource
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedDate
@@ -133,7 +134,16 @@ class LatestCalculationIntTest(private val mockPrisonService: MockPrisonService,
       calculatedByLastName = "One",
     )
     stubKeyDates(bookingId, offenderKeyDates)
-    mockManageUsersClient.withUser(UserDetails("test-client", "Test Client"))
+    mockManageUsersClient.withUsers(
+      listOf(
+        PrisonUserBasicDetails(
+          "TEST-CLIENT", "Test", lastName = "Client",
+          staffId = 123, enabled = true, userId = 1, name = "Test Client",
+          authSource = PrisonUserBasicDetails.AuthSource.auth,
+          activeCaseloadId = null, accountStatus = null, primaryEmail = null,
+        ),
+      ),
+    )
 
     val latestCalculation = webTestClient.get()
       .uri("/calculation/default/latest")
@@ -177,7 +187,7 @@ class LatestCalculationIntTest(private val mockPrisonService: MockPrisonService,
         "test-client",
         null,
         "Test Client",
-        null,
+        "",
         calculationType = CalculationType.CALCULATED.name,
       ),
     )

@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
-import io.hypersistence.utils.hibernate.type.json.internal.JacksonUtil
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -21,6 +20,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Agency
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationSource
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationViewConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.GenuineOverrideReason
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SecondCheckDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculationSummary
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.SecondCheckRepository
@@ -101,49 +101,56 @@ class HistoricCalculationsServiceTest {
   }
 
   @Test
-  fun `Test second check for CRDS `() {
+  fun `Test second check for a CRDS request`() {
     val calcRequest1 = calculationRequest()
-    val calcRequest2 = secondCheckRecord().copy(
+    val secondCheck1 = secondCheckRecord().copy(
       checkedAt = LocalDateTime.now().plusSeconds(1),
+      checkedByUsername = "USER",
+    )
+    val secondCheck2 = secondCheckRecord().copy(
+      checkedAt = LocalDateTime.now().plusSeconds(2),
+      checkedByUsername = "USER1",
+    )
+    val secondCheck3 = secondCheckRecord().copy(
+      checkedAt = LocalDateTime.now().plusSeconds(3),
+      checkedByUsername = "UNKNOWN",
     )
     whenever(calculationRequestRepository.findAllByPrisonerIdAndCalculationStatus(anyString(), anyString())).thenReturn(listOf(calcRequest1))
-    whenever(secondCheckRepository.findAllByPrisonerId(anyString())).thenReturn(listOf(calcRequest2))
+    whenever(secondCheckRepository.findAllByPrisonerId(anyString())).thenReturn(listOf(secondCheck1, secondCheck2, secondCheck3))
+    whenever(manageUsersApiClient.getUsersByUsernames(anySet())).thenReturn(usersDetails)
 
     val sentenceCalculationSummary1 = sentenceCalculationSummary("comment $reference")
     whenever(prisonService.getCalculationsForAPrisonerId(anyString())).thenReturn(listOf(sentenceCalculationSummary1))
     val result = underTest.getHistoricCalculationsForPrisoner("123")
-    assertThat(result).hasSize(2)
-    assertThat(result[1].calculationSource).isEqualTo(CalculationSource.CRDS)
-    assertThat(result[1].calculationViewConfiguration).isEqualTo(CalculationViewConfiguration(reference.toString(), 1))
-    assertThat(result[1].establishment).isEqualTo("Chelmsford (HMP)")
-    assertThat(result[1].calculationReason).isNull()
-
+    assertThat(result).hasSize(1)
     assertThat(result[0].calculationSource).isEqualTo(CalculationSource.CRDS)
-    assertThat(result[0].calculationViewConfiguration).isNull()
+    assertThat(result[0].calculationViewConfiguration).isEqualTo(CalculationViewConfiguration(reference.toString(), 1))
     assertThat(result[0].establishment).isEqualTo("Chelmsford (HMP)")
-    assertThat(result[0].calculationReason).isEqualTo("SECOND_CHECK")
+    assertThat(result[0].calculationReason).isNull()
+    assertThat(result[0].secondCheckDetails).hasSize(3)
+    assertThat(result[0].secondCheckDetails[2]).isEqualTo(
+      SecondCheckDetails("USER", "Crd Test User", secondCheck1.checkedAt),
+    )
+    assertThat(result[0].secondCheckDetails[1]).isEqualTo(
+      SecondCheckDetails("USER1", "Crd Test User 1", secondCheck2.checkedAt),
+    )
+    assertThat(result[0].secondCheckDetails[0]).isEqualTo(
+      SecondCheckDetails("UNKNOWN", "", secondCheck3.checkedAt),
+    )
   }
 
   @Test
-  fun `Test second check for CRDS with NOMIS history`() {
+  fun `Test no second check in CRDS with only NOMIS history`() {
     val calcRequest1 = calculationRequest()
-    val calcRequest2 = secondCheckRecord().copy(
-      checkedAt = LocalDateTime.now().plusSeconds(1),
-    )
     whenever(calculationRequestRepository.findAllByPrisonerIdAndCalculationStatus(anyString(), anyString())).thenReturn(listOf(calcRequest1))
-    whenever(secondCheckRepository.findAllByPrisonerId(anyString())).thenReturn(listOf(calcRequest2))
+    whenever(secondCheckRepository.findAllByPrisonerId(anyString())).thenReturn(emptyList())
 
     val sentenceCalculationSummary1 = sentenceCalculationSummary("test comment")
     whenever(prisonService.getCalculationsForAPrisonerId(anyString())).thenReturn(listOf(sentenceCalculationSummary1))
     val result = underTest.getHistoricCalculationsForPrisoner("123")
-    assertThat(result).hasSize(2)
-    assertThat(result[1].calculationSource).isEqualTo(CalculationSource.NOMIS)
-    assertThat(result[1].calculationReason).isEqualTo("reason")
-
-    assertThat(result[0].calculationSource).isEqualTo(CalculationSource.CRDS)
-    assertThat(result[0].calculationViewConfiguration).isNull()
-    assertThat(result[0].establishment).isEqualTo("Chelmsford (HMP)")
-    assertThat(result[0].calculationReason).isEqualTo("SECOND_CHECK")
+    assertThat(result).hasSize(1)
+    assertThat(result[0].calculationSource).isEqualTo(CalculationSource.NOMIS)
+    assertThat(result[0].calculationReason).isEqualTo("reason")
   }
 
   @Test
@@ -196,7 +203,7 @@ class HistoricCalculationsServiceTest {
   private fun sentenceCalculationSummary(comment: String): SentenceCalculationSummary = SentenceCalculationSummary(456, "123", "bob", "davies", "RNI", "Ranby (HMP)", 1, LocalDateTime.now(), 4, comment, "reason", "user", "User", "One")
 
   private fun calculationRequest(): CalculationRequest = CalculationRequest(1, reference, "123", 4565, CalculationStatus.CONFIRMED.name, calculatedAt = LocalDateTime.now(), prisonerLocation = "CDI")
-  private fun secondCheckRecord(): CalculationRequestSecondCheck = CalculationRequestSecondCheck(1, calculationRequest(), "123", checkedByUsername = "CRD_TEST_USER")
+  private fun secondCheckRecord(): CalculationRequestSecondCheck = CalculationRequestSecondCheck(1, calculationRequest().id(), "123", checkedByUsername = "CRD_TEST_USER")
 
   val calculationReason = CalculationReason(
     id = 18,
@@ -212,23 +219,5 @@ class HistoricCalculationsServiceTest {
     requiresFurtherDetail = false,
     furtherDetailDescription = null,
     isSecondCheck = false,
-  )
-
-  val calculationRequestWithOutcomes = CalculationRequest(
-    id = 234L,
-    calculationReference = UUID.randomUUID(),
-    prisonerId = "123",
-    prisonerLocation = "KTI",
-    bookingId = 123L,
-    calculationOutcomes = listOf(),
-    calculationStatus = CalculationStatus.CONFIRMED.name,
-    inputData = JacksonUtil.toJsonNode(
-      "{" + "\"offender\":{" + "\"reference\":\"ABC123D\"," +
-        "\"dateOfBirth\":\"1970-03-03\"" + "}," + "\"sentences\":[" +
-        "{" + "\"caseSequence\":1," + "\"lineSequence\":2," +
-        "\"offence\":{" + "\"committedAt\":\"2013-09-19\"" + "}," + "\"duration\":{" +
-        "\"durationElements\":{" + "\"YEARS\":2" + "}" + "}," + "\"sentencedAt\":\"2013-09-21\"" + "}" + "]" + "}",
-    ),
-    reasonForCalculation = calculationReason,
   )
 }

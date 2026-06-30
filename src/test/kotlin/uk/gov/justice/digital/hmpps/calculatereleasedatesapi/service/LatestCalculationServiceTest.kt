@@ -6,6 +6,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.mockito.ArgumentMatchers
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
@@ -16,8 +17,11 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.client.ManageUsersApiClient
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequestSecondCheck
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.manageusersapi.model.PrisonUserBasicDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Agency
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BreakdownMissingReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
@@ -28,7 +32,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NomisCalculat
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OffenderKeyDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSReleaseArrangements
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SecondCheckDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
@@ -37,6 +40,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Sent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.manageusers.UserDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeHistoricOverrideRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.SecondCheckRepository
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.Optional
@@ -52,6 +56,7 @@ class LatestCalculationServiceTest {
   private val sourceDataMapper: SourceDataMapper = mock()
   private val offenderKeyDatesService: OffenderKeyDatesService = mock()
   private val manageUsersApiClient: ManageUsersApiClient = mock()
+  private val secondCheckRepository: SecondCheckRepository = mock()
   private val service = LatestCalculationService(
     prisonService,
     offenderKeyDatesService,
@@ -61,6 +66,7 @@ class LatestCalculationServiceTest {
     historicOverrideRepository,
     sourceDataMapper,
     manageUsersApiClient,
+    secondCheckRepository,
   )
   private val objectMapper = TestUtil.objectMapper()
   private val prisonerId = "ABC123"
@@ -73,6 +79,29 @@ class LatestCalculationServiceTest {
     LocalDate.of(1970, 1, 1),
   )
   private val now = LocalDateTime.now()
+  val reference: UUID = UUID.randomUUID()
+  private val usersDetails = mapOf(
+    "USERNAME" to PrisonUserBasicDetails(
+      username = "CRD_TEST_USER",
+      firstName = "User",
+      lastName = "Name",
+      authSource = PrisonUserBasicDetails.AuthSource.nomis,
+      enabled = true,
+      staffId = 12345,
+      userId = 67890,
+      name = "Crd Test User",
+    ),
+    "USERNAME1" to PrisonUserBasicDetails(
+      username = "CRD_TEST_USER",
+      firstName = "User",
+      lastName = "Name 1",
+      authSource = PrisonUserBasicDetails.AuthSource.nomis,
+      enabled = true,
+      staffId = 12345,
+      userId = 67890,
+      name = "Crd Test User",
+    ),
+  )
 
   @BeforeEach
   fun setUp() {
@@ -176,6 +205,8 @@ class LatestCalculationServiceTest {
     whenever(prisonService.getNOMISCalcReasons()).thenReturn(listOf(NomisCalculationReason("NEW", "New Sentence")))
     whenever(prisonService.getOffenderKeyDates(bookingId)).thenReturn(OffenderKeyDates(reasonCode = "NEW", calculatedAt = now, comment = "Not this one", calculatedByUserId = "username", calculatedByFirstName = "User", calculatedByLastName = "One").right())
     whenever(calculationRequestRepository.findFirstByPrisonerIdAndCalculationStatusOrderByCalculatedAtDesc(prisonerId)).thenReturn(Optional.of(CalculationRequest(calculationReference = UUID.randomUUID())))
+    whenever(secondCheckRepository.findLatestByCalculationRequestId(any())).thenReturn(null)
+    whenever(manageUsersApiClient.getUserByUsername("username")).thenReturn(UserDetails("username", "User Name"))
 
     assertThat(service.latestCalculationForPrisoner(prisonerId)).isEqualTo(
       LatestCalculation(
@@ -193,7 +224,7 @@ class LatestCalculationServiceTest {
         null,
         "User Name",
         null,
-        calculationType = CalculationType.CALCULATED.name,
+        "Unknown",
       ).right(),
     )
   }
@@ -204,6 +235,8 @@ class LatestCalculationServiceTest {
     whenever(prisonService.getNOMISCalcReasons()).thenReturn(listOf(NomisCalculationReason("NEW", "New Sentence")))
     whenever(prisonService.getOffenderKeyDates(bookingId)).thenReturn(OffenderKeyDates(reasonCode = "NEW", calculatedAt = now, calculatedByUserId = "username", calculatedByFirstName = "User", calculatedByLastName = "One").right())
     whenever(calculationRequestRepository.findFirstByPrisonerIdAndCalculationStatusOrderByCalculatedAtDesc(prisonerId)).thenReturn(Optional.of(CalculationRequest(calculationReference = UUID.randomUUID())))
+    whenever(secondCheckRepository.findLatestByCalculationRequestId(any())).thenReturn(null)
+    whenever(manageUsersApiClient.getUserByUsername("username")).thenReturn(UserDetails("username", "User Name"))
 
     assertThat(service.latestCalculationForPrisoner(prisonerId)).isEqualTo(
       LatestCalculation(
@@ -221,7 +254,7 @@ class LatestCalculationServiceTest {
         null,
         "User Name",
         null,
-        calculationType = CalculationType.CALCULATED.name,
+        "Unknown",
       ).right(),
     )
   }
@@ -231,6 +264,8 @@ class LatestCalculationServiceTest {
     whenever(prisonService.getOffenderDetail(prisonerId)).thenReturn(prisonerDetails)
     whenever(prisonService.getOffenderKeyDates(bookingId)).thenReturn(OffenderKeyDates(reasonCode = "FOO", calculatedAt = now, calculatedByUserId = "username", calculatedByFirstName = "User", calculatedByLastName = "One").right())
     whenever(calculationRequestRepository.findFirstByPrisonerIdAndCalculationStatusOrderByCalculatedAtDesc(prisonerId)).thenReturn(Optional.of(CalculationRequest(calculationReference = UUID.randomUUID())))
+    whenever(secondCheckRepository.findLatestByCalculationRequestId(any())).thenReturn(null)
+    whenever(manageUsersApiClient.getUserByUsername("username")).thenReturn(UserDetails("username", "User Name"))
 
     assertThat(service.latestCalculationForPrisoner(prisonerId)).isEqualTo(
       LatestCalculation(
@@ -248,7 +283,7 @@ class LatestCalculationServiceTest {
         null,
         "User Name",
         null,
-        calculationType = CalculationType.CALCULATED.name,
+        "Unknown",
       ).right(),
     )
   }
@@ -268,9 +303,12 @@ class LatestCalculationServiceTest {
       calculatedByFirstName = "User",
       calculatedByLastName = "One",
     )
+    val secondCheck = secondCheckRecord()
 
     whenever(prisonService.getOffenderDetail(prisonerId)).thenReturn(prisonerDetails)
     whenever(prisonService.getOffenderKeyDates(bookingId)).thenReturn(offenderKeyDates.right())
+    whenever(secondCheckRepository.findLatestByCalculationRequestId(any())).thenReturn(secondCheck)
+    whenever(manageUsersApiClient.getUsersByUsernames(ArgumentMatchers.anySet())).thenReturn(usersDetails)
 
     whenever(calculationRequestRepository.findFirstByPrisonerIdAndCalculationStatusOrderByCalculatedAtDesc(prisonerId)).thenReturn(
       Optional.of(
@@ -293,12 +331,13 @@ class LatestCalculationServiceTest {
     val detailedDates = toDetailedDates(dates)
     whenever(calculationResultEnrichmentService.addDetailToCalculationDates(dates, null, null, null, null, null)).thenReturn(detailedDates.associateBy { it.type })
     whenever(calculationBreakdownService.getBreakdownSafely(any())).thenReturn(BreakdownMissingReason.UNSUPPORTED_CALCULATION_BREAKDOWN.left())
+
     assertThat(service.latestCalculationForPrisoner(prisonerId)).isEqualTo(
       LatestCalculation(
         prisonerId,
         bookingId,
         calculatedAt,
-        null,
+        secondCheck.checkedAt,
         654321,
         null,
         "Some reason",
@@ -306,9 +345,9 @@ class LatestCalculationServiceTest {
         CalculationSource.CRDS,
         detailedDates,
         "username",
-        null,
+        secondCheck.checkedByUsername,
         "User Name",
-        null,
+        "User Name",
         calculationType = CalculationType.CALCULATED.name,
       ).right(),
     )
@@ -333,7 +372,8 @@ class LatestCalculationServiceTest {
 
     whenever(prisonService.getOffenderDetail(prisonerId)).thenReturn(prisonerDetails)
     whenever(prisonService.getOffenderKeyDates(bookingId)).thenReturn(offenderKeyDates.right())
-    whenever(calculationResultEnrichmentService.getSecondCheckDetails(calcRequestId)).thenReturn(null)
+    whenever(secondCheckRepository.findLatestByCalculationRequestId(any())).thenReturn(null)
+    whenever(manageUsersApiClient.getUsersByUsernames(ArgumentMatchers.anySet())).thenReturn(usersDetails)
 
     whenever(calculationRequestRepository.findFirstByPrisonerIdAndCalculationStatusOrderByCalculatedAtDesc(prisonerId)).thenReturn(
       Optional.of(
@@ -342,7 +382,7 @@ class LatestCalculationServiceTest {
           calculationReference = calculationReference,
           calculatedAt = calculatedAt,
           reasonForCalculation = CalculationReason(0, false, false, "Some reason", false, null, null, null, false, false, false, null, isSecondCheck = false),
-          calculatedByUsername = "username",
+          calculatedByUsername = "username1",
         ),
       ),
     )
@@ -369,10 +409,10 @@ class LatestCalculationServiceTest {
         null,
         CalculationSource.CRDS,
         detailedDates,
-        "username",
+        "username1",
         null,
-        "username",
-        null,
+        "User Name 1",
+        "",
         calculationType = CalculationType.CALCULATED.name,
       ).right(),
     )
@@ -471,6 +511,8 @@ class LatestCalculationServiceTest {
     whenever(prisonService.getOffenderDetail(prisonerId)).thenReturn(prisonerDetails)
     whenever(prisonService.getAgenciesByType("INST")).thenReturn(listOf(Agency("ABC", "HMP ABC")))
     whenever(prisonService.getOffenderKeyDates(bookingId)).thenReturn(offenderKeyDates.right())
+    whenever(secondCheckRepository.findLatestByCalculationRequestId(any())).thenReturn(null)
+    whenever(manageUsersApiClient.getUsersByUsernames(ArgumentMatchers.anySet())).thenReturn(usersDetails)
 
     whenever(calculationRequestRepository.findFirstByPrisonerIdAndCalculationStatusOrderByCalculatedAtDesc(prisonerId)).thenReturn(
       Optional.of(CalculationRequest(id = 654321, calculationReference = calculationReference, calculatedAt = calculatedAt, prisonerLocation = "ABC", calculatedByUsername = "username")),
@@ -498,7 +540,7 @@ class LatestCalculationServiceTest {
         "username",
         null,
         "User Name",
-        null,
+        "",
         calculationType = CalculationType.CALCULATED.name,
       ).right(),
     )
@@ -521,6 +563,8 @@ class LatestCalculationServiceTest {
     whenever(prisonService.getOffenderDetail(prisonerId)).thenReturn(prisonerDetails)
     whenever(prisonService.getAgenciesByType("INST")).thenReturn(listOf(Agency("ABC", "HMP ABC")))
     whenever(prisonService.getOffenderKeyDates(bookingId)).thenReturn(offenderKeyDates.right())
+    whenever(secondCheckRepository.findLatestByCalculationRequestId(any())).thenReturn(null)
+    whenever(manageUsersApiClient.getUsersByUsernames(ArgumentMatchers.anySet())).thenReturn(usersDetails)
 
     whenever(calculationRequestRepository.findFirstByPrisonerIdAndCalculationStatusOrderByCalculatedAtDesc(prisonerId)).thenReturn(
       Optional.of(CalculationRequest(id = 654321, calculationReference = calculationReference, calculatedAt = calculatedAt, prisonerLocation = "XYZ", calculatedByUsername = "username")),
@@ -548,7 +592,7 @@ class LatestCalculationServiceTest {
         "username",
         null,
         "User Name",
-        null,
+        "",
         calculationType = CalculationType.CALCULATED.name,
       ).right(),
     )
@@ -577,13 +621,8 @@ class LatestCalculationServiceTest {
     whenever(calculationRequestRepository.findFirstByPrisonerIdAndCalculationStatusOrderByCalculatedAtDesc(prisonerId)).thenReturn(Optional.of(calculationRequest))
     whenever(calculationBreakdownService.getBreakdownSafely(calculationRequest)).thenReturn(expectedBreakdown.right())
     whenever(sourceDataMapper.mapSentencesAndOffences(calculationRequest)).thenReturn(listOf(someSentence))
-
-    val secondCheck = SecondCheckDetails(
-      checkedByDisplayName = "User Name",
-      checkedByUsername = "username",
-      checkedAt = LocalDateTime.now(),
-    )
-    whenever(calculationResultEnrichmentService.getSecondCheckDetails(calculationRequest.id())).thenReturn(secondCheck)
+    whenever(secondCheckRepository.findLatestByCalculationRequestId(any())).thenReturn(null)
+    whenever(manageUsersApiClient.getUsersByUsernames(ArgumentMatchers.anySet())).thenReturn(usersDetails)
 
     val dates = listOf(ReleaseDate(LocalDate.of(2025, 1, 1), ReleaseDateType.SED))
     whenever(offenderKeyDatesService.releaseDates(offenderKeyDates)).thenReturn(dates)
@@ -594,7 +633,7 @@ class LatestCalculationServiceTest {
         prisonerId,
         bookingId,
         calculatedAt,
-        secondCheck.checkedAt,
+        null,
         654321,
         "HMP ABC",
         "Not entered",
@@ -602,9 +641,9 @@ class LatestCalculationServiceTest {
         CalculationSource.CRDS,
         detailedDates,
         "username",
-        secondCheck.checkedByUsername,
+        null,
         "User Name",
-        "User Name",
+        "",
         calculationType = CalculationType.CALCULATED.name,
       ).right(),
     )
@@ -632,6 +671,8 @@ class LatestCalculationServiceTest {
     whenever(calculationRequestRepository.findFirstByPrisonerIdAndCalculationStatusOrderByCalculatedAtDesc(prisonerId)).thenReturn(Optional.of(calculationRequest))
     whenever(calculationBreakdownService.getBreakdownSafely(calculationRequest)).thenReturn(BreakdownMissingReason.UNSUPPORTED_CALCULATION_BREAKDOWN.left())
     whenever(sourceDataMapper.mapSentencesAndOffences(calculationRequest)).thenReturn(listOf(someSentence))
+    whenever(secondCheckRepository.findLatestByCalculationRequestId(any())).thenReturn(null)
+    whenever(manageUsersApiClient.getUsersByUsernames(ArgumentMatchers.anySet())).thenReturn(usersDetails)
 
     val dates = listOf(ReleaseDate(LocalDate.of(2025, 1, 1), ReleaseDateType.SED))
     whenever(offenderKeyDatesService.releaseDates(offenderKeyDates)).thenReturn(dates)
@@ -652,7 +693,7 @@ class LatestCalculationServiceTest {
         "username",
         null,
         "User Name",
-        null,
+        "",
         calculationType = CalculationType.CALCULATED.name,
       ).right(),
     )
@@ -675,6 +716,8 @@ class LatestCalculationServiceTest {
     whenever(prisonService.getOffenderDetail(prisonerId)).thenReturn(prisonerDetails)
     whenever(prisonService.getAgenciesByType("INST")).thenReturn(listOf(Agency("ABC", "HMP ABC")))
     whenever(prisonService.getOffenderKeyDates(bookingId)).thenReturn(offenderKeyDates.right())
+    whenever(secondCheckRepository.findLatestByCalculationRequestId(any())).thenReturn(null)
+    whenever(manageUsersApiClient.getUsersByUsernames(ArgumentMatchers.anySet())).thenReturn(usersDetails)
 
     val calculationRequest = CalculationRequest(id = 654321, calculationReference = calculationReference, calculatedAt = calculatedAt, prisonerLocation = "ABC", sentenceAndOffences = null, calculatedByUsername = "username")
     val expectedBreakdown = CalculationBreakdown(emptyList(), null)
@@ -700,12 +743,16 @@ class LatestCalculationServiceTest {
         "username",
         null,
         "User Name",
-        null,
+        "",
         calculationType = CalculationType.CALCULATED.name,
       ).right(),
     )
     verify(sourceDataMapper, never()).mapSentencesAndOffences(calculationRequest)
   }
+
+  private fun calculationRequest(): CalculationRequest = CalculationRequest(1, reference, "123", 4565, CalculationStatus.CONFIRMED.name, calculatedAt = LocalDateTime.now(), prisonerLocation = "CDI")
+
+  private fun secondCheckRecord(): CalculationRequestSecondCheck = CalculationRequestSecondCheck(1, calculationRequest().id(), "123", checkedByUsername = "username")
 
   private val someSentence = SentenceAndOffenceWithReleaseArrangements(
     bookingId = 1L,
