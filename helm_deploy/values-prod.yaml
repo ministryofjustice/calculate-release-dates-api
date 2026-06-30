@@ -7,7 +7,7 @@ generic-service:
     host: calculate-release-dates-api.hmpps.service.justice.gov.uk
 
   env:
-    SPRING_PROFILES_ACTIVE: "calculation-params"
+    SPRING_PROFILES_ACTIVE: "calculation-params,sds-progression-model"
     APPLICATIONINSIGHTS_CONFIGURATION_FILE: applicationinsights.json
     HMPPS_AUTH_URL: https://sign-in.hmpps.service.justice.gov.uk/auth
     PRISON_API_URL: https://prison-api.prison.service.justice.gov.uk
@@ -15,6 +15,8 @@ generic-service:
     MANAGE-OFFENCES_API_URL: https://manage-offences-api.hmpps.service.justice.gov.uk
     NOMIS-SYNC-MAPPING_API_URL: https://nomis-sync-prisoner-mapping.hmpps.service.justice.gov.uk
     MANAGE-USERS_API_URL: https://manage-users-api.hmpps.service.justice.gov.uk
+    APPLY_POST_HDCED_REPEAL_RULES: "true"
+    ROUTE_PRE_PROGRESSION_EXTINGUISHED_SENTENCE_TO_MANUAL: "true"
 
   serviceAccountName: calculate-release-dates-api-prod
 
