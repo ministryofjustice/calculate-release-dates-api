@@ -61,7 +61,7 @@ class HistoricCalculationsService(
           SecondCheckDetails(
             checkedByUsername = it.checkedByUsername,
             checkedByDisplayName = listOfNotNull(checkedByUserDetail?.firstName, checkedByUserDetail?.lastName)
-              .joinToString(" ").ifBlank { it.checkedByUsername } ,
+              .joinToString(" ").ifBlank { it.checkedByUsername },
             checkedAt = it.checkedAt,
           )
         }
