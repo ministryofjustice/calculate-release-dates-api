@@ -92,6 +92,6 @@ class HistoricCalculationsService(
         secondCheckDetails = secondCheckDetailsList,
       )
     }
-    return historicCalculations.sortedByDescending { it.calculationDate }
+    return historicCalculations
   }
 }

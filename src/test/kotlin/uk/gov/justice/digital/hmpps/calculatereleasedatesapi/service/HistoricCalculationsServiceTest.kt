@@ -93,11 +93,13 @@ class HistoricCalculationsServiceTest {
     assertThat(result[0].calculationViewConfiguration).isEqualTo(CalculationViewConfiguration(reference.toString(), 1))
     assertThat(result[0].establishment).isEqualTo("Chelmsford (HMP)")
     assertThat(result[0].calculationReason).isNull()
+    assertThat(result[0].secondCheckDetails).isEmpty()
 
     assertThat(result[1].calculationSource).isEqualTo(CalculationSource.CRDS)
     assertThat(result[1].calculationViewConfiguration).isEqualTo(CalculationViewConfiguration(calcRequest2.calculationReference.toString(), 1))
     assertThat(result[1].establishment).isEqualTo("HMP KENNET")
     assertThat(result[1].calculationReason).isEqualTo(calcRequest2.reasonForCalculation?.displayName)
+    assertThat(result[1].secondCheckDetails).isEmpty()
   }
 
   @Test
@@ -151,6 +153,7 @@ class HistoricCalculationsServiceTest {
     assertThat(result).hasSize(1)
     assertThat(result[0].calculationSource).isEqualTo(CalculationSource.NOMIS)
     assertThat(result[0].calculationReason).isEqualTo("reason")
+    assertThat(result[0].secondCheckDetails).isEmpty()
   }
 
   @Test
@@ -164,6 +167,7 @@ class HistoricCalculationsServiceTest {
     assertThat(result[0].calculationSource).isEqualTo(CalculationSource.NOMIS)
     assertThat(result[0].calculationViewConfiguration).isNull()
     assertThat(result[0].establishment).isNull()
+    assertThat(result[0].secondCheckDetails).isEmpty()
   }
 
   @Test
@@ -190,6 +194,7 @@ class HistoricCalculationsServiceTest {
     assertThat(result[0].establishment).isEqualTo("Chelmsford (HMP)")
     assertThat(result[0].genuineOverrideReasonCode).isEqualTo(GenuineOverrideReason.AGGRAVATING_FACTOR_OFFENCE)
     assertThat(result[0].genuineOverrideReasonDescription).isEqualTo("One or more offences have been characterised by an aggravating factor (such as terror)")
+    assertThat(result[0].secondCheckDetails).isEmpty()
 
     assertThat(result[1].calculatedByDisplayName).isEqualTo("Crd Test User 1")
     assertThat(result[1].calculationSource).isEqualTo(CalculationSource.CRDS)
@@ -198,6 +203,7 @@ class HistoricCalculationsServiceTest {
     assertThat(result[1].calculationReason).isEqualTo(calcRequest2.reasonForCalculation?.displayName)
     assertThat(result[1].genuineOverrideReasonCode).isEqualTo(GenuineOverrideReason.OTHER)
     assertThat(result[1].genuineOverrideReasonDescription).isEqualTo("Some more details")
+    assertThat(result[1].secondCheckDetails).isEmpty()
   }
 
   private fun sentenceCalculationSummary(comment: String): SentenceCalculationSummary = SentenceCalculationSummary(456, "123", "bob", "davies", "RNI", "Ranby (HMP)", 1, LocalDateTime.now(), 4, comment, "reason", "user", "User", "One")
