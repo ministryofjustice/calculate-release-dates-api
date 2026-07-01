@@ -128,8 +128,8 @@ class LatestCalculationService(
       calculatedByUsername = calculatedByUsername,
       checkedByUsername = secondCheck?.checkedByUsername,
       checkedAt = secondCheck?.checkedAt,
-      calculatedByDisplayName = listOfNotNull(calculatedByUserDetail?.firstName, calculatedByUserDetail?.lastName).joinToString(" "),
-      checkedByDisplayName = listOfNotNull(checkedByUserDetail?.firstName, checkedByUserDetail?.lastName).joinToString(" "),
+      calculatedByDisplayName = listOfNotNull(calculatedByUserDetail?.firstName, calculatedByUserDetail?.lastName).joinToString(" ").ifBlank { calculatedByUsername },
+      checkedByDisplayName = secondCheck?.checkedByUsername?.let { username -> listOfNotNull(checkedByUserDetail?.firstName, checkedByUserDetail?.lastName).joinToString(" ").ifBlank { username } },
       calculationType = calculationType,
       dates = calculationResultEnrichmentService.addDetailToCalculationDates(
         dates,
