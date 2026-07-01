@@ -137,7 +137,7 @@ class HistoricCalculationsServiceTest {
       SecondCheckDetails("USER1", "Crd Test User 1", secondCheck2.checkedAt),
     )
     assertThat(result[0].secondCheckDetails[0]).isEqualTo(
-      SecondCheckDetails("UNKNOWN", "", secondCheck3.checkedAt),
+      SecondCheckDetails("UNKNOWN", "UNKNOWN", secondCheck3.checkedAt),
     )
   }
 

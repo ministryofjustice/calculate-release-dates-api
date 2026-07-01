@@ -354,6 +354,71 @@ class LatestCalculationServiceTest {
   }
 
   @Test
+  fun `Should map and return username for second check display name if it is not found in manage users api`() {
+    val calculationReference = UUID.randomUUID()
+    val calculatedAt = LocalDateTime.now()
+    val offenderKeyDates = OffenderKeyDates(
+      sentenceExpiryDate = LocalDate.of(2025, 1, 1),
+      licenceExpiryDate = LocalDate.of(2025, 1, 2),
+      conditionalReleaseDate = LocalDate.of(2025, 1, 7),
+      reasonCode = "NEW",
+      calculatedAt = calculatedAt,
+      comment = "Some stuff and then the ref: $calculationReference",
+      calculatedByUserId = "user1",
+      calculatedByFirstName = "User",
+      calculatedByLastName = "One",
+    )
+    val secondCheck = secondCheckRecordWithUknownUsername()
+
+    whenever(prisonService.getOffenderDetail(prisonerId)).thenReturn(prisonerDetails)
+    whenever(prisonService.getOffenderKeyDates(bookingId)).thenReturn(offenderKeyDates.right())
+    whenever(secondCheckRepository.findLatestByCalculationRequestId(any())).thenReturn(secondCheck)
+    whenever(manageUsersApiClient.getUsersByUsernames(ArgumentMatchers.anySet())).thenReturn(usersDetails)
+
+    whenever(calculationRequestRepository.findFirstByPrisonerIdAndCalculationStatusOrderByCalculatedAtDesc(prisonerId)).thenReturn(
+      Optional.of(
+        CalculationRequest(
+          id = 654321,
+          calculationReference = calculationReference,
+          calculatedAt = calculatedAt,
+          reasonForCalculation = CalculationReason(0, false, false, "Some reason", false, null, null, null, false, false, false, null, isSecondCheck = false),
+          calculatedByUsername = "username",
+        ),
+      ),
+    )
+
+    val dates = listOf(
+      ReleaseDate(LocalDate.of(2025, 1, 1), ReleaseDateType.SED),
+      ReleaseDate(LocalDate.of(2025, 1, 2), ReleaseDateType.LED),
+      ReleaseDate(LocalDate.of(2025, 1, 7), ReleaseDateType.CRD),
+    )
+    whenever(offenderKeyDatesService.releaseDates(offenderKeyDates)).thenReturn(dates)
+    val detailedDates = toDetailedDates(dates)
+    whenever(calculationResultEnrichmentService.addDetailToCalculationDates(dates, null, null, null, null, null)).thenReturn(detailedDates.associateBy { it.type })
+    whenever(calculationBreakdownService.getBreakdownSafely(any())).thenReturn(BreakdownMissingReason.UNSUPPORTED_CALCULATION_BREAKDOWN.left())
+
+    assertThat(service.latestCalculationForPrisoner(prisonerId)).isEqualTo(
+      LatestCalculation(
+        prisonerId,
+        bookingId,
+        calculatedAt,
+        secondCheck.checkedAt,
+        654321,
+        null,
+        "Some reason",
+        null,
+        CalculationSource.CRDS,
+        detailedDates,
+        "username",
+        secondCheck.checkedByUsername,
+        "User Name",
+        secondCheck.checkedByUsername,
+        calculationType = CalculationType.CALCULATED.name,
+      ).right(),
+    )
+  }
+
+  @Test
   fun `Should map CRDS additional fields excluding user display name if the user was not found`() {
     val calculationReference = UUID.randomUUID()
     val calculatedAt = LocalDateTime.now()
@@ -412,7 +477,7 @@ class LatestCalculationServiceTest {
         "username1",
         null,
         "User Name 1",
-        "",
+        null,
         calculationType = CalculationType.CALCULATED.name,
       ).right(),
     )
@@ -540,7 +605,7 @@ class LatestCalculationServiceTest {
         "username",
         null,
         "User Name",
-        "",
+        null,
         calculationType = CalculationType.CALCULATED.name,
       ).right(),
     )
@@ -592,7 +657,7 @@ class LatestCalculationServiceTest {
         "username",
         null,
         "User Name",
-        "",
+        null,
         calculationType = CalculationType.CALCULATED.name,
       ).right(),
     )
@@ -643,7 +708,7 @@ class LatestCalculationServiceTest {
         "username",
         null,
         "User Name",
-        "",
+        null,
         calculationType = CalculationType.CALCULATED.name,
       ).right(),
     )
@@ -693,7 +758,7 @@ class LatestCalculationServiceTest {
         "username",
         null,
         "User Name",
-        "",
+        null,
         calculationType = CalculationType.CALCULATED.name,
       ).right(),
     )
@@ -743,7 +808,7 @@ class LatestCalculationServiceTest {
         "username",
         null,
         "User Name",
-        "",
+        null,
         calculationType = CalculationType.CALCULATED.name,
       ).right(),
     )
@@ -753,6 +818,8 @@ class LatestCalculationServiceTest {
   private fun calculationRequest(): CalculationRequest = CalculationRequest(1, reference, "123", 4565, CalculationStatus.CONFIRMED.name, calculatedAt = LocalDateTime.now(), prisonerLocation = "CDI")
 
   private fun secondCheckRecord(): CalculationRequestSecondCheck = CalculationRequestSecondCheck(1, calculationRequest().id(), "123", checkedByUsername = "username")
+
+  private fun secondCheckRecordWithUknownUsername(): CalculationRequestSecondCheck = CalculationRequestSecondCheck(1, calculationRequest().id(), "123", checkedByUsername = "username2")
 
   private val someSentence = SentenceAndOffenceWithReleaseArrangements(
     bookingId = 1L,

@@ -187,7 +187,7 @@ class LatestCalculationIntTest(private val mockPrisonService: MockPrisonService,
         "test-client",
         null,
         "Test Client",
-        "",
+        null,
         calculationType = CalculationType.CALCULATED.name,
       ),
     )
