@@ -40,7 +40,7 @@ class RelevantRemandService(
     val calculationUserInputs = CalculationUserInputs()
 
     val validationMessages = validationService.validate(sourceData, calculationUserInputs, ValidationOrder.INVALID)
-      .filterNot { listOf(ValidationCode.CUSTODIAL_PERIOD_EXTINGUISHED_TAGGED_BAIL, ValidationCode.CUSTODIAL_PERIOD_EXTINGUISHED_REMAND).contains(it.code) }
+      .filterNot { listOf(ValidationCode.CUSTODIAL_PERIOD_EXTINGUISHED_TAGGED_BAIL, ValidationCode.CUSTODIAL_PERIOD_EXTINGUISHED_REMAND, ValidationCode.RELEASE_DATE_BEFORE_SENTENCE_DATE).contains(it.code) }
     if (validationMessages.isNotEmpty()) {
       return RelevantRemandCalculationResult(
         validationMessages = validationMessages,

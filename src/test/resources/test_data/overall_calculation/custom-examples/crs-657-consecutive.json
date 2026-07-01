@@ -61,5 +61,5 @@
     "useOffenceIndicators": true
   },
   "params": "calculation-params",
-  "expectedValidationException": "CUSTODIAL_PERIOD_EXTINGUISHED_REMAND"
+  "expectedValidationException": "RELEASE_DATE_BEFORE_SENTENCE_DATE"
 }

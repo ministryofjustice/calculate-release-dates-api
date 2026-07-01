@@ -9,4 +9,5 @@ data class ValidationMessage(
   val message: String = String.format(code.message, *arguments.toTypedArray()),
   val type: ValidationType = code.validationType,
   val calculationUnsupported: Boolean = code.validationType.isUnsupported(),
+  val contentType: ValidationMessageContentType = code.contentType,
 )
