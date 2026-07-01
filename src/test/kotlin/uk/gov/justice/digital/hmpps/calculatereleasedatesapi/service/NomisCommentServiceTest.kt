@@ -100,6 +100,7 @@ class NomisCommentServiceTest {
       eligibleForPreviouslyRecordedSled = false,
       requiresFurtherDetail = false,
       furtherDetailDescription = null,
+      isSecondCheck = false,
     )
 
     private val CALCULATION_REQUEST = CalculationRequest(

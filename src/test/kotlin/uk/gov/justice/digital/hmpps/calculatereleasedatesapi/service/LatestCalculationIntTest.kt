@@ -6,10 +6,12 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.http.MediaType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.MockManageUsersClient
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.MockPrisonService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.manageusersapi.model.PrisonUserBasicDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Agency
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationSource
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedDate
@@ -81,6 +83,7 @@ class LatestCalculationIntTest(private val mockPrisonService: MockPrisonService,
         now,
         null,
         null,
+        null,
         "New Sentence",
         null,
         CalculationSource.NOMIS,
@@ -100,7 +103,10 @@ class LatestCalculationIntTest(private val mockPrisonService: MockPrisonService,
           ),
         ),
         "user1",
+        null,
         "User Name",
+        null,
+        calculationType = "Unknown",
       ),
     )
   }
@@ -128,7 +134,16 @@ class LatestCalculationIntTest(private val mockPrisonService: MockPrisonService,
       calculatedByLastName = "One",
     )
     stubKeyDates(bookingId, offenderKeyDates)
-    mockManageUsersClient.withUser(UserDetails("test-client", "Test Client"))
+    mockManageUsersClient.withUsers(
+      listOf(
+        PrisonUserBasicDetails(
+          "TEST-CLIENT", "Test", lastName = "Client",
+          staffId = 123, enabled = true, userId = 1, name = "Test Client",
+          authSource = PrisonUserBasicDetails.AuthSource.auth,
+          activeCaseloadId = null, accountStatus = null, primaryEmail = null,
+        ),
+      ),
+    )
 
     val latestCalculation = webTestClient.get()
       .uri("/calculation/default/latest")
@@ -147,6 +162,7 @@ class LatestCalculationIntTest(private val mockPrisonService: MockPrisonService,
         prisonerId,
         bookingId,
         calculatedAtOverrideForComparison,
+        null,
         confirmed.calculationRequestId,
         "",
         "Initial calculation",
@@ -169,7 +185,10 @@ class LatestCalculationIntTest(private val mockPrisonService: MockPrisonService,
           DetailedDate(ReleaseDateType.TUSED, ReleaseDateType.TUSED.description, LocalDate.of(2017, 1, 6), emptyList()),
         ),
         "test-client",
+        null,
         "Test Client",
+        null,
+        calculationType = CalculationType.CALCULATED.name,
       ),
     )
   }
