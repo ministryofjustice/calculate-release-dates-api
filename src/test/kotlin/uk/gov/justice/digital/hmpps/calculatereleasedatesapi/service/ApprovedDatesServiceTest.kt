@@ -374,6 +374,7 @@ class ApprovedDatesServiceTest {
       eligibleForPreviouslyRecordedSled = false,
       requiresFurtherDetail = false,
       furtherDetailDescription = null,
+      isSecondCheck = false,
     )
   }
 }

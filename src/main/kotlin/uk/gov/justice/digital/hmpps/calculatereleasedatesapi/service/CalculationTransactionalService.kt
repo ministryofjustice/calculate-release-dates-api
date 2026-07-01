@@ -14,6 +14,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcomeHistoricSledOverride
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequestSecondCheck
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.OperativeSentenceEnvelopeEntity
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.TrancheOutcome
@@ -47,6 +48,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.Calculat
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationReasonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.OperativeSentenceEnvelopeRepository
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.SecondCheckRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.TrancheOutcomeRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationOrder
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.service.ValidationService
@@ -71,6 +73,7 @@ class CalculationTransactionalService(
   private val featureToggles: FeatureToggles,
   private val sentenceLevelDatesService: SentenceLevelDatesService,
   private val operativeSentenceEnvelopeRepository: OperativeSentenceEnvelopeRepository,
+  private val secondCheckRepository: SecondCheckRepository,
 ) {
 
   @Transactional
@@ -104,6 +107,23 @@ class CalculationTransactionalService(
         calculationRequestModel.otherReasonDescription,
       )
       throw error
+    }
+  }
+
+  @Transactional
+  fun confirmSecondCheck(calculationRequestId: Long): Boolean {
+    val foundCalculation = calculationRequestRepository.findById(calculationRequestId)
+    if (foundCalculation.isPresent) {
+      val calculationRequest = foundCalculation.get()
+      val secondCheckSubmission = CalculationRequestSecondCheck(
+        calculationRequestId = calculationRequest.id(),
+        prisonerId = calculationRequest.prisonerId,
+        checkedByUsername = serviceUserService.getUsername(),
+      )
+      secondCheckRepository.save(secondCheckSubmission)
+      return true
+    } else {
+      throw EntityNotFoundException("No calculation request id found to confirm the second check")
     }
   }
 
@@ -155,28 +175,26 @@ class CalculationTransactionalService(
     reasonForCalculation: CalculationReason?,
     otherReasonForCalculation: String?,
     historicalTusedSource: HistoricalTusedSource? = null,
-  ): CalculatedReleaseDates {
-    try {
-      val calculation = calculate(
-        booking,
-        CONFIRMED,
-        sourceData,
-        reasonForCalculation,
-        userInput,
-        otherReasonForCalculation,
-        calculationFragments,
-        CalculationType.CALCULATED,
-        historicalTusedSource,
-      )
-      if (!approvedDates.isNullOrEmpty()) {
-        calculationConfirmationService.storeApprovedDates(calculation, approvedDates)
-      }
-      calculationConfirmationService.writeToNomisAndPublishEvent(prisonerId, booking, calculation, approvedDates)
-      return calculation
-    } catch (error: Exception) {
-      recordError(booking, sourceData, userInput, reasonForCalculation, otherReasonForCalculation)
-      throw error
+  ): CalculatedReleaseDates = try {
+    val calculation = calculate(
+      booking,
+      CONFIRMED,
+      sourceData,
+      reasonForCalculation,
+      userInput,
+      otherReasonForCalculation,
+      calculationFragments,
+      CalculationType.CALCULATED,
+      historicalTusedSource,
+    )
+    if (!approvedDates.isNullOrEmpty()) {
+      calculationConfirmationService.storeApprovedDates(calculation, approvedDates)
     }
+    calculationConfirmationService.writeToNomisAndPublishEvent(prisonerId, booking, calculation, approvedDates)
+    calculation
+  } catch (error: Exception) {
+    recordError(booking, sourceData, userInput, reasonForCalculation, otherReasonForCalculation)
+    throw error
   }
 
   @Transactional
