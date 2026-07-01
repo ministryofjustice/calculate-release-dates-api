@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.RestController
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationReasonRepository
 
@@ -19,6 +20,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.Calculat
 @Tag(name = "calculation-reason-controller", description = "Returns a list of active reasons for calculation")
 class CalculationReasonController(
   private val calculationReasonRepository: CalculationReasonRepository,
+  private val featureToggles: FeatureToggles,
 ) {
 
   @GetMapping("/")
@@ -34,7 +36,11 @@ class CalculationReasonController(
   )
   fun getActiveCalculationReasons(): List<CalculationReason> {
     log.info("Request for active calculation reasons received")
-    return calculationReasonRepository.findAllByIsActiveTrueOrderByDisplayRankAsc()
+    val calcReasons = calculationReasonRepository.findAllByIsActiveTrueOrderByDisplayRankAsc()
+    if (!featureToggles.secondCheckEnabled) {
+      return calcReasons.filter { !it.isSecondCheck }
+    }
+    return calcReasons
   }
   companion object {
     val log: Logger = LoggerFactory.getLogger(this::class.java)

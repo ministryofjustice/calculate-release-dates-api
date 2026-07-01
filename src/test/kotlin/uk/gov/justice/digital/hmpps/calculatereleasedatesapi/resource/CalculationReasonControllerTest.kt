@@ -17,6 +17,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.ControllerAdvice
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationReasonRepository
 
@@ -27,6 +28,9 @@ class CalculationReasonControllerTest {
   @MockitoBean
   private lateinit var calculationReasonRepository: CalculationReasonRepository
 
+  @MockitoBean
+  private lateinit var featureToggles: FeatureToggles
+
   private lateinit var mvc: MockMvc
 
   @Autowired
@@ -34,74 +38,116 @@ class CalculationReasonControllerTest {
 
   private val jackson2HttpMessageConverter = JacksonJsonHttpMessageConverter()
 
+  private val calculationReasons = listOf(
+    CalculationReason(
+      1,
+      isActive = true,
+      isOther = false,
+      isBulk = false,
+      displayName = "Reason 1",
+      nomisReason = "UPDATE",
+      nomisComment = "NOMIS_COMMENT",
+      displayRank = 10,
+      useForApprovedDates = false,
+      eligibleForPreviouslyRecordedSled = false,
+      requiresFurtherDetail = false,
+      furtherDetailDescription = null,
+      isSecondCheck = false,
+    ),
+    CalculationReason(
+      2,
+      isActive = true,
+      isOther = false,
+      isBulk = false,
+      displayName = "Reason 2",
+      nomisReason = "UPDATE",
+      nomisComment = "NOMIS_COMMENT",
+      displayRank = 20,
+      useForApprovedDates = false,
+      eligibleForPreviouslyRecordedSled = false,
+      requiresFurtherDetail = false,
+      furtherDetailDescription = null,
+      isSecondCheck = false,
+    ),
+    CalculationReason(
+      3,
+      isActive = true,
+      isOther = true,
+      isBulk = false,
+      displayName = "Other",
+      nomisReason = "UPDATE",
+      nomisComment = "NOMIS_COMMENT",
+      displayRank = 10,
+      useForApprovedDates = false,
+      eligibleForPreviouslyRecordedSled = false,
+      requiresFurtherDetail = true,
+      furtherDetailDescription = "the reason for the calculation",
+      isSecondCheck = false,
+    ),
+    CalculationReason(
+      4,
+      isActive = false,
+      isOther = false,
+      isBulk = true,
+      displayName = "Bulk Calculation",
+      nomisReason = "UPDATE",
+      nomisComment = "NOMIS_COMMENT",
+      displayRank = 10,
+      useForApprovedDates = false,
+      eligibleForPreviouslyRecordedSled = false,
+      requiresFurtherDetail = false,
+      furtherDetailDescription = null,
+      isSecondCheck = false,
+    ),
+    CalculationReason(
+      18,
+      isActive = false,
+      isOther = false,
+      isBulk = true,
+      displayName = "Second Check",
+      nomisReason = "UPDATE",
+      nomisComment = "NOMIS_COMMENT",
+      displayRank = 150,
+      useForApprovedDates = false,
+      eligibleForPreviouslyRecordedSled = false,
+      requiresFurtherDetail = false,
+      furtherDetailDescription = null,
+      isSecondCheck = true,
+    ),
+  )
+
   @Test
   fun `Test GET of the active calculation reasons`() {
     mvc = MockMvcBuilders
-      .standaloneSetup(CalculationReasonController(calculationReasonRepository))
+      .standaloneSetup(CalculationReasonController(calculationReasonRepository, featureToggles))
       .setControllerAdvice(ControllerAdvice())
       .setMessageConverters(jackson2HttpMessageConverter)
       .build()
 
-    val calculationReasons = listOf(
-      CalculationReason(
-        1,
-        isActive = true,
-        isOther = false,
-        isBulk = false,
-        displayName = "Reason 1",
-        nomisReason = "UPDATE",
-        nomisComment = "NOMIS_COMMENT",
-        displayRank = 10,
-        useForApprovedDates = false,
-        eligibleForPreviouslyRecordedSled = false,
-        requiresFurtherDetail = false,
-        furtherDetailDescription = null,
-      ),
-      CalculationReason(
-        2,
-        isActive = true,
-        isOther = false,
-        isBulk = false,
-        displayName = "Reason 2",
-        nomisReason = "UPDATE",
-        nomisComment = "NOMIS_COMMENT",
-        displayRank = 20,
-        useForApprovedDates = false,
-        eligibleForPreviouslyRecordedSled = false,
-        requiresFurtherDetail = false,
-        furtherDetailDescription = null,
-      ),
-      CalculationReason(
-        3,
-        isActive = true,
-        isOther = true,
-        isBulk = false,
-        displayName = "Other",
-        nomisReason = "UPDATE",
-        nomisComment = "NOMIS_COMMENT",
-        displayRank = 10,
-        useForApprovedDates = false,
-        eligibleForPreviouslyRecordedSled = false,
-        requiresFurtherDetail = true,
-        furtherDetailDescription = "the reason for the calculation",
-      ),
-      CalculationReason(
-        4,
-        isActive = false,
-        isOther = false,
-        isBulk = true,
-        displayName = "Bulk Calculation",
-        nomisReason = "UPDATE",
-        nomisComment = "NOMIS_COMMENT",
-        displayRank = 10,
-        useForApprovedDates = false,
-        eligibleForPreviouslyRecordedSled = false,
-        requiresFurtherDetail = false,
-        furtherDetailDescription = null,
-      ),
-    )
+    whenever(calculationReasonRepository.findAllByIsActiveTrueOrderByDisplayRankAsc()).thenReturn(calculationReasons)
+
+    val result = mvc.perform(get("/calculation-reasons/").accept(MediaType.APPLICATION_JSON))
+      .andExpect(status().isOk)
+      .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+      .andReturn()
+
+    val returnedJson = result.response.contentAsString
+    assertEquals(mapper.writeValueAsString(calculationReasons.filter { !it.isSecondCheck }), returnedJson)
+    assertFalse(returnedJson.contains("\"isActive\":"), "Active tags are not required as they will all be true")
+    assertFalse(returnedJson.contains("\"isBulk\":"), "Bulk tags are not required as they will all be true")
+    assertFalse(returnedJson.contains("\"reason\":"), "This is not needed the UI")
+  }
+
+  @Test
+  fun `Test GET of the active and also second check calculation reasons`() {
+    mvc = MockMvcBuilders
+      .standaloneSetup(CalculationReasonController(calculationReasonRepository, featureToggles))
+      .setControllerAdvice(ControllerAdvice())
+      .setMessageConverters(jackson2HttpMessageConverter)
+      .build()
 
     whenever(calculationReasonRepository.findAllByIsActiveTrueOrderByDisplayRankAsc()).thenReturn(calculationReasons)
+    whenever(featureToggles.secondCheckEnabled).thenReturn(true)
 
     val result = mvc.perform(get("/calculation-reasons/").accept(MediaType.APPLICATION_JSON))
       .andExpect(status().isOk)

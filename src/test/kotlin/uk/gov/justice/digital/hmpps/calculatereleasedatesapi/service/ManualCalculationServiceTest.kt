@@ -813,6 +813,7 @@ class ManualCalculationServiceTest {
       eligibleForPreviouslyRecordedSled = false,
       requiresFurtherDetail = false,
       furtherDetailDescription = null,
+      isSecondCheck = false,
     )
 
     val CALCULATION_REQUEST_WITH_OUTCOMES = CalculationRequest(

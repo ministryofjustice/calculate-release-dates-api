@@ -25,6 +25,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedRel
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationRequestModel
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConfirmSecondCheckResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedCalculationResults
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.LatestCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NomisCalculationSummary
@@ -113,6 +114,34 @@ class CalculationController(
   ): CalculatedReleaseDates {
     log.info("Request received to confirm release dates calculation for $calculationRequestId")
     return calculationTransactionalService.validateAndConfirmCalculation(calculationRequestId, submitCalculationRequest)
+  }
+
+  @PostMapping(value = ["/confirm/second-check/{calculationRequestId}"])
+  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR', 'CALCULATE_RELEASE_DATES__CALCULATE__RW')")
+  @ResponseBody
+  @Operation(
+    summary = "Persist the second check for a confirmed calculation",
+    description = "This endpoint will save a second check for a confirmed calculation, this is required for the second check process",
+  )
+  @ApiResponses(
+    value = [
+      ApiResponse(responseCode = "200", description = "Second check persisted successfully"),
+      ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
+      ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
+      ApiResponse(responseCode = "404", description = "No calculation request id found to confirm the second check"),
+    ],
+  )
+  fun confirmSecondCheck(
+    @PathVariable("calculationRequestId") calculationRequestId: Long,
+  ): ConfirmSecondCheckResult {
+    log.info("Request received to confirm second check for calculationRequestId: {}", calculationRequestId)
+    try {
+      calculationTransactionalService.confirmSecondCheck(calculationRequestId)
+      return ConfirmSecondCheckResult(success = true)
+    } catch (e: EntityNotFoundException) {
+      log.error("Error confirming second check for calculationRequestId {}: {}", calculationRequestId, e.message)
+      throw e
+    }
   }
 
   @GetMapping(value = ["/results/{prisonerId}/{bookingId}"])

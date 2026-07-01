@@ -170,6 +170,7 @@ feature-toggles:
   storeSentenceLevelDates: ${STORE_SENTECE_LEVEL_DATES:false}
   applyPostHdcedRepealRules: ${APPLY_POST_HDCED_REPEAL_RULES:false}
   adultHdcSuspended: ${ADULT_HDC_SUSPENDED:false}
+  secondCheckEnabled: ${SECOND_CHECK_ENABLED:false}
   storeOperativeSentenceEnvelope: ${STORE_OPERATIVE_SENTENCE_ENVELOPE:false}
   routePreProgressionExtinguishedSentenceToManual: ${ROUTE_PRE_PROGRESSION_EXTINGUISHED_SENTENCE_TO_MANUAL:false}
 

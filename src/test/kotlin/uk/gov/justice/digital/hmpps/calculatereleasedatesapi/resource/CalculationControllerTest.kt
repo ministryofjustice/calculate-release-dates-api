@@ -50,6 +50,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationRe
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationRequestModel
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationSource
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConfirmSecondCheckResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedCalculationResults
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.LatestCalculation
@@ -157,6 +158,31 @@ class CalculationControllerTest {
       calculatedReleaseDates,
     )
     verify(calculationTransactionalService, times(1)).calculate(prisonerId, calculationRequestModel)
+  }
+
+  @Test
+  fun `Test POST of a confirm second check`() {
+    val calcRequestId = 123L
+
+    val expectedSecondCheckResult = ConfirmSecondCheckResult(
+      success = true,
+    )
+
+    whenever(calculationTransactionalService.confirmSecondCheck(calcRequestId)).thenReturn(true)
+
+    val result = mvc.perform(
+      post("/calculation/confirm/second-check/$calcRequestId")
+        .accept(APPLICATION_JSON)
+        .contentType(APPLICATION_JSON),
+    )
+      .andExpect(status().isOk)
+      .andExpect(content().contentType(APPLICATION_JSON))
+      .andReturn()
+
+    assertThat(mapper.readValue(result.response.contentAsString, ConfirmSecondCheckResult::class.java)).isEqualTo(
+      expectedSecondCheckResult,
+    )
+    verify(calculationTransactionalService, times(1)).confirmSecondCheck(calcRequestId)
   }
 
   @Test
@@ -363,7 +389,8 @@ class CalculationControllerTest {
         "Brixton (HMP)",
       ),
       dates = mapOf(),
-      null,
+      approvedDates = mapOf(),
+      secondCheckDetails = null,
       CalculationOriginalData(
         null,
         null,
@@ -394,6 +421,7 @@ class CalculationControllerTest {
       prisonerId,
       123456,
       LocalDateTime.now(),
+      null,
       654321,
       "HMP Belfast",
       "Other",
@@ -401,7 +429,10 @@ class CalculationControllerTest {
       CalculationSource.CRDS,
       listOf(DetailedDate(ReleaseDateType.CRD, ReleaseDateType.CRD.description, LocalDate.of(2024, 1, 1), emptyList())),
       "username",
+      null,
       "User Name",
+      null,
+      calculationType = CalculationType.CALCULATED.name,
     )
 
     whenever(latestCalculationService.latestCalculationForPrisoner(prisonerId)).thenReturn(expected.right())
@@ -506,7 +537,7 @@ class CalculationControllerTest {
         "A1234AB",
         CONFIRMED,
         UUID.randomUUID(),
-        CalculationReasonDto(-1, isOther = false, displayName = "14 day check", useForApprovedDates = false, requiresFurtherDetail = false),
+        CalculationReasonDto(-1, isOther = false, displayName = "14 day check", useForApprovedDates = false, requiresFurtherDetail = false, isSecondCheck = false),
         null,
         LocalDate.of(2024, 1, 1),
         CalculationType.CALCULATED,
@@ -567,5 +598,5 @@ class CalculationControllerTest {
       )
   }
 
-  private val calculationReason = CalculationReason(-1, false, false, "Reason", false, null, null, null, false, false, false, null)
+  private val calculationReason = CalculationReason(-1, false, false, "Reason", false, null, null, null, false, false, false, null, isSecondCheck = false)
 }

@@ -14,6 +14,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonPerson
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.TrancheOutcome
@@ -217,7 +218,7 @@ class ManualComparisonServiceTest {
       comparisonType = ComparisonType.MANUAL,
       criteria = emptyObjectNode,
     )
-    val latestCalculation = LatestCalculation("foo", 1L, LocalDateTime.now(), 1L, "BXI", "Other", "Further detail", CalculationSource.CRDS, emptyList(), "user1", "User One")
+    val latestCalculation = LatestCalculation("foo", 1L, LocalDateTime.now(), null, 1L, "BXI", "Other", "Further detail", CalculationSource.CRDS, emptyList(), "user1", null, "User One", null, calculationType = CalculationType.CALCULATED.name)
     whenever(comparisonRepository.findByComparisonShortReference(any())).thenReturn(comparison)
     whenever(comparisonPersonRepository.findByComparisonIdAndShortReference(any(), any())).thenReturn(person)
     whenever(comparisonPersonDiscrepancyRepository.existsByComparisonPerson(any())).thenReturn(false)

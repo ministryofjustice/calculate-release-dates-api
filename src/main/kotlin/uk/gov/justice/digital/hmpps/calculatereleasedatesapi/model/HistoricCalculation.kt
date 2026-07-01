@@ -20,4 +20,5 @@ data class HistoricCalculation(
   val genuineOverrideReasonDescription: String?,
   val calculatedByUsername: String,
   val calculatedByDisplayName: String,
+  val secondCheckDetails: List<SecondCheckDetails>,
 )

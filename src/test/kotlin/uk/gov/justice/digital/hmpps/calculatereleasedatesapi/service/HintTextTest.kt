@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil.Companion.overrideFeatureTogglesForTest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.calculation.CalculationExampleTests
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.client.ManageUsersApiClient
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.SDSLegislationConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcomeHistoricSledOverride
@@ -34,6 +35,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.BookingAndSentenceAdjustments
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.SecondCheckRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource.JsonTransformation
 import java.io.File
 import java.time.Clock
@@ -52,6 +54,12 @@ class HintTextTest : SpringTestBase() {
 
   @Autowired
   private lateinit var calculationTransactionalService: CalculationTransactionalService
+
+  @Autowired
+  private lateinit var secondCheckRepository: SecondCheckRepository
+
+  @Autowired
+  private lateinit var manageUsersApiClient: ManageUsersApiClient
 
   @Autowired
   private lateinit var workingDayService: WorkingDayService
@@ -219,6 +227,7 @@ class HintTextTest : SpringTestBase() {
         false,
         false,
         null,
+        isSecondCheck = false,
       )
 
     private val SOURCE_DATA = CalculationSourceData(

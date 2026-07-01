@@ -76,6 +76,7 @@ class HistoricCalculationsControllerTest {
       genuineOverrideReasonDescription = null,
       calculatedByUsername = "user1",
       calculatedByDisplayName = "User One",
+      secondCheckDetails = emptyList(),
     )
 
     whenever(historicCalculationsService.getHistoricCalculationsForPrisoner(anyString())).thenReturn(listOf(historicCalculation))
