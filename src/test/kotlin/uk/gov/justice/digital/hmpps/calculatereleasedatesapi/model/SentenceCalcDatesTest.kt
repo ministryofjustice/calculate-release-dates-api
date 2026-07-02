@@ -166,6 +166,83 @@ internal class SentenceCalcDatesTest {
     assertThat(sentenceCalcDates.isSameComparableCalculatedDates(differentEffectiveSentencedEndDate)).isTrue
   }
 
+  @Test
+  fun `a different TUSED should not cause a mismatch because of the PSS repeal, we no longer generate them but they may still be in the previous calculation`() {
+    val datesWithATused = SentenceCalcDates(
+      sentenceExpiryCalculatedDate = LocalDate.of(2023, 11, 22),
+      sentenceExpiryOverrideDate = null,
+      automaticReleaseDate = null,
+      automaticReleaseOverrideDate = null,
+      conditionalReleaseDate = null,
+      conditionalReleaseOverrideDate = null,
+      nonParoleDate = null,
+      nonParoleOverrideDate = null,
+      postRecallReleaseDate = null,
+      postRecallReleaseOverrideDate = null,
+      licenceExpiryCalculatedDate = null,
+      licenceExpiryOverrideDate = null,
+      homeDetentionCurfewEligibilityCalculatedDate = null,
+      homeDetentionCurfewEligibilityOverrideDate = null,
+      paroleEligibilityCalculatedDate = null,
+      paroleEligibilityOverrideDate = null,
+      homeDetentionCurfewActualDate = null,
+      actualParoleDate = null,
+      releaseOnTemporaryLicenceDate = null,
+      earlyRemovalSchemeEligibilityDate = null,
+      tariffEarlyRemovalSchemeEligibilityDate = null,
+      tariffDate = null,
+      etdCalculatedDate = null,
+      etdOverrideDate = null,
+      mtdCalculatedDate = null,
+      mtdOverrideDate = null,
+      ltdCalculatedDate = null,
+      ltdOverrideDate = null,
+      topupSupervisionExpiryCalculatedDate = LocalDate.of(2022, 5, 5),
+      topupSupervisionExpiryOverrideDate = null,
+      dtoPostRecallReleaseDate = null,
+      dtoPostRecallReleaseDateOverride = null,
+      effectiveSentenceEndDate = null,
+    )
+
+    val differentDatesWithNoTused = SentenceCalcDates(
+      sentenceExpiryCalculatedDate = LocalDate.of(2023, 11, 22),
+      sentenceExpiryOverrideDate = null,
+      automaticReleaseDate = null,
+      automaticReleaseOverrideDate = null,
+      conditionalReleaseDate = null,
+      conditionalReleaseOverrideDate = null,
+      nonParoleDate = null,
+      nonParoleOverrideDate = null,
+      postRecallReleaseDate = null,
+      postRecallReleaseOverrideDate = null,
+      licenceExpiryCalculatedDate = null,
+      licenceExpiryOverrideDate = null,
+      homeDetentionCurfewEligibilityCalculatedDate = null,
+      homeDetentionCurfewEligibilityOverrideDate = null,
+      paroleEligibilityCalculatedDate = null,
+      paroleEligibilityOverrideDate = null,
+      homeDetentionCurfewActualDate = null,
+      actualParoleDate = null,
+      releaseOnTemporaryLicenceDate = null,
+      earlyRemovalSchemeEligibilityDate = null,
+      tariffEarlyRemovalSchemeEligibilityDate = null,
+      tariffDate = null,
+      etdCalculatedDate = null,
+      etdOverrideDate = null,
+      mtdCalculatedDate = null,
+      mtdOverrideDate = null,
+      ltdCalculatedDate = null,
+      ltdOverrideDate = null,
+      topupSupervisionExpiryCalculatedDate = null,
+      topupSupervisionExpiryOverrideDate = null,
+      dtoPostRecallReleaseDate = null,
+      dtoPostRecallReleaseDateOverride = null,
+      effectiveSentenceEndDate = null,
+    )
+
+    assertThat(datesWithATused.isSameComparableCalculatedDates(differentDatesWithNoTused)).isTrue
+  }
+
   @ParameterizedTest
   @MethodSource("comparableDateModifiers")
   fun `different comparable calculated dates are not the same`(dateType: ReleaseDateType, modifier: (LocalDate, SentenceCalcDates) -> SentenceCalcDates) {
@@ -273,7 +350,6 @@ internal class SentenceCalcDatesTest {
       Arguments.of(ReleaseDateType.ETD, { date: LocalDate, sentenceCalDates: SentenceCalcDates -> sentenceCalDates.copy(etdCalculatedDate = date) }),
       Arguments.of(ReleaseDateType.MTD, { date: LocalDate, sentenceCalDates: SentenceCalcDates -> sentenceCalDates.copy(mtdCalculatedDate = date) }),
       Arguments.of(ReleaseDateType.LTD, { date: LocalDate, sentenceCalDates: SentenceCalcDates -> sentenceCalDates.copy(ltdCalculatedDate = date) }),
-      Arguments.of(ReleaseDateType.TUSED, { date: LocalDate, sentenceCalDates: SentenceCalcDates -> sentenceCalDates.copy(topupSupervisionExpiryCalculatedDate = date) }),
       Arguments.of(ReleaseDateType.DPRRD, { date: LocalDate, sentenceCalDates: SentenceCalcDates -> sentenceCalDates.copy(dtoPostRecallReleaseDate = date) }),
       Arguments.of(ReleaseDateType.ERSED, { date: LocalDate, sentenceCalDates: SentenceCalcDates -> sentenceCalDates.copy(earlyRemovalSchemeEligibilityDate = date) }),
     )
