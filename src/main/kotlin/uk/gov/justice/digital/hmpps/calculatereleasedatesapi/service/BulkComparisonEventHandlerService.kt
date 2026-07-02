@@ -19,7 +19,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedRel
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Mismatch
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.MismatchType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.SentenceCalcDates
@@ -163,7 +162,7 @@ class BulkComparisonEventHandlerService(
     val sdsPlusSentenceAndOffences = sourceData.sentenceAndOffences.filter { it.sdsReleaseArrangements?.isSDSPlus == true }
 
     val mismatchType =
-      determineMismatchType(validationResult, sourceData.prisonerDetails.sentenceDetail, sourceData.sentenceAndOffences)
+      determineMismatchType(validationResult, sourceData.prisonerDetails.sentenceDetail)
 
     val mismatch = Mismatch(
       isMatch = mismatchType == MismatchType.NONE,
@@ -248,7 +247,6 @@ class BulkComparisonEventHandlerService(
   fun determineMismatchType(
     validationResult: ValidationResult,
     sentenceCalcDates: SentenceCalcDates?,
-    sentenceAndOffenceWithReleaseArrangements: List<SentenceAndOffenceWithReleaseArrangements>,
   ): MismatchType {
     if (validationResult.messages.isEmpty()) {
       val datesMatch =
