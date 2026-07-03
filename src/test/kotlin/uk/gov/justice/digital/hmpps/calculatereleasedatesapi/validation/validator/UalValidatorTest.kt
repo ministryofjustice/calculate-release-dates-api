@@ -13,7 +13,7 @@ import java.time.LocalDate
 
 class UalValidatorTest {
 
-  private val validator = UalValidator()
+  private val validator = UalValidator(ADJUSTMENTS_URL)
 
   @Test
   fun `should return no messages if no UAL`() {
@@ -84,7 +84,8 @@ class UalValidatorTest {
       ),
     )
     val messages = validator.validate(MINIMAL_BOOKING.copy(adjustments = adjustments))
-    assertThat(messages).containsOnly(ValidationMessage(ValidationCode.DUPLICATE_OR_OVERLAPPING_UAL))
+    assertThat(messages).containsOnly(ValidationMessage(ValidationCode.DUPLICATE_OR_OVERLAPPING_UAL, listOf(ADJUSTMENTS_URL, PRISONER_NUMBER)))
+    assertThat(messages[0].message).isEqualTo("UAL time can only be added once, it can cannot overlap with other UAL dates. Update UAL in the <a href=\"https://adjustments.example.com/A1234BC/unlawfully-at-large/view\">Adjustments service</a>.")
   }
 
   @Test
@@ -109,7 +110,7 @@ class UalValidatorTest {
       ),
     )
     val messages = validator.validate(MINIMAL_BOOKING.copy(adjustments = adjustments))
-    assertThat(messages).containsOnly(ValidationMessage(ValidationCode.DUPLICATE_OR_OVERLAPPING_UAL))
+    assertThat(messages).containsOnly(ValidationMessage(ValidationCode.DUPLICATE_OR_OVERLAPPING_UAL, listOf(ADJUSTMENTS_URL, PRISONER_NUMBER)))
   }
 
   @Test
@@ -134,7 +135,7 @@ class UalValidatorTest {
       ),
     )
     val messages = validator.validate(MINIMAL_BOOKING.copy(adjustments = adjustments))
-    assertThat(messages).containsOnly(ValidationMessage(ValidationCode.DUPLICATE_OR_OVERLAPPING_UAL))
+    assertThat(messages).containsOnly(ValidationMessage(ValidationCode.DUPLICATE_OR_OVERLAPPING_UAL, listOf(ADJUSTMENTS_URL, PRISONER_NUMBER)))
   }
 
   @Test
@@ -149,13 +150,15 @@ class UalValidatorTest {
     adjustments.addAdjustment(AdjustmentType.UNLAWFULLY_AT_LARGE, ual)
     adjustments.addAdjustment(AdjustmentType.UNLAWFULLY_AT_LARGE, ual)
     val messages = validator.validate(MINIMAL_BOOKING.copy(adjustments = adjustments))
-    assertThat(messages).containsOnly(ValidationMessage(ValidationCode.DUPLICATE_OR_OVERLAPPING_UAL))
+    assertThat(messages).containsOnly(ValidationMessage(ValidationCode.DUPLICATE_OR_OVERLAPPING_UAL, listOf(ADJUSTMENTS_URL, PRISONER_NUMBER)))
   }
 
   companion object {
+    private const val PRISONER_NUMBER = "A1234BC"
+    private const val ADJUSTMENTS_URL = "https://adjustments.example.com"
     private val MINIMAL_BOOKING = Booking(
       offender = Offender(
-        reference = "A1234BC",
+        reference = PRISONER_NUMBER,
         dateOfBirth = LocalDate.of(1982, 6, 15),
       ),
       sentences = emptyList(),

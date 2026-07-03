@@ -29,7 +29,7 @@ enum class ValidationCode(val message: String, val validationType: ValidationTyp
 
   // replaces CUSTODIAL_PERIOD_EXTINGUISHED_REMAND and CUSTODIAL_PERIOD_EXTINGUISHED_TAGGED_BAIL which are maintained for historic bulk calcs
   RELEASE_DATE_BEFORE_SENTENCE_DATE("The amount of %s exceeds the custodial period. Update the unused deductions in the <a href=\"%s/%s/manual-unused-deductions/days/edit\">Adjustments service</a>.", ValidationType.VALIDATION_FIXABLE_IN_DPS, ValidationMessageContentType.HTML),
-  DUPLICATE_OR_OVERLAPPING_UAL("UAL time can only be added once, it can cannot overlap with other UAL dates.", ValidationType.VALIDATION_FIXABLE_IN_DPS),
+  DUPLICATE_OR_OVERLAPPING_UAL("UAL time can only be added once, it can cannot overlap with other UAL dates. Update UAL in the <a href=\"%s/%s/unlawfully-at-large/view\">Adjustments service</a>.", ValidationType.VALIDATION_FIXABLE_IN_DPS, ValidationMessageContentType.HTML),
   PROGRESSION_MODEL_UNSUPPORTED_EXTINGUISHED_SENTENCE("Remand and/or tagged bail exceeds Progression Model custodial period.", MANUAL_ENTRY_JOURNEY_REQUIRED),
   DTO_CONSECUTIVE_TO_SENTENCE("A DTO is consecutive to a sentence type that is not a DTO", UNSUPPORTED_CALCULATION),
   DTO_HAS_SENTENCE_CONSECUTIVE_TO_IT("A non-DTO sentence is consecutive to a DTO.", UNSUPPORTED_CALCULATION),
