@@ -104,6 +104,7 @@ class OperativeSentenceEnvelopeServiceTest {
         isPostRecallSentenceEnvelope = null,
         containsAnSDSPlusSentence = null,
         sentenceEnvelopeSource = OperativeSentenceEnvelopeSource.NOMIS,
+        bookingId = bookingId,
       ).right(),
     )
   }
@@ -166,6 +167,7 @@ class OperativeSentenceEnvelopeServiceTest {
         isPostRecallSentenceEnvelope = null,
         containsAnSDSPlusSentence = null,
         sentenceEnvelopeSource = OperativeSentenceEnvelopeSource.NOMIS,
+        bookingId = bookingId,
       ).right(),
     )
 
@@ -196,6 +198,7 @@ class OperativeSentenceEnvelopeServiceTest {
         isPostRecallSentenceEnvelope = null,
         containsAnSDSPlusSentence = null,
         sentenceEnvelopeSource = OperativeSentenceEnvelopeSource.NOMIS,
+        bookingId = bookingId,
       ).right(),
     )
 
@@ -234,6 +237,7 @@ class OperativeSentenceEnvelopeServiceTest {
         isPostRecallSentenceEnvelope = false,
         containsAnSDSPlusSentence = true,
         sentenceEnvelopeSource = OperativeSentenceEnvelopeSource.CRDS,
+        bookingId = bookingId,
       ).right(),
     )
 
