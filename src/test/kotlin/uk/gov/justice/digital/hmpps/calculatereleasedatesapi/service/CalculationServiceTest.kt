@@ -72,6 +72,7 @@ class CalculationServiceTest {
           isPostRecallSentenceEnvelope = false,
           containsAnSDSPlusSentence = false,
           sentenceEnvelopeSource = OperativeSentenceEnvelopeSource.CRDS,
+          bookingId = BOOKING_ID,
         ),
       ),
     )
@@ -125,6 +126,7 @@ class CalculationServiceTest {
           isPostRecallSentenceEnvelope = false,
           containsAnSDSPlusSentence = false,
           sentenceEnvelopeSource = OperativeSentenceEnvelopeSource.CRDS,
+          bookingId = BOOKING_ID,
         ),
       ),
     )
@@ -172,6 +174,7 @@ class CalculationServiceTest {
           isPostRecallSentenceEnvelope = false,
           containsAnSDSPlusSentence = false,
           sentenceEnvelopeSource = OperativeSentenceEnvelopeSource.CRDS,
+          bookingId = BOOKING_ID,
         ),
       ),
     )
@@ -195,6 +198,7 @@ class CalculationServiceTest {
           isPostRecallSentenceEnvelope = false,
           containsAnSDSPlusSentence = false,
           sentenceEnvelopeSource = OperativeSentenceEnvelopeSource.CRDS,
+          bookingId = BOOKING_ID,
         ),
       ),
     )
@@ -230,6 +234,7 @@ class CalculationServiceTest {
           isPostRecallSentenceEnvelope = false,
           containsAnSDSPlusSentence = true,
           sentenceEnvelopeSource = OperativeSentenceEnvelopeSource.CRDS,
+          bookingId = BOOKING_ID,
         ),
       ),
     )
@@ -252,6 +257,7 @@ class CalculationServiceTest {
           isPostRecallSentenceEnvelope = true,
           containsAnSDSPlusSentence = false,
           sentenceEnvelopeSource = OperativeSentenceEnvelopeSource.CRDS,
+          bookingId = BOOKING_ID,
         ),
       ),
     )
@@ -302,6 +308,7 @@ class CalculationServiceTest {
           isPostRecallSentenceEnvelope = false,
           containsAnSDSPlusSentence = false,
           sentenceEnvelopeSource = OperativeSentenceEnvelopeSource.CRDS,
+          bookingId = BOOKING_ID,
         ),
       ),
     )

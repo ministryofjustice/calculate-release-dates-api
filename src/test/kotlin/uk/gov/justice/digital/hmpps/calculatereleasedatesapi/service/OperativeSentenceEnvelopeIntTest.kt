@@ -57,6 +57,7 @@ class OperativeSentenceEnvelopeIntTest(private val mockPrisonService: MockPrison
         isPostRecallSentenceEnvelope = null,
         containsAnSDSPlusSentence = null,
         sentenceEnvelopeSource = OperativeSentenceEnvelopeSource.NOMIS,
+        bookingId = BOOKING_ID,
       ),
     )
   }
@@ -95,6 +96,7 @@ class OperativeSentenceEnvelopeIntTest(private val mockPrisonService: MockPrison
         isPostRecallSentenceEnvelope = false,
         containsAnSDSPlusSentence = false,
         sentenceEnvelopeSource = OperativeSentenceEnvelopeSource.CRDS,
+        bookingId = bookingId,
       ),
     )
   }

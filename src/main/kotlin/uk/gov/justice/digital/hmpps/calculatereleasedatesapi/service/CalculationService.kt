@@ -64,6 +64,7 @@ class CalculationService(
             isPostRecallSentenceEnvelope = calculatedReleaseDates.sentences.any { it.isRecall() },
             containsAnSDSPlusSentence = calculatedReleaseDates.sentences.any { it is StandardDeterminateSentence && it.releaseArrangements.isSDSPlus },
             sentenceEnvelopeSource = OperativeSentenceEnvelopeSource.CRDS,
+            bookingId = booking.bookingId,
           ),
         )
       }

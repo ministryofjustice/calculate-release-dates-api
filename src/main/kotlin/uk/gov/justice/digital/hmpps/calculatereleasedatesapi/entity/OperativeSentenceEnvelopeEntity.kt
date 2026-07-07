@@ -30,7 +30,8 @@ data class OperativeSentenceEnvelopeEntity(
 
   val containsSdsPlusSentence: Boolean,
 ) {
-  fun toOperativeSentenceEnvelope() = OperativeSentenceEnvelope(
+  fun toOperativeSentenceEnvelope(bookingId: Long) = OperativeSentenceEnvelope(
+    bookingId = bookingId,
     sentenceEnvelopeLengthInDays = envelopeLengthDays,
     earliestSentenceStartDate = earliestSentenceDate,
     isPostRecallSentenceEnvelope = isPostRecall,
