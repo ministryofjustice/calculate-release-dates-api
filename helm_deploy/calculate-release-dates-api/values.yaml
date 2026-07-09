@@ -37,6 +37,7 @@ generic-service:
     STORE_OPERATIVE_SENTENCE_ENVELOPE: "true"
     APPLY_POST_HDCED_REPEAL_RULES: "false"
     ADULT_HDC_SUSPENDED: "false"
+    SECOND_CHECK_ENABLED: "true"
 
   # Pre-existing kubernetes secrets to load as environment variables in the deployment.
   # namespace_secrets:
