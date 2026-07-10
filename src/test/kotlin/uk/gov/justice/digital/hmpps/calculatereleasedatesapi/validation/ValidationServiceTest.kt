@@ -14,6 +14,7 @@ import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.override.mockito.MockitoBean
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.adjustmentsapi.model.AdjustmentDto
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.SDS40TrancheConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.LegislationName
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.REMAND
@@ -3439,6 +3440,76 @@ class ValidationServiceTest : SpringTestBase() {
     assertThat(result).isEqualTo(listOf(ValidationMessage(ValidationCode.FTR_RTC_DATE_BEFORE_REVOCATION_DATE)))
   }
 
+  @Test
+  fun `Test remand with mismatched sentence sequence`() {
+    val result = validationService.validate(
+      CalculationSourceData(
+        sentenceAndOffences = listOf(
+          SentenceAndOffenceWithReleaseArrangements(
+            source = validSdsSentence,
+            isSdsPlus = false,
+            isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+            hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
+          ),
+        ),
+        prisonerDetails = VALID_PRISONER,
+        bookingAndSentenceAdjustments = AdjustmentsSourceData(
+          adjustmentsApiData = listOf(
+            AdjustmentDto(
+              person = VALID_PRISONER.offenderNo,
+              adjustmentType = AdjustmentDto.AdjustmentType.REMAND,
+              sentenceSequence = 99,
+              fromDate = LocalDate.of(2020, 2, 3),
+              toDate = LocalDate.of(2020, 2, 28),
+            ),
+          ),
+        ),
+        returnToCustodyDate = null,
+      ),
+      USER_INPUTS,
+      ValidationOrder.allValidations(),
+    )
+
+    assertThat(result).isEqualTo(
+      listOf(ValidationMessage(ValidationCode.ADJUSTMENT_LINKED_TO_INACTIVE_SENTENCE, listOf("https://adjusments-ui.example.com", PRISONER_ID))),
+    )
+  }
+
+  @Test
+  fun `Test tagged bail with mismatched sentence sequence`() {
+    val result = validationService.validate(
+      CalculationSourceData(
+        sentenceAndOffences = listOf(
+          SentenceAndOffenceWithReleaseArrangements(
+            source = validSdsSentence,
+            isSdsPlus = false,
+            isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+            hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
+          ),
+        ),
+        prisonerDetails = VALID_PRISONER,
+        bookingAndSentenceAdjustments = AdjustmentsSourceData(
+          adjustmentsApiData = listOf(
+            AdjustmentDto(
+              person = VALID_PRISONER.offenderNo,
+              adjustmentType = AdjustmentDto.AdjustmentType.TAGGED_BAIL,
+              sentenceSequence = 99,
+              fromDate = LocalDate.of(2020, 2, 3),
+              toDate = LocalDate.of(2020, 2, 28),
+            ),
+          ),
+        ),
+        returnToCustodyDate = null,
+      ),
+      USER_INPUTS,
+      ValidationOrder.allValidations(),
+    )
+
+    val expectedMessage = ValidationMessage(ValidationCode.ADJUSTMENT_LINKED_TO_INACTIVE_SENTENCE, listOf("https://adjusments-ui.example.com", PRISONER_ID))
+    assertThat(result).isEqualTo(listOf(expectedMessage))
+    assertThat(expectedMessage.message).isEqualTo("An adjustment has been linked to an inactive sentence. You must remove any adjustments that are no longer relevant to this case. <a href=\"https://adjusments-ui.example.com/A123456A\">Review the adjustments</a>.")
+  }
+
   companion object {
     val FIRST_MAY_2018: LocalDate = LocalDate.of(2018, 5, 1)
     val FIRST_MAY_2021: LocalDate = LocalDate.of(2021, 5, 1)
@@ -3464,7 +3535,7 @@ class ValidationServiceTest : SpringTestBase() {
     const val OFFENCE_CODE = "RR1"
     val returnToCustodyDate = ReturnToCustodyDate(COMPANION_BOOKING_ID, LocalDate.of(2022, 3, 15))
     private val USER_INPUTS = CalculationUserInputs()
-    private val VALID_PRISONER = PrisonerDetails(offenderNo = "", bookingId = 1, dateOfBirth = LocalDate.of(1, 2, 3))
+    private val VALID_PRISONER = PrisonerDetails(offenderNo = PRISONER_ID, bookingId = 1, dateOfBirth = LocalDate.of(1, 2, 3))
     private val VALID_ADJUSTMENTS = AdjustmentsSourceData(prisonApiData = BookingAndSentenceAdjustments(emptyList(), emptyList()))
     private const val BOOKING_ID = 100091L
     private val RETURN_TO_CUSTODY_DATE = LocalDate.of(2022, 3, 15)

@@ -176,7 +176,7 @@ class ValidationIntTest(private val mockManageOffencesClient: MockManageOffences
     runValidationAndCheckMessages(
       "EXTINGUISH",
       listOf(
-        ValidationMessage(ValidationCode.RELEASE_DATE_BEFORE_SENTENCE_DATE, arguments = listOf("remand", "http://adjusments-ui.example.com", "EXTINGUISH")),
+        ValidationMessage(ValidationCode.RELEASE_DATE_BEFORE_SENTENCE_DATE, arguments = listOf("remand", "https://adjusments-ui.example.com", "EXTINGUISH")),
       ),
     )
   }
