@@ -112,7 +112,7 @@ tasks.jacocoTestCoverageVerification {
 
 kotlin {
   kotlinDaemonJvmArgs = listOf("-Xmx1g", "-Xms256m", "-XX:+UseParallelGC")
-  compilerOptions.jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21
+  compilerOptions.jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_25
 }
 
 dependencyCheck {
@@ -192,7 +192,6 @@ val models = listOf(
 tasks {
   withType<KotlinCompile> {
     dependsOn(models.map { it.name })
-    compilerOptions.jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21
   }
   withType<KtLintCheckTask> {
     // Under gradle 8 we must declare the dependency here, even if we're not going to be linting the model
