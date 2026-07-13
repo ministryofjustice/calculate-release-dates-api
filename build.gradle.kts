@@ -194,6 +194,9 @@ tasks {
     dependsOn(models.map { it.name })
     compilerOptions.jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_25
   }
+  withType<JavaCompile> {
+    options.release.set(25)
+  }
   withType<KtLintCheckTask> {
     // Under gradle 8 we must declare the dependency here, even if we're not going to be linting the model
     mustRunAfter(models.map { it.name })
