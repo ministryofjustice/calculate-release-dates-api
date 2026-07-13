@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.gradle.api.tasks.testing.Test
 import org.jlleitschuh.gradle.ktlint.KtlintExtension
 import org.jlleitschuh.gradle.ktlint.tasks.KtLintCheckTask
 import org.jlleitschuh.gradle.ktlint.tasks.KtLintFormatTask
@@ -196,6 +197,9 @@ val models = listOf(
 )
 
 tasks {
+  withType<Test> {
+    maxHeapSize = "1g"
+  }
   withType<KotlinCompile> {
     dependsOn(models.map { it.name })
     compilerOptions.jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_25
