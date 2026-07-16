@@ -437,7 +437,7 @@ class CalculationController(
   ): RelevantRemandCalculationResult = relevantRemandService.relevantRemandCalculation(prisonerId, relevantRemandCalculationRequest)
 
   @GetMapping(value = ["/{prisonerId}/latest"])
-  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR', 'CALCULATE_RELEASE_DATES__RECALL__CALCULATE__RW', 'CALCULATE_RELEASE_DATES__CALCULATE__RW', 'CALCULATE_RELEASE_DATES__CALCULATE__RO')")
+  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR', 'CALCULATE_RELEASE_DATES__RECALL__CALCULATE__RW', 'CALCULATE_RELEASE_DATES__CALCULATE__RW', 'CALCULATE_RELEASE_DATES__CALCULATE__RO', 'CALCULATE_RELEASE_DATES__CCRD__RO')")
   @ResponseBody
   @Operation(
     summary = "Get latest release dates for a prisoner",

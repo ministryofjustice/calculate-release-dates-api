@@ -4,7 +4,10 @@ import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 import com.github.tomakehurst.wiremock.client.WireMock.get
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.CsvSource
 import org.springframework.http.MediaType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
@@ -13,6 +16,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremoc
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.MockPrisonService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.manageusersapi.model.PrisonUserBasicDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Agency
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationSource
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.LatestCalculation
@@ -113,37 +117,7 @@ class LatestCalculationIntTest(private val mockPrisonService: MockPrisonService,
 
   @Test
   fun `should be able to get latest calculation when it is from CRDS`() {
-    val bookingId = 1544803905L
-    // stubs from JSON for sentence and offences, etc.
-    val prisonerId = "default"
-    val prelim = createPreliminaryCalculation(prisonerId)
-    val confirmed = createConfirmCalculationForPrisoner(prelim.calculationRequestId)
-
-    val offenderKeyDates = OffenderKeyDates(
-      "NEW",
-      now,
-      "From CRDS: ${confirmed.calculationReference}",
-      conditionalReleaseDate = LocalDate.of(2016, 1, 6),
-      topupSupervisionExpiryDate = LocalDate.of(2017, 1, 6),
-      homeDetentionCurfewEligibilityDate = LocalDate.of(2015, 8, 7),
-      effectiveSentenceEndDate = LocalDate.of(2016, 11, 16),
-      sentenceExpiryDate = LocalDate.of(2016, 11, 6),
-      licenceExpiryDate = LocalDate.of(2016, 11, 6),
-      calculatedByUserId = "user1",
-      calculatedByFirstName = "User",
-      calculatedByLastName = "One",
-    )
-    stubKeyDates(bookingId, offenderKeyDates)
-    mockManageUsersClient.withUsers(
-      listOf(
-        PrisonUserBasicDetails(
-          "TEST-CLIENT", "Test", lastName = "Client",
-          staffId = 123, enabled = true, userId = 1, name = "Test Client",
-          authSource = PrisonUserBasicDetails.AuthSource.auth,
-          activeCaseloadId = null, accountStatus = null, primaryEmail = null,
-        ),
-      ),
-    )
+    val (bookingId, prisonerId, confirmed) = arrangeForCRDSAsSource()
 
     val latestCalculation = webTestClient.get()
       .uri("/calculation/default/latest")
@@ -191,6 +165,61 @@ class LatestCalculationIntTest(private val mockPrisonService: MockPrisonService,
         calculationType = CalculationType.CALCULATED.name,
       ),
     )
+  }
+
+  @ParameterizedTest
+  @CsvSource(
+    "ROLE_SYSTEM_USER,200",
+    "ROLE_RELEASE_DATES_CALCULATOR,200",
+    "ROLE_CALCULATE_RELEASE_DATES__RECALL__CALCULATE__RW,200",
+    "ROLE_CALCULATE_RELEASE_DATES__CALCULATE__RW,200",
+    "ROLE_CALCULATE_RELEASE_DATES__CALCULATE__RO,200",
+    "ROLE_CALCULATE_RELEASE_DATES__CCRD__RO,200",
+    "INVALID,403",
+    "'',403",
+  )
+  @DisplayName("should return specific statusCode based on permissions against calculation/{prisonerId}/latest")
+  fun `should return specific statusCode based on permissions`(role: String, statusCode: Int) {
+    arrangeForCRDSAsSource()
+    webTestClient.get().uri("/calculation/default/latest")
+      .headers(setAuthorisation(roles = listOf(role)))
+      .exchange()
+      .expectStatus().isEqualTo(statusCode)
+  }
+
+  private fun arrangeForCRDSAsSource(): Triple<Long, String, CalculatedReleaseDates> {
+    val bookingId = 1544803905L
+    // stubs from JSON for sentence and offences, etc.
+    val prisonerId = "default"
+    val prelim = createPreliminaryCalculation(prisonerId)
+    val confirmed = createConfirmCalculationForPrisoner(prelim.calculationRequestId)
+
+    val offenderKeyDates = OffenderKeyDates(
+      "NEW",
+      now,
+      "From CRDS: ${confirmed.calculationReference}",
+      conditionalReleaseDate = LocalDate.of(2016, 1, 6),
+      topupSupervisionExpiryDate = LocalDate.of(2017, 1, 6),
+      homeDetentionCurfewEligibilityDate = LocalDate.of(2015, 8, 7),
+      effectiveSentenceEndDate = LocalDate.of(2016, 11, 16),
+      sentenceExpiryDate = LocalDate.of(2016, 11, 6),
+      licenceExpiryDate = LocalDate.of(2016, 11, 6),
+      calculatedByUserId = "user1",
+      calculatedByFirstName = "User",
+      calculatedByLastName = "One",
+    )
+    stubKeyDates(bookingId, offenderKeyDates)
+    mockManageUsersClient.withUsers(
+      listOf(
+        PrisonUserBasicDetails(
+          "TEST-CLIENT", "Test", lastName = "Client",
+          staffId = 123, enabled = true, userId = 1, name = "Test Client",
+          authSource = PrisonUserBasicDetails.AuthSource.auth,
+          activeCaseloadId = null, accountStatus = null, primaryEmail = null,
+        ),
+      ),
+    )
+    return Triple(bookingId, prisonerId, confirmed)
   }
 
   private fun stubSentenceDetails(bookingId: Long, sentenceDetail: SentenceDetail) {
