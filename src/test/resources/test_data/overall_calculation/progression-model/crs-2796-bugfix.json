@@ -1,0 +1,221 @@
+{
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
+      {
+        "recall": {
+          "recallType": "FIXED_TERM_RECALL_28",
+          "revocationDate": "2020-06-17",
+          "returnToCustodyDate": "2020-09-17"
+        },
+        "offence": {
+          "committedAt": "2017-06-26",
+          "offenceCode": "TH68026"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 5
+          }
+        },
+        "identifier": "d8642e2a-84f7-3e6b-aae7-d50043550c73",
+        "sentencedAt": "2017-08-24",
+        "caseReference": null,
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSection250": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false
+        }
+      },
+      {
+        "recall": {
+          "recallType": "FIXED_TERM_RECALL_28",
+          "revocationDate": "2020-06-17",
+          "returnToCustodyDate": "2020-09-17"
+        },
+        "offence": {
+          "committedAt": "2017-06-02",
+          "offenceCode": "TH68007"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 6
+          }
+        },
+        "identifier": "7ff0215a-0cc7-31fd-bb3e-a606cb84f4e2",
+        "sentencedAt": "2017-08-24",
+        "caseReference": null,
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSection250": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false
+        }
+      },
+      {
+        "type": "ExtendedDeterminateSentence",
+        "offence": {
+          "committedAt": "2020-05-11",
+          "offenceCode": "OF61017A"
+        },
+        "identifier": "a7ae2d24-fca2-353d-9987-d642218a5278",
+        "sentencedAt": "2020-09-17",
+        "caseReference": null,
+        "automaticRelease": false,
+        "custodialDuration": {
+          "durationElements": {
+            "YEARS": 8
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "YEARS": 5
+          }
+        }
+      },
+      {
+        "offence": {
+          "committedAt": "2020-05-11",
+          "offenceCode": "PC53001"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 8
+          }
+        },
+        "identifier": "0c2b5dd2-24d2-3fc6-8070-70c9e82429a3",
+        "sentencedAt": "2020-09-17",
+        "caseReference": null,
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSection250": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false
+        }
+      },
+      {
+        "offence": {
+          "committedAt": "2020-05-11",
+          "offenceCode": "AS14001"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 2
+          }
+        },
+        "identifier": "d942370a-0478-368c-b1af-b1066222984b",
+        "sentencedAt": "2020-09-17",
+        "caseReference": null,
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSection250": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false
+        }
+      },
+      {
+        "offence": {
+          "committedAt": "2020-05-11",
+          "offenceCode": "TH68050"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 4
+          }
+        },
+        "identifier": "bc529382-15af-31c4-b167-aa4122813ea3",
+        "sentencedAt": "2020-09-17",
+        "caseReference": null,
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSection250": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false
+        }
+      },
+      {
+        "offence": {
+          "committedAt": "2021-02-07",
+          "offenceCode": "OF61127"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 12
+          }
+        },
+        "identifier": "45b685fe-fda0-38d2-b976-cef30ffcc66a",
+        "sentencedAt": "2022-09-15",
+        "caseReference": null,
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSection250": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false
+        },
+        "consecutiveSentenceUUIDs": [
+          "a7ae2d24-fca2-353d-9987-d642218a5278"
+        ]
+      }
+    ],
+    "adjustments": {
+      "REMAND": [
+        {
+          "toDate": "2020-09-16",
+          "fromDate": "2020-08-11",
+          "numberOfDays": 37,
+          "additionalInfo": {
+            "type": "NONE"
+          },
+          "appliesToSentencesFrom": "2020-09-17"
+        }
+      ],
+      "ADDITIONAL_DAYS_AWARDED": [
+        {
+          "fromDate": "2025-07-31",
+          "numberOfDays": 21,
+          "additionalInfo": {
+            "type": "NONE"
+          },
+          "appliesToSentencesFrom": "2025-07-31"
+        },
+        {
+          "fromDate": "2026-01-16",
+          "numberOfDays": 28,
+          "additionalInfo": {
+            "type": "NONE"
+          },
+          "appliesToSentencesFrom": "2026-01-16"
+        }
+      ]
+    },
+    "externalMovements": [
+      {
+        "direction": "OUT",
+        "movementDate": "2020-01-31",
+        "movementReason": "CRD"
+      },
+      {
+        "direction": "IN",
+        "movementDate": "2020-07-14",
+        "movementReason": "REMAND"
+      }
+    ],
+    "returnToCustodyDate": "2020-09-17",
+    "fixedTermRecallDetails": {
+      "bookingId": 2645189,
+      "recallLength": 28,
+      "returnToCustodyDate": "2020-09-17"
+    }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "sds-progression-model",
+  "featureToggles": {
+    "applyPostRecallRepealRules": true,
+    "routePreProgressionExtinguishedSentenceToManual": true
+  }
+}
