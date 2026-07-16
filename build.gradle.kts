@@ -6,7 +6,7 @@ import org.jlleitschuh.gradle.ktlint.tasks.KtLintFormatTask
 import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "10.5.4"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "11.0.0-beta"
   id("org.springdoc.openapi-gradle-plugin") version "1.9.0"
   kotlin("plugin.spring") version "2.4.0"
   kotlin("plugin.jpa") version "2.4.0"
@@ -24,7 +24,6 @@ configurations {
 dependencies {
 
   annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
-
   // Spring boot dependencies
   implementation("org.springframework.boot:spring-boot-starter-security")
   implementation("org.springframework.boot:spring-boot-starter-webflux")
@@ -36,7 +35,7 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-flyway")
 
   // MoJ libraries
-  implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter:2.5.0")
+  implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter:3.0.0-beta")
 
   // GOVUK Notify:
   implementation("uk.gov.service.notify:notifications-java-client:6.0.0-RELEASE")
@@ -203,9 +202,6 @@ tasks {
   withType<KotlinCompile> {
     dependsOn(models.map { it.name })
     compilerOptions.jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_25
-  }
-  withType<JavaCompile> {
-    options.release.set(25)
   }
   withType<KtLintCheckTask> {
     // Under gradle 8 we must declare the dependency here, even if we're not going to be linting the model
