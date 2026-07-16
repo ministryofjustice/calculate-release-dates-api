@@ -22,7 +22,6 @@ class SDSProgressionModelFinalDatesService {
     val earliestApplicableDate = preLegislationCalculation.legislationApplied.earliestApplicableDate
     val legislation = preLegislationCalculation.legislationApplied.legislation
     require(legislation is SDSLegislation.ProgressionModelLegislation) { "Using progression model defaulting rules for non-progression model legislation" }
-    val commencementDate = legislation.commencementDate()
 
     // default to the early release dates for when there is no applicable tranche or further adjustment of dates required
     val mergedDates = earlyReleaseCalculation.dates.toMutableMap()
