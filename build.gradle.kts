@@ -6,10 +6,10 @@ import org.jlleitschuh.gradle.ktlint.tasks.KtLintFormatTask
 import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "11.0.0-beta"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "11.0.0-beta2"
   id("org.springdoc.openapi-gradle-plugin") version "1.9.0"
-  kotlin("plugin.spring") version "2.4.0"
-  kotlin("plugin.jpa") version "2.4.0"
+  kotlin("plugin.spring") version "2.4.10"
+  kotlin("plugin.jpa") version "2.4.10"
   id("jacoco")
   id("org.openapi.generator") version "7.23.0"
 }
@@ -35,13 +35,13 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-flyway")
 
   // MoJ libraries
-  implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter:3.0.0-beta")
+  implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter:3.0.0-beta2")
 
   // GOVUK Notify:
-  implementation("uk.gov.service.notify:notifications-java-client:6.0.0-RELEASE")
+  implementation("uk.gov.service.notify:notifications-java-client:6.0.1-RELEASE")
 
   // Enable kotlin reflect
-  implementation("org.jetbrains.kotlin:kotlin-reflect:2.4.0")
+  implementation("org.jetbrains.kotlin:kotlin-reflect:2.4.10")
 
   // Three Ten Date Calculations
   implementation("org.threeten:threeten-extra:1.10.0")
@@ -51,7 +51,7 @@ dependencies {
   // Database dependencies
   runtimeOnly("org.flywaydb:flyway-core")
   runtimeOnly("org.flywaydb:flyway-database-postgresql")
-  runtimeOnly("org.postgresql:postgresql:42.7.12")
+  runtimeOnly("org.postgresql:postgresql:42.7.13")
 
   implementation("io.arrow-kt:arrow-core:2.2.3")
   implementation("io.hypersistence:hypersistence-utils-hibernate-71:3.15.4")
@@ -80,7 +80,7 @@ dependencies {
   testImplementation("net.javacrumbs.json-unit:json-unit-assertj:5.1.2")
   testImplementation("io.swagger.parser.v3:swagger-parser-v2-converter:2.1.45")
   testImplementation("org.mockito:mockito-inline:5.2.0")
-  testImplementation("org.junit.jupiter:junit-jupiter:6.1.1")
+  testImplementation("org.junit.jupiter:junit-jupiter:6.1.2")
   testImplementation("org.testcontainers:testcontainers:2.0.5")
   testImplementation("org.testcontainers:localstack:1.21.4")
   testImplementation("org.testcontainers:postgresql:1.21.4")
