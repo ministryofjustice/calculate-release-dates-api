@@ -45,7 +45,6 @@ class LatestCalculationService(
           bookingId,
           prisonerCalculation,
           nomisReason,
-          "Unknown",
         )
       } else {
         val calculationRequest = latestCrdsCalc.get()
@@ -105,13 +104,13 @@ class LatestCalculationService(
     val secondCheck = secondCheckRepository.findLatestByCalculationRequestId(calculationRequestId)
     val uniqueUsers: Set<String> = listOfNotNull(
       secondCheck?.checkedByUsername?.uppercase(),
-      calculatedByUsername?.uppercase(),
+      calculatedByUsername.uppercase(),
     ).toSet()
     val userDetails = manageUsersApiClient.getUsersByUsernames(uniqueUsers)
     val checkedByUserDetail = secondCheck?.checkedByUsername?.uppercase()?.let { username ->
       userDetails?.get(username)
     }
-    val calculatedByUserDetail = calculatedByUsername?.uppercase()?.let { username ->
+    val calculatedByUserDetail = calculatedByUsername.uppercase().let { username ->
       userDetails?.get(username)
     }
     val dates = offenderKeyDatesService.releaseDates(prisonerCalculation)
@@ -147,7 +146,6 @@ class LatestCalculationService(
     bookingId: Long,
     prisonerCalculation: OffenderKeyDates,
     reason: String,
-    calculationType: String,
   ): LatestCalculation {
     val dates = offenderKeyDatesService.releaseDates(prisonerCalculation)
     return LatestCalculation(
@@ -161,7 +159,7 @@ class LatestCalculationService(
       source = CalculationSource.NOMIS,
       calculatedByUsername = prisonerCalculation.calculatedByUserId,
       calculatedByDisplayName = prisonerCalculation.calculatedByUserId.let { manageUsersApiClient.getUserByUsername(it)?.name } ?: prisonerCalculation.calculatedByUserId,
-      calculationType = calculationType,
+      calculationType = "Unknown",
       checkedAt = null,
       checkedByUsername = null,
       checkedByDisplayName = null,
