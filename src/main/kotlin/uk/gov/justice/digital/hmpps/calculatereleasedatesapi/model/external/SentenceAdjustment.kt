@@ -22,3 +22,13 @@ enum class SentenceAdjustmentType {
   TIME_SPENT_IN_CUSTODY_ABROAD,
   TIME_SPENT_AS_AN_APPEAL_APPLICANT,
 }
+
+fun SentenceAdjustment.getHumanReadableAdjustmentType(): String = when (this.type) {
+  SentenceAdjustmentType.RECALL_SENTENCE_REMAND -> "Recall Sentence Remand"
+  SentenceAdjustmentType.RECALL_SENTENCE_TAGGED_BAIL -> "Recall Sentence Tagged Bail"
+  SentenceAdjustmentType.REMAND -> "Remand"
+  SentenceAdjustmentType.TAGGED_BAIL -> "Tagged Bail"
+  SentenceAdjustmentType.UNUSED_REMAND -> "Unused Remand"
+  SentenceAdjustmentType.TIME_SPENT_IN_CUSTODY_ABROAD -> "Time Spent in Custody Abroad"
+  SentenceAdjustmentType.TIME_SPENT_AS_AN_APPEAL_APPLICANT -> "Time Spent as an Appeal Applicant"
+}
