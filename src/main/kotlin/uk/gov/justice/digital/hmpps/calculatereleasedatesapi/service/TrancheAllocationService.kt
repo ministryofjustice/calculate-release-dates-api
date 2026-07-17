@@ -6,6 +6,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.TrancheType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AFineSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineTrackingData
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
@@ -35,11 +36,11 @@ class TrancheAllocationService {
 
   private fun findTranche(timelineTrackingData: TimelineTrackingData, legislation: LegislationWithTranches): TrancheConfiguration {
     val allSentences = legislation.trancheSelectionStrategy.sentencesToMatchOnSentenceLength(timelineTrackingData, legislation)
-    val allocatedTranche = legislation.tranches.find {
-      when (it.type) {
-        TrancheType.SENTENCE_LENGTH_LESS_THAN -> matchesSentenceLength(allSentences, legislation, it) { sentenceLength, trancheDuration -> sentenceLength >= trancheDuration }
-        TrancheType.SENTENCE_LENGTH_LESS_THAN_OR_EQUAL_TO -> matchesSentenceLength(allSentences, legislation, it) { sentenceLength, trancheDuration -> sentenceLength > trancheDuration }
-        TrancheType.FINAL -> true // Not matched any other tranche, so must be in this one.
+    val allocatedTranche = legislation.tranches.find { tranche ->
+      when (tranche.type) {
+        TrancheType.SENTENCE_LENGTH_LESS_THAN -> matchesSentenceLength(allSentences, legislation, tranche) { sentenceLength, trancheDuration -> sentenceLength >= trancheDuration }
+        TrancheType.SENTENCE_LENGTH_LESS_THAN_OR_EQUAL_TO -> matchesSentenceLength(allSentences, legislation, tranche) { sentenceLength, trancheDuration -> sentenceLength > trancheDuration }
+        TrancheType.FINAL -> hasNoExcludedOffences(tranche, allSentences) // TODO rename from FINAL as it was never even final in the first place...
       }
     }
     return requireNotNull(allocatedTranche) { "Should have allocated a specific tranche or the final one" }
@@ -52,8 +53,13 @@ class TrancheAllocationService {
     isDurationTooLongForTranche: (sentenceLength: Long, trancheDuration: Int) -> Boolean,
   ): Boolean {
     val durations = sentenceDurationsInTheUnitOfTheTrancheDuration(sentencesConsideredForTrancheRules, legislation.commencementDate(), tranche.unit!!)
-    return tranche.duration != null && durations.none { isDurationTooLongForTranche(it, tranche.duration) }
+    return hasNoExcludedOffences(tranche, sentencesConsideredForTrancheRules) && tranche.duration != null && durations.none { isDurationTooLongForTranche(it, tranche.duration) }
   }
+
+  private fun hasNoExcludedOffences(
+    tranche: TrancheConfiguration,
+    sentencesConsideredForTrancheRules: List<CalculableSentence>,
+  ): Boolean = tranche.exclusions.isEmpty() || sentencesConsideredForTrancheRules.flatMap { it.sentenceParts() }.none { sentence -> sentence is StandardDeterminateSentence && sentence.releaseArrangements.sdsEarlyReleaseExclusions.any { it in tranche.exclusions } }
 
   private fun sentenceDurationsInTheUnitOfTheTrancheDuration(
     sentences: List<CalculableSentence>,

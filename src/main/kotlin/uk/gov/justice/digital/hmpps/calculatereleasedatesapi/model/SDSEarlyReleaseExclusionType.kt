@@ -21,6 +21,7 @@ enum class SDSEarlyReleaseExclusionType(
   DOMESTIC_ABUSE_T3(sds40Exclusion = false, sds40AdditionalExcludedOffence = true, progressionModelExclusion = false, displayName = "Domestic Abuse (for prisoners in custody on or after the 16th Dec 2024)"),
   MURDER_T3(sds40Exclusion = false, sds40AdditionalExcludedOffence = true, progressionModelExclusion = false, displayName = "Murder (for prisoners in custody on or after the 16th Dec 2024)"),
   PROGRESSION_MODEL_SCHEDULE_13_PART_3(sds40Exclusion = false, sds40AdditionalExcludedOffence = false, progressionModelExclusion = true, displayName = "Schedule 13 Part 3"),
+  PROGRESSION_MODEL_OTHER_THING(sds40Exclusion = false, sds40AdditionalExcludedOffence = false, progressionModelExclusion = true, displayName = "Other thing"),
   NO(sds40Exclusion = false, sds40AdditionalExcludedOffence = false, progressionModelExclusion = false, displayName = null),
 }
 

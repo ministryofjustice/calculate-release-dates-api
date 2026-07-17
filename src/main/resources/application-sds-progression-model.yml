@@ -9,55 +9,79 @@ sds-legislations:
         duration: 574
         date: 2026-09-02
         name: TRANCHE_1
+        exclusions:
+         - "PROGRESSION_MODEL_OTHER_THING"
 
       - type: SENTENCE_LENGTH_LESS_THAN_OR_EQUAL_TO
         unit: DAYS
         duration: 882
         date: 2026-10-13
         name: TRANCHE_2
+        exclusions:
+         - "PROGRESSION_MODEL_OTHER_THING"
 
       - type: SENTENCE_LENGTH_LESS_THAN_OR_EQUAL_TO
         unit: DAYS
         duration: 1162
         date: 2026-11-10
         name: TRANCHE_3
+        exclusions:
+         - "PROGRESSION_MODEL_OTHER_THING"
 
       - type: SENTENCE_LENGTH_LESS_THAN_OR_EQUAL_TO
         unit: DAYS
         duration: 1561
         date: 2026-12-08
         name: TRANCHE_4
+        exclusions:
+         - "PROGRESSION_MODEL_OTHER_THING"
 
       - type: SENTENCE_LENGTH_LESS_THAN_OR_EQUAL_TO
         unit: DAYS
         duration: 2121
         date: 2027-01-12
         name: TRANCHE_5
+        exclusions:
+         - "PROGRESSION_MODEL_OTHER_THING"
 
       - type: SENTENCE_LENGTH_LESS_THAN_OR_EQUAL_TO
         unit: DAYS
         duration: 2758
         date: 2027-02-09
         name: TRANCHE_6
+        exclusions:
+         - "PROGRESSION_MODEL_OTHER_THING"
 
       - type: SENTENCE_LENGTH_LESS_THAN_OR_EQUAL_TO
         unit: DAYS
         duration: 3283
         date: 2027-03-09
         name: TRANCHE_7
+        exclusions:
+         - "PROGRESSION_MODEL_OTHER_THING"
 
       - type: SENTENCE_LENGTH_LESS_THAN_OR_EQUAL_TO
         unit: DAYS
         duration: 3654
         date: 2027-04-13
         name: TRANCHE_8
+        exclusions:
+         - "PROGRESSION_MODEL_OTHER_THING"
 
       - type: SENTENCE_LENGTH_LESS_THAN_OR_EQUAL_TO
         unit: DAYS
         duration: 4396
         date: 2027-05-11
         name: TRANCHE_9
+        exclusions:
+         - "PROGRESSION_MODEL_OTHER_THING"
 
       - type: FINAL
         date: 2027-06-08
         name: TRANCHE_10
+        exclusions:
+         - "PROGRESSION_MODEL_OTHER_THING"
+
+      - type: FINAL
+        date: 2027-07-09
+        name: TRANCHE_11

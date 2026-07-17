@@ -24,6 +24,7 @@ class SDSMetaDataTest {
       SDSEarlyReleaseExclusionType.DOMESTIC_ABUSE_T3 -> SDSDescriptions("Domestic Abuse (for prisoners in custody on or after the 16th Dec 2024)", null, null)
       SDSEarlyReleaseExclusionType.MURDER_T3 -> SDSDescriptions("Murder (for prisoners in custody on or after the 16th Dec 2024)", null, null)
       SDSEarlyReleaseExclusionType.PROGRESSION_MODEL_SCHEDULE_13_PART_3 -> SDSDescriptions(null, "Schedule 13 Part 3", null)
+      SDSEarlyReleaseExclusionType.PROGRESSION_MODEL_OTHER_THING -> SDSDescriptions(null, "Other thing", null)
       SDSEarlyReleaseExclusionType.NO -> SDSDescriptions(null, null, null)
     }
     val result = SDSDescriptions.from(

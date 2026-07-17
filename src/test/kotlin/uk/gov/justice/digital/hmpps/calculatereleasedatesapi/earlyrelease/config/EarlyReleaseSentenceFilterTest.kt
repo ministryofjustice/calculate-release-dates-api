@@ -88,6 +88,7 @@ class EarlyReleaseSentenceFilterTest {
       SDSEarlyReleaseExclusionType.DOMESTIC_ABUSE_T3 -> true
       SDSEarlyReleaseExclusionType.MURDER_T3 -> true
       SDSEarlyReleaseExclusionType.PROGRESSION_MODEL_SCHEDULE_13_PART_3 -> true
+      SDSEarlyReleaseExclusionType.PROGRESSION_MODEL_OTHER_THING -> true
       SDSEarlyReleaseExclusionType.NO -> true
     }
     assertThat(isIncluded).describedAs("isIncluded expected to be $expected for $exclusion").isEqualTo(expected)
@@ -123,6 +124,7 @@ class EarlyReleaseSentenceFilterTest {
       SDSEarlyReleaseExclusionType.DOMESTIC_ABUSE_T3 -> true
       SDSEarlyReleaseExclusionType.MURDER_T3 -> true
       SDSEarlyReleaseExclusionType.PROGRESSION_MODEL_SCHEDULE_13_PART_3 -> false
+      SDSEarlyReleaseExclusionType.PROGRESSION_MODEL_OTHER_THING -> false
       SDSEarlyReleaseExclusionType.NO -> false
     }
     assertThat(isIncluded).describedAs("isIncluded expected to be $expected for $exclusion").isEqualTo(expected)
@@ -198,6 +200,7 @@ class EarlyReleaseSentenceFilterTest {
       SDSEarlyReleaseExclusionType.DOMESTIC_ABUSE_T3 -> true
       SDSEarlyReleaseExclusionType.MURDER_T3 -> true
       SDSEarlyReleaseExclusionType.PROGRESSION_MODEL_SCHEDULE_13_PART_3 -> false
+      SDSEarlyReleaseExclusionType.PROGRESSION_MODEL_OTHER_THING -> false
       SDSEarlyReleaseExclusionType.NO -> true
     }
     assertThat(isIncluded).describedAs("isIncluded expected to be $expected for $exclusion").isEqualTo(expected)
