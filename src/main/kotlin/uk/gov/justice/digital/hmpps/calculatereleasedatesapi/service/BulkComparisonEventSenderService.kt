@@ -17,7 +17,7 @@ class BulkComparisonEventSenderService(
   fun processPrisonComparison(comparisonId: Long, prison: String, token: String) {
     try {
       setAuthToken(token)
-      val prisoners = prisonService.getCalculablePrisonerByPrison(prison!!)
+      val prisoners = prisonService.getCalculablePrisonerByPrison(prison)
       sendMessages(comparisonId, prisoners.map { it.prisonerNumber })
       bulkComparisonSetupCompleter.completeSetup(comparisonId, prisoners.size.toLong())
     } catch (e: Exception) {

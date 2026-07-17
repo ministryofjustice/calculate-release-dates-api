@@ -29,8 +29,8 @@ class HistoricCalculationsService(
     val nomisCalculations = prisonService.getCalculationsForAPrisonerId(prisonerId)
     val agencyIdToDescriptionMap = prisonService.getAgenciesByType("INST").associateBy { it.agencyId }
     val uniqueUsers: Set<String> = (
-      nomisCalculations.mapNotNull { it.calculatedByUserId?.uppercase() } +
-        secondChecks.mapNotNull { it.checkedByUsername.uppercase() }
+      nomisCalculations.map { it.calculatedByUserId.uppercase() } +
+        secondChecks.map { it.checkedByUsername.uppercase() }
       ).toSet()
     val userDetails = manageUsersApiClient.getUsersByUsernames(uniqueUsers)
     val historicCalculations = nomisCalculations.map { nomisCalculation ->
@@ -44,18 +44,18 @@ class HistoricCalculationsService(
       var genuineOverrideReason: GenuineOverrideReason? = null
       var genuineOverrideReasonDescription: String? = null
       val calculatedByUsername = nomisCalculation.calculatedByUserId
-      val userDetail = userDetails?.get(nomisCalculation.calculatedByUserId?.uppercase())
+      val userDetail = userDetails?.get(nomisCalculation.calculatedByUserId.uppercase())
       val calculatedByDisplayName = listOfNotNull(userDetail?.firstName, userDetail?.lastName).joinToString(" ")
       var secondCheckDetailsList: List<SecondCheckDetails> = emptyList()
       calculations.firstOrNull {
         nomisComment != null && nomisCalculation.commentText.contains(it.calculationReference.toString())
-      }?.let {
+      }?.let { calc ->
         val filteredSecondChecks = secondChecks
-          .filter { secondCheck -> secondCheck.calculationRequestId == it.id }
+          .filter { secondCheck -> secondCheck.calculationRequestId == calc.id }
           .sortedByDescending { secondCheck -> secondCheck.checkedAt }
 
         secondCheckDetailsList = filteredSecondChecks.map {
-          val checkedByUserDetail = it?.checkedByUsername?.uppercase()?.let { username ->
+          val checkedByUserDetail = it.checkedByUsername.uppercase().let { username ->
             userDetails?.get(username)
           }
           SecondCheckDetails(
@@ -65,14 +65,14 @@ class HistoricCalculationsService(
             checkedAt = it.checkedAt,
           )
         }
-        establishment = agencyIdToDescriptionMap[it.prisonerLocation]?.description
+        establishment = agencyIdToDescriptionMap[calc.prisonerLocation]?.description
         source = CalculationSource.CRDS
-        calculationType = it.calculationType
-        calculationViewData = CalculationViewConfiguration(it.calculationReference.toString(), it.id())
-        calculationRequestId = it.id
-        calculationReason = it.reasonForCalculation?.displayName
-        genuineOverrideReason = it.genuineOverrideReason
-        genuineOverrideReasonDescription = it.genuineOverrideReasonFurtherDetail ?: it.genuineOverrideReason?.description
+        calculationType = calc.calculationType
+        calculationViewData = CalculationViewConfiguration(calc.calculationReference.toString(), calc.id())
+        calculationRequestId = calc.id
+        calculationReason = calc.reasonForCalculation?.displayName
+        genuineOverrideReason = calc.genuineOverrideReason
+        genuineOverrideReasonDescription = calc.genuineOverrideReasonFurtherDetail ?: calc.genuineOverrideReason?.description
       }
 
       HistoricCalculation(

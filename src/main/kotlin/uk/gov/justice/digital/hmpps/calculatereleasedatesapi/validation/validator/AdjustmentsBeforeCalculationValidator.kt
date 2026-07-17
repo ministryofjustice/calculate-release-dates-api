@@ -15,6 +15,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.Validati
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationOrder
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationUtilities
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 @Component
 class AdjustmentsBeforeCalculationValidator(private val validationUtilities: ValidationUtilities, @Value($$"${adjustments.ui.url}") private val adjustmentsUiUrl: String) : PreCalculationSourceDataValidator {
@@ -27,22 +28,54 @@ class AdjustmentsBeforeCalculationValidator(private val validationUtilities: Val
   internal fun validateAdjustmentsBeforeCalculation(adjustments: BookingAndSentenceAdjustments, sourceData: CalculationSourceData): List<ValidationMessage> = mutableListOf<ValidationMessage>().apply {
     addAll(validateAllRemandHasFromAndToDates(adjustments))
     addAll(validateBookingAdjustment(adjustments.bookingAdjustments))
-    addAll(
-      validateRemandOverlappingRemand(
-        adjustments.sentenceAdjustments
-          .filter { it.type == SentenceAdjustmentType.REMAND && it.fromDate != null && it.toDate != null }
-          .map { LocalDateRange.of(it.fromDate!!, it.toDate!!) },
-      ),
-    )
+    val (validRemand, invalidRemand) = adjustments.sentenceAdjustments
+      .filter { it.type == SentenceAdjustmentType.REMAND && it.fromDate != null && it.toDate != null }
+      .partition { it.fromDate!! <= it.toDate }
+
+    if (invalidRemand.isNotEmpty()) {
+      addAll(
+        invalidRemand.map {
+          ValidationMessage(
+            ValidationCode.ADJUSTMENT_INVALID_DATE_RANGE,
+            listOf(
+              "Remand",
+              it.fromDate!!.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
+              it.toDate!!.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
+            ),
+          )
+        },
+      )
+    }
+
+    addAll(validateRemandOverlappingRemand(validRemand.map { LocalDateRange.of(it.fromDate!!, it.toDate!!) }))
     addAll(validateAllAdjustmentsAreLinkedToCurrentSentences(adjustments.sentenceAdjustments.map { adjustment -> adjustment.sentenceSequence }.toSet(), sourceData))
   }
 
   internal fun validateAdjustmentsBeforeCalculation(adjustments: List<AdjustmentDto>, sourceData: CalculationSourceData): List<ValidationMessage> = mutableListOf<ValidationMessage>().apply {
     addAll(validateAllRemandHasFromAndToDates(adjustments))
     addAll(validateAdjustmentFutureDates(adjustments))
+    val (validRemand, invalidRemand) = adjustments
+      .filter { it.adjustmentType == AdjustmentDto.AdjustmentType.REMAND && it.fromDate != null && it.toDate != null }
+      .partition { it.fromDate!! <= it.toDate }
+
+    if (invalidRemand.isNotEmpty()) {
+      addAll(
+        invalidRemand.map {
+          ValidationMessage(
+            ValidationCode.ADJUSTMENT_INVALID_DATE_RANGE,
+            listOf(
+              "Remand",
+              it.fromDate!!.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
+              it.toDate!!.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
+            ),
+          )
+        },
+      )
+    }
+
     addAll(
       validateRemandOverlappingRemand(
-        adjustments
+        validRemand
           .filter { it.adjustmentType == AdjustmentDto.AdjustmentType.REMAND && it.fromDate != null && it.toDate != null }
           .map { LocalDateRange.of(it.fromDate!!, it.toDate!!) },
       ),
