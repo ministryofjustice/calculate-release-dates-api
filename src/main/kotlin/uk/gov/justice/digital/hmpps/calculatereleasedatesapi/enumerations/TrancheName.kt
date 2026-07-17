@@ -12,6 +12,7 @@ enum class TrancheName {
   TRANCHE_8,
   TRANCHE_9,
   TRANCHE_10,
+  TRANCHE_11,
 
   FTR_56_TRANCHE_0,
   FTR_56_TRANCHE_1,
