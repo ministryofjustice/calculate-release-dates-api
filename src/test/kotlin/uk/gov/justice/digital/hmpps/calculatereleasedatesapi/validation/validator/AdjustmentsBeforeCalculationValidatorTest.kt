@@ -48,7 +48,6 @@ class AdjustmentsBeforeCalculationValidatorTest {
       assertThat(result).containsExactly(
         ValidationMessage(
           ValidationCode.ADJUSTMENT_INVALID_DATE_RANGE,
-          listOf("Remand", "10/01/2024", "01/01/2024"),
         ),
       )
     }
@@ -210,7 +209,6 @@ class AdjustmentsBeforeCalculationValidatorTest {
       assertThat(result).containsExactly(
         ValidationMessage(
           ValidationCode.ADJUSTMENT_INVALID_DATE_RANGE,
-          listOf("Remand", "10/01/2024", "01/01/2024"),
         ),
       )
     }

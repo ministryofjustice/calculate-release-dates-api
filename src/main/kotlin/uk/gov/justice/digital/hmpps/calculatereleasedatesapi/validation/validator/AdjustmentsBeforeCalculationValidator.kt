@@ -15,7 +15,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.Validati
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationOrder
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationUtilities
 import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 
 @Component
 class AdjustmentsBeforeCalculationValidator(private val validationUtilities: ValidationUtilities, @Value($$"${adjustments.ui.url}") private val adjustmentsUiUrl: String) : PreCalculationSourceDataValidator {
@@ -35,14 +34,7 @@ class AdjustmentsBeforeCalculationValidator(private val validationUtilities: Val
     if (invalidRemand.isNotEmpty()) {
       addAll(
         invalidRemand.map {
-          ValidationMessage(
-            ValidationCode.ADJUSTMENT_INVALID_DATE_RANGE,
-            listOf(
-              "Remand",
-              it.fromDate!!.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
-              it.toDate!!.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
-            ),
-          )
+          ValidationMessage(ValidationCode.ADJUSTMENT_INVALID_DATE_RANGE)
         },
       )
     }
@@ -61,14 +53,7 @@ class AdjustmentsBeforeCalculationValidator(private val validationUtilities: Val
     if (invalidRemand.isNotEmpty()) {
       addAll(
         invalidRemand.map {
-          ValidationMessage(
-            ValidationCode.ADJUSTMENT_INVALID_DATE_RANGE,
-            listOf(
-              "Remand",
-              it.fromDate!!.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
-              it.toDate!!.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
-            ),
-          )
+          ValidationMessage(ValidationCode.ADJUSTMENT_INVALID_DATE_RANGE)
         },
       )
     }
