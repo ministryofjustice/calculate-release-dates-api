@@ -5,6 +5,8 @@ import java.time.LocalDate
 
 @Schema
 data class OperativeSentenceEnvelope(
+  @param:Schema(description = "The id of the booking the calculation of operative sentence envelope considered the sentences from", example = "123456789")
+  val bookingId: Long,
   @param:Schema(description = "The length in days of the sentence envelope", example = "365")
   val sentenceEnvelopeLengthInDays: Long,
   @param:Schema(description = "The date of the earliest sentence in the envelope", example = "2013-06-21")

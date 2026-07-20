@@ -19,6 +19,8 @@ bank-holiday:
 adjustments:
   api:
     url: http://localhost:8334
+  ui:
+    url: https://adjusments-ui.example.com
 
 manage-offences:
   api:

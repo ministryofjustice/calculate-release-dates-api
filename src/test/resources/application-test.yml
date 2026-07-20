@@ -50,6 +50,8 @@ bank-holiday:
 adjustments:
   api:
     url: http://localhost:8334
+  ui:
+    url: https://adjusments-ui.example.com
 
 manage-offences:
   api:
@@ -70,6 +72,7 @@ feature-toggles:
   support-inactive-sentences-and-adjustments: false
   applyPostRecallRepealRules: false
   applyPostHdcedRepealRules: false
+  secondCheckEnabled: true
 
 hdced4:
   hdc4-commencement-date: 2025-01-01

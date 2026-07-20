@@ -32,7 +32,7 @@ class OperativeSentenceEnvelopeService(
       val latestIsACrdsCalc = latestCrdsCalc != null && isSameCalc(prisonerCalculation, latestCrdsCalc)
       val persistedSentenceEnvelope = if (latestIsACrdsCalc) operativeSentenceEnvelopeRepository.findByCalculationRequestId(latestCrdsCalc.id()) else null
       return when {
-        latestIsACrdsCalc && persistedSentenceEnvelope != null -> persistedSentenceEnvelope.toOperativeSentenceEnvelope().right()
+        latestIsACrdsCalc && persistedSentenceEnvelope != null -> persistedSentenceEnvelope.toOperativeSentenceEnvelope(bookingId).right()
         else -> deriveFromNomis(bookingId, prisonerCalculation)
       }
     }
@@ -46,6 +46,7 @@ class OperativeSentenceEnvelopeService(
       "Missing expiry date for booking ($bookingId)".left()
     } else {
       OperativeSentenceEnvelope(
+        bookingId = bookingId,
         sentenceEnvelopeLengthInDays = ChronoUnit.DAYS.between(earliestSentenceDate, expiryDate) + 1, // start and end date should be inclusive
         earliestSentenceStartDate = earliestSentenceDate,
         isPostRecallSentenceEnvelope = null,

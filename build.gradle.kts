@@ -1,3 +1,4 @@
+import org.gradle.api.tasks.testing.Test
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jlleitschuh.gradle.ktlint.KtlintExtension
 import org.jlleitschuh.gradle.ktlint.tasks.KtLintCheckTask
@@ -5,10 +6,10 @@ import org.jlleitschuh.gradle.ktlint.tasks.KtLintFormatTask
 import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "10.5.3"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "11.0.0-beta2"
   id("org.springdoc.openapi-gradle-plugin") version "1.9.0"
-  kotlin("plugin.spring") version "2.4.0"
-  kotlin("plugin.jpa") version "2.4.0"
+  kotlin("plugin.spring") version "2.4.10"
+  kotlin("plugin.jpa") version "2.4.10"
   id("jacoco")
   id("org.openapi.generator") version "7.23.0"
 }
@@ -23,7 +24,6 @@ configurations {
 dependencies {
 
   annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
-
   // Spring boot dependencies
   implementation("org.springframework.boot:spring-boot-starter-security")
   implementation("org.springframework.boot:spring-boot-starter-webflux")
@@ -35,13 +35,13 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-flyway")
 
   // MoJ libraries
-  implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter:2.5.0")
+  implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter:3.0.0-beta2")
 
   // GOVUK Notify:
-  implementation("uk.gov.service.notify:notifications-java-client:6.0.0-RELEASE")
+  implementation("uk.gov.service.notify:notifications-java-client:6.0.1-RELEASE")
 
   // Enable kotlin reflect
-  implementation("org.jetbrains.kotlin:kotlin-reflect:2.4.0")
+  implementation("org.jetbrains.kotlin:kotlin-reflect:2.4.10")
 
   // Three Ten Date Calculations
   implementation("org.threeten:threeten-extra:1.10.0")
@@ -51,10 +51,10 @@ dependencies {
   // Database dependencies
   runtimeOnly("org.flywaydb:flyway-core")
   runtimeOnly("org.flywaydb:flyway-database-postgresql")
-  runtimeOnly("org.postgresql:postgresql:42.7.11")
+  runtimeOnly("org.postgresql:postgresql:42.7.13")
 
   implementation("io.arrow-kt:arrow-core:2.2.3")
-  implementation("io.hypersistence:hypersistence-utils-hibernate-71:3.15.3")
+  implementation("io.hypersistence:hypersistence-utils-hibernate-71:3.15.4")
 
   // OpenAPI
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.3")
@@ -80,7 +80,7 @@ dependencies {
   testImplementation("net.javacrumbs.json-unit:json-unit-assertj:5.1.2")
   testImplementation("io.swagger.parser.v3:swagger-parser-v2-converter:2.1.45")
   testImplementation("org.mockito:mockito-inline:5.2.0")
-  testImplementation("org.junit.jupiter:junit-jupiter:6.1.0")
+  testImplementation("org.junit.jupiter:junit-jupiter:6.1.2")
   testImplementation("org.testcontainers:testcontainers:2.0.5")
   testImplementation("org.testcontainers:localstack:1.21.4")
   testImplementation("org.testcontainers:postgresql:1.21.4")
@@ -112,7 +112,13 @@ tasks.jacocoTestCoverageVerification {
 
 kotlin {
   kotlinDaemonJvmArgs = listOf("-Xmx1g", "-Xms256m", "-XX:+UseParallelGC")
-  compilerOptions.jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21
+  jvmToolchain(25)
+}
+
+java {
+  toolchain {
+    languageVersion.set(JavaLanguageVersion.of(25))
+  }
 }
 
 dependencyCheck {
@@ -190,9 +196,12 @@ val models = listOf(
 )
 
 tasks {
+  withType<Test> {
+    maxHeapSize = "1g"
+  }
   withType<KotlinCompile> {
     dependsOn(models.map { it.name })
-    compilerOptions.jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21
+    compilerOptions.jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_25
   }
   withType<KtLintCheckTask> {
     // Under gradle 8 we must declare the dependency here, even if we're not going to be linting the model

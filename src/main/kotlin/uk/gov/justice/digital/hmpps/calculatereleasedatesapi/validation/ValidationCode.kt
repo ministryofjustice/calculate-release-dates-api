@@ -10,12 +10,13 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.Validati
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationType.VALIDATION
 
 @Schema(description = "Validation code details")
-enum class ValidationCode(val message: String, val validationType: ValidationType = VALIDATION) {
+enum class ValidationCode(val message: String, val validationType: ValidationType = VALIDATION, val contentType: ValidationMessageContentType = ValidationMessageContentType.PLAIN_TEXT) {
   ADJUSTMENT_AFTER_RELEASE_ADA("The from date for Additional days awarded (ADA) should be the date of the adjudication hearing."),
   ADJUSTMENT_AFTER_RELEASE_RADA("The from date for Restored additional days awarded (RADA) must be the date the additional days were remitted."),
   ADJUSTMENT_FUTURE_DATED_ADA("The from date for Additional days awarded (ADA) should be the date of the adjudication hearing."),
   ADJUSTMENT_FUTURE_DATED_RADA("The from date for Restored additional days awarded (RADA) must be the date the additional days were remitted."),
   ADJUSTMENT_FUTURE_DATED_UAL("The from date for Unlawfully at Large (UAL) must be the first day the prisoner was deemed UAL."),
+  ADJUSTMENT_INVALID_DATE_RANGE("%s adjustment has invalid from date %s falling after the to date %s."),
   A_FINE_SENTENCE_CONSECUTIVE("A sentence is consecutive to a default term.", UNSUPPORTED_CALCULATION),
   A_FINE_SENTENCE_CONSECUTIVE_TO(
     "A default term is consecutive to another default term or sentence.",
@@ -26,6 +27,11 @@ enum class ValidationCode(val message: String, val validationType: ValidationTyp
   A_FINE_SENTENCE_WITH_PAYMENTS("Any of the fine amount for a default term has been paid.", UNSUPPORTED_CALCULATION),
   CUSTODIAL_PERIOD_EXTINGUISHED_REMAND("The release date cannot be before the sentence date. Go back to NOMIS and reduce the amount of remand entered"),
   CUSTODIAL_PERIOD_EXTINGUISHED_TAGGED_BAIL("The release date cannot be before the sentence date. Go back to NOMIS and reduce the amount of tagged bail entered"),
+
+  // replaces CUSTODIAL_PERIOD_EXTINGUISHED_REMAND and CUSTODIAL_PERIOD_EXTINGUISHED_TAGGED_BAIL which are maintained for historic bulk calcs
+  RELEASE_DATE_BEFORE_SENTENCE_DATE("The amount of %s exceeds the custodial period. Update the unused deductions in the <a href=\"%s/%s/manual-unused-deductions/days/edit\">Adjustments service</a>.", ValidationType.VALIDATION_FIXABLE_IN_DPS, ValidationMessageContentType.HTML),
+  DUPLICATE_OR_OVERLAPPING_UAL("UAL time can only be added once, it can cannot overlap with other UAL dates. Update UAL in the <a href=\"%s/%s/unlawfully-at-large/view\">Adjustments service</a>.", ValidationType.VALIDATION_FIXABLE_IN_DPS, ValidationMessageContentType.HTML),
+  ADJUSTMENT_LINKED_TO_INACTIVE_SENTENCE("An adjustment has been linked to an inactive sentence. You must remove any adjustments that are no longer relevant to this case. <a href=\"%s/%s\">Review the adjustments</a>.", ValidationType.VALIDATION_FIXABLE_IN_DPS, ValidationMessageContentType.HTML),
   PROGRESSION_MODEL_UNSUPPORTED_EXTINGUISHED_SENTENCE("Remand and/or tagged bail exceeds Progression Model custodial period.", MANUAL_ENTRY_JOURNEY_REQUIRED),
   DTO_CONSECUTIVE_TO_SENTENCE("A DTO is consecutive to a sentence type that is not a DTO", UNSUPPORTED_CALCULATION),
   DTO_HAS_SENTENCE_CONSECUTIVE_TO_IT("A non-DTO sentence is consecutive to a DTO.", UNSUPPORTED_CALCULATION),

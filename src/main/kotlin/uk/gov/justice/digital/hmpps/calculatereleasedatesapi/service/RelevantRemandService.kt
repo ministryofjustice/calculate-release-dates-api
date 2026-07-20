@@ -1,7 +1,5 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.adjustmentsapi.model.AdjustmentDto
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
@@ -40,7 +38,7 @@ class RelevantRemandService(
     val calculationUserInputs = CalculationUserInputs()
 
     val validationMessages = validationService.validate(sourceData, calculationUserInputs, ValidationOrder.INVALID)
-      .filterNot { listOf(ValidationCode.CUSTODIAL_PERIOD_EXTINGUISHED_TAGGED_BAIL, ValidationCode.CUSTODIAL_PERIOD_EXTINGUISHED_REMAND).contains(it.code) }
+      .filterNot { it.code in VALIDATION_CODES_TO_IGNORE_BECAUSE_IDENTIFY_REMAND_MAY_RESOLVE_THEM }
     if (validationMessages.isNotEmpty()) {
       return RelevantRemandCalculationResult(
         validationMessages = validationMessages,
@@ -119,7 +117,13 @@ class RelevantRemandService(
   )
 
   private fun findSentence(sentenceAndOffences: List<SentenceAndOffence>, sentenceSequence: Int): SentenceAndOffence? = sentenceAndOffences.find { it.sentenceSequence == sentenceSequence }
+
   companion object {
-    val log: Logger = LoggerFactory.getLogger(this::class.java)
+    private val VALIDATION_CODES_TO_IGNORE_BECAUSE_IDENTIFY_REMAND_MAY_RESOLVE_THEM = setOf(
+      ValidationCode.CUSTODIAL_PERIOD_EXTINGUISHED_TAGGED_BAIL,
+      ValidationCode.CUSTODIAL_PERIOD_EXTINGUISHED_REMAND,
+      ValidationCode.RELEASE_DATE_BEFORE_SENTENCE_DATE,
+      ValidationCode.ADJUSTMENT_LINKED_TO_INACTIVE_SENTENCE,
+    )
   }
 }

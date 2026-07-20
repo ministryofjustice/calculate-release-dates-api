@@ -7,6 +7,7 @@ data class DetailedCalculationResults(
   val context: CalculationContext,
   val dates: Map<ReleaseDateType, DetailedDate>,
   val approvedDates: Map<ReleaseDateType, DetailedDate>?,
+  val secondCheckDetails: SecondCheckDetails?,
   val calculationOriginalData: CalculationOriginalData,
   val calculationBreakdown: CalculationBreakdown?,
   val breakdownMissingReason: BreakdownMissingReason? = null,

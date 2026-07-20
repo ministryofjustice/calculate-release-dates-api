@@ -40,7 +40,7 @@
     "useOffenceIndicators": true
   },
   "params": "sds-progression-model",
-  "expectedValidationException": "CUSTODIAL_PERIOD_EXTINGUISHED_REMAND",
+  "expectedValidationException": "RELEASE_DATE_BEFORE_SENTENCE_DATE",
   "featureToggles": {
     "applyPostRecallRepealRules": true,
     "routePreProgressionExtinguishedSentenceToManual": true

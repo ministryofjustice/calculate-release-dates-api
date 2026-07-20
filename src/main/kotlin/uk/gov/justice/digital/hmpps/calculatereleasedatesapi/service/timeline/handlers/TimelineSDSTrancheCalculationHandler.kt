@@ -51,7 +51,7 @@ class TimelineSDSTrancheCalculationHandler(
       if (legislationToApply.legislationName == LegislationName.SDS_PROGRESSION_MODEL && LegislationName.SDS_40 in beforeTrancheCalculations) {
         // if there was already an SDS40 tranche allocated then apply defaulting and adjustments at this point so that any SDS50 dates that were
         // retained for SDS40 are used in the progression model defaulting and will likely still be retained then as well.
-        latestCalculation = sds40FinalDatesService.applyFinalDates(latestCalculation, beforeTrancheCalculations[LegislationName.SDS_40]!!, originalAdjustments, releasedSentenceGroups.flatMap { it.sentences })
+        latestCalculation = sds40FinalDatesService.applyFinalDates(latestCalculation, beforeTrancheCalculations[LegislationName.SDS_40]!!, originalAdjustments, allSentences.flatten())
       }
       beforeTrancheCalculations[legislationToApply.legislationName] = PreLegislationCalculation(
         latestCalculation,

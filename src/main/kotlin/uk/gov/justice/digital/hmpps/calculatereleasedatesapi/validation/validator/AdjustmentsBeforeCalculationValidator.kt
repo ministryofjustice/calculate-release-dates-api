@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.validator
 
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import org.threeten.extra.LocalDateRange
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.adjustmentsapi.model.AdjustmentDto
@@ -14,37 +15,72 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.Validati
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationOrder
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationUtilities
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 @Component
-class AdjustmentsBeforeCalculationValidator(private val validationUtilities: ValidationUtilities) : PreCalculationSourceDataValidator {
+class AdjustmentsBeforeCalculationValidator(private val validationUtilities: ValidationUtilities, @Value($$"${adjustments.ui.url}") private val adjustmentsUiUrl: String) : PreCalculationSourceDataValidator {
 
   override fun validate(sourceData: CalculationSourceData): List<ValidationMessage> = sourceData.bookingAndSentenceAdjustments.fold(
-    this::validateAdjustmentsBeforeCalculation,
-    this::validateAdjustmentsBeforeCalculation,
+    { validateAdjustmentsBeforeCalculation(it, sourceData) },
+    { validateAdjustmentsBeforeCalculation(it, sourceData) },
   )
 
-  internal fun validateAdjustmentsBeforeCalculation(adjustments: BookingAndSentenceAdjustments): List<ValidationMessage> = mutableListOf<ValidationMessage>().apply {
+  internal fun validateAdjustmentsBeforeCalculation(adjustments: BookingAndSentenceAdjustments, sourceData: CalculationSourceData): List<ValidationMessage> = mutableListOf<ValidationMessage>().apply {
     addAll(validateAllRemandHasFromAndToDates(adjustments))
     addAll(validateBookingAdjustment(adjustments.bookingAdjustments))
-    addAll(
-      validateRemandOverlappingRemand(
-        adjustments.sentenceAdjustments
-          .filter { it.type == SentenceAdjustmentType.REMAND && it.fromDate != null && it.toDate != null }
-          .map { LocalDateRange.of(it.fromDate!!, it.toDate!!) },
-      ),
-    )
+    val (validRemand, invalidRemand) = adjustments.sentenceAdjustments
+      .filter { it.type == SentenceAdjustmentType.REMAND && it.fromDate != null && it.toDate != null }
+      .partition { it.fromDate!! <= it.toDate }
+
+    if (invalidRemand.isNotEmpty()) {
+      addAll(
+        invalidRemand.map {
+          ValidationMessage(
+            ValidationCode.ADJUSTMENT_INVALID_DATE_RANGE,
+            listOf(
+              "Remand",
+              it.fromDate!!.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
+              it.toDate!!.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
+            ),
+          )
+        },
+      )
+    }
+
+    addAll(validateRemandOverlappingRemand(validRemand.map { LocalDateRange.of(it.fromDate!!, it.toDate!!) }))
+    addAll(validateAllAdjustmentsAreLinkedToCurrentSentences(adjustments.sentenceAdjustments.map { adjustment -> adjustment.sentenceSequence }.toSet(), sourceData))
   }
 
-  internal fun validateAdjustmentsBeforeCalculation(adjustments: List<AdjustmentDto>): List<ValidationMessage> = mutableListOf<ValidationMessage>().apply {
+  internal fun validateAdjustmentsBeforeCalculation(adjustments: List<AdjustmentDto>, sourceData: CalculationSourceData): List<ValidationMessage> = mutableListOf<ValidationMessage>().apply {
     addAll(validateAllRemandHasFromAndToDates(adjustments))
     addAll(validateAdjustmentFutureDates(adjustments))
+    val (validRemand, invalidRemand) = adjustments
+      .filter { it.adjustmentType == AdjustmentDto.AdjustmentType.REMAND && it.fromDate != null && it.toDate != null }
+      .partition { it.fromDate!! <= it.toDate }
+
+    if (invalidRemand.isNotEmpty()) {
+      addAll(
+        invalidRemand.map {
+          ValidationMessage(
+            ValidationCode.ADJUSTMENT_INVALID_DATE_RANGE,
+            listOf(
+              "Remand",
+              it.fromDate!!.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
+              it.toDate!!.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
+            ),
+          )
+        },
+      )
+    }
+
     addAll(
       validateRemandOverlappingRemand(
-        adjustments
+        validRemand
           .filter { it.adjustmentType == AdjustmentDto.AdjustmentType.REMAND && it.fromDate != null && it.toDate != null }
           .map { LocalDateRange.of(it.fromDate!!, it.toDate!!) },
       ),
     )
+    addAll(validateAllAdjustmentsAreLinkedToCurrentSentences(adjustments.mapNotNull { adjustment -> adjustment.sentenceSequence }.toSet(), sourceData))
   }
 
   private fun validateAdjustmentFutureDates(adjustments: List<AdjustmentDto>): List<ValidationMessage> = adjustments.filter {
@@ -66,6 +102,7 @@ class AdjustmentsBeforeCalculationValidator(private val validationUtilities: Val
       ),
     )
   }
+
   private fun validateAllRemandHasFromAndToDates(adjustments: List<AdjustmentDto>): List<ValidationMessage> = adjustments.filter { it.adjustmentType == AdjustmentDto.AdjustmentType.REMAND }.flatMap {
     if (it.fromDate == null || it.toDate == null) {
       listOf(ValidationMessage(ValidationCode.REMAND_FROM_TO_DATES_REQUIRED))
@@ -73,6 +110,7 @@ class AdjustmentsBeforeCalculationValidator(private val validationUtilities: Val
       emptyList()
     }
   }
+
   private fun validateAllRemandHasFromAndToDates(adjustments: BookingAndSentenceAdjustments): List<ValidationMessage> = adjustments.sentenceAdjustments.filter { it.type == SentenceAdjustmentType.REMAND }.flatMap {
     if (it.fromDate == null || it.toDate == null) {
       listOf(ValidationMessage(ValidationCode.REMAND_FROM_TO_DATES_REQUIRED))
@@ -97,6 +135,14 @@ class AdjustmentsBeforeCalculationValidator(private val validationUtilities: Val
       }
     }
     return validationMessages
+  }
+
+  fun validateAllAdjustmentsAreLinkedToCurrentSentences(sentenceSequences: Set<Int>, sourceData: CalculationSourceData): List<ValidationMessage> {
+    val sentenceAndOffences = sourceData.sentenceAndOffences
+    if (sentenceSequences.any { sentenceSequence -> sentenceAndOffences.none { it.sentenceSequence == sentenceSequence } }) {
+      return listOf(ValidationMessage(ValidationCode.ADJUSTMENT_LINKED_TO_INACTIVE_SENTENCE, listOf(adjustmentsUiUrl, sourceData.prisonerDetails.offenderNo)))
+    }
+    return emptyList()
   }
 
   override fun validationOrder() = ValidationOrder.INVALID

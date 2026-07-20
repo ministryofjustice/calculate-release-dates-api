@@ -79,7 +79,6 @@ data class SentenceCalcDates(
     ReleaseDateType.ETD to (etdOverrideDate ?: etdCalculatedDate),
     ReleaseDateType.MTD to (mtdOverrideDate ?: mtdCalculatedDate),
     ReleaseDateType.LTD to (ltdOverrideDate ?: ltdCalculatedDate),
-    ReleaseDateType.TUSED to (topupSupervisionExpiryOverrideDate ?: topupSupervisionExpiryCalculatedDate),
     ReleaseDateType.DPRRD to (dtoPostRecallReleaseDateOverride ?: dtoPostRecallReleaseDate),
     ReleaseDateType.ERSED to earlyRemovalSchemeEligibilityDate,
   )
