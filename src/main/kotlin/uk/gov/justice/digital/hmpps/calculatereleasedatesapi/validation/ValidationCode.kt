@@ -16,7 +16,7 @@ enum class ValidationCode(val message: String, val validationType: ValidationTyp
   ADJUSTMENT_FUTURE_DATED_ADA("The from date for Additional days awarded (ADA) should be the date of the adjudication hearing."),
   ADJUSTMENT_FUTURE_DATED_RADA("The from date for Restored additional days awarded (RADA) must be the date the additional days were remitted."),
   ADJUSTMENT_FUTURE_DATED_UAL("The from date for Unlawfully at Large (UAL) must be the first day the prisoner was deemed UAL."),
-  ADJUSTMENT_INVALID_DATE_RANGE("%s adjustment has invalid from date %s falling after the to date %s."),
+  ADJUSTMENT_INVALID_DATE_RANGE("The remand 'from' date is after the remand 'to' date.", ValidationType.VALIDATION_FIXABLE_IN_DPS),
   A_FINE_SENTENCE_CONSECUTIVE("A sentence is consecutive to a default term.", UNSUPPORTED_CALCULATION),
   A_FINE_SENTENCE_CONSECUTIVE_TO(
     "A default term is consecutive to another default term or sentence.",
