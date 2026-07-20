@@ -77,7 +77,7 @@ dependencies {
   testImplementation("org.springframework.boot:spring-boot-starter-security-test")
   testImplementation("org.springframework.boot:spring-boot-webtestclient")
   testImplementation("org.awaitility:awaitility-kotlin:4.3.0")
-  testImplementation("net.javacrumbs.json-unit:json-unit-assertj:5.1.2")
+  testImplementation("net.javacrumbs.json-unit:json-unit-assertj:6.0.1")
   testImplementation("io.swagger.parser.v3:swagger-parser-v2-converter:2.1.45")
   testImplementation("org.mockito:mockito-inline:5.2.0")
   testImplementation("org.junit.jupiter:junit-jupiter:6.1.2")
@@ -87,7 +87,7 @@ dependencies {
   testImplementation("org.testcontainers:junit-jupiter:1.21.4")
   testImplementation("io.github.hakky54:logcaptor:2.12.6")
   testImplementation("org.mockito.kotlin:mockito-kotlin")
-  testImplementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter-test:2.5.0")
+  testImplementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter-test:3.0.0")
   testImplementation("javax.xml.bind:jaxb-api:2.3.1")
   testImplementation(kotlin("test"))
   if (project.hasProperty("docs")) {
