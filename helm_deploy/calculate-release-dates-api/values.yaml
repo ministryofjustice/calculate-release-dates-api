@@ -38,6 +38,7 @@ generic-service:
     APPLY_POST_HDCED_REPEAL_RULES: "false"
     ADULT_HDC_SUSPENDED: "false"
     SECOND_CHECK_ENABLED: "true"
+    PROGRESSION_TRANCHE_ONE_MANUAL_JOURNEY: "false"
 
   # Pre-existing kubernetes secrets to load as environment variables in the deployment.
   # namespace_secrets:
