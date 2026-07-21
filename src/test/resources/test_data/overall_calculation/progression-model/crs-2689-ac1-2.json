@@ -1,0 +1,60 @@
+{
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "2009-01-01",
+      "isActiveSexOffender": true
+    },
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2025-11-24"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 40
+          }
+        },
+        "sentencedAt": "2025-11-24",
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": ["VIOLENT"],
+          "isSection250": false
+        },
+        "identifier": "d211f333-aa1a-3e25-ac8d-0459c1f98868"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2026-10-12"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 12
+          }
+        },
+        "sentencedAt": "2026-10-12",
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        },
+        "consecutiveSentenceUUIDs": [
+          "d211f333-aa1a-3e25-ac8d-0459c1f98868"
+        ]
+      }
+    ],
+    "adjustments": {}
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "sds-progression-model",
+  "featureToggles": {
+    "applyPostRecallRepealRules": true,
+    "routePreProgressionExtinguishedSentenceToManual": true
+  }
+}

@@ -91,6 +91,7 @@ class SDS40EarlyReleaseDefaultingRulesService {
     otherDates = earlyReleaseResult.otherDates,
     effectiveSentenceLength = earlyReleaseResult.effectiveSentenceLength,
     affectedBySds40 = (dates != standardReleaseResult.dates) || standardReleaseResult.affectedBySds40,
+    affectedByProgressionModel = if (dates != standardReleaseResult.dates) earlyReleaseResult.affectedByProgressionModel else standardReleaseResult.affectedByProgressionModel,
     sentencesImpactingFinalReleaseDate = if (dates != standardReleaseResult.dates) earlyReleaseResult.sentencesImpactingFinalReleaseDate else standardReleaseResult.sentencesImpactingFinalReleaseDate,
   )
 
