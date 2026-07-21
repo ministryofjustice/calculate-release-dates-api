@@ -10,7 +10,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCa
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Term
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.PROGRESSION_COMMENCEMENT_DATE
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.HDC_CLEAN_STOP_DATE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.sentence.SentencesExtractionService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
 import java.time.LocalDate
@@ -94,7 +94,7 @@ class HdcedExtractionService(
     hdcedSentence: CalculableSentence,
   ): Boolean = featureToggles.applyPostHdcedRepealRules &&
     sentences.any { isAdultSentence(it) } &&
-    (hdcedDate.isAfterOrEqualTo(PROGRESSION_COMMENCEMENT_DATE) || hdcedSentence.isAffectedBySdsProgressionModel())
+    (hdcedDate.isAfterOrEqualTo(HDC_CLEAN_STOP_DATE) || hdcedSentence.isAffectedBySdsProgressionModel())
 
   private fun isAdultSentence(sentence: CalculableSentence): Boolean = !(sentence is StandardDeterminateSentence && sentence.releaseArrangements.isSection250 || sentence is Term)
 
