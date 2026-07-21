@@ -25,6 +25,7 @@ generic-service:
     ADJUSTMENTS_UI_URL: https://adjustments-dev.hmpps.service.justice.gov.uk
     APPLY_POST_HDCED_REPEAL_RULES: "true"
     ROUTE_PRE_PROGRESSION_EXTINGUISHED_SENTENCE_TO_MANUAL: "true"
+    PROGRESSION_TRANCHE_ONE_MANUAL_JOURNEY: "true"
 
   # Switches off the allow list in the DEV env only.
   allowlist: null
