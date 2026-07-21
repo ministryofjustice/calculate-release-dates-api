@@ -173,6 +173,7 @@ feature-toggles:
   secondCheckEnabled: ${SECOND_CHECK_ENABLED:false}
   storeOperativeSentenceEnvelope: ${STORE_OPERATIVE_SENTENCE_ENVELOPE:false}
   routePreProgressionExtinguishedSentenceToManual: ${ROUTE_PRE_PROGRESSION_EXTINGUISHED_SENTENCE_TO_MANUAL:false}
+  progressionTrancheOneManualJourney: ${PROGRESSION_TRANCHE_ONE_MANUAL_JOURNEY:false}
 
 prisonsWithNomisCalcDisabled: ${PRISONS_WITH_NOMIS_CALC_DISABLED:}
 

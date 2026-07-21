@@ -14,4 +14,5 @@ data class FeatureToggles(
   var adultHdcSuspended: Boolean = false,
   var secondCheckEnabled: Boolean = false,
   var routePreProgressionExtinguishedSentenceToManual: Boolean = false,
+  var progressionTrancheOneManualJourney: Boolean = false,
 )
