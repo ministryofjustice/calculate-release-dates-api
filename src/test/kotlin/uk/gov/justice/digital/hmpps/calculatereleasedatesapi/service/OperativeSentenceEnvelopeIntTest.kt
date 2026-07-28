@@ -24,8 +24,8 @@ class OperativeSentenceEnvelopeIntTest(private val mockPrisonService: MockPrison
 
   @Test
   fun `should be able to get operative sentence enveloper when the latest calculation is from NOMIS`() {
-    stubPrisoner(PRISONER_ID, prisonerDetails)
-    stubKeyDates(
+    mockPrisonService.stubPrisoner(prisonerDetails)
+    mockPrisonService.stubKeyDates(
       BOOKING_ID,
       OffenderKeyDates(
         "NEW",
@@ -66,7 +66,7 @@ class OperativeSentenceEnvelopeIntTest(private val mockPrisonService: MockPrison
   fun `should be able to get operative sentence enveloper when the latest calculation is a supported CRDS calculation`() {
     val bookingId = 1544803905L
     val prisonerId = "default"
-    stubPrisoner(PRISONER_ID, prisonerDetails.copy(bookingId = bookingId))
+    mockPrisonService.stubPrisoner(prisonerDetails.copy(bookingId = bookingId))
     val prelim = createPreliminaryCalculation(prisonerId)
     val confirmed = createConfirmCalculationForPrisoner(prelim.calculationRequestId)
 
@@ -78,7 +78,7 @@ class OperativeSentenceEnvelopeIntTest(private val mockPrisonService: MockPrison
       calculatedByFirstName = "User",
       calculatedByLastName = "One",
     )
-    stubKeyDates(bookingId, offenderKeyDates)
+    mockPrisonService.stubKeyDates(bookingId, offenderKeyDates)
     val operativeSentenceEnvelope = webTestClient.get()
       .uri("/operative-sentence-envelope/$prisonerId")
       .accept(MediaType.APPLICATION_JSON)
@@ -111,30 +111,6 @@ class OperativeSentenceEnvelopeIntTest(private val mockPrisonService: MockPrison
               .withBody(TestUtil.objectMapper().writeValueAsString(listOf(sentenceAndOffence)))
               .withStatus(200),
           )
-        ),
-    )
-  }
-
-  private fun stubKeyDates(bookingId: Long, offenderKeyDates: OffenderKeyDates) {
-    mockPrisonService.withStub(
-      get("/api/offender-dates/$bookingId")
-        .willReturn(
-          aResponse()
-            .withHeader("Content-Type", "application/json")
-            .withBody(objectMapper.writeValueAsString(offenderKeyDates))
-            .withStatus(200),
-        ),
-    )
-  }
-
-  private fun stubPrisoner(prisonerId: String, prisonerDetails: PrisonerDetails) {
-    mockPrisonService.withStub(
-      get("/api/offenders/$prisonerId")
-        .willReturn(
-          aResponse()
-            .withHeader("Content-Type", "application/json")
-            .withBody(objectMapper.writeValueAsString(prisonerDetails))
-            .withStatus(200),
         ),
     )
   }
