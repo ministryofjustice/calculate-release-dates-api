@@ -10,15 +10,21 @@ import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.client.ManageUsersApiClient
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.HistoricalTusedSource
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.CONFIRMED
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.manageusersapi.model.PrisonUserBasicDetails
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Agency
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationSource
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.HistoricCalculationSummary
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.LatestCalculation
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NomisCalculationReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OffenderKeyDates
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.PrisonerCalculationOverview
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeHistoricOverrideRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.SecondCheckRepository
+import java.util.Optional
+import kotlin.math.max
 
 @Component
 class LatestCalculationService(
@@ -30,7 +36,6 @@ class LatestCalculationService(
   private val calculationOutcomeHistoricOverrideRepository: CalculationOutcomeHistoricOverrideRepository,
   private val sourceDataMapper: SourceDataMapper,
   private val manageUsersApiClient: ManageUsersApiClient,
-  private val secondCheckRepository: SecondCheckRepository,
 ) {
 
   @Transactional(readOnly = true)
@@ -38,20 +43,19 @@ class LatestCalculationService(
     .flatMap { bookingId -> prisonService.getOffenderKeyDates(bookingId).map { bookingId to it } }
     .map { (bookingId, prisonerCalculation) ->
       val latestCrdsCalc = calculationRequestRepository.findFirstByPrisonerIdAndCalculationStatusOrderByCalculatedAtDesc(prisonerId)
-      if (latestCrdsCalc.isEmpty || !isSameCalc(prisonerCalculation, latestCrdsCalc.get())) {
-        val nomisReason = prisonService.getNOMISCalcReasons().find { it.code == prisonerCalculation.reasonCode }?.description ?: prisonerCalculation.reasonCode
-        toLatestNomisCalculation(
-          prisonerId,
-          bookingId,
-          prisonerCalculation,
-          nomisReason,
-        )
-      } else {
+      val sameCalc = isSameCalc(prisonerCalculation.comment, latestCrdsCalc)
+      val requiredUsersNames = latestCrdsCalc
+        .map { calc -> listOfNotNull(calc.calculatedByUsername) + calc.secondChecks.map { it.checkedByUsername } }
+        .orElse(listOf())
+        .plus(prisonerCalculation.calculatedByUserId)
+        .map { it.uppercase() }.toSet()
+      val prisonDetails = if (sameCalc) prisonService.getAgenciesByType("INST") else emptyList()
+      val nomisReasons = if (!sameCalc) prisonService.getNOMISCalcReasons() else emptyList()
+      val userDetails = manageUsersApiClient.getUsersByUsernames(requiredUsersNames)
+      val metaData = LatestCalcMetaData(prisonDetails, userDetails ?: emptyMap(), nomisReasons)
+
+      if (sameCalc) {
         val calculationRequest = latestCrdsCalc.get()
-        var location = calculationRequest.prisonerLocation
-        if (calculationRequest.prisonerLocation != null) {
-          location = prisonService.getAgenciesByType("INST").firstOrNull { it.agencyId == location }?.description ?: location
-        }
         val sentenceAndOffences = calculationRequest.sentenceAndOffences?.let { sourceDataMapper.mapSentencesAndOffences(calculationRequest) }
         val breakdown = calculationBreakdownService.getBreakdownSafely(calculationRequest).getOrNull()
         toLatestDpsCalculation(
@@ -59,21 +63,118 @@ class LatestCalculationService(
           prisonerId,
           bookingId,
           prisonerCalculation,
-          calculationRequest.reasonForCalculation?.displayName ?: "Not entered",
-          calculationRequest.otherReasonForCalculation,
-          location,
+          calculationRequest,
+          metaData,
           sentenceAndOffences,
           breakdown,
-          calculationRequest.historicalTusedSource,
-          calculationRequest.calculatedByUsername,
-          calculationRequest.calculationType.name,
+        )
+      } else {
+        toLatestNomisCalculation(
+          prisonerId,
+          bookingId,
+          prisonerCalculation,
+          metaData,
         )
       }
     }
 
-  private fun isSameCalc(prisonerCalculation: OffenderKeyDates, latestCrdsCalc: CalculationRequest): Boolean = when {
-    prisonerCalculation.comment == null -> false
-    prisonerCalculation.comment.contains(latestCrdsCalc.calculationReference.toString()) -> true
+  @Transactional(readOnly = true)
+  fun latestCalculationOverviewForPrisoner(prisonerId: String, numberOfRecentCalculations: Int): Either<String, PrisonerCalculationOverview> = getLatestBookingFromPrisoner(prisonerId)
+    .map { bookingId -> prisonService.getOffenderKeyDates(bookingId).fold({ bookingId to null }, { bookingId to it }) }
+    .map { (bookingId, latestNomisCalculation) ->
+
+      // retrieve at least one NOMIS and CRDS calculation to ensure latest calc and metadata is loaded appropriately even if no summaries requested.
+      val allNomisCalculations = prisonService.getCalculationsForAPrisonerId(prisonerId)
+      val crdsCalculations = calculationRequestRepository
+        .findAllByPrisonerIdAndCalculationStatus(prisonerId, CONFIRMED.name)
+        .sortedByDescending { it.calculatedAt }
+        .take(max(numberOfRecentCalculations, 1))
+      val nomisCalculationsToCrdsCalculations = allNomisCalculations
+        .sortedByDescending { it.calculationDate }
+        .take(max(numberOfRecentCalculations, 1))
+        .map { nomisCalculation -> nomisCalculation to crdsCalculations.find { crdsCalculation -> isSameCalc(nomisCalculation.commentText, Optional.of(crdsCalculation)) } }
+
+      val latestCrdsCalc = Optional.ofNullable(crdsCalculations.maxByOrNull { it.calculatedAt })
+
+      val requiredUsersNames = nomisCalculationsToCrdsCalculations
+        .flatMap { (nomisCalc, crdsCalc) -> listOfNotNull(nomisCalc.calculatedByUserId, crdsCalc?.calculatedByUsername) + (crdsCalc?.secondChecks ?: emptyList()).map { it.checkedByUsername } }
+        .map { it.uppercase() }.toSet()
+
+      val anyCrdsCalcs = nomisCalculationsToCrdsCalculations.any { (_, crdsCalc) -> crdsCalc != null }
+      val anyNomisCalcs = nomisCalculationsToCrdsCalculations.any { (_, crdsCalc) -> crdsCalc == null }
+
+      val prisonDetails = if (anyCrdsCalcs) prisonService.getAgenciesByType("INST") else emptyList()
+      val nomisReasons = if (anyNomisCalcs) prisonService.getNOMISCalcReasons() else emptyList()
+
+      val userDetails = manageUsersApiClient.getUsersByUsernames(requiredUsersNames)
+      val metaData = LatestCalcMetaData(prisonDetails, userDetails ?: emptyMap(), nomisReasons)
+
+      val latestCalculation = if (latestNomisCalculation != null && isSameCalc(latestNomisCalculation.comment, latestCrdsCalc)) {
+        val calculationRequest = latestCrdsCalc.get()
+        val sentenceAndOffences = calculationRequest.sentenceAndOffences?.let { sourceDataMapper.mapSentencesAndOffences(calculationRequest) }
+        val breakdown = calculationBreakdownService.getBreakdownSafely(calculationRequest).getOrNull()
+        toLatestDpsCalculation(
+          calculationRequest.id(),
+          prisonerId,
+          bookingId,
+          latestNomisCalculation,
+          calculationRequest,
+          metaData,
+          sentenceAndOffences,
+          breakdown,
+        )
+      } else if (latestNomisCalculation != null) {
+        toLatestNomisCalculation(
+          prisonerId,
+          bookingId,
+          latestNomisCalculation,
+          metaData,
+        )
+      } else {
+        null
+      }
+      val historicCalculationSummaries = nomisCalculationsToCrdsCalculations.map { (nomisCalc, crdsCalc) ->
+        if (crdsCalc != null) {
+          val location = crdsCalc.prisonerLocation
+            ?.let { metaData.prisons.firstOrNull { it.agencyId == crdsCalc.prisonerLocation }?.description ?: crdsCalc.prisonerLocation }
+          HistoricCalculationSummary(
+            calculationDate = crdsCalc.calculatedAt,
+            calculationSource = CalculationSource.CRDS,
+            calculationType = crdsCalc.calculationType,
+            crdsCalculationId = crdsCalc.id(),
+            nomisCalculationId = nomisCalc.offenderSentCalculationId,
+            reasonDescription = crdsCalc.reasonForCalculation?.displayName ?: "Not entered",
+            reasonFurtherDetail = crdsCalc.otherReasonForCalculation,
+            genuineOverrideReasonDescription = crdsCalc.genuineOverrideReason?.description,
+            calculatedByDisplayName = formatUsersName(metaData.usersDetails, crdsCalc.calculatedByUsername),
+            establishmentCalculatedAtDescription = location,
+          )
+        } else {
+          val nomisReason = metaData.nomisReasons.find { it.code == nomisCalc.calculationReason }?.description ?: nomisCalc.calculationReason
+          HistoricCalculationSummary(
+            calculationDate = nomisCalc.calculationDate,
+            calculationSource = CalculationSource.NOMIS,
+            calculationType = null,
+            crdsCalculationId = null,
+            nomisCalculationId = nomisCalc.offenderSentCalculationId,
+            reasonDescription = nomisReason,
+            reasonFurtherDetail = null,
+            genuineOverrideReasonDescription = null,
+            calculatedByDisplayName = formatUsersName(metaData.usersDetails, nomisCalc.calculatedByUserId),
+            establishmentCalculatedAtDescription = nomisCalc.agencyDescription,
+          )
+        }
+      }
+      PrisonerCalculationOverview(
+        latestCalculation = latestCalculation,
+        recentCalculations = historicCalculationSummaries.take(numberOfRecentCalculations),
+        totalCalculationCount = allNomisCalculations.size,
+      )
+    }
+
+  private fun isSameCalc(nomisComment: String?, latestCrdsCalc: Optional<CalculationRequest>): Boolean = when {
+    nomisComment == null -> false
+    latestCrdsCalc.map { it.calculationReference }.orElse(null).let { calculationReference -> calculationReference != null && nomisComment.contains(calculationReference.toString()) } -> true
     else -> false
   }
 
@@ -92,49 +193,38 @@ class LatestCalculationService(
     prisonerId: String,
     bookingId: Long,
     prisonerCalculation: OffenderKeyDates,
-    reason: String,
-    reasonFurtherDetail: String?,
-    location: String?,
+    calculationRequest: CalculationRequest,
+    metaData: LatestCalcMetaData,
     sentenceAndOffences: List<SentenceAndOffenceWithReleaseArrangements>?,
     breakdown: CalculationBreakdown?,
-    historicalTusedSource: HistoricalTusedSource? = null,
-    calculatedByUsername: String,
-    calculationType: String,
   ): LatestCalculation {
-    val secondCheck = secondCheckRepository.findLatestByCalculationRequestId(calculationRequestId)
-    val uniqueUsers: Set<String> = listOfNotNull(
-      secondCheck?.checkedByUsername?.uppercase(),
-      calculatedByUsername.uppercase(),
-    ).toSet()
-    val userDetails = manageUsersApiClient.getUsersByUsernames(uniqueUsers)
-    val checkedByUserDetail = secondCheck?.checkedByUsername?.uppercase()?.let { username ->
-      userDetails?.get(username)
-    }
-    val calculatedByUserDetail = calculatedByUsername.uppercase().let { username ->
-      userDetails?.get(username)
-    }
+    val secondCheck = calculationRequest.secondChecks.maxByOrNull { it.checkedAt }
+
     val dates = offenderKeyDatesService.releaseDates(prisonerCalculation)
     val historicSledOverride = calculationOutcomeHistoricOverrideRepository.findByCalculationRequestId(calculationRequestId)
+    val location = calculationRequest.prisonerLocation
+      ?.let { metaData.prisons.firstOrNull { it.agencyId == calculationRequest.prisonerLocation }?.description ?: calculationRequest.prisonerLocation }
+
     return LatestCalculation(
       prisonerId = prisonerId,
       bookingId = bookingId,
       calculatedAt = prisonerCalculation.calculatedAt,
       calculationRequestId = calculationRequestId,
       establishment = location,
-      reason = reason,
-      reasonFurtherDetail = reasonFurtherDetail,
+      reason = calculationRequest.reasonForCalculation?.displayName ?: "Not entered",
+      reasonFurtherDetail = calculationRequest.otherReasonForCalculation,
       source = CalculationSource.CRDS,
-      calculatedByUsername = calculatedByUsername,
+      calculatedByUsername = calculationRequest.calculatedByUsername,
       checkedByUsername = secondCheck?.checkedByUsername,
       checkedAt = secondCheck?.checkedAt,
-      calculatedByDisplayName = listOfNotNull(calculatedByUserDetail?.firstName, calculatedByUserDetail?.lastName).joinToString(" ").ifBlank { calculatedByUsername },
-      checkedByDisplayName = secondCheck?.checkedByUsername?.let { username -> listOfNotNull(checkedByUserDetail?.firstName, checkedByUserDetail?.lastName).joinToString(" ").ifBlank { username } },
-      calculationType = calculationType,
+      calculatedByDisplayName = formatUsersName(metaData.usersDetails, calculationRequest.calculatedByUsername),
+      checkedByDisplayName = secondCheck?.checkedByUsername?.let { username -> formatUsersName(metaData.usersDetails, username) },
+      calculationType = calculationRequest.calculationType.name,
       dates = calculationResultEnrichmentService.addDetailToCalculationDates(
         dates,
         sentenceAndOffences,
         breakdown,
-        historicalTusedSource,
+        calculationRequest.historicalTusedSource,
         null,
         historicSledOverride,
       ).values.toList(),
@@ -145,20 +235,21 @@ class LatestCalculationService(
     prisonerId: String,
     bookingId: Long,
     prisonerCalculation: OffenderKeyDates,
-    reason: String,
+    metaData: LatestCalcMetaData,
   ): LatestCalculation {
     val dates = offenderKeyDatesService.releaseDates(prisonerCalculation)
+    val nomisReason = metaData.nomisReasons.find { it.code == prisonerCalculation.reasonCode }?.description ?: prisonerCalculation.reasonCode
     return LatestCalculation(
       prisonerId = prisonerId,
       bookingId = bookingId,
       calculatedAt = prisonerCalculation.calculatedAt,
       calculationRequestId = null,
       establishment = null,
-      reason = reason,
+      reason = nomisReason,
       reasonFurtherDetail = null,
       source = CalculationSource.NOMIS,
       calculatedByUsername = prisonerCalculation.calculatedByUserId,
-      calculatedByDisplayName = prisonerCalculation.calculatedByUserId.let { manageUsersApiClient.getUserByUsername(it)?.name } ?: prisonerCalculation.calculatedByUserId,
+      calculatedByDisplayName = formatUsersName(metaData.usersDetails, prisonerCalculation.calculatedByUserId),
       calculationType = "Unknown",
       checkedAt = null,
       checkedByUsername = null,
@@ -173,4 +264,18 @@ class LatestCalculationService(
       ).values.toList(),
     )
   }
+
+  private fun formatUsersName(
+    usersDetails: Map<String, PrisonUserBasicDetails>,
+    username: String,
+  ): String {
+    val userDetails = usersDetails[username.uppercase()]
+    return listOfNotNull(userDetails?.firstName, userDetails?.lastName).joinToString(" ").ifBlank { username }
+  }
+
+  private data class LatestCalcMetaData(
+    val prisons: List<Agency>,
+    val usersDetails: Map<String, PrisonUserBasicDetails>,
+    val nomisReasons: List<NomisCalculationReason>,
+  )
 }
