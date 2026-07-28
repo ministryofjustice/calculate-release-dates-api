@@ -23,9 +23,13 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CaseLo
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Agency
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CaseLoad
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NomisCalculationReason
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OffenderKeyDates
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculationSummary
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSentenceAndOffences
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.PrisonPeriod
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.PrisonerInPrisonSummary
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.SentenceDetail
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource.JsonTransformation
 
 /*
@@ -187,6 +191,54 @@ class MockPrisonService(
   }
 
   fun withStub(mappingBuilder: MappingBuilder): StubMapping = prisonApi.stubFor(mappingBuilder)
+
+  fun stubSentenceDetails(bookingId: Long, sentenceDetail: SentenceDetail) {
+    withStub(
+      get("/api/bookings/$bookingId/sentenceDetail")
+        .willReturn(
+          aResponse()
+            .withHeader("Content-Type", "application/json")
+            .withBody(objectMapper.writeValueAsString(sentenceDetail))
+            .withStatus(200),
+        ),
+    )
+  }
+
+  fun stubKeyDates(bookingId: Long, offenderKeyDates: OffenderKeyDates) {
+    withStub(
+      get("/api/offender-dates/$bookingId")
+        .willReturn(
+          aResponse()
+            .withHeader("Content-Type", "application/json")
+            .withBody(objectMapper.writeValueAsString(offenderKeyDates))
+            .withStatus(200),
+        ),
+    )
+  }
+
+  fun stubHistoricCalculations(prisonerId: String, calcs: List<SentenceCalculationSummary>) {
+    withStub(
+      get("/api/offender-dates/calculations/$prisonerId")
+        .willReturn(
+          aResponse()
+            .withHeader("Content-Type", "application/json")
+            .withBody(objectMapper.writeValueAsString(calcs))
+            .withStatus(200),
+        ),
+    )
+  }
+
+  fun stubPrisoner(prisonerDetails: PrisonerDetails) {
+    withStub(
+      get("/api/offenders/${prisonerDetails.offenderNo}")
+        .willReturn(
+          aResponse()
+            .withHeader("Content-Type", "application/json")
+            .withBody(objectMapper.writeValueAsString(prisonerDetails))
+            .withStatus(200),
+        ),
+    )
+  }
 
   fun verify(requestPatternBuilder: RequestPatternBuilder) {
     prisonApi.verify(requestPatternBuilder)
