@@ -11,6 +11,7 @@ data class LatestCalculation(
   val establishment: String?,
   val reason: String,
   val reasonFurtherDetail: String?,
+  val genuineOverrideReasonDescription: String?,
   val source: CalculationSource,
   val dates: List<DetailedDate>,
   val calculatedByUsername: String,

@@ -151,6 +151,7 @@ class PrisonerCalculationOverviewIntTest(private val mockPrisonService: MockPris
           null,
           "New Sentence",
           null,
+          null,
           CalculationSource.NOMIS,
           listOf(
             DetailedDate(ReleaseDateType.SED, ReleaseDateType.SED.description, LocalDate.of(2025, 2, 14), emptyList()),
@@ -266,6 +267,7 @@ class PrisonerCalculationOverviewIntTest(private val mockPrisonService: MockPris
           confirmed.calculationRequestId,
           "",
           "Initial calculation",
+          null,
           null,
           CalculationSource.CRDS,
           listOf(
