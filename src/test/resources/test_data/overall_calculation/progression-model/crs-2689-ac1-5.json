@@ -71,7 +71,6 @@
     "adjustments": {}
   },
   "userInputs": {
-    "calculateErsed": true,
     "useOffenceIndicators": true
   },
   "params": "sds-progression-model",

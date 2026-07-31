@@ -1,0 +1,12 @@
+{
+  "dates": {
+    "SLED": "2028-05-11",
+    "CRD": "2026-07-24",
+    "HDCED": "2025-12-26",
+    "ERSED": "2025-12-26",
+    "ESED": "2028-05-11"
+  },
+  "effectiveSentenceLength": "P3Y",
+  "trancheAllocationByLegislationName": {},
+  "affectedByProgressionModel": false
+}
