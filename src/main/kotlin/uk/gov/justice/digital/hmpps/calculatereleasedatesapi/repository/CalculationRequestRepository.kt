@@ -8,7 +8,8 @@ import org.springframework.stereotype.Repository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
 import java.time.LocalDateTime
-import java.util.*
+import java.util.Optional
+import java.util.UUID
 
 @Repository
 interface CalculationRequestRepository : JpaRepository<CalculationRequest, Long> {
