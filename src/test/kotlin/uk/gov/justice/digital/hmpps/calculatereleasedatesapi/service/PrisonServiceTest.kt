@@ -7,7 +7,6 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoMoreInteractions
 import org.mockito.kotlin.whenever
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CaseLoadFunction
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CaseLoadType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Agency
@@ -28,7 +27,7 @@ import java.time.LocalDateTime
 class PrisonServiceTest {
   private val prisonApiClient = mock<PrisonApiClient>()
   private val releaseArrangementLookupService = mock<ReleaseArrangementLookupService>()
-  private val prisonService = PrisonService(prisonApiClient, releaseArrangementLookupService, FeatureToggles())
+  private val prisonService = PrisonService(prisonApiClient, releaseArrangementLookupService)
 
   @Test
   fun `getCurrentUserPrisonsList should exclude prisons where the establishment is KTI`() {

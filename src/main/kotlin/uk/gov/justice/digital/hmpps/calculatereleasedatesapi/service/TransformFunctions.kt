@@ -566,6 +566,9 @@ fun transform(calculationRequest: CalculationRequest): CalculatedReleaseDates = 
   calculationDate = calculationRequest.calculatedAt.toLocalDate(),
 )
 
+@JvmName("transformCalculationRequests")
+fun transform(calculationRequests: List<CalculationRequest>): List<CalculatedReleaseDates> = calculationRequests.map { transform(it) }
+
 fun transform(firstOrNull: ApprovedDatesSubmission?): Map<ReleaseDateType, LocalDate?>? = firstOrNull?.approvedDates?.associateBy(
   { ReleaseDateType.valueOf(it.calculationDateType) },
   { it.outcomeDate },
