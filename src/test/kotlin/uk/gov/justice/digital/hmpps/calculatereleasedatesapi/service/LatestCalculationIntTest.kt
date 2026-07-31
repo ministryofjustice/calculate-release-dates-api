@@ -1,7 +1,5 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
-import com.github.tomakehurst.wiremock.client.WireMock.aResponse
-import com.github.tomakehurst.wiremock.client.WireMock.get
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
@@ -44,12 +42,28 @@ class LatestCalculationIntTest(private val mockPrisonService: MockPrisonService,
         NomisCalculationReason("NEW", "New Sentence"),
       ),
     )
+    mockManageUsersClient.withUsers(
+      listOf(
+        PrisonUserBasicDetails(
+          "TEST-CLIENT", "Test", lastName = "Client",
+          staffId = 123, enabled = true, userId = 1, name = "Test Client",
+          authSource = PrisonUserBasicDetails.AuthSource.auth,
+          activeCaseloadId = null, accountStatus = null, primaryEmail = null,
+        ),
+        PrisonUserBasicDetails(
+          "USER1", "User", lastName = "Name",
+          staffId = 321, enabled = true, userId = 2, name = "User Name",
+          authSource = PrisonUserBasicDetails.AuthSource.auth,
+          activeCaseloadId = null, accountStatus = null, primaryEmail = null,
+        ),
+      ),
+    )
   }
 
   @Test
   fun `should be able to get latest calculation when it is from NOMIS`() {
-    stubPrisoner(prisonerDetails)
-    stubKeyDates(
+    mockPrisonService.stubPrisoner(prisonerDetails)
+    mockPrisonService.stubKeyDates(
       bookingId,
       OffenderKeyDates(
         "NEW",
@@ -63,7 +77,7 @@ class LatestCalculationIntTest(private val mockPrisonService: MockPrisonService,
         calculatedByLastName = "One",
       ),
     )
-    stubSentenceDetails(
+    mockPrisonService.stubSentenceDetails(
       bookingId,
       sentenceDetailsStub.copy(
         conditionalReleaseOverrideDate = LocalDate.of(2030, 1, 6),
@@ -89,6 +103,7 @@ class LatestCalculationIntTest(private val mockPrisonService: MockPrisonService,
         null,
         null,
         "New Sentence",
+        null,
         null,
         CalculationSource.NOMIS,
         listOf(
@@ -140,6 +155,7 @@ class LatestCalculationIntTest(private val mockPrisonService: MockPrisonService,
         confirmed.calculationRequestId,
         "",
         "Initial calculation",
+        null,
         null,
         CalculationSource.CRDS,
         listOf(
@@ -208,54 +224,8 @@ class LatestCalculationIntTest(private val mockPrisonService: MockPrisonService,
       calculatedByFirstName = "User",
       calculatedByLastName = "One",
     )
-    stubKeyDates(bookingId, offenderKeyDates)
-    mockManageUsersClient.withUsers(
-      listOf(
-        PrisonUserBasicDetails(
-          "TEST-CLIENT", "Test", lastName = "Client",
-          staffId = 123, enabled = true, userId = 1, name = "Test Client",
-          authSource = PrisonUserBasicDetails.AuthSource.auth,
-          activeCaseloadId = null, accountStatus = null, primaryEmail = null,
-        ),
-      ),
-    )
+    mockPrisonService.stubKeyDates(bookingId, offenderKeyDates)
     return Triple(bookingId, prisonerId, confirmed)
-  }
-
-  private fun stubSentenceDetails(bookingId: Long, sentenceDetail: SentenceDetail) {
-    mockPrisonService.withStub(
-      get("/api/bookings/$bookingId/sentenceDetail")
-        .willReturn(
-          aResponse()
-            .withHeader("Content-Type", "application/json")
-            .withBody(objectMapper.writeValueAsString(sentenceDetail))
-            .withStatus(200),
-        ),
-    )
-  }
-
-  private fun stubKeyDates(bookingId: Long, offenderKeyDates: OffenderKeyDates) {
-    mockPrisonService.withStub(
-      get("/api/offender-dates/$bookingId")
-        .willReturn(
-          aResponse()
-            .withHeader("Content-Type", "application/json")
-            .withBody(objectMapper.writeValueAsString(offenderKeyDates))
-            .withStatus(200),
-        ),
-    )
-  }
-
-  private fun stubPrisoner(prisonerDetails: PrisonerDetails) {
-    mockPrisonService.withStub(
-      get("/api/offenders/${prisonerDetails.offenderNo}")
-        .willReturn(
-          aResponse()
-            .withHeader("Content-Type", "application/json")
-            .withBody(objectMapper.writeValueAsString(prisonerDetails))
-            .withStatus(200),
-        ),
-    )
   }
 
   companion object {

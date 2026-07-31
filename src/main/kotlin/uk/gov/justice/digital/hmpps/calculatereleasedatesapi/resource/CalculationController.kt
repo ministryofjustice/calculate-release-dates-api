@@ -29,6 +29,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConfirmSecond
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedCalculationResults
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.LatestCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NomisCalculationSummary
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.PrisonerCalculationOverview
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDatesAndCalculationContext
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RelevantRemandCalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RelevantRemandCalculationResult
@@ -458,6 +459,32 @@ class CalculationController(
   ): LatestCalculation {
     log.info("Request received return latest calculation for prisoner {}", prisonerId)
     val result = latestCalculationService.latestCalculationForPrisoner(prisonerId)
+    return result.getOrElse { problemMessage -> throw NoActiveBookingException(problemMessage) }
+  }
+
+  @GetMapping(value = ["/{prisonerId}/overview"])
+  @PreAuthorize("hasAnyRole('CALCULATE_RELEASE_DATES__CALCULATE__RW', 'CALCULATE_RELEASE_DATES__CALCULATE__RO', 'CALCULATE_RELEASE_DATES__CCRD__RO')")
+  @ResponseBody
+  @Operation(
+    summary = "Get an overview of the prisoners calculations",
+    description = "This endpoint will return the latest calculation in detail as well, the request number of most recent calculations in summary form and other metadata about the prisoners calculations.",
+  )
+  @ApiResponses(
+    value = [
+      ApiResponse(responseCode = "200", description = "Returns prisoner overview"),
+      ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
+      ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
+      ApiResponse(responseCode = "404", description = "The prisoner could not be found"),
+    ],
+  )
+  fun getOverview(
+    @PathVariable @Parameter(required = true, example = "ABC123", description = "The id of the prisoner")
+    prisonerId: String,
+    @Parameter(required = false, example = "5", description = "The number of historic calculation summaries to return. Default is 5, specify 0 if you want no summaries.")
+    numberOfSummaries: Int = 5,
+  ): PrisonerCalculationOverview {
+    log.info("Request received to get prisoner overview for {} with {} summaries", prisonerId, numberOfSummaries)
+    val result = latestCalculationService.latestCalculationOverviewForPrisoner(prisonerId, numberOfSummaries)
     return result.getOrElse { problemMessage -> throw NoActiveBookingException(problemMessage) }
   }
 
