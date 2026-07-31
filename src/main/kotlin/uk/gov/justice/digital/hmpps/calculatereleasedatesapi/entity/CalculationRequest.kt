@@ -8,6 +8,7 @@ import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.EnumType
 import jakarta.persistence.Enumerated
+import jakarta.persistence.FetchType
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
@@ -147,6 +148,10 @@ data class CalculationRequest(
   val genuineOverrideReason: GenuineOverrideReason? = null,
 
   val genuineOverrideReasonFurtherDetail: String? = null,
+
+  @JoinColumn(name = "calculationRequestId")
+  @OneToMany(fetch = FetchType.LAZY)
+  val secondChecks: MutableList<CalculationRequestSecondCheck> = mutableListOf(),
 
 ) {
   init {

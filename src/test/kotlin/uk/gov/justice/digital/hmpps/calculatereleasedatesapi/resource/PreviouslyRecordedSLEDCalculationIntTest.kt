@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource
 
-import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 import com.github.tomakehurst.wiremock.client.WireMock.get
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
@@ -306,7 +305,9 @@ class PreviouslyRecordedSLEDCalculationIntTest(private val mockPrisonService: Mo
     val confirmedCalcWithOverride = createConfirmCalculationForPrisoner(prelimWithPreviouslyRecordedSLED.calculationRequestId)
     assertThat(confirmedCalcWithOverride.usedPreviouslyRecordedSLED).isNotNull
 
-    stubKeyDates(
+    val bookingId = PRISONER_ID.hashCode().toLong()
+    mockPrisonService.stubKeyDates(
+      bookingId,
       OffenderKeyDates(
         sentenceExpiryDate = confirmedCalcWithOverride.dates[SLED],
         licenceExpiryDate = confirmedCalcWithOverride.dates[SLED],
@@ -494,19 +495,6 @@ class PreviouslyRecordedSLEDCalculationIntTest(private val mockPrisonService: Mo
     assertThat(dates[SLED]).describedAs("$calcDescription SLED").isEqualTo(expectedSled)
     assertThat(dates[CRD]).describedAs("$calcDescription CRD").isEqualTo(expectedCrd)
     assertThat(dates[TUSED]).describedAs("$calcDescription TUSED").isEqualTo(expectedTused)
-  }
-
-  private fun stubKeyDates(offenderKeyDates: OffenderKeyDates) {
-    val bookingId = PRISONER_ID.hashCode().toLong()
-    mockPrisonService.withStub(
-      get("/api/offender-dates/$bookingId")
-        .willReturn(
-          aResponse()
-            .withHeader("Content-Type", "application/json")
-            .withBody(objectMapper.writeValueAsString(offenderKeyDates))
-            .withStatus(200),
-        ),
-    )
   }
 
   private fun updatedSentencesToVersion(version: String) {

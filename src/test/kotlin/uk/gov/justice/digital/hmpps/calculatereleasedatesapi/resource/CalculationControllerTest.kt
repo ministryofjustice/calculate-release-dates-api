@@ -426,6 +426,7 @@ class CalculationControllerTest {
       "HMP Belfast",
       "Other",
       "Some custom text",
+      null,
       CalculationSource.CRDS,
       listOf(DetailedDate(ReleaseDateType.CRD, ReleaseDateType.CRD.description, LocalDate.of(2024, 1, 1), emptyList())),
       "username",
