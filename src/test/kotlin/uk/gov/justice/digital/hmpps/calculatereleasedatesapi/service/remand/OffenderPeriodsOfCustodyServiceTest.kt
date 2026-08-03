@@ -14,9 +14,9 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.PrisonServi
 import java.time.LocalDate
 import java.time.LocalDateTime
 
-class OffenderRemandServiceTest {
+class OffenderPeriodsOfCustodyServiceTest {
   private val prisonService = mock<PrisonService>()
-  private val offenderRemandService = OffenderRemandService(prisonService)
+  private val offenderPeriodsOfCustodyService = OffenderPeriodsOfCustodyService(prisonService)
 
   @Test
   fun `should pair movements chronologically and ignore unmatched movements`() {
@@ -36,7 +36,7 @@ class OffenderRemandServiceTest {
     )
     whenever(prisonService.getCalculationsForAPrisonerId(eq(prisonerId))).thenReturn(emptyList())
 
-    val periods = offenderRemandService.offenderRemandPeriods(prisonerId)
+    val periods = offenderPeriodsOfCustodyService.offenderRemandPeriods(prisonerId)
 
     assertThat(periods).hasSize(1)
     assertThat(periods.first().startDate).isEqualTo(admissionDate)
@@ -68,7 +68,7 @@ class OffenderRemandServiceTest {
     )
     whenever(prisonService.getCalculationsForAPrisonerId(eq(prisonerId))).thenReturn(listOf(firstCalculation, secondCalculation))
 
-    val periods = offenderRemandService.offenderRemandPeriods(prisonerId)
+    val periods = offenderPeriodsOfCustodyService.offenderRemandPeriods(prisonerId)
 
     assertThat(periods).hasSize(2)
     assertThat(periods[0].startDate).isEqualTo(firstAdmission)

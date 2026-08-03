@@ -9,11 +9,11 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.remand.OffenderCustodyPeriod
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.remand.OffenderRemandService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.remand.OffenderPeriodsOfCustodyService
 
 @RestController
 @Tag(name = "Offender Custody Periods", description = "Offender custody periods")
-class OffenderCustodyPeriodsController(private val offenderRemandService: OffenderRemandService) {
+class OffenderCustodyPeriodsController(private val offenderPeriodsOfCustodyService: OffenderPeriodsOfCustodyService) {
 
   @GetMapping("/offender-custody-periods/{prisonerId}")
   @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR', 'CALCULATE_RELEASE_DATES__CALCULATE__RW', 'CALCULATE_RELEASE_DATES__CALCULATE__RO')")
@@ -29,5 +29,5 @@ class OffenderCustodyPeriodsController(private val offenderRemandService: Offend
       ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
     ],
   )
-  fun offenderRemandPeriods(prisonerId: String): List<OffenderCustodyPeriod> = offenderRemandService.offenderRemandPeriods(prisonerId)
+  fun offenderRemandPeriods(prisonerId: String): List<OffenderCustodyPeriod> = offenderPeriodsOfCustodyService.offenderRemandPeriods(prisonerId)
 }
