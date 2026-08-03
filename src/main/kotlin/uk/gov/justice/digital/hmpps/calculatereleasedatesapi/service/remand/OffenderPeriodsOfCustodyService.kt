@@ -18,9 +18,7 @@ data class OffenderCustodyPeriod(
 )
 
 @Service
-class OffenderRemandService(
-  private val prisonService: PrisonService,
-) {
+class OffenderPeriodsOfCustodyService(private val prisonService: PrisonService) {
   fun offenderRemandPeriods(prisonerId: String): List<OffenderCustodyPeriod> {
     val externalMovements = prisonService.getExternalMovements(prisonerId)
     val periods = buildCustodyPeriods(externalMovements)
