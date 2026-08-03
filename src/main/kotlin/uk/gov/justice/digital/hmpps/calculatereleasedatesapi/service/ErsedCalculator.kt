@@ -31,7 +31,8 @@ class ErsedCalculator(
   }
 
   private fun calculateUsingBothERS30AndERS50(sentence: CalculableSentence, sentenceCalculation: SentenceCalculation) {
-    val ers50Result = if (isSentencedOnOrAfterCommencement(sentence) || isConsecutiveSentenceWithSentencesBeforeAndAfterCommencement(sentence)) {
+    val isConsideredPostERS30Sentence = isSentencedOnOrAfterCommencement(sentence) || isConsecutiveSentenceWithSentencesBeforeAndAfterCommencement(sentence)
+    val ers50Result = if (isConsideredPostERS30Sentence) {
       null
     } else {
       calculate(
@@ -56,7 +57,7 @@ class ErsedCalculator(
 
     if (ers50Result != null && ers50Result.adjustedDateExcludingAwarded.isBefore(ImportantDates.ERS30_COMMENCEMENT_DATE)) {
       sentenceCalculation.breakdownByReleaseDateType[ReleaseDateType.ERSED] = ers50Result.breakdown
-    } else if (ers30Result.adjustedDateExcludingAwarded.isAfterOrEqualTo(ImportantDates.ERS30_COMMENCEMENT_DATE)) {
+    } else if (isConsideredPostERS30Sentence || ers30Result.adjustedDateExcludingAwarded.isAfterOrEqualTo(ImportantDates.ERS30_COMMENCEMENT_DATE)) {
       sentenceCalculation.breakdownByReleaseDateType[ReleaseDateType.ERSED] = ers30Result.breakdown
     } else {
       val daysToBeAddedExcludingUAL = sentenceCalculation.adjustments.awardedDuringCustody -
