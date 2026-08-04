@@ -20,6 +20,7 @@ class WebClientConfiguration(
   @Value("\${manage-offences.api.url}") private val manageOffencesApiUrl: String,
   @Value("\${nomis-sync-mapping.api.url}") private val nomisSyncMappingApiUrl: String,
   @Value("\${manage-users.api.url}") private val manageUsersApiUrl: String,
+  @Value("\${remand-and-sentencing.api.url}") private val remandAndSentencingApiUrl: String,
 ) {
 
   /*
@@ -78,4 +79,10 @@ class WebClientConfiguration(
     builder: WebClient.Builder,
     authorizedClientManager: OAuth2AuthorizedClientManager,
   ): WebClient = builder.authorisedWebClient(authorizedClientManager, registrationId = "manage-users-api", url = manageUsersApiUrl)
+
+  @Bean
+  fun remandAndSentencingApiWebClient(
+    builder: WebClient.Builder,
+    authorizedClientManager: OAuth2AuthorizedClientManager,
+  ): WebClient = builder.authorisedWebClient(authorizedClientManager, registrationId = "remand-and-sentencing-api", url = remandAndSentencingApiUrl)
 }

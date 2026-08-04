@@ -2,9 +2,12 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.remand
 
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExternalMovementDirection
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculationSummary
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.HistoricCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.PrisonApiExternalMovement
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.remandandsentencing.Recall
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.HistoricCalculationsService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.PrisonService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.RemandAndSentencingService
 import java.time.LocalDate
 
 data class OffenderCustodyPeriod(
@@ -12,23 +15,32 @@ data class OffenderCustodyPeriod(
   val endDate: LocalDate,
   val reason: String,
   val courtCases: List<Unit>,
-  val recalls: List<Unit>,
+  val recalls: List<Recall>,
   val immigrationDetention: List<Unit>,
-  val calculations: List<SentenceCalculationSummary>,
+  val calculations: List<HistoricCalculation>,
 )
 
 @Service
-class OffenderPeriodsOfCustodyService(private val prisonService: PrisonService) {
+class OffenderPeriodsOfCustodyService(
+  private val prisonService: PrisonService,
+  private val historicCalculationsService: HistoricCalculationsService,
+  private val remandAndSentencingService: RemandAndSentencingService,
+) {
   fun offenderRemandPeriods(prisonerId: String): List<OffenderCustodyPeriod> {
     val externalMovements = prisonService.getExternalMovements(prisonerId)
     val periods = buildCustodyPeriods(externalMovements)
     if (periods.isEmpty()) return emptyList()
 
-    val nomisCalculations = prisonService.getCalculationsForAPrisonerId(prisonerId)
+    val historicCalculations = historicCalculationsService.getHistoricCalculationsForPrisoner(prisonerId)
+    val offenderRecalls = remandAndSentencingService.getRecallsForOffender(prisonerId)
 
     return periods.map { period ->
-      val calculations = nomisCalculations.filter {
+      val calculations = historicCalculations.filter {
         it.calculationDate.toLocalDate() in period.startDate..period.endDate
+      }
+
+      val recalls = offenderRecalls.filter {
+        it.createdAt.toLocalDate() in period.startDate..period.endDate
       }
 
       OffenderCustodyPeriod(
@@ -36,7 +48,7 @@ class OffenderPeriodsOfCustodyService(private val prisonService: PrisonService) 
         endDate = period.endDate,
         reason = period.reason,
         courtCases = emptyList(),
-        recalls = emptyList(),
+        recalls = recalls,
         immigrationDetention = emptyList(),
         calculations = calculations,
       )
