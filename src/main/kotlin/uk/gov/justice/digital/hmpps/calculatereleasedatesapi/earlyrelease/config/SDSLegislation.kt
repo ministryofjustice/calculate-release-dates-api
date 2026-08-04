@@ -12,9 +12,12 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDa
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ReleaseMultiplier
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.ExternalMovementTimeline
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculationEvent
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculationEvent.ProgressionModelSnapshotTimelineCalculationEvent
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculationEvent.SDS40SnapshotTimelineCalculationEvent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculationEvent.SDSLegislationAmendmentTimelineCalculationEvent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculationEvent.SDSLegislationCommencementTimelineCalculationEvent
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculationEvent.SDSTrancheTimelineCalculationEvent
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculationEvent.SDSTrancheAllocationTimelineCalculationEvent
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculationEvent.SDSTrancheRecalculationTimelineCalculationEvent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineTrackingData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
 import java.time.LocalDate
@@ -53,8 +56,12 @@ sealed interface SDSLegislation : Legislation {
     override val legislationName = LegislationName.SDS_40
     override val trancheSelectionStrategy: SDSTrancheSelectionStrategy = SDS40TrancheSelectionStrategy()
 
-    override fun requiredTimelineCalculations(): List<TimelineCalculationEvent> = super.requiredTimelineCalculations() + tranches.map { tranche ->
-      SDSTrancheTimelineCalculationEvent(tranche.date, legislation = this, tranche)
+    override fun requiredTimelineCalculations(): List<TimelineCalculationEvent> = super.requiredTimelineCalculations() + tranches.flatMap { tranche ->
+      listOf(
+        SDSTrancheAllocationTimelineCalculationEvent(tranche.date, legislation = this, tranche),
+        SDS40SnapshotTimelineCalculationEvent(tranche.date, legislation = this, tranche),
+        SDSTrancheRecalculationTimelineCalculationEvent(tranche.date, legislation = this, tranche),
+      )
     }
 
     override fun commencementDate(): LocalDate = tranches.minOf { it.date }
@@ -106,8 +113,12 @@ sealed interface SDSLegislation : Legislation {
     override val legislationName = LegislationName.SDS_PROGRESSION_MODEL
     override val trancheSelectionStrategy: SDSTrancheSelectionStrategy = SDSProgressionModelTrancheSelectionStrategy()
 
-    override fun requiredTimelineCalculations(): List<TimelineCalculationEvent> = super.requiredTimelineCalculations() + tranches.map { tranche ->
-      SDSTrancheTimelineCalculationEvent(tranche.date, legislation = this, tranche)
+    override fun requiredTimelineCalculations(): List<TimelineCalculationEvent> = super.requiredTimelineCalculations() + tranches.flatMap { tranche ->
+      listOf(
+        SDSTrancheAllocationTimelineCalculationEvent(tranche.date, legislation = this, tranche),
+        ProgressionModelSnapshotTimelineCalculationEvent(tranche.date, legislation = this),
+        SDSTrancheRecalculationTimelineCalculationEvent(tranche.date, legislation = this, tranche),
+      )
     }
 
     override fun commencementDate(): LocalDate = tranches.minOf { it.date }

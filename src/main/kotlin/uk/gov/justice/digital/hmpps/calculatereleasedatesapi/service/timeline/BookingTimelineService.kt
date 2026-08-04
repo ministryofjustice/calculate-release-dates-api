@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.FTRLegislationConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.LegislationName
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.PreLegislationCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.SDSLegislationConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.ADDITIONAL_DAYS_AWARDED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.RECALL_REMAND
@@ -22,16 +23,25 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOu
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExternalMovement
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceGroup
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.SDSProgressionModelFinalDatesService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.WorkingDayService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculationEvent.AwardedAdjustmentTimelineCalculationEvent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculationEvent.ExternalMovementTimelineCalculationEvent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculationEvent.FTR56TrancheTimelineCalculationEvent
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculationEvent.ProgressionModelSnapshotTimelineCalculationEvent
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculationEvent.SDS40SnapshotTimelineCalculationEvent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculationEvent.SDSLegislationAmendmentTimelineCalculationEvent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculationEvent.SDSLegislationCommencementTimelineCalculationEvent
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculationEvent.SDSTrancheTimelineCalculationEvent
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculationEvent.SDSTrancheAllocationTimelineCalculationEvent
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculationEvent.SDSTrancheRecalculationTimelineCalculationEvent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculationEvent.SentenceTimelineCalculationEvent
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculationEvent.SimpleSnapshotTimelineCalculationEvent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculationEvent.UALTimelineCalculationEvent
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers.ProgressionModelSnapshotTimelineCalculationHandler
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers.SDS40SnapshotTimelineCalculationHandler
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers.SDSTrancheRecalculationTimelineCalculationHandler
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers.SimpleSnapshotTimelineCalculationHandler
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers.TimelineAwardedAdjustmentCalculationHandler
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers.TimelineExternalMovementCalculationHandler
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers.TimelineFTR56TrancheCalculationHandler
@@ -58,6 +68,10 @@ class BookingTimelineService(
   private val timelineSDSLegislationAmendmentHandler: TimelineSDSLegislationAmendmentHandler,
   private val sdsLegislationConfiguration: SDSLegislationConfiguration,
   private val ftrLegislationConfiguration: FTRLegislationConfiguration,
+  private val sds40SnapshotTimelineCalculationHandler: SDS40SnapshotTimelineCalculationHandler,
+  private val progressionModelSnapshotTimelineCalculationHandler: ProgressionModelSnapshotTimelineCalculationHandler,
+  private val sdsTrancheRecalculationTimelineCalculationHandler: SDSTrancheRecalculationTimelineCalculationHandler,
+  private val simpleSnapshotTimelineCalculationHandler: SimpleSnapshotTimelineCalculationHandler,
 ) {
 
   fun calculate(
@@ -79,7 +93,7 @@ class BookingTimelineService(
       sentences = sentences.sortedBy { it.sentencedAt },
     )
 
-    val calculationsByDate = getCalculationsByDate(sentences, futureData, externalMovements)
+    val calculationsByDate = getCalculationsByDate(sentences, futureData, externalMovements, options.calculateErsed)
 
     val earliestSentence = futureData.sentences.minBy { it.sentencedAt }
 
@@ -102,13 +116,17 @@ class BookingTimelineService(
       val results = calculations.sortedBy { it.type.order }.map {
         when (it) {
           is SDSLegislationCommencementTimelineCalculationEvent -> timelineSDSLegislationCommencementHandler.handle(it, timelineTrackingData)
+          is SDS40SnapshotTimelineCalculationEvent -> sds40SnapshotTimelineCalculationHandler.handle(it, timelineTrackingData)
+          is ProgressionModelSnapshotTimelineCalculationEvent -> progressionModelSnapshotTimelineCalculationHandler.handle(it, timelineTrackingData)
+          is SDSTrancheRecalculationTimelineCalculationEvent -> sdsTrancheRecalculationTimelineCalculationHandler.handle(it, timelineTrackingData)
           is SentenceTimelineCalculationEvent -> timelineSentenceCalculationHandler.handle(it, timelineTrackingData)
           is AwardedAdjustmentTimelineCalculationEvent -> timelineAwardedAdjustmentCalculationHandler.handle(it, timelineTrackingData)
           is UALTimelineCalculationEvent -> timelineUalAdjustmentCalculationHandler.handle(it, timelineTrackingData)
-          is SDSTrancheTimelineCalculationEvent -> timelineSDSTrancheCalculationHandler.handle(it, timelineTrackingData)
+          is SDSTrancheAllocationTimelineCalculationEvent -> timelineSDSTrancheCalculationHandler.handle(it, timelineTrackingData)
           is FTR56TrancheTimelineCalculationEvent -> timelineFTR56TrancheCalculationHandler.handle(it, timelineTrackingData)
           is ExternalMovementTimelineCalculationEvent -> timelineExternalMovementCalculationHandler.handle(it, timelineTrackingData)
           is SDSLegislationAmendmentTimelineCalculationEvent -> timelineSDSLegislationAmendmentHandler.handle(it, timelineTrackingData)
+          is SimpleSnapshotTimelineCalculationEvent -> simpleSnapshotTimelineCalculationHandler.handle(it, timelineTrackingData)
         }
       }
       val anyCalculationRequired = results.any { it.requiresCalculation }
@@ -142,13 +160,16 @@ class BookingTimelineService(
           releasedSentenceGroups.map { it.sentences },
           offender,
           returnToCustodyDate,
+          snapshots,
         )
 
       val allSentences = releasedSentenceGroups.flatMap { it.sentences }
-      if (LegislationName.SDS_PROGRESSION_MODEL in beforeTrancheCalculations) {
-        latestCalculation = sdsProgressionModelFinalDatesService.applyFinalDates(latestCalculation, beforeTrancheCalculations[LegislationName.SDS_PROGRESSION_MODEL]!!, adjustments)
-      } else if (LegislationName.SDS_40 in beforeTrancheCalculations) {
-        latestCalculation = sds40FinalDatesService.applyFinalDates(latestCalculation, beforeTrancheCalculations[LegislationName.SDS_40]!!, adjustments, allSentences)
+      if (applicableSdsLegislations.hasTrancheSet(LegislationName.SDS_PROGRESSION_MODEL) && SnapshotName.BEFORE_PROGRESSION_MODEL_TRANCHE in snapshots) {
+        val preLegislationCalculation = PreLegislationCalculation(snapshots[SnapshotName.BEFORE_PROGRESSION_MODEL_TRANCHE]!!.result, applicableSdsLegislations.getApplicableLegislation(LegislationName.SDS_PROGRESSION_MODEL)!!)
+        latestCalculation = sdsProgressionModelFinalDatesService.applyFinalDates(latestCalculation, preLegislationCalculation, adjustments)
+      } else if (applicableSdsLegislations.hasTrancheSet(LegislationName.SDS_40) && SnapshotName.BEFORE_SDS40_TRANCHE in snapshots) {
+        val preLegislationCalculation = PreLegislationCalculation(snapshots[SnapshotName.BEFORE_SDS40_TRANCHE]!!.result, applicableSdsLegislations.getApplicableLegislation(LegislationName.SDS_40)!!)
+        latestCalculation = sds40FinalDatesService.applyFinalDates(latestCalculation, preLegislationCalculation, adjustments, allSentences)
       }
 
       val sds40TrancheName = timelineTrackingData.trancheAllocationByLegislationName[LegislationName.SDS_40] ?: TrancheName.TRANCHE_0
@@ -199,7 +220,7 @@ class BookingTimelineService(
           }
           currentSentenceGroup.clear()
         }
-        latestCalculation = timelineCalculator.getLatestCalculation(releasedSentenceGroups.map { it.sentences }, offender, returnToCustodyDate)
+        latestCalculation = timelineCalculator.getLatestCalculation(releasedSentenceGroups.map { it.sentences }, offender, returnToCustodyDate, snapshots)
       }
       if (licenceSentences.isNotEmpty()) {
         val sentencesThatHaveExpired = licenceSentences.filter { date.isAfter(it.sentenceCalculation.licenceExpiryAtInitialRelease) }
@@ -209,18 +230,23 @@ class BookingTimelineService(
     }
   }
 
-  private fun getCalculationsByDate(sentences: List<CalculableSentence>, futureData: TimelineFutureData, externalMovements: List<ExternalMovement>): Map<LocalDate, List<TimelineCalculationEvent>> = (
-    sentences.flatMap { it.sentenceParts().map { part -> SentenceTimelineCalculationEvent(part.sentencedAt) } } +
-      futureData.additional.map { AwardedAdjustmentTimelineCalculationEvent(it.appliesToSentencesFrom, TimelineCalculationType.ADDITIONAL_DAYS) } +
-      futureData.restored.map { AwardedAdjustmentTimelineCalculationEvent(it.appliesToSentencesFrom, TimelineCalculationType.RESTORATION_DAYS) } +
-      futureData.ual.map { UALTimelineCalculationEvent(it.appliesToSentencesFrom) } +
-      sdsLegislationConfiguration.all().flatMap { legislation -> legislation.requiredTimelineCalculations() } +
-      ftrLegislationConfiguration.ftr56Legislation.requiredTimelineCalculations() +
-      externalMovements.map { ExternalMovementTimelineCalculationEvent(it.movementDate) }
-    )
-    .sortedBy { it.date }
-    .distinct()
-    .groupBy { it.date }
+  private fun getCalculationsByDate(sentences: List<CalculableSentence>, futureData: TimelineFutureData, externalMovements: List<ExternalMovement>, calculateErsed: Boolean): Map<LocalDate, List<TimelineCalculationEvent>> {
+    val sentenceParts = sentences.flatMap { it.sentenceParts() }
+    val ers30SnapshotIfRequired = if (calculateErsed && sentenceParts.any { it.sentencedAt.isAfter(ImportantDates.ERS30_COMMENCEMENT_DATE) }) SimpleSnapshotTimelineCalculationEvent(ImportantDates.ERS30_COMMENCEMENT_DATE, SnapshotName.BEFORE_ERS30) else null
+    return (
+      sentenceParts.map { part -> SentenceTimelineCalculationEvent(part.sentencedAt) } +
+        futureData.additional.map { AwardedAdjustmentTimelineCalculationEvent(it.appliesToSentencesFrom, TimelineCalculationType.ADDITIONAL_DAYS) } +
+        futureData.restored.map { AwardedAdjustmentTimelineCalculationEvent(it.appliesToSentencesFrom, TimelineCalculationType.RESTORATION_DAYS) } +
+        futureData.ual.map { UALTimelineCalculationEvent(it.appliesToSentencesFrom) } +
+        sdsLegislationConfiguration.all().flatMap { legislation -> legislation.requiredTimelineCalculations() } +
+        ftrLegislationConfiguration.ftr56Legislation.requiredTimelineCalculations() +
+        externalMovements.map { ExternalMovementTimelineCalculationEvent(it.movementDate) } +
+        listOfNotNull(ers30SnapshotIfRequired)
+      )
+      .sortedBy { it.date }
+      .distinct()
+      .groupBy { it.date }
+  }
 
   companion object {
     val log: Logger = LoggerFactory.getLogger(this::class.java)
