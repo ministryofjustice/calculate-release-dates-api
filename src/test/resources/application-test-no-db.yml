@@ -34,6 +34,10 @@ manage-users:
   api:
     url: http://localhost:8337
 
+remand-and-sentencing:
+  api:
+    url: http://localhost:8338
+
 domain-events-sns:
   provider: localstack
 

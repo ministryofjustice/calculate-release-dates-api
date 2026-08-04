@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.BankHolidayCache
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BankHolidays
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.BankHolidayCacheRepository
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.apiclients.BankHolidayApiClient
 import java.time.LocalDateTime
 
 @Service
