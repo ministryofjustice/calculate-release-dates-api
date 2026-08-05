@@ -15,4 +15,6 @@ data class FeatureToggles(
   var secondCheckEnabled: Boolean = false,
   var routePreProgressionExtinguishedSentenceToManual: Boolean = false,
   var progressionTrancheOneManualJourney: Boolean = false,
+  var progressionModelScheduleExclusionEnabled: Boolean = false,
+  var routeProgressionModelScheduleExclusionToManual: Boolean = false,
 )
