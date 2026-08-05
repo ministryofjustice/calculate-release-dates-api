@@ -6,7 +6,7 @@ import org.springframework.core.ParameterizedTypeReference
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.client.loggingRetry
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.remandandsentencing.Recall
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.remandandsentencing.PrisonerRecallsResponse
 
 @Service
 class RemandAndSentencingApiClient(
@@ -16,7 +16,7 @@ class RemandAndSentencingApiClient(
 
   private val log = LoggerFactory.getLogger(this::class.java)
 
-  fun getRecallsForOffender(prisonerId: String, includeAllPeriods: Boolean, bookingId: String? = null): List<Recall> {
+  fun getRecallsForOffender(prisonerId: String, includeAllPeriods: Boolean, bookingId: String? = null): PrisonerRecallsResponse {
     log.info("Requesting getRecallsForOffender for $prisonerId")
     return userAuthWebClient.get()
       .uri {
@@ -26,7 +26,7 @@ class RemandAndSentencingApiClient(
           .build()
       }
       .retrieve()
-      .bodyToMono(typeReference<List<Recall>>())
+      .bodyToMono(typeReference<PrisonerRecallsResponse>())
       .loggingRetry(log, "getRecallsForOffender($prisonerId)")
       .block()!!
   }
