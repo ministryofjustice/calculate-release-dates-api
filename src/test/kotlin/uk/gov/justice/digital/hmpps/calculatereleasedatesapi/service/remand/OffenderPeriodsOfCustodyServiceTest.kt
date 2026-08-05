@@ -10,6 +10,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationSo
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExternalMovementDirection
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.HistoricCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.PrisonApiExternalMovement
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.remandandsentencing.PrisonerRecallsResponse
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.remandandsentencing.Recall
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.remandandsentencing.UAL
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.HistoricCalculationsService
@@ -17,6 +18,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.PrisonServi
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.RemandAndSentencingService
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.ZoneOffset
+import java.time.ZonedDateTime
 
 class OffenderPeriodsOfCustodyServiceTest {
   private val prisonService = mock<PrisonService>()
@@ -25,10 +28,11 @@ class OffenderPeriodsOfCustodyServiceTest {
   private val offenderPeriodsOfCustodyService = OffenderPeriodsOfCustodyService(prisonService, historicCalculationsService, remandAndSentencingService)
 
   @Test
-  fun `should pair movements chronologically and ignore unmatched movements`() {
+  fun `should pair movements chronologically and include active period of custody`() {
     val prisonerId = "A1234AA"
     val admissionDate = LocalDate.of(2026, 1, 2)
     val releaseDate = LocalDate.of(2026, 1, 5)
+    val currentPeriodStart = LocalDate.of(2026, 1, 7)
 
     whenever(prisonService.getExternalMovements(prisonerId)).thenReturn(
       listOf(
@@ -37,19 +41,24 @@ class OffenderPeriodsOfCustodyServiceTest {
         movement(prisonerId, LocalDate.of(2026, 1, 3), ExternalMovementDirection.IN, "duplicate admission"),
         movement(prisonerId, releaseDate, ExternalMovementDirection.OUT, "release"),
         movement(prisonerId, LocalDate.of(2026, 1, 6), ExternalMovementDirection.OUT, "unmatched release"),
-        movement(prisonerId, LocalDate.of(2026, 1, 7), ExternalMovementDirection.IN, "open period"),
+        movement(prisonerId, currentPeriodStart, ExternalMovementDirection.IN, "current period"),
       ),
     )
     whenever(historicCalculationsService.getHistoricCalculationsForPrisoner(eq(prisonerId))).thenReturn(emptyList())
-    whenever(remandAndSentencingService.getRecallsForOffender(eq(prisonerId))).thenReturn(emptyList())
+    whenever(remandAndSentencingService.getRecallsForOffender(eq(prisonerId))).thenReturn(prisonerRecallsResponse())
 
     val periods = offenderPeriodsOfCustodyService.offenderRemandPeriods(prisonerId)
 
-    assertThat(periods.size).isEqualTo(1)
+    assertThat(periods.size).isEqualTo(2)
     assertThat(periods.first().startDate).isEqualTo(admissionDate)
     assertThat(periods.first().endDate).isEqualTo(releaseDate)
     assertThat(periods.first().reason).isEqualTo("remand")
     assertThat(periods.first().recalls).isEmpty()
+
+    assertThat(periods[1].startDate).isEqualTo(currentPeriodStart)
+    assertThat(periods[1].endDate).isNull()
+    assertThat(periods[1].reason).isEqualTo("current period")
+    assertThat(periods[1].recalls).isEmpty()
 
     verify(prisonService).getExternalMovements(eq(prisonerId))
     verify(historicCalculationsService).getHistoricCalculationsForPrisoner(eq(prisonerId))
@@ -75,7 +84,7 @@ class OffenderPeriodsOfCustodyServiceTest {
       ),
     )
     whenever(historicCalculationsService.getHistoricCalculationsForPrisoner(eq(prisonerId))).thenReturn(listOf(firstCalculation, secondCalculation))
-    whenever(remandAndSentencingService.getRecallsForOffender(eq(prisonerId))).thenReturn(emptyList())
+    whenever(remandAndSentencingService.getRecallsForOffender(eq(prisonerId))).thenReturn(prisonerRecallsResponse())
 
     val periods = offenderPeriodsOfCustodyService.offenderRemandPeriods(prisonerId)
 
@@ -104,8 +113,8 @@ class OffenderPeriodsOfCustodyServiceTest {
     val firstRelease = LocalDate.of(2026, 1, 31)
     val secondAdmission = LocalDate.of(2026, 3, 1)
     val secondRelease = LocalDate.of(2026, 3, 31)
-    val recallInFirstPeriod = recall(prisonerId, LocalDateTime.of(2026, 1, 15, 12, 0))
-    val recallInSecondPeriod = recall(prisonerId, LocalDateTime.of(2026, 3, 10, 12, 0))
+    val recallInFirstPeriod = recall(prisonerId, ZonedDateTime.of(2026, 1, 15, 12, 0, 0, 0, ZoneOffset.UTC))
+    val recallInSecondPeriod = recall(prisonerId, ZonedDateTime.of(2026, 3, 10, 12, 0, 0, 0, ZoneOffset.UTC))
 
     whenever(prisonService.getExternalMovements(prisonerId)).thenReturn(
       listOf(
@@ -116,13 +125,53 @@ class OffenderPeriodsOfCustodyServiceTest {
       ),
     )
     whenever(historicCalculationsService.getHistoricCalculationsForPrisoner(eq(prisonerId))).thenReturn(emptyList())
-    whenever(remandAndSentencingService.getRecallsForOffender(eq(prisonerId))).thenReturn(listOf(recallInFirstPeriod, recallInSecondPeriod))
+    whenever(remandAndSentencingService.getRecallsForOffender(eq(prisonerId))).thenReturn(
+      prisonerRecallsResponse(recallInFirstPeriod, recallInSecondPeriod),
+    )
 
     val periods = offenderPeriodsOfCustodyService.offenderRemandPeriods(prisonerId)
 
     assertThat(periods.size).isEqualTo(2)
     assertThat(periods[0].recalls).containsExactly(recallInFirstPeriod)
     assertThat(periods[1].recalls).containsExactly(recallInSecondPeriod)
+  }
+
+  @Test
+  fun `should include calculations and recalls in an active custody period with no end date`() {
+    val prisonerId = "A1234AA"
+    val closedAdmission = LocalDate.of(2026, 1, 2)
+    val closedRelease = LocalDate.of(2026, 1, 31)
+    val activeAdmission = LocalDate.of(2026, 3, 1)
+    val calculationInClosedPeriod = historicCalculation(prisonerId, LocalDateTime.of(2026, 1, 15, 10, 0))
+    val calculationInActivePeriod = historicCalculation(prisonerId, LocalDateTime.of(2026, 3, 10, 10, 0))
+    val recallInClosedPeriod = recall(prisonerId, ZonedDateTime.of(2026, 1, 20, 12, 0, 0, 0, ZoneOffset.UTC))
+    val recallInActivePeriod = recall(prisonerId, ZonedDateTime.of(2026, 3, 11, 12, 0, 0, 0, ZoneOffset.UTC))
+
+    whenever(prisonService.getExternalMovements(prisonerId)).thenReturn(
+      listOf(
+        movement(prisonerId, closedAdmission, ExternalMovementDirection.IN, "remand"),
+        movement(prisonerId, closedRelease, ExternalMovementDirection.OUT, "release"),
+        movement(prisonerId, activeAdmission, ExternalMovementDirection.IN, "current remand"),
+      ),
+    )
+    whenever(historicCalculationsService.getHistoricCalculationsForPrisoner(eq(prisonerId))).thenReturn(
+      listOf(calculationInClosedPeriod, calculationInActivePeriod),
+    )
+    whenever(remandAndSentencingService.getRecallsForOffender(eq(prisonerId))).thenReturn(
+      prisonerRecallsResponse(recallInClosedPeriod, recallInActivePeriod),
+    )
+
+    val periods = offenderPeriodsOfCustodyService.offenderRemandPeriods(prisonerId)
+
+    assertThat(periods.size).isEqualTo(2)
+    assertThat(periods[0].endDate).isEqualTo(closedRelease)
+    assertThat(periods[0].calculations).containsExactly(calculationInClosedPeriod)
+    assertThat(periods[0].recalls).containsExactly(recallInClosedPeriod)
+
+    assertThat(periods[1].startDate).isEqualTo(activeAdmission)
+    assertThat(periods[1].endDate).isNull()
+    assertThat(periods[1].calculations).containsExactly(calculationInActivePeriod)
+    assertThat(periods[1].recalls).containsExactly(recallInActivePeriod)
   }
 
   private fun historicCalculation(prisonerId: String, calculationDate: LocalDateTime): HistoricCalculation = HistoricCalculation(
@@ -143,11 +192,16 @@ class OffenderPeriodsOfCustodyServiceTest {
     secondCheckDetails = emptyList(),
   )
 
-  private fun recall(prisonerId: String, createdAt: LocalDateTime): Recall = Recall(
+  private fun prisonerRecallsResponse(vararg recalls: Recall) = PrisonerRecallsResponse(
+    recalls = recalls.toList(),
+    prisonerRecallTotal = recalls.size.toLong(),
+  )
+
+  private fun recall(prisonerId: String, createdAt: ZonedDateTime): Recall = Recall(
     recallUuid = "recall-uuid-${createdAt.toLocalDate()}",
     prisonerId = prisonerId,
-    revocationDate = createdAt.toLocalDate().toString(),
-    returnToCustodyDate = createdAt.toLocalDate().toString(),
+    revocationDate = createdAt.toLocalDate(),
+    returnToCustodyDate = createdAt.toLocalDate(),
     inPrisonOnRevocationDate = false,
     recallType = "STANDARD_RECALL",
     createdAt = createdAt,

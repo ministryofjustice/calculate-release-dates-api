@@ -12,7 +12,7 @@ import java.time.LocalDate
 
 data class OffenderCustodyPeriod(
   val startDate: LocalDate,
-  val endDate: LocalDate,
+  val endDate: LocalDate?,
   val reason: String,
   val courtCases: List<Unit>,
   val recalls: List<Recall>,
@@ -36,11 +36,11 @@ class OffenderPeriodsOfCustodyService(
 
     return periods.map { period ->
       val calculations = historicCalculations.filter {
-        it.calculationDate.toLocalDate() in period.startDate..period.endDate
+        it.calculationDate.toLocalDate() in period.startDate..(period.endDate ?: LocalDate.MAX)
       }
 
-      val recalls = offenderRecalls.filter {
-        it.createdAt.toLocalDate() in period.startDate..period.endDate
+      val recalls = offenderRecalls.recalls.filter {
+        it.createdAt.toLocalDate() in period.startDate..(period.endDate ?: LocalDate.MAX)
       }
 
       OffenderCustodyPeriod(
@@ -88,6 +88,17 @@ class OffenderPeriodsOfCustodyService(
       }
     }
 
+    // if admission has no end date, it must be the current custody period
+    if (currentAdmission != null) {
+      periods.add(
+        CustodyPeriod(
+          startDate = currentAdmission.movementDate,
+          endDate = null,
+          reason = currentAdmission.movementReason,
+        ),
+      )
+    }
+
     return periods
   }
 
@@ -111,7 +122,7 @@ class OffenderPeriodsOfCustodyService(
 
   private data class CustodyPeriod(
     val startDate: LocalDate,
-    val endDate: LocalDate,
+    val endDate: LocalDate?,
     val reason: String,
   )
 }

@@ -1,20 +1,21 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.remandandsentencing
 
-import java.time.LocalDateTime
+import java.time.LocalDate
+import java.time.ZonedDateTime
 
 data class Recall(
   val recallUuid: String,
   val prisonerId: String,
-  val revocationDate: String,
-  val returnToCustodyDate: String,
-  val inPrisonOnRevocationDate: Boolean,
+  val revocationDate: LocalDate? = null,
+  val returnToCustodyDate: LocalDate? = null,
+  val inPrisonOnRevocationDate: Boolean? = null,
   val recallType: String,
-  val createdAt: LocalDateTime,
-  val createdByUsername: String,
-  val createdByPrison: String,
+  val createdAt: ZonedDateTime,
+  val createdByUsername: String? = null,
+  val createdByPrison: String? = null,
   val source: String,
-  val courtCases: List<CourtCase>,
-  val ual: UAL,
-  val calculationRequestId: Int,
+  val courtCases: List<RecallCourtCaseDetails>,
+  val ual: UAL? = null,
+  val calculationRequestId: Int? = null,
   val isManual: Boolean,
 )
