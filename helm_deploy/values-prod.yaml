@@ -17,6 +17,7 @@ generic-service:
     MANAGE-USERS_API_URL: https://manage-users-api.hmpps.service.justice.gov.uk
     ADJUSTMENTS_UI_URL: https://adjust-release-dates.hmpps.service.justice.gov.uk
     APPLY_POST_HDCED_REPEAL_RULES: "true"
+    PROGRESSION_TRANCHE_ONE_MANUAL_JOURNEY: "true"
 
   serviceAccountName: calculate-release-dates-api-prod
 
