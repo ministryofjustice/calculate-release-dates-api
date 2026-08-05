@@ -44,7 +44,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.Calculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.DetailedCalculationResultsService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.LatestCalculationService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.OffenderKeyDatesService
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.RelevantRemandService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.remand.RelevantRemandService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.transform
 
 @RestController

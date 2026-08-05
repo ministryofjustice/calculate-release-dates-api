@@ -5,7 +5,6 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.core.codec.DecodingException
 import org.springframework.stereotype.Service
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.NoValidReturnToCustodyDateException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NomisCalculationReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NomisTusedData
@@ -18,16 +17,17 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Pris
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ReturnToCustodyDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.UpdateOffenderDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.BookingAndSentenceAdjustments
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.PrisonApiCharge
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.PrisonApiExternalMovement
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.PrisonerInPrisonSummary
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.prisonapi.model.CalculablePrisoner
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.apiclients.PrisonApiClient
 import java.time.LocalDate
 
 @Service
 class PrisonService(
   private val prisonApiClient: PrisonApiClient,
   private val releaseArrangementLookupService: ReleaseArrangementLookupService,
-  private val featureToggles: FeatureToggles,
 ) {
 
   fun getExternalMovements(
@@ -36,7 +36,7 @@ class PrisonService(
   ): List<PrisonApiExternalMovement> {
     val earliestSentenceDate = sentenceAndOffences.minOfOrNull { it.sentenceDate }
     if (earliestSentenceDate != null) {
-      return prisonApiClient.getExternalMovements(prisonerId, earliestSentenceDate)
+      return prisonApiClient.getExternalAdmissionAndReleaseMovements(prisonerId, earliestSentenceDate)
     }
     return emptyList()
   }
@@ -116,6 +116,10 @@ class PrisonService(
   fun getLatestTusedDataForBotus(nomisId: String): Either<String, NomisTusedData> = prisonApiClient.getLatestTusedDataForBotus(nomisId)
 
   fun getPrisonerInPrisonSummary(prisonerId: String): PrisonerInPrisonSummary = prisonApiClient.getPrisonerInPrisonSummary(prisonerId)
+
+  fun getExternalMovements(prisonerId: String): List<PrisonApiExternalMovement> = prisonApiClient.getExternalAdmissionAndReleaseMovements(prisonerId)
+
+  fun getCourtDateResults(prisonerId: String): List<PrisonApiCharge> = prisonApiClient.getCourtDateResults(prisonerId)
 
   companion object {
     val log: Logger = LoggerFactory.getLogger(this::class.java)
