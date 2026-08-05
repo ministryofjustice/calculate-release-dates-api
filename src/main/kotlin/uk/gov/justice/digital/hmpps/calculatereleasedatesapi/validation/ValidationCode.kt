@@ -151,5 +151,6 @@ enum class ValidationCode(val message: String, val validationType: ValidationTyp
   CONSECUTIVE_TO_SENTENCE_IMPOSED_AFTER("Court case %s NOMIS line number %s cannot be consecutive to a sentence that has a later date"),
   REVOCATION_DATE_IN_THE_FUTURE("Revocation date must not be in the future"),
   HDCED_REPEAL("This person has been released on home detention curfew (HDC)", MANUAL_ENTRY_JOURNEY_REQUIRED),
-  PROGRESSION_TRANCHE_ONE_ALLOCATION("this person was in Tranche 1 of the Progression Model legislation change", MANUAL_ENTRY_JOURNEY_REQUIRED),
+  PROGRESSION_TRANCHE_ONE_ALLOCATION("This person was in Tranche 1 of the Progression Model legislation change", MANUAL_ENTRY_JOURNEY_REQUIRED),
+  PROGRESSION_MODEL_SCHEDULE_EXCLUSION("This person has one or more offences that appear on the SA2026 Excluded Offences for Progression Model schedule", MANUAL_ENTRY_JOURNEY_REQUIRED),
 }
