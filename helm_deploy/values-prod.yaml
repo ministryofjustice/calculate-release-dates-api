@@ -18,7 +18,7 @@ generic-service:
     ADJUSTMENTS_UI_URL: https://adjust-release-dates.hmpps.service.justice.gov.uk
     REMAND-AND-SENTENCING_API_URL: https://remand-and-sentencing-api.hmpps.service.justice.gov.uk
     APPLY_POST_HDCED_REPEAL_RULES: "true"
-    ROUTE_PRE_PROGRESSION_EXTINGUISHED_SENTENCE_TO_MANUAL: "true"
+    PROGRESSION_TRANCHE_ONE_MANUAL_JOURNEY: "true"
 
   serviceAccountName: calculate-release-dates-api-prod
 

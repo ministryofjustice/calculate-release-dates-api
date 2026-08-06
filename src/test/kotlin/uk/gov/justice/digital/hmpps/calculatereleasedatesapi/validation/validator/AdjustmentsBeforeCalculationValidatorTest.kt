@@ -48,6 +48,7 @@ class AdjustmentsBeforeCalculationValidatorTest {
       assertThat(result).containsExactly(
         ValidationMessage(
           ValidationCode.ADJUSTMENT_INVALID_DATE_RANGE,
+          listOf(ADJUSTMENTS_UI_URL, OFFENDER_NO),
         ),
       )
     }
@@ -209,6 +210,7 @@ class AdjustmentsBeforeCalculationValidatorTest {
       assertThat(result).containsExactly(
         ValidationMessage(
           ValidationCode.ADJUSTMENT_INVALID_DATE_RANGE,
+          listOf(ADJUSTMENTS_UI_URL, OFFENDER_NO),
         ),
       )
     }

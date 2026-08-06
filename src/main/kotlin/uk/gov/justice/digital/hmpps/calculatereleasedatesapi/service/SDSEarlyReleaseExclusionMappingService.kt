@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.SDSLegislationConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.manageoffencesapi.model.OffenceSdsExclusionIndicator
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
@@ -10,7 +11,7 @@ import java.time.LocalDate
 import java.time.Period
 
 @Service
-class SDSEarlyReleaseExclusionMappingService(private val sdsLegislationConfiguration: SDSLegislationConfiguration) {
+class SDSEarlyReleaseExclusionMappingService(private val sdsLegislationConfiguration: SDSLegislationConfiguration, private val featureToggles: FeatureToggles) {
 
   internal fun exclusionForOffence(
     exclusionsForOffence: List<OffenceSdsExclusionIndicator>,
@@ -30,6 +31,7 @@ class SDSEarlyReleaseExclusionMappingService(private val sdsLegislationConfigura
         OffenceSdsExclusionIndicator.MURDER_T3 -> SDSEarlyReleaseExclusionType.MURDER_T3
         OffenceSdsExclusionIndicator.VIOLENT -> evaluateViolentExclusion(sentenceAndOffence)
         OffenceSdsExclusionIndicator.SCHEDULE_13_PART_3 -> evaluateSchedule13Part3Exclusion(sentenceAndOffence)
+        OffenceSdsExclusionIndicator.SENTENCING_ACT_2026_PROGRESSION_MODEL -> if (featureToggles.progressionModelScheduleExclusionEnabled) SDSEarlyReleaseExclusionType.SA2026_PROGRESSION_MODEL_SCHEDULE else null
         OffenceSdsExclusionIndicator.NONE -> null
       }
     }
