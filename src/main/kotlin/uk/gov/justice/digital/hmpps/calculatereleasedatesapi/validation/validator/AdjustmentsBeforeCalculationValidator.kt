@@ -34,7 +34,7 @@ class AdjustmentsBeforeCalculationValidator(private val validationUtilities: Val
     if (invalidRemand.isNotEmpty()) {
       addAll(
         invalidRemand.map {
-          ValidationMessage(ValidationCode.ADJUSTMENT_INVALID_DATE_RANGE)
+          ValidationMessage(ValidationCode.ADJUSTMENT_INVALID_DATE_RANGE, listOf(adjustmentsUiUrl, sourceData.prisonerDetails.offenderNo))
         },
       )
     }
@@ -53,7 +53,7 @@ class AdjustmentsBeforeCalculationValidator(private val validationUtilities: Val
     if (invalidRemand.isNotEmpty()) {
       addAll(
         invalidRemand.map {
-          ValidationMessage(ValidationCode.ADJUSTMENT_INVALID_DATE_RANGE)
+          ValidationMessage(ValidationCode.ADJUSTMENT_INVALID_DATE_RANGE, listOf(adjustmentsUiUrl, sourceData.prisonerDetails.offenderNo))
         },
       )
     }
