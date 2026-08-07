@@ -26,7 +26,6 @@ generic-service:
     ADULT_HDC_SUSPENDED: "true"
     PROGRESSION_TRANCHE_ONE_MANUAL_JOURNEY: "false"
     PROGRESSION_MODEL_SCHEDULE_EXCLUSION_ENABLED: "true"
-    ROUTE_PROGRESSION_MODEL_SCHEDULE_EXCLUSION_TO_MANUAL: "true"
 
   serviceAccountName: calculate-release-dates-api-preprod
 
