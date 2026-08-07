@@ -51,6 +51,7 @@ class OperativeSentenceEnvelopeService(
         earliestSentenceStartDate = earliestSentenceDate,
         isPostRecallSentenceEnvelope = null,
         containsAnSDSPlusSentence = null,
+        containsOffenceExcludedFromProgressionModel = null,
         sentenceEnvelopeSource = OperativeSentenceEnvelopeSource.NOMIS,
       ).right()
     }
