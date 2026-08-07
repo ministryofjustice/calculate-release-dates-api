@@ -10,7 +10,9 @@
         "HDCED": "2024-03-03"
       },
       "groupIndex": 0,
-      "releaseMultiplier": "ONE_HALF"
+      "releaseMultiplier": "ONE_HALF",
+      "awardedDuringCustody": 0,
+      "awardedAfterDeterminateRelease": 0
     },
     {
       "identifier": "644ecbf5-56ac-33e0-9905-591708da91da",
@@ -21,7 +23,9 @@
         "HDCED": "2025-03-01"
       },
       "groupIndex": 1,
-      "releaseMultiplier": "FORTY_PERCENT"
+      "releaseMultiplier": "FORTY_PERCENT",
+      "awardedDuringCustody": 0,
+      "awardedAfterDeterminateRelease": 0
     }
   ]
 }
