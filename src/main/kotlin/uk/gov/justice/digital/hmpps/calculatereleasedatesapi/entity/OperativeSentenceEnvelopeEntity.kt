@@ -29,6 +29,8 @@ data class OperativeSentenceEnvelopeEntity(
   val isPostRecall: Boolean,
 
   val containsSdsPlusSentence: Boolean,
+
+  val containsOffenceExcludedFromProgressionModel: Boolean?,
 ) {
   fun toOperativeSentenceEnvelope(bookingId: Long) = OperativeSentenceEnvelope(
     bookingId = bookingId,
@@ -36,6 +38,7 @@ data class OperativeSentenceEnvelopeEntity(
     earliestSentenceStartDate = earliestSentenceDate,
     isPostRecallSentenceEnvelope = isPostRecall,
     containsAnSDSPlusSentence = containsSdsPlusSentence,
+    containsOffenceExcludedFromProgressionModel = containsOffenceExcludedFromProgressionModel,
     sentenceEnvelopeSource = OperativeSentenceEnvelopeSource.CRDS,
   )
 }

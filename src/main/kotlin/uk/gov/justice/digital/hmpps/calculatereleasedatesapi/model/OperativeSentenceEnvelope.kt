@@ -15,6 +15,8 @@ data class OperativeSentenceEnvelope(
   val isPostRecallSentenceEnvelope: Boolean?,
   @param:Schema(description = "Whether the sentence envelope contains an SDS plus sentence or not. Null indicates this is unknown.", examples = ["true", "false", "null"])
   val containsAnSDSPlusSentence: Boolean?,
+  @param:Schema(description = "Whether the sentence envelope contains an offence appearing on the SA2026 Excluded Offences for Progression Model schedule .", examples = ["true", "false", "null"])
+  val containsOffenceExcludedFromProgressionModel: Boolean?,
   @param:Schema(description = "The source of the data used to determine the operative sentence envelope", example = "CRDS")
   val sentenceEnvelopeSource: OperativeSentenceEnvelopeSource,
 )

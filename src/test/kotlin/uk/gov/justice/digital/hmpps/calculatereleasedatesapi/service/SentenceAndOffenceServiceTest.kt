@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.ArgumentMatchers.anyLong
 import org.mockito.ArgumentMatchers.anyString
@@ -11,6 +12,7 @@ import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.whenever
+import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AnalysedSentenceAndOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSDescriptions
@@ -19,6 +21,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSReleaseArr
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceAnalysis
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
@@ -64,8 +67,8 @@ class SentenceAndOffenceServiceTest {
       sentenceCalculationType = SentenceCalculationType.ADIMP.name,
       sentenceTypeDescription = "Standard Determinate",
       offence = offences[0],
-      lineSequence = lineSequence,
-      caseSequence = caseSequence,
+      lineSequence = LINE_SEQUENCE,
+      caseSequence = CASE_SEQUENCE,
       caseReference = null,
       fineAmount = null,
       courtDescription = null,
@@ -139,15 +142,277 @@ class SentenceAndOffenceServiceTest {
     assertThat(response[3].sentenceAndOffenceAnalysis).isEqualTo(SentenceAndOffenceAnalysis.NEW)
   }
 
+  @Test
+  fun `if progression model exclusion can't find prisoner then propagate exception`() {
+    whenever(prisonService.getOffenderDetail(PRISONER_ID)).thenThrow(WebClientResponseException(404, "Not found", null, null, null))
+
+    assertThrows<WebClientResponseException> {
+      underTest.hasOffencesExcludedFromProgressionModelNotIncludingSchedule13Part3(PRISONER_ID)
+    }
+  }
+
+  @Test
+  fun `if progression model exclusion returns no sentences then return no exclusion`() {
+    whenever(prisonService.getOffenderDetail(PRISONER_ID)).thenReturn(PRISONER_DETAILS)
+    whenever(prisonService.getSentencesAndOffences(BOOKING_ID)).thenReturn(emptyList())
+
+    val response = underTest.hasOffencesExcludedFromProgressionModelNotIncludingSchedule13Part3(PRISONER_ID)
+
+    assertThat(response).isFalse
+  }
+
+  @Test
+  fun `if progression model exclusion returns no SDS sentences then return no exclusion`() {
+    whenever(prisonService.getOffenderDetail(PRISONER_ID)).thenReturn(PRISONER_DETAILS)
+    whenever(prisonService.getSentencesAndOffences(BOOKING_ID)).thenReturn(
+      listOf(
+        SentenceAndOffenceWithReleaseArrangements(
+          bookingId = BOOKING_ID,
+          sentenceSequence = 1,
+          lineSequence = 1,
+          caseSequence = 1,
+          consecutiveToSequence = null,
+          sentenceStatus = "A",
+          sentenceCategory = "SEN",
+          sentenceCalculationType = SentenceCalculationType.EDS21.name,
+          sentenceTypeDescription = SentenceCalculationType.EDS21.name,
+          sentenceDate = LocalDate.of(2000, 1, 1),
+          terms = emptyList(),
+          offence = OffenderOffence(
+            offenderChargeId = 1,
+            offenceStartDate = LocalDate.of(2000, 1, 1),
+            offenceCode = "ABC123",
+            offenceDescription = "Test",
+          ),
+          caseReference = null,
+          courtId = null,
+          courtDescription = null,
+          courtTypeCode = null,
+          fineAmount = null,
+          revocationDates = emptyList(),
+          sdsReleaseArrangements = null,
+        ),
+      ),
+    )
+
+    val response = underTest.hasOffencesExcludedFromProgressionModelNotIncludingSchedule13Part3(PRISONER_ID)
+
+    assertThat(response).isFalse
+  }
+
+  @Test
+  fun `if progression model exclusion returns SDS sentences with no exclusions then return no exclusion`() {
+    whenever(prisonService.getOffenderDetail(PRISONER_ID)).thenReturn(PRISONER_DETAILS)
+    whenever(prisonService.getSentencesAndOffences(BOOKING_ID)).thenReturn(
+      listOf(
+        SentenceAndOffenceWithReleaseArrangements(
+          bookingId = BOOKING_ID,
+          sentenceSequence = 1,
+          lineSequence = 1,
+          caseSequence = 1,
+          consecutiveToSequence = null,
+          sentenceStatus = "A",
+          sentenceCategory = "SEN",
+          sentenceCalculationType = SentenceCalculationType.ADIMP_ORA.name,
+          sentenceTypeDescription = SentenceCalculationType.ADIMP_ORA.name,
+          sentenceDate = LocalDate.of(2000, 1, 1),
+          terms = emptyList(),
+          offence = OffenderOffence(
+            offenderChargeId = 1,
+            offenceStartDate = LocalDate.of(2000, 1, 1),
+            offenceCode = "ABC123",
+            offenceDescription = "Test",
+          ),
+          caseReference = null,
+          courtId = null,
+          courtDescription = null,
+          courtTypeCode = null,
+          fineAmount = null,
+          revocationDates = emptyList(),
+          sdsReleaseArrangements = SDSReleaseArrangements(
+            isSDSPlus = false,
+            isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+            sdsEarlyReleaseExclusions = emptyList(),
+            isSection250 = false,
+          ),
+        ),
+      ),
+    )
+
+    val response = underTest.hasOffencesExcludedFromProgressionModelNotIncludingSchedule13Part3(PRISONER_ID)
+
+    assertThat(response).isFalse
+  }
+
+  @Test
+  fun `if progression model exclusion contains any SDS sentences with an exclusions then return an exclusion`() {
+    whenever(prisonService.getOffenderDetail(PRISONER_ID)).thenReturn(PRISONER_DETAILS)
+    whenever(prisonService.getSentencesAndOffences(BOOKING_ID)).thenReturn(
+      listOf(
+        SentenceAndOffenceWithReleaseArrangements(
+          bookingId = BOOKING_ID,
+          sentenceSequence = 1,
+          lineSequence = 1,
+          caseSequence = 1,
+          consecutiveToSequence = null,
+          sentenceStatus = "A",
+          sentenceCategory = "SEN",
+          sentenceCalculationType = SentenceCalculationType.ADIMP_ORA.name,
+          sentenceTypeDescription = SentenceCalculationType.ADIMP_ORA.name,
+          sentenceDate = LocalDate.of(2000, 1, 1),
+          terms = emptyList(),
+          offence = OffenderOffence(
+            offenderChargeId = 1,
+            offenceStartDate = LocalDate.of(2000, 1, 1),
+            offenceCode = "ABC123",
+            offenceDescription = "Test",
+          ),
+          caseReference = null,
+          courtId = null,
+          courtDescription = null,
+          courtTypeCode = null,
+          fineAmount = null,
+          revocationDates = emptyList(),
+          sdsReleaseArrangements = SDSReleaseArrangements(
+            isSDSPlus = false,
+            isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+            sdsEarlyReleaseExclusions = emptyList(),
+            isSection250 = false,
+          ),
+        ),
+        SentenceAndOffenceWithReleaseArrangements(
+          bookingId = BOOKING_ID,
+          sentenceSequence = 2,
+          lineSequence = 2,
+          caseSequence = 1,
+          consecutiveToSequence = null,
+          sentenceStatus = "A",
+          sentenceCategory = "SEN",
+          sentenceCalculationType = SentenceCalculationType.ADIMP_ORA.name,
+          sentenceTypeDescription = SentenceCalculationType.ADIMP_ORA.name,
+          sentenceDate = LocalDate.of(2000, 1, 1),
+          terms = emptyList(),
+          offence = OffenderOffence(
+            offenderChargeId = 1,
+            offenceStartDate = LocalDate.of(2000, 1, 1),
+            offenceCode = "ABC123",
+            offenceDescription = "Test",
+          ),
+          caseReference = null,
+          courtId = null,
+          courtDescription = null,
+          courtTypeCode = null,
+          fineAmount = null,
+          revocationDates = emptyList(),
+          sdsReleaseArrangements = SDSReleaseArrangements(
+            isSDSPlus = false,
+            isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+            sdsEarlyReleaseExclusions = listOf(SDSEarlyReleaseExclusionType.SA2026_PROGRESSION_MODEL_SCHEDULE),
+            isSection250 = false,
+          ),
+        ),
+      ),
+    )
+
+    val response = underTest.hasOffencesExcludedFromProgressionModelNotIncludingSchedule13Part3(PRISONER_ID)
+
+    assertThat(response).isTrue
+  }
+
+  @Test
+  fun `if progression model exclusion contains an SDS sentences with an different exclusion then return no exclusion`() {
+    whenever(prisonService.getOffenderDetail(PRISONER_ID)).thenReturn(PRISONER_DETAILS)
+    whenever(prisonService.getSentencesAndOffences(BOOKING_ID)).thenReturn(
+      listOf(
+        SentenceAndOffenceWithReleaseArrangements(
+          bookingId = BOOKING_ID,
+          sentenceSequence = 1,
+          lineSequence = 1,
+          caseSequence = 1,
+          consecutiveToSequence = null,
+          sentenceStatus = "A",
+          sentenceCategory = "SEN",
+          sentenceCalculationType = SentenceCalculationType.ADIMP_ORA.name,
+          sentenceTypeDescription = SentenceCalculationType.ADIMP_ORA.name,
+          sentenceDate = LocalDate.of(2000, 1, 1),
+          terms = emptyList(),
+          offence = OffenderOffence(
+            offenderChargeId = 1,
+            offenceStartDate = LocalDate.of(2000, 1, 1),
+            offenceCode = "ABC123",
+            offenceDescription = "Test",
+          ),
+          caseReference = null,
+          courtId = null,
+          courtDescription = null,
+          courtTypeCode = null,
+          fineAmount = null,
+          revocationDates = emptyList(),
+          sdsReleaseArrangements = SDSReleaseArrangements(
+            isSDSPlus = false,
+            isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+            sdsEarlyReleaseExclusions = emptyList(),
+            isSection250 = false,
+          ),
+        ),
+        SentenceAndOffenceWithReleaseArrangements(
+          bookingId = BOOKING_ID,
+          sentenceSequence = 2,
+          lineSequence = 2,
+          caseSequence = 1,
+          consecutiveToSequence = null,
+          sentenceStatus = "A",
+          sentenceCategory = "SEN",
+          sentenceCalculationType = SentenceCalculationType.ADIMP_ORA.name,
+          sentenceTypeDescription = SentenceCalculationType.ADIMP_ORA.name,
+          sentenceDate = LocalDate.of(2000, 1, 1),
+          terms = emptyList(),
+          offence = OffenderOffence(
+            offenderChargeId = 1,
+            offenceStartDate = LocalDate.of(2000, 1, 1),
+            offenceCode = "ABC123",
+            offenceDescription = "Test",
+          ),
+          caseReference = null,
+          courtId = null,
+          courtDescription = null,
+          courtTypeCode = null,
+          fineAmount = null,
+          revocationDates = emptyList(),
+          sdsReleaseArrangements = SDSReleaseArrangements(
+            isSDSPlus = false,
+            isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+            sdsEarlyReleaseExclusions = listOf(SDSEarlyReleaseExclusionType.PROGRESSION_MODEL_SCHEDULE_13_PART_3),
+            isSection250 = false,
+          ),
+        ),
+      ),
+    )
+
+    val response = underTest.hasOffencesExcludedFromProgressionModelNotIncludingSchedule13Part3(PRISONER_ID)
+
+    assertThat(response).isFalse
+  }
+
   companion object {
+    private const val PRISONER_ID = "A1234BC"
+    private const val BOOKING_ID = 1110022L
+    private val PRISONER_DETAILS = PrisonerDetails(
+      bookingId = BOOKING_ID,
+      offenderNo = PRISONER_ID,
+      dateOfBirth = LocalDate.of(1982, 6, 15),
+      firstName = "John",
+      lastName = "Smith",
+    )
+
     private val FIRST_JAN_2015: LocalDate = LocalDate.of(2015, 1, 1)
     private val SECOND_JAN_2015: LocalDate = LocalDate.of(2015, 1, 2)
-    private val bookingId = 1110022L
-    private val lineSequence = 154
-    private val caseSequence = 155
-    val offences = listOf(
+
+    private const val LINE_SEQUENCE = 154
+    private const val CASE_SEQUENCE = 155
+    private val offences = listOf(
       OffenderOffence(
-        offenderChargeId = bookingId,
+        offenderChargeId = BOOKING_ID,
         offenceStartDate = FIRST_JAN_2015,
         offenceCode = "RR1",
         offenceDescription = "Littering",
@@ -159,9 +424,9 @@ class SentenceAndOffenceServiceTest {
         offenceDescription = "Jaywalking",
       ),
     )
-    val changedOffences = listOf(
+    private val changedOffences = listOf(
       OffenderOffence(
-        offenderChargeId = bookingId,
+        offenderChargeId = BOOKING_ID,
         offenceStartDate = FIRST_JAN_2015,
         offenceCode = "RR1",
         offenceDescription = "Littering",
@@ -173,9 +438,9 @@ class SentenceAndOffenceServiceTest {
         offenceDescription = "Jaywalking",
       ),
     )
-    val newOffences = listOf(
+    private val newOffences = listOf(
       OffenderOffence(
-        offenderChargeId = bookingId,
+        offenderChargeId = BOOKING_ID,
         offenceStartDate = FIRST_JAN_2015,
         offenceCode = "RR4",
         offenceDescription = "Littering",
@@ -187,7 +452,7 @@ class SentenceAndOffenceServiceTest {
         offenceDescription = "Jaywalking",
       ),
     )
-    val sentenceAndOffences = offences.map {
+    private val sentenceAndOffences = offences.map {
       SentenceAndOffenceWithReleaseArrangements(
         bookingId = 1,
         sentenceSequence = 1,
@@ -205,8 +470,8 @@ class SentenceAndOffenceServiceTest {
         sentenceCalculationType = SentenceCalculationType.ADIMP.name,
         sentenceTypeDescription = "Standard Determinate",
         offence = it,
-        lineSequence = lineSequence,
-        caseSequence = caseSequence,
+        lineSequence = LINE_SEQUENCE,
+        caseSequence = CASE_SEQUENCE,
         caseReference = null,
         fineAmount = null,
         courtId = null,
@@ -222,7 +487,7 @@ class SentenceAndOffenceServiceTest {
         revocationDates = listOf(LocalDate.of(2024, 1, 1)),
       )
     }
-    val changedSentenceAndOffences = changedOffences.map {
+    private val changedSentenceAndOffences = changedOffences.map {
       SentenceAndOffenceWithReleaseArrangements(
         bookingId = 1,
         sentenceSequence = 1,
@@ -240,8 +505,8 @@ class SentenceAndOffenceServiceTest {
         sentenceCalculationType = SentenceCalculationType.ADIMP.name,
         sentenceTypeDescription = "Standard Determinate",
         offence = it,
-        lineSequence = lineSequence,
-        caseSequence = caseSequence,
+        lineSequence = LINE_SEQUENCE,
+        caseSequence = CASE_SEQUENCE,
         caseReference = null,
         fineAmount = null,
         courtId = null,
@@ -277,8 +542,8 @@ class SentenceAndOffenceServiceTest {
       sentenceCalculationType = SentenceCalculationType.ADIMP.name,
       sentenceTypeDescription = "Standard Determinate",
       offence = it,
-      lineSequence = lineSequence,
-      caseSequence = caseSequence,
+      lineSequence = LINE_SEQUENCE,
+      caseSequence = CASE_SEQUENCE,
       caseReference = null,
       fineAmount = null,
       courtId = null,

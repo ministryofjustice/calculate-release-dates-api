@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.sentence
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AnalysedSentenceAndOffence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceAnalysis
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
@@ -51,5 +52,11 @@ class SentenceAndOffenceService(
         }
       }
     }
+  }
+
+  fun hasOffencesExcludedFromProgressionModelNotIncludingSchedule13Part3(prisonerId: String): Boolean {
+    val prisonerDetails = prisonService.getOffenderDetail(prisonerId)
+    val sentencesAndOffences = prisonService.getSentencesAndOffences(prisonerDetails.bookingId)
+    return sentencesAndOffences.any { it.sdsReleaseArrangements != null && SDSEarlyReleaseExclusionType.SA2026_PROGRESSION_MODEL_SCHEDULE in it.sdsReleaseArrangements.sdsEarlyReleaseExclusions }
   }
 }
