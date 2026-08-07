@@ -117,7 +117,10 @@ class SentenceLevelDatesServiceTest {
         sentence,
         CalculationTrigger(LocalDate.now()),
       ),
-      SentenceAdjustments(),
+      SentenceAdjustments(
+        awardedDuringCustody = 28,
+        awardedAfterDeterminateRelease = 46,
+      ),
       false,
     )
     assertThat(sentence.isIdentificationTrackInitialized()).isTrue
@@ -143,7 +146,17 @@ class SentenceLevelDatesServiceTest {
         ),
       ),
     )
-    assertThat(extracted).containsExactly(SentenceLevelDates(sentence = sentence, groupIndex = 0, impactsFinalReleaseDate = false, releaseMultiplier = ReleaseMultiplier.ONE_HALF, dates = mapOf(SLED to LocalDate.of(2020, 1, 1))))
+    assertThat(extracted).containsExactly(
+      SentenceLevelDates(
+        sentence = sentence,
+        groupIndex = 0,
+        impactsFinalReleaseDate = false,
+        releaseMultiplier = ReleaseMultiplier.ONE_HALF,
+        awardedDuringCustody = 28,
+        awardedAfterDeterminateRelease = 46,
+        dates = mapOf(SLED to LocalDate.of(2020, 1, 1)),
+      ),
+    )
   }
 
   companion object {

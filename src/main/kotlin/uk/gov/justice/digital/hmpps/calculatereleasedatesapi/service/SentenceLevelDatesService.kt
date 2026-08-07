@@ -33,6 +33,8 @@ class SentenceLevelDatesService(
             groupIndex = index,
             impactsFinalReleaseDate = sentencePart.identifier in finalReleaseDateUUIDs,
             releaseMultiplier = sentence.sentenceCalculation.unadjustedReleaseDate.multiplierForSentence(sentencePart),
+            awardedDuringCustody = sentence.sentenceCalculation.adjustments.awardedDuringCustody,
+            awardedAfterDeterminateRelease = sentence.sentenceCalculation.adjustments.awardedAfterDeterminateRelease,
             dates = dates,
           )
         }
@@ -51,6 +53,8 @@ class SentenceLevelDatesService(
             inputSentenceData = objectToJson(sourceSentence, objectMapper),
             impactsFinalReleaseDate = sentenceLevelDates.impactsFinalReleaseDate,
             releaseMultiplier = sentenceLevelDates.releaseMultiplier,
+            awardedDuringCustody = sentenceLevelDates.awardedDuringCustody,
+            awardedAfterDeterminateRelease = sentenceLevelDates.awardedAfterDeterminateRelease,
             groupIndex = sentenceLevelDates.groupIndex,
           ),
         )

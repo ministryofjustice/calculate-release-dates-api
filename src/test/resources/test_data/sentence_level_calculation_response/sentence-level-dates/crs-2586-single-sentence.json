@@ -9,7 +9,9 @@
         "HDCED": "2025-03-01"
       },
       "groupIndex": 0,
-      "releaseMultiplier": "FORTY_PERCENT"
+      "releaseMultiplier": "FORTY_PERCENT",
+      "awardedDuringCustody": 0,
+      "awardedAfterDeterminateRelease": 0
     }
   ]
 }

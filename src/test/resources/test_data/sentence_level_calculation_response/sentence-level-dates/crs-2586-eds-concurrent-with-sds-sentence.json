@@ -9,7 +9,9 @@
         "PED": "2039-10-25"
       },
       "groupIndex": 0,
-      "releaseMultiplier": "FULL"
+      "releaseMultiplier": "FULL",
+      "awardedDuringCustody": 0,
+      "awardedAfterDeterminateRelease": 0
     },
     {
       "identifier": "28678f86-86ae-3ba2-ba07-aae1ee0b44ef",
@@ -20,7 +22,9 @@
         "PED": "2039-10-25"
       },
       "groupIndex": 0,
-      "releaseMultiplier": "FORTY_PERCENT"
+      "releaseMultiplier": "FORTY_PERCENT",
+      "awardedDuringCustody": 0,
+      "awardedAfterDeterminateRelease": 0
     }
   ]
 }
