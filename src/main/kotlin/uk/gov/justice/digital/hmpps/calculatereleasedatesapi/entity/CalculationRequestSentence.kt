@@ -31,5 +31,9 @@ data class CalculationRequestSentence(
   @Enumerated(EnumType.STRING)
   val releaseMultiplier: ReleaseMultiplier,
 
+  val awardedDuringCustody: Long?,
+
+  val awardedAfterDeterminateRelease: Long?,
+
   val groupIndex: Int,
 )

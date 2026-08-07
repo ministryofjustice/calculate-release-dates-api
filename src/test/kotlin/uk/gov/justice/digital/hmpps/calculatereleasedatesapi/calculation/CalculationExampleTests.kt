@@ -145,6 +145,8 @@ abstract class CalculationExampleTests : SpringTestBase() {
         dates = it.dates,
         groupIndex = it.groupIndex,
         releaseMultiplier = it.releaseMultiplier,
+        awardedDuringCustody = it.awardedDuringCustody,
+        awardedAfterDeterminateRelease = it.awardedAfterDeterminateRelease,
       )
     }
     assertThat(actual).containsExactlyInAnyOrderElementsOf(expected.sentenceLevelDates)
