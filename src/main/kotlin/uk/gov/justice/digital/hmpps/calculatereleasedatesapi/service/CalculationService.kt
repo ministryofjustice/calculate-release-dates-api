@@ -12,6 +12,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OperativeSent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OperativeSentenceEnvelopeSource
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.PreviouslyRecordedSLED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.sentence.SentenceIdentificationService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.BookingTimelineService
@@ -57,12 +58,14 @@ class CalculationService(
       val earliestSentenceDate = calculatedReleaseDates.sentences.minOfOrNull { it.sentencedAt }
       val sledOrSed = calculatedReleaseDates.calculationResult.dates[ReleaseDateType.SLED] ?: calculatedReleaseDates.calculationResult.dates[ReleaseDateType.SED]
       if (earliestSentenceDate != null && sledOrSed != null) {
+        val allSentenceParts = calculatedReleaseDates.sentences.flatMap { it.sentenceParts() }
         calculatedReleaseDates = calculatedReleaseDates.copy(
           operativeSentenceEnvelope = OperativeSentenceEnvelope(
             sentenceEnvelopeLengthInDays = ChronoUnit.DAYS.between(earliestSentenceDate, sledOrSed) + 1, // start and end date should be inclusive
             earliestSentenceStartDate = earliestSentenceDate,
-            isPostRecallSentenceEnvelope = calculatedReleaseDates.sentences.any { it.isRecall() },
-            containsAnSDSPlusSentence = calculatedReleaseDates.sentences.any { it is StandardDeterminateSentence && it.releaseArrangements.isSDSPlus },
+            isPostRecallSentenceEnvelope = allSentenceParts.any { it.isRecall() },
+            containsAnSDSPlusSentence = allSentenceParts.any { it is StandardDeterminateSentence && it.releaseArrangements.isSDSPlus },
+            containsOffenceExcludedFromProgressionModel = if (featureToggles.progressionModelScheduleExclusionEnabled) allSentenceParts.any { it is StandardDeterminateSentence && SDSEarlyReleaseExclusionType.SA2026_PROGRESSION_MODEL_SCHEDULE in it.releaseArrangements.sdsEarlyReleaseExclusions } else null,
             sentenceEnvelopeSource = OperativeSentenceEnvelopeSource.CRDS,
             bookingId = booking.bookingId,
           ),

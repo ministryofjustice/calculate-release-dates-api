@@ -266,6 +266,7 @@ class CalculationTransactionalService(
           earliestSentenceDate = operativeSentenceEnvelope.earliestSentenceStartDate,
           isPostRecall = requireNotNull(operativeSentenceEnvelope.isPostRecallSentenceEnvelope) { "should not be null if persisting from CRDS calc" },
           containsSdsPlusSentence = requireNotNull(operativeSentenceEnvelope.containsAnSDSPlusSentence) { "should not be null if persisting from CRDS calc" },
+          containsOffenceExcludedFromProgressionModel = if (featureToggles.progressionModelScheduleExclusionEnabled) requireNotNull(operativeSentenceEnvelope.containsOffenceExcludedFromProgressionModel) { "should not be null if persisting from CRDS calc" } else null,
         ),
       )
     }

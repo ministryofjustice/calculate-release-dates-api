@@ -3,6 +3,8 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.CsvSource
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
@@ -34,6 +36,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.PreviouslyRec
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Recall
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.sentence.SentenceIdentificationService
@@ -53,7 +56,7 @@ class CalculationServiceTest {
   private val bookingTimelineService = mock<BookingTimelineService>(lenient = false)
   private val previouslyRecordedSLEDService = mock<PreviouslyRecordedSLEDService>()
   private val sentenceLevelDatesService = mock<SentenceLevelDatesService>()
-  private val featureToggles = FeatureToggles(storeSentenceLevelDates = true, storeOperativeSentenceEnvelope = true)
+  private val featureToggles = FeatureToggles(storeSentenceLevelDates = true, storeOperativeSentenceEnvelope = true, progressionModelScheduleExclusionEnabled = true)
 
   private val service = CalculationService(sentenceIdentificationService, bookingTimelineService, featureToggles, previouslyRecordedSLEDService, sentenceLevelDatesService)
 
@@ -71,6 +74,7 @@ class CalculationServiceTest {
           earliestSentenceStartDate = LocalDate.of(2021, 2, 3),
           isPostRecallSentenceEnvelope = false,
           containsAnSDSPlusSentence = false,
+          containsOffenceExcludedFromProgressionModel = false,
           sentenceEnvelopeSource = OperativeSentenceEnvelopeSource.CRDS,
           bookingId = BOOKING_ID,
         ),
@@ -125,6 +129,7 @@ class CalculationServiceTest {
           earliestSentenceStartDate = LocalDate.of(2021, 2, 3),
           isPostRecallSentenceEnvelope = false,
           containsAnSDSPlusSentence = false,
+          containsOffenceExcludedFromProgressionModel = false,
           sentenceEnvelopeSource = OperativeSentenceEnvelopeSource.CRDS,
           bookingId = BOOKING_ID,
         ),
@@ -173,6 +178,7 @@ class CalculationServiceTest {
           earliestSentenceStartDate = LocalDate.of(2021, 2, 3),
           isPostRecallSentenceEnvelope = false,
           containsAnSDSPlusSentence = false,
+          containsOffenceExcludedFromProgressionModel = false,
           sentenceEnvelopeSource = OperativeSentenceEnvelopeSource.CRDS,
           bookingId = BOOKING_ID,
         ),
@@ -197,6 +203,7 @@ class CalculationServiceTest {
           earliestSentenceStartDate = LocalDate.of(2021, 2, 3),
           isPostRecallSentenceEnvelope = false,
           containsAnSDSPlusSentence = false,
+          containsOffenceExcludedFromProgressionModel = false,
           sentenceEnvelopeSource = OperativeSentenceEnvelopeSource.CRDS,
           bookingId = BOOKING_ID,
         ),
@@ -233,6 +240,7 @@ class CalculationServiceTest {
           earliestSentenceStartDate = LocalDate.of(2021, 2, 3),
           isPostRecallSentenceEnvelope = false,
           containsAnSDSPlusSentence = true,
+          containsOffenceExcludedFromProgressionModel = false,
           sentenceEnvelopeSource = OperativeSentenceEnvelopeSource.CRDS,
           bookingId = BOOKING_ID,
         ),
@@ -256,6 +264,47 @@ class CalculationServiceTest {
           earliestSentenceStartDate = LocalDate.of(2021, 2, 3),
           isPostRecallSentenceEnvelope = true,
           containsAnSDSPlusSentence = false,
+          containsOffenceExcludedFromProgressionModel = false,
+          sentenceEnvelopeSource = OperativeSentenceEnvelopeSource.CRDS,
+          bookingId = BOOKING_ID,
+        ),
+      ),
+    )
+  }
+
+  @ParameterizedTest
+  @CsvSource(
+    "true,true",
+    "false,",
+  )
+  fun `should mark operative sentence envelope with progression model exclusion if there was an excluded sentence and the feature toggle is on`(featureToggle: Boolean, expected: Boolean?) {
+    featureToggles.progressionModelScheduleExclusionEnabled = featureToggle
+    val calculationOutputWithSdsPlus = CALCULATION_OUTPUT.copy(
+      sentences = listOf(
+        SDS_SENTENCE.copy(
+          releaseArrangements = SDSReleaseArrangements(
+            isSDSPlus = false,
+            isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+            isSection250 = false,
+            sdsEarlyReleaseExclusions = listOf(SDSEarlyReleaseExclusionType.SA2026_PROGRESSION_MODEL_SCHEDULE),
+          ),
+        ),
+      ),
+    )
+    whenever(bookingTimelineService.calculate(anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull()))
+      .thenReturn(calculationOutputWithSdsPlus)
+    whenever(previouslyRecordedSLEDService.findPreviouslyRecordedSLEDThatShouldOverrideTheCalculatedSLED(any(), any())).thenReturn(null)
+
+    val result = service.calculateReleaseDates(BOOKING, CalculationUserInputs(usePreviouslyRecordedSLEDIfFound = true), calculateSentenceLevelDates = false)
+
+    assertThat(result).isEqualTo(
+      calculationOutputWithSdsPlus.copy(
+        operativeSentenceEnvelope = OperativeSentenceEnvelope(
+          sentenceEnvelopeLengthInDays = 1826,
+          earliestSentenceStartDate = LocalDate.of(2021, 2, 3),
+          isPostRecallSentenceEnvelope = false,
+          containsAnSDSPlusSentence = false,
+          containsOffenceExcludedFromProgressionModel = expected,
           sentenceEnvelopeSource = OperativeSentenceEnvelopeSource.CRDS,
           bookingId = BOOKING_ID,
         ),
@@ -307,6 +356,7 @@ class CalculationServiceTest {
           earliestSentenceStartDate = LocalDate.of(2021, 2, 3),
           isPostRecallSentenceEnvelope = false,
           containsAnSDSPlusSentence = false,
+          containsOffenceExcludedFromProgressionModel = false,
           sentenceEnvelopeSource = OperativeSentenceEnvelopeSource.CRDS,
           bookingId = BOOKING_ID,
         ),

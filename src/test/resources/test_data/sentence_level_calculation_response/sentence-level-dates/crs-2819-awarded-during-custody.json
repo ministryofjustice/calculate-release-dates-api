@@ -4,13 +4,12 @@
       "identifier": "c1de11aa-e45f-3f76-ac92-83a08b759c72",
       "impactsFinalReleaseDate": true,
       "dates": {
-        "SLED": "2028-01-20",
-        "CRD": "2025-08-27",
-        "HDCED": "2025-03-01"
+        "SLED": "2020-12-31",
+        "CRD": "2020-07-11"
       },
       "groupIndex": 0,
-      "releaseMultiplier": "FORTY_PERCENT",
-      "awardedDuringCustody": 0,
+      "releaseMultiplier": "ONE_HALF",
+      "awardedDuringCustody": 10,
       "awardedAfterDeterminateRelease": 0
     }
   ]
