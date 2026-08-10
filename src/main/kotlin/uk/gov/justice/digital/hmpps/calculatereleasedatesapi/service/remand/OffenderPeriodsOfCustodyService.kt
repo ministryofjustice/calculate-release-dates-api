@@ -1,6 +1,8 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.remand
 
 import org.springframework.stereotype.Service
+import reactor.core.publisher.Mono
+import reactor.core.scheduler.Schedulers
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExternalMovementDirection
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.HistoricCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.PrisonApiExternalMovement
@@ -31,8 +33,15 @@ class OffenderPeriodsOfCustodyService(
     val periods = buildCustodyPeriods(externalMovements)
     if (periods.isEmpty()) return emptyList()
 
-    val historicCalculations = historicCalculationsService.getHistoricCalculationsForPrisoner(prisonerId)
-    val offenderRecalls = remandAndSentencingService.getRecallsForOffender(prisonerId)
+    val asyncRequest = Mono.zip(
+      Mono
+        .fromCallable { historicCalculationsService.getHistoricCalculationsForPrisoner(prisonerId) }
+        .subscribeOn(Schedulers.boundedElastic()),
+      remandAndSentencingService.getRecallsForOffender(prisonerId))
+      .block()!!
+
+    val historicCalculations = asyncRequest.t1
+    val offenderRecalls = asyncRequest.t2
 
     return periods.map { period ->
       val calculations = historicCalculations.filter {
