@@ -6,6 +6,7 @@ import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import reactor.core.publisher.Mono
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationSource
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExternalMovementDirection
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.HistoricCalculation
@@ -45,7 +46,7 @@ class OffenderPeriodsOfCustodyServiceTest {
       ),
     )
     whenever(historicCalculationsService.getHistoricCalculationsForPrisoner(eq(prisonerId))).thenReturn(emptyList())
-    whenever(remandAndSentencingService.getRecallsForOffender(eq(prisonerId))).thenReturn(prisonerRecallsResponse())
+    whenever(remandAndSentencingService.getRecallsForOffender(eq(prisonerId))).thenReturn(Mono.just(prisonerRecallsResponse()))
 
     val periods = offenderPeriodsOfCustodyService.offenderRemandPeriods(prisonerId)
 
@@ -84,7 +85,7 @@ class OffenderPeriodsOfCustodyServiceTest {
       ),
     )
     whenever(historicCalculationsService.getHistoricCalculationsForPrisoner(eq(prisonerId))).thenReturn(listOf(firstCalculation, secondCalculation))
-    whenever(remandAndSentencingService.getRecallsForOffender(eq(prisonerId))).thenReturn(prisonerRecallsResponse())
+    whenever(remandAndSentencingService.getRecallsForOffender(eq(prisonerId))).thenReturn(Mono.just(prisonerRecallsResponse()))
 
     val periods = offenderPeriodsOfCustodyService.offenderRemandPeriods(prisonerId)
 
@@ -126,7 +127,7 @@ class OffenderPeriodsOfCustodyServiceTest {
     )
     whenever(historicCalculationsService.getHistoricCalculationsForPrisoner(eq(prisonerId))).thenReturn(emptyList())
     whenever(remandAndSentencingService.getRecallsForOffender(eq(prisonerId))).thenReturn(
-      prisonerRecallsResponse(recallInFirstPeriod, recallInSecondPeriod),
+      Mono.just(prisonerRecallsResponse(recallInFirstPeriod, recallInSecondPeriod)),
     )
 
     val periods = offenderPeriodsOfCustodyService.offenderRemandPeriods(prisonerId)
@@ -158,7 +159,7 @@ class OffenderPeriodsOfCustodyServiceTest {
       listOf(calculationInClosedPeriod, calculationInActivePeriod),
     )
     whenever(remandAndSentencingService.getRecallsForOffender(eq(prisonerId))).thenReturn(
-      prisonerRecallsResponse(recallInClosedPeriod, recallInActivePeriod),
+      Mono.just(prisonerRecallsResponse(recallInClosedPeriod, recallInActivePeriod)),
     )
 
     val periods = offenderPeriodsOfCustodyService.offenderRemandPeriods(prisonerId)
