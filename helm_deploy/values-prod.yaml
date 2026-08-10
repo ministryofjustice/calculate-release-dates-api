@@ -18,6 +18,8 @@ generic-service:
     ADJUSTMENTS_UI_URL: https://adjust-release-dates.hmpps.service.justice.gov.uk
     APPLY_POST_HDCED_REPEAL_RULES: "true"
     PROGRESSION_TRANCHE_ONE_MANUAL_JOURNEY: "true"
+    PROGRESSION_MODEL_SCHEDULE_EXCLUSION_ENABLED: "true"
+    ROUTE_PROGRESSION_MODEL_SCHEDULE_EXCLUSION_TO_MANUAL: "true"
 
   serviceAccountName: calculate-release-dates-api-prod
 
