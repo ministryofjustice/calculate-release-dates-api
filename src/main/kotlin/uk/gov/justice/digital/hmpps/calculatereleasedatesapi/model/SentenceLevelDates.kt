@@ -9,5 +9,7 @@ data class SentenceLevelDates(
   val groupIndex: Int,
   val impactsFinalReleaseDate: Boolean,
   val releaseMultiplier: ReleaseMultiplier,
+  val awardedDuringCustody: Long,
+  val awardedAfterDeterminateRelease: Long,
   val dates: Map<ReleaseDateType, LocalDate>,
 )

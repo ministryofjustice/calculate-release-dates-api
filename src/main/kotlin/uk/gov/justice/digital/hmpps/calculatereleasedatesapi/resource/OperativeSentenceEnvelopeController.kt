@@ -31,7 +31,7 @@ class OperativeSentenceEnvelopeController(private val operativeSentenceEnvelopeS
   @ResponseBody
   @Operation(
     summary = "Get the current operative sentence envelope for a prisoner",
-    description = "Required role: CALCULATE_RELEASE_DATES__SENTENCE_ENVELOPE__RO\n\nDetermines the operative sentence envelope for a prisoner either using CRDS data if available or NOMIS if not.\n\nIndicators for SDS+ and recall are only available when the source is CRDS. ",
+    description = "Required role: CALCULATE_RELEASE_DATES__SENTENCE_ENVELOPE__RO\n\nDetermines the operative sentence envelope for a prisoner either using CRDS data if available or NOMIS if not.\n\nIndicators for SDS+, recall and progression model exclusions are only available when the source is CRDS and a calculation has been performed since the field was introduced. ",
   )
   @ApiResponses(
     value = [
@@ -50,6 +50,7 @@ class OperativeSentenceEnvelopeController(private val operativeSentenceEnvelopeS
   "earliestSentenceStartDate": "2013-06-21",
   "isPostRecallSentenceEnvelope": true,
   "containsAnSDSPlusSentence": false,
+  "containsOffenceExcludedFromProgressionModel": false,
   "sentenceEnvelopeSource": "CRDS"
 }
   """,
@@ -62,6 +63,7 @@ class OperativeSentenceEnvelopeController(private val operativeSentenceEnvelopeS
   "earliestSentenceStartDate": "2013-06-21",
   "isPostRecallSentenceEnvelope": null,
   "containsAnSDSPlusSentence": null,
+  "containsOffenceExcludedFromProgressionModel": null,
   "sentenceEnvelopeSource": "NOMIS"
 }
   """,

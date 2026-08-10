@@ -11,4 +11,6 @@ data class ExpectedSentenceLevelDates(
   val impactsFinalReleaseDate: Boolean,
   val groupIndex: Int,
   val releaseMultiplier: ReleaseMultiplier?,
+  val awardedDuringCustody: Long?,
+  val awardedAfterDeterminateRelease: Long?,
 )

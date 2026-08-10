@@ -25,6 +25,8 @@ generic-service:
     REMAND-AND-SENTENCING_API_URL: https://remand-and-sentencing-api-preprod.hmpps.service.justice.gov.uk
     APPLY_POST_HDCED_REPEAL_RULES: "true"
     PROGRESSION_TRANCHE_ONE_MANUAL_JOURNEY: "true"
+    PROGRESSION_MODEL_SCHEDULE_EXCLUSION_ENABLED: "true"
+    ROUTE_PROGRESSION_MODEL_SCHEDULE_EXCLUSION_TO_MANUAL: "true"
 
   allowlist:
     penetration-test-ip-1: 54.37.241.156/30

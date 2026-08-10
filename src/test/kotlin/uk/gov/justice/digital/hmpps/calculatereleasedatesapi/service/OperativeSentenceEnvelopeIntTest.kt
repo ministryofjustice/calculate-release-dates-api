@@ -19,7 +19,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Pris
 import java.time.LocalDate
 import java.time.LocalDateTime
 
-@SpringBootTest(webEnvironment = RANDOM_PORT, properties = ["feature-toggles.storeOperativeSentenceEnvelope=true"])
+@SpringBootTest(webEnvironment = RANDOM_PORT, properties = ["feature-toggles.storeOperativeSentenceEnvelope=true", "feature-toggles.progressionModelScheduleExclusionEnabled=true"])
 class OperativeSentenceEnvelopeIntTest(private val mockPrisonService: MockPrisonService) : IntegrationTestBase() {
 
   @Test
@@ -56,6 +56,7 @@ class OperativeSentenceEnvelopeIntTest(private val mockPrisonService: MockPrison
         earliestSentenceStartDate = LocalDate.of(2025, 2, 1),
         isPostRecallSentenceEnvelope = null,
         containsAnSDSPlusSentence = null,
+        containsOffenceExcludedFromProgressionModel = null,
         sentenceEnvelopeSource = OperativeSentenceEnvelopeSource.NOMIS,
         bookingId = BOOKING_ID,
       ),
@@ -63,7 +64,7 @@ class OperativeSentenceEnvelopeIntTest(private val mockPrisonService: MockPrison
   }
 
   @Test
-  fun `should be able to get operative sentence enveloper when the latest calculation is a supported CRDS calculation`() {
+  fun `should be able to get operative sentence envelope when the latest calculation is a supported CRDS calculation`() {
     val bookingId = 1544803905L
     val prisonerId = "default"
     mockPrisonService.stubPrisoner(prisonerDetails.copy(bookingId = bookingId))
@@ -95,6 +96,7 @@ class OperativeSentenceEnvelopeIntTest(private val mockPrisonService: MockPrison
         earliestSentenceStartDate = LocalDate.of(2015, 3, 17),
         isPostRecallSentenceEnvelope = false,
         containsAnSDSPlusSentence = false,
+        containsOffenceExcludedFromProgressionModel = false,
         sentenceEnvelopeSource = OperativeSentenceEnvelopeSource.CRDS,
         bookingId = bookingId,
       ),
