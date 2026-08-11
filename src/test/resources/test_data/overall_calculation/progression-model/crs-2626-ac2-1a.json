@@ -54,7 +54,7 @@
         "direction": "OUT"
       },
       {
-        "movementDate": "2026-09-18",
+        "movementDate": "2026-10-18",
         "movementReason": "REMAND",
         "direction": "IN"
       }
@@ -64,6 +64,7 @@
     "useOffenceIndicators": true
   },
   "params": "sds-progression-model-october",
+  "expectedValidationException": "UNSUPPORTED_OUT_OF_CUSTODY_AT_PROGRESSION_MODEL_COMMENCEMENT",
   "featureToggles": {
     "applyPostRecallRepealRules": true,
     "routePreProgressionExtinguishedSentenceToManual": true

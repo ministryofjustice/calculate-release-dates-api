@@ -7,63 +7,53 @@
     },
     "sentences": [
       {
-        "type": "SopcSentence",
+        "type": "StandardSentence",
         "offence": {
-          "committedAt": "2022-03-27"
+          "committedAt": "2024-10-23"
         },
-        "custodialDuration": {
+        "duration": {
           "durationElements": {
             "YEARS": 5
           }
         },
-        "extensionDuration": {
-          "durationElements": {
-            "YEARS": 1
-          }
-        },
-        "sentencedAt": "2022-03-27",
-        "identifier": "d211f333-aa1a-3e25-ac8d-0459c1f98868"
-      },
-      {
-        "type": "StandardSentence",
-        "offence": {
-          "committedAt": "2022-03-27"
-        },
-        "duration": {
-          "durationElements": {
-            "MONTHS": 18
-          }
-        },
-        "sentencedAt": "2022-03-27",
+        "sentencedAt": "2024-10-23",
         "releaseArrangements": {
           "isSDSPlus": false,
           "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
           "sdsEarlyReleaseExclusions": [],
           "isSection250": false
-        },
-        "consecutiveSentenceUUIDs": [
-          "d211f333-aa1a-3e25-ac8d-0459c1f98868"
-        ]
+        }
       }
     ],
-    "adjustments": {},
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2024-10-23",
+          "numberOfDays": 20,
+          "fromDate": "2024-10-03",
+          "toDate": "2024-10-22"
+        }
+      ]
+    },
     "externalMovements": [
       {
-        "movementDate": "2026-06-09",
-        "movementReason": "PAROLE",
+        "movementDate": "2026-09-01",
+        "movementReason": "ERS",
         "direction": "OUT"
       },
       {
-        "movementDate": "2026-09-18",
-        "movementReason": "REMAND",
+        "movementDate": "2026-10-18",
+        "movementReason": "ERS_BREACH",
         "direction": "IN"
       }
     ]
   },
   "userInputs": {
-    "useOffenceIndicators": true
+    "useOffenceIndicators": true,
+    "calculateErsed": true
   },
   "params": "sds-progression-model-october",
+  "expectedValidationException": "UNSUPPORTED_OUT_OF_CUSTODY_AT_PROGRESSION_MODEL_COMMENCEMENT",
   "featureToggles": {
     "applyPostRecallRepealRules": true,
     "routePreProgressionExtinguishedSentenceToManual": true
