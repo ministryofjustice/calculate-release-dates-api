@@ -39,7 +39,7 @@
   "userInputs": {
     "useOffenceIndicators": true
   },
-  "params": "sds-progression-model",
+  "params": "sds-progression-model-october",
   "expectedValidationException": "PROGRESSION_MODEL_UNSUPPORTED_EXTINGUISHED_SENTENCE",
   "featureToggles": {
     "applyPostRecallRepealRules": true,

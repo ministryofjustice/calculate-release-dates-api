@@ -52,7 +52,7 @@
     "useOffenceIndicators": true,
     "calculateErsed": true
   },
-  "params": "sds-progression-model",
+  "params": "sds-progression-model-october",
   "expectedValidationException": "UNSUPPORTED_OUT_OF_CUSTODY_AT_PROGRESSION_MODEL_COMMENCEMENT",
   "featureToggles": {
     "applyPostRecallRepealRules": true,

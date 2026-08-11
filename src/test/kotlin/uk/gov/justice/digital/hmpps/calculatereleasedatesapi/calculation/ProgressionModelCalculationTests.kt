@@ -22,7 +22,7 @@ class ProgressionModelCalculationTests : CalculationExampleTests() {
 
   companion object {
     val log: Logger = LoggerFactory.getLogger(this::class.java)
-    const val TEST_CONFIGURATION = "sds-progression-model"
+    const val TEST_CONFIGURATION = "sds-progression-model-october"
 
     @JvmStatic
     fun testCases(): Stream<Arguments> {

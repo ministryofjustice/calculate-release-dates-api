@@ -52,5 +52,5 @@
     "adultHdcSuspended": true,
     "routePreProgressionExtinguishedSentenceToManual": true
   },
-  "params": "sds-progression-model"
+  "params": "sds-progression-model-october"
 }
