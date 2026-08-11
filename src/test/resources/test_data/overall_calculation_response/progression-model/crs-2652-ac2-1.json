@@ -6,6 +6,7 @@
   },
   "effectiveSentenceLength": "P5Y2M7D",
   "trancheAllocationByLegislationName": {
-    "SDS_PROGRESSION_MODEL": "TRANCHE_3"
-  }
+    "SDS_PROGRESSION_MODEL": "TRANCHE_4"
+  },
+  "affectedByProgressionModel": true
 }

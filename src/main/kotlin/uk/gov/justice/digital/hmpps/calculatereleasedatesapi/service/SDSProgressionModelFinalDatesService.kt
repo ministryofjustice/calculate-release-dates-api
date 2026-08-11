@@ -64,7 +64,7 @@ class SDSProgressionModelFinalDatesService {
       otherDates = earlyReleaseCalculation.otherDates,
       effectiveSentenceLength = earlyReleaseCalculation.effectiveSentenceLength,
       sentencesImpactingFinalReleaseDate = earlyReleaseCalculation.sentencesImpactingFinalReleaseDate,
-      affectedByProgressionModel = mergedDates != standardReleaseCalculation.dates,
+      affectedByProgressionModel = mergedDates != standardReleaseCalculation.dates || standardReleaseCalculation.affectedByProgressionModel,
     )
   }
 
