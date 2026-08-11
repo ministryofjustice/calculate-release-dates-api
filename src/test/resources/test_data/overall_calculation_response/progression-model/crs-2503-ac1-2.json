@@ -7,7 +7,6 @@
   "effectiveSentenceLength": "P3Y5M11D",
   "trancheAllocationByLegislationName": {
     "SDS_40": "TRANCHE_1",
-    "FTR_56": "FTR_56_TRANCHE_1",
-    "SDS_PROGRESSION_MODEL": "TRANCHE_3"
+    "FTR_56": "FTR_56_TRANCHE_1"
   }
 }

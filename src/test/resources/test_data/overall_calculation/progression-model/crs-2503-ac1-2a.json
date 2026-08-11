@@ -1,0 +1,61 @@
+{
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "2000-01-01",
+      "isActiveSexOffender": true
+    },
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2024-06-12"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 30
+          }
+        },
+        "sentencedAt": "2024-06-12",
+        "recall": {
+          "recallType": "FIXED_TERM_RECALL_56",
+          "revocationDate": "2026-02-22",
+          "returnToCustodyDate": "2026-02-23"
+        },
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2026-03-03"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 18
+          }
+        },
+        "sentencedAt": "2026-03-03",
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
+      }
+    ],
+    "adjustments": {}
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "sds-progression-model-october",
+  "featureToggles": {
+    "applyPostRecallRepealRules": true,
+    "routePreProgressionExtinguishedSentenceToManual": true
+  }
+}
