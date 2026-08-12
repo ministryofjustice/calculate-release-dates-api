@@ -5,7 +5,6 @@ import org.springframework.stereotype.Component
 import org.threeten.extra.LocalDateRange
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isBeforeOrEqualTo
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessage
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationOrder
@@ -22,7 +21,7 @@ class UalValidator(
     }
     val messages = mutableListOf<ValidationMessage>()
     val ualRanges = ual
-      .filter { it.fromDate != null && it.toDate != null && it.fromDate.isBeforeOrEqualTo(it.toDate)}
+      .filter { it.fromDate != null && it.toDate != null }
       .mapIndexed { index, adjustment -> index to LocalDateRange.of(adjustment.fromDate!!, adjustment.toDate!!) }
     if (ualRanges.any { (index, ual) -> ualRanges.any { (otherIndex, otherUal) -> index != otherIndex && ual.isConnected(otherUal) } }) {
       messages += ValidationMessage(ValidationCode.DUPLICATE_OR_OVERLAPPING_UAL, listOf(adjustmentsUiUrl, booking.offender.reference))
