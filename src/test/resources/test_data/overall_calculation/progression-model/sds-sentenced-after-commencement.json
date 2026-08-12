@@ -2,7 +2,8 @@
   "booking": {
     "offender": {
       "reference": "ABC123",
-      "dateOfBirth": "1990-01-01"
+      "dateOfBirth": "1990-01-01",
+      "isActiveSexOffender": true
     },
     "sentences": [
       {
@@ -15,7 +16,7 @@
             "YEARS": 12
           }
         },
-        "sentencedAt": "2026-09-02",
+        "sentencedAt": "2026-10-01",
         "releaseArrangements": {
           "isSDSPlus": false,
           "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
