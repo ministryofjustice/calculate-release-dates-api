@@ -9,18 +9,19 @@
       {
         "type": "StandardSentence",
         "offence": {
-          "committedAt": "2026-09-02"
+          "committedAt": "2026-10-10"
         },
         "duration": {
           "durationElements": {
             "YEARS": 3
           }
         },
-        "sentencedAt": "2026-09-02",
+        "sentencedAt": "2026-10-10",
         "releaseArrangements": {
           "isSDSPlus": false,
           "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
-          "sdsEarlyReleaseExclusions": ["NATIONAL_SECURITY", "PROGRESSION_MODEL_SCHEDULE_13_PART_3"],
+          "comment": "This is a schedule 13 part 3 offence sentenced on or after progression model commencement so wouldn't get the PM exclusion",
+          "sdsEarlyReleaseExclusions": ["NATIONAL_SECURITY"],
           "isSection250": false
         }
       }
