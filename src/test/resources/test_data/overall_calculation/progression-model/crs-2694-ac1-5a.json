@@ -28,10 +28,10 @@
     "adjustments": {
       "UNLAWFULLY_AT_LARGE": [
         {
-          "appliesToSentencesFrom": "2026-08-29",
+          "appliesToSentencesFrom": "2026-09-27",
           "numberOfDays": 4,
-          "fromDate": "2026-08-29",
-          "toDate": "2026-09-01",
+          "fromDate": "2026-09-27",
+          "toDate": "2026-09-30",
           "additionalInfo": {
             "type": "UAL",
             "reason": "SENTENCED_IN_ABSENCE"
@@ -47,5 +47,6 @@
   "featureToggles": {
     "applyPostRecallRepealRules": true,
     "routePreProgressionExtinguishedSentenceToManual": true
-  }
+  },
+  "expectedValidationException": "UNSUPPORTED_OUT_OF_CUSTODY_AT_PROGRESSION_MODEL_COMMENCEMENT"
 }
