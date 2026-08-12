@@ -9,14 +9,14 @@
       {
         "type": "StandardSentence",
         "offence": {
-          "committedAt": "2026-08-31"
+          "committedAt": "2026-09-18"
         },
         "duration": {
           "durationElements": {
             "MONTHS": 8
           }
         },
-        "sentencedAt": "2026-08-31",
+        "sentencedAt": "2026-09-18",
         "releaseArrangements": {
           "isSDSPlus": false,
           "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
@@ -28,7 +28,7 @@
     "adjustments": {
       "TAGGED_BAIL": [
         {
-          "appliesToSentencesFrom": "2026-08-31",
+          "appliesToSentencesFrom": "2026-09-18",
           "numberOfDays": 82
         }
       ]
@@ -38,6 +38,7 @@
     "useOffenceIndicators": true
   },
   "params": "sds-progression-model-october",
+  "expectedValidationException": "PROGRESSION_MODEL_UNSUPPORTED_EXTINGUISHED_SENTENCE",
   "featureToggles": {
     "applyPostRecallRepealRules": true,
     "routePreProgressionExtinguishedSentenceToManual": true
