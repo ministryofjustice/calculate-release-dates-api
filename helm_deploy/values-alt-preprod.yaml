@@ -25,7 +25,7 @@ generic-service:
     ADJUSTMENTS_UI_URL: https://adjust-release-dates-preprod.hmpps.service.justice.gov.uk
     ADULT_HDC_SUSPENDED: "true"
     PROGRESSION_TRANCHE_ONE_MANUAL_JOURNEY: "false"
-    PROGRESSION_MODEL_SCHEDULE_EXCLUSION_ENABLED: "true"
+    PROGRESSION_MODEL_SCHEDULE_EXCLUSION_ENABLED: "false"
 
   serviceAccountName: calculate-release-dates-api-preprod
 
