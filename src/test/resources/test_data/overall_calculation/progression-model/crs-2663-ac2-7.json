@@ -28,10 +28,10 @@
     "adjustments": {
       "UNLAWFULLY_AT_LARGE": [
         {
-          "appliesToSentencesFrom": "2026-09-02",
+          "appliesToSentencesFrom": "2026-10-01",
           "numberOfDays": 4,
-          "fromDate": "2026-09-02",
-          "toDate": "2026-09-05",
+          "fromDate": "2026-10-01",
+          "toDate": "2026-10-04",
           "additionalInfo": {
             "type": "UAL",
             "reason": "RELEASE_IN_ERROR"

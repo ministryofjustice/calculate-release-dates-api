@@ -28,10 +28,10 @@
     "adjustments": {
       "UNLAWFULLY_AT_LARGE": [
         {
-          "appliesToSentencesFrom": "2026-09-01",
+          "appliesToSentencesFrom": "2026-09-30",
           "numberOfDays": 1,
-          "fromDate": "2026-09-01",
-          "toDate": "2026-09-01",
+          "fromDate": "2026-09-30",
+          "toDate": "2026-09-30",
           "additionalInfo": {
             "type": "UAL",
             "reason": "SENTENCED_IN_ABSENCE"
