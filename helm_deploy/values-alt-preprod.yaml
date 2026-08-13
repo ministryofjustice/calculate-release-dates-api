@@ -23,9 +23,10 @@ generic-service:
     NOMIS-SYNC-MAPPING_API_URL: https://nomis-sync-prisoner-mapping-preprod.hmpps.service.justice.gov.uk
     MANAGE-USERS_API_URL: https://manage-users-api-preprod.hmpps.service.justice.gov.uk
     ADJUSTMENTS_UI_URL: https://adjust-release-dates-preprod.hmpps.service.justice.gov.uk
-    ADULT_HDC_SUSPENDED: "true"
+    APPLY_POST_HDCED_REPEAL_RULES: "true"
     PROGRESSION_TRANCHE_ONE_MANUAL_JOURNEY: "false"
-    PROGRESSION_MODEL_SCHEDULE_EXCLUSION_ENABLED: "false"
+    PROGRESSION_MODEL_SCHEDULE_EXCLUSION_ENABLED: "true"
+    ROUTE_PROGRESSION_MODEL_SCHEDULE_EXCLUSION_TO_MANUAL: "true"
 
   serviceAccountName: calculate-release-dates-api-preprod
 
