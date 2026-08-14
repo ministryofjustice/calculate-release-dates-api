@@ -20,14 +20,13 @@
         "releaseArrangements": {
           "isSDSPlus": false,
           "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
-          "comment": "This is a schedule 13 part 3 offence sentenced on or after progression model commencement so wouldn't get the PM exclusion",
-          "sdsEarlyReleaseExclusions": ["NATIONAL_SECURITY"],
+          "sdsEarlyReleaseExclusions": ["NATIONAL_SECURITY", "PROGRESSION_MODEL_SCHEDULE_13_PART_3"],
           "isSection250": false
         }
       }
     ]
   },
-  "params": "sds-progression-model",
+  "params": "sds-progression-model-october",
   "featureToggles": {
     "applyPostRecallRepealRules": true,
     "routePreProgressionExtinguishedSentenceToManual": true

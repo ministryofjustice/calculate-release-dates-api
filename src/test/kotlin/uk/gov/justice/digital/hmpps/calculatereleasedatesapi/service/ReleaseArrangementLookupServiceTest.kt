@@ -44,7 +44,7 @@ class ReleaseArrangementLookupServiceTest {
 
   @BeforeEach
   fun setUp() {
-    whenever(progressionModelLegislation.commencementDate()).thenReturn(LocalDate.of(2026, 9, 2))
+    whenever(progressionModelLegislation.commencementDate()).thenReturn(LocalDate.of(2026, 10, 1))
   }
 
   @Test
@@ -315,9 +315,9 @@ class ReleaseArrangementLookupServiceTest {
 
   @ParameterizedTest
   @CsvSource(
-    "2026-09-01,true",
-    "2026-09-02,false",
-    "2026-09-03,false",
+    "2026-09-30,true",
+    "2026-10-01,false",
+    "2026-10-02,false",
   )
   fun `should set has an SDS exclusion if offence is schedule 13 part 3 sentenced before progression commencement but not on or after commencement`(sentenceDate: LocalDate, shouldBeExcluded: Boolean) {
     whenever(mockManageOffencesService.getSdsOffenceDetailsForOffenceCodes(listOf(OFFENCE_CODE_NON_SDS_PLUS))).thenReturn(
