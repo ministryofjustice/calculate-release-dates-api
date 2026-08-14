@@ -101,7 +101,7 @@
       }
     ]
   },
-  "params": "sds-progression-model",
+  "params": "sds-progression-model-october",
   "featureToggles": {
     "applyPostHdcedRepealRules": true
   },
