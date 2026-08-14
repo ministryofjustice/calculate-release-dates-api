@@ -1,8 +1,8 @@
 {
   "dates": {
     "SLED": "2031-03-15",
-    "CRD": "2026-11-03",
-    "PED": "2025-07-04",
+    "CRD": "2026-11-09",
+    "PED": "2025-07-10",
     "ESED": "2031-03-15"
   },
   "effectiveSentenceLength": "P9Y3M",
@@ -10,5 +10,5 @@
     "SDS_40": "TRANCHE_2",
     "SDS_PROGRESSION_MODEL": "TRANCHE_8"
   },
-  "affectedByProgressionModel": true
+  "affectedByProgressionModel": false
 }

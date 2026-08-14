@@ -28,10 +28,10 @@
     "adjustments": {
       "UNLAWFULLY_AT_LARGE": [
         {
-          "appliesToSentencesFrom": "2026-08-30",
+          "appliesToSentencesFrom": "2026-09-28",
           "numberOfDays": 3,
-          "fromDate": "2026-08-30",
-          "toDate": "2026-09-01",
+          "fromDate": "2026-09-28",
+          "toDate": "2026-09-30",
           "additionalInfo": {
             "type": "UAL",
             "reason": "IMMIGRATION_DETENTION"
@@ -43,7 +43,7 @@
   "userInputs": {
     "useOffenceIndicators": true
   },
-  "params": "sds-progression-model",
+  "params": "sds-progression-model-october",
   "expectedValidationException": "UNSUPPORTED_OUT_OF_CUSTODY_AT_PROGRESSION_MODEL_COMMENCEMENT",
   "featureToggles": {
     "applyPostRecallRepealRules": true,

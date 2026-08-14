@@ -1,9 +1,9 @@
 {
   "dates": {
-    "SLED": "2038-09-01",
-    "CRD": "2030-09-01",
-    "HDCED": "2029-09-02",
-    "ESED": "2038-09-01"
+    "SLED": "2038-09-30",
+    "CRD": "2030-09-30",
+    "ESED": "2038-09-30"
   },
-  "effectiveSentenceLength": "P12Y"
+  "effectiveSentenceLength": "P12Y",
+  "trancheAllocationByLegislationName": {}
 }

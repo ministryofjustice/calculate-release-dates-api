@@ -28,10 +28,10 @@
     "adjustments": {
       "UNLAWFULLY_AT_LARGE": [
         {
-          "appliesToSentencesFrom": "2008-07-20",
-          "numberOfDays": 6618,
-          "fromDate": "2008-07-20",
-          "toDate": "2026-09-01",
+          "appliesToSentencesFrom": "2008-07-18",
+          "numberOfDays": 6649,
+          "fromDate": "2008-07-18",
+          "toDate": "2026-09-30",
           "additionalInfo": {
             "type": "UAL",
             "reason": "ESCAPE"
@@ -43,7 +43,7 @@
   "userInputs": {
     "useOffenceIndicators": true
   },
-  "params": "sds-progression-model",
+  "params": "sds-progression-model-october",
   "expectedValidationException": "UNSUPPORTED_OUT_OF_CUSTODY_AT_PROGRESSION_MODEL_COMMENCEMENT",
   "featureToggles": {
     "applyPostRecallRepealRules": true,
