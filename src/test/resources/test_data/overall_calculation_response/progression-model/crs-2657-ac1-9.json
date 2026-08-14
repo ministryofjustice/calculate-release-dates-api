@@ -5,8 +5,6 @@
     "ESED": "2028-03-27"
   },
   "effectiveSentenceLength": "P1Y6M28D",
-  "trancheAllocationByLegislationName": {
-    "SDS_PROGRESSION_MODEL": "TRANCHE_2"
-  },
+  "trancheAllocationByLegislationName": {},
   "affectedByProgressionModel": false
 }

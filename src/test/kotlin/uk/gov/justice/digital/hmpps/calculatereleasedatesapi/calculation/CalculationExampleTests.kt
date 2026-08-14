@@ -77,9 +77,9 @@ abstract class CalculationExampleTests : SpringTestBase() {
     )
     if (calculationTestFile.expectedValidationException != null) {
       val expectedExceptions = calculationTestFile.expectedValidationException.split("|")
-      assertThat(returnedValidationMessages.size)
+      assertThat(returnedValidationMessages)
         .describedAs("Expected validation exceptions")
-        .isEqualTo(expectedExceptions.size)
+        .hasSize(expectedExceptions.size)
       expectedExceptions.forEachIndexed { index, exception ->
         assertThat(returnedValidationMessages[index].code.toString()).isEqualTo(exception)
         calculationTestFile.expectedValidationMessage?.let {

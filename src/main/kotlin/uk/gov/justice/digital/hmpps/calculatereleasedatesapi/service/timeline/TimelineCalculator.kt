@@ -21,7 +21,7 @@ class TimelineCalculator(
   private val bookingExtractionService: BookingExtractionService,
 ) {
 
-  fun getLatestCalculation(sentences: List<List<CalculableSentence>>, offender: Offender, returnToCustodyDate: LocalDate? = null): CalculationResult {
+  fun getLatestCalculation(sentences: List<List<CalculableSentence>>, offender: Offender, returnToCustodyDate: LocalDate? = null, snapshots: Map<SnapshotName, CalculationSnapshot>): CalculationResult {
     calculateUnusedAdas(sentences)
     sentences.flatten().forEach {
       sentenceAdjustedCalculationService.calculateDatesFromAdjustments(it, offender)
@@ -37,6 +37,7 @@ class TimelineCalculator(
       sentences,
       offender,
       returnToCustodyDate,
+      snapshots,
     )
   }
 
