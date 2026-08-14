@@ -1,0 +1,89 @@
+{
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "2000-01-01",
+      "isActiveSexOffender": true
+    },
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2023-09-11"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 12
+          }
+        },
+        "sentencedAt": "2023-09-11",
+        "identifier": "d211f333-aa1a-3e25-ac8d-0459c1f98868",
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2026-05-26"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 4
+          }
+        },
+        "sentencedAt": "2026-05-26",
+        "identifier": "023e388e-1673-3bbc-9f13-1b1d915f3b73",
+        "consecutiveSentenceUUIDs": [
+          "d211f333-aa1a-3e25-ac8d-0459c1f98868"
+        ],
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
+      }
+    ],
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2023-09-11",
+          "numberOfDays": 219,
+          "fromDate": "2023-02-04",
+          "toDate": "2023-09-10"
+        }
+      ],
+      "TAGGED_BAIL": [
+        {
+          "appliesToSentencesFrom": "2023-09-11",
+          "numberOfDays": 45
+        }
+      ],
+      "UNLAWFULLY_AT_LARGE": [
+        {
+          "appliesToSentencesFrom": "2025-12-11",
+          "numberOfDays": 134,
+          "fromDate": "2025-12-11",
+          "toDate": "2026-04-23",
+          "additionalInfo": {
+            "type": "UAL",
+            "reason": "ESCAPE"
+          }
+        }
+      ]
+    }
+  },
+  "userInputs": {
+    "calculateErsed": true,
+    "useOffenceIndicators": true
+  },
+  "params": "sds-progression-model-october",
+  "featureToggles": {
+    "applyPostRecallRepealRules": true,
+    "routePreProgressionExtinguishedSentenceToManual": true
+  }
+}

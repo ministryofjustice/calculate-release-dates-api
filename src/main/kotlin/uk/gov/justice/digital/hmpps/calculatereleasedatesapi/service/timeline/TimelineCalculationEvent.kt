@@ -36,7 +36,23 @@ sealed interface TimelineCalculationEvent {
     override val type: TimelineCalculationType = TimelineCalculationType.SDS_LEGISLATION_COMMENCEMENT
   }
 
-  data class SDSTrancheTimelineCalculationEvent(override val date: LocalDate, val legislation: SDSLegislationWithTranches, val tranche: TrancheConfiguration) : TimelineCalculationEvent {
-    override val type: TimelineCalculationType = TimelineCalculationType.EARLY_RELEASE_TRANCHE
+  data class SDSTrancheAllocationTimelineCalculationEvent(override val date: LocalDate, val legislation: SDSLegislationWithTranches, val tranche: TrancheConfiguration) : TimelineCalculationEvent {
+    override val type: TimelineCalculationType = TimelineCalculationType.SDS_TRANCHE_ALLOCATION
+  }
+
+  data class SDS40SnapshotTimelineCalculationEvent(override val date: LocalDate, val legislation: SDSLegislationWithTranches, val tranche: TrancheConfiguration) : TimelineCalculationEvent {
+    override val type: TimelineCalculationType = TimelineCalculationType.SDS40_SNAPSHOT
+  }
+
+  data class ProgressionModelSnapshotTimelineCalculationEvent(override val date: LocalDate, val legislation: SDSLegislationWithTranches) : TimelineCalculationEvent {
+    override val type: TimelineCalculationType = TimelineCalculationType.PROGRESSION_MODEL_SNAPSHOT
+  }
+
+  data class SDSTrancheRecalculationTimelineCalculationEvent(override val date: LocalDate, val legislation: SDSLegislationWithTranches, val tranche: TrancheConfiguration) : TimelineCalculationEvent {
+    override val type: TimelineCalculationType = TimelineCalculationType.SDS_TRANCHE_RECALCULATION
+  }
+
+  data class SimpleSnapshotTimelineCalculationEvent(override val date: LocalDate, val snapshotName: SnapshotName) : TimelineCalculationEvent {
+    override val type: TimelineCalculationType = TimelineCalculationType.SIMPLE_SNAPSHOT
   }
 }

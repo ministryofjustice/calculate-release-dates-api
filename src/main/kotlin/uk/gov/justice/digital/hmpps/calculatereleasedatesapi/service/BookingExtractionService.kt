@@ -33,6 +33,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCa
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.sentence.SentencesExtractionService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.sentence.oraAndNoneOraExtraction
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.CalculationSnapshot
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.SnapshotName
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
 import java.time.LocalDate
 import java.time.Period
@@ -51,19 +53,21 @@ class BookingExtractionService(
     sentenceGroups: List<List<CalculableSentence>>,
     offender: Offender,
     returnToCustodyDate: LocalDate? = null,
+    snapshots: Map<SnapshotName, CalculationSnapshot>,
   ): CalculationResult = when (sentences.size) {
     0 -> throw NoSentencesProvidedException("At least one sentence must be provided")
-    1 -> extractSingle(sentences[0])
+    1 -> extractSingle(sentences[0], snapshots)
     else -> {
-      extractMultiple(sentences, sentenceGroups, offender, returnToCustodyDate)
+      extractMultiple(sentences, sentenceGroups, offender, returnToCustodyDate, snapshots)
     }
   }
 
-  private fun extractSingle(sentence: CalculableSentence): CalculationResult {
+  private fun extractSingle(sentence: CalculableSentence, snapshots: Map<SnapshotName, CalculationSnapshot>): CalculationResult {
     val dates: MutableMap<ReleaseDateType, LocalDate> = mutableMapOf()
     val sentenceCalculation = sentence.sentenceCalculation
     var historicalTusedSource: HistoricalTusedSource? = null
     val sentenceIsOrExclusivelyBotus = sentence.isOrExclusivelyBotus()
+    val breakdownByReleaseDateType = sentenceCalculation.breakdownByReleaseDateType.toMutableMap()
 
     if (sentence.releaseDateTypes.contains(SLED)) {
       dates[SLED] = sentenceCalculation.expiryDate
@@ -103,7 +107,16 @@ class BookingExtractionService(
     }
 
     if (sentenceCalculation.earlyReleaseSchemeEligibilityDate != null) {
-      dates[ERSED] = sentenceCalculation.earlyReleaseSchemeEligibilityDate!!
+      val latestErsedFromTimeline = sentenceCalculation.earlyReleaseSchemeEligibilityDate!!
+      val latestFromErs30Snapshot = snapshots[SnapshotName.BEFORE_ERS30]?.result?.dates?.get(ERSED)
+      if (latestFromErs30Snapshot == null || latestErsedFromTimeline.isAfterOrEqualTo(latestFromErs30Snapshot)) {
+        dates[ERSED] = latestErsedFromTimeline
+      } else {
+        dates[ERSED] = latestFromErs30Snapshot
+        snapshots[SnapshotName.BEFORE_ERS30]?.result?.breakdownByReleaseDateType?.get(ERSED)?.let { breakdownFromSnapshot ->
+          breakdownByReleaseDateType[ERSED] = breakdownFromSnapshot
+        }
+      }
     }
 
     if (sentenceCalculation.earlyTransferDate != null) {
@@ -130,7 +143,7 @@ class BookingExtractionService(
 
     return CalculationResult(
       dates.toMap(),
-      sentenceCalculation.breakdownByReleaseDateType.toMap(),
+      breakdownByReleaseDateType,
       emptyMap(),
       getEffectiveSentenceLength(sentence.sentencedAt, sentenceCalculation.unadjustedExpiryDate),
       false,
@@ -149,6 +162,7 @@ class BookingExtractionService(
     sentenceGroups: List<List<CalculableSentence>>,
     offender: Offender,
     returnToCustodyDate: LocalDate?,
+    snapshots: Map<SnapshotName, CalculationSnapshot>,
   ): CalculationResult {
     val dates: MutableMap<ReleaseDateType, LocalDate> = mutableMapOf()
     val otherDates: MutableMap<ReleaseDateType, LocalDate> = mutableMapOf()
@@ -353,6 +367,7 @@ class BookingExtractionService(
       breakdownByReleaseDateType,
       dates,
       sentenceGroups,
+      snapshots,
     )
 
     if (mostRecentSentencesByReleaseDate.any { it.isRecall() }) {
@@ -493,6 +508,7 @@ class BookingExtractionService(
     breakdownByReleaseDateType: MutableMap<ReleaseDateType, ReleaseDateCalculationBreakdown>,
     dates: MutableMap<ReleaseDateType, LocalDate>,
     sentenceGroups: List<List<CalculableSentence>>,
+    snapshots: Map<SnapshotName, CalculationSnapshot>,
   ): Boolean {
     val latestEarlyReleaseSchemeEligibilitySentence =
       extractionService.mostRecentSentenceOrNull(
@@ -500,9 +516,8 @@ class BookingExtractionService(
         SentenceCalculation::earlyReleaseSchemeEligibilityDate,
       ) { !it.sentenceCalculation.isImmediateRelease() }
 
-    if (latestEarlyReleaseSchemeEligibilitySentence != null) {
+    val notApplicableDueToDtoLaterThanCrdFlag = if (latestEarlyReleaseSchemeEligibilitySentence != null) {
       val sentenceGroup = sentenceGroups.find { it.contains(latestEarlyReleaseSchemeEligibilitySentence) }!!
-
       val noAFineOrBotusReleaseAfterLatestEarlyReleaseSchemeEligibilitySentence =
         extractionService.mostRecentSentenceOrNull(
           sentenceGroup.filter {
@@ -530,10 +545,10 @@ class BookingExtractionService(
             unadjustedDate = latestEarlyReleaseSchemeEligibilitySentence.sentenceCalculation.earlyReleaseSchemeEligibilityDate!!,
           )
           dates[ERSED] = latestAFineReleaseAfterErsed.sentenceCalculation.releaseDate
-          return false
+          false
         } else {
           if (sentences.any { it.isDto() }) {
-            return calculateErsedWhereDtoIsPresent(
+            calculateErsedWhereDtoIsPresent(
               dates,
               latestEarlyReleaseSchemeEligibilitySentence,
               breakdownByReleaseDateType,
@@ -543,12 +558,26 @@ class BookingExtractionService(
               latestEarlyReleaseSchemeEligibilitySentence.sentenceCalculation.breakdownByReleaseDateType[ERSED]!!
             dates[ERSED] =
               latestEarlyReleaseSchemeEligibilitySentence.sentenceCalculation.earlyReleaseSchemeEligibilityDate!!
-            return false
+            false
           }
         }
+      } else {
+        false
       }
+    } else {
+      false
     }
-    return false
+
+    val ersedFromErs30Snapshot = snapshots[SnapshotName.BEFORE_ERS30]?.result?.dates?.get(ERSED)
+    val ersedFromTimeline = dates[ERSED]
+    if (ersedFromErs30Snapshot != null && ersedFromTimeline != null && ersedFromErs30Snapshot.isAfter(ersedFromTimeline)) {
+      val snapshot = snapshots[SnapshotName.BEFORE_ERS30]!!
+      dates[ERSED] = ersedFromErs30Snapshot
+      snapshot.result.breakdownByReleaseDateType[ERSED]?.let { snapshotErsedBreadkdown -> breakdownByReleaseDateType[ERSED] = snapshotErsedBreadkdown }
+      return snapshot.result.ersedNotApplicableDueToDtoLaterThanCrd
+    }
+
+    return notApplicableDueToDtoLaterThanCrdFlag
   }
 
   private fun isTusedableDtos(sentences: List<CalculableSentence>, offender: Offender): Boolean = sentences.all { it.isDto() } &&
