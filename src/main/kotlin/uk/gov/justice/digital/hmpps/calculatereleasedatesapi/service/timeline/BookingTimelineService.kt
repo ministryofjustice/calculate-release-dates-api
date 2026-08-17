@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.FTRLegislationConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.LegislationName
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.PreLegislationCalculation
@@ -72,6 +73,7 @@ class BookingTimelineService(
   private val progressionModelSnapshotTimelineCalculationHandler: ProgressionModelSnapshotTimelineCalculationHandler,
   private val sdsTrancheRecalculationTimelineCalculationHandler: SDSTrancheRecalculationTimelineCalculationHandler,
   private val simpleSnapshotTimelineCalculationHandler: SimpleSnapshotTimelineCalculationHandler,
+  private val featureToggles: FeatureToggles,
 ) {
 
   fun calculate(
@@ -232,7 +234,7 @@ class BookingTimelineService(
 
   private fun getCalculationsByDate(sentences: List<CalculableSentence>, futureData: TimelineFutureData, externalMovements: List<ExternalMovement>, calculateErsed: Boolean): Map<LocalDate, List<TimelineCalculationEvent>> {
     val sentenceParts = sentences.flatMap { it.sentenceParts() }
-    val ers30SnapshotIfRequired = if (calculateErsed && sentenceParts.any { it.sentencedAt.isAfter(ImportantDates.ERS30_COMMENCEMENT_DATE) }) SimpleSnapshotTimelineCalculationEvent(ImportantDates.ERS30_COMMENCEMENT_DATE, SnapshotName.BEFORE_ERS30) else null
+    val ers30SnapshotIfRequired = if (featureToggles.useLatestErsedFromPreErs30Snapshot && calculateErsed && sentenceParts.any { it.sentencedAt.isAfter(ImportantDates.ERS30_COMMENCEMENT_DATE) }) SimpleSnapshotTimelineCalculationEvent(ImportantDates.ERS30_COMMENCEMENT_DATE, SnapshotName.BEFORE_ERS30) else null
     return (
       sentenceParts.map { part -> SentenceTimelineCalculationEvent(part.sentencedAt) } +
         futureData.additional.map { AwardedAdjustmentTimelineCalculationEvent(it.appliesToSentencesFrom, TimelineCalculationType.ADDITIONAL_DAYS) } +
