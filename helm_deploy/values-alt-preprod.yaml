@@ -27,6 +27,7 @@ generic-service:
     PROGRESSION_TRANCHE_ONE_MANUAL_JOURNEY: "false"
     PROGRESSION_MODEL_SCHEDULE_EXCLUSION_ENABLED: "true"
     ROUTE_PROGRESSION_MODEL_SCHEDULE_EXCLUSION_TO_MANUAL: "true"
+    REMAND-AND-SENTENCING_API_URL: https://remand-and-sentencing-api-preprod.hmpps.service.justice.gov.uk
 
   serviceAccountName: calculate-release-dates-api-preprod
 

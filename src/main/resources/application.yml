@@ -30,31 +30,49 @@ spring:
             client-id: ${client.creds.client.id}
             client-secret: ${client.creds.client.secret}
             authorization-grant-type: client_credentials
-            scope: read,write
+            scope:
+              - read
+              - write
           prison-api:
             provider: hmpps-auth
             client-id: ${client.creds.client.id}
             client-secret: ${client.creds.client.secret}
             authorization-grant-type: client_credentials
-            scope: read,write
+            scope:
+              - read
+              - write
           adjustments-api:
             provider: hmpps-auth
             client-id: ${client.creds.client.id}
             client-secret: ${client.creds.client.secret}
             authorization-grant-type: client_credentials
-            scope: read,write
+            scope:
+              - read
+              - write
           nomis-sync-mapping-api:
             provider: hmpps-auth
             client-id: ${client.creds.client.id}
             client-secret: ${client.creds.client.secret}
             authorization-grant-type: client_credentials
-            scope: read,write
+            scope:
+              - read
+              - write
           manage-users-api:
             provider: hmpps-auth
             client-id: ${client.creds.client.id}
             client-secret: ${client.creds.client.secret}
             authorization-grant-type: client_credentials
-            scope: read,write
+            scope:
+              - read
+              - write
+          remand-and-sentencing-api:
+            provider: hmpps-auth
+            client-id: ${client.creds.client.id}
+            client-secret: ${client.creds.client.secret}
+            authorization-grant-type: client_credentials
+            scope:
+              - read
+              - write
         provider:
           hmpps-auth:
             token-uri: ${hmpps.auth.url}/oauth/token

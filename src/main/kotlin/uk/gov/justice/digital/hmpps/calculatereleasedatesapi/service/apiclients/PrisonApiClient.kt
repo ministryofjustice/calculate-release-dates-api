@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
+package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.apiclients
 
 import arrow.core.Either
 import arrow.core.left
@@ -27,6 +27,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Upda
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.AgencySwitch
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.AgencySwitchAgency
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.BookingAndSentenceAdjustments
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.PrisonApiCharge
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.PrisonApiExternalMovement
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.PrisonerInPrisonSummary
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.prisonapi.model.CalculablePrisoner
@@ -196,13 +197,32 @@ class PrisonApiClient(
     }
     .block()!!
 
-  fun getExternalMovements(prisonerId: String, earliestSentenceDate: LocalDate): List<PrisonApiExternalMovement> {
+  fun getExternalAdmissionAndReleaseMovements(prisonerId: String, earliestSentenceDate: LocalDate): List<PrisonApiExternalMovement> {
     log.info("Requesting external movements for $prisonerId")
     return systemAuthWebClient.get()
       .uri("/api/movements/offender/$prisonerId?allBookings=true&movementTypes=ADM&movementTypes=REL&movementsAfter=$earliestSentenceDate")
       .retrieve()
       .bodyToMono(typeReference<List<PrisonApiExternalMovement>>())
       .loggingRetry(log, "getExternalMovements($prisonerId)")
+      .block()!!
+  }
+
+  fun getExternalAdmissionAndReleaseMovements(prisonerId: String): List<PrisonApiExternalMovement> {
+    log.info("Requesting external admission and release movements for $prisonerId")
+    return systemAuthWebClient.get()
+      .uri("/api/movements/offender/$prisonerId?allBookings=true&movementTypes=ADM&movementTypes=REL")
+      .retrieve()
+      .bodyToMono(typeReference<List<PrisonApiExternalMovement>>())
+      .loggingRetry(log, "getExternalMovements($prisonerId)")
+      .block()!!
+  }
+
+  fun getCourtDateResults(prisonerId: String): List<PrisonApiCharge> {
+    log.info("Requesting court case results for prisoner $prisonerId")
+    return systemAuthWebClient.get()
+      .uri("/api/court-date-results/by-charge/$prisonerId")
+      .retrieve()
+      .bodyToMono(typeReference<List<PrisonApiCharge>>())
       .block()!!
   }
 

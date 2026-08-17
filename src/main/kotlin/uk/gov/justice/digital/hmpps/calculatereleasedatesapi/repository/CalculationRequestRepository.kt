@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query
 import org.springframework.stereotype.Repository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
+import java.time.LocalDateTime
 import java.util.Optional
 import java.util.UUID
 
@@ -28,6 +29,14 @@ interface CalculationRequestRepository : JpaRepository<CalculationRequest, Long>
 
   @EntityGraph(value = "CalculationRequest.detail", type = EntityGraphType.LOAD)
   fun findAllByPrisonerIdAndCalculationStatus(prisonerId: String, calculationStatus: String): List<CalculationRequest>
+
+  @EntityGraph(value = "CalculationRequest.detail", type = EntityGraphType.LOAD)
+  fun findAllByPrisonerIdAndCalculationStatusAndCalculatedAtBetween(
+    prisonerId: String,
+    calculationStatus: String,
+    startDate: LocalDateTime,
+    endDate: LocalDateTime,
+  ): List<CalculationRequest>
 
   @EntityGraph(value = "CalculationRequest.detail", type = EntityGraphType.LOAD)
   fun findFirstByBookingIdAndCalculationStatusOrderByCalculatedAtDesc(bookingId: Long, status: String = CalculationStatus.CONFIRMED.name): Optional<CalculationRequest>

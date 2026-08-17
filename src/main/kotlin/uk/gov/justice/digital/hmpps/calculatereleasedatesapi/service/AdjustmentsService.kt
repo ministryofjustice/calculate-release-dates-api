@@ -10,6 +10,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AnalysedBooki
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AnalysedSentenceAdjustment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.apiclients.AdjustmentsApiClient
 
 @Service
 class AdjustmentsService(
