@@ -7,7 +7,7 @@ generic-service:
     host: calculate-release-dates-api.hmpps.service.justice.gov.uk
 
   env:
-    SPRING_PROFILES_ACTIVE: "calculation-params,sds-progression-model-september"
+    SPRING_PROFILES_ACTIVE: "calculation-params,sds-progression-model-october"
     APPLICATIONINSIGHTS_CONFIGURATION_FILE: applicationinsights.json
     HMPPS_AUTH_URL: https://sign-in.hmpps.service.justice.gov.uk/auth
     PRISON_API_URL: https://prison-api.prison.service.justice.gov.uk
@@ -17,7 +17,7 @@ generic-service:
     MANAGE-USERS_API_URL: https://manage-users-api.hmpps.service.justice.gov.uk
     ADJUSTMENTS_UI_URL: https://adjust-release-dates.hmpps.service.justice.gov.uk
     APPLY_POST_HDCED_REPEAL_RULES: "true"
-    PROGRESSION_TRANCHE_ONE_MANUAL_JOURNEY: "true"
+    PROGRESSION_TRANCHE_ONE_MANUAL_JOURNEY: "false"
     PROGRESSION_MODEL_SCHEDULE_EXCLUSION_ENABLED: "true"
     ROUTE_PROGRESSION_MODEL_SCHEDULE_EXCLUSION_TO_MANUAL: "true"
 
