@@ -28,6 +28,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AbstractSente
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BotusSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
@@ -35,6 +36,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.sentence.Se
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.sentence.oraAndNoneOraExtraction
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.CalculationSnapshot
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.SnapshotName
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.hasSentencesBeforeAndAfter
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
 import java.time.LocalDate
 import java.time.Period
@@ -109,7 +111,8 @@ class BookingExtractionService(
     if (sentenceCalculation.earlyReleaseSchemeEligibilityDate != null) {
       val latestErsedFromTimeline = sentenceCalculation.earlyReleaseSchemeEligibilityDate!!
       val latestFromErs30Snapshot = snapshots[SnapshotName.BEFORE_ERS30]?.result?.dates?.get(ERSED)
-      if (latestFromErs30Snapshot == null || latestErsedFromTimeline.isAfterOrEqualTo(latestFromErs30Snapshot)) {
+      val hasSentencesBeforeAndAfterErs30 = (sentence is ConsecutiveSentence) && sentence.hasSentencesBeforeAndAfter(ImportantDates.ERS30_COMMENCEMENT_DATE)
+      if (!hasSentencesBeforeAndAfterErs30 || latestFromErs30Snapshot == null || latestErsedFromTimeline.isAfterOrEqualTo(latestFromErs30Snapshot)) {
         dates[ERSED] = latestErsedFromTimeline
       } else {
         dates[ERSED] = latestFromErs30Snapshot
@@ -570,7 +573,8 @@ class BookingExtractionService(
 
     val ersedFromErs30Snapshot = snapshots[SnapshotName.BEFORE_ERS30]?.result?.dates?.get(ERSED)
     val ersedFromTimeline = dates[ERSED]
-    if (ersedFromErs30Snapshot != null && ersedFromTimeline != null && ersedFromErs30Snapshot.isAfter(ersedFromTimeline)) {
+    val hasSentencesBeforeAndAfterErs30 = (latestEarlyReleaseSchemeEligibilitySentence is ConsecutiveSentence) && latestEarlyReleaseSchemeEligibilitySentence.hasSentencesBeforeAndAfter(ImportantDates.ERS30_COMMENCEMENT_DATE)
+    if (hasSentencesBeforeAndAfterErs30 && ersedFromErs30Snapshot != null && ersedFromTimeline != null && ersedFromErs30Snapshot.isAfter(ersedFromTimeline)) {
       val snapshot = snapshots[SnapshotName.BEFORE_ERS30]!!
       dates[ERSED] = ersedFromErs30Snapshot
       snapshot.result.breakdownByReleaseDateType[ERSED]?.let { snapshotErsedBreadkdown -> breakdownByReleaseDateType[ERSED] = snapshotErsedBreadkdown }
