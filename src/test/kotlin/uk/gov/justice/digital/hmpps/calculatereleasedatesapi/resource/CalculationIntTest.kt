@@ -496,12 +496,12 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
 
     val sdsPlusFromBooking = bookingSentenceAndOffences.find { it.offence.offenceCode == "SX03001" }!!
     val sdsPlusFromCalculation = calculationSentenceAndOffences.find { it.offence.offenceCode == "SX03001" }!!
-    assertThat(sdsPlusFromBooking.sdsDescriptions).isEqualTo(SDSDescriptions(null, null, "SDS+"))
+    assertThat(sdsPlusFromBooking.sdsDescriptions).isEqualTo(SDSDescriptions(null, null, null, null, "SDS+"))
     assertThat(sdsPlusFromBooking).usingRecursiveComparison().ignoringFields("sentenceAndOffenceAnalysis").isEqualTo(sdsPlusFromCalculation)
 
     val sexualExclusionFromBooking = bookingSentenceAndOffences.find { it.offence.offenceCode == "TR68132" }!!
     val sexualExclusionFromCalculation = calculationSentenceAndOffences.find { it.offence.offenceCode == "TR68132" }!!
-    assertThat(sexualExclusionFromBooking.sdsDescriptions).isEqualTo(SDSDescriptions("Sexual", null, null))
+    assertThat(sexualExclusionFromBooking.sdsDescriptions).isEqualTo(SDSDescriptions("Sexual", null, null, null, null))
     assertThat(sexualExclusionFromBooking).usingRecursiveComparison().ignoringFields("sentenceAndOffenceAnalysis").isEqualTo(sexualExclusionFromCalculation)
   }
 

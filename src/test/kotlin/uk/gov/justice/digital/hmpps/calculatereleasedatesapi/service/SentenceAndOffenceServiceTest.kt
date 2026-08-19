@@ -76,7 +76,7 @@ class SentenceAndOffenceServiceTest {
       isSDSPlus = false,
       hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
       sentenceAndOffenceAnalysis = SentenceAndOffenceAnalysis.NEW,
-      sdsDescriptions = SDSDescriptions(null, null, null),
+      sdsDescriptions = SDSDescriptions(null, null, null, null, null),
       revocationDates = listOf(LocalDate.of(2024, 1, 1)),
     )
     assertThat(response[0]).isEqualTo(analysedSentenceAndOffence)

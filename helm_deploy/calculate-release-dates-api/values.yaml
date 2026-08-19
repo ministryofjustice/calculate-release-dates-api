@@ -42,6 +42,7 @@ generic-service:
     PROGRESSION_TRANCHE_ONE_MANUAL_JOURNEY: "false"
     PROGRESSION_MODEL_SCHEDULE_EXCLUSION_ENABLED: "false"
     ROUTE_PROGRESSION_MODEL_SCHEDULE_EXCLUSION_TO_MANUAL: "false"
+    USE_LATEST_ERSED_FROM_PRE_ERS_30_SNAPSHOT: "false"
 
   # Pre-existing kubernetes secrets to load as environment variables in the deployment.
   # namespace_secrets:

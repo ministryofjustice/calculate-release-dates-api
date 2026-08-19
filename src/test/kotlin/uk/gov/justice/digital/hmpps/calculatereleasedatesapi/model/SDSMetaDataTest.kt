@@ -15,17 +15,17 @@ class SDSMetaDataTest {
   @EnumSource(SDSEarlyReleaseExclusionType::class)
   fun `should provide display name texts based on exclusions`(exclusion: SDSEarlyReleaseExclusionType) {
     val expected = when (exclusion) {
-      SDSEarlyReleaseExclusionType.SEXUAL -> SDSDescriptions("Sexual", null, null)
-      SDSEarlyReleaseExclusionType.VIOLENT -> SDSDescriptions("Violent", null, null)
-      SDSEarlyReleaseExclusionType.DOMESTIC_ABUSE -> SDSDescriptions("Domestic Abuse", null, null)
-      SDSEarlyReleaseExclusionType.NATIONAL_SECURITY -> SDSDescriptions("National Security", null, null)
-      SDSEarlyReleaseExclusionType.TERRORISM -> SDSDescriptions("Terrorism", null, null)
-      SDSEarlyReleaseExclusionType.SEXUAL_T3 -> SDSDescriptions("Sexual (for prisoners in custody on or after the 16th Dec 2024)", null, null)
-      SDSEarlyReleaseExclusionType.DOMESTIC_ABUSE_T3 -> SDSDescriptions("Domestic Abuse (for prisoners in custody on or after the 16th Dec 2024)", null, null)
-      SDSEarlyReleaseExclusionType.MURDER_T3 -> SDSDescriptions("Murder (for prisoners in custody on or after the 16th Dec 2024)", null, null)
-      SDSEarlyReleaseExclusionType.PROGRESSION_MODEL_SCHEDULE_13_PART_3 -> SDSDescriptions(null, "Schedule 13 Part 3", null)
-      SDSEarlyReleaseExclusionType.SA2026_PROGRESSION_MODEL_SCHEDULE -> SDSDescriptions(null, "Excluded offence", null)
-      SDSEarlyReleaseExclusionType.NO -> SDSDescriptions(null, null, null)
+      SDSEarlyReleaseExclusionType.SEXUAL -> SDSDescriptions("Sexual", null, null, null, null)
+      SDSEarlyReleaseExclusionType.VIOLENT -> SDSDescriptions("Violent", null, null, null, null)
+      SDSEarlyReleaseExclusionType.DOMESTIC_ABUSE -> SDSDescriptions("Domestic Abuse", null, null, null, null)
+      SDSEarlyReleaseExclusionType.NATIONAL_SECURITY -> SDSDescriptions("National Security", null, null, null, null)
+      SDSEarlyReleaseExclusionType.TERRORISM -> SDSDescriptions("Terrorism", null, null, null, null)
+      SDSEarlyReleaseExclusionType.SEXUAL_T3 -> SDSDescriptions("Sexual (for prisoners in custody on or after the 16th Dec 2024)", null, null, null, null)
+      SDSEarlyReleaseExclusionType.DOMESTIC_ABUSE_T3 -> SDSDescriptions("Domestic Abuse (for prisoners in custody on or after the 16th Dec 2024)", null, null, null, null)
+      SDSEarlyReleaseExclusionType.MURDER_T3 -> SDSDescriptions("Murder (for prisoners in custody on or after the 16th Dec 2024)", null, null, null, null)
+      SDSEarlyReleaseExclusionType.PROGRESSION_MODEL_SCHEDULE_13_PART_3 -> SDSDescriptions(null, "Schedule 13 Part 3", "Schedule 13 Part 3", null, null)
+      SDSEarlyReleaseExclusionType.SA2026_PROGRESSION_MODEL_SCHEDULE -> SDSDescriptions(null, "Excluded offence", null, "Excluded offence", null)
+      SDSEarlyReleaseExclusionType.NO -> SDSDescriptions(null, null, null, null, null)
     }
     val result = SDSDescriptions.from(
       ADIMP_SENTENCE.copy(
@@ -46,7 +46,7 @@ class SDSMetaDataTest {
     val result = SDSDescriptions.from(
       ADIMP_SENTENCE.copy(sentenceCalculationType = sentenceCalculationType),
     )
-    assertThat(result).isEqualTo(SDSDescriptions(null, "Section 91", null))
+    assertThat(result).isEqualTo(SDSDescriptions(null, "Section 91", "Section 91", null, null))
   }
 
   @ParameterizedTest
@@ -55,7 +55,7 @@ class SDSMetaDataTest {
     val result = SDSDescriptions.from(
       ADIMP_SENTENCE.copy(sentenceCalculationType = sentenceCalculationType),
     )
-    assertThat(result).isEqualTo(SDSDescriptions(null, "Section 250", null))
+    assertThat(result).isEqualTo(SDSDescriptions(null, "Section 250", "Section 250", null, null))
   }
 
   @ParameterizedTest
@@ -77,7 +77,7 @@ class SDSMetaDataTest {
         ),
       ),
     )
-    assertThat(result).isEqualTo(SDSDescriptions(null, expected, null))
+    assertThat(result).isEqualTo(SDSDescriptions(null, expected, expected, null, null))
   }
 
   @ParameterizedTest
@@ -107,7 +107,7 @@ class SDSMetaDataTest {
   @Test
   fun `should have no exclusions`() {
     val result = SDSDescriptions.from(ADIMP_SENTENCE)
-    assertThat(result).isEqualTo(SDSDescriptions(null, null, null))
+    assertThat(result).isEqualTo(SDSDescriptions(null, null, null, null, null))
   }
 
   @Test
