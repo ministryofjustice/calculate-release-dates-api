@@ -32,11 +32,10 @@ class AdjustmentsBeforeCalculationValidator(private val validationUtilities: Val
       .partition { it.fromDate!! <= it.toDate }
 
     if (invalidRemand.isNotEmpty()) {
-      addAll(
-        invalidRemand.map {
-          ValidationMessage(ValidationCode.ADJUSTMENT_INVALID_DATE_RANGE, listOf(adjustmentsUiUrl, sourceData.prisonerDetails.offenderNo))
-        },
-      )
+      addAll(listOf(ValidationMessage(ValidationCode.ADJUSTMENT_INVALID_DATE_RANGE, listOf("remand", adjustmentsUiUrl, sourceData.prisonerDetails.offenderNo))))
+    }
+    if (adjustments.bookingAdjustments.any { it.type == BookingAdjustmentType.UNLAWFULLY_AT_LARGE && it.toDate != null && it.fromDate.isAfter(it.toDate) }) {
+      addAll(listOf(ValidationMessage(ValidationCode.ADJUSTMENT_INVALID_DATE_RANGE, listOf("UAL", adjustmentsUiUrl, sourceData.prisonerDetails.offenderNo))))
     }
 
     addAll(validateRemandOverlappingRemand(validRemand.map { LocalDateRange.of(it.fromDate!!, it.toDate!!) }))
@@ -51,11 +50,10 @@ class AdjustmentsBeforeCalculationValidator(private val validationUtilities: Val
       .partition { it.fromDate!! <= it.toDate }
 
     if (invalidRemand.isNotEmpty()) {
-      addAll(
-        invalidRemand.map {
-          ValidationMessage(ValidationCode.ADJUSTMENT_INVALID_DATE_RANGE, listOf(adjustmentsUiUrl, sourceData.prisonerDetails.offenderNo))
-        },
-      )
+      addAll(listOf(ValidationMessage(ValidationCode.ADJUSTMENT_INVALID_DATE_RANGE, listOf("remand", adjustmentsUiUrl, sourceData.prisonerDetails.offenderNo))))
+    }
+    if (adjustments.any { it.adjustmentType == AdjustmentDto.AdjustmentType.UNLAWFULLY_AT_LARGE && it.fromDate != null && it.toDate != null && it.fromDate.isAfter(it.toDate) }) {
+      addAll(listOf(ValidationMessage(ValidationCode.ADJUSTMENT_INVALID_DATE_RANGE, listOf("UAL", adjustmentsUiUrl, sourceData.prisonerDetails.offenderNo))))
     }
 
     addAll(
