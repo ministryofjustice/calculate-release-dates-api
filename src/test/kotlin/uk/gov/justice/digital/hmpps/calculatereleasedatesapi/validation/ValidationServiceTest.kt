@@ -3471,7 +3471,7 @@ class ValidationServiceTest : SpringTestBase() {
     )
 
     assertThat(result).isEqualTo(
-      listOf(ValidationMessage(ValidationCode.ADJUSTMENT_LINKED_TO_INACTIVE_SENTENCE, listOf("https://adjusments-ui.example.com", PRISONER_ID))),
+      listOf(ValidationMessage(ValidationCode.ADJUSTMENT_LINKED_TO_INACTIVE_SENTENCE, listOf("https://adjustments-ui.example.com", PRISONER_ID))),
     )
   }
 
@@ -3505,9 +3505,44 @@ class ValidationServiceTest : SpringTestBase() {
       ValidationOrder.allValidations(),
     )
 
-    val expectedMessage = ValidationMessage(ValidationCode.ADJUSTMENT_LINKED_TO_INACTIVE_SENTENCE, listOf("https://adjusments-ui.example.com", PRISONER_ID))
+    val expectedMessage = ValidationMessage(ValidationCode.ADJUSTMENT_LINKED_TO_INACTIVE_SENTENCE, listOf("https://adjustments-ui.example.com", PRISONER_ID))
     assertThat(result).isEqualTo(listOf(expectedMessage))
-    assertThat(expectedMessage.message).isEqualTo("An adjustment has been linked to an inactive sentence. You must remove any adjustments that are no longer relevant to this case. <a href=\"https://adjusments-ui.example.com/A123456A\">Review the adjustments</a>.")
+    assertThat(expectedMessage.message).isEqualTo("An adjustment has been linked to an inactive sentence. You must remove any adjustments that are no longer relevant to this case. <a href=\"https://adjustments-ui.example.com/A123456A\">Review the adjustments</a>.")
+  }
+
+  @Test
+  fun `UAL with from after to date should give a validation error`() {
+    val result = validationService.validate(
+      CalculationSourceData(
+        sentenceAndOffences = listOf(
+          SentenceAndOffenceWithReleaseArrangements(
+            source = validSdsSentence,
+            isSdsPlus = false,
+            isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+            hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
+          ),
+        ),
+        prisonerDetails = VALID_PRISONER,
+        bookingAndSentenceAdjustments = AdjustmentsSourceData(
+          adjustmentsApiData = listOf(
+            AdjustmentDto(
+              person = VALID_PRISONER.offenderNo,
+              adjustmentType = AdjustmentDto.AdjustmentType.UNLAWFULLY_AT_LARGE,
+              sentenceSequence = 7,
+              fromDate = LocalDate.of(2022, 1, 2),
+              toDate = LocalDate.of(2022, 1, 1),
+            ),
+          ),
+        ),
+        returnToCustodyDate = null,
+      ),
+      USER_INPUTS,
+      ValidationOrder.allValidations(),
+    )
+
+    val expectedMessage = ValidationMessage(ValidationCode.ADJUSTMENT_INVALID_DATE_RANGE, listOf("UAL", "https://adjustments-ui.example.com", PRISONER_ID))
+    assertThat(result).isEqualTo(listOf(expectedMessage))
+    assertThat(expectedMessage.message).isEqualTo("The UAL 'from' date is after the UAL 'to' date.<br/>Update these details in the <a href=\"https://adjustments-ui.example.com/A123456A\">Adjustments service</a>.")
   }
 
   companion object {
