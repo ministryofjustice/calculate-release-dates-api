@@ -2,40 +2,40 @@
   "booking": {
     "offender": {
       "reference": "ABC123",
-      "dateOfBirth": "2000-01-01",
-      "isActiveSexOffender": false
+      "dateOfBirth": "2009-01-01",
+      "isActiveSexOffender": true
     },
     "sentences": [
       {
         "type": "StandardSentence",
         "offence": {
-          "committedAt": "2025-05-12"
+          "committedAt": "2026-05-01"
         },
         "duration": {
           "durationElements": {
-            "MONTHS": 24
+            "YEARS": 3
           }
         },
-        "sentencedAt": "2025-05-12",
+        "sentencedAt": "2026-05-01",
         "releaseArrangements": {
           "isSDSPlus": false,
           "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
-          "sdsEarlyReleaseExclusions": [],
+          "sdsEarlyReleaseExclusions": ["SEXUAL", "SA2026_PROGRESSION_MODEL_SCHEDULE"],
           "isSection250": false
         },
-        "identifier": "cb304745-d781-47d3-b931-4baa31551fc5"
+        "identifier": "d211f333-aa1a-3e25-ac8d-0459c1f98868"
       },
       {
         "type": "StandardSentence",
         "offence": {
-          "committedAt": "2025-10-02"
+          "committedAt": "2026-05-01"
         },
         "duration": {
           "durationElements": {
-            "MONTHS": 12
+            "YEARS": 2
           }
         },
-        "sentencedAt": "2025-10-02",
+        "sentencedAt": "2026-05-01",
         "releaseArrangements": {
           "isSDSPlus": false,
           "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
@@ -43,33 +43,19 @@
           "isSection250": false
         },
         "consecutiveSentenceUUIDs": [
-          "cb304745-d781-47d3-b931-4baa31551fc5"
+          "d211f333-aa1a-3e25-ac8d-0459c1f98868"
         ]
-      },
-      {
-        "type": "AFineSentence",
-        "offence": {
-          "committedAt": "2025-11-11"
-        },
-        "duration": {
-          "durationElements": {
-            "MONTHS": 3
-          }
-        },
-        "sentencedAt": "2025-11-11",
-        "fineAmount": 99
       }
     ],
     "adjustments": {}
   },
   "userInputs": {
-    "calculateErsed": true,
     "useOffenceIndicators": true
   },
   "params": "sds-progression-model-october",
   "featureToggles": {
     "applyPostRecallRepealRules": true,
     "routePreProgressionExtinguishedSentenceToManual": true,
-    "useLatestErsedFromPreErs30Snapshot": true
+    "progressionModelScheduleExclusionEnabled": true
   }
 }

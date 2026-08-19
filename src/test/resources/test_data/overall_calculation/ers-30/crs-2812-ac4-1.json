@@ -3,61 +3,67 @@
     "offender": {
       "reference": "ABC123",
       "dateOfBirth": "2000-01-01",
-      "isActiveSexOffender": false
+      "isActiveSexOffender": true
     },
     "sentences": [
       {
         "type": "StandardSentence",
         "offence": {
-          "committedAt": "2025-05-12"
+          "committedAt": "2026-06-06"
         },
         "duration": {
           "durationElements": {
-            "MONTHS": 24
+            "YEARS": 3
           }
         },
-        "sentencedAt": "2025-05-12",
+        "sentencedAt": "2026-06-06",
+        "identifier": "d211f333-aa1a-3e25-ac8d-0459c1f98868",
         "releaseArrangements": {
           "isSDSPlus": false,
           "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
           "sdsEarlyReleaseExclusions": [],
           "isSection250": false
-        },
-        "identifier": "cb304745-d781-47d3-b931-4baa31551fc5"
+        }
       },
       {
         "type": "StandardSentence",
         "offence": {
-          "committedAt": "2025-10-02"
+          "committedAt": "2026-06-06"
         },
         "duration": {
           "durationElements": {
-            "MONTHS": 12
+            "YEARS": 3
           }
         },
-        "sentencedAt": "2025-10-02",
+        "sentencedAt": "2026-06-06",
+        "identifier": "023e388e-1673-3bbc-9f13-1b1d915f3b73",
+        "consecutiveSentenceUUIDs": [
+          "d211f333-aa1a-3e25-ac8d-0459c1f98868"
+        ],
         "releaseArrangements": {
           "isSDSPlus": false,
           "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
           "sdsEarlyReleaseExclusions": [],
           "isSection250": false
-        },
-        "consecutiveSentenceUUIDs": [
-          "cb304745-d781-47d3-b931-4baa31551fc5"
-        ]
+        }
       },
       {
-        "type": "AFineSentence",
+        "type": "StandardSentence",
         "offence": {
-          "committedAt": "2025-11-11"
+          "committedAt": "2026-06-06"
         },
         "duration": {
           "durationElements": {
-            "MONTHS": 3
+            "YEARS": 3
           }
         },
-        "sentencedAt": "2025-11-11",
-        "fineAmount": 99
+        "sentencedAt": "2026-06-06",
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
       }
     ],
     "adjustments": {}

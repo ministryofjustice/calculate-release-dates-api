@@ -57,5 +57,8 @@
     "calculateErsed": true,
     "useOffenceIndicators": true
   },
+  "featureToggles": {
+    "useLatestErsedFromPreErs30Snapshot": true
+  },
   "params": "calculation-params"
 }
