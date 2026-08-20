@@ -6,7 +6,7 @@ import org.jlleitschuh.gradle.ktlint.tasks.KtLintFormatTask
 import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "11.0.1"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "11.0.5"
   id("org.springdoc.openapi-gradle-plugin") version "1.9.0"
   kotlin("plugin.spring") version "2.4.10"
   kotlin("plugin.jpa") version "2.4.10"
@@ -61,9 +61,9 @@ dependencies {
 
   implementation("com.amazonaws:amazon-sqs-java-messaging-lib:2.1.4")
   implementation("io.awspring.cloud:spring-cloud-aws-starter:4.0.2")
-  implementation("io.awspring.cloud:spring-cloud-aws-core:4.0.2")
-  implementation("io.awspring.cloud:spring-cloud-aws-sns:4.0.2")
-  implementation("io.awspring.cloud:spring-cloud-aws-sqs:4.0.2")
+  implementation("io.awspring.cloud:spring-cloud-aws-core:4.1.0")
+  implementation("io.awspring.cloud:spring-cloud-aws-sns:4.1.0")
+  implementation("io.awspring.cloud:spring-cloud-aws-sqs:4.1.0")
   implementation("org.springframework:spring-jms:7.0.8")
   implementation("org.apache.commons:commons-text:1.15.0")
 
