@@ -123,7 +123,6 @@ java {
 
 dependencyCheck {
   suppressionFiles.add("$rootDir/dependencyCheck/suppression.xml")
-  nvd.apiKey = "6db1ab36-a18c-4a3e-a113-17519617c816"
 }
 
 openApi {
