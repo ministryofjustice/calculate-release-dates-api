@@ -45,12 +45,9 @@ class AdjustmentsBeforeCalculationValidatorTest {
 
       val result = validator.validateAdjustmentsBeforeCalculation(adjustments, sourceData())
 
-      assertThat(result).containsExactly(
-        ValidationMessage(
-          ValidationCode.ADJUSTMENT_INVALID_DATE_RANGE,
-          listOf(ADJUSTMENTS_UI_URL, OFFENDER_NO),
-        ),
-      )
+      val expectedMessage = ValidationMessage(ValidationCode.ADJUSTMENT_INVALID_DATE_RANGE, listOf("remand", ADJUSTMENTS_UI_URL, OFFENDER_NO))
+      assertThat(result).containsExactly(expectedMessage)
+      assertThat(expectedMessage.message).isEqualTo("The remand 'from' date is after the remand 'to' date.<br/>Update these details in the <a href=\"https://adjustments-ui.example.com/A1234BC\">Adjustments service</a>.")
     }
 
     @Test
@@ -207,12 +204,28 @@ class AdjustmentsBeforeCalculationValidatorTest {
 
       val result = validator.validateAdjustmentsBeforeCalculation(adjustments, sourceData())
 
-      assertThat(result).containsExactly(
-        ValidationMessage(
-          ValidationCode.ADJUSTMENT_INVALID_DATE_RANGE,
-          listOf(ADJUSTMENTS_UI_URL, OFFENDER_NO),
+      val expectedMessage = ValidationMessage(ValidationCode.ADJUSTMENT_INVALID_DATE_RANGE, listOf("remand", ADJUSTMENTS_UI_URL, OFFENDER_NO))
+      assertThat(result).containsExactly(expectedMessage)
+      assertThat(expectedMessage.message).isEqualTo("The remand 'from' date is after the remand 'to' date.<br/>Update these details in the <a href=\"https://adjustments-ui.example.com/A1234BC\">Adjustments service</a>.")
+    }
+
+    @Test
+    fun `returns invalid date range when UAL from date is after to date`() {
+      val adjustments = listOf(
+        AdjustmentDto(
+          person = OFFENDER_NO,
+          adjustmentType = AdjustmentDto.AdjustmentType.UNLAWFULLY_AT_LARGE,
+          sentenceSequence = 1,
+          fromDate = LocalDate.of(2024, 1, 10),
+          toDate = LocalDate.of(2024, 1, 1),
         ),
       )
+
+      val result = validator.validateAdjustmentsBeforeCalculation(adjustments, sourceData())
+
+      val expectedMessage = ValidationMessage(ValidationCode.ADJUSTMENT_INVALID_DATE_RANGE, listOf("UAL", ADJUSTMENTS_UI_URL, OFFENDER_NO))
+      assertThat(result).containsExactly(expectedMessage)
+      assertThat(expectedMessage.message).isEqualTo("The UAL 'from' date is after the UAL 'to' date.<br/>Update these details in the <a href=\"https://adjustments-ui.example.com/A1234BC\">Adjustments service</a>.")
     }
 
     @Test
