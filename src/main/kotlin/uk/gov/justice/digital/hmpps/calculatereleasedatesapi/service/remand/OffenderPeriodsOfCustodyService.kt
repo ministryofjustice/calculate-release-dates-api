@@ -37,7 +37,8 @@ class OffenderPeriodsOfCustodyService(
       Mono
         .fromCallable { historicCalculationsService.getHistoricCalculationsForPrisoner(prisonerId) }
         .subscribeOn(Schedulers.boundedElastic()),
-      remandAndSentencingService.getRecallsForOffender(prisonerId))
+      remandAndSentencingService.getRecallsForOffender(prisonerId),
+    )
       .block()!!
 
     val historicCalculations = asyncRequest.t1
