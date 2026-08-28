@@ -52,6 +52,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.SecondCh
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.TrancheOutcomeRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationOrder
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.service.ValidationService
+import java.time.LocalDateTime
 import java.util.UUID
 
 @Service
@@ -333,6 +334,12 @@ class CalculationTransactionalService(
   fun findCalculationRequestAndResults(calculationRequestId: Long): Pair<CalculationRequest, CalculatedReleaseDates> {
     val calculationRequest = getCalculationRequest(calculationRequestId)
     return calculationRequest to transform(calculationRequest)
+  }
+
+  @Transactional(readOnly = true)
+  fun findCalculationRequestsAndResults(prisonerId: String, startDate: LocalDateTime, endDate: LocalDateTime): List<CalculatedReleaseDates> {
+    val calculationResults = calculationRequestRepository.findAllByPrisonerIdAndCalculationStatusAndCalculatedAtBetween(prisonerId, CONFIRMED.name, startDate, endDate)
+    return transform(calculationResults)
   }
 
   @Transactional(readOnly = true)
