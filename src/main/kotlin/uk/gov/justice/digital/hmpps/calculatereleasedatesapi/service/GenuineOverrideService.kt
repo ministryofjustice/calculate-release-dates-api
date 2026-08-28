@@ -148,16 +148,16 @@ class GenuineOverrideService(
         effectiveSentenceLength = effectiveSentenceLength,
       )
     } catch (_: Exception) {
-        newRequest.id?.let { calcId ->
-          val manualCalc = calculationRequestRepository.findById(calcId)
-          if (manualCalc.isPresent) {
-            val updatedCalc = manualCalc.get().copy(
-              calculationStatus = CalculationStatus.ERROR.name,
-              calculationType = CalculationType.MANUAL_DETERMINATE
-            )
-            calculationRequestRepository.save(updatedCalc)
-          }
+      newRequest.id?.let { calcId ->
+        val manualCalc = calculationRequestRepository.findById(calcId)
+        if (manualCalc.isPresent) {
+          val updatedCalc = manualCalc.get().copy(
+            calculationStatus = CalculationStatus.ERROR.name,
+            calculationType = CalculationType.MANUAL_DETERMINATE,
+          )
+          calculationRequestRepository.save(updatedCalc)
         }
+      }
       throw CouldNotSaveManualEntryException("There was a problem saving the overridden dates to NOMIS")
     }
   }
