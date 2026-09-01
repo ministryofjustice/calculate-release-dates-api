@@ -109,15 +109,25 @@ class BulkComparisonEventHandlerService(
       }
     }
 
-    val sourceData =
+    val establishmentValue = getEstablishmentValueForComparisonPerson(comparison, establishment)
+
+    val sourceData = try {
       calculationSourceDataService.getCalculationSourceData(prisonerDetails, SourceDataLookupOptions.default())
+    } catch (e: Exception) {
+      saveComparisonPersonWithFatalError(
+        comparison,
+        personId,
+        null,
+        establishmentValue,
+        e,
+      )
+      return
+    }
 
     val calculationUserInput = CalculationUserInputs(
       listOf(),
       hasExistingErsed(sourceData) && isEligibleForErsed(sourceData),
     )
-
-    val establishmentValue = getEstablishmentValueForComparisonPerson(comparison, establishment)
 
     val validationResult = try {
       val messages =
@@ -212,7 +222,6 @@ class BulkComparisonEventHandlerService(
     establishment: String?,
     lastException: Throwable,
   ) {
-    val establishmentValue = getEstablishmentValueForComparisonPerson(comparison, establishment)
     val trimmedException = lastException.message?.trim()?.take(256) ?: "Exception had no message"
     log.error(
       "Failed to create comparison for $personId due to \"$trimmedException\"",
@@ -237,7 +246,7 @@ class BulkComparisonEventHandlerService(
         breakdownByReleaseDateType = objectMapper.createObjectNode(),
         isActiveSexOffender = sourceData?.prisonerDetails?.isActiveSexOffender(),
         sdsPlusSentencesIdentified = objectMapper.createObjectNode(),
-        establishment = establishmentValue,
+        establishment = establishment,
         fatalException = trimmedException,
         hasIndeterminateSentences = sourceData?.sentenceAndOffences?.any { SentenceCalculationType.isIndeterminate(it.sentenceCalculationType) },
       ),
