@@ -125,20 +125,6 @@ class RecordARecallDecisionService(
     val penultimateBookingId = getPenultimateBookingId(prisonerId)
     val sourceData = getSourceData(prisonerId, penultimateBookingId)
 
-    val latestValidationMessages = if (penultimateBookingId != null && sourceData.sentenceAndOffences.any { it.bookingId == penultimateBookingId }) {
-      val (latestBookingData, _) = splitLatestAndPenultimate(sourceData, penultimateBookingId)
-      validate(latestBookingData)
-    } else {
-      validate(sourceData)
-    }
-
-    if (latestValidationMessages.criticalMessages.isNotEmpty()) {
-      return RecordARecallDecisionResult(
-        RecordARecallDecision.CRITICAL_ERRORS,
-        validationMessages = latestValidationMessages.criticalMessages,
-      )
-    }
-
     val validationMessages = validate(sourceData)
 
     if (validationMessages.otherMessages.isNotEmpty() || validationMessages.criticalMessages.isNotEmpty()) {
