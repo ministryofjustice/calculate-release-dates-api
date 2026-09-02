@@ -137,14 +137,29 @@ class GenuineOverrideService(
       log.info("Exception caught calculating ESL for ${newRequest.prisonerId}, setting to zero.", ex)
       ZERO
     }
-    manualCalculationService.writeToNomisAndPublishEvent(
-      prisonerId = newRequest.prisonerId,
-      booking = booking,
-      calculationRequestId = newRequest.id(),
-      calculationOutcomes = calculationOutcomes,
-      isGenuineOverride = true,
-      effectiveSentenceLength = effectiveSentenceLength,
-    ) ?: throw CouldNotSaveManualEntryException("There was a problem saving the overridden dates to NOMIS")
+
+    try {
+      manualCalculationService.writeToNomisAndPublishEvent(
+        prisonerId = newRequest.prisonerId,
+        booking = booking,
+        calculationRequestId = newRequest.id(),
+        calculationOutcomes = calculationOutcomes,
+        isGenuineOverride = true,
+        effectiveSentenceLength = effectiveSentenceLength,
+      )
+    } catch (_: Exception) {
+      newRequest.id?.let { calcId ->
+        val manualCalc = calculationRequestRepository.findById(calcId)
+        if (manualCalc.isPresent) {
+          val updatedCalc = manualCalc.get().copy(
+            calculationStatus = CalculationStatus.ERROR.name,
+            calculationType = CalculationType.MANUAL_DETERMINATE,
+          )
+          calculationRequestRepository.save(updatedCalc)
+        }
+      }
+      throw CouldNotSaveManualEntryException("There was a problem saving the overridden dates to NOMIS")
+    }
   }
 
   fun inputsForCalculation(calculationRequestId: Long): GenuineOverrideInputResponse {

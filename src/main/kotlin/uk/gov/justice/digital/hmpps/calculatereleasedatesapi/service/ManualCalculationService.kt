@@ -93,32 +93,10 @@ class ManualCalculationService(
       version = buildProperties.version ?: "",
     ).withType(type)
 
-    return try {
-      val savedCalculationRequest = calculationRequestRepository.save(calculationRequest)
-      val validationMessages = validationService.validate(sourceData, calculationUserInputs, ValidationOrder.UNSUPPORTED)
-
-      if (validationMessages.isNotEmpty()) {
-        savedCalculationRequest.manualCalculationReason =
-          validationMessages.map { transform(savedCalculationRequest, it) }
-        calculationRequestRepository.save(savedCalculationRequest)
-      }
-
-      val calculationOutcomes =
-        manualEntryRequest.selectedManualEntryDates.map { transform(savedCalculationRequest, it) }
-
-      calculationOutcomeRepository.saveAll(calculationOutcomes)
-      val enteredDates =
-        writeToNomisAndPublishEvent(
-          prisonerId = prisonerId,
-          booking = booking,
-          calculationRequestId = savedCalculationRequest.id(),
-          calculationOutcomes = calculationOutcomes,
-          isGenuineOverride = false,
-          effectiveSentenceLength = effectiveSentenceLength,
-        )
-          ?: throw CouldNotSaveManualEntryException("There was a problem saving the dates")
-      ManualCalculationResponse(enteredDates, savedCalculationRequest.id())
+    val savedCalculationRequest = try {
+      calculationRequestRepository.save(calculationRequest)
     } catch (ex: Exception) {
+      log.error("Failed to save calculation request for $prisonerId", ex)
       calculationRequestRepository.save(
         transform(
           booking,
@@ -131,8 +109,48 @@ class ManualCalculationService(
           version = buildProperties.version ?: "",
         ),
       )
-      ManualCalculationResponse(emptyMap(), calculationRequest.id())
+      throw ex
     }
+
+    try {
+      val validationMessages = validationService.validate(sourceData, calculationUserInputs, ValidationOrder.UNSUPPORTED)
+      if (validationMessages.isNotEmpty()) {
+        savedCalculationRequest.manualCalculationReason =
+          validationMessages.map { transform(savedCalculationRequest, it) }
+        calculationRequestRepository.save(savedCalculationRequest)
+      }
+    } catch (ex: Exception) {
+      calculationRequestRepository.save(savedCalculationRequest.copy(calculationType = CalculationType.MANUAL_INDETERMINATE))
+      log.error("Failed to save validation messages for $prisonerId", ex)
+      throw ex
+    }
+
+    val calculationOutcomes = manualEntryRequest.selectedManualEntryDates.map { transform(savedCalculationRequest, it) }
+
+    try {
+      calculationOutcomeRepository.saveAll(calculationOutcomes)
+    } catch (ex: Exception) {
+      log.error("Failed to save calculation outcomes for $prisonerId", ex)
+      calculationRequestRepository.save(savedCalculationRequest.copy(calculationType = CalculationType.MANUAL_INDETERMINATE))
+      throw ex
+    }
+
+    val enteredDates = try {
+      writeToNomisAndPublishEvent(
+        prisonerId = prisonerId,
+        booking = booking,
+        calculationRequestId = savedCalculationRequest.id(),
+        calculationOutcomes = calculationOutcomes,
+        isGenuineOverride = false,
+        effectiveSentenceLength = effectiveSentenceLength,
+      ) ?: throw CouldNotSaveManualEntryException("There was a problem saving the dates")
+    } catch (ex: Exception) {
+      log.error("Failed to write to NOMIS for $prisonerId", ex)
+      calculationRequestRepository.save(savedCalculationRequest.copy(calculationType = CalculationType.MANUAL_INDETERMINATE))
+      throw ex
+    }
+
+    return ManualCalculationResponse(enteredDates, savedCalculationRequest.id())
   }
 
   @Transactional(readOnly = true)
