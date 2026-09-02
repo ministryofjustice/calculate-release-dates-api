@@ -54,14 +54,16 @@ class SDSEarlyReleaseExclusionMappingService(private val sdsLegislationConfigura
   }
 
   private fun fourYearsOrMore(sentence: SentenceAndOffence): Boolean {
-    val endOfSentence = endOfSentence(sentence)
+    val endOfSentenceOrNullIfNoTerms = endOfSentenceOrNullIfNoTerms(sentence)
     val endOfFourYears = sentence.sentenceDate.plusYears(4)
-    return endOfSentence.isAfterOrEqualTo(endOfFourYears)
+    return endOfSentenceOrNullIfNoTerms != null && endOfSentenceOrNullIfNoTerms.isAfterOrEqualTo(endOfFourYears)
   }
 
-  private fun endOfSentence(sentence: SentenceAndOffence): LocalDate {
-    val duration =
-      Period.of(sentence.terms[0].years, sentence.terms[0].months, sentence.terms[0].weeks * 7 + sentence.terms[0].days)
-    return sentence.sentenceDate.plus(duration)
+  private fun endOfSentenceOrNullIfNoTerms(sentence: SentenceAndOffence): LocalDate? = if (sentence.terms.isEmpty()) {
+    null
+  } else {
+    val custodialTerm = sentence.terms.first() // there should only be a custodial term for SDS, other numbers of terms will be handled by validation.
+    val duration = Period.of(custodialTerm.years, custodialTerm.months, custodialTerm.weeks * 7 + custodialTerm.days)
+    sentence.sentenceDate.plus(duration)
   }
 }
