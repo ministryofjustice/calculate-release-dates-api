@@ -180,7 +180,7 @@ class RecordARecallDecisionServiceTest {
   @Nested
   inner class MakeDecisionTests {
     @Test
-    fun `makeRecallDecision returns CRITICAL_ERRORS early when latest booking has critical errors`() {
+    fun `makeRecallDecision returns VALIDATION when latest booking has critical errors`() {
       val inPrisonSummary = mock(PrisonerInPrisonSummary::class.java)
 
       val latest = mock(PrisonPeriod::class.java).apply {
@@ -196,11 +196,10 @@ class RecordARecallDecisionServiceTest {
       whenever(prisonService.getPrisonerInPrisonSummary(PRISONER_ID)).thenReturn(inPrisonSummary)
 
       val latestSentence = mock(SentenceAndOffenceWithReleaseArrangements::class.java).apply {
-        whenever(bookingId).thenReturn(LATEST_BOOKING_ID)
         whenever(sentenceDate).thenReturn(LocalDate.of(2020, 1, 1))
       }
       val penultimateSentence = mock(SentenceAndOffenceWithReleaseArrangements::class.java).apply {
-        whenever(bookingId).thenReturn(PENULTIMATE_BOOKING_ID)
+        whenever(sentenceDate).thenReturn(LocalDate.of(2019, 1, 1))
       }
 
       val sourceData = baseSourceData.copy(sentenceAndOffences = listOf(latestSentence, penultimateSentence))
@@ -223,7 +222,7 @@ class RecordARecallDecisionServiceTest {
         ),
       )
 
-      assertThat(result.decision).isEqualTo(RecordARecallDecision.CRITICAL_ERRORS)
+      assertThat(result.decision).isEqualTo(RecordARecallDecision.VALIDATION)
       assertThat(result.validationMessages).isNotEmpty()
     }
 

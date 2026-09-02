@@ -269,7 +269,7 @@ class RecordARecallControllerIntTest(private val mockManageOffencesClient: MockM
         RecordARecallRequest(revocationDate = LocalDate.of(2016, 2, 6)),
       )
 
-      assertThat(result.decision).isEqualTo(RecordARecallDecision.CRITICAL_ERRORS)
+      assertThat(result.decision).isEqualTo(RecordARecallDecision.VALIDATION)
       assertThat(result.validationMessages).isNotEmpty()
     }
 

@@ -37,7 +37,6 @@ data class RecallSentenceCalculation(
 )
 
 enum class RecordARecallDecision {
-  CRITICAL_ERRORS,
   AUTOMATED,
   NO_RECALLABLE_SENTENCES_FOUND,
   VALIDATION,
