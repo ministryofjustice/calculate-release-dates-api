@@ -392,6 +392,22 @@ class ReleaseArrangementLookupServiceTest {
   }
 
   @Test
+  fun `should not set an SDS exclusion or blow up if offence is violent but has no terms, this will be captured by validation later`() {
+    whenever(mockManageOffencesService.getSdsOffenceDetailsForOffenceCodes(listOf(OFFENCE_CODE_NON_SDS_PLUS))).thenReturn(
+      listOf(
+        nonSdsPlusExclusion(OFFENCE_CODE_NON_SDS_PLUS, listOf(OffenceSdsExclusionIndicator.VIOLENT)),
+      ),
+    )
+
+    val nonSDSPlusSentenceNoTerms = nonSDSPlusSentenceAndOffenceFourYears.copy(terms = emptyList())
+    val withReleaseArrangements = underTest.populateReleaseArrangements(listOf(nonSDSPlusSentenceNoTerms))
+    assertThat(withReleaseArrangements[0].sdsReleaseArrangements!!.isSDSPlus).isFalse()
+    assertThat(withReleaseArrangements[0].sdsReleaseArrangements!!.sdsEarlyReleaseExclusions).isEmpty()
+
+    verify(mockManageOffencesService, times(1)).getSdsOffenceDetailsForOffenceCodes(listOf(OFFENCE_CODE_NON_SDS_PLUS))
+  }
+
+  @Test
   fun `should blow up if SDS details are not returned from MO`() {
     whenever(mockManageOffencesService.getSdsOffenceDetailsForOffenceCodes(listOf(OFFENCE_CODE_NON_SDS_PLUS))).thenReturn(emptyList())
 
