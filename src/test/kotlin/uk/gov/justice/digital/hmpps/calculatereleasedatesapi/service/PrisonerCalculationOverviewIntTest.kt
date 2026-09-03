@@ -201,6 +201,8 @@ class PrisonerCalculationOverviewIntTest(private val mockPrisonService: MockPris
           ),
         ),
         totalCalculationCount = 2,
+        numberOfSentences = 1,
+        hasIndeterminateSentences = false,
       ),
     )
   }
@@ -319,6 +321,8 @@ class PrisonerCalculationOverviewIntTest(private val mockPrisonService: MockPris
           ),
         ),
         totalCalculationCount = 2,
+        numberOfSentences = 1,
+        hasIndeterminateSentences = false,
       ),
     )
   }
