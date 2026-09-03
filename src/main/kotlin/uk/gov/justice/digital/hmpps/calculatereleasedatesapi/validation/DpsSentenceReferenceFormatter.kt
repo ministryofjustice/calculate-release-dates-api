@@ -9,7 +9,7 @@ import java.time.format.DateTimeFormatter
  * This is the first iteration and has a literal mapping to the AC's in Jira RASS-2607.
  * To be iterated on later...
  */
-internal object RasSentenceReferenceFormatter {
+internal object DpsSentenceReferenceFormatter {
 
   private val dateFormatter = DateTimeFormatter.ofPattern("d MMMM yyyy")
 
