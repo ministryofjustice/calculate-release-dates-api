@@ -21,6 +21,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NomisCalculat
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OffenderKeyDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.PrisonerCalculationOverview
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeHistoricOverrideRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 import java.util.Optional
@@ -109,6 +110,9 @@ class LatestCalculationService(
       val userDetails = manageUsersApiClient.getUsersByUsernames(requiredUsersNames)
       val metaData = LatestCalcMetaData(prisonDetails, userDetails ?: emptyMap(), nomisReasons)
 
+      val sentencesAndOffences = prisonService.getSentencesAndOffences(bookingId)
+      val hasIndeterminateSentences = sentencesAndOffences.any { SentenceCalculationType.isIndeterminate(it.sentenceCalculationType) }
+
       val latestCalculation = if (latestNomisCalculation != null && isSameCalc(latestNomisCalculation.comment, latestCrdsCalc)) {
         val calculationRequest = latestCrdsCalc.get()
         val sentenceAndOffences = calculationRequest.sentenceAndOffences?.let { sourceDataMapper.mapSentencesAndOffences(calculationRequest) }
@@ -169,6 +173,8 @@ class LatestCalculationService(
         latestCalculation = latestCalculation,
         recentCalculations = historicCalculationSummaries.take(numberOfRecentCalculations),
         totalCalculationCount = allNomisCalculations.size,
+        numberOfSentences = sentencesAndOffences.size,
+        hasIndeterminateSentences = hasIndeterminateSentences,
       )
     }
 

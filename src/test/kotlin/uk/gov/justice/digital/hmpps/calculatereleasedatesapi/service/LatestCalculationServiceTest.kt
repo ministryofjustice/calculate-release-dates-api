@@ -156,7 +156,7 @@ class LatestCalculationServiceTest {
     whenever(prisonService.getOffenderKeyDates(bookingId)).thenReturn("Bang!".left())
 
     assertThat(service.latestCalculationOverviewForPrisoner(prisonerId, 5)).isEqualTo(
-      PrisonerCalculationOverview(null, emptyList(), 0).right(),
+      PrisonerCalculationOverview(null, emptyList(), 0, 0, false).right(),
     )
   }
 
@@ -1080,6 +1080,55 @@ class LatestCalculationServiceTest {
     )
     assertThat(result.recentCalculations).hasSize(min(requestedNumberOfSummaries, 5)).containsExactly(*(expectedHistories.take(requestedNumberOfSummaries).toTypedArray()))
     assertThat(result.totalCalculationCount).isEqualTo(5)
+  }
+
+  @Test
+  fun `Should map the number of sentences and any indeterminate sentences should set the flag`() {
+    val calculationReference = UUID.randomUUID()
+    val calculatedAt = LocalDateTime.now()
+    val calcRequestId = 654321L
+    val offenderKeyDates = OffenderKeyDates(
+      sentenceExpiryDate = LocalDate.of(2025, 1, 1),
+      licenceExpiryDate = LocalDate.of(2025, 1, 2),
+      conditionalReleaseDate = LocalDate.of(2025, 1, 7),
+      reasonCode = "NEW",
+      calculatedAt = calculatedAt,
+      comment = "Some stuff and then the ref: $calculationReference",
+      calculatedByUserId = "user1",
+      calculatedByFirstName = "User",
+      calculatedByLastName = "One",
+    )
+
+    whenever(prisonService.getOffenderDetail(prisonerId)).thenReturn(prisonerDetails)
+    whenever(prisonService.getOffenderKeyDates(bookingId)).thenReturn(offenderKeyDates.right())
+    whenever(manageUsersApiClient.getUsersByUsernames(ArgumentMatchers.anySet())).thenReturn(usersDetails)
+
+    val calculationRequest = CalculationRequest(
+      id = calcRequestId,
+      calculationReference = calculationReference,
+      calculatedAt = calculatedAt,
+      reasonForCalculation = CalculationReason(0, false, false, "Some reason", false, null, null, null, false, false, false, null, isSecondCheck = false),
+      calculatedByUsername = "username1",
+    )
+    whenever(calculationRequestRepository.findFirstByPrisonerIdAndCalculationStatusOrderByCalculatedAtDesc(prisonerId)).thenReturn(Optional.of(calculationRequest))
+
+    whenever(offenderKeyDatesService.releaseDates(offenderKeyDates)).thenReturn(emptyList())
+    whenever(calculationResultEnrichmentService.addDetailToCalculationDates(emptyList(), null, null, null, null, null)).thenReturn(emptyMap())
+    whenever(calculationBreakdownService.getBreakdownSafely(any())).thenReturn(BreakdownMissingReason.UNSUPPORTED_CALCULATION_BREAKDOWN.left())
+    whenever(manageUsersApiClient.getUserByUsername("username")).thenReturn(null)
+    whenever(calculationRequestRepository.findAllByPrisonerIdAndCalculationStatus(prisonerId, CONFIRMED.name)).thenReturn(listOf(calculationRequest))
+    whenever(prisonService.getCalculationsForAPrisonerId(prisonerId)).thenReturn(listOf(summary(offenderKeyDates)))
+    whenever(prisonService.getSentencesAndOffences(bookingId)).thenReturn(
+      listOf(
+        someSentence,
+        someSentence.copy(sentenceCalculationType = SentenceCalculationType.DLP.name),
+      ),
+    )
+
+    val result = service.latestCalculationOverviewForPrisoner(prisonerId, 0)
+
+    assertThat(result.getOrNull()?.numberOfSentences).isEqualTo(2)
+    assertThat(result.getOrNull()?.hasIndeterminateSentences).isTrue
   }
 
   private fun summary(offenderKeyDates: OffenderKeyDates): SentenceCalculationSummary = SentenceCalculationSummary(
