@@ -30,6 +30,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.remandandsentencing
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationReasonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isBeforeOrEqualTo
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessage
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationOrder
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.service.ValidationService
 import java.time.LocalDate
@@ -46,6 +47,7 @@ class RecordARecallDecisionService(
   private val bookingService: BookingService,
   private val nomisSyncMappingApiClient: NomisSyncMappingApiClient,
   private val featureToggles: FeatureToggles,
+  private val dpsSentenceReferenceDecoratorService: DpsSentenceReferenceDecoratorService,
 ) {
 
   fun validate(prisonerId: String): RecordARecallValidationResult {
@@ -106,11 +108,14 @@ class RecordARecallDecisionService(
   }
 
   private fun validate(sourceData: CalculationSourceData): RecallInterimValidationResult {
-    val validationResult = validationService.validate(sourceData, CalculationUserInputs(), ValidationOrder.INVALID)
+    // TODO DM remove this e2e test line
+    val validationResult = validationService.validate(sourceData, CalculationUserInputs(), ValidationOrder.INVALID) + listOf(ValidationMessage(code = ValidationCode.OFFENCE_MISSING_DATE, arguments = listOf("1", "1")))
+    // val validationResult = validationService.validate(sourceData, CalculationUserInputs(), ValidationOrder.INVALID)
     val (criticalValidationMessages, otherValidationMessages) = validationResult.partition { criticalValidationErrors.contains(it.code) }
+    val dpsDecoratedCriticalValidationMessages = dpsSentenceReferenceDecoratorService.decorateCriticalMessages(criticalValidationMessages, sourceData.sentenceAndOffences)
 
     return RecallInterimValidationResult(
-      criticalMessages = criticalValidationMessages,
+      criticalMessages = dpsDecoratedCriticalValidationMessages,
       otherMessages = otherValidationMessages,
       earliestSentenceDate = sourceData.sentenceAndOffences.minOfOrNull { it.sentenceDate },
     )
