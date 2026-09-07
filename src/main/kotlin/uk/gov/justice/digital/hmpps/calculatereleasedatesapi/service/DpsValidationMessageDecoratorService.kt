@@ -4,8 +4,8 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.nomissyncmapping.model.NomisSentenceId
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.RasSentenceReference
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.DpsSentenceReferenceFormatter
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.DpsValidationMessage
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.DpsValidationMessageFormatter
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessage
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationUtilities
 import java.util.UUID
@@ -19,7 +19,7 @@ import java.util.UUID
  *   2. RemandAndSentencingApiClient: GET /sentence/{uuid} -> chargeNumber (Note: This is RAS's name for count)
  */
 @Service
-class DpsSentenceReferenceDecoratorService(
+class DpsValidationMessageDecoratorService(
   private val nomisSyncMappingApiClient: NomisSyncMappingApiClient,
   private val remandAndSentencingApiClient: RemandAndSentencingApiClient,
   private val validationUtilities: ValidationUtilities,
@@ -47,7 +47,7 @@ class DpsSentenceReferenceDecoratorService(
   }
 
   private fun decorate(message: ValidationMessage, sentenceAndOffence: SentenceAndOffence, count: Int?): ValidationMessage {
-    val rasSentenceReference = RasSentenceReference(
+    val dpsValidationMessage = DpsValidationMessage(
       count = count,
       offenceCode = sentenceAndOffence.offence.offenceCode,
       offenceDescription = sentenceAndOffence.offence.offenceDescription,
@@ -56,20 +56,17 @@ class DpsSentenceReferenceDecoratorService(
       courtName = sentenceAndOffence.courtDescription ?: sentenceAndOffence.courtId ?: "the court",
       sentencingDate = sentenceAndOffence.sentenceDate,
     )
-    val dpsFormattedMessage = DpsSentenceReferenceFormatter.format(rasSentenceReference)
-    return message.copy(dpsMessage = String.format(message.code.dpsMessage, dpsFormattedMessage))
+    val dpsFormattedMessage = DpsValidationMessageFormatter.format(dpsValidationMessage)
+    return message.copy(dpsMessage = ValidationMessage.safeFormat(message.code.dpsMessage, listOf(dpsFormattedMessage)))
   }
 
-  private fun findSentenceAndOffence(message: ValidationMessage, sentenceAndOffences: List<SentenceAndOffence>): SentenceAndOffence? {
-    return validationUtilities.findSentenceAndOffence(message.arguments, sentenceAndOffences)
-  }
+  private fun findSentenceAndOffence(message: ValidationMessage, sentenceAndOffences: List<SentenceAndOffence>): SentenceAndOffence? = validationUtilities.findSentenceAndOffence(message.arguments, sentenceAndOffences)
 
   /*
-   * TODO DM test this e2e
    * Batches the NOMIS-mapping-service lookup for every distinct sentence referenced by the critical
    * messages into a single call, then makes one RAS call per distinct sentence.
    * If either lookup fails, the sentence is simply omitted from the result
-   * map and its count falls back to null - the formatter still produces a valid (count-less) RAS message
+   * map and its count falls back to null - the formatter still produces a valid (count-less) DPS message
    * using the NOMIS-sourced fields rather than failing the whole page.
    */
   private fun lookupCounts(
@@ -90,7 +87,7 @@ class DpsSentenceReferenceDecoratorService(
     }
 
     // Correlate each NOMIS sentence with its DPS UUID from the batched lookup response
-    // then fetch that sentences RAS count
+    // then fetch that sentence's RaS count
     return relevantSentenceAndOffences.associateWith { sentenceAndOffence ->
       val mapping = nomisDpsSentenceMappings.find {
         it.nomisSentenceId.nomisBookingId == sentenceAndOffence.bookingId &&

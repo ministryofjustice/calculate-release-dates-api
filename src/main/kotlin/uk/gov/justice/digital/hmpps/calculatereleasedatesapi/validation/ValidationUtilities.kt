@@ -11,12 +11,14 @@ class ValidationUtilities {
     if (a.caseSequence < b.caseSequence) return -1
     return a.lineSequence - b.lineSequence
   }
-  internal fun getCaseSeqAndLineSeq(sentencesAndOffence: SentenceAndOffence): List<String> {
-    return listOf(sentencesAndOffence.caseSequence.toString(), sentencesAndOffence.lineSequence.toString())
-  }
 
-   /*
-    * Inverse of getCaseSeqAndLineSeq, keep both in sync
+  /**
+   * Inverse of findSentenceAndOffence, keep both in sync
+   */
+  internal fun getCaseSeqAndLineSeq(sentencesAndOffence: SentenceAndOffence): List<String> = listOf(sentencesAndOffence.caseSequence.toString(), sentencesAndOffence.lineSequence.toString())
+
+  /**
+   * Inverse of getCaseSeqAndLineSeq, keep both in sync
    */
   internal fun findSentenceAndOffence(caseSeqAndLineSeq: List<String>, sentenceAndOffences: List<SentenceAndOffence>): SentenceAndOffence? {
     val caseSequence = caseSeqAndLineSeq.getOrNull(0)?.toIntOrNull()

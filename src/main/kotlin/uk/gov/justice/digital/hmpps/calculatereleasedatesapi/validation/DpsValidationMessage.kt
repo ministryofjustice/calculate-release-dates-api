@@ -3,7 +3,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation
 import java.time.LocalDate
 
 /**
- * RAS data class required to build out validation messages,
+ * DPS data class required to build out validation messages,
  * replacing the old "Court case %s NOMIS line reference %s" NOMIS wording.
  *
  * Optional - Count number
@@ -14,7 +14,7 @@ import java.time.LocalDate
  * Mandatory - Court name
  * Mandatory - Court date (Sentencing date)
  */
-internal data class RasSentenceReference(
+internal data class DpsValidationMessage(
   val count: Int?,
   val offenceCode: String,
   val offenceDescription: String,
