@@ -8,8 +8,8 @@ import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 plugins {
   id("uk.gov.justice.hmpps.gradle-spring-boot") version "11.0.7"
   id("org.springdoc.openapi-gradle-plugin") version "1.9.0"
-  kotlin("plugin.spring") version "2.4.10"
-  kotlin("plugin.jpa") version "2.4.10"
+  kotlin("plugin.spring") version "2.4.20"
+  kotlin("plugin.jpa") version "2.4.20"
   id("jacoco")
   id("org.openapi.generator") version "7.25.0"
 }
@@ -41,7 +41,7 @@ dependencies {
   implementation("uk.gov.service.notify:notifications-java-client:6.2.0-RELEASE")
 
   // Enable kotlin reflect
-  implementation("org.jetbrains.kotlin:kotlin-reflect:2.4.10")
+  implementation("org.jetbrains.kotlin:kotlin-reflect:2.4.20")
 
   // Three Ten Date Calculations
   implementation("org.threeten:threeten-extra:1.10.0")
@@ -57,7 +57,7 @@ dependencies {
   implementation("io.hypersistence:hypersistence-utils-hibernate-71:3.15.5")
 
   // OpenAPI
-  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.1.0")
+  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.1.1")
 
   implementation("com.amazonaws:amazon-sqs-java-messaging-lib:2.1.4")
   implementation("io.awspring.cloud:spring-cloud-aws-starter:4.1.1")
