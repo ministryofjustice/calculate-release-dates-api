@@ -39,13 +39,13 @@ class RecordARecallDecisionServiceTest {
   private val validationService: ValidationService = mock(ValidationService::class.java)
   private val bookingService: BookingService = mock(BookingService::class.java)
   private val nomisSyncMappingApiClient: NomisSyncMappingApiClient = mock(NomisSyncMappingApiClient::class.java)
-  private val dpsSentenceReferenceDecoratorService: DpsSentenceReferenceDecoratorService = mock(DpsSentenceReferenceDecoratorService::class.java)
+  private val dpsValidationMessageDecoratorService: DpsValidationMessageDecoratorService = mock(DpsValidationMessageDecoratorService::class.java)
 
   private lateinit var underTest: RecordARecallDecisionService
 
   @BeforeEach
   fun setUp() {
-    whenever(dpsSentenceReferenceDecoratorService.decorateCriticalMessages(any(), any())).thenAnswer { it.getArgument(0) }
+    whenever(dpsValidationMessageDecoratorService.decorateCriticalMessages(any(), any())).thenAnswer { it.getArgument(0) }
 
     underTest = RecordARecallDecisionService(
       prisonService = prisonService,
@@ -56,7 +56,7 @@ class RecordARecallDecisionServiceTest {
       bookingService = bookingService,
       nomisSyncMappingApiClient = nomisSyncMappingApiClient,
       featureToggles = FeatureToggles(),
-      dpsSentenceReferenceDecoratorService = dpsSentenceReferenceDecoratorService,
+      dpsValidationMessageDecoratorService = dpsValidationMessageDecoratorService,
     )
   }
 
