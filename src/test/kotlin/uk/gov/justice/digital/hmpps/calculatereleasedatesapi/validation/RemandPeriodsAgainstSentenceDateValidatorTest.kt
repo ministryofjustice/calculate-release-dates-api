@@ -20,8 +20,7 @@ import java.time.LocalDate
 
 @ExtendWith(MockitoExtension::class)
 class RemandPeriodsAgainstSentenceDateValidatorTest {
-  val validationUtilities = ValidationUtilities()
-  val validator = RemandPeriodsAgainstSentenceDateValidator(validationUtilities)
+  val validator = RemandPeriodsAgainstSentenceDateValidator(ValidationUtilities())
 
   @Test
   fun `Validation fails if remand dates are after sentence date`() {
@@ -50,9 +49,7 @@ class RemandPeriodsAgainstSentenceDateValidatorTest {
     val validationResult = validator.validate(sourceData)
 
     assertThat(validationResult).isNotEmpty()
-    assertThat(validationResult[0]).isEqualTo(
-      validationUtilities.createValidationMessage(ValidationCode.REMAND_ON_OR_AFTER_SENTENCE_DATE, testSentence),
-    )
+    assertThat(validationResult[0]).isEqualTo(ValidationMessage(ValidationCode.REMAND_ON_OR_AFTER_SENTENCE_DATE, listOf(testSentence.caseSequence.toString(), testSentence.lineSequence.toString()), sentenceIdentifier = SentenceIdentifier(bookingId = 1, sentenceSequence = 1)))
   }
 
   @Test
