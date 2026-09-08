@@ -120,6 +120,14 @@ import java.util.UUID
 @ExtendWith(OAuthExtension::class, ManageOffencesApiExtension::class)
 class ValidationServiceTest : SpringTestBase() {
 
+  private val validationUtilities = ValidationUtilities()
+
+  private fun expectedMessage(
+    code: ValidationCode,
+    sentenceAndOffence: NormalisedSentenceAndOffence,
+    vararg extraArguments: String,
+  ): ValidationMessage = validationUtilities.createValidationMessage(code, sentenceAndOffence, *extraArguments)
+
   @MockitoBean
   private lateinit var sourceDataService: CalculationSourceDataService
 
@@ -565,10 +573,7 @@ class ValidationServiceTest : SpringTestBase() {
 
     assertThat(result).isEqualTo(
       listOf(
-        ValidationMessage(
-          SENTENCE_HAS_NO_IMPRISONMENT_TERM,
-          listOf(CASE_SEQ.toString(), LINE_SEQ.toString()),
-        ),
+        expectedMessage(SENTENCE_HAS_NO_IMPRISONMENT_TERM, sentence),
       ),
     )
   }
@@ -603,10 +608,7 @@ class ValidationServiceTest : SpringTestBase() {
 
     assertThat(result).isEqualTo(
       listOf(
-        ValidationMessage(
-          ZERO_IMPRISONMENT_TERM,
-          listOf(CASE_SEQ.toString(), LINE_SEQ.toString()),
-        ),
+        expectedMessage(ZERO_IMPRISONMENT_TERM, sentence),
       ),
     )
   }
@@ -640,10 +642,7 @@ class ValidationServiceTest : SpringTestBase() {
 
     assertThat(result).isEqualTo(
       listOf(
-        ValidationMessage(
-          SENTENCE_HAS_NO_LICENCE_TERM,
-          listOf(CASE_SEQ.toString(), LINE_SEQ.toString()),
-        ),
+        expectedMessage(SENTENCE_HAS_NO_LICENCE_TERM, sentence),
       ),
     )
   }
@@ -693,8 +692,8 @@ class ValidationServiceTest : SpringTestBase() {
 
     assertThat(result).isEqualTo(
       listOf(
-        ValidationMessage(EDS_LICENCE_TERM_LESS_THAN_ONE_YEAR, arguments = listOf("1", "2")),
-        ValidationMessage(EDS_LICENCE_TERM_LESS_THAN_ONE_YEAR, arguments = listOf("1", "2")),
+        expectedMessage(EDS_LICENCE_TERM_LESS_THAN_ONE_YEAR, sentences[0]),
+        expectedMessage(EDS_LICENCE_TERM_LESS_THAN_ONE_YEAR, sentences[1]),
       ),
     )
   }
@@ -780,7 +779,7 @@ class ValidationServiceTest : SpringTestBase() {
 
     assertThat(result).isEqualTo(
       listOf(
-        ValidationMessage(EDS_LICENCE_TERM_MORE_THAN_EIGHT_YEARS, listOf(CASE_SEQ.toString(), LINE_SEQ.toString())),
+        expectedMessage(EDS_LICENCE_TERM_MORE_THAN_EIGHT_YEARS, sentences[0]),
       ),
     )
   }
@@ -839,9 +838,9 @@ class ValidationServiceTest : SpringTestBase() {
 
     assertThat(result).isEqualTo(
       listOf(
-        ValidationMessage(EDS18_EDS21_EDSU18_SENTENCE_TYPE_INCORRECT, listOf(CASE_SEQ.toString(), LINE_SEQ.toString())),
-        ValidationMessage(EDS18_EDS21_EDSU18_SENTENCE_TYPE_INCORRECT, listOf(CASE_SEQ.toString(), LINE_SEQ.toString())),
-        ValidationMessage(EDS18_EDS21_EDSU18_SENTENCE_TYPE_INCORRECT, listOf(CASE_SEQ.toString(), LINE_SEQ.toString())),
+        expectedMessage(EDS18_EDS21_EDSU18_SENTENCE_TYPE_INCORRECT, sentences[0]),
+        expectedMessage(EDS18_EDS21_EDSU18_SENTENCE_TYPE_INCORRECT, sentences[1]),
+        expectedMessage(EDS18_EDS21_EDSU18_SENTENCE_TYPE_INCORRECT, sentences[2]),
       ),
     )
   }
@@ -884,7 +883,7 @@ class ValidationServiceTest : SpringTestBase() {
 
     assertThat(result).isEqualTo(
       listOf(
-        ValidationMessage(LASPO_AR_SENTENCE_TYPE_INCORRECT, listOf(CASE_SEQ.toString(), LINE_SEQ.toString())),
+        expectedMessage(LASPO_AR_SENTENCE_TYPE_INCORRECT, sentences[0]),
       ),
     )
   }
@@ -929,8 +928,8 @@ class ValidationServiceTest : SpringTestBase() {
 
     assertThat(result).isEqualTo(
       listOf(
-        ValidationMessage(MORE_THAN_ONE_IMPRISONMENT_TERM, listOf(CASE_SEQ.toString(), LINE_SEQ.toString())),
-        ValidationMessage(MORE_THAN_ONE_LICENCE_TERM, listOf(CASE_SEQ.toString(), LINE_SEQ.toString())),
+        expectedMessage(MORE_THAN_ONE_IMPRISONMENT_TERM, sentences[0]),
+        expectedMessage(MORE_THAN_ONE_LICENCE_TERM, sentences[1]),
       ),
     )
   }
@@ -1001,8 +1000,8 @@ class ValidationServiceTest : SpringTestBase() {
 
     assertThat(result).isEqualTo(
       listOf(
-        ValidationMessage(SOPC18_SOPC21_SENTENCE_TYPE_INCORRECT, listOf(CASE_SEQ.toString(), LINE_SEQ.toString())),
-        ValidationMessage(SOPC18_SOPC21_SENTENCE_TYPE_INCORRECT, listOf(CASE_SEQ.toString(), LINE_SEQ.toString())),
+        expectedMessage(SOPC18_SOPC21_SENTENCE_TYPE_INCORRECT, sentences[0]),
+        expectedMessage(SOPC18_SOPC21_SENTENCE_TYPE_INCORRECT, sentences[1]),
       ),
     )
   }
@@ -1111,8 +1110,8 @@ class ValidationServiceTest : SpringTestBase() {
 
     assertThat(result).isEqualTo(
       listOf(
-        ValidationMessage(SOPC_LICENCE_TERM_NOT_12_MONTHS, listOf(CASE_SEQ.toString(), LINE_SEQ.toString())),
-        ValidationMessage(SOPC_LICENCE_TERM_NOT_12_MONTHS, listOf(CASE_SEQ.toString(), LINE_SEQ.toString())),
+        expectedMessage(SOPC_LICENCE_TERM_NOT_12_MONTHS, sentences[0]),
+        expectedMessage(SOPC_LICENCE_TERM_NOT_12_MONTHS, sentences[1]),
       ),
     )
   }
@@ -1678,7 +1677,7 @@ class ValidationServiceTest : SpringTestBase() {
 
     assertThat(result).isEqualTo(
       listOf(
-        ValidationMessage(A_FINE_SENTENCE_MISSING_FINE_AMOUNT, listOf(CASE_SEQ.toString(), LINE_SEQ.toString())),
+        expectedMessage(A_FINE_SENTENCE_MISSING_FINE_AMOUNT, sentences[0]),
       ),
     )
   }
@@ -2652,7 +2651,7 @@ class ValidationServiceTest : SpringTestBase() {
     )
 
     val result = validationService.validateOnlyOffenceDatesForManualEntry(PRISONER_ID)
-    assertThat(result).containsExactly(ValidationMessage(ValidationCode.OFFENCE_MISSING_DATE, listOf("1", "2")))
+    assertThat(result).containsExactly(expectedMessage(ValidationCode.OFFENCE_MISSING_DATE, sentenceWithMissingOffenceDates))
   }
 
   @Test

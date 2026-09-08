@@ -41,9 +41,9 @@ class SentenceValidator(private val validationUtilities: ValidationUtilities) : 
 
   private fun validateFineAmount(sentencesAndOffence: SentenceAndOffence): ValidationMessage? {
     if (isFineSentence(sentencesAndOffence) && sentencesAndOffence.fineAmount == null) {
-      return ValidationMessage(
+      return createValidationMessage(
         ValidationCode.A_FINE_SENTENCE_MISSING_FINE_AMOUNT,
-        validationUtilities.getCaseSeqAndLineSeq(sentencesAndOffence),
+        sentencesAndOffence,
       )
     }
     return null
@@ -55,9 +55,9 @@ class SentenceValidator(private val validationUtilities: ValidationUtilities) : 
     val messages = mutableListOf<ValidationMessage>()
     if (isSopc(SentenceCalculationType.from(sentencesAndOffence.sentenceCalculationType)) && isBeforeSec91EndDate(sentencesAndOffence)) {
       messages.add(
-        ValidationMessage(
+        createValidationMessage(
           SOPC18_SOPC21_SENTENCE_TYPE_INCORRECT,
-          validationUtilities.getCaseSeqAndLineSeq(sentencesAndOffence),
+          sentencesAndOffence,
         ),
       )
     }
@@ -92,7 +92,7 @@ class SentenceValidator(private val validationUtilities: ValidationUtilities) : 
 
   private fun isAfterLaspoEndDate(sentenceAndOffence: SentenceAndOffence): Boolean = sentenceAndOffence.sentenceDate.isAfterOrEqualTo(ImportantDates.LASPO_AR_SENTENCE_TYPES_END_DATE)
 
-  private fun createValidationMessage(validationCode: ValidationCode, sentenceAndOffence: SentenceAndOffence): ValidationMessage = ValidationMessage(validationCode, validationUtilities.getCaseSeqAndLineSeq(sentenceAndOffence))
+  private fun createValidationMessage(validationCode: ValidationCode, sentenceAndOffence: SentenceAndOffence, vararg extraArguments: String): ValidationMessage = validationUtilities.createValidationMessage(validationCode, sentenceAndOffence, *extraArguments)
 
   private fun section91Validation(sentencesAndOffence: SentenceAndOffence): ValidationMessage? {
     val sentenceCalculationType = SentenceCalculationType.from(sentencesAndOffence.sentenceCalculationType)
@@ -102,9 +102,9 @@ class SentenceValidator(private val validationUtilities: ValidationUtilities) : 
     }
 
     return if (isAfterSec91EndDate(sentencesAndOffence)) {
-      ValidationMessage(
+      createValidationMessage(
         SEC_91_SENTENCE_TYPE_INCORRECT,
-        validationUtilities.getCaseSeqAndLineSeq(sentencesAndOffence),
+        sentencesAndOffence,
       )
     } else {
       null
@@ -119,9 +119,9 @@ class SentenceValidator(private val validationUtilities: ValidationUtilities) : 
     val offence = sentencesAndOffence.offence
     val invalid = offence.offenceEndDate != null && offence.offenceEndDate > sentencesAndOffence.sentenceDate
     if (invalid) {
-      return ValidationMessage(
+      return createValidationMessage(
         ValidationCode.OFFENCE_DATE_AFTER_SENTENCE_RANGE_DATE,
-        validationUtilities.getCaseSeqAndLineSeq(sentencesAndOffence),
+        sentencesAndOffence,
       )
     }
     return null
@@ -143,9 +143,9 @@ class SentenceValidator(private val validationUtilities: ValidationUtilities) : 
     // either case. If an end date is null it will be set to the start date in the transformation.
     val invalid = sentencesAndOffence.offence.offenceStartDate == null
     if (invalid) {
-      return ValidationMessage(
+      return createValidationMessage(
         ValidationCode.OFFENCE_MISSING_DATE,
-        validationUtilities.getCaseSeqAndLineSeq(sentencesAndOffence),
+        sentencesAndOffence,
       )
     }
     return null
@@ -159,17 +159,19 @@ class SentenceValidator(private val validationUtilities: ValidationUtilities) : 
     if (offence.offenceStartDate == null) return null
 
     if (offence.offenceStartDate.isBefore(minDate)) {
-      return ValidationMessage(
+      return createValidationMessage(
         ValidationCode.OFFENCE_DATE_OVER_OR_UNDER_100_YEARS_AGO,
-        validationUtilities.getCaseSeqAndLineSeq(sentenceAndOffence)
-          .plus(listOf(minDate.year.toString(), today.year.toString())),
+        sentenceAndOffence,
+        minDate.year.toString(),
+        today.year.toString(),
       )
     }
     if (offence.offenceStartDate.isAfter(maxDate)) {
-      return ValidationMessage(
+      return createValidationMessage(
         ValidationCode.OFFENCE_DATE_OVER_OR_UNDER_100_YEARS_AGO,
-        validationUtilities.getCaseSeqAndLineSeq(sentenceAndOffence)
-          .plus(listOf(LocalDate.now().year.toString(), maxDate.year.toString())),
+        sentenceAndOffence,
+        LocalDate.now().year.toString(),
+        maxDate.year.toString(),
       )
     }
 
@@ -181,9 +183,9 @@ class SentenceValidator(private val validationUtilities: ValidationUtilities) : 
   ): ValidationMessage? {
     val offence = sentencesAndOffence.offence
     if (offence.offenceStartDate != null && offence.offenceStartDate > sentencesAndOffence.sentenceDate) {
-      return ValidationMessage(
+      return createValidationMessage(
         ValidationCode.OFFENCE_DATE_AFTER_SENTENCE_START_DATE,
-        validationUtilities.getCaseSeqAndLineSeq(sentencesAndOffence),
+        sentencesAndOffence,
       )
     }
     return null
@@ -195,9 +197,9 @@ class SentenceValidator(private val validationUtilities: ValidationUtilities) : 
     when (sentencesAndOffence.terms.size) {
       0 -> {
         validationMessages.add(
-          ValidationMessage(
+          createValidationMessage(
             ValidationCode.SENTENCE_HAS_NO_IMPRISONMENT_TERM,
-            validationUtilities.getCaseSeqAndLineSeq(sentencesAndOffence),
+            sentencesAndOffence,
           ),
         )
       }
@@ -207,18 +209,18 @@ class SentenceValidator(private val validationUtilities: ValidationUtilities) : 
 
         if (emptyImprisonmentTerm) {
           validationMessages.add(
-            ValidationMessage(
+            createValidationMessage(
               ValidationCode.ZERO_IMPRISONMENT_TERM,
-              validationUtilities.getCaseSeqAndLineSeq(sentencesAndOffence),
+              sentencesAndOffence,
             ),
           )
         }
       }
       else -> {
         validationMessages.add(
-          ValidationMessage(
+          createValidationMessage(
             ValidationCode.SENTENCE_HAS_MULTIPLE_TERMS,
-            validationUtilities.getCaseSeqAndLineSeq(sentencesAndOffence),
+            sentencesAndOffence,
           ),
         )
       }
@@ -232,16 +234,16 @@ class SentenceValidator(private val validationUtilities: ValidationUtilities) : 
     val imprisonmentTerms = sentencesAndOffence.terms.filter { it.code == SentenceTerms.IMPRISONMENT_TERM_CODE }
     if (imprisonmentTerms.isEmpty()) {
       validationMessages.add(
-        ValidationMessage(
+        createValidationMessage(
           ValidationCode.SENTENCE_HAS_NO_IMPRISONMENT_TERM,
-          validationUtilities.getCaseSeqAndLineSeq(sentencesAndOffence),
+          sentencesAndOffence,
         ),
       )
     } else if (imprisonmentTerms.size > 1) {
       validationMessages.add(
-        ValidationMessage(
+        createValidationMessage(
           ValidationCode.MORE_THAN_ONE_IMPRISONMENT_TERM,
-          validationUtilities.getCaseSeqAndLineSeq(sentencesAndOffence),
+          sentencesAndOffence,
         ),
       )
     } else {
@@ -249,9 +251,9 @@ class SentenceValidator(private val validationUtilities: ValidationUtilities) : 
         imprisonmentTerms[0].days == 0 && imprisonmentTerms[0].weeks == 0 && imprisonmentTerms[0].months == 0 && imprisonmentTerms[0].years == 0
       if (emptyTerm) {
         validationMessages.add(
-          ValidationMessage(
+          createValidationMessage(
             ValidationCode.ZERO_IMPRISONMENT_TERM,
-            validationUtilities.getCaseSeqAndLineSeq(sentencesAndOffence),
+            sentencesAndOffence,
           ),
         )
       }
@@ -259,16 +261,16 @@ class SentenceValidator(private val validationUtilities: ValidationUtilities) : 
     val licenceTerms = sentencesAndOffence.terms.filter { it.code == SentenceTerms.LICENCE_TERM_CODE }
     if (licenceTerms.isEmpty()) {
       validationMessages.add(
-        ValidationMessage(
+        createValidationMessage(
           ValidationCode.SENTENCE_HAS_NO_LICENCE_TERM,
-          validationUtilities.getCaseSeqAndLineSeq(sentencesAndOffence),
+          sentencesAndOffence,
         ),
       )
     } else if (licenceTerms.size > 1) {
       validationMessages.add(
-        ValidationMessage(
+        createValidationMessage(
           ValidationCode.MORE_THAN_ONE_LICENCE_TERM,
-          validationUtilities.getCaseSeqAndLineSeq(sentencesAndOffence),
+          sentencesAndOffence,
         ),
       )
     } else {
@@ -287,16 +289,16 @@ class SentenceValidator(private val validationUtilities: ValidationUtilities) : 
 
         if (endOfDuration.isBefore(endOfOneYear)) {
           validationMessages.add(
-            ValidationMessage(
+            createValidationMessage(
               ValidationCode.EDS_LICENCE_TERM_LESS_THAN_ONE_YEAR,
-              validationUtilities.getCaseSeqAndLineSeq(sentencesAndOffence),
+              sentencesAndOffence,
             ),
           )
         } else if (endOfDuration.isAfter(endOfEightYears)) {
           validationMessages.add(
-            ValidationMessage(
+            createValidationMessage(
               ValidationCode.EDS_LICENCE_TERM_MORE_THAN_EIGHT_YEARS,
-              validationUtilities.getCaseSeqAndLineSeq(sentencesAndOffence),
+              sentencesAndOffence,
             ),
           )
         }
@@ -311,9 +313,9 @@ class SentenceValidator(private val validationUtilities: ValidationUtilities) : 
         val endOfOneYear = sentencesAndOffence.sentenceDate.plusYears(1)
         if (endOfDuration != endOfOneYear) {
           validationMessages.add(
-            ValidationMessage(
+            createValidationMessage(
               ValidationCode.SOPC_LICENCE_TERM_NOT_12_MONTHS,
-              validationUtilities.getCaseSeqAndLineSeq(sentencesAndOffence),
+              sentencesAndOffence,
             ),
           )
         }

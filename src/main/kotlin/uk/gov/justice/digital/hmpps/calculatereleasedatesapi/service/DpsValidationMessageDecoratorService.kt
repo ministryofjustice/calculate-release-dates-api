@@ -7,7 +7,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.nomissyncmapping.mo
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.DpsValidationMessage
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.DpsValidationMessageFormatter
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessage
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationUtilities
 import java.util.UUID
 
 /**
@@ -22,7 +21,6 @@ import java.util.UUID
 class DpsValidationMessageDecoratorService(
   private val nomisSyncMappingApiClient: NomisSyncMappingApiClient,
   private val remandAndSentencingApiClient: RemandAndSentencingApiClient,
-  private val validationUtilities: ValidationUtilities,
 ) {
   private val log = LoggerFactory.getLogger(this::class.java)
 
@@ -60,7 +58,10 @@ class DpsValidationMessageDecoratorService(
     return message.copy(dpsMessage = ValidationMessage.safeFormat(message.code.dpsMessage, listOf(dpsFormattedMessage)))
   }
 
-  private fun findSentenceAndOffence(message: ValidationMessage, sentenceAndOffences: List<SentenceAndOffence>): SentenceAndOffence? = validationUtilities.findSentenceAndOffence(message.arguments, sentenceAndOffences)
+  private fun findSentenceAndOffence(message: ValidationMessage, sentenceAndOffences: List<SentenceAndOffence>): SentenceAndOffence? {
+    val sentenceIdentifier = message.sentenceIdentifier ?: return null
+    return sentenceAndOffences.find { it.bookingId == sentenceIdentifier.bookingId && it.sentenceSequence == sentenceIdentifier.sentenceSequence }
+  }
 
   /*
    * Batches the NOMIS-mapping-service lookup for every distinct sentence referenced by the critical
