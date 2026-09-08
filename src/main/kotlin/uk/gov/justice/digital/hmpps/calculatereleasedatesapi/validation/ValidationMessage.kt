@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import io.swagger.v3.oas.annotations.media.Schema
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -14,6 +15,7 @@ import org.slf4j.LoggerFactory
  * @param type ValidationType
  * @param calculationUnsupported Boolean
  * @param contentType ValidationMessageContentType
+ * @param sentenceIdentifier Explicitly identifies the sentence this message relates to
  */
 @Schema(description = "Validation message details")
 data class ValidationMessage(
@@ -24,6 +26,8 @@ data class ValidationMessage(
   val type: ValidationType = code.validationType,
   val calculationUnsupported: Boolean = code.validationType.isUnsupported(),
   val contentType: ValidationMessageContentType = code.contentType,
+  @get:JsonIgnore
+  val sentenceIdentifier: SentenceIdentifier? = null,
 ) {
   companion object {
     /*
@@ -39,3 +43,8 @@ data class ValidationMessage(
     private val log: Logger = LoggerFactory.getLogger(this::class.java)
   }
 }
+
+data class SentenceIdentifier(
+  val bookingId: Long,
+  val sentenceSequence: Int,
+)

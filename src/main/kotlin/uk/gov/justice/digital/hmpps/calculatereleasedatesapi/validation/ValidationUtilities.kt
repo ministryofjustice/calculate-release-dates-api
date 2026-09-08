@@ -12,24 +12,18 @@ class ValidationUtilities {
     return a.lineSequence - b.lineSequence
   }
 
-  /**
-   * Inverse of findSentenceAndOffence, keep both in sync
-   */
-  internal fun getCaseSeqAndLineSeq(sentencesAndOffence: SentenceAndOffence): List<String> = listOf(sentencesAndOffence.caseSequence.toString(), sentencesAndOffence.lineSequence.toString())
-
-  /**
-   * Inverse of getCaseSeqAndLineSeq, keep both in sync
-   */
-  internal fun findSentenceAndOffence(caseSeqAndLineSeq: List<String>, sentenceAndOffences: List<SentenceAndOffence>): SentenceAndOffence? {
-    val caseSequence = caseSeqAndLineSeq.getOrNull(0)?.toIntOrNull()
-    val lineSequence = caseSeqAndLineSeq.getOrNull(1)?.toIntOrNull()
-    return sentenceAndOffences.find { it.caseSequence == caseSequence && it.lineSequence == lineSequence }
-  }
-
   fun buildOverlappingMessageArguments(range1: LocalDateRange, range2: LocalDateRange): List<String> = listOf(
     range1.start.toString(),
     range1.end.toString(),
     range2.start.toString(),
     range2.end.toString(),
   )
+
+  fun createValidationMessage(code: ValidationCode, sentenceAndOffence: SentenceAndOffence, vararg extraArguments: String): ValidationMessage = ValidationMessage(
+    code,
+    getCaseSeqAndLineSeq(sentenceAndOffence).plus(extraArguments),
+    sentenceIdentifier = SentenceIdentifier(sentenceAndOffence.bookingId, sentenceAndOffence.sentenceSequence),
+  )
+
+  private fun getCaseSeqAndLineSeq(sentencesAndOffence: SentenceAndOffence): List<String> = listOf(sentencesAndOffence.caseSequence.toString(), sentencesAndOffence.lineSequence.toString())
 }
