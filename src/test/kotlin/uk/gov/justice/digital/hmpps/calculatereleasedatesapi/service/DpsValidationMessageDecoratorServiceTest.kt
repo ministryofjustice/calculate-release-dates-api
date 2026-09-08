@@ -16,8 +16,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Offe
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.nomissyncmapping.model.NomisDpsSentenceMapping
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.nomissyncmapping.model.NomisSentenceId
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.remandandsentencing.model.Sentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.SentenceIdentifier
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessage
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationUtilities
 import java.time.LocalDate
 import java.util.UUID
@@ -30,12 +30,9 @@ class DpsValidationMessageDecoratorServiceTest {
   private val validationUtilities = ValidationUtilities()
 
   private val dpsValidationMessageDecoratorService =
-    DpsValidationMessageDecoratorService(nomisSyncMappingApiClient, remandAndSentencingApiClient, validationUtilities)
+    DpsValidationMessageDecoratorService(nomisSyncMappingApiClient, remandAndSentencingApiClient)
 
-  private val message = ValidationMessage(
-    code = ValidationCode.OFFENCE_MISSING_DATE,
-    arguments = listOf(CASE_SEQUENCE.toString(), LINE_SEQUENCE.toString()),
-  )
+  private val message = validationUtilities.createValidationMessage(ValidationCode.OFFENCE_MISSING_DATE, sentenceAndOffence())
 
   @Nested
   inner class DpsMessageFormatting {
@@ -160,7 +157,7 @@ class DpsValidationMessageDecoratorServiceTest {
 
     @Test
     fun `should return the message unchanged when no matching sentence can be found`() {
-      val unmatched = message.copy(arguments = listOf("999", "999"))
+      val unmatched = message.copy(sentenceIdentifier = SentenceIdentifier(bookingId = 9999L, sentenceSequence = 999))
 
       val result = dpsValidationMessageDecoratorService.decorateCriticalMessages(listOf(unmatched), listOf(sentenceAndOffence()))
 
@@ -172,10 +169,7 @@ class DpsValidationMessageDecoratorServiceTest {
     @Test
     fun `should only look up RAS once per distinct sentence, even if multiple messages reference it`() {
       mockCount(2)
-      val anotherMessage = ValidationMessage(
-        code = ValidationCode.SENTENCE_HAS_NO_IMPRISONMENT_TERM,
-        arguments = listOf(CASE_SEQUENCE.toString(), LINE_SEQUENCE.toString()),
-      )
+      val anotherMessage = validationUtilities.createValidationMessage(ValidationCode.SENTENCE_HAS_NO_IMPRISONMENT_TERM, sentenceAndOffence())
 
       val result = dpsValidationMessageDecoratorService.decorateCriticalMessages(listOf(message, anotherMessage), listOf(sentenceAndOffence()))
 
