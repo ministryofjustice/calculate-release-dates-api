@@ -179,11 +179,33 @@ class DpsValidationMessageDecoratorServiceTest {
       )
       verify(nomisSyncMappingApiClient, times(1)).postNomisToDpsMappingLookup(eq(listOf(NomisSentenceId(BOOKING_ID, SENTENCE_SEQUENCE))))
     }
+
+    @Test
+    fun `should fall back to courtId when courtDescription is null`() {
+      mockCount(null)
+      decorateAndAssert(
+        sentenceAndOffence(courtDescription = null),
+        "Court case 3 NOMIS line reference 2 must include an offence date.",
+        "OF123 - Some offence at COURT1 on 12/03/2026 must include an offence date.",
+      )
+    }
+
+    @Test
+    fun `should fall back to 'the court' when courtDescription and courtId are both null`() {
+      mockCount(null)
+      decorateAndAssert(
+        sentenceAndOffence(courtDescription = null, courtId = null),
+        "Court case 3 NOMIS line reference 2 must include an offence date.",
+        "OF123 - Some offence at the court on 12/03/2026 must include an offence date.",
+      )
+    }
   }
 
   private fun sentenceAndOffence(
     offenceDate: LocalDate? = null,
     caseReference: String? = null,
+    courtId: String? = "COURT1",
+    courtDescription: String? = "Birmingham Crown Court",
   ) = SentenceAndOffenceWithReleaseArrangements(
     bookingId = BOOKING_ID,
     sentenceSequence = SENTENCE_SEQUENCE,
@@ -203,8 +225,8 @@ class DpsValidationMessageDecoratorServiceTest {
       offenceDescription = "Some offence",
     ),
     caseReference = caseReference,
-    courtId = "COURT1",
-    courtDescription = "Birmingham Crown Court",
+    courtId = courtId,
+    courtDescription = courtDescription,
     courtTypeCode = null,
     fineAmount = null,
   )
