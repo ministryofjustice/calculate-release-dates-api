@@ -4,6 +4,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.SDSLegislation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.SDSLegislationWithTranches
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.TrancheConfiguration
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ERSLegislation
 import java.time.LocalDate
 
 sealed interface TimelineCalculationEvent {
@@ -54,5 +55,9 @@ sealed interface TimelineCalculationEvent {
 
   data class SimpleSnapshotTimelineCalculationEvent(override val date: LocalDate, val snapshotName: SnapshotName) : TimelineCalculationEvent {
     override val type: TimelineCalculationType = TimelineCalculationType.SIMPLE_SNAPSHOT
+  }
+
+  data class ERSLegislationCommencementTimelineCalculationEvent(override val date: LocalDate, val legislation: ERSLegislation) : TimelineCalculationEvent {
+    override val type: TimelineCalculationType = TimelineCalculationType.ERS_LEGISLATION_COMMENCEMENT
   }
 }

@@ -58,7 +58,7 @@
     "useOffenceIndicators": true
   },
   "featureToggles": {
-    "useLatestErsedFromPreErs30Snapshot": true
+    "useLatestErsedFromPreConsecutivelyImposedSnapshot": true
   },
   "params": "calculation-params"
 }

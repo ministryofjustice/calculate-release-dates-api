@@ -1,11 +1,15 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers
 
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AbstractSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationTrigger
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceSnapshotCalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.UnadjustedReleaseDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.sentence.SentenceCombinationService
@@ -22,6 +26,7 @@ import java.time.temporal.ChronoUnit
 class TimelineSentenceCalculationHandler(
   timelineCalculator: TimelineCalculator,
   private val sentenceCombinationService: SentenceCombinationService,
+  private val featureToggles: FeatureToggles,
 ) : TimelineCalculationHandler<SentenceTimelineCalculationEvent>(timelineCalculator) {
 
   override fun handle(
@@ -61,6 +66,8 @@ class TimelineSentenceCalculationHandler(
       applyUalToCombinedSentences(combinedSentencesWhichHaveNewParts, sentencesBeforeCombining)
 
       shareDeductionsThatAreApplicableToThisSentenceDate(event.date, timelineTrackingData)
+
+      populatePriorEligibilityDatesForConsecutiveChains(combinedSentencesWhichHaveNewParts, sentencesBeforeCombining, event.date)
     }
     return TimelineHandleResult()
   }
@@ -206,5 +213,30 @@ class TimelineSentenceCalculationHandler(
       }
     }
     return 0
+  }
+
+  private fun populatePriorEligibilityDatesForConsecutiveChains(
+    combinedSentencesWhichHaveNewParts: List<CalculableSentence>,
+    sentencesBeforeCombining: List<CalculableSentence>,
+    timelineCalculationDate: LocalDate,
+  ) {
+    combinedSentencesWhichHaveNewParts
+      .filterIsInstance<ConsecutiveSentence>()
+      .filter { consecutiveSentence -> consecutiveSentence.sentenceParts().any { it.sentencedAt != timelineCalculationDate } } // if all sentenced today there will be no previous calculation
+      .mapNotNull { newSentence ->
+        val lastPartBeforeToday = newSentence.sentenceParts()
+          .filterNot { it.sentencedAt == timelineCalculationDate }
+          .maxBy { it.sentencedAt }
+        val previousChainOrSingleSentence = sentencesBeforeCombining.find { og -> og.sentenceParts().any { part -> part.getSentencePartIdentifiers() == lastPartBeforeToday.getSentencePartIdentifiers() } }
+        previousChainOrSingleSentence?.let { it to newSentence }
+      }
+      .onEach { (previousChainOrSingleSentence, newSentence) ->
+        val ersed = previousChainOrSingleSentence.sentenceCalculation.earlyReleaseSchemeEligibilityDate
+        if (featureToggles.useLatestErsedFromPreConsecutivelyImposedSnapshot && ersed != null) {
+          newSentence.sentenceCalculation.ersedSnapshotPriorToLatestSentenceBeingImposedConsecutively = previousChainOrSingleSentence.sentenceCalculation.breakdownByReleaseDateType[ReleaseDateType.ERSED]?.let {
+            SentenceSnapshotCalculationBreakdown(timelineCalculationDate, it, newSentence.sentenceCalculation.adjustments.awardedDuringCustody)
+          }
+        }
+      }
   }
 }

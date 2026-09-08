@@ -25,7 +25,7 @@ class SDS40SnapshotTimelineCalculationHandler(
       val currentTimelineDateIsTheAllocatedTrancheDate = timelineCalculationDate == applicableLegislation?.earliestApplicableDate
       if (applicableLegislation != null && currentTimelineDateIsTheAllocatedTrancheDate && sentencesToModifyReleaseDates.isNotEmpty()) {
         val allSentences = releasedSentenceGroups.map { it.sentences }.plus(listOf(currentSentenceGroup))
-        val latestCalculation = timelineCalculator.getLatestCalculation(allSentences, offender, returnToCustodyDate, snapshots)
+        val latestCalculation = timelineCalculator.getLatestCalculation(allSentences, offender, returnToCustodyDate, snapshots, applicableErsLegislation)
         snapshots[SnapshotName.BEFORE_SDS40_TRANCHE] = CalculationSnapshot(SnapshotName.BEFORE_SDS40_TRANCHE, latestCalculation, timelineCalculationDate)
       }
     }
