@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.validator
 
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode
@@ -8,9 +7,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.Validati
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationOrder
 
 @Component
-class InvalidNomisOffenceCodeValidator(
-  @Value($$"${remand-and-sentencing.ui.url}") private val remandAndSentencingUiUrl: String,
-) : PreCalculationSourceDataValidator {
+class InvalidNomisOffenceCodeValidator : PreCalculationSourceDataValidator {
 
   override fun validate(
     sourceData: CalculationSourceData,
@@ -23,8 +20,6 @@ class InvalidNomisOffenceCodeValidator(
           sentenceAndOffence.offence.offenceCode,
           sentenceAndOffence.offence.offenceDescription,
           sentenceAndOffence.caseReference?.let { " from case $it" } ?: "",
-          remandAndSentencingUiUrl,
-          sourceData.prisonerDetails.offenderNo,
         ),
       )
     }
