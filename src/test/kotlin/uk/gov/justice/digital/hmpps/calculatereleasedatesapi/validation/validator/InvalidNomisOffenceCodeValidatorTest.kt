@@ -28,6 +28,8 @@ class InvalidNomisOffenceCodeValidatorTest {
     "MD71131-462N",
     "XX00000-017N",
     "CJ91015-034N",
+    "cj91015-034n",
+    "CJ91015-034N",
     "SX56070-072N",
     "RT88000-002N",
     "MD71210-225N",
@@ -96,6 +98,7 @@ class InvalidNomisOffenceCodeValidatorTest {
     "RT88501-502N",
     "COML017N",
     "XX0114",
+    "xx0114",
     "SX03070-077N",
     "TH68000-001N",
     "SX56037N",
@@ -143,6 +146,35 @@ class InvalidNomisOffenceCodeValidatorTest {
     assertThat(messages).containsExactly(expectedMessage)
   }
 
+  @Test
+  fun `Should deduplicate errors from the same court case`() {
+    val sentences = listOf(
+      aSentenceForOffence(offenceCode = "XX123").copy(caseReference = "CASEABC123"),
+      aSentenceForOffence(offenceCode = "XX123").copy(caseReference = "CASEABC123"),
+      aSentenceForOffence(offenceCode = "XX123", offenceDescription = "Different one").copy(caseReference = "CASEABC123"),
+      aSentenceForOffence(offenceCode = "XX456").copy(caseReference = "CASEABC123"),
+      aSentenceForOffence(offenceCode = "XX123").copy(caseReference = "CASEABC456"),
+      aSentenceForOffence(offenceCode = "XX123").copy(caseReference = null),
+    )
+    val messages = validator.validate(
+      CalculationSourceData(
+        sentences,
+        prisonerDetails = PRISONER_DETAILS,
+        bookingAndSentenceAdjustments = mock(),
+        returnToCustodyDate = null,
+      ),
+    )
+    assertThat(messages).isEqualTo(
+      listOf(
+        ValidationMessage(ValidationCode.INVALID_NOMIS_OFFENCE_CODE, listOf("XX123", "Some offence description", " from case CASEABC123")),
+        ValidationMessage(ValidationCode.INVALID_NOMIS_OFFENCE_CODE, listOf("XX123", "Different one", " from case CASEABC123")),
+        ValidationMessage(ValidationCode.INVALID_NOMIS_OFFENCE_CODE, listOf("XX456", "Some offence description", " from case CASEABC123")),
+        ValidationMessage(ValidationCode.INVALID_NOMIS_OFFENCE_CODE, listOf("XX123", "Some offence description", " from case CASEABC456")),
+        ValidationMessage(ValidationCode.INVALID_NOMIS_OFFENCE_CODE, listOf("XX123", "Some offence description", "")),
+      ),
+    )
+  }
+
   @ParameterizedTest
   @CsvSource(
     "A123XX",
@@ -160,7 +192,7 @@ class InvalidNomisOffenceCodeValidatorTest {
     assertThat(messages).isEmpty()
   }
 
-  private fun aSentenceForOffence(offenceCode: String) = A_SENTENCE.copy(offence = AN_OFFENCE.copy(offenceCode = offenceCode))
+  private fun aSentenceForOffence(offenceCode: String, offenceDescription: String = "Some offence description") = A_SENTENCE.copy(offence = AN_OFFENCE.copy(offenceCode = offenceCode, offenceDescription = offenceDescription))
 
   companion object {
     private const val PRISONER_NUMBER = "A1234BC"
