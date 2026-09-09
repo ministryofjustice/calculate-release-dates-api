@@ -17,6 +17,7 @@ generic-service:
     REMAND-AND-SENTENCING_API_URL: https://remand-and-sentencing-api.hmpps.service.justice.gov.uk
     MANAGE-USERS_API_URL: https://manage-users-api.hmpps.service.justice.gov.uk
     ADJUSTMENTS_UI_URL: https://adjust-release-dates.hmpps.service.justice.gov.uk
+    REMAND-AND-SENTENCING_UI_URL: https://remand-and-sentencing.hmpps.service.justice.gov.uk
     APPLY_POST_HDCED_REPEAL_RULES: "false"
     ADULT_HDC_SUSPENDED: "true"
     PROGRESSION_TRANCHE_ONE_MANUAL_JOURNEY: "false"
