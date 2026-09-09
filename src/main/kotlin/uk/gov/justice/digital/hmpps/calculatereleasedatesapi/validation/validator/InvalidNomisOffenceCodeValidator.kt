@@ -12,17 +12,15 @@ class InvalidNomisOffenceCodeValidator : PreCalculationSourceDataValidator {
   override fun validate(
     sourceData: CalculationSourceData,
   ): List<ValidationMessage> = sourceData.sentenceAndOffences
-    .filter { sentenceAndOffence -> isInactiveNomisOffenceCode(sentenceAndOffence.offence.offenceCode) }
+    .filter { sentenceAndOffence -> isInactiveNomisOffenceCode(sentenceAndOffence.offence.offenceCode.uppercase()) }
     .map { sentenceAndOffence ->
-      ValidationMessage(
-        ValidationCode.INVALID_NOMIS_OFFENCE_CODE,
-        listOf(
-          sentenceAndOffence.offence.offenceCode,
-          sentenceAndOffence.offence.offenceDescription,
-          sentenceAndOffence.caseReference?.let { " from case $it" } ?: "",
-        ),
+      listOf(
+        sentenceAndOffence.offence.offenceCode,
+        sentenceAndOffence.offence.offenceDescription,
+        sentenceAndOffence.caseReference?.let { " from case $it" } ?: "",
       )
-    }
+    }.toSet()
+    .map { uniqueArgs -> ValidationMessage(ValidationCode.INVALID_NOMIS_OFFENCE_CODE, uniqueArgs) }
 
   private fun isInactiveNomisOffenceCode(offenceCode: String): Boolean = offenceCode.contains("-") || offenceCode.startsWith("XX") || offenceCode.endsWith("N")
 
