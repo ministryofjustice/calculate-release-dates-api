@@ -30,13 +30,15 @@ nomis-sync-mapping:
   api:
     url: http://localhost:8336
 
+remand-and-sentencing:
+  api:
+    url: http://localhost:8338
+  ui:
+    url: http://ras.example.com
+
 manage-users:
   api:
     url: http://localhost:8337
-
-remand-and-sentencing:
-  ui:
-    url: http://ras.example.com
 
 domain-events-sns:
   provider: localstack

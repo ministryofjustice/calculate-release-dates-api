@@ -63,9 +63,9 @@ class RemandPeriodsAgainstSentenceDateValidator(private val validationUtilities:
 
         if (areRemandDatesAfterSentenceDate) {
           validationMessages.add(
-            ValidationMessage(
+            validationUtilities.createValidationMessage(
               ValidationCode.REMAND_ON_OR_AFTER_SENTENCE_DATE,
-              validationUtilities.getCaseSeqAndLineSeq(sentence),
+              sentence,
             ),
           )
         }

@@ -68,6 +68,8 @@ manage-users:
 remand-and-sentencing:
   ui:
     url: http://ras.example.com
+  api:
+    url: http://localhost:8338
 
 domain-events-sns:
   provider: localstack

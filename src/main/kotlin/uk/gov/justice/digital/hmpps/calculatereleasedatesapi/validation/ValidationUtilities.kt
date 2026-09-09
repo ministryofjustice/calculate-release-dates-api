@@ -11,7 +11,6 @@ class ValidationUtilities {
     if (a.caseSequence < b.caseSequence) return -1
     return a.lineSequence - b.lineSequence
   }
-  internal fun getCaseSeqAndLineSeq(sentencesAndOffence: SentenceAndOffence) = listOf(sentencesAndOffence.caseSequence.toString(), sentencesAndOffence.lineSequence.toString())
 
   fun buildOverlappingMessageArguments(range1: LocalDateRange, range2: LocalDateRange): List<String> = listOf(
     range1.start.toString(),
@@ -19,4 +18,12 @@ class ValidationUtilities {
     range2.start.toString(),
     range2.end.toString(),
   )
+
+  fun createValidationMessage(code: ValidationCode, sentenceAndOffence: SentenceAndOffence, vararg extraArguments: String): ValidationMessage = ValidationMessage(
+    code,
+    getCaseSeqAndLineSeq(sentenceAndOffence).plus(extraArguments),
+    sentenceIdentifier = SentenceIdentifier(sentenceAndOffence.bookingId, sentenceAndOffence.sentenceSequence),
+  )
+
+  private fun getCaseSeqAndLineSeq(sentencesAndOffence: SentenceAndOffence): List<String> = listOf(sentencesAndOffence.caseSequence.toString(), sentencesAndOffence.lineSequence.toString())
 }

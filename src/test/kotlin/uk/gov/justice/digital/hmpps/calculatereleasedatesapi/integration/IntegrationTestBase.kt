@@ -26,6 +26,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremoc
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.NomisSyncMappingApiExtension
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.OAuthExtension
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.PrisonApiExtension
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.RemandAndSentencingApiExtension
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationFragments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationRequestModel
@@ -61,6 +62,7 @@ import uk.gov.justice.hmpps.test.kotlin.auth.JwtAuthorisationHelper
   ManageOffencesApiExtension::class,
   AdjustmentsApiExtension::class,
   NomisSyncMappingApiExtension::class,
+  RemandAndSentencingApiExtension::class,
   ManageUsersApiExtension::class,
 )
 @SpringBootTest(webEnvironment = RANDOM_PORT)

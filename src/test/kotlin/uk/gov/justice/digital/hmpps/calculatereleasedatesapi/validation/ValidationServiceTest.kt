@@ -568,6 +568,7 @@ class ValidationServiceTest : SpringTestBase() {
         ValidationMessage(
           SENTENCE_HAS_NO_IMPRISONMENT_TERM,
           listOf(CASE_SEQ.toString(), LINE_SEQ.toString()),
+          sentenceIdentifier = SentenceIdentifier(bookingId = 1, sentenceSequence = 7),
         ),
       ),
     )
@@ -606,6 +607,7 @@ class ValidationServiceTest : SpringTestBase() {
         ValidationMessage(
           ZERO_IMPRISONMENT_TERM,
           listOf(CASE_SEQ.toString(), LINE_SEQ.toString()),
+          sentenceIdentifier = SentenceIdentifier(bookingId = 1, sentenceSequence = 7),
         ),
       ),
     )
@@ -643,6 +645,7 @@ class ValidationServiceTest : SpringTestBase() {
         ValidationMessage(
           SENTENCE_HAS_NO_LICENCE_TERM,
           listOf(CASE_SEQ.toString(), LINE_SEQ.toString()),
+          sentenceIdentifier = SentenceIdentifier(bookingId = 1, sentenceSequence = 7),
         ),
       ),
     )
@@ -693,8 +696,8 @@ class ValidationServiceTest : SpringTestBase() {
 
     assertThat(result).isEqualTo(
       listOf(
-        ValidationMessage(EDS_LICENCE_TERM_LESS_THAN_ONE_YEAR, arguments = listOf("1", "2")),
-        ValidationMessage(EDS_LICENCE_TERM_LESS_THAN_ONE_YEAR, arguments = listOf("1", "2")),
+        ValidationMessage(EDS_LICENCE_TERM_LESS_THAN_ONE_YEAR, arguments = listOf("1", "2"), sentenceIdentifier = SentenceIdentifier(bookingId = 1, sentenceSequence = 7)),
+        ValidationMessage(EDS_LICENCE_TERM_LESS_THAN_ONE_YEAR, arguments = listOf("1", "2"), sentenceIdentifier = SentenceIdentifier(bookingId = 1, sentenceSequence = 7)),
       ),
     )
   }
@@ -780,7 +783,7 @@ class ValidationServiceTest : SpringTestBase() {
 
     assertThat(result).isEqualTo(
       listOf(
-        ValidationMessage(EDS_LICENCE_TERM_MORE_THAN_EIGHT_YEARS, listOf(CASE_SEQ.toString(), LINE_SEQ.toString())),
+        ValidationMessage(EDS_LICENCE_TERM_MORE_THAN_EIGHT_YEARS, listOf(CASE_SEQ.toString(), LINE_SEQ.toString()), sentenceIdentifier = SentenceIdentifier(bookingId = 1, sentenceSequence = 7)),
       ),
     )
   }
@@ -839,9 +842,9 @@ class ValidationServiceTest : SpringTestBase() {
 
     assertThat(result).isEqualTo(
       listOf(
-        ValidationMessage(EDS18_EDS21_EDSU18_SENTENCE_TYPE_INCORRECT, listOf(CASE_SEQ.toString(), LINE_SEQ.toString())),
-        ValidationMessage(EDS18_EDS21_EDSU18_SENTENCE_TYPE_INCORRECT, listOf(CASE_SEQ.toString(), LINE_SEQ.toString())),
-        ValidationMessage(EDS18_EDS21_EDSU18_SENTENCE_TYPE_INCORRECT, listOf(CASE_SEQ.toString(), LINE_SEQ.toString())),
+        ValidationMessage(EDS18_EDS21_EDSU18_SENTENCE_TYPE_INCORRECT, listOf(CASE_SEQ.toString(), LINE_SEQ.toString()), sentenceIdentifier = SentenceIdentifier(bookingId = 1, sentenceSequence = 7)),
+        ValidationMessage(EDS18_EDS21_EDSU18_SENTENCE_TYPE_INCORRECT, listOf(CASE_SEQ.toString(), LINE_SEQ.toString()), sentenceIdentifier = SentenceIdentifier(bookingId = 1, sentenceSequence = 7)),
+        ValidationMessage(EDS18_EDS21_EDSU18_SENTENCE_TYPE_INCORRECT, listOf(CASE_SEQ.toString(), LINE_SEQ.toString()), sentenceIdentifier = SentenceIdentifier(bookingId = 1, sentenceSequence = 7)),
       ),
     )
   }
@@ -884,7 +887,7 @@ class ValidationServiceTest : SpringTestBase() {
 
     assertThat(result).isEqualTo(
       listOf(
-        ValidationMessage(LASPO_AR_SENTENCE_TYPE_INCORRECT, listOf(CASE_SEQ.toString(), LINE_SEQ.toString())),
+        ValidationMessage(LASPO_AR_SENTENCE_TYPE_INCORRECT, listOf(CASE_SEQ.toString(), LINE_SEQ.toString()), sentenceIdentifier = SentenceIdentifier(bookingId = 1, sentenceSequence = 7)),
       ),
     )
   }
@@ -929,8 +932,8 @@ class ValidationServiceTest : SpringTestBase() {
 
     assertThat(result).isEqualTo(
       listOf(
-        ValidationMessage(MORE_THAN_ONE_IMPRISONMENT_TERM, listOf(CASE_SEQ.toString(), LINE_SEQ.toString())),
-        ValidationMessage(MORE_THAN_ONE_LICENCE_TERM, listOf(CASE_SEQ.toString(), LINE_SEQ.toString())),
+        ValidationMessage(MORE_THAN_ONE_IMPRISONMENT_TERM, listOf(CASE_SEQ.toString(), LINE_SEQ.toString()), sentenceIdentifier = SentenceIdentifier(bookingId = 1, sentenceSequence = 7)),
+        ValidationMessage(MORE_THAN_ONE_LICENCE_TERM, listOf(CASE_SEQ.toString(), LINE_SEQ.toString()), sentenceIdentifier = SentenceIdentifier(bookingId = 1, sentenceSequence = 7)),
       ),
     )
   }
@@ -1001,8 +1004,8 @@ class ValidationServiceTest : SpringTestBase() {
 
     assertThat(result).isEqualTo(
       listOf(
-        ValidationMessage(SOPC18_SOPC21_SENTENCE_TYPE_INCORRECT, listOf(CASE_SEQ.toString(), LINE_SEQ.toString())),
-        ValidationMessage(SOPC18_SOPC21_SENTENCE_TYPE_INCORRECT, listOf(CASE_SEQ.toString(), LINE_SEQ.toString())),
+        ValidationMessage(SOPC18_SOPC21_SENTENCE_TYPE_INCORRECT, listOf(CASE_SEQ.toString(), LINE_SEQ.toString()), sentenceIdentifier = SentenceIdentifier(bookingId = 1, sentenceSequence = 7)),
+        ValidationMessage(SOPC18_SOPC21_SENTENCE_TYPE_INCORRECT, listOf(CASE_SEQ.toString(), LINE_SEQ.toString()), sentenceIdentifier = SentenceIdentifier(bookingId = 1, sentenceSequence = 7)),
       ),
     )
   }
@@ -1111,8 +1114,8 @@ class ValidationServiceTest : SpringTestBase() {
 
     assertThat(result).isEqualTo(
       listOf(
-        ValidationMessage(SOPC_LICENCE_TERM_NOT_12_MONTHS, listOf(CASE_SEQ.toString(), LINE_SEQ.toString())),
-        ValidationMessage(SOPC_LICENCE_TERM_NOT_12_MONTHS, listOf(CASE_SEQ.toString(), LINE_SEQ.toString())),
+        ValidationMessage(SOPC_LICENCE_TERM_NOT_12_MONTHS, listOf(CASE_SEQ.toString(), LINE_SEQ.toString()), sentenceIdentifier = SentenceIdentifier(bookingId = 1, sentenceSequence = 7)),
+        ValidationMessage(SOPC_LICENCE_TERM_NOT_12_MONTHS, listOf(CASE_SEQ.toString(), LINE_SEQ.toString()), sentenceIdentifier = SentenceIdentifier(bookingId = 1, sentenceSequence = 7)),
       ),
     )
   }
@@ -1678,7 +1681,7 @@ class ValidationServiceTest : SpringTestBase() {
 
     assertThat(result).isEqualTo(
       listOf(
-        ValidationMessage(A_FINE_SENTENCE_MISSING_FINE_AMOUNT, listOf(CASE_SEQ.toString(), LINE_SEQ.toString())),
+        ValidationMessage(A_FINE_SENTENCE_MISSING_FINE_AMOUNT, listOf(CASE_SEQ.toString(), LINE_SEQ.toString()), sentenceIdentifier = SentenceIdentifier(bookingId = 1, sentenceSequence = 7)),
       ),
     )
   }
@@ -2652,7 +2655,7 @@ class ValidationServiceTest : SpringTestBase() {
     )
 
     val result = validationService.validateOnlyOffenceDatesForManualEntry(PRISONER_ID)
-    assertThat(result).containsExactly(ValidationMessage(ValidationCode.OFFENCE_MISSING_DATE, listOf("1", "2")))
+    assertThat(result).containsExactly(ValidationMessage(ValidationCode.OFFENCE_MISSING_DATE, listOf("1", "2"), sentenceIdentifier = SentenceIdentifier(bookingId = 1, sentenceSequence = 7)))
   }
 
   @Test

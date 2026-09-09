@@ -49,6 +49,12 @@ spring:
             client-secret: ${client.creds.client.secret}
             authorization-grant-type: client_credentials
             scope: read,write
+          remand-and-sentencing-api:
+            provider: hmpps-auth
+            client-id: ${client.creds.client.id}
+            client-secret: ${client.creds.client.secret}
+            authorization-grant-type: client_credentials
+            scope: read,write
           manage-users-api:
             provider: hmpps-auth
             client-id: ${client.creds.client.id}

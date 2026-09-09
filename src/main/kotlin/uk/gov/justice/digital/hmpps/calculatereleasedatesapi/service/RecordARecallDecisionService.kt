@@ -46,6 +46,7 @@ class RecordARecallDecisionService(
   private val bookingService: BookingService,
   private val nomisSyncMappingApiClient: NomisSyncMappingApiClient,
   private val featureToggles: FeatureToggles,
+  private val dpsValidationMessageDecoratorService: DpsValidationMessageDecoratorService,
 ) {
 
   fun validate(prisonerId: String): RecordARecallValidationResult {
@@ -108,9 +109,10 @@ class RecordARecallDecisionService(
   private fun validate(sourceData: CalculationSourceData): RecallInterimValidationResult {
     val validationResult = validationService.validate(sourceData, CalculationUserInputs(), ValidationOrder.INVALID)
     val (criticalValidationMessages, otherValidationMessages) = validationResult.partition { criticalValidationErrors.contains(it.code) }
+    val dpsDecoratedCriticalValidationMessages = dpsValidationMessageDecoratorService.decorateCriticalMessages(criticalValidationMessages, sourceData.sentenceAndOffences)
 
     return RecallInterimValidationResult(
-      criticalMessages = criticalValidationMessages,
+      criticalMessages = dpsDecoratedCriticalValidationMessages,
       otherMessages = otherValidationMessages,
       earliestSentenceDate = sourceData.sentenceAndOffences.minOfOrNull { it.sentenceDate },
     )
