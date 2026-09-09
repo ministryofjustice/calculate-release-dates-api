@@ -14,7 +14,7 @@ class InvalidNomisOffenceCodeValidator(
 
   override fun validate(
     sourceData: CalculationSourceData,
-  ): List<ValidationMessage> = sourceData.sentenceAndOffences.map { it }
+  ): List<ValidationMessage> = sourceData.sentenceAndOffences
     .filter { sentenceAndOffence -> isInactiveNomisOffenceCode(sentenceAndOffence.offence.offenceCode) }
     .map { sentenceAndOffence ->
       ValidationMessage(
