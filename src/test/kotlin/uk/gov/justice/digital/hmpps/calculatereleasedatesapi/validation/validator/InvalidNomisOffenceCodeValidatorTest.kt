@@ -16,7 +16,7 @@ import java.time.LocalDate
 
 class InvalidNomisOffenceCodeValidatorTest {
 
-  private val validator = InvalidNomisOffenceCodeValidator(REMAND_AND_SENTENCING_UI_URL)
+  private val validator = InvalidNomisOffenceCodeValidator()
 
   @ParameterizedTest
   @CsvSource(
@@ -109,7 +109,7 @@ class InvalidNomisOffenceCodeValidatorTest {
         returnToCustodyDate = null,
       ),
     )
-    val expectedMessage = ValidationMessage(ValidationCode.INVALID_NOMIS_OFFENCE_CODE, listOf(offenceCode, "Some offence description", " from case CASEABC123", REMAND_AND_SENTENCING_UI_URL, PRISONER_NUMBER))
+    val expectedMessage = ValidationMessage(ValidationCode.INVALID_NOMIS_OFFENCE_CODE, listOf(offenceCode, "Some offence description", " from case CASEABC123"))
     assertThat(messages).containsExactly(expectedMessage)
   }
 
@@ -123,8 +123,8 @@ class InvalidNomisOffenceCodeValidatorTest {
         returnToCustodyDate = null,
       ),
     )
-    val expectedMessage = ValidationMessage(ValidationCode.INVALID_NOMIS_OFFENCE_CODE, listOf("XX123", "Some offence description", " from case CASEABC123", REMAND_AND_SENTENCING_UI_URL, PRISONER_NUMBER))
-    assertThat(expectedMessage.message).isEqualTo("The offence XX123 Some offence description from case CASEABC123 is invalid.<br/>Check the warrant information and update the offence code in the <a href=\"https://ras.example.com/person/A1234BC\">Court Cases tab</a>.")
+    val expectedMessage = ValidationMessage(ValidationCode.INVALID_NOMIS_OFFENCE_CODE, listOf("XX123", "Some offence description", " from case CASEABC123"))
+    assertThat(expectedMessage.message).isEqualTo("The offence XX123 Some offence description from case CASEABC123 is invalid.")
     assertThat(messages).containsExactly(expectedMessage)
   }
 
@@ -138,8 +138,8 @@ class InvalidNomisOffenceCodeValidatorTest {
         returnToCustodyDate = null,
       ),
     )
-    val expectedMessage = ValidationMessage(ValidationCode.INVALID_NOMIS_OFFENCE_CODE, listOf("XX123", "Some offence description", "", REMAND_AND_SENTENCING_UI_URL, PRISONER_NUMBER))
-    assertThat(expectedMessage.message).isEqualTo("The offence XX123 Some offence description is invalid.<br/>Check the warrant information and update the offence code in the <a href=\"https://ras.example.com/person/A1234BC\">Court Cases tab</a>.")
+    val expectedMessage = ValidationMessage(ValidationCode.INVALID_NOMIS_OFFENCE_CODE, listOf("XX123", "Some offence description", ""))
+    assertThat(expectedMessage.message).isEqualTo("The offence XX123 Some offence description is invalid.")
     assertThat(messages).containsExactly(expectedMessage)
   }
 
@@ -169,7 +169,6 @@ class InvalidNomisOffenceCodeValidatorTest {
       offenderNo = PRISONER_NUMBER,
       dateOfBirth = LocalDate.of(1980, 1, 1),
     )
-    private const val REMAND_AND_SENTENCING_UI_URL = "https://ras.example.com"
     private val AN_OFFENCE = OffenderOffence(1L, LocalDate.of(2015, 1, 1), null, "ABC", "Some offence description", listOf("A"))
     private val A_SENTENCE = SentenceAndOffenceWithReleaseArrangements(
       bookingId = 999L,
