@@ -9,6 +9,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOptions
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ERSLegislation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceGroup
 import java.time.LocalDate
@@ -36,6 +37,7 @@ data class TimelineTrackingData(
   val applicableSdsLegislations: ApplicableSDSLegislations = ApplicableSDSLegislations(),
   val trancheAllocationByLegislationName: MutableMap<LegislationName, TrancheName> = mutableMapOf(),
   val originalAdjustments: Adjustments,
+  val applicableErsLegislation: MutableList<ERSLegislation> = mutableListOf(ERSLegislation.ERS50),
 ) {
 
   lateinit var latestCalculation: CalculationResult

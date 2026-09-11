@@ -9,6 +9,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentDuration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ERSLegislation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
@@ -18,21 +19,27 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqual
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
+import kotlin.collections.set
 
 @Service
 class ErsedCalculator(
   private val ersedConfiguration: ErsedConfiguration,
 ) {
 
-  fun generateEarlyReleaseSchemeEligibilityDateBreakdown(sentence: CalculableSentence, sentenceCalculation: SentenceCalculation) {
+  fun generateEarlyReleaseSchemeEligibilityDateBreakdown(sentence: CalculableSentence, sentenceCalculation: SentenceCalculation, enabledLegislation: List<ERSLegislation>) {
     if (isSentenceEligible(sentence)) {
-      calculateUsingBothERS30AndERS50(sentence, sentenceCalculation)
+      if (ERSLegislation.ERS30 in enabledLegislation) {
+        calculateUsingBothERS30AndERS50(sentence, sentenceCalculation)
+      } else {
+        calculateUsingJustERS50(sentence, sentenceCalculation)
+      }
     }
   }
 
   private fun calculateUsingBothERS30AndERS50(sentence: CalculableSentence, sentenceCalculation: SentenceCalculation) {
-    val isConsideredPostERS30Sentence = isSentencedOnOrAfterCommencement(sentence) || isConsecutiveSentenceWithSentencesBeforeAndAfterCommencement(sentence)
-    val ers50Result = if (isConsideredPostERS30Sentence) {
+    val isSentencedOnOrAfterCommencement = isSentencedOnOrAfterCommencement(sentence)
+    val isConsecutiveSentenceWithSentencesBeforeAndAfterCommencement = isConsecutiveSentenceWithSentencesBeforeAndAfterCommencement(sentence)
+    val ers50Result = if (isSentencedOnOrAfterCommencement || isConsecutiveSentenceWithSentencesBeforeAndAfterCommencement) {
       null
     } else {
       calculate(
@@ -57,7 +64,20 @@ class ErsedCalculator(
 
     if (ers50Result != null && ers50Result.adjustedDateExcludingAwarded.isBefore(ImportantDates.ERS30_COMMENCEMENT_DATE)) {
       sentenceCalculation.breakdownByReleaseDateType[ReleaseDateType.ERSED] = ers50Result.breakdown
-    } else if (isConsideredPostERS30Sentence || ers30Result.adjustedDateExcludingAwarded.isAfterOrEqualTo(ImportantDates.ERS30_COMMENCEMENT_DATE)) {
+    } else if (isSentencedOnOrAfterCommencement) {
+      sentenceCalculation.breakdownByReleaseDateType[ReleaseDateType.ERSED] = ers30Result.breakdown
+    } else if (isConsecutiveSentenceWithSentencesBeforeAndAfterCommencement) {
+      val priorErsedSnapshot = sentenceCalculation.ersedSnapshotPriorToLatestSentenceBeingImposedConsecutively
+      if (
+        priorErsedSnapshot != null &&
+        priorErsedSnapshot.breakdown.releaseDate.minusDays(priorErsedSnapshot.awardedDuringCustodyAtSnapshot).isAfter(ers30Result.adjustedDateExcludingAwarded) &&
+        priorErsedSnapshot.breakdown.releaseDate.isBefore(priorErsedSnapshot.snapshotDate)
+      ) {
+        sentenceCalculation.breakdownByReleaseDateType[ReleaseDateType.ERSED] = priorErsedSnapshot.breakdown
+      } else {
+        sentenceCalculation.breakdownByReleaseDateType[ReleaseDateType.ERSED] = ers30Result.breakdown
+      }
+    } else if (ers30Result.adjustedDateExcludingAwarded.isAfterOrEqualTo(ImportantDates.ERS30_COMMENCEMENT_DATE)) {
       sentenceCalculation.breakdownByReleaseDateType[ReleaseDateType.ERSED] = ers30Result.breakdown
     } else {
       val daysToBeAddedExcludingUAL = sentenceCalculation.adjustments.awardedDuringCustody -
@@ -70,6 +90,19 @@ class ErsedCalculator(
         rules = setOf(CalculationRule.ERSED_ADJUSTED_TO_ERS30_COMMENCEMENT),
       )
     }
+  }
+
+  private fun calculateUsingJustERS50(sentence: CalculableSentence, sentenceCalculation: SentenceCalculation) {
+    val ers50Result = calculate(
+      Params(
+        sentence = sentence,
+        sentenceCalculation = sentenceCalculation,
+        maxPeriodUnit = ersedConfiguration.ers50MaxPeriodUnit,
+        maxPeriodAmount = ersedConfiguration.ers50MaxPeriodAmount,
+        releaseMultiplier = ersedConfiguration.ers50ReleasePoint.value,
+      ),
+    )
+    sentenceCalculation.breakdownByReleaseDateType[ReleaseDateType.ERSED] = ers50Result.breakdown
   }
 
   private fun isConsecutiveSentenceWithSentencesBeforeAndAfterCommencement(sentence: CalculableSentence): Boolean = (sentence is ConsecutiveSentence) && sentence.hasSentencesBeforeAndAfter(ImportantDates.ERS30_COMMENCEMENT_DATE)

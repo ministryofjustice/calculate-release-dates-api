@@ -3,7 +3,6 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.FTRLegislationConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.LegislationName
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.PreLegislationCalculation
@@ -21,6 +20,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOptions
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOutput
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ERSLegislation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExternalMovement
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceGroup
@@ -28,6 +28,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDa
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.SDSProgressionModelFinalDatesService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.WorkingDayService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculationEvent.AwardedAdjustmentTimelineCalculationEvent
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculationEvent.ERSLegislationCommencementTimelineCalculationEvent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculationEvent.ExternalMovementTimelineCalculationEvent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculationEvent.FTR56TrancheTimelineCalculationEvent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculationEvent.ProgressionModelSnapshotTimelineCalculationEvent
@@ -39,6 +40,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.Ti
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculationEvent.SentenceTimelineCalculationEvent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculationEvent.SimpleSnapshotTimelineCalculationEvent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculationEvent.UALTimelineCalculationEvent
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers.ERSCommencementTimelineCalculationHandler
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers.ProgressionModelSnapshotTimelineCalculationHandler
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers.SDS40SnapshotTimelineCalculationHandler
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers.SDSTrancheRecalculationTimelineCalculationHandler
@@ -73,7 +75,7 @@ class BookingTimelineService(
   private val progressionModelSnapshotTimelineCalculationHandler: ProgressionModelSnapshotTimelineCalculationHandler,
   private val sdsTrancheRecalculationTimelineCalculationHandler: SDSTrancheRecalculationTimelineCalculationHandler,
   private val simpleSnapshotTimelineCalculationHandler: SimpleSnapshotTimelineCalculationHandler,
-  private val featureToggles: FeatureToggles,
+  private val ersCommencementTimelineCalculationHandler: ERSCommencementTimelineCalculationHandler,
 ) {
 
   fun calculate(
@@ -129,6 +131,7 @@ class BookingTimelineService(
           is ExternalMovementTimelineCalculationEvent -> timelineExternalMovementCalculationHandler.handle(it, timelineTrackingData)
           is SDSLegislationAmendmentTimelineCalculationEvent -> timelineSDSLegislationAmendmentHandler.handle(it, timelineTrackingData)
           is SimpleSnapshotTimelineCalculationEvent -> simpleSnapshotTimelineCalculationHandler.handle(it, timelineTrackingData)
+          is ERSLegislationCommencementTimelineCalculationEvent -> ersCommencementTimelineCalculationHandler.handle(it, timelineTrackingData)
         }
       }
       val anyCalculationRequired = results.any { it.requiresCalculation }
@@ -163,6 +166,7 @@ class BookingTimelineService(
           offender,
           returnToCustodyDate,
           snapshots,
+          applicableErsLegislation,
         )
 
       val allSentences = releasedSentenceGroups.flatMap { it.sentences }
@@ -222,7 +226,7 @@ class BookingTimelineService(
           }
           currentSentenceGroup.clear()
         }
-        latestCalculation = timelineCalculator.getLatestCalculation(releasedSentenceGroups.map { it.sentences }, offender, returnToCustodyDate, snapshots)
+        latestCalculation = timelineCalculator.getLatestCalculation(releasedSentenceGroups.map { it.sentences }, offender, returnToCustodyDate, snapshots, applicableErsLegislation)
       }
       if (licenceSentences.isNotEmpty()) {
         val sentencesThatHaveExpired = licenceSentences.filter { date.isAfter(it.sentenceCalculation.licenceExpiryAtInitialRelease) }
@@ -234,16 +238,20 @@ class BookingTimelineService(
 
   private fun getCalculationsByDate(sentences: List<CalculableSentence>, futureData: TimelineFutureData, externalMovements: List<ExternalMovement>, calculateErsed: Boolean): Map<LocalDate, List<TimelineCalculationEvent>> {
     val sentenceParts = sentences.flatMap { it.sentenceParts() }
-    val ers30SnapshotIfRequired = if (featureToggles.useLatestErsedFromPreErs30Snapshot && calculateErsed && sentenceParts.any { it.sentencedAt.isAfter(ImportantDates.ERS30_COMMENCEMENT_DATE) }) SimpleSnapshotTimelineCalculationEvent(ImportantDates.ERS30_COMMENCEMENT_DATE, SnapshotName.BEFORE_ERS30) else null
     return (
-      sentenceParts.map { part -> SentenceTimelineCalculationEvent(part.sentencedAt) } +
+      sentenceParts.flatMap { part ->
+        listOfNotNull(
+          if (part.consecutiveSentenceUUIDs.isNotEmpty()) SimpleSnapshotTimelineCalculationEvent(part.sentencedAt, SnapshotName.BEFORE_IMPOSING_SENTENCE_CONSECUTIVELY) else null,
+          SentenceTimelineCalculationEvent(part.sentencedAt),
+        )
+      } +
         futureData.additional.map { AwardedAdjustmentTimelineCalculationEvent(it.appliesToSentencesFrom, TimelineCalculationType.ADDITIONAL_DAYS) } +
         futureData.restored.map { AwardedAdjustmentTimelineCalculationEvent(it.appliesToSentencesFrom, TimelineCalculationType.RESTORATION_DAYS) } +
         futureData.ual.map { UALTimelineCalculationEvent(it.appliesToSentencesFrom) } +
         sdsLegislationConfiguration.all().flatMap { legislation -> legislation.requiredTimelineCalculations() } +
         ftrLegislationConfiguration.ftr56Legislation.requiredTimelineCalculations() +
         externalMovements.map { ExternalMovementTimelineCalculationEvent(it.movementDate) } +
-        listOfNotNull(ers30SnapshotIfRequired)
+        listOfNotNull(ERSLegislationCommencementTimelineCalculationEvent(ImportantDates.ERS30_COMMENCEMENT_DATE, ERSLegislation.ERS30))
       )
       .sortedBy { it.date }
       .distinct()

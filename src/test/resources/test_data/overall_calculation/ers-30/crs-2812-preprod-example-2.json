@@ -1,0 +1,173 @@
+{
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01",
+      "isActiveSexOffender": true
+    },
+    "sentences": [
+      {
+        "offence": {
+          "committedAt": "2024-09-16",
+          "offenceCode": "TH68026"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 6,
+            "YEARS": 4
+          }
+        },
+        "sentencedAt": "2025-03-11",
+        "identifier": "226dde7b-483f-3209-8814-378ae8cd1e92",
+        "caseReference": null,
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
+      },
+      {
+        "offence": {
+          "committedAt": "2024-12-20",
+          "offenceCode": "TH68026A"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 6,
+            "YEARS": 4
+          }
+        },
+        "sentencedAt": "2025-03-11",
+        "identifier": "0f4fb088-8aa2-3762-9a75-44c70797db86",
+        "caseReference": null,
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
+      },
+      {
+        "offence": {
+          "committedAt": "2024-08-31",
+          "offenceCode": "TH68026"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 4
+          }
+        },
+        "sentencedAt": "2025-03-11",
+        "identifier": "aac41241-6d2f-3aa5-a0c6-a8cca664ef17",
+        "caseReference": null,
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
+      },
+      {
+        "offence": {
+          "committedAt": "2024-07-10",
+          "offenceCode": "TH68036"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 3,
+            "YEARS": 2
+          }
+        },
+        "sentencedAt": "2025-04-30",
+        "identifier": "f863fc98-7e8e-30ed-86fa-3a534aae0241",
+        "consecutiveSentenceUUIDs": [
+          "226dde7b-483f-3209-8814-378ae8cd1e92"
+        ],
+        "caseReference": null,
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
+      },
+      {
+        "offence": {
+          "committedAt": "2024-07-26",
+          "offenceCode": "TH68036"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 3,
+            "YEARS": 2
+          }
+        },
+        "sentencedAt": "2025-04-30",
+        "identifier": "a343d28a-99fa-33e8-bb0b-82806a785acf",
+        "caseReference": null,
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
+      },
+      {
+        "offence": {
+          "committedAt": "2024-07-01",
+          "offenceCode": "TH68036"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 3
+          }
+        },
+        "sentencedAt": "2025-11-14",
+        "identifier": "771acfb2-451b-30d4-9e2e-5c4f06cbdb44",
+        "consecutiveSentenceUUIDs": [
+          "f863fc98-7e8e-30ed-86fa-3a534aae0241"
+        ],
+        "caseReference": null,
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
+      }
+    ],
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2025-11-14",
+          "numberOfDays": 13,
+          "fromDate": "2025-02-26",
+          "toDate": "2025-03-10",
+          "additionalInfo": {
+            "type": "NONE"
+          }
+        },
+        {
+          "appliesToSentencesFrom": "2025-11-14",
+          "numberOfDays": 46,
+          "fromDate": "2025-01-10",
+          "toDate": "2025-02-24",
+          "additionalInfo": {
+            "type": "NONE"
+          }
+        }
+      ]
+    }
+  },
+  "userInputs": {
+    "calculateErsed": true,
+    "useOffenceIndicators": true
+  },
+  "params": "sds-progression-model-october",
+  "featureToggles": {
+    "applyPostRecallRepealRules": true,
+    "routePreProgressionExtinguishedSentenceToManual": true,
+    "useLatestErsedFromPreConsecutivelyImposedSnapshot": true
+  }
+}

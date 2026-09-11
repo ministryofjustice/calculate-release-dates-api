@@ -140,6 +140,9 @@ data class SentenceCalculation(
       return breakdownByReleaseDateType[ReleaseDateType.ERSED]?.releaseDate
     }
 
+  // only relevant to consecutive chains where the sentences do not all have the same sentencing date
+  var ersedSnapshotPriorToLatestSentenceBeingImposedConsecutively: SentenceSnapshotCalculationBreakdown? = null
+
   // Licence Expiry Date (LED)
   var numberOfDaysToLicenceExpiryDate: Long = 0
   private var _licenceExpiryDate: LocalDate? = null

@@ -7,6 +7,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Senten
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AFineSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ERSLegislation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Term
@@ -21,15 +22,21 @@ class TimelineCalculator(
   private val bookingExtractionService: BookingExtractionService,
 ) {
 
-  fun getLatestCalculation(sentences: List<List<CalculableSentence>>, offender: Offender, returnToCustodyDate: LocalDate? = null, snapshots: Map<SnapshotName, CalculationSnapshot>): CalculationResult {
+  fun getLatestCalculation(
+    sentences: List<List<CalculableSentence>>,
+    offender: Offender,
+    returnToCustodyDate: LocalDate? = null,
+    snapshots: Map<SnapshotName, CalculationSnapshot>,
+    enabledLegislation: List<ERSLegislation>,
+  ): CalculationResult {
     calculateUnusedAdas(sentences)
     sentences.flatten().forEach {
-      sentenceAdjustedCalculationService.calculateDatesFromAdjustments(it, offender)
+      sentenceAdjustedCalculationService.calculateDatesFromAdjustments(it, offender, enabledLegislation)
     }
     val adjustAgain = calculateUnusedLicenceAdas(sentences)
     if (adjustAgain) {
       sentences.flatten().forEach {
-        sentenceAdjustedCalculationService.calculateDatesFromAdjustments(it, offender)
+        sentenceAdjustedCalculationService.calculateDatesFromAdjustments(it, offender, enabledLegislation)
       }
     }
     return bookingExtractionService.extract(
