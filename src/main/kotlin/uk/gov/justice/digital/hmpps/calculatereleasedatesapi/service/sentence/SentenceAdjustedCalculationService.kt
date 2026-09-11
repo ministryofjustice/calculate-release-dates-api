@@ -21,6 +21,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentDur
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BotusSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ERSLegislation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
@@ -45,7 +46,7 @@ class SentenceAdjustedCalculationService(
     This function calculates dates after adjustments have been decided.
     It can be run many times to recalculate dates. It needs to be run if there is a change to adjustments.
    */
-  fun calculateDatesFromAdjustments(sentence: CalculableSentence, offender: Offender): SentenceCalculation {
+  fun calculateDatesFromAdjustments(sentence: CalculableSentence, offender: Offender, enabledERSLegislation: List<ERSLegislation>): SentenceCalculation {
     val sentenceCalculation: SentenceCalculation = sentence.sentenceCalculation
     // Other adjustments need to be included in the sentence calculation here
     setCrdOrArdDetails(sentence, sentenceCalculation)
@@ -53,7 +54,7 @@ class SentenceAdjustedCalculationService(
     setPedDetails(sentence, sentenceCalculation)
 
     if (sentenceCalculation.calculateErsed) {
-      ersedCalculator.generateEarlyReleaseSchemeEligibilityDateBreakdown(sentence, sentenceCalculation)
+      ersedCalculator.generateEarlyReleaseSchemeEligibilityDateBreakdown(sentence, sentenceCalculation, enabledERSLegislation)
     }
 
     if (sentence is BotusSentence) {

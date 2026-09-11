@@ -1,0 +1,148 @@
+{
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01",
+      "isActiveSexOffender": true
+    },
+    "sentences": [
+      {
+        "offence": {
+          "committedAt": "2020-07-17",
+          "offenceCode": "MD71230"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 7
+          }
+        },
+        "sentencedAt": "2024-02-06",
+        "identifier": "817cc801-d5f5-3b5e-933d-4f0f14d5ff34",
+        "caseReference": null,
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
+      },
+      {
+        "offence": {
+          "committedAt": "2020-07-17",
+          "offenceCode": "MD71233"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 8
+          }
+        },
+        "sentencedAt": "2024-02-06",
+        "identifier": "9b14990c-74b6-30f7-94ef-73bb72d258ed",
+        "consecutiveSentenceUUIDs": [
+          "817cc801-d5f5-3b5e-933d-4f0f14d5ff34"
+        ],
+        "caseReference": null,
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
+      },
+      {
+        "offence": {
+          "committedAt": "2020-07-17",
+          "offenceCode": "MD71526"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 4
+          }
+        },
+        "sentencedAt": "2024-02-06",
+        "identifier": "df893a85-2ef0-34fc-b3ed-1315fd4880a4",
+        "caseReference": null,
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
+      },
+      {
+        "offence": {
+          "committedAt": "2020-07-17",
+          "offenceCode": "MD71240"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 6
+          }
+        },
+        "sentencedAt": "2024-02-06",
+        "identifier": "58e51961-ad84-3a61-9bc1-85b6b13446a8",
+        "caseReference": null,
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
+      },
+      {
+        "offence": {
+          "committedAt": "2022-10-28",
+          "offenceCode": "BA76001"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 2
+          }
+        },
+        "sentencedAt": "2026-05-29",
+        "identifier": "e7830e3c-8a0e-33d2-a6e6-cbe4454e5e28",
+        "consecutiveSentenceUUIDs": [
+          "9b14990c-74b6-30f7-94ef-73bb72d258ed"
+        ],
+        "caseReference": null,
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
+      }
+    ],
+    "adjustments": {
+      "UNLAWFULLY_AT_LARGE": [
+        {
+          "appliesToSentencesFrom": "2024-02-07",
+          "numberOfDays": 822,
+          "fromDate": "2024-02-07",
+          "toDate": "2026-05-08",
+          "additionalInfo": {
+            "type": "UAL",
+            "reason": "SENTENCED_IN_ABSENCE"
+          }
+        }
+      ]
+    },
+    "externalMovements": [
+      {
+        "movementDate": "2026-05-11",
+        "movementReason": "REMAND",
+        "direction": "IN"
+      }
+    ]
+  },
+  "userInputs": {
+    "calculateErsed": true,
+    "useOffenceIndicators": true
+  },
+  "params": "sds-progression-model-october",
+  "featureToggles": {
+    "applyPostRecallRepealRules": true,
+    "routePreProgressionExtinguishedSentenceToManual": true,
+    "useLatestErsedFromPreConsecutivelyImposedSnapshot": true
+  }
+}

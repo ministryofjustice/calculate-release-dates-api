@@ -18,7 +18,7 @@ data class FeatureToggles(
   var progressionTrancheOneManualJourney: Boolean = false,
   var progressionModelScheduleExclusionEnabled: Boolean = false,
   var routeProgressionModelScheduleExclusionToManual: Boolean = false,
-  var useLatestErsedFromPreErs30Snapshot: Boolean = false,
+  var useLatestErsedFromPreConsecutivelyImposedSnapshot: Boolean = false,
 ) {
   fun toConfigItems(): List<ConfigItem> = listOf(
     ConfigItem("Support inactive sentences and adjustments", supportInactiveSentencesAndAdjustments.toString()),
@@ -34,6 +34,6 @@ data class FeatureToggles(
     ConfigItem("Progression Model route T1 to manual", progressionTrancheOneManualJourney.toString()),
     ConfigItem("Progression Model excluded offences enabled", progressionModelScheduleExclusionEnabled.toString()),
     ConfigItem("Progression Model route excluded offences to manual", routeProgressionModelScheduleExclusionToManual.toString()),
-    ConfigItem("Use latest ERSED from pre-ERS30 snapshot (CRS-2812)", useLatestErsedFromPreErs30Snapshot.toString()),
+    ConfigItem("Use latest ERSED from snapshots taken before a sentence is imposed consecutively (CRS-2812)", useLatestErsedFromPreConsecutivelyImposedSnapshot.toString()),
   )
 }
