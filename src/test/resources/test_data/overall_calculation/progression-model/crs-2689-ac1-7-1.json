@@ -9,18 +9,18 @@
       {
         "type": "StandardSentence",
         "offence": {
-          "committedAt": "2025-11-24"
+          "committedAt": "2022-12-16"
         },
         "duration": {
           "durationElements": {
-            "MONTHS": 40
+            "MONTHS": 69
           }
         },
-        "sentencedAt": "2025-11-24",
+        "sentencedAt": "2022-12-16",
         "releaseArrangements": {
-          "isSDSPlus": false,
-          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
-          "sdsEarlyReleaseExclusions": ["VIOLENT"],
+          "isSDSPlus": true,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": true,
+          "sdsEarlyReleaseExclusions": [],
           "isSection250": false
         },
         "identifier": "d211f333-aa1a-3e25-ac8d-0459c1f98868"
@@ -28,17 +28,17 @@
       {
         "type": "StandardSentence",
         "offence": {
-          "committedAt": "2026-10-12"
+          "committedAt": "2026-10-05"
         },
         "duration": {
           "durationElements": {
-            "MONTHS": 12
+            "MONTHS": 48
           }
         },
-        "sentencedAt": "2026-10-12",
+        "sentencedAt": "2026-10-05",
         "releaseArrangements": {
-          "isSDSPlus": false,
-          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "isSDSPlus": true,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": true,
           "sdsEarlyReleaseExclusions": [],
           "isSection250": false
         },
