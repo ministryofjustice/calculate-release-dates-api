@@ -50,11 +50,13 @@
     "adjustments": {}
   },
   "userInputs": {
+    "calculateErsed": true,
     "useOffenceIndicators": true
   },
   "params": "sds-progression-model-october",
   "featureToggles": {
     "applyPostRecallRepealRules": true,
-    "routePreProgressionExtinguishedSentenceToManual": true
+    "routePreProgressionExtinguishedSentenceToManual": true,
+    "useLatestErsedFromPreConsecutivelyImposedSnapshot": true
   }
 }

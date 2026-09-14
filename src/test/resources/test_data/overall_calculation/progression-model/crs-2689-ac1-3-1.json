@@ -9,14 +9,14 @@
       {
         "type": "StandardSentence",
         "offence": {
-          "committedAt": "2022-12-16"
+          "committedAt": "2024-05-07"
         },
         "duration": {
           "durationElements": {
-            "MONTHS": 69
+            "YEARS": 4
           }
         },
-        "sentencedAt": "2022-12-16",
+        "sentencedAt": "2024-05-07",
         "releaseArrangements": {
           "isSDSPlus": true,
           "isSDSPlusEligibleSentenceTypeLengthAndOffence": true,
@@ -28,17 +28,17 @@
       {
         "type": "StandardSentence",
         "offence": {
-          "committedAt": "2026-09-16"
+          "committedAt": "2026-10-03"
         },
         "duration": {
           "durationElements": {
-            "MONTHS": 48
+            "MONTHS": 2
           }
         },
-        "sentencedAt": "2026-09-16",
+        "sentencedAt": "2026-10-03",
         "releaseArrangements": {
-          "isSDSPlus": true,
-          "isSDSPlusEligibleSentenceTypeLengthAndOffence": true,
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
           "sdsEarlyReleaseExclusions": [],
           "isSection250": false
         },
@@ -47,14 +47,24 @@
         ]
       }
     ],
-    "adjustments": {}
+    "adjustments": {
+      "ADDITIONAL_DAYS_AWARDED": [
+        {
+          "appliesToSentencesFrom": "2025-01-13",
+          "numberOfDays": 5,
+          "fromDate": "2025-01-13"
+        }
+      ]
+    }
   },
   "userInputs": {
+    "calculateErsed": true,
     "useOffenceIndicators": true
   },
   "params": "sds-progression-model-october",
   "featureToggles": {
     "applyPostRecallRepealRules": true,
-    "routePreProgressionExtinguishedSentenceToManual": true
+    "routePreProgressionExtinguishedSentenceToManual": true,
+    "useLatestErsedFromPreConsecutivelyImposedSnapshot": true
   }
 }

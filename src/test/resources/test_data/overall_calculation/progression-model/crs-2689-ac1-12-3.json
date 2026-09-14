@@ -32,7 +32,8 @@
         },
         "duration": {
           "durationElements": {
-            "YEARS": 2
+            "YEARS": 1,
+            "MONTHS": 7
           }
         },
         "sentencedAt": "2026-12-02",
@@ -47,14 +48,25 @@
         ]
       }
     ],
-    "adjustments": {}
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2026-12-02",
+          "numberOfDays": 10,
+          "fromDate": "2026-05-13",
+          "toDate": "2026-05-23"
+        }
+      ]
+    }
   },
   "userInputs": {
+    "calculateErsed": true,
     "useOffenceIndicators": true
   },
   "params": "sds-progression-model-october",
   "featureToggles": {
     "applyPostRecallRepealRules": true,
-    "routePreProgressionExtinguishedSentenceToManual": true
+    "routePreProgressionExtinguishedSentenceToManual": true,
+    "useLatestErsedFromPreConsecutivelyImposedSnapshot": true
   }
 }

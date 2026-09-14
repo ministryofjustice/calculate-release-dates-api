@@ -37,9 +37,8 @@ class ErsedCalculator(
   }
 
   private fun calculateUsingBothERS30AndERS50(sentence: CalculableSentence, sentenceCalculation: SentenceCalculation) {
-    val isSentencedOnOrAfterCommencement = isSentencedOnOrAfterCommencement(sentence)
-    val isConsecutiveSentenceWithSentencesBeforeAndAfterCommencement = isConsecutiveSentenceWithSentencesBeforeAndAfterCommencement(sentence)
-    val ers50Result = if (isSentencedOnOrAfterCommencement || isConsecutiveSentenceWithSentencesBeforeAndAfterCommencement) {
+    val isConsideredPostErs30CommencementSentence = isSentencedOnOrAfterCommencement(sentence) || isConsecutiveSentenceWithSentencesBeforeAndAfterCommencement(sentence)
+    val ers50Result = if (isConsideredPostErs30CommencementSentence) {
       null
     } else {
       calculate(
@@ -64,9 +63,7 @@ class ErsedCalculator(
 
     if (ers50Result != null && ers50Result.adjustedDateExcludingAwarded.isBefore(ImportantDates.ERS30_COMMENCEMENT_DATE)) {
       sentenceCalculation.breakdownByReleaseDateType[ReleaseDateType.ERSED] = ers50Result.breakdown
-    } else if (isSentencedOnOrAfterCommencement) {
-      sentenceCalculation.breakdownByReleaseDateType[ReleaseDateType.ERSED] = ers30Result.breakdown
-    } else if (isConsecutiveSentenceWithSentencesBeforeAndAfterCommencement) {
+    } else if (isConsideredPostErs30CommencementSentence) {
       val priorErsedSnapshot = sentenceCalculation.ersedSnapshotPriorToLatestSentenceBeingImposedConsecutively
       if (
         priorErsedSnapshot != null &&

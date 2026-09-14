@@ -9,55 +9,33 @@
       {
         "type": "StandardSentence",
         "offence": {
-          "committedAt": "2022-02-11"
-        },
-        "duration": {
-          "durationElements": {
-            "YEARS": 7
-          }
-        },
-        "releaseArrangements": {
-          "isSDSPlus": false,
-          "isSDSPlusEligibleSentenceTypeLengthAndOffence": true,
-          "sdsEarlyReleaseExclusions": ["VIOLENT"],
-          "isSection250": false
-        },
-        "sentencedAt": "2022-02-11",
-        "identifier": "d211f333-aa1a-3e25-ac8d-0459c1f98868"
-      },
-      {
-        "type": "StandardSentence",
-        "offence": {
-          "committedAt": "2025-03-11"
+          "committedAt": "2026-08-14"
         },
         "duration": {
           "durationElements": {
             "YEARS": 3
           }
         },
-        "sentencedAt": "2025-03-11",
+        "sentencedAt": "2026-08-14",
         "releaseArrangements": {
           "isSDSPlus": false,
           "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
           "sdsEarlyReleaseExclusions": [],
-          "isSection250": false
+          "isSection250": true
         },
-        "identifier": "023e388e-1673-3bbc-9f13-1b1d915f3b73",
-        "consecutiveSentenceUUIDs": [
-          "d211f333-aa1a-3e25-ac8d-0459c1f98868"
-        ]
+        "identifier": "d211f333-aa1a-3e25-ac8d-0459c1f98868"
       },
       {
         "type": "StandardSentence",
         "offence": {
-          "committedAt": "2026-09-13"
+          "committedAt": "2026-10-16"
         },
         "duration": {
           "durationElements": {
-            "YEARS": 4
+            "MONTHS": 18
           }
         },
-        "sentencedAt": "2026-09-13",
+        "sentencedAt": "2026-10-16",
         "releaseArrangements": {
           "isSDSPlus": false,
           "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
@@ -65,18 +43,20 @@
           "isSection250": false
         },
         "consecutiveSentenceUUIDs": [
-          "023e388e-1673-3bbc-9f13-1b1d915f3b73"
+          "d211f333-aa1a-3e25-ac8d-0459c1f98868"
         ]
       }
     ],
     "adjustments": {}
   },
   "userInputs": {
+    "calculateErsed": true,
     "useOffenceIndicators": true
   },
   "params": "sds-progression-model-october",
   "featureToggles": {
     "applyPostRecallRepealRules": true,
-    "routePreProgressionExtinguishedSentenceToManual": true
+    "routePreProgressionExtinguishedSentenceToManual": true,
+    "useLatestErsedFromPreConsecutivelyImposedSnapshot": true
   }
 }
