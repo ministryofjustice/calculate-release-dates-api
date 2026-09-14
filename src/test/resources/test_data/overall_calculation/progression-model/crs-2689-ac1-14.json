@@ -7,35 +7,56 @@
     },
     "sentences": [
       {
+        "type": "ExtendedDeterminateSentence",
+        "offence": {
+          "committedAt": "2023-08-05"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "YEARS": 4
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "YEARS": 3
+          }
+        },
+        "sentencedAt": "2023-08-05",
+        "identifier": "d211f333-aa1a-3e25-ac8d-0459c1f98868"
+      },
+      {
         "type": "StandardSentence",
         "offence": {
-          "committedAt": "2025-11-24"
+          "committedAt": "2025-08-13"
         },
         "duration": {
           "durationElements": {
-            "MONTHS": 40
+            "YEARS": 2
           }
         },
-        "sentencedAt": "2025-11-24",
+        "sentencedAt": "2025-08-13",
         "releaseArrangements": {
           "isSDSPlus": false,
           "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
           "sdsEarlyReleaseExclusions": ["VIOLENT"],
           "isSection250": false
         },
-        "identifier": "d211f333-aa1a-3e25-ac8d-0459c1f98868"
+        "consecutiveSentenceUUIDs": [
+          "d211f333-aa1a-3e25-ac8d-0459c1f98868"
+        ],
+        "identifier": "023e388e-1673-3bbc-9f13-1b1d915f3b73"
       },
       {
         "type": "StandardSentence",
         "offence": {
-          "committedAt": "2026-10-12"
+          "committedAt": "2026-10-05"
         },
         "duration": {
           "durationElements": {
-            "MONTHS": 12
+            "MONTHS": 4
           }
         },
-        "sentencedAt": "2026-10-12",
+        "sentencedAt": "2026-10-05",
         "releaseArrangements": {
           "isSDSPlus": false,
           "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
@@ -43,7 +64,7 @@
           "isSection250": false
         },
         "consecutiveSentenceUUIDs": [
-          "d211f333-aa1a-3e25-ac8d-0459c1f98868"
+          "023e388e-1673-3bbc-9f13-1b1d915f3b73"
         ]
       }
     ],

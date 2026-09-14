@@ -2,25 +2,24 @@
   "booking": {
     "offender": {
       "reference": "ABC123",
-      "dateOfBirth": "2009-01-01",
-      "isActiveSexOffender": true
+      "dateOfBirth": "2009-01-01"
     },
     "sentences": [
       {
         "type": "StandardSentence",
         "offence": {
-          "committedAt": "2025-11-24"
+          "committedAt": "2025-03-10"
         },
         "duration": {
           "durationElements": {
-            "MONTHS": 40
+            "MONTHS": 18
           }
         },
-        "sentencedAt": "2025-11-24",
+        "sentencedAt": "2025-03-10",
         "releaseArrangements": {
           "isSDSPlus": false,
           "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
-          "sdsEarlyReleaseExclusions": ["VIOLENT"],
+          "sdsEarlyReleaseExclusions": [],
           "isSection250": false
         },
         "identifier": "d211f333-aa1a-3e25-ac8d-0459c1f98868"
@@ -28,14 +27,14 @@
       {
         "type": "StandardSentence",
         "offence": {
-          "committedAt": "2026-10-12"
+          "committedAt": "2025-09-30"
         },
         "duration": {
           "durationElements": {
-            "MONTHS": 12
+            "MONTHS": 30
           }
         },
-        "sentencedAt": "2026-10-12",
+        "sentencedAt": "2025-09-30",
         "releaseArrangements": {
           "isSDSPlus": false,
           "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
@@ -44,6 +43,28 @@
         },
         "consecutiveSentenceUUIDs": [
           "d211f333-aa1a-3e25-ac8d-0459c1f98868"
+        ],
+        "identifier": "023e388e-1673-3bbc-9f13-1b1d915f3b73"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2026-10-05"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 2
+          }
+        },
+        "sentencedAt": "2026-10-05",
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        },
+        "consecutiveSentenceUUIDs": [
+          "023e388e-1673-3bbc-9f13-1b1d915f3b73"
         ]
       }
     ],
