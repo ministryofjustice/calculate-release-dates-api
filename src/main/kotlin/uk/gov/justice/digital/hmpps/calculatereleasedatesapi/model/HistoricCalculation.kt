@@ -15,6 +15,7 @@ data class HistoricCalculation(
   val establishment: String?, // this is the establishment of the booking not of when the calculation was performed.
   val calculationRequestId: Long?,
   val calculationReason: String?,
+  val reasonFurtherDetail: String?,
   val offenderSentCalculationId: Long?,
   val genuineOverrideReasonCode: GenuineOverrideReason?,
   val genuineOverrideReasonDescription: String?,
