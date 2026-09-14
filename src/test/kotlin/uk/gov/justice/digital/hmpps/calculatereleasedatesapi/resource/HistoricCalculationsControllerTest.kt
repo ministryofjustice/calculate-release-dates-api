@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.ArgumentMatchers.anyString
+import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.reset
 import org.mockito.kotlin.verify
@@ -28,6 +29,10 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationT
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationSource
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationViewConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.HistoricCalculation
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.HistoricCalculationSummary
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.HistoricCalculationSummaryPage
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.PageInfo
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.PageRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.HistoricCalculationsService
 import java.time.LocalDateTime
 
@@ -60,7 +65,7 @@ class HistoricCalculationsControllerTest {
   }
 
   @Test
-  fun `Test GET of calculation results by calculationReference`() {
+  fun `Test GET of calculation history`() {
     val historicCalculation = HistoricCalculation(
       "G5556UH",
       LocalDateTime.now(),
@@ -71,6 +76,7 @@ class HistoricCalculationsControllerTest {
       "Ranby (HMP)",
       48,
       "Adding more sentences or terms",
+      null,
       -1,
       genuineOverrideReasonCode = null,
       genuineOverrideReasonDescription = null,
@@ -88,5 +94,36 @@ class HistoricCalculationsControllerTest {
 
     assertThat(result.response.contentAsString).isEqualTo(mapper.writeValueAsString(listOf(historicCalculation)))
     verify(historicCalculationsService).getHistoricCalculationsForPrisoner(eq("123"))
+  }
+
+  @Test
+  fun `Test GET of calculation history paged`() {
+    val historicCalculationPage = HistoricCalculationSummaryPage(
+      items = listOf(
+        HistoricCalculationSummary(
+          calculationDate = LocalDateTime.now(),
+          calculationSource = CalculationSource.CRDS,
+          calculationType = CalculationType.CALCULATED,
+          crdsCalculationId = 123,
+          nomisCalculationId = 456,
+          reasonDescription = "Other",
+          reasonFurtherDetail = "Foo",
+          genuineOverrideReasonDescription = null,
+          calculatedByDisplayName = "Bob",
+          establishmentCalculatedAtDescription = "HMP Brixham",
+        ),
+      ),
+      page = PageInfo(1, 1, 1),
+    )
+
+    whenever(historicCalculationsService.getHistoricCalculationSummaryPage(anyString(), any())).thenReturn(historicCalculationPage)
+
+    val result = mvc.perform(MockMvcRequestBuilders.get("/historicCalculations/123/paged?page=4&size=10").accept(MediaType.APPLICATION_JSON))
+      .andExpect(MockMvcResultMatchers.status().isOk)
+      .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+      .andReturn()
+
+    assertThat(result.response.contentAsString).isEqualTo(mapper.writeValueAsString(historicCalculationPage))
+    verify(historicCalculationsService).getHistoricCalculationSummaryPage(eq("123"), eq(PageRequest(4, 10)))
   }
 }

@@ -4,6 +4,8 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.CsvSource
 import org.mockito.ArgumentMatchers.anySet
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.InjectMocks
@@ -20,6 +22,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Agency
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationSource
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationViewConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.GenuineOverrideReason
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.PageRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SecondCheckDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculationSummary
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
@@ -204,6 +207,53 @@ class HistoricCalculationsServiceTest {
     assertThat(result[1].genuineOverrideReasonCode).isEqualTo(GenuineOverrideReason.OTHER)
     assertThat(result[1].genuineOverrideReasonDescription).isEqualTo("Some more details")
     assertThat(result[1].secondCheckDetails).isEmpty()
+  }
+
+  @ParameterizedTest
+  @CsvSource(
+    "1,1,100,10,1,1,10", // less than the number of items
+    "2,1,100,10,1,1,10", // requested page number more than the number of pages
+    "42,1,100,10,1,1,10", // requested page number much more than the number of pages
+    "0,1,100,10,1,1,10", // requested 0 page number
+    "-1,1,100,10,1,1,10", // requested negative page number
+    "2,2,3,3,4,4,6", // requested a middle page
+    "4,4,3,1,4,10,10", // requested a final page with fewer items than the page size
+  )
+  fun `Pagination should work as expected`(requestedPageNumber: Int, expectedPageNumber: Int, requestedPageSize: Int, expectedItemCount: Int, expectedTotalPages: Int, expectedFirstId: Long, expectedLastId: Long) {
+    val calculationRequestsAndSummaries = (1..10).map { index ->
+      val calcRequest = calculationRequest().copy(
+        calculationReference = UUID.randomUUID(),
+        calculatedAt = LocalDateTime.now().minusDays(index.toLong()),
+        id = index.toLong(),
+      )
+      val sentenceCalculationSummary = sentenceCalculationSummary("comment ${calcRequest.calculationReference}")
+      calcRequest to sentenceCalculationSummary
+    }
+
+    whenever(calculationRequestRepository.findAllByPrisonerIdAndCalculationStatus(anyString(), anyString())).thenReturn(calculationRequestsAndSummaries.map { it.first })
+    whenever(prisonService.getCalculationsForAPrisonerId(anyString())).thenReturn(calculationRequestsAndSummaries.map { it.second })
+
+    whenever(manageUsersApiClient.getUsersByUsernames(anySet())).thenReturn(usersDetails)
+    val result = underTest.getHistoricCalculationSummaryPage("123", PageRequest(requestedPageNumber, requestedPageSize))
+    assertThat(result.items).describedAs("actual items").hasSize(expectedItemCount)
+    assertThat(result.page.pageNumber).describedAs("page number").isEqualTo(expectedPageNumber)
+    assertThat(result.page.totalPages).describedAs("total pages").isEqualTo(expectedTotalPages)
+    assertThat(result.page.totalItems).describedAs("total items").isEqualTo(10)
+    assertThat(result.items.firstOrNull()?.crdsCalculationId).describedAs("first item id").isEqualTo(expectedFirstId)
+    assertThat(result.items.lastOrNull()?.crdsCalculationId).describedAs("first item id").isEqualTo(expectedLastId)
+  }
+
+  @Test
+  fun `Pagination should work when there are no items`() {
+    whenever(calculationRequestRepository.findAllByPrisonerIdAndCalculationStatus(anyString(), anyString())).thenReturn(emptyList())
+    whenever(prisonService.getCalculationsForAPrisonerId(anyString())).thenReturn(emptyList())
+
+    whenever(manageUsersApiClient.getUsersByUsernames(anySet())).thenReturn(usersDetails)
+    val result = underTest.getHistoricCalculationSummaryPage("123", PageRequest(1, 100))
+    assertThat(result.items).describedAs("actual items").isEmpty()
+    assertThat(result.page.pageNumber).describedAs("page number").isEqualTo(1)
+    assertThat(result.page.totalPages).describedAs("total pages").isEqualTo(1)
+    assertThat(result.page.totalItems).describedAs("total items").isEqualTo(0)
   }
 
   private fun sentenceCalculationSummary(comment: String): SentenceCalculationSummary = SentenceCalculationSummary(456, "123", "bob", "davies", "RNI", "Ranby (HMP)", 1, LocalDateTime.now(), 4, comment, "reason", "user", "User", "One")
