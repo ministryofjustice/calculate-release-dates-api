@@ -24,11 +24,10 @@ generic-service:
     NOMIS-SYNC-MAPPING_API_URL: https://nomis-sync-prisoner-mapping-dev.hmpps.service.justice.gov.uk
     MANAGE-USERS_API_URL: https://manage-users-api-dev.hmpps.service.justice.gov.uk
     ADJUSTMENTS_UI_URL: https://adjustments-dev.hmpps.service.justice.gov.uk
-    ADULT_HDC_SUSPENDED: "true"
     PROGRESSION_TRANCHE_ONE_MANUAL_JOURNEY: "false"
     PROGRESSION_MODEL_SCHEDULE_EXCLUSION_ENABLED: "true"
     ROUTE_PROGRESSION_MODEL_SCHEDULE_EXCLUSION_TO_MANUAL: "false"
-    USE_LATEST_ERSED_FROM_PRE_CONSEC_IMPOSED_SNAPSHOT: "false"
+    USE_LATEST_ERSED_FROM_PRE_CONSEC_IMPOSED_SNAPSHOT: "true"
 
   # Switches off the allow list in the DEV env only.
   allowlist: null
