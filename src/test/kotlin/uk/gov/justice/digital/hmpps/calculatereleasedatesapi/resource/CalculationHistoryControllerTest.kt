@@ -27,8 +27,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.ControllerAdvice
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationSource
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationViewConfiguration
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.HistoricCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.HistoricCalculationSummary
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.HistoricCalculationSummaryPage
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.PageInfo
@@ -38,11 +36,11 @@ import java.time.LocalDateTime
 
 @ExtendWith(SpringExtension::class)
 @ActiveProfiles("test")
-@WebMvcTest(controllers = [HistoricCalculationsController::class])
+@WebMvcTest(controllers = [LegacyHistoricCalculationsController::class])
 @AutoConfigureMockMvc(addFilters = false)
-@ContextConfiguration(classes = [HistoricCalculationsController::class])
+@ContextConfiguration(classes = [LegacyHistoricCalculationsController::class])
 @WebAppConfiguration
-class HistoricCalculationsControllerTest {
+class CalculationHistoryControllerTest {
 
   @MockitoBean
   private lateinit var historicCalculationsService: HistoricCalculationsService
@@ -58,42 +56,10 @@ class HistoricCalculationsControllerTest {
     reset(historicCalculationsService)
 
     mvc = MockMvcBuilders
-      .standaloneSetup(HistoricCalculationsController(historicCalculationsService))
+      .standaloneSetup(CalculationHistoryController(historicCalculationsService))
       .setControllerAdvice(ControllerAdvice())
       .build()
     mapper.findAndRegisterModules()
-  }
-
-  @Test
-  fun `Test GET of calculation history`() {
-    val historicCalculation = HistoricCalculation(
-      "G5556UH",
-      LocalDateTime.now(),
-      CalculationSource.CRDS,
-      CalculationViewConfiguration("ref", 1),
-      "Comment",
-      CalculationType.CALCULATED,
-      "Ranby (HMP)",
-      48,
-      "Adding more sentences or terms",
-      null,
-      -1,
-      genuineOverrideReasonCode = null,
-      genuineOverrideReasonDescription = null,
-      calculatedByUsername = "user1",
-      calculatedByDisplayName = "User One",
-      secondCheckDetails = emptyList(),
-    )
-
-    whenever(historicCalculationsService.getHistoricCalculationsForPrisoner(anyString())).thenReturn(listOf(historicCalculation))
-
-    val result = mvc.perform(MockMvcRequestBuilders.get("/historicCalculations/123").accept(MediaType.APPLICATION_JSON))
-      .andExpect(MockMvcResultMatchers.status().isOk)
-      .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
-      .andReturn()
-
-    assertThat(result.response.contentAsString).isEqualTo(mapper.writeValueAsString(listOf(historicCalculation)))
-    verify(historicCalculationsService).getHistoricCalculationsForPrisoner(eq("123"))
   }
 
   @Test
@@ -118,12 +84,12 @@ class HistoricCalculationsControllerTest {
 
     whenever(historicCalculationsService.getHistoricCalculationSummaryPage(anyString(), any())).thenReturn(historicCalculationPage)
 
-    val result = mvc.perform(MockMvcRequestBuilders.get("/historicCalculations/123/paged?page=4&size=10").accept(MediaType.APPLICATION_JSON))
+    val result = mvc.perform(MockMvcRequestBuilders.get("/calculation-history/A1234BC?page=4&size=7").accept(MediaType.APPLICATION_JSON))
       .andExpect(MockMvcResultMatchers.status().isOk)
       .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
       .andReturn()
 
     assertThat(result.response.contentAsString).isEqualTo(mapper.writeValueAsString(historicCalculationPage))
-    verify(historicCalculationsService).getHistoricCalculationSummaryPage(eq("123"), eq(PageRequest(4, 10)))
+    verify(historicCalculationsService).getHistoricCalculationSummaryPage(eq("A1234BC"), eq(PageRequest(4, 7)))
   }
 }
