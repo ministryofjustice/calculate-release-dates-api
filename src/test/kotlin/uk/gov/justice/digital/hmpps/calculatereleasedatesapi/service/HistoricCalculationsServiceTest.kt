@@ -221,14 +221,15 @@ class HistoricCalculationsServiceTest {
   )
   fun `Pagination should work as expected`(requestedPageNumber: Int, expectedPageNumber: Int, requestedPageSize: Int, expectedItemCount: Int, expectedTotalPages: Int, expectedFirstId: Long, expectedLastId: Long) {
     val calculationRequestsAndSummaries = (1..10).map { index ->
+      val calculatedAt = LocalDateTime.now().minusDays(index.toLong())
       val calcRequest = calculationRequest().copy(
         calculationReference = UUID.randomUUID(),
-        calculatedAt = LocalDateTime.now().minusDays(index.toLong()),
+        calculatedAt = calculatedAt,
         id = index.toLong(),
       )
-      val sentenceCalculationSummary = sentenceCalculationSummary("comment ${calcRequest.calculationReference}")
+      val sentenceCalculationSummary = sentenceCalculationSummary("comment ${calcRequest.calculationReference}").copy(calculationDate = calculatedAt)
       calcRequest to sentenceCalculationSummary
-    }
+    }.shuffled()
 
     whenever(calculationRequestRepository.findAllByPrisonerIdAndCalculationStatus(anyString(), anyString())).thenReturn(calculationRequestsAndSummaries.map { it.first })
     whenever(prisonService.getCalculationsForAPrisonerId(anyString())).thenReturn(calculationRequestsAndSummaries.map { it.second })

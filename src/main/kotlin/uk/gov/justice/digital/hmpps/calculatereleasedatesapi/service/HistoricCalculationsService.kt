@@ -56,7 +56,7 @@ class HistoricCalculationsService(
     val secondChecks: List<CalculationRequestSecondCheck> = secondCheckRepository.findAllByPrisonerId(prisonerId)
     val (nomisCalculations, pageInfo) = prisonService.getCalculationsForAPrisonerId(prisonerId).let { calcs ->
       if (pageRequest != null && calcs.isNotEmpty()) {
-        val pages = calcs.sortedBy { it.calculationDate }.chunked(pageRequest.size)
+        val pages = calcs.sortedByDescending { it.calculationDate }.chunked(pageRequest.size)
         val zeroIndexedPageNumber = maxOf(0, pageRequest.pageNumber - 1)
         val atLeastTheFirstAndNoMoreThanTheLastPage = minOf(pages.size - 1, zeroIndexedPageNumber)
         pages[atLeastTheFirstAndNoMoreThanTheLastPage] to PageInfo(atLeastTheFirstAndNoMoreThanTheLastPage + 1, pages.size, calcs.size)
