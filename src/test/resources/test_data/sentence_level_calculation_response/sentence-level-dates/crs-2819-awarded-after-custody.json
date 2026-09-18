@@ -15,7 +15,7 @@
     },
     {
       "identifier": "c1de11aa-e45f-3f76-ac92-83a08b759c72",
-      "impactsFinalReleaseDate": false,
+      "impactsFinalReleaseDate": true,
       "dates": {
         "SLED": "2026-04-21",
         "CRD": "2025-12-02",
