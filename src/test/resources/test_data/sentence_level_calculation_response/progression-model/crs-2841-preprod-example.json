@@ -1,0 +1,93 @@
+{
+  "sentenceLevelDates": [
+    {
+      "identifier": "38ad49eb-4b97-3611-9e71-b001221ca1a9",
+      "dates": {
+        "SLED": "2027-06-02",
+        "PRRD": "2027-06-02"
+      },
+      "impactsFinalReleaseDate": false,
+      "groupIndex": 0,
+      "releaseMultiplier": "FULL",
+      "awardedDuringCustody": 7,
+      "awardedAfterDeterminateRelease": 0
+    },
+    {
+      "identifier": "d1cb226e-ef8c-3d58-bce1-51f4c4a75c94",
+      "dates": {
+        "SLED": "2031-04-18",
+        "CRD": "2028-01-19",
+        "PED": "2027-01-19"
+      },
+      "impactsFinalReleaseDate": true,
+      "groupIndex": 1,
+      "releaseMultiplier": "FULL",
+      "awardedDuringCustody": 32,
+      "awardedAfterDeterminateRelease": 0
+    },
+    {
+      "identifier": "04375069-914e-3d97-b1c2-496e8e716cf3",
+      "dates": {
+        "SLED": "2031-04-18",
+        "CRD": "2028-01-19",
+        "PED": "2027-01-19"
+      },
+      "impactsFinalReleaseDate": true,
+      "groupIndex": 1,
+      "releaseMultiplier": "ONE_THIRD",
+      "awardedDuringCustody": 32,
+      "awardedAfterDeterminateRelease": 0
+    },
+    {
+      "identifier": "1f332705-6526-3289-9a7c-d9d1bbdf1f23",
+      "dates": {
+        "SLED": "2026-10-18",
+        "CRD": "2025-08-20",
+        "HDCED": "2025-02-22"
+      },
+      "impactsFinalReleaseDate": false,
+      "groupIndex": 2,
+      "releaseMultiplier": "ONE_HALF",
+      "awardedDuringCustody": 32,
+      "awardedAfterDeterminateRelease": 0
+    },
+    {
+      "identifier": "06521a27-6f6b-399f-9b60-302c08e707de",
+      "dates": {
+        "SLED": "2024-10-18",
+        "CRD": "2024-08-20",
+        "HDCED": "2024-07-06"
+      },
+      "impactsFinalReleaseDate": false,
+      "groupIndex": 3,
+      "releaseMultiplier": "ONE_HALF",
+      "awardedDuringCustody": 32,
+      "awardedAfterDeterminateRelease": 0
+    },
+    {
+      "identifier": "1e8e76b4-f4f3-3ba4-80ce-c40c926ebd59",
+      "dates": {
+        "SLED": "2024-05-18",
+        "CRD": "2024-05-18"
+      },
+      "impactsFinalReleaseDate": false,
+      "groupIndex": 4,
+      "releaseMultiplier": "ONE_HALF",
+      "awardedDuringCustody": 32,
+      "awardedAfterDeterminateRelease": 0
+    },
+    {
+      "identifier": "039f4589-bc55-3d91-ad4b-68ace973e834",
+      "dates": {
+        "SLED": "2026-04-18",
+        "CRD": "2025-03-08",
+        "HDCED": "2024-10-14"
+      },
+      "impactsFinalReleaseDate": false,
+      "groupIndex": 5,
+      "releaseMultiplier": "FORTY_PERCENT",
+      "awardedDuringCustody": 32,
+      "awardedAfterDeterminateRelease": 0
+    }
+  ]
+}

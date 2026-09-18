@@ -1,0 +1,242 @@
+{
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
+      {
+        "type": "ExtendedDeterminateSentence",
+        "recall": {
+          "recallType": "STANDARD_RECALL",
+          "revocationDate": "2023-08-14"
+        },
+        "offence": {
+          "committedAt": "2018-04-03",
+          "offenceCode": "OF61017"
+        },
+        "identifier": "38ad49eb-4b97-3611-9e71-b001221ca1a9",
+        "sentencedAt": "2018-07-31",
+        "caseReference": null,
+        "automaticRelease": false,
+        "custodialDuration": {
+          "durationElements": {
+            "YEARS": 6
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "YEARS": 3
+          }
+        }
+      },
+      {
+        "type": "ExtendedDeterminateSentence",
+        "offence": {
+          "committedAt": "2023-07-23",
+          "offenceCode": "SC15005"
+        },
+        "identifier": "d1cb226e-ef8c-3d58-bce1-51f4c4a75c94",
+        "sentencedAt": "2024-04-19",
+        "caseReference": null,
+        "automaticRelease": false,
+        "custodialDuration": {
+          "durationElements": {
+            "YEARS": 3
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "YEARS": 2
+          }
+        }
+      },
+      {
+        "offence": {
+          "committedAt": "2023-08-14",
+          "offenceCode": "SC15004"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 2
+          }
+        },
+        "identifier": "04375069-914e-3d97-b1c2-496e8e716cf3",
+        "sentencedAt": "2024-04-19",
+        "caseReference": null,
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSection250": false,
+          "sdsEarlyReleaseExclusions": [
+            "DOMESTIC_ABUSE"
+          ],
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false
+        },
+        "consecutiveSentenceUUIDs": [
+          "d1cb226e-ef8c-3d58-bce1-51f4c4a75c94"
+        ]
+      },
+      {
+        "offence": {
+          "committedAt": "2023-07-23",
+          "offenceCode": "SC15005"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 30
+          }
+        },
+        "identifier": "1f332705-6526-3289-9a7c-d9d1bbdf1f23",
+        "sentencedAt": "2024-04-19",
+        "caseReference": null,
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSection250": false,
+          "sdsEarlyReleaseExclusions": [
+            "DOMESTIC_ABUSE"
+          ],
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false
+        }
+      },
+      {
+        "offence": {
+          "committedAt": "2023-07-23",
+          "offenceCode": "OF61102"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 6
+          }
+        },
+        "identifier": "06521a27-6f6b-399f-9b60-302c08e707de",
+        "sentencedAt": "2024-04-19",
+        "caseReference": null,
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSection250": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false
+        }
+      },
+      {
+        "offence": {
+          "committedAt": "2023-07-23",
+          "offenceCode": "CD71039"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 1
+          }
+        },
+        "identifier": "1e8e76b4-f4f3-3ba4-80ce-c40c926ebd59",
+        "sentencedAt": "2024-04-19",
+        "caseReference": null,
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSection250": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false
+        }
+      },
+      {
+        "offence": {
+          "committedAt": "2023-08-06",
+          "offenceCode": "OF61102"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 2
+          }
+        },
+        "identifier": "039f4589-bc55-3d91-ad4b-68ace973e834",
+        "sentencedAt": "2024-04-19",
+        "caseReference": null,
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSection250": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false
+        }
+      }
+    ],
+    "adjustments": {
+      "RECALL_REMAND": [
+        {
+          "toDate": "2018-07-30",
+          "fromDate": "2018-06-04",
+          "numberOfDays": 57,
+          "additionalInfo": {
+            "type": "NONE"
+          },
+          "appliesToSentencesFrom": "2018-07-31"
+        },
+        {
+          "toDate": "2018-04-03",
+          "fromDate": "2018-04-03",
+          "numberOfDays": 1,
+          "additionalInfo": {
+            "type": "NONE"
+          },
+          "appliesToSentencesFrom": "2018-07-31"
+        }
+      ],
+      "ADDITIONAL_DAYS_AWARDED": [
+        {
+          "fromDate": "2019-04-04",
+          "numberOfDays": 8,
+          "additionalInfo": {
+            "type": "NONE"
+          },
+          "appliesToSentencesFrom": "2019-04-04"
+        },
+        {
+          "fromDate": "2019-11-13",
+          "numberOfDays": 6,
+          "additionalInfo": {
+            "type": "NONE"
+          },
+          "appliesToSentencesFrom": "2019-11-13"
+        },
+        {
+          "fromDate": "2026-05-27",
+          "numberOfDays": 32,
+          "additionalInfo": {
+            "type": "NONE"
+          },
+          "appliesToSentencesFrom": "2026-05-27"
+        }
+      ],
+      "RESTORATION_OF_ADDITIONAL_DAYS_AWARDED": [
+        {
+          "fromDate": "2021-02-25",
+          "numberOfDays": 7,
+          "additionalInfo": {
+            "type": "NONE"
+          },
+          "appliesToSentencesFrom": "2021-02-25"
+        }
+      ]
+    },
+    "externalMovements": [
+      {
+        "direction": "OUT",
+        "movementDate": "2023-03-01",
+        "movementReason": "CRD"
+      },
+      {
+        "direction": "IN",
+        "movementDate": "2023-08-15",
+        "movementReason": "RECALL_ADMISSION"
+      }
+    ]
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "sds-progression-model-october",
+  "featureToggles": {
+    "applyPostRecallRepealRules": true,
+    "routePreProgressionExtinguishedSentenceToManual": true,
+    "storeSentenceLevelDates": true
+  }
+}

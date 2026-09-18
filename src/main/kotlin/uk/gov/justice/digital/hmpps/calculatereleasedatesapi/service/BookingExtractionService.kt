@@ -315,7 +315,6 @@ class BookingExtractionService(
       extractionService.mostRecentSentenceOrNull(sentences, SentenceCalculation::adjustedPostRecallReleaseDate)
     if (latestPostRecallReleaseDateSentence != null && latestPostRecallReleaseDateSentence.sentenceCalculation.adjustedPostRecallReleaseDate != null) {
       otherDates[PRRD] = latestPostRecallReleaseDateSentence.sentenceCalculation.adjustedPostRecallReleaseDate!!
-      sentencesImpactingFinalReleaseDate += latestPostRecallReleaseDateSentence.sentenceParts()
     }
 
     if (latestNonParoleDate != null) {
@@ -369,6 +368,8 @@ class BookingExtractionService(
         returnToCustodyDate,
         dates[SLED],
       )
+
+      sentencesImpactingFinalReleaseDate += mostRecentSentencesByReleaseDate.filter { it.isRecall() }.flatMap { it.sentenceParts() }
 
       if (!fixedTermRecallsService.hasHomeDetentionCurfew(dates)) {
         dates.remove(HDCED)
