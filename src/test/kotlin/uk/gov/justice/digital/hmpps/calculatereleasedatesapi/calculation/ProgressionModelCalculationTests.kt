@@ -20,6 +20,14 @@ class ProgressionModelCalculationTests : CalculationExampleTests() {
     `Test Example`(example)
   }
 
+  @ParameterizedTest
+  @MethodSource(value = ["sentenceLevelDatesTestCaseSource"])
+  fun `Test sentence level dates with progression-model configuration`(
+    example: String,
+  ) {
+    `Test Sentence Level Dates Example`(example)
+  }
+
   companion object {
     val log: Logger = LoggerFactory.getLogger(this::class.java)
     const val TEST_CONFIGURATION = "sds-progression-model-october"
@@ -27,6 +35,12 @@ class ProgressionModelCalculationTests : CalculationExampleTests() {
     @JvmStatic
     fun testCases(): Stream<Arguments> {
       val dir = File(object {}.javaClass.getResource("/test_data/overall_calculation")!!.file)
+      return getTestCasesFromDir(dir, listOf(), TEST_CONFIGURATION)
+    }
+
+    @JvmStatic
+    fun sentenceLevelDatesTestCaseSource(): Stream<Arguments> {
+      val dir = File(object {}.javaClass.getResource("/test_data/sentence_level_calculation_response").file)
       return getTestCasesFromDir(dir, listOf(), TEST_CONFIGURATION)
     }
   }

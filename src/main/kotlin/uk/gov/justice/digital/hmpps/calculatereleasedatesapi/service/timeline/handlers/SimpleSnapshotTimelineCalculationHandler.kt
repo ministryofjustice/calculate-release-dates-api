@@ -17,7 +17,7 @@ class SimpleSnapshotTimelineCalculationHandler(timelineCalculator: TimelineCalcu
     with(timelineTrackingData) {
       val allSentenceGroups = releasedSentenceGroups.map { it.sentences }.plus(listOf(currentSentenceGroup))
       if (allSentenceGroups.flatten().isNotEmpty()) {
-        val latestCalculation = timelineCalculator.getLatestCalculation(allSentenceGroups, offender, returnToCustodyDate, snapshots)
+        val latestCalculation = timelineCalculator.getLatestCalculation(allSentenceGroups, offender, returnToCustodyDate, snapshots, applicableErsLegislation)
         snapshots[event.snapshotName] = CalculationSnapshot(event.snapshotName, latestCalculation, event.date)
       }
     }

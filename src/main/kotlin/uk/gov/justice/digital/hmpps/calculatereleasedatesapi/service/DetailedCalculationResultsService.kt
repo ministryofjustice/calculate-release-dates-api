@@ -4,7 +4,6 @@ import jakarta.persistence.EntityNotFoundException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.client.ManageUsersApiClient
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.LegislationName
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.SDSLegislationConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ApprovedDatesSubmission
@@ -21,6 +20,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.PreviouslyRecordedSLED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SecondCheckDetails
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceAnalysis
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeHistoricOverrideRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.SecondCheckRepository
@@ -34,7 +34,6 @@ open class DetailedCalculationResultsService(
   private val calculationRequestRepository: CalculationRequestRepository,
   private val calculationResultEnrichmentService: CalculationResultEnrichmentService,
   private val calculationOutcomeHistoricOverrideRepository: CalculationOutcomeHistoricOverrideRepository,
-  private val featureToggles: FeatureToggles,
   private val manageUsersApiClient: ManageUsersApiClient,
   private val prisonService: PrisonService,
   private val sdsLegislationConfiguration: SDSLegislationConfiguration,
@@ -53,6 +52,7 @@ open class DetailedCalculationResultsService(
     }
     val calculationRequest = getCalculationRequest(calculationRequestId)
     val sentenceAndOffences = calculationRequest.sentenceAndOffences?.let { sourceDataMapper.mapSentencesAndOffences(calculationRequest) }
+    val adjustmentDtos = calculationRequest.adjustments?.let { sourceDataMapper.mapAdjustments(calculationRequest) }
     val prisonerDetails = calculationRequest.prisonerDetails?.let { sourceDataMapper.mapPrisonerDetails(calculationRequest) }
     val (breakdownMissingReason, calculationBreakdown) = calculationBreakdownService.getBreakdownSafely(calculationRequest).fold(
       { it to null },
@@ -77,7 +77,8 @@ open class DetailedCalculationResultsService(
       approvedDates = approvedDates(calculationRequest.approvedDatesSubmissions.firstOrNull()),
       calculationOriginalData = CalculationOriginalData(
         prisonerDetails,
-        sentenceAndOffences,
+        sentenceAndOffences?.let { transform(SentenceAndOffenceAnalysis.SAME, sentenceAndOffences) },
+        adjustmentDtos,
       ),
       calculationBreakdown = calculationBreakdown,
       breakdownMissingReason = breakdownMissingReason,

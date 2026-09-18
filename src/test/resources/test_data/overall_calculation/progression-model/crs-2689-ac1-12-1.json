@@ -9,18 +9,18 @@
       {
         "type": "StandardSentence",
         "offence": {
-          "committedAt": "2024-05-07"
+          "committedAt": "2026-05-24"
         },
         "duration": {
           "durationElements": {
-            "YEARS": 4
+            "YEARS": 3
           }
         },
-        "sentencedAt": "2024-05-07",
+        "sentencedAt": "2026-05-24",
         "releaseArrangements": {
-          "isSDSPlus": true,
-          "isSDSPlusEligibleSentenceTypeLengthAndOffence": true,
-          "sdsEarlyReleaseExclusions": [],
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": ["VIOLENT"],
           "isSection250": false
         },
         "identifier": "d211f333-aa1a-3e25-ac8d-0459c1f98868"
@@ -28,14 +28,14 @@
       {
         "type": "StandardSentence",
         "offence": {
-          "committedAt": "2026-09-03"
+          "committedAt": "2026-12-02"
         },
         "duration": {
           "durationElements": {
-            "MONTHS": 2
+            "YEARS": 2
           }
         },
-        "sentencedAt": "2026-09-03",
+        "sentencedAt": "2026-12-02",
         "releaseArrangements": {
           "isSDSPlus": false,
           "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
@@ -47,22 +47,16 @@
         ]
       }
     ],
-    "adjustments": {
-      "ADDITIONAL_DAYS_AWARDED": [
-        {
-          "appliesToSentencesFrom": "2025-01-13",
-          "numberOfDays": 5,
-          "fromDate": "2025-01-13"
-        }
-      ]
-    }
+    "adjustments": {}
   },
   "userInputs": {
+    "calculateErsed": true,
     "useOffenceIndicators": true
   },
   "params": "sds-progression-model-october",
   "featureToggles": {
     "applyPostRecallRepealRules": true,
-    "routePreProgressionExtinguishedSentenceToManual": true
+    "routePreProgressionExtinguishedSentenceToManual": true,
+    "useLatestErsedFromPreConsecutivelyImposedSnapshot": true
   }
 }

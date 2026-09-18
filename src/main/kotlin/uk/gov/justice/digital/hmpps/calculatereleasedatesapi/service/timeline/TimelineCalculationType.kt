@@ -5,8 +5,9 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline
  * This is important in some scenarios such as whether someone is sentenced on the same day as SDS legislation commencement.
  */
 enum class TimelineCalculationType(val order: Int) {
-  SIMPLE_SNAPSHOT(5),
   SDS_LEGISLATION_COMMENCEMENT(10),
+  ERS_LEGISLATION_COMMENCEMENT(11),
+  SIMPLE_SNAPSHOT(12),
   SDS_TRANCHE_ALLOCATION(20),
   SDS_LEGISLATION_AMENDMENT(30),
   SDS40_SNAPSHOT(35),

@@ -13,8 +13,8 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.adjustmentsapi.model.AdjustmentDto
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.client.ManageUsersApiClient
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.LegislationName
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.SDSLegislation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.SDSLegislationConfiguration
@@ -45,6 +45,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SecondCheckDetails
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceAnalysis
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
@@ -81,7 +82,6 @@ class DetailedCalculationResultsServiceTest {
     calculationRequestRepository,
     calculationResultEnrichmentService,
     historicOverrideRepository,
-    FeatureToggles(),
     manageUsersApiClient,
     prisonService,
     sdsLegislationConfiguration,
@@ -197,7 +197,8 @@ class DetailedCalculationResultsServiceTest {
         secondCheckDetails = secondCheckDto,
         CalculationOriginalData(
           prisonerDetails,
-          listOf(originalSentence),
+          transform(SentenceAndOffenceAnalysis.SAME, listOf(originalSentence)),
+          emptyList(),
         ),
         expectedBreakdown,
         null,
@@ -212,6 +213,75 @@ class DetailedCalculationResultsServiceTest {
     )
     verify(calculationResultEnrichmentService).addDetailToCalculationDates(
       toReleaseDates(calculationRequestWithApprovedDates),
+      listOf(originalSentence),
+      expectedBreakdown,
+      null,
+      null,
+      null,
+    )
+  }
+
+  @Test
+  fun `should return standard calculation as detailed dates`() {
+    val calculationRequest = calculationRequestWithOutcomes().copy(
+      prisonerDetails = objectToJson(prisonerDetails, objectMapper),
+      sentenceAndOffences = objectToJson(listOf(originalSentence), objectMapper),
+      adjustments = objectToJson(adjustments, objectMapper),
+      calculationOutcomes = listOf(
+        CalculationOutcome(calculationRequestId = CALCULATION_REQUEST_ID, calculationDateType = "CRD", outcomeDate = LocalDate.of(2026, 6, 26)),
+      ),
+      calculatedByUsername = "username",
+      prisonerLocation = "BXI",
+    )
+    val enrichedReleaseDates = mapOf(ReleaseDateType.CRD to DetailedDate(ReleaseDateType.CRD, ReleaseDateType.CRD.description, LocalDate.of(2026, 6, 26), emptyList()))
+    val expectedBreakdown = CalculationBreakdown(emptyList(), null, mapOf(ReleaseDateType.CRD to ReleaseDateCalculationBreakdown(emptySet())), mapOf(ReleaseDateType.PRRD to LocalDate.of(2026, 6, 27)))
+    val secondCheckRecord = secondCheckRecord()
+    val secondCheckDto = SecondCheckDetails(
+      checkedByDisplayName = "User Name",
+      checkedByUsername = secondCheckRecord.checkedByUsername,
+      checkedAt = secondCheckRecord.checkedAt,
+    )
+    val expectedAdjustments = listOf(AdjustmentDto(person = "A1234BC", adjustmentType = AdjustmentDto.AdjustmentType.REMAND))
+
+    whenever(calculationRequestRepository.findById(CALCULATION_REQUEST_ID)).thenReturn(Optional.of(calculationRequest))
+    whenever(sourceDataMapper.mapSentencesAndOffences(calculationRequest)).thenReturn(listOf(originalSentence))
+    whenever(sourceDataMapper.mapPrisonerDetails(calculationRequest)).thenReturn(prisonerDetails)
+    whenever(sourceDataMapper.mapAdjustments(calculationRequest)).thenReturn(expectedAdjustments)
+    whenever(
+      calculationResultEnrichmentService.addDetailToCalculationDates(
+        toReleaseDates(calculationRequest),
+        listOf(originalSentence),
+        expectedBreakdown,
+        null,
+        null,
+        null,
+      ),
+    ).thenReturn(enrichedReleaseDates)
+    whenever(calculationBreakdownService.getBreakdownSafely(any())).thenReturn(expectedBreakdown.right())
+    whenever(manageUsersApiClient.getUserByUsername("username")).thenReturn(UserDetails("username", "User Name"))
+    whenever(secondCheckRepository.findLatestByCalculationRequestId(any())).thenReturn(secondCheckRecord)
+    val results = service.findDetailedCalculationResults(CALCULATION_REQUEST_ID)
+    assertThat(results).isEqualTo(
+      DetailedCalculationResults(
+        context = expectedCalcContext,
+        dates = enrichedReleaseDates,
+        approvedDates = null,
+        secondCheckDetails = secondCheckDto,
+        calculationOriginalData = CalculationOriginalData(
+          prisonerDetails = prisonerDetails,
+          sentencesAndOffences = transform(SentenceAndOffenceAnalysis.SAME, listOf(originalSentence)),
+          adjustments = expectedAdjustments,
+        ),
+        calculationBreakdown = expectedBreakdown,
+        breakdownMissingReason = null,
+        sds40Tranche = null,
+        ftr56Tranche = null,
+        progressionModelTranche = null,
+        allocatedTranches = emptyList(),
+      ),
+    )
+    verify(calculationResultEnrichmentService).addDetailToCalculationDates(
+      toReleaseDates(calculationRequest),
       listOf(originalSentence),
       expectedBreakdown,
       null,
@@ -266,7 +336,11 @@ class DetailedCalculationResultsServiceTest {
         dates = enrichedReleaseDates,
         approvedDates = null,
         secondCheckDetails = null,
-        calculationOriginalData = CalculationOriginalData(prisonerDetails, listOf(originalSentence)),
+        calculationOriginalData = CalculationOriginalData(
+          prisonerDetails,
+          transform(SentenceAndOffenceAnalysis.SAME, listOf(originalSentence)),
+          emptyList(),
+        ),
         calculationBreakdown = expectedBreakdown,
         breakdownMissingReason = null,
         sds40Tranche = TrancheName.TRANCHE_2,
@@ -514,7 +588,8 @@ class DetailedCalculationResultsServiceTest {
         secondCheckDetails = null,
         CalculationOriginalData(
           prisonerDetails,
-          listOf(originalSentence),
+          transform(SentenceAndOffenceAnalysis.SAME, listOf(originalSentence)),
+          emptyList(),
         ),
         null,
         BreakdownMissingReason.UNSUPPORTED_CALCULATION_BREAKDOWN,

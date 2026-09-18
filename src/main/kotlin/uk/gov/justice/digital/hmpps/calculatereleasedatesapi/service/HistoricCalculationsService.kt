@@ -10,6 +10,10 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationSo
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationViewConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.GenuineOverrideReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.HistoricCalculation
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.HistoricCalculationSummary
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.HistoricCalculationSummaryPage
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.PageInfo
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.PageRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SecondCheckDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.SecondCheckRepository
@@ -23,10 +27,43 @@ class HistoricCalculationsService(
 ) {
 
   @Transactional(readOnly = true)
-  fun getHistoricCalculationsForPrisoner(prisonerId: String): List<HistoricCalculation> {
+  fun getHistoricCalculationsForPrisoner(prisonerId: String): List<HistoricCalculation> = getHistoricCalculations(prisonerId, null).first
+
+  @Transactional(readOnly = true)
+  fun getHistoricCalculationSummaryPage(prisonerId: String, pageRequest: PageRequest): HistoricCalculationSummaryPage {
+    val (results, pageInfo) = getHistoricCalculations(prisonerId, pageRequest)
+    return HistoricCalculationSummaryPage(
+      results.map { historicCalculation ->
+        HistoricCalculationSummary(
+          calculationDate = historicCalculation.calculationDate,
+          calculationSource = historicCalculation.calculationSource,
+          calculationType = historicCalculation.calculationType,
+          crdsCalculationId = historicCalculation.calculationRequestId,
+          nomisCalculationId = historicCalculation.offenderSentCalculationId,
+          reasonDescription = historicCalculation.calculationReason ?: "Not entered",
+          reasonFurtherDetail = historicCalculation.reasonFurtherDetail,
+          genuineOverrideReasonDescription = historicCalculation.genuineOverrideReasonDescription,
+          calculatedByDisplayName = historicCalculation.calculatedByDisplayName,
+          establishmentCalculatedAtDescription = historicCalculation.establishment,
+        )
+      },
+      pageInfo,
+    )
+  }
+
+  private fun getHistoricCalculations(prisonerId: String, pageRequest: PageRequest?): Pair<List<HistoricCalculation>, PageInfo> {
     val calculations = calculationRequestRepository.findAllByPrisonerIdAndCalculationStatus(prisonerId, CONFIRMED.name)
     val secondChecks: List<CalculationRequestSecondCheck> = secondCheckRepository.findAllByPrisonerId(prisonerId)
-    val nomisCalculations = prisonService.getCalculationsForAPrisonerId(prisonerId)
+    val (nomisCalculations, pageInfo) = prisonService.getCalculationsForAPrisonerId(prisonerId).let { calcs ->
+      if (pageRequest != null && calcs.isNotEmpty()) {
+        val pages = calcs.sortedByDescending { it.calculationDate }.chunked(pageRequest.size)
+        val zeroIndexedPageNumber = maxOf(0, pageRequest.pageNumber - 1)
+        val atLeastTheFirstAndNoMoreThanTheLastPage = minOf(pages.size - 1, zeroIndexedPageNumber)
+        pages[atLeastTheFirstAndNoMoreThanTheLastPage] to PageInfo(atLeastTheFirstAndNoMoreThanTheLastPage + 1, pages.size, calcs.size)
+      } else {
+        calcs to PageInfo(1, 1, calcs.size)
+      }
+    }
     val agencyIdToDescriptionMap = prisonService.getAgenciesByType("INST").associateBy { it.agencyId }
     val uniqueUsers: Set<String> = (
       nomisCalculations.map { it.calculatedByUserId.uppercase() } +
@@ -39,6 +76,7 @@ class HistoricCalculationsService(
       var calculationType: CalculationType? = null
       var calculationRequestId: Long? = null
       var calculationReason: String? = nomisCalculation.calculationReason
+      var reasonFurtherDetail: String? = null
       var establishment: String? = null
       val nomisComment = nomisCalculation.commentText
       var genuineOverrideReason: GenuineOverrideReason? = null
@@ -71,6 +109,7 @@ class HistoricCalculationsService(
         calculationViewData = CalculationViewConfiguration(calc.calculationReference.toString(), calc.id())
         calculationRequestId = calc.id
         calculationReason = calc.reasonForCalculation?.displayName
+        reasonFurtherDetail = calc.otherReasonForCalculation
         genuineOverrideReason = calc.genuineOverrideReason
         genuineOverrideReasonDescription = calc.genuineOverrideReasonFurtherDetail ?: calc.genuineOverrideReason?.description
       }
@@ -85,6 +124,7 @@ class HistoricCalculationsService(
         establishment = establishment,
         calculationRequestId = calculationRequestId,
         calculationReason = calculationReason,
+        reasonFurtherDetail = reasonFurtherDetail,
         offenderSentCalculationId = nomisCalculation.offenderSentCalculationId,
         genuineOverrideReasonCode = genuineOverrideReason,
         genuineOverrideReasonDescription = genuineOverrideReasonDescription,
@@ -93,6 +133,6 @@ class HistoricCalculationsService(
         secondCheckDetails = secondCheckDetailsList,
       )
     }
-    return historicCalculations
+    return historicCalculations to pageInfo
   }
 }

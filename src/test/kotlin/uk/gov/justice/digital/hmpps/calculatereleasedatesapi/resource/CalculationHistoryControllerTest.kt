@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.ArgumentMatchers.anyString
+import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.reset
 import org.mockito.kotlin.verify
@@ -26,18 +27,20 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.ControllerAdvice
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationSource
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationViewConfiguration
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.HistoricCalculation
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.HistoricCalculationSummary
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.HistoricCalculationSummaryPage
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.PageInfo
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.PageRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.HistoricCalculationsService
 import java.time.LocalDateTime
 
 @ExtendWith(SpringExtension::class)
 @ActiveProfiles("test")
-@WebMvcTest(controllers = [HistoricCalculationsController::class])
+@WebMvcTest(controllers = [LegacyHistoricCalculationsController::class])
 @AutoConfigureMockMvc(addFilters = false)
-@ContextConfiguration(classes = [HistoricCalculationsController::class])
+@ContextConfiguration(classes = [LegacyHistoricCalculationsController::class])
 @WebAppConfiguration
-class HistoricCalculationsControllerTest {
+class CalculationHistoryControllerTest {
 
   @MockitoBean
   private lateinit var historicCalculationsService: HistoricCalculationsService
@@ -53,40 +56,40 @@ class HistoricCalculationsControllerTest {
     reset(historicCalculationsService)
 
     mvc = MockMvcBuilders
-      .standaloneSetup(HistoricCalculationsController(historicCalculationsService))
+      .standaloneSetup(CalculationHistoryController(historicCalculationsService))
       .setControllerAdvice(ControllerAdvice())
       .build()
     mapper.findAndRegisterModules()
   }
 
   @Test
-  fun `Test GET of calculation results by calculationReference`() {
-    val historicCalculation = HistoricCalculation(
-      "G5556UH",
-      LocalDateTime.now(),
-      CalculationSource.CRDS,
-      CalculationViewConfiguration("ref", 1),
-      "Comment",
-      CalculationType.CALCULATED,
-      "Ranby (HMP)",
-      48,
-      "Adding more sentences or terms",
-      -1,
-      genuineOverrideReasonCode = null,
-      genuineOverrideReasonDescription = null,
-      calculatedByUsername = "user1",
-      calculatedByDisplayName = "User One",
-      secondCheckDetails = emptyList(),
+  fun `Test GET of calculation history paged`() {
+    val historicCalculationPage = HistoricCalculationSummaryPage(
+      items = listOf(
+        HistoricCalculationSummary(
+          calculationDate = LocalDateTime.now(),
+          calculationSource = CalculationSource.CRDS,
+          calculationType = CalculationType.CALCULATED,
+          crdsCalculationId = 123,
+          nomisCalculationId = 456,
+          reasonDescription = "Other",
+          reasonFurtherDetail = "Foo",
+          genuineOverrideReasonDescription = null,
+          calculatedByDisplayName = "Bob",
+          establishmentCalculatedAtDescription = "HMP Brixham",
+        ),
+      ),
+      page = PageInfo(1, 1, 1),
     )
 
-    whenever(historicCalculationsService.getHistoricCalculationsForPrisoner(anyString())).thenReturn(listOf(historicCalculation))
+    whenever(historicCalculationsService.getHistoricCalculationSummaryPage(anyString(), any())).thenReturn(historicCalculationPage)
 
-    val result = mvc.perform(MockMvcRequestBuilders.get("/historicCalculations/123").accept(MediaType.APPLICATION_JSON))
+    val result = mvc.perform(MockMvcRequestBuilders.get("/calculation-history/A1234BC?page=4&size=7").accept(MediaType.APPLICATION_JSON))
       .andExpect(MockMvcResultMatchers.status().isOk)
       .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
       .andReturn()
 
-    assertThat(result.response.contentAsString).isEqualTo(mapper.writeValueAsString(listOf(historicCalculation)))
-    verify(historicCalculationsService).getHistoricCalculationsForPrisoner(eq("123"))
+    assertThat(result.response.contentAsString).isEqualTo(mapper.writeValueAsString(historicCalculationPage))
+    verify(historicCalculationsService).getHistoricCalculationSummaryPage(eq("A1234BC"), eq(PageRequest(4, 7)))
   }
 }

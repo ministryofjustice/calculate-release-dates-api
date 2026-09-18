@@ -27,7 +27,7 @@ class ProgressionModelSnapshotTimelineCalculationHandler(
       val timelineCalculationDate = event.date
       val currentTimelineDateIsTheAllocatedTrancheDate = timelineCalculationDate == applicableLegislation?.earliestApplicableDate
       if (applicableLegislation != null && currentTimelineDateIsTheAllocatedTrancheDate && allSentences.flatten().isNotEmpty()) {
-        var latestCalculation = timelineCalculator.getLatestCalculation(allSentences, offender, returnToCustodyDate, snapshots)
+        var latestCalculation = timelineCalculator.getLatestCalculation(allSentences, offender, returnToCustodyDate, snapshots, applicableErsLegislation)
         if (applicableSdsLegislations.hasTrancheSet(LegislationName.SDS_40) && SnapshotName.BEFORE_SDS40_TRANCHE in snapshots) {
           // if there was already an SDS40 tranche allocated then apply defaulting and adjustments at this point so that any SDS50 dates that were
           // retained for SDS40 are used in the progression model defaulting and will likely still be retained then as well.

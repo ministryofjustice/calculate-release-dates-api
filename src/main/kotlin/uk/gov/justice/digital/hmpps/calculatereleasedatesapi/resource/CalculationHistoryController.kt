@@ -14,13 +14,14 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.RestController
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.HistoricCalculation
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.HistoricCalculationSummaryPage
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.PageRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.HistoricCalculationsService
 
 @RestController
-@RequestMapping("/historicCalculations", produces = [MediaType.APPLICATION_JSON_VALUE])
-@Tag(name = "historic-calculations-controller", description = "Operations to handle historic calculations")
-class HistoricCalculationsController(
+@RequestMapping("/calculation-history", produces = [MediaType.APPLICATION_JSON_VALUE])
+@Tag(name = "calculation-history-controller", description = "Operations to handle the calculation history for a prisoner")
+class CalculationHistoryController(
   private val historicCalculationsService: HistoricCalculationsService,
 ) {
 
@@ -28,8 +29,8 @@ class HistoricCalculationsController(
   @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR', 'CALCULATE_RELEASE_DATES__CALCULATE__RW', 'CALCULATE_RELEASE_DATES__CALCULATE__RO')")
   @ResponseBody
   @Operation(
-    summary = "Get historic calculations for a prisoner",
-    description = "This endpoint will return a list of calculations performed for a given prisoner",
+    summary = "Get a page of historic calculations for a prisoner",
+    description = "This endpoint will return a list of calculations performed for a given prisoner based the on the page number and page size requested. The results are ordered with the most recent calculation first.",
   )
   @ApiResponses(
     value = [
@@ -39,14 +40,19 @@ class HistoricCalculationsController(
       ApiResponse(responseCode = "404", description = "This prisoner id does not exist"),
     ],
   )
-  fun getCalculationResults(
+  fun getHistoricCalculationSummaryPage(
     @Parameter(required = true, example = "AD123A", description = "The nomsId of the prisoner")
     @PathVariable("nomsId")
     nomsId: String,
-  ): List<HistoricCalculation> {
-    log.info("Request received for nomsId {}", nomsId)
-    return historicCalculationsService.getHistoricCalculationsForPrisoner(nomsId)
+    @Parameter(required = true, example = "1", description = "The number of the page to load with 1 being the first page")
+    page: Int,
+    @Parameter(required = true, example = "10", description = "The number of items to load in the page")
+    size: Int,
+  ): HistoricCalculationSummaryPage {
+    log.info("Request received for calculation history page {} with size {} for nomsId {}", page, size, nomsId)
+    return historicCalculationsService.getHistoricCalculationSummaryPage(nomsId, PageRequest(page, size))
   }
+
   companion object {
     val log: Logger = LoggerFactory.getLogger(this::class.java)
   }

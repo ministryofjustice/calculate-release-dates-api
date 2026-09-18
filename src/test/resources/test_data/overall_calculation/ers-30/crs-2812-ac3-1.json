@@ -89,6 +89,6 @@
   "featureToggles": {
     "applyPostRecallRepealRules": true,
     "routePreProgressionExtinguishedSentenceToManual": true,
-    "useLatestErsedFromPreErs30Snapshot": true
+    "useLatestErsedFromPreConsecutivelyImposedSnapshot": true
   }
 }

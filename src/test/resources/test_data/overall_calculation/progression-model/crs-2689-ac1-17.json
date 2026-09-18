@@ -9,33 +9,34 @@
       {
         "type": "StandardSentence",
         "offence": {
-          "committedAt": "2026-08-14"
+          "committedAt": "2026-06-26"
         },
         "duration": {
           "durationElements": {
-            "YEARS": 3
+            "YEARS": 5,
+            "MONTHS": 9
           }
         },
-        "sentencedAt": "2026-08-14",
+        "sentencedAt": "2026-06-26",
         "releaseArrangements": {
           "isSDSPlus": false,
           "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
-          "sdsEarlyReleaseExclusions": [],
-          "isSection250": true
+          "sdsEarlyReleaseExclusions": ["VIOLENT"],
+          "isSection250": false
         },
-        "identifier": "d211f333-aa1a-3e25-ac8d-0459c1f98868"
+        "identifier": "023e388e-1673-3bbc-9f13-1b1d915f3b73"
       },
       {
         "type": "StandardSentence",
         "offence": {
-          "committedAt": "2026-09-16"
+          "committedAt": "2026-10-13"
         },
         "duration": {
           "durationElements": {
-            "MONTHS": 18
+            "MONTHS": 1
           }
         },
-        "sentencedAt": "2026-09-16",
+        "sentencedAt": "2026-10-13",
         "releaseArrangements": {
           "isSDSPlus": false,
           "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
@@ -43,18 +44,29 @@
           "isSection250": false
         },
         "consecutiveSentenceUUIDs": [
-          "d211f333-aa1a-3e25-ac8d-0459c1f98868"
+          "023e388e-1673-3bbc-9f13-1b1d915f3b73"
         ]
       }
     ],
-    "adjustments": {}
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2026-10-13",
+          "numberOfDays": 30,
+          "fromDate": "2026-05-27",
+          "toDate": "2026-06-25"
+        }
+      ]
+    }
   },
   "userInputs": {
+    "calculateErsed": true,
     "useOffenceIndicators": true
   },
   "params": "sds-progression-model-october",
   "featureToggles": {
     "applyPostRecallRepealRules": true,
-    "routePreProgressionExtinguishedSentenceToManual": true
+    "routePreProgressionExtinguishedSentenceToManual": true,
+    "useLatestErsedFromPreConsecutivelyImposedSnapshot": true
   }
 }

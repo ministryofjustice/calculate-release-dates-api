@@ -49,14 +49,14 @@
       {
         "type": "StandardSentence",
         "offence": {
-          "committedAt": "2026-09-08"
+          "committedAt": "2026-10-01"
         },
         "duration": {
           "durationElements": {
             "MONTHS": 3
           }
         },
-        "sentencedAt": "2026-09-08",
+        "sentencedAt": "2026-10-01",
         "releaseArrangements": {
           "isSDSPlus": false,
           "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
@@ -71,11 +71,13 @@
     "adjustments": {}
   },
   "userInputs": {
+    "calculateErsed": true,
     "useOffenceIndicators": true
   },
   "params": "sds-progression-model-october",
   "featureToggles": {
     "applyPostRecallRepealRules": true,
-    "routePreProgressionExtinguishedSentenceToManual": true
+    "routePreProgressionExtinguishedSentenceToManual": true,
+    "useLatestErsedFromPreConsecutivelyImposedSnapshot": true
   }
 }
