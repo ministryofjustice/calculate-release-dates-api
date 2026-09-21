@@ -16,7 +16,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CouldNot
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.NoActiveBookingException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualCalculationEntryMode
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualCalculationInputResponse
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualCalculationResponse
@@ -214,19 +213,13 @@ class ManualCalculationService(
     val latestCalc = latestCalculationService.latestCalculationForPrisoner(prisonerId)
       .getOrElse { problemMessage: String -> throw NoActiveBookingException(problemMessage) }
 
-    val (mode, previousManuallyEnteredDates: List<DetailedDate>?) =
-      if (currentBookingHash == latestCalculationHash &&
-        (latestCalc.calculationType == CalculationType.MANUAL_DETERMINATE.name || latestCalc.calculationType == CalculationType.MANUAL_INDETERMINATE.name)
-      ) {
-        ManualCalculationEntryMode.EXPRESS to latestCalc.dates
-      } else {
-        ManualCalculationEntryMode.STANDARD to emptyList()
-      }
+    if (currentBookingHash == latestCalculationHash &&
+      (latestCalc.calculationType == CalculationType.MANUAL_DETERMINATE.name || latestCalc.calculationType == CalculationType.MANUAL_INDETERMINATE.name)
+    ) {
+      return ManualCalculationInputResponse(mode = ManualCalculationEntryMode.EXPRESS, manuallyEnteredDates = latestCalc.dates)
+    }
 
-    return ManualCalculationInputResponse(
-      mode = mode,
-      manuallyEnteredDates = previousManuallyEnteredDates,
-    )
+    return ManualCalculationInputResponse(mode = ManualCalculationEntryMode.STANDARD, manuallyEnteredDates = emptyList())
   }
 
   /**
