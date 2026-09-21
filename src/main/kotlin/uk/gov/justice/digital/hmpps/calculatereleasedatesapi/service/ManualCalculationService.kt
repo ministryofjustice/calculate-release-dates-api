@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
+import arrow.core.getOrElse
 import com.fasterxml.jackson.databind.ObjectMapper
 import jakarta.persistence.EntityNotFoundException
 import org.slf4j.Logger
@@ -12,8 +13,12 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationT
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CouldNotSaveManualEntryException
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.NoActiveBookingException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedDate
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualCalculationEntryMode
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualCalculationInputResponse
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualCalculationResponse
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualEntryRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType
@@ -45,6 +50,7 @@ class ManualCalculationService(
   private val sentenceCombinationService: SentenceCombinationService,
   private val validationService: ValidationService,
   private val calculationSourceDataService: CalculationSourceDataService,
+  private val latestCalculationService: LatestCalculationService,
 ) {
 
   fun hasIndeterminateSentences(bookingId: Long): Boolean {
@@ -194,6 +200,33 @@ class ManualCalculationService(
         Period.ZERO
       }
     }
+  }
+
+  @Transactional
+  fun inputsForAManualCalculation(prisonerId: String): ManualCalculationInputResponse {
+    val latestManualCalc = calculationRequestRepository
+      .findLatestManualCalculation(prisonerId, CalculationStatus.CONFIRMED.name)
+
+    val sourceData = calculationSourceDataService.getCalculationSourceData(prisonerId, SourceDataLookupOptions.default())
+    val booking = bookingService.getBooking(sourceData)
+    val currentBookingHash = objectToJson(booking, objectMapper).hashCode()
+    val latestCalculationHash = latestManualCalc?.inputData?.hashCode() ?: 0
+    val latestCalc = latestCalculationService.latestCalculationForPrisoner(prisonerId)
+      .getOrElse { problemMessage: String -> throw NoActiveBookingException(problemMessage) }
+
+    val (mode, previousManuallyEnteredDates: List<DetailedDate>?) =
+      if (currentBookingHash == latestCalculationHash &&
+        (latestCalc.calculationType == CalculationType.MANUAL_DETERMINATE.name || latestCalc.calculationType == CalculationType.MANUAL_INDETERMINATE.name)
+      ) {
+        ManualCalculationEntryMode.EXPRESS to latestCalc.dates
+      } else {
+        ManualCalculationEntryMode.STANDARD to null
+      }
+
+    return ManualCalculationInputResponse(
+      mode = mode,
+      manuallyEnteredDates = previousManuallyEnteredDates ?: emptyList(),
+    )
   }
 
   /**
