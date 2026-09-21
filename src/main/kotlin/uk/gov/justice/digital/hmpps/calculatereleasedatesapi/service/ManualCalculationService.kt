@@ -220,12 +220,12 @@ class ManualCalculationService(
       ) {
         ManualCalculationEntryMode.EXPRESS to latestCalc.dates
       } else {
-        ManualCalculationEntryMode.STANDARD to null
+        ManualCalculationEntryMode.STANDARD to emptyList()
       }
 
     return ManualCalculationInputResponse(
       mode = mode,
-      manuallyEnteredDates = previousManuallyEnteredDates ?: emptyList(),
+      manuallyEnteredDates = previousManuallyEnteredDates,
     )
   }
 
