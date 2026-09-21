@@ -24,6 +24,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOf
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeHistoricOverrideRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.SecondCheckRepository
+import kotlin.jvm.optionals.getOrNull
 
 @Service
 @Transactional(readOnly = true)
@@ -73,6 +74,21 @@ open class DetailedCalculationResultsService(
         null,
         historicSledOverride,
       ),
+      overriddenDates = calculationRequest.overridesCalculationRequestId?.let { overriddenCalculationRequestId ->
+        calculationRequestRepository.findById(overriddenCalculationRequestId).getOrNull()?.let { overriddenCalculation ->
+          val overriddenReleaseDates = overriddenCalculation.calculationOutcomes
+            .filter { it.outcomeDate != null }
+            .map { ReleaseDate(it.outcomeDate!!, ReleaseDateType.valueOf(it.calculationDateType)) }
+          calculationResultEnrichmentService.addDetailToCalculationDates(
+            overriddenReleaseDates,
+            sentenceAndOffences,
+            calculationBreakdown,
+            calculationRequest.historicalTusedSource,
+            null,
+            historicSledOverride,
+          )
+        }
+      },
       secondCheckDetails = secondCheckDetails,
       approvedDates = approvedDates(calculationRequest.approvedDatesSubmissions.firstOrNull()),
       calculationOriginalData = CalculationOriginalData(
