@@ -779,10 +779,7 @@ class ManualCalculationServiceTest {
       val previousCalculation = CALCULATION_REQUEST_WITH_OUTCOMES.copy(
         inputData = objectToJson(BOOKING, objectMapper),
       ).withType(CalculationType.MANUAL_DETERMINATE)
-      whenever(
-        calculationRequestRepository
-          .findLatestManualCalculation(PRISONER_ID, CalculationStatus.CONFIRMED.name),
-      ).thenReturn(previousCalculation)
+      whenever(calculationRequestRepository.findById(CALCULATION_REQUEST_ID)).thenReturn(Optional.of(previousCalculation))
 
       val latestCalculation = LATEST_CALCULATION.copy(calculationType = CalculationType.MANUAL_DETERMINATE.name, dates = DETAILED_DATES)
       whenever(latestCalculationService.latestCalculationForPrisoner(PRISONER_ID)).thenReturn(latestCalculation.right())
@@ -806,10 +803,7 @@ class ManualCalculationServiceTest {
       val previousCalculation = CALCULATION_REQUEST_WITH_OUTCOMES.copy(
         inputData = objectToJson(BOOKING, objectMapper),
       ).withType(CalculationType.MANUAL_INDETERMINATE)
-      whenever(
-        calculationRequestRepository
-          .findLatestManualCalculation(PRISONER_ID, CalculationStatus.CONFIRMED.name),
-      ).thenReturn(previousCalculation)
+      whenever(calculationRequestRepository.findById(CALCULATION_REQUEST_ID)).thenReturn(Optional.of(previousCalculation))
 
       val latestCalculation = LATEST_CALCULATION.copy(calculationType = CalculationType.MANUAL_INDETERMINATE.name, dates = DETAILED_DATES)
       whenever(latestCalculationService.latestCalculationForPrisoner(PRISONER_ID)).thenReturn(latestCalculation.right())
@@ -834,10 +828,7 @@ class ManualCalculationServiceTest {
       val previousCalculation = CALCULATION_REQUEST_WITH_OUTCOMES.copy(
         inputData = objectToJson(BOOKING.copy(returnToCustodyDate = LocalDate.now()), objectMapper),
       ).withType(CalculationType.MANUAL_DETERMINATE)
-      whenever(
-        calculationRequestRepository
-          .findLatestManualCalculation(PRISONER_ID, CalculationStatus.CONFIRMED.name),
-      ).thenReturn(previousCalculation)
+      whenever(calculationRequestRepository.findById(CALCULATION_REQUEST_ID)).thenReturn(Optional.of(previousCalculation))
 
       val latestCalculation = LATEST_CALCULATION.copy(calculationType = CalculationType.MANUAL_DETERMINATE.name, dates = DETAILED_DATES)
       whenever(latestCalculationService.latestCalculationForPrisoner(PRISONER_ID)).thenReturn(latestCalculation.right())
@@ -861,10 +852,7 @@ class ManualCalculationServiceTest {
       val previousCalculation = CALCULATION_REQUEST_WITH_OUTCOMES.copy(
         inputData = objectToJson(BOOKING, objectMapper),
       ).withType(CalculationType.CALCULATED)
-      whenever(
-        calculationRequestRepository
-          .findLatestManualCalculation(PRISONER_ID, CalculationStatus.CONFIRMED.name),
-      ).thenReturn(previousCalculation)
+      whenever(calculationRequestRepository.findById(CALCULATION_REQUEST_ID)).thenReturn(Optional.of(previousCalculation))
 
       // the latest calculation service reports the booking's most recent calculation type as CALCULATED, not manual
       val latestCalculation = LATEST_CALCULATION.copy(calculationType = CalculationType.CALCULATED.name, dates = DETAILED_DATES)
@@ -885,12 +873,9 @@ class ManualCalculationServiceTest {
         ),
       ).thenReturn(FAKE_SOURCE_DATA)
       whenever(bookingService.getBooking(FAKE_SOURCE_DATA)).thenReturn(BOOKING)
-      whenever(
-        calculationRequestRepository
-          .findLatestManualCalculation(PRISONER_ID, CalculationStatus.CONFIRMED.name),
-      ).thenReturn(null)
 
-      val latestCalculation = LATEST_CALCULATION.copy(calculationType = CalculationType.MANUAL_DETERMINATE.name, dates = DETAILED_DATES)
+      // no previous calculation request exists for this prisoner
+      val latestCalculation = LATEST_CALCULATION.copy(calculationType = CalculationType.MANUAL_DETERMINATE.name, calculationRequestId = null, dates = DETAILED_DATES)
       whenever(latestCalculationService.latestCalculationForPrisoner(PRISONER_ID)).thenReturn(latestCalculation.right())
 
       val result = manualCalculationService.inputsForAManualCalculation(PRISONER_ID)
@@ -908,10 +893,6 @@ class ManualCalculationServiceTest {
         ),
       ).thenReturn(FAKE_SOURCE_DATA)
       whenever(bookingService.getBooking(FAKE_SOURCE_DATA)).thenReturn(BOOKING)
-      whenever(
-        calculationRequestRepository
-          .findLatestManualCalculation(PRISONER_ID, CalculationStatus.CONFIRMED.name),
-      ).thenReturn(null)
       whenever(latestCalculationService.latestCalculationForPrisoner(PRISONER_ID))
         .thenReturn("Prisoner ($PRISONER_ID) could not be found".left())
 

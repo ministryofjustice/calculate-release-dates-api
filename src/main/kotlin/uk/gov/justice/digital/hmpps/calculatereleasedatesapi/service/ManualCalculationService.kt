@@ -203,19 +203,19 @@ class ManualCalculationService(
 
   @Transactional
   fun inputsForAManualCalculation(prisonerId: String): ManualCalculationInputResponse {
-    val latestManualCalc = calculationRequestRepository
-      .findLatestManualCalculation(prisonerId, CalculationStatus.CONFIRMED.name)
-
     val sourceData = calculationSourceDataService.getCalculationSourceData(prisonerId, SourceDataLookupOptions.default())
     val booking = bookingService.getBooking(sourceData)
     val currentBookingHash = objectToJson(booking, objectMapper).hashCode()
-    val latestCalculationHash = latestManualCalc?.inputData?.hashCode() ?: 0
+
     val latestCalc = latestCalculationService.latestCalculationForPrisoner(prisonerId)
       .getOrElse { problemMessage: String -> throw NoActiveBookingException(problemMessage) }
 
-    if (currentBookingHash == latestCalculationHash &&
-      (latestCalc.calculationType == CalculationType.MANUAL_DETERMINATE.name || latestCalc.calculationType == CalculationType.MANUAL_INDETERMINATE.name)
-    ) {
+    val isLatestManualCalculation = latestCalc.calculationType == CalculationType.MANUAL_DETERMINATE.name ||
+      latestCalc.calculationType == CalculationType.MANUAL_INDETERMINATE.name
+    val latestCalculationRequest = latestCalc.calculationRequestId?.let { calculationRequestRepository.findById(it).orElse(null) }
+    val latestCalculationHash = latestCalculationRequest?.inputData?.hashCode() ?: 0
+
+    if (isLatestManualCalculation && currentBookingHash == latestCalculationHash) {
       return ManualCalculationInputResponse(mode = ManualCalculationEntryMode.EXPRESS, manuallyEnteredDates = latestCalc.dates)
     }
 
