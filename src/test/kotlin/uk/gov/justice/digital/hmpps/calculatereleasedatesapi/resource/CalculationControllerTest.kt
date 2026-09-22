@@ -389,6 +389,7 @@ class CalculationControllerTest {
         "Brixton (HMP)",
       ),
       dates = mapOf(),
+      overriddenDates = null,
       approvedDates = mapOf(),
       secondCheckDetails = null,
       CalculationOriginalData(
