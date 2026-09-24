@@ -1,0 +1,109 @@
+{
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01",
+      "isActiveSexOffender": true
+    },
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "recall": {
+          "recallType": "STANDARD_RECALL",
+          "revocationDate": "2022-08-15"
+        },
+        "offence": {
+          "committedAt": "2016-04-03",
+          "offenceCode": "OF61017"
+        },
+        "identifier": "38ad49eb-4b97-3611-9e71-b001221ca1a9",
+        "sentencedAt": "2017-09-25",
+        "caseReference": null,
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSection250": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false
+        },
+        "automaticRelease": false,
+        "duration": {
+          "durationElements": {
+            "YEARS": 9
+          }
+        }
+      },
+      {
+        "offence": {
+          "committedAt": "2023-08-06",
+          "offenceCode": "OF61102"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 7
+          }
+        },
+        "identifier": "039f4589-bc55-3d91-ad4b-68ace973e834",
+        "sentencedAt": "2023-08-07",
+        "caseReference": null,
+        "releaseArrangements": {
+          "isSDSPlus": true,
+          "isSection250": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": true
+        }
+      }
+    ],
+    "adjustments": {
+      "ADDITIONAL_DAYS_AWARDED": [
+        {
+          "fromDate": "2022-01-02",
+          "numberOfDays": 5,
+          "additionalInfo": {
+            "type": "NONE"
+          },
+          "appliesToSentencesFrom": "2022-01-02"
+        },
+        {
+          "fromDate": "2026-10-07",
+          "numberOfDays": 5,
+          "additionalInfo": {
+            "type": "NONE"
+          },
+          "appliesToSentencesFrom": "2026-10-07"
+        }
+      ],
+      "RESTORATION_OF_ADDITIONAL_DAYS_AWARDED": [
+        {
+          "fromDate": "2026-11-02",
+          "numberOfDays": 4,
+          "additionalInfo": {
+            "type": "NONE"
+          },
+          "appliesToSentencesFrom": "2026-11-02"
+        }
+      ]
+    },
+    "externalMovements": [
+      {
+        "direction": "OUT",
+        "movementDate": "2022-03-31",
+        "movementReason": "CRD"
+      },
+      {
+        "direction": "IN",
+        "movementDate": "2022-08-15",
+        "movementReason": "RECALL_ADMISSION"
+      }
+    ]
+  },
+  "userInputs": {
+    "useOffenceIndicators": true,
+    "calculateErsed": true
+  },
+  "params": "sds-progression-model-october",
+  "featureToggles": {
+    "applyPostRecallRepealRules": true,
+    "routePreProgressionExtinguishedSentenceToManual": true,
+    "useLatestErsedFromPreConsecutivelyImposedSnapshot": true
+  }
+}

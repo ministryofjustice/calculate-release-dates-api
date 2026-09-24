@@ -44,7 +44,6 @@ class TimelineCalculator(
       sentences,
       offender,
       returnToCustodyDate,
-      snapshots,
     )
   }
 

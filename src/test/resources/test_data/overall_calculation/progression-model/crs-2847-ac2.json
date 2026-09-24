@@ -1,0 +1,176 @@
+{
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01",
+      "isActiveSexOffender": true
+    },
+    "sentences": [
+      {
+        "recall": {
+          "recallType": "STANDARD_RECALL",
+          "revocationDate": "2025-12-22"
+        },
+        "offence": {
+          "committedAt": "2023-07-08",
+          "offenceCode": "TH68023"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 54
+          }
+        },
+        "identifier": "cef93e80-f4d2-384e-b8a3-6f50babe7633",
+        "sentencedAt": "2024-02-15",
+        "caseReference": null,
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSection250": false,
+          "sdsEarlyReleaseExclusions": [
+            "VIOLENT"
+          ],
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false
+        }
+      },
+      {
+        "offence": {
+          "committedAt": "2025-12-26",
+          "offenceCode": "TH68025"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 6
+          }
+        },
+        "identifier": "9bad6177-316c-3cc7-8c90-e7ca5cf3bade",
+        "sentencedAt": "2026-03-23",
+        "caseReference": null,
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSection250": false,
+          "sdsEarlyReleaseExclusions": [
+            "VIOLENT"
+          ],
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false
+        }
+      },
+      {
+        "offence": {
+          "committedAt": "2025-12-26",
+          "offenceCode": "PC53001"
+        },
+        "duration": {
+          "durationElements": {
+            "WEEKS": 32
+          }
+        },
+        "identifier": "3c738ea0-0836-35d9-a28f-0f13f9603aeb",
+        "sentencedAt": "2026-03-23",
+        "caseReference": null,
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSection250": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false
+        }
+      },
+      {
+        "offence": {
+          "committedAt": "2025-12-26",
+          "offenceCode": "PU86004"
+        },
+        "duration": {
+          "durationElements": {
+            "WEEKS": 6
+          }
+        },
+        "identifier": "a37378d2-4000-353e-ae4f-da4307492375",
+        "sentencedAt": "2026-03-23",
+        "caseReference": null,
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSection250": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false
+        }
+      },
+      {
+        "offence": {
+          "committedAt": "2025-12-26",
+          "offenceCode": "PL96003"
+        },
+        "duration": {
+          "durationElements": {
+            "DAYS": 7
+          }
+        },
+        "identifier": "6e164c16-a41e-3618-8e04-5a7023188452",
+        "sentencedAt": "2026-03-23",
+        "caseReference": null,
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSection250": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false
+        }
+      }
+    ],
+    "adjustments": {
+      "RECALL_REMAND": [
+        {
+          "toDate": "2024-02-14",
+          "fromDate": "2023-09-08",
+          "numberOfDays": 160,
+          "additionalInfo": {
+            "type": "NONE"
+          },
+          "appliesToSentencesFrom": "2024-02-15"
+        }
+      ],
+      "UNLAWFULLY_AT_LARGE": [
+        {
+          "toDate": "2025-12-26",
+          "fromDate": "2025-12-23",
+          "numberOfDays": 4,
+          "additionalInfo": {
+            "type": "UAL",
+            "reason": "RECALL"
+          },
+          "appliesToSentencesFrom": "2025-12-23"
+        }
+      ],
+      "ADDITIONAL_DAYS_AWARDED": [
+        {
+          "fromDate": "2024-11-01",
+          "numberOfDays": 10,
+          "additionalInfo": {
+            "type": "NONE"
+          },
+          "appliesToSentencesFrom": "2024-11-01"
+        }
+      ]
+    },
+    "externalMovements": [
+      {
+        "direction": "OUT",
+        "movementDate": "2025-12-17",
+        "movementReason": "CRD"
+      },
+      {
+        "direction": "IN",
+        "movementDate": "2025-12-29",
+        "movementReason": "RECALL_ADMISSION"
+      }
+    ]
+  },
+  "userInputs": {
+    "useOffenceIndicators": true,
+    "calculateErsed": true
+  },
+  "params": "sds-progression-model-october",
+  "featureToggles": {
+    "applyPostRecallRepealRules": true,
+    "routePreProgressionExtinguishedSentenceToManual": true,
+    "useLatestErsedFromPreConsecutivelyImposedSnapshot": true
+  }
+}

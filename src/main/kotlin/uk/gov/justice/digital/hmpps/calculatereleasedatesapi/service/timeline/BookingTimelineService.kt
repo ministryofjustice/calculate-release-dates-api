@@ -172,7 +172,7 @@ class BookingTimelineService(
       val allSentences = releasedSentenceGroups.flatMap { it.sentences }
       if (applicableSdsLegislations.hasTrancheSet(LegislationName.SDS_PROGRESSION_MODEL) && SnapshotName.BEFORE_PROGRESSION_MODEL_TRANCHE in snapshots) {
         val preLegislationCalculation = PreLegislationCalculation(snapshots[SnapshotName.BEFORE_PROGRESSION_MODEL_TRANCHE]!!.result, applicableSdsLegislations.getApplicableLegislation(LegislationName.SDS_PROGRESSION_MODEL)!!)
-        latestCalculation = sdsProgressionModelFinalDatesService.applyFinalDates(latestCalculation, preLegislationCalculation, adjustments)
+        latestCalculation = sdsProgressionModelFinalDatesService.applyFinalDates(latestCalculation, preLegislationCalculation)
       } else if (applicableSdsLegislations.hasTrancheSet(LegislationName.SDS_40) && SnapshotName.BEFORE_SDS40_TRANCHE in snapshots) {
         val preLegislationCalculation = PreLegislationCalculation(snapshots[SnapshotName.BEFORE_SDS40_TRANCHE]!!.result, applicableSdsLegislations.getApplicableLegislation(LegislationName.SDS_40)!!)
         latestCalculation = sds40FinalDatesService.applyFinalDates(latestCalculation, preLegislationCalculation, adjustments, allSentences)

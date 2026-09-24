@@ -41,7 +41,8 @@
       "rulesWithExtraAdjustments": {},
       "adjustedDays": -25,
       "releaseDate": "2023-02-23",
-      "unadjustedDate": "2023-03-20"
+      "unadjustedDate": "2023-03-20",
+      "appliedAdjustments": { "awarded": 5 }
     },
     "HDCED": {
       "rules": [

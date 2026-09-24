@@ -25,6 +25,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Senten
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.NoSentencesProvidedException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AFineSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AbstractSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AppliedAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BotusSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
@@ -33,8 +34,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCa
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.sentence.SentencesExtractionService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.sentence.oraAndNoneOraExtraction
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.CalculationSnapshot
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.SnapshotName
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
 import java.time.LocalDate
 import java.time.Period
@@ -53,16 +52,15 @@ class BookingExtractionService(
     sentenceGroups: List<List<CalculableSentence>>,
     offender: Offender,
     returnToCustodyDate: LocalDate? = null,
-    snapshots: Map<SnapshotName, CalculationSnapshot>,
   ): CalculationResult = when (sentences.size) {
     0 -> throw NoSentencesProvidedException("At least one sentence must be provided")
-    1 -> extractSingle(sentences[0], snapshots)
+    1 -> extractSingle(sentences[0])
     else -> {
-      extractMultiple(sentences, sentenceGroups, offender, returnToCustodyDate, snapshots)
+      extractMultiple(sentences, sentenceGroups, offender, returnToCustodyDate)
     }
   }
 
-  private fun extractSingle(sentence: CalculableSentence, snapshots: Map<SnapshotName, CalculationSnapshot>): CalculationResult {
+  private fun extractSingle(sentence: CalculableSentence): CalculationResult {
     val dates: MutableMap<ReleaseDateType, LocalDate> = mutableMapOf()
     val sentenceCalculation = sentence.sentenceCalculation
     var historicalTusedSource: HistoricalTusedSource? = null
@@ -153,7 +151,6 @@ class BookingExtractionService(
     sentenceGroups: List<List<CalculableSentence>>,
     offender: Offender,
     returnToCustodyDate: LocalDate?,
-    snapshots: Map<SnapshotName, CalculationSnapshot>,
   ): CalculationResult {
     val dates: MutableMap<ReleaseDateType, LocalDate> = mutableMapOf()
     val otherDates: MutableMap<ReleaseDateType, LocalDate> = mutableMapOf()
@@ -206,19 +203,6 @@ class BookingExtractionService(
         }
     } else {
       null
-    }
-
-    val latestExtendedDeterminateParoleEligibilityDate: LocalDate? = extractionService.mostRecentOrNull(
-      sentences,
-      SentenceCalculation::extendedDeterminateParoleEligibilityDate,
-    )?.let { adjustedPed ->
-      // adjustments can make the PED earlier than the earliest sentence date
-      val earliestSentenceDate = sentences.minOf { it.sentencedAt }
-      if (adjustedPed.isAfter(earliestSentenceDate)) {
-        adjustedPed
-      } else {
-        earliestSentenceDate
-      }
     }
 
     val concurrentOraAndNonOraDetails = extractConcurrentOraAndNonOraDetails(
@@ -284,6 +268,7 @@ class BookingExtractionService(
         val latestDtoSentence = sentences.sortedBy { it.sentenceCalculation.releaseDate }.last { it.isDto() }
         val type = if (concurrentOraAndNonOraDetails.isReleaseDateConditional) CRD else ARD
         dates[type] = latestNonDtoSentence.sentenceCalculation.releaseDate
+        breakdownByReleaseDateType[type] = latestNonDtoSentence.sentenceCalculation.breakdownByReleaseDateType[type]!!
         sentencesImpactingFinalReleaseDate += latestNonDtoSentence.sentenceParts()
         val midTermDate = calculateMidTermDate(
           latestDtoSentence,
@@ -341,7 +326,6 @@ class BookingExtractionService(
      **/
     val pedExtractionResult = if (activeSentenceCalculation.releaseDateTypes.contains(PED)) {
       extractPedForBooking(
-        latestExtendedDeterminateParoleEligibilityDate,
         mostRecentSentenceByAdjustedDeterminateReleaseDate,
         sentences,
         dates,
@@ -357,7 +341,6 @@ class BookingExtractionService(
       breakdownByReleaseDateType,
       dates,
       sentenceGroups,
-      snapshots,
     )
 
     if (mostRecentSentencesByReleaseDate.any { it.isRecall() }) {
@@ -391,7 +374,7 @@ class BookingExtractionService(
       isAffectedByProgressionModel(sentence) &&
         PROGRESSION_MODEL_ELIGIBLE_RELEASE_TYPES.any { type ->
           val targetDate = dates[type]
-          val targetType = if (type == ReleaseDateType.PED && pedExtractionResult == PedExtractionResult.PED_ADJUSTED_TO_NON_PED_RELEASE) {
+          val targetType = if (type == PED && pedExtractionResult == PedExtractionResult.PED_ADJUSTED_TO_NON_PED_RELEASE) {
             // if the PED was adjusted to the CRD and the CRD was affected by progression model then the calculation was affected by progression
             CRD
           } else {
@@ -444,13 +427,27 @@ class BookingExtractionService(
   }
 
   private fun extractPedForBooking(
-    latestExtendedDeterminateParoleEligibilityDate: LocalDate?,
     mostRecentSentenceByAdjustedDeterminateReleaseDate: CalculableSentence,
     sentences: List<CalculableSentence>,
     dates: MutableMap<ReleaseDateType, LocalDate>,
     breakdownByReleaseDateType: MutableMap<ReleaseDateType, ReleaseDateCalculationBreakdown>,
   ): PedExtractionResult {
-    if (latestExtendedDeterminateParoleEligibilityDate != null) {
+    val (latestExtendedDeterminateParoleEligibilityDate, latestExtendedDeterminateParoleEligibilityDateAppliedAdjustments) = extractionService.mostRecentSentenceOrNull(
+      sentences,
+      SentenceCalculation::extendedDeterminateParoleEligibilityDate,
+    )?.let { sentence ->
+      val adjustedPed = sentence.sentenceCalculation.extendedDeterminateParoleEligibilityDate!!
+      val appliedAdjustments = AppliedAdjustments.forInitialRelease(sentence)
+      // adjustments can make the PED earlier than the earliest sentence date
+      val earliestSentenceDate = sentences.minOf { it.sentencedAt }
+      if (adjustedPed.isAfter(earliestSentenceDate)) {
+        adjustedPed to appliedAdjustments
+      } else {
+        earliestSentenceDate to appliedAdjustments
+      }
+    } ?: (null to null)
+
+    if (latestExtendedDeterminateParoleEligibilityDate != null && latestExtendedDeterminateParoleEligibilityDateAppliedAdjustments != null) {
       val mostRecentReleaseSentenceParoleDate =
         mostRecentSentenceByAdjustedDeterminateReleaseDate.sentenceCalculation.extendedDeterminateParoleEligibilityDate
       if (mostRecentReleaseSentenceParoleDate != null) {
@@ -479,6 +476,7 @@ class BookingExtractionService(
               ),
               releaseDate = dates[PED]!!,
               unadjustedDate = latestExtendedDeterminateParoleEligibilityDate,
+              appliedAdjustments = AppliedAdjustments.forInitialRelease(latestNonPedReleaseSentence),
             )
             return PedExtractionResult.PED_ADJUSTED_TO_NON_PED_RELEASE
           } else {
@@ -486,6 +484,7 @@ class BookingExtractionService(
             breakdownByReleaseDateType[PED] = ReleaseDateCalculationBreakdown(
               releaseDate = dates[PED]!!,
               unadjustedDate = latestExtendedDeterminateParoleEligibilityDate,
+              appliedAdjustments = latestExtendedDeterminateParoleEligibilityDateAppliedAdjustments,
             )
             return PedExtractionResult.LATEST_PED_USED
           }
@@ -500,7 +499,6 @@ class BookingExtractionService(
     breakdownByReleaseDateType: MutableMap<ReleaseDateType, ReleaseDateCalculationBreakdown>,
     dates: MutableMap<ReleaseDateType, LocalDate>,
     sentenceGroups: List<List<CalculableSentence>>,
-    snapshots: Map<SnapshotName, CalculationSnapshot>,
   ): Boolean {
     val latestEarlyReleaseSchemeEligibilitySentence =
       extractionService.mostRecentSentenceOrNull(
@@ -535,6 +533,7 @@ class BookingExtractionService(
             rules = setOf(CalculationRule.ERSED_ADJUSTED_TO_CONCURRENT_TERM),
             releaseDate = latestAFineReleaseAfterErsed.sentenceCalculation.releaseDate,
             unadjustedDate = latestEarlyReleaseSchemeEligibilitySentence.sentenceCalculation.earlyReleaseSchemeEligibilityDate!!,
+            appliedAdjustments = AppliedAdjustments.forInitialRelease(latestAFineReleaseAfterErsed),
           )
           dates[ERSED] = latestAFineReleaseAfterErsed.sentenceCalculation.releaseDate
           false
@@ -585,6 +584,7 @@ class BookingExtractionService(
           rules = setOf(ERSED_ADJUSTED_TO_MTD),
           releaseDate = dates[MTD]!!,
           unadjustedDate = ersed,
+          appliedAdjustments = AppliedAdjustments.forInitialRelease(latestEarlyReleaseSchemeEligibilitySentence),
         )
         dates[ERSED] = dates[MTD]!!
       }

@@ -142,6 +142,7 @@ class HdcedExtractionService(
       releaseDate = adjustedReleaseDate,
       unadjustedDate = hdcedSentenceDate,
       adjustedDays = ChronoUnit.DAYS.between(adjustedReleaseDate, hdcedSentenceDate),
+      appliedAdjustments = null,
     )
   }
 

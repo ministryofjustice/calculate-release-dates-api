@@ -18,6 +18,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SLED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.TUSED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentDuration
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AppliedAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BotusSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
@@ -120,6 +121,7 @@ class SentenceAdjustedCalculationService(
           sentenceCalculation.unadjustedExtendedDeterminateParoleEligibilityDate,
           sentenceCalculation.extendedDeterminateParoleEligibilityDate,
         ),
+        appliedAdjustments = AppliedAdjustments.forInitialRelease(sentenceCalculation.adjustments),
       )
     }
   }
@@ -155,6 +157,7 @@ class SentenceAdjustedCalculationService(
       sentenceCalculation.unadjustedExpiryDate,
       sentenceCalculation.adjustedExpiryDate,
     ),
+    appliedAdjustments = null,
   )
 
   private fun getBreakdownForReleaseDate(sentenceCalculation: SentenceCalculation): ReleaseDateCalculationBreakdown {
@@ -177,6 +180,7 @@ class SentenceAdjustedCalculationService(
       } else {
         emptyMap()
       },
+      appliedAdjustments = AppliedAdjustments.forInitialRelease(sentenceCalculation.adjustments),
     )
   }
 
@@ -220,6 +224,7 @@ class SentenceAdjustedCalculationService(
           } else {
             emptyMap()
           },
+          appliedAdjustments = null,
         )
     } else {
       sentenceCalculation.numberOfDaysToLicenceExpiryDate =
