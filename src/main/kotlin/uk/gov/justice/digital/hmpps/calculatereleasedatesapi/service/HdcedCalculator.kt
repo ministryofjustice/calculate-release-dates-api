@@ -180,6 +180,7 @@ class HdcedCalculator(
           adjustedDays = input.totalAdjustmentForBreakdown(),
           releaseDate = adjustedDate,
           unadjustedDate = input.sentence.sentencedAt,
+          appliedAdjustments = null,
         ),
 
       )
@@ -210,6 +211,7 @@ class HdcedCalculator(
           adjustedDays = input.totalAdjustmentForBreakdown(),
           releaseDate = adjustedDate,
           unadjustedDate = adjustedDate.plusDays(input.custodialPeriodAboveMidpointDeductionDays),
+          appliedAdjustments = null,
         ),
 
       )
@@ -237,6 +239,7 @@ class HdcedCalculator(
         adjustedDays = input.ualToAdd.plus(input.otherAdditions),
         releaseDate = adjustedDate,
         unadjustedDate = input.sentence.sentencedAt,
+        appliedAdjustments = null,
       ),
     )
   }

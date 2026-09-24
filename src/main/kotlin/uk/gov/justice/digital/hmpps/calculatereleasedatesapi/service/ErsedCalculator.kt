@@ -7,6 +7,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.ErsedConfigu
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentDuration
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AppliedAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ERSLegislation
@@ -77,14 +78,15 @@ class ErsedCalculator(
     } else if (ers30Result.adjustedDateExcludingAwarded.isAfterOrEqualTo(ImportantDates.ERS30_COMMENCEMENT_DATE)) {
       sentenceCalculation.breakdownByReleaseDateType[ReleaseDateType.ERSED] = ers30Result.breakdown
     } else {
-      val daysToBeAddedExcludingUAL = sentenceCalculation.adjustments.awardedDuringCustody -
+      val daysAwarded = sentenceCalculation.adjustments.awardedDuringCustody -
         sentenceCalculation.adjustments.unusedAdaDays -
         sentenceCalculation.adjustments.servedAdaDays
       sentenceCalculation.breakdownByReleaseDateType[ReleaseDateType.ERSED] = ReleaseDateCalculationBreakdown(
-        releaseDate = ImportantDates.ERS30_COMMENCEMENT_DATE.plusDays(daysToBeAddedExcludingUAL),
+        releaseDate = ImportantDates.ERS30_COMMENCEMENT_DATE.plusDays(daysAwarded),
         unadjustedDate = ImportantDates.ERS30_COMMENCEMENT_DATE,
-        adjustedDays = daysToBeAddedExcludingUAL,
+        adjustedDays = daysAwarded,
         rules = setOf(CalculationRule.ERSED_ADJUSTED_TO_ERS30_COMMENCEMENT),
+        appliedAdjustments = AppliedAdjustments.forInitialRelease(sentenceCalculation.adjustments),
       )
     }
   }
@@ -138,6 +140,7 @@ class ErsedCalculator(
           unadjustedDate = params.sentence.sentencedAt,
           adjustedDays = addedDays,
           rules = setOf(CalculationRule.ERSED_BEFORE_SENTENCE_DATE),
+          appliedAdjustments = AppliedAdjustments.forInitialRelease(params.sentenceCalculation.adjustments),
         ),
         params.sentence.sentencedAt.plusDays(params.sentenceCalculation.adjustments.ualDuringCustody),
       )
@@ -171,6 +174,7 @@ class ErsedCalculator(
       rulesWithExtraAdjustments = mapOf(
         CalculationRule.ERSED_MAX_PERIOD to AdjustmentDuration(-params.maxPeriodAmount, params.maxPeriodUnit),
       ),
+      appliedAdjustments = AppliedAdjustments.forInitialRelease(params.sentenceCalculation.adjustments),
     )
 
     val daysUntilRelease =
@@ -188,6 +192,7 @@ class ErsedCalculator(
       releaseDate = minimumEffectiveErsed,
       unadjustedDate = unadjustedMinimumErsed,
       adjustedDays = ChronoUnit.DAYS.between(unadjustedMinimumErsed, minimumEffectiveErsed),
+      appliedAdjustments = AppliedAdjustments.forInitialRelease(params.sentenceCalculation.adjustments),
     )
 
     return if (minimumEffectiveErsed.isAfter(maxEffectiveErsed)) {

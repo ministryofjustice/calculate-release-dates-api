@@ -106,7 +106,8 @@
       },
       "adjustedDays": 106,
       "releaseDate": "2015-09-11",
-      "unadjustedDate": "2015-05-28"
+      "unadjustedDate": "2015-05-28",
+      "appliedAdjustments": { "awarded": 112 }
     },
     "TUSED": {
       "rules": [

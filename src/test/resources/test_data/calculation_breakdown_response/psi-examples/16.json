@@ -74,7 +74,8 @@
       "rulesWithExtraAdjustments": {},
       "adjustedDays": -14,
       "releaseDate": "2015-05-29",
-      "unadjustedDate": "2015-06-12"
+      "unadjustedDate": "2015-06-12",
+      "appliedAdjustments": { "awarded": 0 }
     },
     "TUSED": {
       "rules": [
