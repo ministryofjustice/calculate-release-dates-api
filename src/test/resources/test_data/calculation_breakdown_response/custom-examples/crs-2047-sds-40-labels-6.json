@@ -7,7 +7,8 @@
       "rulesWithExtraAdjustments": {},
       "adjustedDays": 0,
       "releaseDate": "2026-08-16",
-      "unadjustedDate": "2026-08-16"
+      "unadjustedDate": "2026-08-16",
+      "appliedAdjustments": { "awarded": 0 }
     },
     "SLED": {
       "rules": [],
@@ -21,7 +22,8 @@
       "rulesWithExtraAdjustments": {},
       "adjustedDays": 0,
       "releaseDate": "2025-05-17",
-      "unadjustedDate": "2025-05-17"
+      "unadjustedDate": "2025-05-17",
+      "appliedAdjustments": { "awarded": 0 }
     },
     "ERSED": {
       "rules": [
@@ -30,7 +32,8 @@
       "rulesWithExtraAdjustments": {},
       "adjustedDays": 0,
       "releaseDate": "2024-02-17",
-      "unadjustedDate": "2024-02-17"
+      "unadjustedDate": "2024-02-17",
+      "appliedAdjustments": { "awarded": 0 }
     }
   },
   "otherDates": {},

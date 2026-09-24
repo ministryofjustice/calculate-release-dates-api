@@ -99,6 +99,7 @@ class TusedCalculator(private val featureToggles: FeatureToggles) {
     adjustedDays = getAdjustedDays(sentenceCalculation),
     releaseDate = sentenceCalculation.topUpSupervisionDate!!,
     unadjustedDate = sentenceCalculation.unadjustedDeterminateReleaseDate,
+    appliedAdjustments = null,
   )
 
   fun getCalculationBreakdownForBotus(sentenceCalculation: SentenceCalculation, postRepeal: Boolean = false): ReleaseDateCalculationBreakdown {
@@ -119,6 +120,7 @@ class TusedCalculator(private val featureToggles: FeatureToggles) {
       adjustedDays = getAdjustedDays(sentenceCalculation),
       releaseDate = sentenceCalculation.topUpSupervisionDate!!,
       unadjustedDate = sentenceCalculation.unadjustedDeterminateReleaseDate,
+      appliedAdjustments = null,
     )
   }
 

@@ -145,7 +145,8 @@
       "rulesWithExtraAdjustments": {},
       "adjustedDays": -7,
       "releaseDate": "2022-06-13",
-      "unadjustedDate": "2022-06-20"
+      "unadjustedDate": "2022-06-20",
+      "appliedAdjustments": { "awarded": 0 }
     },
     "HDCED": {
       "rules": [

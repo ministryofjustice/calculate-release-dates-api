@@ -45,7 +45,8 @@
       },
       "adjustedDays": 0,
       "releaseDate": "2022-12-16",
-      "unadjustedDate": "2022-12-16"
+      "unadjustedDate": "2022-12-16",
+      "appliedAdjustments": { "awarded": 0 }
     },
     "PED": {
       "rules": [
@@ -55,7 +56,8 @@
       },
       "adjustedDays": 0,
       "releaseDate": "2021-05-09",
-      "unadjustedDate": "2019-08-17"
+      "unadjustedDate": "2019-08-17",
+      "appliedAdjustments": { "awarded": 0 }
     }
   },
   "otherDates": {
