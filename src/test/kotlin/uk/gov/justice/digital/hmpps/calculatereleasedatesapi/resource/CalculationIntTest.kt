@@ -3,11 +3,13 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource
 import jakarta.persistence.EntityNotFoundException
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.entry
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType.APPLICATION_JSON
+import org.springframework.test.context.jdbc.Sql
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.adjustmentsapi.model.AdjustmentDto
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.ErrorResponse
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
@@ -31,6 +33,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.TUSED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.MockManageOffencesClient
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.MockPrisonService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.manageoffencesapi.model.OffenceSdsExclusionIndicator
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.manageoffencesapi.model.PcscMarkers
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.manageoffencesapi.model.SdsOffenceDetails
@@ -58,9 +61,15 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.Calculat
 import java.time.Duration
 import java.time.LocalDate
 
-class CalculationIntTest(private val mockManageOffencesClient: MockManageOffencesClient) : IntegrationTestBase() {
+@Sql(scripts = ["classpath:/test_data/reset-base-data.sql", "classpath:/test_data/load-base-data.sql"])
+class CalculationIntTest(private val mockManageOffencesClient: MockManageOffencesClient, private val mockPrisonService: MockPrisonService) : IntegrationTestBase() {
   @Autowired
   lateinit var calculationRequestRepository: CalculationRequestRepository
+
+  @BeforeEach
+  fun setUp() {
+    mockPrisonService.stubPostOffenderDates(PRISONER_ID.hashCode().toLong())
+  }
 
   @Test
   fun `Run calculation for a prisoner (based on example 13 from the unit tests) + test input JSON in DB`() {
@@ -95,6 +104,27 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
     assertThat(calculationRequest.calculationStatus).isEqualTo("CONFIRMED")
     assertThat(calculationRequest.inputData["offender"]["reference"].asText()).isEqualTo(PRISONER_ID)
     assertThat(calculationRequest.inputData["sentences"][0]["offence"]["committedAt"].asText()).isEqualTo("2015-03-17")
+  }
+
+  @Test
+  fun `Should handle failing to write to NOMIS`() {
+    val prelim = createPreliminaryCalculation(PRISONER_ID)
+    mockPrisonService.stubPostOffenderDatesFails(PRISONER_ID.hashCode().toLong())
+    webTestClient.post()
+      .uri("/calculation/confirm/${prelim.calculationRequestId}")
+      .accept(APPLICATION_JSON)
+      .contentType(APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+      .bodyValue(objectMapper.writeValueAsString(SubmitCalculationRequest(CalculationFragments("<p>BREAKDOWN</p>"), emptyList())))
+      .exchange()
+      .expectStatus().is5xxServerError
+
+    assertThat(calculationRequestRepository.findAllByPrisonerIdAndCalculationStatus(PRISONER_ID, CalculationStatus.CONFIRMED.name))
+      .describedAs("No confirmed calculation was created")
+      .hasSize(0)
+    assertThat(calculationRequestRepository.findAllByPrisonerIdAndCalculationStatus(PRISONER_ID, CalculationStatus.ERROR.name))
+      .describedAs("An error calculation was created")
+      .hasSize(1)
   }
 
   @Test

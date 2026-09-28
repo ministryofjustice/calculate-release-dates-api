@@ -114,7 +114,7 @@ class CalculationController(
     submitCalculationRequest: SubmitCalculationRequest,
   ): CalculatedReleaseDates {
     log.info("Request received to confirm release dates calculation for $calculationRequestId")
-    return calculationTransactionalService.validateAndConfirmCalculation(calculationRequestId, submitCalculationRequest)
+    return calculationTransactionalService.validateAndConfirmCalculation(calculationRequestId, submitCalculationRequest).getOrElse { throw it }
   }
 
   @PostMapping(value = ["/confirm/second-check/{calculationRequestId}"])
