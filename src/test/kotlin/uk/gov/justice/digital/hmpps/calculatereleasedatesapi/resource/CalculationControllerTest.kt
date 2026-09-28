@@ -242,7 +242,7 @@ class CalculationControllerTest {
         calculationRequestId,
         submitCalculationRequest,
       ),
-    ).thenReturn(calculatedReleaseDates)
+    ).thenReturn(calculatedReleaseDates.right())
 
     val result = mvc.perform(
       post("/calculation/confirm/$calculationRequestId")

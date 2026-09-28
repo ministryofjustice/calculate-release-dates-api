@@ -4,6 +4,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import java.time.LocalDate
 
 data class ManualCalculationResponse(
+  val success: Boolean,
   val enteredDates: Map<ReleaseDateType, LocalDate?>?,
   val calculationRequestId: Long,
 )

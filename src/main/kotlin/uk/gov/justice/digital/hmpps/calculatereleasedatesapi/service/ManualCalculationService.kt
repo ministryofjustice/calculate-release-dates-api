@@ -9,6 +9,7 @@ import org.springframework.boot.info.BuildProperties
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcome
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
@@ -98,8 +99,9 @@ class ManualCalculationService(
       version = buildProperties.version ?: "",
     ).withType(type)
 
+    var savedCalculationRequest: CalculationRequest? = null
     return try {
-      val savedCalculationRequest = calculationRequestRepository.save(calculationRequest)
+      savedCalculationRequest = calculationRequestRepository.save(calculationRequest)
       val validationMessages = validationService.validate(sourceData, calculationUserInputs, ValidationOrder.UNSUPPORTED)
 
       if (validationMessages.isNotEmpty()) {
@@ -122,9 +124,12 @@ class ManualCalculationService(
           effectiveSentenceLength = effectiveSentenceLength,
         )
           ?: throw CouldNotSaveManualEntryException("There was a problem saving the dates")
-      ManualCalculationResponse(enteredDates, savedCalculationRequest.id())
+      ManualCalculationResponse(true, enteredDates, savedCalculationRequest.id())
     } catch (ex: Exception) {
-      calculationRequestRepository.save(
+      val calculationRequestWithErrorStatus = if (savedCalculationRequest != null) {
+        savedCalculationRequest.calculationStatus = CalculationStatus.ERROR.name
+        savedCalculationRequest
+      } else {
         transform(
           booking,
           serviceUserService.getUsername(),
@@ -134,9 +139,10 @@ class ManualCalculationService(
           objectMapper,
           manualEntryRequest.otherReasonDescription,
           version = buildProperties.version ?: "",
-        ),
-      )
-      ManualCalculationResponse(emptyMap(), calculationRequest.id())
+        )
+      }
+      calculationRequestRepository.save(calculationRequestWithErrorStatus)
+      ManualCalculationResponse(false, emptyMap(), calculationRequestWithErrorStatus.id())
     }
   }
 
@@ -164,7 +170,7 @@ class ManualCalculationService(
       prisonService.postReleaseDates(booking.bookingId, updateOffenderDates)
     } catch (ex: Exception) {
       CalculationTransactionalService.log.error("Nomis write failed: ${ex.message}")
-      throw EntityNotFoundException(
+      throw CouldNotSaveManualEntryException(
         "Writing release dates to NOMIS failed for prisonerId $prisonerId " +
           "and bookingId ${booking.bookingId}",
       )

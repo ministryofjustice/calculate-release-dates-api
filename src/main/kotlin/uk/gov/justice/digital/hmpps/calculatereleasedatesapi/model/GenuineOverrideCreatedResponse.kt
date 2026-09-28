@@ -4,6 +4,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.Validati
 
 data class GenuineOverrideCreatedResponse(
   val success: Boolean,
+  val error: Boolean,
   val newCalculationRequestId: Long? = null,
   val originalCalculationRequestId: Long? = null,
   val validationMessages: List<ValidationMessage>? = null,

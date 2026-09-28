@@ -55,7 +55,7 @@ data class CalculationRequest(
   val bookingId: Long = -1L,
 
   @NotNull
-  val calculationStatus: String = "",
+  var calculationStatus: String = "",
 
   @NotNull
   val calculatedAt: LocalDateTime = LocalDateTime.now(),

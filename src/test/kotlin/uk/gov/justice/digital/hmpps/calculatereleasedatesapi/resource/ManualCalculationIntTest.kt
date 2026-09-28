@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
 import org.springframework.test.context.jdbc.Sql
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.MockPrisonService
@@ -83,6 +84,7 @@ class ManualCalculationIntTest(private val mockPrisonService: MockPrisonService)
       .expectBody(ManualCalculationResponse::class.java)
       .returnResult().responseBody!!
     assertThat(response.calculationRequestId).isNotNull
+    assertThat(response.success).isTrue
     val calcRequest = calculationRequestRepository.findById(response.calculationRequestId).getOrElse { fail("couldn't find calc request") }
     assertThat(calcRequest.allocatedSDSTranche)
       .describedAs("CRS-2657 AC1.5 - Manual calculation should not store any tranche information")
@@ -91,8 +93,10 @@ class ManualCalculationIntTest(private val mockPrisonService: MockPrisonService)
 
   @Test
   fun `Stores successful manual calculation triggered by having invalid SHPO offence`() {
+    val prisonerId = "CRS-2333-2"
+    mockPrisonService.stubPostOffenderDates(prisonerId.hashCode().toLong())
     val response = webTestClient.post()
-      .uri("/manual-calculation/CRS-2333-2")
+      .uri("/manual-calculation/$prisonerId")
       .bodyValue(
         ManualEntryRequest(
           listOf(
@@ -113,6 +117,7 @@ class ManualCalculationIntTest(private val mockPrisonService: MockPrisonService)
       .expectBody(ManualCalculationResponse::class.java)
       .returnResult().responseBody!!
     assertThat(response.calculationRequestId).isNotNull
+    assertThat(response.success).isTrue
   }
 
   @Test
@@ -260,6 +265,40 @@ class ManualCalculationIntTest(private val mockPrisonService: MockPrisonService)
     assertThat(response.manuallyEnteredDates).hasSize(1)
     assertThat(response.manuallyEnteredDates.first().type).isEqualTo(ReleaseDateType.PED)
     assertThat(response.manuallyEnteredDates.first().date).isEqualTo(LocalDate.of(2040, 1, 1))
+  }
+
+  @Test
+  fun `Should handle failing to write to nomis correctly`() {
+    val prisonerId = "CRS-2333-2"
+    mockPrisonService.stubPostOffenderDatesFails(prisonerId.hashCode().toLong())
+    val response = webTestClient.post()
+      .uri("/manual-calculation/$prisonerId")
+      .bodyValue(
+        ManualEntryRequest(
+          listOf(
+            ManuallyEnteredDate(
+              ReleaseDateType.CRD,
+              SubmittedDate(1, 1, LocalDate.now().year + 1),
+            ),
+          ),
+          1L,
+          "",
+        ),
+      )
+      .accept(MediaType.APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+      .exchange()
+      .expectStatus().is5xxServerError
+      .expectBody(ManualCalculationResponse::class.java)
+      .returnResult().responseBody!!
+
+    assertThat(response.success).isFalse
+    assertThat(calculationRequestRepository.findAllByPrisonerIdAndCalculationStatus(prisonerId, CalculationStatus.CONFIRMED.name))
+      .describedAs("No confirmed calculation was created")
+      .hasSize(0)
+    assertThat(calculationRequestRepository.findAllByPrisonerIdAndCalculationStatus(prisonerId, CalculationStatus.ERROR.name))
+      .describedAs("An error calculation was created")
+      .hasSize(1)
   }
 
   companion object {

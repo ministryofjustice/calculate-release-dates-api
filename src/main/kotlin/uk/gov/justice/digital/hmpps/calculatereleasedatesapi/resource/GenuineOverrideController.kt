@@ -73,6 +73,8 @@ class GenuineOverrideController(private val genuineOverrideService: GenuineOverr
     val response = genuineOverrideService.overrideDatesForACalculation(calculationRequestId, request)
     return if (response.success) {
       ResponseEntity.status(HttpStatus.OK).body(response)
+    } else if (response.error) {
+      ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response)
     } else {
       ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response)
     }
