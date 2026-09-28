@@ -176,7 +176,7 @@ class TimelineSentenceCalculationHandler(
         recallRemand = existingAdjustments.recallRemand,
         recallTaggedBail = existingAdjustments.recallTaggedBail,
         awardedDuringCustody = existingAdjustments.awardedDuringCustody,
-        servedAdaDays = if (servedAdas == 0L) existingAdjustments.servedAdaDays else servedAdas,
+        servedAdaDays = existingAdjustments.servedAdaDays + servedAdas,
       ),
     )
   }
