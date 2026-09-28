@@ -27,8 +27,8 @@ class BookingAnonymiser {
 
   @Test
   fun anonymiseSingleTestCases() {
-    val exampleType = "custom-examples"
-    val exampleNumber = "crs-2509-hdced-adjusted-to-recall-prrd"
+    val exampleType = "progression-model"
+    val exampleNumber = "crs-2851"
 
     anonymiseTestCase("$exampleType/$exampleNumber")
   }
@@ -117,10 +117,20 @@ class BookingAnonymiser {
       val type = it.get("type").asText()
       if (type == "StandardSentence") {
         obj.remove("type")
-      }
-
-      if (obj.has("hasAnSDSEarlyReleaseExclusion") && obj.get("hasAnSDSEarlyReleaseExclusion").asText() == "NO") {
-        obj.remove("hasAnSDSEarlyReleaseExclusion")
+        // default the release arrangements which are removed by NON_DEFAULT which in turn blow up when parsing the sentence
+        val releaseArrangements = obj.get("releaseArrangements") as ObjectNode
+        if (!releaseArrangements.has("isSDSPlus")) {
+          releaseArrangements.put("isSDSPlus", false)
+        }
+        if (!releaseArrangements.has("isSDSPlusEligibleSentenceTypeLengthAndOffence")) {
+          releaseArrangements.put("isSDSPlusEligibleSentenceTypeLengthAndOffence", false)
+        }
+        if (!releaseArrangements.has("sdsEarlyReleaseExclusions")) {
+          releaseArrangements.put("sdsEarlyReleaseExclusions", mapper.createArrayNode())
+        }
+        if (!releaseArrangements.has("isSection250")) {
+          releaseArrangements.put("isSection250", false)
+        }
       }
 
 //      val identifier = obj.get("identifier").asText()
