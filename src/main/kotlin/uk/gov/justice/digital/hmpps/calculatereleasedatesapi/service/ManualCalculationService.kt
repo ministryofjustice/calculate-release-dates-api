@@ -14,7 +14,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationT
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CouldNotSaveManualEntryException
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.NoActiveBookingException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualCalculationEntryMode
@@ -213,16 +212,15 @@ class ManualCalculationService(
     val booking = bookingService.getBooking(sourceData)
     val currentBookingHash = objectToJson(booking, objectMapper).hashCode()
 
-    val latestCalc = latestCalculationService.latestCalculationForPrisoner(prisonerId)
-      .getOrElse { problemMessage: String -> throw NoActiveBookingException(problemMessage) }
+    val latestCalc = latestCalculationService.latestCalculationForPrisoner(prisonerId).getOrNull()
 
-    val isLatestManualCalculation = latestCalc.calculationType == CalculationType.MANUAL_DETERMINATE.name ||
-      latestCalc.calculationType == CalculationType.MANUAL_INDETERMINATE.name
-    val latestCalculationRequest = latestCalc.calculationRequestId?.let { calculationRequestRepository.findById(it).orElse(null) }
+    val isLatestManualCalculation = latestCalc?.calculationType == CalculationType.MANUAL_DETERMINATE.name ||
+      latestCalc?.calculationType == CalculationType.MANUAL_INDETERMINATE.name
+    val latestCalculationRequest = latestCalc?.calculationRequestId?.let { calculationRequestRepository.findById(it).orElse(null) }
     val latestCalculationHash = latestCalculationRequest?.inputData?.hashCode() ?: 0
 
     if (isLatestManualCalculation && currentBookingHash == latestCalculationHash) {
-      return ManualCalculationInputResponse(mode = ManualCalculationEntryMode.EXPRESS, manuallyEnteredDates = latestCalc.dates)
+      return ManualCalculationInputResponse(mode = ManualCalculationEntryMode.EXPRESS, manuallyEnteredDates = latestCalc!!.dates)
     }
 
     return ManualCalculationInputResponse(mode = ManualCalculationEntryMode.STANDARD, manuallyEnteredDates = emptyList())

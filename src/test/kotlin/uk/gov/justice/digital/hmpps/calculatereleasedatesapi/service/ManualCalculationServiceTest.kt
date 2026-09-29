@@ -4,7 +4,6 @@ import arrow.core.left
 import arrow.core.right
 import io.hypersistence.utils.hibernate.type.json.internal.JacksonUtil
 import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.mockito.ArgumentMatchers.anyLong
@@ -14,6 +13,7 @@ import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcome
@@ -23,7 +23,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationR
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.NoActiveBookingException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.TestBuildPropertiesConfiguration.Companion.TEST_BUILD_PROPERTIES
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentsSourceData
@@ -885,7 +884,7 @@ class ManualCalculationServiceTest {
     }
 
     @Test
-    fun `Throws NoActiveBookingException when the latest calculation for the prisoner cannot be determined`() {
+    fun `Returns STANDARD mode with no dates when no latest calculation can be found for the prisoner, such as when there are no previous calculations`() {
       whenever(
         calculationSourceDataService.getCalculationSourceData(
           PRISONER_ID,
@@ -894,11 +893,13 @@ class ManualCalculationServiceTest {
       ).thenReturn(FAKE_SOURCE_DATA)
       whenever(bookingService.getBooking(FAKE_SOURCE_DATA)).thenReturn(BOOKING)
       whenever(latestCalculationService.latestCalculationForPrisoner(PRISONER_ID))
-        .thenReturn("Prisoner ($PRISONER_ID) could not be found".left())
+        .thenReturn("Booking (12345) not found or has no calculations".left())
 
-      assertThatThrownBy { manualCalculationService.inputsForAManualCalculation(PRISONER_ID) }
-        .isInstanceOf(NoActiveBookingException::class.java)
-        .hasMessage("Prisoner ($PRISONER_ID) could not be found")
+      val result = manualCalculationService.inputsForAManualCalculation(PRISONER_ID)
+
+      assertThat(result.mode).isEqualTo(ManualCalculationEntryMode.STANDARD)
+      assertThat(result.manuallyEnteredDates).isEmpty()
+      verifyNoInteractions(calculationRequestRepository)
     }
   }
 
