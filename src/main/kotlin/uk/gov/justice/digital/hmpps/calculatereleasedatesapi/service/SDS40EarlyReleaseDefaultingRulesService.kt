@@ -350,6 +350,7 @@ class SDS40EarlyReleaseDefaultingRulesService {
       rules = rules,
       releaseDate = earliestApplicableDate,
       unadjustedDate = early,
+      appliedAdjustments = context.earlyReleaseResult.breakdownByReleaseDateType[context.dateType]?.appliedAdjustments,
     )
   }
 

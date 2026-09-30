@@ -1,5 +1,7 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
+import arrow.core.left
+import arrow.core.right
 import io.hypersistence.utils.hibernate.type.json.internal.JacksonUtil
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Nested
@@ -11,6 +13,7 @@ import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcome
@@ -24,8 +27,12 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.TestBui
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentsSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationSource
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.LatestCalculation
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualCalculationEntryMode
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualEntryRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManuallyEnteredDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NormalisedSentenceAndOffence
@@ -54,6 +61,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.Validati
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessage
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.service.ValidationService
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.Period
 import java.time.temporal.ChronoUnit
 import java.util.Optional
@@ -73,6 +81,7 @@ class ManualCalculationServiceTest {
   private val sentenceIdentificationService = mock<SentenceIdentificationService>()
   private val sentenceCombinationService = mock<SentenceCombinationService>()
   private val validationService = mock<ValidationService>()
+  private val latestCalculationService = mock<LatestCalculationService>()
   private val manualCalculationService = ManualCalculationService(
     prisonService,
     bookingService,
@@ -88,6 +97,7 @@ class ManualCalculationServiceTest {
     sentenceCombinationService,
     validationService,
     calculationSourceDataService,
+    latestCalculationService,
   )
   private val calculationRequestArgumentCaptor = argumentCaptor<CalculationRequest>()
 
@@ -752,6 +762,147 @@ class ManualCalculationServiceTest {
     assertThat(result).isFalse
   }
 
+  @Nested
+  inner class InputsForAManualCalculationTests {
+
+    @Test
+    fun `Returns EXPRESS mode with the previously entered dates when the booking is unchanged since the last CONFIRMED manual determinate calculation`() {
+      whenever(
+        calculationSourceDataService.getCalculationSourceData(
+          PRISONER_ID,
+          SourceDataLookupOptions.default(),
+        ),
+      ).thenReturn(FAKE_SOURCE_DATA)
+      whenever(bookingService.getBooking(FAKE_SOURCE_DATA)).thenReturn(BOOKING)
+
+      val previousCalculation = CALCULATION_REQUEST_WITH_OUTCOMES.copy(
+        inputData = objectToJson(BOOKING, objectMapper),
+      ).withType(CalculationType.MANUAL_DETERMINATE)
+      whenever(calculationRequestRepository.findById(CALCULATION_REQUEST_ID)).thenReturn(Optional.of(previousCalculation))
+
+      val latestCalculation = LATEST_CALCULATION.copy(calculationType = CalculationType.MANUAL_DETERMINATE.name, dates = DETAILED_DATES)
+      whenever(latestCalculationService.latestCalculationForPrisoner(PRISONER_ID)).thenReturn(latestCalculation.right())
+
+      val result = manualCalculationService.inputsForAManualCalculation(PRISONER_ID)
+
+      assertThat(result.mode).isEqualTo(ManualCalculationEntryMode.EXPRESS)
+      assertThat(result.manuallyEnteredDates).isEqualTo(DETAILED_DATES)
+    }
+
+    @Test
+    fun `Returns EXPRESS mode with the previously entered dates when the booking is unchanged since the last CONFIRMED manual indeterminate calculation`() {
+      whenever(
+        calculationSourceDataService.getCalculationSourceData(
+          PRISONER_ID,
+          SourceDataLookupOptions.default(),
+        ),
+      ).thenReturn(FAKE_SOURCE_DATA)
+      whenever(bookingService.getBooking(FAKE_SOURCE_DATA)).thenReturn(BOOKING)
+
+      val previousCalculation = CALCULATION_REQUEST_WITH_OUTCOMES.copy(
+        inputData = objectToJson(BOOKING, objectMapper),
+      ).withType(CalculationType.MANUAL_INDETERMINATE)
+      whenever(calculationRequestRepository.findById(CALCULATION_REQUEST_ID)).thenReturn(Optional.of(previousCalculation))
+
+      val latestCalculation = LATEST_CALCULATION.copy(calculationType = CalculationType.MANUAL_INDETERMINATE.name, dates = DETAILED_DATES)
+      whenever(latestCalculationService.latestCalculationForPrisoner(PRISONER_ID)).thenReturn(latestCalculation.right())
+
+      val result = manualCalculationService.inputsForAManualCalculation(PRISONER_ID)
+
+      assertThat(result.mode).isEqualTo(ManualCalculationEntryMode.EXPRESS)
+      assertThat(result.manuallyEnteredDates).isEqualTo(DETAILED_DATES)
+    }
+
+    @Test
+    fun `Returns STANDARD mode with no dates when the booking has changed since the last CONFIRMED manual calculation`() {
+      whenever(
+        calculationSourceDataService.getCalculationSourceData(
+          PRISONER_ID,
+          SourceDataLookupOptions.default(),
+        ),
+      ).thenReturn(FAKE_SOURCE_DATA)
+      whenever(bookingService.getBooking(FAKE_SOURCE_DATA)).thenReturn(BOOKING)
+
+      // changed returnToCustodyDate compared to the current booking, so the input data hash will differ
+      val previousCalculation = CALCULATION_REQUEST_WITH_OUTCOMES.copy(
+        inputData = objectToJson(BOOKING.copy(returnToCustodyDate = LocalDate.now()), objectMapper),
+      ).withType(CalculationType.MANUAL_DETERMINATE)
+      whenever(calculationRequestRepository.findById(CALCULATION_REQUEST_ID)).thenReturn(Optional.of(previousCalculation))
+
+      val latestCalculation = LATEST_CALCULATION.copy(calculationType = CalculationType.MANUAL_DETERMINATE.name, dates = DETAILED_DATES)
+      whenever(latestCalculationService.latestCalculationForPrisoner(PRISONER_ID)).thenReturn(latestCalculation.right())
+
+      val result = manualCalculationService.inputsForAManualCalculation(PRISONER_ID)
+
+      assertThat(result.mode).isEqualTo(ManualCalculationEntryMode.STANDARD)
+      assertThat(result.manuallyEnteredDates).isEmpty()
+    }
+
+    @Test
+    fun `Returns STANDARD mode with no dates when the last CONFIRMED calculation for the booking was not a manual calculation`() {
+      whenever(
+        calculationSourceDataService.getCalculationSourceData(
+          PRISONER_ID,
+          SourceDataLookupOptions.default(),
+        ),
+      ).thenReturn(FAKE_SOURCE_DATA)
+      whenever(bookingService.getBooking(FAKE_SOURCE_DATA)).thenReturn(BOOKING)
+
+      val previousCalculation = CALCULATION_REQUEST_WITH_OUTCOMES.copy(
+        inputData = objectToJson(BOOKING, objectMapper),
+      ).withType(CalculationType.CALCULATED)
+      whenever(calculationRequestRepository.findById(CALCULATION_REQUEST_ID)).thenReturn(Optional.of(previousCalculation))
+
+      // the latest calculation service reports the booking's most recent calculation type as CALCULATED, not manual
+      val latestCalculation = LATEST_CALCULATION.copy(calculationType = CalculationType.CALCULATED.name, dates = DETAILED_DATES)
+      whenever(latestCalculationService.latestCalculationForPrisoner(PRISONER_ID)).thenReturn(latestCalculation.right())
+
+      val result = manualCalculationService.inputsForAManualCalculation(PRISONER_ID)
+
+      assertThat(result.mode).isEqualTo(ManualCalculationEntryMode.STANDARD)
+      assertThat(result.manuallyEnteredDates).isEmpty()
+    }
+
+    @Test
+    fun `Returns STANDARD mode with no dates when there is no previous CONFIRMED manual calculation`() {
+      whenever(
+        calculationSourceDataService.getCalculationSourceData(
+          PRISONER_ID,
+          SourceDataLookupOptions.default(),
+        ),
+      ).thenReturn(FAKE_SOURCE_DATA)
+      whenever(bookingService.getBooking(FAKE_SOURCE_DATA)).thenReturn(BOOKING)
+
+      // no previous calculation request exists for this prisoner
+      val latestCalculation = LATEST_CALCULATION.copy(calculationType = CalculationType.MANUAL_DETERMINATE.name, calculationRequestId = null, dates = DETAILED_DATES)
+      whenever(latestCalculationService.latestCalculationForPrisoner(PRISONER_ID)).thenReturn(latestCalculation.right())
+
+      val result = manualCalculationService.inputsForAManualCalculation(PRISONER_ID)
+
+      assertThat(result.mode).isEqualTo(ManualCalculationEntryMode.STANDARD)
+      assertThat(result.manuallyEnteredDates).isEmpty()
+    }
+
+    @Test
+    fun `Returns STANDARD mode with no dates when no latest calculation can be found for the prisoner, such as when there are no previous calculations`() {
+      whenever(
+        calculationSourceDataService.getCalculationSourceData(
+          PRISONER_ID,
+          SourceDataLookupOptions.default(),
+        ),
+      ).thenReturn(FAKE_SOURCE_DATA)
+      whenever(bookingService.getBooking(FAKE_SOURCE_DATA)).thenReturn(BOOKING)
+      whenever(latestCalculationService.latestCalculationForPrisoner(PRISONER_ID))
+        .thenReturn("Booking (12345) not found or has no calculations".left())
+
+      val result = manualCalculationService.inputsForAManualCalculation(PRISONER_ID)
+
+      assertThat(result.mode).isEqualTo(ManualCalculationEntryMode.STANDARD)
+      assertThat(result.manuallyEnteredDates).isEmpty()
+      verifyNoInteractions(calculationRequestRepository)
+    }
+  }
+
   private companion object {
     private const val BOOKING_ID = 12345L
     private val THIRD_FEB_2021 = LocalDate.of(2021, 2, 3)
@@ -860,5 +1011,33 @@ class ManualCalculationServiceTest {
       "",
     )
     const val USERNAME = "user1"
+
+    private val DETAILED_DATES = listOf(
+      DetailedDate(
+        type = ReleaseDateType.CRD,
+        description = "Conditional release date",
+        date = LocalDate.of(2026, 1, 1),
+        hints = emptyList(),
+      ),
+    )
+
+    private val LATEST_CALCULATION = LatestCalculation(
+      prisonerId = PRISONER_ID,
+      bookingId = BOOKING_ID,
+      calculatedAt = LocalDateTime.of(2026, 1, 1, 10, 0),
+      checkedAt = null,
+      calculationRequestId = CALCULATION_REQUEST_ID,
+      establishment = null,
+      reason = "Reason",
+      reasonFurtherDetail = null,
+      genuineOverrideReasonDescription = null,
+      source = CalculationSource.CRDS,
+      dates = DETAILED_DATES,
+      calculatedByUsername = USERNAME,
+      checkedByUsername = null,
+      calculatedByDisplayName = USERNAME,
+      checkedByDisplayName = null,
+      calculationType = CalculationType.MANUAL_DETERMINATE.name,
+    )
   }
 }

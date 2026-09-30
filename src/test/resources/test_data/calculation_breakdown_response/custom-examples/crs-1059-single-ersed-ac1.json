@@ -34,7 +34,8 @@
       "rulesWithExtraAdjustments": {},
       "adjustedDays": 0,
       "releaseDate": "2011-03-01",
-      "unadjustedDate": "2011-03-01"
+      "unadjustedDate": "2011-03-01",
+      "appliedAdjustments": { "awarded": 0 }
     },
     "SLED": {
       "rules": [],
@@ -50,7 +51,8 @@
       "rulesWithExtraAdjustments": {},
       "adjustedDays": 0,
       "releaseDate": "2010-12-01",
-      "unadjustedDate": "2010-12-01"
+      "unadjustedDate": "2010-12-01",
+      "appliedAdjustments": { "awarded": 0 }
     },
     "HDCED": {
       "rules": [

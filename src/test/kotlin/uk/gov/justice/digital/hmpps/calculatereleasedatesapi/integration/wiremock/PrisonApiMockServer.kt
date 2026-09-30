@@ -240,6 +240,10 @@ class MockPrisonService(
     )
   }
 
+  fun stubPostOffenderDates(bookingId: Long): StubMapping = prisonApi.stubPostOffenderDates(bookingId)
+
+  fun stubPostOffenderDatesFails(bookingId: Long): StubMapping = prisonApi.stubPostOffenderDatesFails(bookingId)
+
   fun verify(requestPatternBuilder: RequestPatternBuilder) {
     prisonApi.verify(requestPatternBuilder)
   }
@@ -310,6 +314,15 @@ class PrisonApiMockServer : WireMockServer(WIREMOCK_PORT) {
         aResponse()
           .withHeader("Content-Type", "application/json")
           .withStatus(200),
+      ),
+  )
+
+  fun stubPostOffenderDatesFails(bookingId: Long): StubMapping = stubFor(
+    post("/api/offender-dates/$bookingId")
+      .willReturn(
+        aResponse()
+          .withHeader("Content-Type", "application/json")
+          .withStatus(500),
       ),
   )
 

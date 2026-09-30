@@ -36,7 +36,8 @@
       "rulesWithExtraAdjustments": {},
       "adjustedDays": 0,
       "releaseDate": "2024-09-10",
-      "unadjustedDate": "2024-09-07"
+      "unadjustedDate": "2024-09-07",
+      "appliedAdjustments": { "awarded": 0 }
     },
     "SLED": {
       "rules": [],
@@ -53,7 +54,8 @@
       "rulesWithExtraAdjustments": {},
       "adjustedDays": 0,
       "releaseDate": "2024-07-24",
-      "unadjustedDate": "2024-07-24"
+      "unadjustedDate": "2024-07-24",
+      "appliedAdjustments": { "awarded": 0 }
     },
     "TUSED": {
       "rules": [

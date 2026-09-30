@@ -55,7 +55,8 @@
       "rulesWithExtraAdjustments": {},
       "adjustedDays": 0,
       "releaseDate": "2024-10-22",
-      "unadjustedDate": "2024-09-10"
+      "unadjustedDate": "2024-09-10",
+      "appliedAdjustments": { "awarded": 0 }
     },
     "SLED": {
       "rules": [],
@@ -77,7 +78,8 @@
       },
       "adjustedDays": -190,
       "releaseDate": "2024-08-14",
-      "unadjustedDate": "2026-08-18"
+      "unadjustedDate": "2026-08-18",
+      "appliedAdjustments": { "awarded": 0 }
     },
     "HDCED": {
       "rules": [
