@@ -67,7 +67,8 @@
       "rulesWithExtraAdjustments": {},
       "adjustedDays": 0,
       "releaseDate": "2022-12-20",
-      "unadjustedDate": "2022-12-20"
+      "unadjustedDate": "2022-12-20",
+      "appliedAdjustments": { "awarded": 0 }
     },
     "TUSED": {
       "rules": [

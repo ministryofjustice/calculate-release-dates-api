@@ -1,5 +1,8 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
+import arrow.core.Either
+import arrow.core.left
+import arrow.core.right
 import com.fasterxml.jackson.databind.ObjectMapper
 import jakarta.persistence.EntityNotFoundException
 import org.slf4j.Logger
@@ -36,7 +39,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationFr
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationReasonDto
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationRequestModel
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManuallyEnteredDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmitCalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
@@ -131,7 +133,7 @@ class CalculationTransactionalService(
   fun validateAndConfirmCalculation(
     calculationRequestId: Long,
     submitCalculationRequest: SubmitCalculationRequest,
-  ): CalculatedReleaseDates {
+  ): Either<Exception, CalculatedReleaseDates> {
     val calculationRequest =
       calculationRequestRepository.findByIdAndCalculationStatus(
         calculationRequestId,
@@ -155,46 +157,40 @@ class CalculationTransactionalService(
       throw CrdWebException(message = "The booking now fails validation", status = HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
-    return confirmCalculation(
-      calculationRequest.prisonerId,
-      submitCalculationRequest.calculationFragments, sourceData, booking, userInput,
-      submitCalculationRequest.approvedDates,
-      calculationRequest.reasonForCalculation,
-      calculationRequest.otherReasonForCalculation,
-      sourceData.historicalTusedData?.historicalTusedSource,
-    )
-  }
-
-  private fun confirmCalculation(
-    prisonerId: String,
-    calculationFragments: CalculationFragments,
-    sourceData: CalculationSourceData,
-    booking: Booking,
-    userInput: CalculationUserInputs,
-    approvedDates: List<ManuallyEnteredDate>?,
-    reasonForCalculation: CalculationReason?,
-    otherReasonForCalculation: String?,
-    historicalTusedSource: HistoricalTusedSource? = null,
-  ): CalculatedReleaseDates = try {
-    val calculation = calculate(
-      booking,
-      CONFIRMED,
-      sourceData,
-      reasonForCalculation,
-      userInput,
-      otherReasonForCalculation,
-      calculationFragments,
-      CalculationType.CALCULATED,
-      historicalTusedSource,
-    )
-    if (!approvedDates.isNullOrEmpty()) {
-      calculationConfirmationService.storeApprovedDates(calculation, approvedDates)
+    var confirmedCalculationRequestId: Long? = null
+    return try {
+      val calculation = calculate(
+        booking,
+        CONFIRMED,
+        sourceData,
+        calculationRequest.reasonForCalculation,
+        userInput,
+        calculationRequest.otherReasonForCalculation,
+        submitCalculationRequest.calculationFragments,
+        CalculationType.CALCULATED,
+        sourceData.historicalTusedData?.historicalTusedSource,
+      )
+      confirmedCalculationRequestId = calculation.calculationRequestId
+      if (!submitCalculationRequest.approvedDates.isNullOrEmpty()) {
+        calculationConfirmationService.storeApprovedDates(calculation, submitCalculationRequest.approvedDates)
+      }
+      calculationConfirmationService.writeToNomisAndPublishEvent(
+        calculationRequest.prisonerId,
+        booking,
+        calculation,
+        submitCalculationRequest.approvedDates,
+      )
+      calculation.right()
+    } catch (error: Exception) {
+      if (confirmedCalculationRequestId != null) {
+        val confirmed = calculationRequestRepository.getReferenceById(confirmedCalculationRequestId)
+        confirmed.calculationStatus = ERROR.name
+        calculationRequestRepository.save(confirmed)
+      } else {
+        recordError(booking, sourceData, userInput, calculationRequest.reasonForCalculation, calculationRequest.otherReasonForCalculation)
+      }
+      error.left()
     }
-    calculationConfirmationService.writeToNomisAndPublishEvent(prisonerId, booking, calculation, approvedDates)
-    calculation
-  } catch (error: Exception) {
-    recordError(booking, sourceData, userInput, reasonForCalculation, otherReasonForCalculation)
-    throw error
   }
 
   @Transactional

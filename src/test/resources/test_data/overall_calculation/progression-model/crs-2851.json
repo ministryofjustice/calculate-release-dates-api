@@ -1,0 +1,113 @@
+{
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01",
+      "isActiveSexOffender": true
+    },
+    "sentences": [
+      {
+        "offence": {
+          "committedAt": "2025-05-11",
+          "offenceCode": "TH68023"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 31
+          }
+        },
+        "sentencedAt": "2025-08-28",
+        "identifier": "428437f8-3601-3ab1-a247-b626d4e3908c",
+        "releaseArrangements": {
+          "isSection250": true,
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": []
+        }
+      },
+      {
+        "offence": {
+          "committedAt": "2026-01-31",
+          "offenceCode": "PR52044"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 6
+          }
+        },
+        "sentencedAt": "2026-07-21",
+        "identifier": "6a51f0a6-cbc1-3c71-82a5-a45c4b3338d4",
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
+      },
+      {
+        "offence": {
+          "committedAt": "2026-05-13",
+          "offenceCode": "PR52044"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 12
+          }
+        },
+        "sentencedAt": "2026-08-27",
+        "identifier": "44c07725-02f8-3871-9566-954cf3f1e5e2",
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
+      }
+    ],
+    "adjustments": {
+      "TAGGED_BAIL": [
+        {
+          "appliesToSentencesFrom": "2025-08-28",
+          "numberOfDays": 52,
+          "additionalInfo": {
+            "type": "NONE"
+          }
+        }
+      ],
+      "ADDITIONAL_DAYS_AWARDED": [
+        {
+          "appliesToSentencesFrom": "2026-02-06",
+          "numberOfDays": 14,
+          "fromDate": "2026-02-06",
+          "additionalInfo": {
+            "type": "NONE"
+          }
+        },
+        {
+          "appliesToSentencesFrom": "2026-02-20",
+          "numberOfDays": 14,
+          "fromDate": "2026-02-20",
+          "additionalInfo": {
+            "type": "NONE"
+          }
+        }
+      ]
+    },
+    "externalMovements": [
+      {
+        "movementDate": "2025-08-28",
+        "movementReason": "SENTENCE",
+        "direction": "IN"
+      }
+    ]
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "sds-progression-model-october",
+  "featureToggles": {
+    "applyPostRecallRepealRules": true,
+    "routePreProgressionExtinguishedSentenceToManual": true,
+    "useLatestErsedFromPreConsecutivelyImposedSnapshot": true
+  }
+}

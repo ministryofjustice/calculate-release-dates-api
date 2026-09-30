@@ -190,6 +190,7 @@ class DetailedCalculationResultsServiceTest {
       DetailedCalculationResults(
         expectedCalcContext,
         enrichedReleaseDates,
+        null,
         mapOf(
           ReleaseDateType.HDCAD to DetailedDate(ReleaseDateType.HDCAD, ReleaseDateType.HDCAD.description, LocalDate.of(2024, 1, 2), emptyList()),
           ReleaseDateType.ROTL to DetailedDate(ReleaseDateType.ROTL, ReleaseDateType.ROTL.description, LocalDate.of(2024, 1, 2), emptyList()),
@@ -265,6 +266,7 @@ class DetailedCalculationResultsServiceTest {
       DetailedCalculationResults(
         context = expectedCalcContext,
         dates = enrichedReleaseDates,
+        overriddenDates = null,
         approvedDates = null,
         secondCheckDetails = secondCheckDto,
         calculationOriginalData = CalculationOriginalData(
@@ -334,6 +336,7 @@ class DetailedCalculationResultsServiceTest {
       DetailedCalculationResults(
         context = expectedCalcContext,
         dates = enrichedReleaseDates,
+        overriddenDates = null,
         approvedDates = null,
         secondCheckDetails = null,
         calculationOriginalData = CalculationOriginalData(
@@ -449,7 +452,8 @@ class DetailedCalculationResultsServiceTest {
   }
 
   @Test
-  fun `should return genuine override reason that is not OTHER`() {
+  fun `should return genuine override with reason that is not OTHER and the overridden dates`() {
+    val overriddenCalcRequestId = 999888777L
     val base = calculationRequestWithOutcomes().copy(
       prisonerDetails = objectToJson(prisonerDetails, objectMapper),
       sentenceAndOffences = objectToJson(listOf(originalSentence), objectMapper),
@@ -460,11 +464,26 @@ class DetailedCalculationResultsServiceTest {
       calculationType = CalculationType.GENUINE_OVERRIDE,
       genuineOverrideReason = GenuineOverrideReason.AGGRAVATING_FACTOR_OFFENCE,
       genuineOverrideReasonFurtherDetail = null,
+      overridesCalculationRequestId = overriddenCalcRequestId,
+    )
+
+    val overridden = calculationRequestWithOutcomes().copy(
+      prisonerDetails = objectToJson(prisonerDetails, objectMapper),
+      sentenceAndOffences = objectToJson(listOf(originalSentence), objectMapper),
+      adjustments = objectToJson(adjustments, objectMapper),
+      calculationOutcomes = listOf(
+        CalculationOutcome(calculationRequestId = overriddenCalcRequestId, calculationDateType = "CRD", outcomeDate = LocalDate.of(2025, 5, 25)),
+      ),
+      calculationType = CalculationType.CALCULATED,
+      calculationStatus = CalculationStatus.PRELIMINARY.name,
+      overriddenByCalculationRequestId = base.id(),
     )
 
     val enrichedReleaseDates = mapOf(ReleaseDateType.CRD to DetailedDate(ReleaseDateType.CRD, ReleaseDateType.CRD.description, LocalDate.of(2026, 6, 26), emptyList()))
+    val overriddenEnrichedReleaseDates = mapOf(ReleaseDateType.CRD to DetailedDate(ReleaseDateType.CRD, ReleaseDateType.CRD.description, LocalDate.of(2025, 5, 25), emptyList()))
     val expectedBreakdown = CalculationBreakdown(emptyList(), null, mapOf(ReleaseDateType.CRD to ReleaseDateCalculationBreakdown(emptySet())), mapOf(ReleaseDateType.PRRD to LocalDate.of(2026, 6, 27)))
     whenever(calculationRequestRepository.findById(CALCULATION_REQUEST_ID)).thenReturn(Optional.of(base))
+    whenever(calculationRequestRepository.findById(overriddenCalcRequestId)).thenReturn(Optional.of(overridden))
     whenever(sourceDataMapper.mapSentencesAndOffences(base)).thenReturn(listOf(originalSentence))
     whenever(sourceDataMapper.mapPrisonerDetails(base)).thenReturn(prisonerDetails)
     whenever(sourceDataMapper.mapBookingAndSentenceAdjustments(base)).thenReturn(adjustments)
@@ -478,10 +497,21 @@ class DetailedCalculationResultsServiceTest {
         null,
       ),
     ).thenReturn(enrichedReleaseDates)
+    whenever(
+      calculationResultEnrichmentService.addDetailToCalculationDates(
+        toReleaseDates(overridden),
+        listOf(originalSentence),
+        expectedBreakdown,
+        null,
+        null,
+        null,
+      ),
+    ).thenReturn(overriddenEnrichedReleaseDates)
     whenever(calculationBreakdownService.getBreakdownSafely(any())).thenReturn(expectedBreakdown.right())
     val results = service.findDetailedCalculationResults(CALCULATION_REQUEST_ID)
     assertThat(results.context.genuineOverrideReasonCode).isEqualTo(GenuineOverrideReason.AGGRAVATING_FACTOR_OFFENCE)
     assertThat(results.context.genuineOverrideReasonDescription).isEqualTo("One or more offences have been characterised by an aggravating factor (such as terror)")
+    assertThat(results.overriddenDates).isEqualTo(overriddenEnrichedReleaseDates)
   }
 
   @Test
@@ -581,6 +611,7 @@ class DetailedCalculationResultsServiceTest {
       DetailedCalculationResults(
         expectedCalcContext,
         enrichedReleaseDates,
+        null,
         mapOf(
           ReleaseDateType.HDCAD to DetailedDate(ReleaseDateType.HDCAD, ReleaseDateType.HDCAD.description, LocalDate.of(2024, 1, 2), emptyList()),
           ReleaseDateType.ROTL to DetailedDate(ReleaseDateType.ROTL, ReleaseDateType.ROTL.description, LocalDate.of(2024, 1, 2), emptyList()),

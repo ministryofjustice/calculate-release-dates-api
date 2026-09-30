@@ -6,6 +6,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Tranch
 data class DetailedCalculationResults(
   val context: CalculationContext,
   val dates: Map<ReleaseDateType, DetailedDate>,
+  val overriddenDates: Map<ReleaseDateType, DetailedDate>?,
   val approvedDates: Map<ReleaseDateType, DetailedDate>?,
   val secondCheckDetails: SecondCheckDetails?,
   val calculationOriginalData: CalculationOriginalData,

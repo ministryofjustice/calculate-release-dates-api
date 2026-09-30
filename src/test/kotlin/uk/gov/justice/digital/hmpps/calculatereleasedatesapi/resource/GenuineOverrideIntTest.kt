@@ -6,6 +6,7 @@ import com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor
 import com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.fail
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
@@ -30,6 +31,11 @@ class GenuineOverrideIntTest(private val mockPrisonService: MockPrisonService) :
 
   @Autowired
   lateinit var calculationRequestRepository: CalculationRequestRepository
+
+  @BeforeEach
+  fun setUp() {
+    mockPrisonService.stubPostOffenderDates(CalculationIntTest.BOOKING_ID)
+  }
 
   @Test
   fun `should create a new calculation using the overridden dates and update the original calculation to say it was overridden`() {
@@ -202,5 +208,40 @@ class GenuineOverrideIntTest(private val mockPrisonService: MockPrisonService) :
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
       .exchange()
       .expectStatus().isNotFound
+  }
+
+  @Test
+  fun `Should record errors writing to NOMIS when saving the overridden dates and report back to the UI`() {
+    val preliminaryCalculation = createPreliminaryCalculation(PRISONER_ID)
+    val request = GenuineOverrideRequest(
+      dates = listOf(
+        GenuineOverrideDate(ReleaseDateType.SED, LocalDate.of(2025, 1, 2)),
+        GenuineOverrideDate(ReleaseDateType.LED, LocalDate.of(2029, 12, 13)),
+        GenuineOverrideDate(ReleaseDateType.HDCED, LocalDate.of(2021, 6, 7)),
+      ),
+      reason = GenuineOverrideReason.AGGRAVATING_FACTOR_OFFENCE,
+      reasonFurtherDetail = null,
+    )
+
+    mockPrisonService.stubPostOffenderDatesFails(CalculationIntTest.BOOKING_ID)
+
+    val response = webTestClient.post()
+      .uri("/genuine-override/calculation/${preliminaryCalculation.calculationRequestId}")
+      .accept(MediaType.APPLICATION_JSON)
+      .bodyValue(request)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+      .exchange()
+      .expectStatus().is5xxServerError
+      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectBody(GenuineOverrideCreatedResponse::class.java)
+      .returnResult().responseBody!!
+
+    assertThat(response.success).isFalse
+    assertThat(calculationRequestRepository.findAllByPrisonerIdAndCalculationStatus(PRISONER_ID, CalculationStatus.CONFIRMED.name))
+      .describedAs("No confirmed calculation was created")
+      .hasSize(0)
+    assertThat(calculationRequestRepository.findAllByPrisonerIdAndCalculationStatus(PRISONER_ID, CalculationStatus.ERROR.name))
+      .describedAs("An error calculation was created")
+      .hasSize(1)
   }
 }

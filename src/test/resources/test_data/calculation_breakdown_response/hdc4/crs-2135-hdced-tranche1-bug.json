@@ -93,7 +93,8 @@
       "rulesWithExtraAdjustments": {},
       "adjustedDays": 0,
       "releaseDate": "2025-01-23",
-      "unadjustedDate": "2025-01-23"
+      "unadjustedDate": "2025-01-23",
+      "appliedAdjustments": { "awarded": 0 }
     },
     "TUSED": {
       "rules": [
@@ -125,7 +126,8 @@
       "rulesWithExtraAdjustments": {},
       "adjustedDays": 0,
       "releaseDate": "2024-09-01",
-      "unadjustedDate": "2024-09-01"
+      "unadjustedDate": "2024-09-01",
+      "appliedAdjustments": { "awarded": 0 }
     }
   },
   "otherDates": {

@@ -242,7 +242,7 @@ class CalculationControllerTest {
         calculationRequestId,
         submitCalculationRequest,
       ),
-    ).thenReturn(calculatedReleaseDates)
+    ).thenReturn(calculatedReleaseDates.right())
 
     val result = mvc.perform(
       post("/calculation/confirm/$calculationRequestId")
@@ -389,6 +389,7 @@ class CalculationControllerTest {
         "Brixton (HMP)",
       ),
       dates = mapOf(),
+      overriddenDates = null,
       approvedDates = mapOf(),
       secondCheckDetails = null,
       CalculationOriginalData(

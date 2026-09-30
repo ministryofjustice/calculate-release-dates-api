@@ -7,7 +7,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
+import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.RestController
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualCalculationInputResponse
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualCalculationResponse
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualEntryRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ManualCalculationService
@@ -89,7 +92,14 @@ class ManualCalculationController(
   fun storeManualCalculation(
     @PathVariable prisonerId: String,
     @RequestBody manualEntryRequest: ManualEntryRequest,
-  ): ManualCalculationResponse = manualCalculationService.storeManualCalculation(prisonerId, manualEntryRequest)
+  ): ResponseEntity<ManualCalculationResponse> {
+    val response = manualCalculationService.storeManualCalculation(prisonerId, manualEntryRequest)
+    return if (response.success) {
+      ResponseEntity.status(HttpStatus.OK).body(response)
+    } else {
+      ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response)
+    }
+  }
 
   @GetMapping(value = ["/{prisonerId}/has-existing-calculation"])
   @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR', 'CALCULATE_RELEASE_DATES__CALCULATE__RW', 'CALCULATE_RELEASE_DATES__CALCULATE__RO')")
@@ -99,6 +109,30 @@ class ManualCalculationController(
     description = "Only applies where the last calculation performed was manual, using the same sentence data as the current booking",
   )
   fun hasExistingCalculation(@PathVariable prisonerId: String): Boolean = manualCalculationService.equivalentManualCalculationExists(prisonerId)
+
+  @GetMapping(value = ["/{prisonerId}/inputs"])
+  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR', 'CALCULATE_RELEASE_DATES__CALCULATE__RW', 'CALCULATE_RELEASE_DATES__CALCULATE__RO')")
+  @ResponseBody
+  @Operation(
+    summary = "Get the inputs for a manual calculation",
+    description = "This endpoint will return the already manually entered dates with express mode or " +
+      "with no dates with standard mode - required to perform a manual calculation for a prisoner",
+  )
+  @ApiResponses(
+    value = [
+      ApiResponse(responseCode = "200", description = "Returns a ManualCalculationInputResponse"),
+      ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
+      ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
+    ],
+  )
+  fun inputsForAManualCalculation(
+    @Parameter(required = true, description = "The prisoner ID to check against")
+    @PathVariable
+    prisonerId: String,
+  ): ManualCalculationInputResponse {
+    log.info("Request received to get inputs for a manual calculation for prisonerId: $prisonerId")
+    return manualCalculationService.inputsForAManualCalculation(prisonerId)
+  }
 
   companion object {
     val log: Logger = LoggerFactory.getLogger(this::class.java)

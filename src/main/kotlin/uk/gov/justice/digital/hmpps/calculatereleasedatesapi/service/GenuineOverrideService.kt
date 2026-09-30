@@ -47,6 +47,7 @@ class GenuineOverrideService(
     if (validationErrorsForSelectedDates.isNotEmpty()) {
       return GenuineOverrideCreatedResponse(
         success = false,
+        error = false,
         validationMessages = validationErrorsForSelectedDates,
       )
     }
@@ -61,13 +62,24 @@ class GenuineOverrideService(
 
     val calculationOutcomes = saveOverriddenDates(genuineOverrideRequest, newRequest)
 
-    writeToNomisAndPublishEvent(booking, genuineOverrideRequest, newRequest, calculationOutcomes)
-
-    return GenuineOverrideCreatedResponse(
-      success = true,
-      originalCalculationRequestId = originalRequest.id,
-      newCalculationRequestId = newRequest.id,
-    )
+    return try {
+      writeToNomisAndPublishEvent(booking, genuineOverrideRequest, newRequest, calculationOutcomes)
+      GenuineOverrideCreatedResponse(
+        success = true,
+        error = false,
+        originalCalculationRequestId = originalRequest.id,
+        newCalculationRequestId = newRequest.id,
+      )
+    } catch (ex: CouldNotSaveManualEntryException) {
+      newRequest.calculationStatus = CalculationStatus.ERROR.name
+      calculationRequestRepository.save(newRequest)
+      GenuineOverrideCreatedResponse(
+        success = false,
+        error = true,
+        originalCalculationRequestId = originalRequest.id,
+        newCalculationRequestId = newRequest.id,
+      )
+    }
   }
 
   private fun getPreliminaryRequest(calculationRequestId: Long): CalculationRequest = calculationRequestRepository.findByIdAndCalculationStatus(

@@ -39,7 +39,8 @@
       },
       "adjustedDays": 106,
       "releaseDate": "2021-05-18",
-      "unadjustedDate": "2021-02-01"
+      "unadjustedDate": "2021-02-01",
+      "appliedAdjustments": { "awarded": 135 }
     },
     "SED": {
       "rules": [],

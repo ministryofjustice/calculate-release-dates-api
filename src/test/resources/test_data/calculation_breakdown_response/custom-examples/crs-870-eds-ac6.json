@@ -19,7 +19,8 @@
       },
       "adjustedDays": 0,
       "releaseDate": "2020-04-14",
-      "unadjustedDate": "2020-04-14"
+      "unadjustedDate": "2020-04-14",
+      "appliedAdjustments": { "awarded": 0 }
     },
     "PED": {
       "rules": [
@@ -29,7 +30,8 @@
       },
       "adjustedDays": 0,
       "releaseDate": "2019-05-21",
-      "unadjustedDate": "2018-12-14"
+      "unadjustedDate": "2018-12-14",
+      "appliedAdjustments": { "awarded": 0 }
     }
   },
   "otherDates": {

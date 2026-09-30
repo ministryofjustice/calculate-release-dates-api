@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ApprovedDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ApprovedDatesSubmission
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CalculationNotFoundException
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CouldNotSaveDatesToNomisException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManuallyEnteredDate
@@ -67,7 +68,7 @@ class CalculationConfirmationService(
       prisonService.postReleaseDates(booking.bookingId, updateOffenderDates)
     } catch (ex: Exception) {
       log.error("Nomis write failed: ${ex.message}")
-      throw EntityNotFoundException(
+      throw CouldNotSaveDatesToNomisException(
         "Writing release dates to NOMIS failed for prisonerId $prisonerId " +
           "and bookingId ${booking.bookingId}",
       )
