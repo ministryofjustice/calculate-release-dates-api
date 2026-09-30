@@ -19,6 +19,16 @@ configurations {
     exclude(group = "org.junit.vintage")
     exclude(group = "logback-classic")
   }
+  // Workaround for ktlint's embedded Kotlin compiler being incompatible with Kotlin 2.4.20
+  // (https://github.com/ktlint/ktlint/issues/3403). Force ktlint to use an older, compatible
+  // Kotlin compiler version instead of aligning to the project's Kotlin version.
+  named("ktlint") {
+    resolutionStrategy.eachDependency {
+      if (requested.group == "org.jetbrains.kotlin") {
+        useVersion("2.4.10")
+      }
+    }
+  }
 }
 
 dependencies {
