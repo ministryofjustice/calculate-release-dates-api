@@ -6,7 +6,7 @@ import org.jlleitschuh.gradle.ktlint.tasks.KtLintFormatTask
 import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "11.0.7"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "11.0.10"
   id("org.springdoc.openapi-gradle-plugin") version "1.9.0"
   kotlin("plugin.spring") version "2.4.20"
   kotlin("plugin.jpa") version "2.4.20"
@@ -45,10 +45,10 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-flyway")
 
   // MoJ libraries
-  implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter:3.0.1")
+  implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter:3.0.3")
 
   // GOVUK Notify:
-  implementation("uk.gov.service.notify:notifications-java-client:6.2.0-RELEASE")
+  implementation("uk.gov.service.notify:notifications-java-client:6.2.1-RELEASE")
 
   // Enable kotlin reflect
   implementation("org.jetbrains.kotlin:kotlin-reflect:2.4.20")
@@ -64,16 +64,16 @@ dependencies {
   runtimeOnly("org.postgresql:postgresql:42.7.13")
 
   implementation("io.arrow-kt:arrow-core:2.2.3")
-  implementation("io.hypersistence:hypersistence-utils-hibernate-71:3.15.5")
+  implementation("io.hypersistence:hypersistence-utils-hibernate-71:3.16.0")
 
   // OpenAPI
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.1.1")
 
   implementation("com.amazonaws:amazon-sqs-java-messaging-lib:2.1.4")
-  implementation("io.awspring.cloud:spring-cloud-aws-starter:4.1.1")
-  implementation("io.awspring.cloud:spring-cloud-aws-core:4.1.1")
-  implementation("io.awspring.cloud:spring-cloud-aws-sns:4.1.1")
-  implementation("io.awspring.cloud:spring-cloud-aws-sqs:4.1.1")
+  implementation("io.awspring.cloud:spring-cloud-aws-starter:4.2.0")
+  implementation("io.awspring.cloud:spring-cloud-aws-core:4.2.0")
+  implementation("io.awspring.cloud:spring-cloud-aws-sns:4.2.0")
+  implementation("io.awspring.cloud:spring-cloud-aws-sqs:4.2.0")
   implementation("org.springframework:spring-jms:7.0.9")
   implementation("org.apache.commons:commons-text:1.15.0")
 
@@ -97,7 +97,7 @@ dependencies {
   testImplementation("org.testcontainers:junit-jupiter:1.21.4")
   testImplementation("io.github.hakky54:logcaptor:2.12.7")
   testImplementation("org.mockito.kotlin:mockito-kotlin")
-  testImplementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter-test:3.0.1")
+  testImplementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter-test:3.0.3")
   testImplementation("javax.xml.bind:jaxb-api:2.3.1")
   testImplementation(kotlin("test"))
   if (project.hasProperty("docs")) {
