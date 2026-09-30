@@ -9,11 +9,11 @@ import org.springframework.boot.info.BuildProperties
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcome
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CouldNotSaveManualEntryException
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.NoActiveBookingException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualCalculationEntryMode
@@ -98,8 +98,9 @@ class ManualCalculationService(
       version = buildProperties.version ?: "",
     ).withType(type)
 
+    var savedCalculationRequest: CalculationRequest? = null
     return try {
-      val savedCalculationRequest = calculationRequestRepository.save(calculationRequest)
+      savedCalculationRequest = calculationRequestRepository.save(calculationRequest)
       val validationMessages = validationService.validate(sourceData, calculationUserInputs, ValidationOrder.UNSUPPORTED)
 
       if (validationMessages.isNotEmpty()) {
@@ -122,9 +123,12 @@ class ManualCalculationService(
           effectiveSentenceLength = effectiveSentenceLength,
         )
           ?: throw CouldNotSaveManualEntryException("There was a problem saving the dates")
-      ManualCalculationResponse(enteredDates, savedCalculationRequest.id())
+      ManualCalculationResponse(true, enteredDates, savedCalculationRequest.id())
     } catch (ex: Exception) {
-      calculationRequestRepository.save(
+      val calculationRequestWithErrorStatus = if (savedCalculationRequest != null) {
+        savedCalculationRequest.calculationStatus = CalculationStatus.ERROR.name
+        savedCalculationRequest
+      } else {
         transform(
           booking,
           serviceUserService.getUsername(),
@@ -134,9 +138,10 @@ class ManualCalculationService(
           objectMapper,
           manualEntryRequest.otherReasonDescription,
           version = buildProperties.version ?: "",
-        ),
-      )
-      ManualCalculationResponse(emptyMap(), calculationRequest.id())
+        )
+      }
+      calculationRequestRepository.save(calculationRequestWithErrorStatus)
+      ManualCalculationResponse(false, emptyMap(), calculationRequestWithErrorStatus.id())
     }
   }
 
@@ -164,7 +169,7 @@ class ManualCalculationService(
       prisonService.postReleaseDates(booking.bookingId, updateOffenderDates)
     } catch (ex: Exception) {
       CalculationTransactionalService.log.error("Nomis write failed: ${ex.message}")
-      throw EntityNotFoundException(
+      throw CouldNotSaveManualEntryException(
         "Writing release dates to NOMIS failed for prisonerId $prisonerId " +
           "and bookingId ${booking.bookingId}",
       )
@@ -207,16 +212,15 @@ class ManualCalculationService(
     val booking = bookingService.getBooking(sourceData)
     val currentBookingHash = objectToJson(booking, objectMapper).hashCode()
 
-    val latestCalc = latestCalculationService.latestCalculationForPrisoner(prisonerId)
-      .getOrElse { problemMessage: String -> throw NoActiveBookingException(problemMessage) }
+    val latestCalc = latestCalculationService.latestCalculationForPrisoner(prisonerId).getOrNull()
 
-    val isLatestManualCalculation = latestCalc.calculationType == CalculationType.MANUAL_DETERMINATE.name ||
-      latestCalc.calculationType == CalculationType.MANUAL_INDETERMINATE.name
-    val latestCalculationRequest = latestCalc.calculationRequestId?.let { calculationRequestRepository.findById(it).orElse(null) }
+    val isLatestManualCalculation = latestCalc?.calculationType == CalculationType.MANUAL_DETERMINATE.name ||
+      latestCalc?.calculationType == CalculationType.MANUAL_INDETERMINATE.name
+    val latestCalculationRequest = latestCalc?.calculationRequestId?.let { calculationRequestRepository.findById(it).orElse(null) }
     val latestCalculationHash = latestCalculationRequest?.inputData?.hashCode() ?: 0
 
     if (isLatestManualCalculation && currentBookingHash == latestCalculationHash) {
-      return ManualCalculationInputResponse(mode = ManualCalculationEntryMode.EXPRESS, manuallyEnteredDates = latestCalc.dates)
+      return ManualCalculationInputResponse(mode = ManualCalculationEntryMode.EXPRESS, manuallyEnteredDates = latestCalc!!.dates)
     }
 
     return ManualCalculationInputResponse(mode = ManualCalculationEntryMode.STANDARD, manuallyEnteredDates = emptyList())

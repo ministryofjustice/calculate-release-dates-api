@@ -44,6 +44,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SLED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CalculationDataHasChangedError
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CouldNotSaveDatesToNomisException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.PreconditionFailedException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.TestBuildPropertiesConfiguration.Companion.TEST_BUILD_PROPERTIES
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustments
@@ -346,7 +347,7 @@ class CalculationTransactionalServiceTest {
       prisonService.postReleaseDates(any(), any()),
     ).thenThrow(EntityNotFoundException("test ex"))
 
-    val exception = assertThrows<EntityNotFoundException> {
+    val exception = assertThrows<CouldNotSaveDatesToNomisException> {
       calculationConfirmationService.writeToNomisAndPublishEvent(
         PRISONER_ID,
         BOOKING,
@@ -356,7 +357,7 @@ class CalculationTransactionalServiceTest {
     }
 
     assertThat(exception)
-      .isInstanceOf(EntityNotFoundException::class.java)
+      .isInstanceOf(CouldNotSaveDatesToNomisException::class.java)
       .withFailMessage(
         "Writing release dates to NOMIS failed for prisonerId $PRISONER_ID " +
           "and bookingId $BOOKING_ID",
@@ -445,7 +446,7 @@ class CalculationTransactionalServiceTest {
         approvedDates = emptyList(),
       ),
     )
-    assertThat(calculatedReleaseDates.usedPreviouslyRecordedSLED).isEqualTo(usedPreviouslyRecordedSLED)
+    assertThat(calculatedReleaseDates.getOrNull()!!.usedPreviouslyRecordedSLED).isEqualTo(usedPreviouslyRecordedSLED)
     verify(calculationOutcomeHistoricOverrideRepository).save(
       CalculationOutcomeHistoricSledOverride(
         calculationRequestId = CALCULATION_REQUEST_ID,
