@@ -41,7 +41,7 @@ class DeleteOldPreliminaryCalculationsIntTest(private val mockPrisonService: Moc
     val prelimNew = createPreliminaryCalculation(PRISONER_ID)
     val confirmedNew = createConfirmCalculationForPrisoner(prelimNew.calculationRequestId)
 
-    val response = webTestClient.get()
+    val response = webTestClient.post()
       .uri("/scheduled-task/delete-old-preliminary-calculations")
       .accept(APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
