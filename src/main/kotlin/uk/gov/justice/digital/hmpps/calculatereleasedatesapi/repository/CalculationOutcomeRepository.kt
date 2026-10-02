@@ -1,7 +1,9 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository
 
 import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
+import org.springframework.data.repository.query.Param
 import org.springframework.stereotype.Repository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcome
 
@@ -12,4 +14,8 @@ interface CalculationOutcomeRepository : JpaRepository<CalculationOutcome, Long>
     value = "select * from calculation_outcome where calculation_outcome.calculation_request_id in (select calculation_request_id from comparison_person where comparison_id = ? and mismatch_type='RELEASE_DATES_MISMATCH')",
   )
   fun findForComparisonAndReleaseDatesMismatch(comparisonId: Long): List<CalculationOutcome>
+
+  @Query("DELETE FROM CalculationOutcome WHERE calculationRequestId = :calculationRequestId")
+  @Modifying
+  fun deleteByCalculationRequestId(@Param("calculationRequestId") calculationRequestId: Long)
 }
