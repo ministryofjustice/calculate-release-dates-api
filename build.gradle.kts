@@ -6,7 +6,7 @@ import org.jlleitschuh.gradle.ktlint.tasks.KtLintFormatTask
 import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "11.0.10"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "11.0.11"
   id("org.springdoc.openapi-gradle-plugin") version "1.9.0"
   kotlin("plugin.spring") version "2.4.20"
   kotlin("plugin.jpa") version "2.4.20"
@@ -18,16 +18,6 @@ configurations {
   testImplementation {
     exclude(group = "org.junit.vintage")
     exclude(group = "logback-classic")
-  }
-  // Workaround for ktlint's embedded Kotlin compiler being incompatible with Kotlin 2.4.20
-  // (https://github.com/ktlint/ktlint/issues/3403). Force ktlint to use an older, compatible
-  // Kotlin compiler version instead of aligning to the project's Kotlin version.
-  named("ktlint") {
-    resolutionStrategy.eachDependency {
-      if (requested.group == "org.jetbrains.kotlin") {
-        useVersion("2.4.10")
-      }
-    }
   }
 }
 
