@@ -98,6 +98,3 @@ generic-data-analytics-extractor:
 deleteOldPreliminaryCalculationsCronJob:
   enabled: false
 
-image:
-  tag: app_version
-
