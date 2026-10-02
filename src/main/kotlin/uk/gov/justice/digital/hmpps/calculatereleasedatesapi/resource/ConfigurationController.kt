@@ -43,6 +43,7 @@ class ConfigurationController(
     } else {
       ConfigItem("Progression Model commencement", "Disabled")
     }
-    return featureToggles.toConfigItems() + listOf(progressionModelConfig)
+    val scheduledRemovalConfigItem = ConfigItem("Prelim Calc Removal Config", "Max ${ScheduledTaskController.MAX_ITEMS} over ${ScheduledTaskController.MIN_AGE_YEARS} years old")
+    return featureToggles.toConfigItems() + listOf(progressionModelConfig, scheduledRemovalConfigItem)
   }
 }

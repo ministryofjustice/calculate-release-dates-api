@@ -20,6 +20,10 @@ generic-service:
           deny all;
           return 401;
         }
+        location ~* "^/scheduled-task/.*" {
+          deny all;
+          return 401;
+        }
 
   # Environment variables to load into the deployment
   env:
@@ -90,3 +94,10 @@ generic-data-analytics-extractor:
       cpu: 1
     limits:
       memory: 4G
+
+deleteOldPreliminaryCalculationsCronJob:
+  enabled: false
+
+image:
+  tag: app_version
+
