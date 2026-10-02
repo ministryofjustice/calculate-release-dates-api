@@ -1,10 +1,21 @@
-  {{- if .Values.deleteOldPreliminaryCalculationsCronJob.enabled -}}
+{{- $genericValues := index .Values "generic-service" -}}
+{{- $generic := dict
+  "Chart" ((index .Subcharts "generic-service").Chart)
+  "Values" $genericValues
+  "Release" .Release
+  "Capabilities" .Capabilities
+  "Files" .Files
+  "Template" .Template
+-}}
+{{- $fullName := include "generic-service.fullname" $generic -}}
+{{- if .Values.deleteOldPreliminaryCalculationsCronJob.enabled -}}
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: {{ include "generic-service.fullname" . | trunc 27 }}-delete-old-prelim-calcs
+  name: {{ $fullName }}-delete-old-prelim-calcs
   labels:
-    {{- include "generic-service.labels" . | nindent 4 }}
+    {{- $genericWithParentChart := merge (dict "Chart" .Chart) $generic -}}
+    {{ include "generic-service.labels" $genericWithParentChart | nindent 4 }}
 
 spec:
   schedule: "{{ .Values.deleteOldPreliminaryCalculationsCronJob.schedule }}"
@@ -25,7 +36,7 @@ spec:
               imagePullPolicy: IfNotPresent
               command: [ "/bin/sh", "-c" ]
               args:
-                - curl -XPOST --connect-timeout 5 --max-time 10 http://{{ include "generic-service.fullname" . }}/scheduled-task/delete-old-preliminary-calculations
+                - curl -XPOST --connect-timeout 5 --max-time 10 http://{{ $fullName }}/scheduled-task/delete-old-preliminary-calculations
               securityContext:
                 {{- toYaml .Values.deleteOldPreliminaryCalculationsCronJob.securityContext | nindent 16 }}
-  {{- end }}
+{{- end }}
