@@ -18,6 +18,7 @@ class DeleteOldPreliminaryCalculationsService(
     val minAge = LocalDateTime.now().minusYears(minAgeInYears.toLong())
     val calcsToDelete = calculationRequestRepository.findPreliminaryCalculationRequestIdsOlderThan(minAge, maxItems)
     val calcsDeletedSuccessfully = calcsToDelete.count { calculationRequestId ->
+      log.info("Deleting preliminary calculation request $calculationRequestId")
       try {
         deleteCalculationService.delete(calculationRequestId)
         true
