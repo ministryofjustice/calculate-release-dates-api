@@ -7,7 +7,7 @@ import io.swagger.v3.oas.annotations.tags.Tag
 import org.slf4j.LoggerFactory
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.RestController
@@ -19,7 +19,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.DeleteOldPr
 @Tag(name = "cleanup", description = "Endpoints for scheduled admin tasks that can only be called locally")
 class ScheduledTaskController(private val deleteOldPreliminaryCalculationsService: DeleteOldPreliminaryCalculationsService) {
 
-  @GetMapping(value = ["/delete-old-preliminary-calculations"])
+  @PostMapping(value = ["/delete-old-preliminary-calculations"])
   @ResponseBody
   @Operation(
     summary = "Delete preliminary calculations older than the configured amount",
