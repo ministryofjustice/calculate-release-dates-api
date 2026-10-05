@@ -43,8 +43,6 @@ class DeleteOldPreliminaryCalculationsIntTest(private val mockPrisonService: Moc
 
     val response = webTestClient.post()
       .uri("/scheduled-task/delete-old-preliminary-calculations")
-      .accept(APPLICATION_JSON)
-      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
       .exchange()
       .expectStatus().isOk
       .expectHeader().contentType(APPLICATION_JSON)
