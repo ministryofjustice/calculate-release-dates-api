@@ -39,7 +39,7 @@ private class ResourceServerConfiguration {
         authorize(HttpMethod.POST, "/h2-console/**", permitAll)
         authorize(HttpMethod.GET, "/some-url-not-found", permitAll)
         authorize(HttpMethod.PUT, "/queue-admin/retry-all-dlqs", permitAll)
-        authorize(HttpMethod.PUT, "/scheduled-task/**", permitAll)
+        authorize(HttpMethod.POST, "/scheduled-task/**", permitAll)
         authorize(anyRequest, authenticated)
       }
       oauth2ResourceServer {

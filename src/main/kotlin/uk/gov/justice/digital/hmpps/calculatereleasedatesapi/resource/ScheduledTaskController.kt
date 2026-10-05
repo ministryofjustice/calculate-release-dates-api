@@ -16,7 +16,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.DeleteOldPr
 
 @RestController
 @RequestMapping("/scheduled-task", produces = [MediaType.APPLICATION_JSON_VALUE])
-@Tag(name = "cleanup", description = "Endpoints for scheduled admin tasks that can only be called locally")
+@Tag(name = "Scheduled Tasks", description = "Endpoints for scheduled admin tasks that can only be called locally")
 class ScheduledTaskController(private val deleteOldPreliminaryCalculationsService: DeleteOldPreliminaryCalculationsService) {
 
   @PostMapping(value = ["/delete-old-preliminary-calculations"])
@@ -29,8 +29,7 @@ class ScheduledTaskController(private val deleteOldPreliminaryCalculationsServic
   @ApiResponses(
     value = [
       ApiResponse(responseCode = "200", description = "The task was processed and a count of deleted calculations returned"),
-      ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
-      ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
+      ApiResponse(responseCode = "401", description = "Unauthorised, can only be called by trusted services within the namespace and not through ingress"),
       ApiResponse(responseCode = "404", description = "Couldn't find the requested prisoner"),
     ],
   )
