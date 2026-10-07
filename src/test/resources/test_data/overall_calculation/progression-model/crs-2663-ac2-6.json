@@ -54,7 +54,6 @@
   "params": "sds-progression-model-october",
   "expectedValidationException": "UNSUPPORTED_OUT_OF_CUSTODY_AT_PROGRESSION_MODEL_COMMENCEMENT",
   "featureToggles": {
-    "applyPostRecallRepealRules": true,
-    "routePreProgressionExtinguishedSentenceToManual": true
+    "applyPostRecallRepealRules": true
   }
 }

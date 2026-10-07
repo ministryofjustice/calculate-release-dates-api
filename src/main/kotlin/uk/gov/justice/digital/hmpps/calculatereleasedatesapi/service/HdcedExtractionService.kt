@@ -10,9 +10,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCa
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Term
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.HDC_CLEAN_STOP_DATE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.sentence.SentencesExtractionService
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 
@@ -54,10 +52,6 @@ class HdcedExtractionService(
         return null
       }
 
-      if (shouldExcludePostHdcedRepeal(sentences, hdcedResult.first, hdcedSentence)) {
-        return null
-      }
-
       return hdcedResult
     }
 
@@ -81,20 +75,8 @@ class HdcedExtractionService(
       return false
     }
 
-    if (shouldExcludePostHdcedRepeal(listOf(sentenceCalculation.sentence), hdcedDate, sentenceCalculation.sentence)) {
-      return false
-    }
-
     return true
   }
-
-  private fun shouldExcludePostHdcedRepeal(
-    sentences: List<CalculableSentence>,
-    hdcedDate: LocalDate,
-    hdcedSentence: CalculableSentence,
-  ): Boolean = featureToggles.applyPostHdcedRepealRules &&
-    sentences.any { isAdultSentence(it) } &&
-    (hdcedDate.isAfterOrEqualTo(HDC_CLEAN_STOP_DATE) || hdcedSentence.isAffectedBySdsProgressionModel())
 
   private fun isAdultSentence(sentence: CalculableSentence): Boolean = !(sentence is StandardDeterminateSentence && sentence.releaseArrangements.isSection250 || sentence is Term)
 

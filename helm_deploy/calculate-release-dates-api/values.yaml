@@ -39,13 +39,7 @@ generic-service:
     USE_ADJUSTMENTS_API: "true"
     STORE_SENTECE_LEVEL_DATES: "true"
     STORE_OPERATIVE_SENTENCE_ENVELOPE: "true"
-    APPLY_POST_HDCED_REPEAL_RULES: "false"
     ADULT_HDC_SUSPENDED: "true"
-    ROUTE_PRE_PROGRESSION_EXTINGUISHED_SENTENCE_TO_MANUAL: "true"
-    PROGRESSION_TRANCHE_ONE_MANUAL_JOURNEY: "false"
-    PROGRESSION_MODEL_SCHEDULE_EXCLUSION_ENABLED: "false"
-    ROUTE_PROGRESSION_MODEL_SCHEDULE_EXCLUSION_TO_MANUAL: "false"
-    USE_LATEST_ERSED_FROM_PRE_CONSEC_IMPOSED_SNAPSHOT: "true"
 
   # Pre-existing kubernetes secrets to load as environment variables in the deployment.
   # namespace_secrets:
