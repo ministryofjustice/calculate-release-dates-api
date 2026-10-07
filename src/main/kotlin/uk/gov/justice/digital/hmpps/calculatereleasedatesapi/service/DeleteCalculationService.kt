@@ -19,7 +19,8 @@ class DeleteCalculationService(
   private val operativeSentenceEnvelopeRepository: OperativeSentenceEnvelopeRepository,
 ) {
 
-  @Transactional
+  // REQUIRES_NEW so that the batch clean up of old preliminary calculations only fails for a single calculation request.
+  @Transactional(Transactional.TxType.REQUIRES_NEW)
   fun delete(calculationRequestId: Long) {
     val calculationRequest = calculationRequestRepository.findById(calculationRequestId).getOrElse { throw EntityNotFoundException("Tried to delete a calculation request that doesn't exist: $calculationRequestId") }
 
