@@ -42,7 +42,7 @@ class ScheduledTaskController(private val deleteOldPreliminaryCalculationsServic
 
   companion object {
     private val log = LoggerFactory.getLogger(ScheduledTaskController::class.java)
-    const val MAX_ITEMS = 100
+    const val MAX_ITEMS = 2000
     const val MIN_AGE_YEARS = 2
   }
 }
