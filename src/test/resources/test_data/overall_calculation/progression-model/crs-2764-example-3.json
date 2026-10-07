@@ -118,7 +118,6 @@
   },
   "params": "sds-progression-model-october",
   "featureToggles": {
-    "applyPostRecallRepealRules": true,
-    "routePreProgressionExtinguishedSentenceToManual": true
+    "applyPostRecallRepealRules": true
   }
 }

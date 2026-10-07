@@ -11,9 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.SDSLegislationConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ConfigItem
-import java.time.format.DateTimeFormatter
 
 @RestController
 @RequestMapping("/configuration", produces = [MediaType.APPLICATION_JSON_VALUE])
@@ -21,7 +19,6 @@ import java.time.format.DateTimeFormatter
 @Validated
 class ConfigurationController(
   private val featureToggles: FeatureToggles,
-  private val sdsLegislationConfiguration: SDSLegislationConfiguration,
 ) {
 
   @GetMapping(value = ["/all"])
@@ -37,13 +34,7 @@ class ConfigurationController(
     ],
   )
   fun getAllConfiguration(): List<ConfigItem> {
-    val pmCommencementDate = sdsLegislationConfiguration.progressionModelLegislation?.commencementDate()
-    val progressionModelConfig = if (pmCommencementDate != null) {
-      ConfigItem("Progression Model commencement", DateTimeFormatter.ISO_DATE.format(pmCommencementDate))
-    } else {
-      ConfigItem("Progression Model commencement", "Disabled")
-    }
-    val scheduledRemovalConfigItem = ConfigItem("Prelim Calc Removal Config", "Max ${ScheduledTaskController.MAX_ITEMS} over ${ScheduledTaskController.MIN_AGE_YEARS} years old")
-    return featureToggles.toConfigItems() + listOf(progressionModelConfig, scheduledRemovalConfigItem)
+    val scheduledRemovalConfigItem = ConfigItem("Delete Preliminary Calculations Config", "Max ${ScheduledTaskController.MAX_ITEMS} over ${ScheduledTaskController.MIN_AGE_YEARS} years old")
+    return featureToggles.toConfigItems() + listOf(scheduledRemovalConfigItem)
   }
 }
