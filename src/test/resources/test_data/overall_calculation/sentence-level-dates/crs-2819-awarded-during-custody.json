@@ -40,7 +40,6 @@
   },
   "params": "calculation-params",
   "featureToggles": {
-    "applyPostRecallRepealRules": true,
-    "storeSentenceLevelDates": true
+    "applyPostRecallRepealRules": true
   }
 }
