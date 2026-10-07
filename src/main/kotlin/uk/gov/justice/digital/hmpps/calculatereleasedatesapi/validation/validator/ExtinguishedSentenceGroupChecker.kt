@@ -1,7 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.validator
 
 import org.springframework.stereotype.Service
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.LegislationName
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.SDSLegislationConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType
@@ -14,12 +13,11 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.sentence.Se
 @Service
 class ExtinguishedSentenceGroupChecker(
   private val extractionService: SentencesExtractionService,
-  private val featureToggles: FeatureToggles,
   private val sdsLegislationConfiguration: SDSLegislationConfiguration,
 ) {
 
   fun mode(calculationOutput: CalculationOutput, booking: Booking): ExtinguishedSentenceValidationMode {
-    if (!featureToggles.routePreProgressionExtinguishedSentenceToManual || sdsLegislationConfiguration.progressionModelLegislation == null || wasNotAssignedAProgressionModelTranche(calculationOutput)) {
+    if (sdsLegislationConfiguration.progressionModelLegislation == null || wasNotAssignedAProgressionModelTranche(calculationOutput)) {
       return ExtinguishedSentenceValidationMode.INVALID
     }
     val commencementDate = sdsLegislationConfiguration.progressionModelLegislation.commencementDate()

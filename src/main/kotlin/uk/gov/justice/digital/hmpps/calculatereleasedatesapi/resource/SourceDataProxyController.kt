@@ -5,7 +5,6 @@ import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
-import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.GetMapping
@@ -13,8 +12,6 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.RestController
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CrdWebException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AnalysedAdjustment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AnalysedBookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AnalysedSentenceAndOffence
@@ -29,7 +26,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.sentence.Se
 class SourceDataProxyController(
   val sentenceAndOffenceService: SentenceAndOffenceService,
   val adjustmentsService: AdjustmentsService,
-  val featureToggles: FeatureToggles,
 ) {
   @GetMapping(value = ["/sentence-and-offence-information/{bookingId}"])
   @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR', 'CALCULATE_RELEASE_DATES__CALCULATE__RW', 'CALCULATE_RELEASE_DATES__CALCULATE__RO')")
@@ -98,9 +94,6 @@ class SourceDataProxyController(
     @PathVariable prisonerId: String,
   ): ProgressionModelExclusionResponse {
     log.info("Request received to check if prisoners latest booking has PM exclusions: $prisonerId")
-    if (featureToggles.progressionModelScheduleExclusionEnabled) {
-      return ProgressionModelExclusionResponse(containsOffenceExcludedFromProgressionModel = sentenceAndOffenceService.hasOffencesExcludedFromProgressionModelNotIncludingSchedule13Part3(prisonerId))
-    }
-    throw CrdWebException("Progression Model exclusion not supported in this environment yet", HttpStatus.BAD_REQUEST)
+    return ProgressionModelExclusionResponse(containsOffenceExcludedFromProgressionModel = sentenceAndOffenceService.hasOffencesExcludedFromProgressionModelNotIncludingSchedule13Part3(prisonerId))
   }
 }
