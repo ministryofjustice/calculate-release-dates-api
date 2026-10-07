@@ -36,7 +36,7 @@ spec:
               imagePullPolicy: IfNotPresent
               command: [ "/bin/sh", "-c" ]
               args:
-                - curl -XPOST --connect-timeout 30 --max-time 300 http://{{ $fullName }}/scheduled-task/delete-old-preliminary-calculations
+                - curl -XPOST --connect-timeout 30 http://{{ $fullName }}/scheduled-task/delete-old-preliminary-calculations && echo "Done"
               securityContext:
                 {{- toYaml .Values.deleteOldPreliminaryCalculationsCronJob.securityContext | nindent 16 }}
 {{- end }}
