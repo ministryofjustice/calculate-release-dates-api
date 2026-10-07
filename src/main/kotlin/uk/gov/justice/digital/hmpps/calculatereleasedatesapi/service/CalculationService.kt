@@ -65,7 +65,7 @@ class CalculationService(
             earliestSentenceStartDate = earliestSentenceDate,
             isPostRecallSentenceEnvelope = allSentenceParts.any { it.isRecall() },
             containsAnSDSPlusSentence = allSentenceParts.any { it is StandardDeterminateSentence && it.releaseArrangements.isSDSPlus },
-            containsOffenceExcludedFromProgressionModel = if (featureToggles.progressionModelScheduleExclusionEnabled) allSentenceParts.any { it is StandardDeterminateSentence && SDSEarlyReleaseExclusionType.SA2026_PROGRESSION_MODEL_SCHEDULE in it.releaseArrangements.sdsEarlyReleaseExclusions } else null,
+            containsOffenceExcludedFromProgressionModel = allSentenceParts.any { it is StandardDeterminateSentence && SDSEarlyReleaseExclusionType.SA2026_PROGRESSION_MODEL_SCHEDULE in it.releaseArrangements.sdsEarlyReleaseExclusions },
             sentenceEnvelopeSource = OperativeSentenceEnvelopeSource.CRDS,
             bookingId = booking.bookingId,
           ),

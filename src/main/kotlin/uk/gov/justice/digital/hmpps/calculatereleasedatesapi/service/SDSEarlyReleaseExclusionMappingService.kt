@@ -31,7 +31,7 @@ class SDSEarlyReleaseExclusionMappingService(private val sdsLegislationConfigura
         OffenceSdsExclusionIndicator.MURDER_T3 -> SDSEarlyReleaseExclusionType.MURDER_T3
         OffenceSdsExclusionIndicator.VIOLENT -> evaluateViolentExclusion(sentenceAndOffence)
         OffenceSdsExclusionIndicator.SCHEDULE_13_PART_3 -> evaluateSchedule13Part3Exclusion(sentenceAndOffence)
-        OffenceSdsExclusionIndicator.SENTENCING_ACT_2026_PROGRESSION_MODEL -> if (featureToggles.progressionModelScheduleExclusionEnabled) SDSEarlyReleaseExclusionType.SA2026_PROGRESSION_MODEL_SCHEDULE else null
+        OffenceSdsExclusionIndicator.SENTENCING_ACT_2026_PROGRESSION_MODEL -> SDSEarlyReleaseExclusionType.SA2026_PROGRESSION_MODEL_SCHEDULE
         OffenceSdsExclusionIndicator.NONE -> null
       }
     }
