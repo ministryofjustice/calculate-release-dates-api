@@ -11,7 +11,7 @@ plugins {
   kotlin("plugin.spring") version "2.4.20"
   kotlin("plugin.jpa") version "2.4.20"
   id("jacoco")
-  id("org.openapi.generator") version "7.25.0"
+  id("org.openapi.generator") version "7.26.0"
 }
 
 configurations {
@@ -77,7 +77,7 @@ dependencies {
   testImplementation("org.springframework.boot:spring-boot-starter-security-test")
   testImplementation("org.springframework.boot:spring-boot-webtestclient")
   testImplementation("org.awaitility:awaitility-kotlin:4.3.0")
-  testImplementation("net.javacrumbs.json-unit:json-unit-assertj:6.2.0")
+  testImplementation("net.javacrumbs.json-unit:json-unit-assertj:6.3.0")
   testImplementation("io.swagger.parser.v3:swagger-parser-v2-converter:2.1.48")
   testImplementation("org.mockito:mockito-inline:5.2.0")
   testImplementation("org.junit.jupiter:junit-jupiter:6.1.3")
