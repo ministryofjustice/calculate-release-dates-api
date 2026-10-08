@@ -54,3 +54,16 @@ generic-prometheus-alerts:
   sqsAlertsOldestThreshold: 2
   sqsAlertsTotalMessagesThreshold: 1
   alertSeverity: legacy-replacement-alerts-non-prod
+
+deleteOldPreliminaryCalculationsCronJob:
+  enabled: true
+  schedule: "00 12 * * *" # 1200 UTC daily
+  timeZone: Etc/UTC
+  securityContext:
+    capabilities:
+      drop:
+        - ALL
+    runAsNonRoot: true
+    allowPrivilegeEscalation: false
+    seccompProfile:
+      type: RuntimeDefault

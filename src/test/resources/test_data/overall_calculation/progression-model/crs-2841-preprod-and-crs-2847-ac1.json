@@ -235,7 +235,6 @@
   },
   "params": "sds-progression-model-october",
   "featureToggles": {
-    "applyPostRecallRepealRules": true,
-    "storeSentenceLevelDates": true
+    "applyPostRecallRepealRules": true
   }
 }

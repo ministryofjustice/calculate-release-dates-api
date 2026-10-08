@@ -19,7 +19,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Pris
 import java.time.LocalDate
 import java.time.LocalDateTime
 
-@SpringBootTest(webEnvironment = RANDOM_PORT, properties = ["feature-toggles.storeOperativeSentenceEnvelope=true"])
+@SpringBootTest(webEnvironment = RANDOM_PORT, properties = [])
 class OperativeSentenceEnvelopeIntTest(private val mockPrisonService: MockPrisonService) : IntegrationTestBase() {
 
   @Test
