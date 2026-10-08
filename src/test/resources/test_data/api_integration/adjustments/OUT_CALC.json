@@ -1,0 +1,23 @@
+[
+  {
+    "person": "OUT_CALC",
+    "adjustmentType": "UNLAWFULLY_AT_LARGE",
+    "bookingId": 866108614,
+    "toDate": "2021-06-01",
+    "fromDate": "2021-05-31",
+    "days": 2,
+    "status": "INACTIVE",
+    "effectiveDays": 2
+  },
+  {
+    "person": "OUT_CALC",
+    "adjustmentType": "REMAND",
+    "bookingId": 866108614,
+    "toDate": "2021-05-29",
+    "fromDate": "2021-05-10",
+    "days": 20,
+    "sentenceSequence": 1,
+    "status": "INACTIVE",
+    "effectiveDays": 20
+  }
+]

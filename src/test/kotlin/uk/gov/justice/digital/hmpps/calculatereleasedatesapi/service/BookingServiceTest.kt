@@ -5,9 +5,13 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.InjectMocks
 import org.mockito.junit.jupiter.MockitoExtension
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.adjustmentsapi.model.AdjustmentDto
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.RECALL_REMAND
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.REMAND
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.UNLAWFULLY_AT_LARGE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustment
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentAdditionalInfo
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentsSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
@@ -20,18 +24,13 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustment
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderFinePayment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ReturnToCustodyDate
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustment
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.BookingAndSentenceAdjustments
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit.DAYS
@@ -88,34 +87,6 @@ class BookingServiceTest {
     ),
   )
 
-  private val bookingAndSentenceAdjustment = BookingAndSentenceAdjustments(
-    bookingAdjustments = listOf(
-      BookingAdjustment(
-        active = true,
-        numberOfDays = 5,
-        type = BookingAdjustmentType.UNLAWFULLY_AT_LARGE,
-        fromDate = FIRST_JAN_2015.minusDays(6),
-        toDate = FIRST_JAN_2015.minusDays(1),
-      ),
-    ),
-    sentenceAdjustments = listOf(
-      SentenceAdjustment(
-        active = true,
-        sentenceSequence = sequence,
-        numberOfDays = 6,
-        type = SentenceAdjustmentType.REMAND,
-        fromDate = FIRST_JAN_2015.minusDays(7),
-        toDate = FIRST_JAN_2015.minusDays(1),
-
-      ),
-      SentenceAdjustment(
-        active = true,
-        sentenceSequence = sequence,
-        numberOfDays = 22,
-        type = SentenceAdjustmentType.UNUSED_REMAND,
-      ),
-    ),
-  )
   private val prisonerDetails = PrisonerDetails(
     bookingId,
     prisonerId,
@@ -123,9 +94,38 @@ class BookingServiceTest {
     firstName = "Zimmy",
     lastName = "Cnys",
   )
+  private val adjustmentDtos = listOf(
+    AdjustmentDto(
+      person = prisonerDetails.offenderNo,
+      days = 5,
+      effectiveDays = 5,
+      adjustmentType = AdjustmentDto.AdjustmentType.UNLAWFULLY_AT_LARGE,
+      fromDate = FIRST_JAN_2015.minusDays(6),
+      toDate = FIRST_JAN_2015.minusDays(1),
+      bookingId = bookingId,
+    ),
+    AdjustmentDto(
+      person = prisonerDetails.offenderNo,
+      sentenceSequence = sequence,
+      days = 6,
+      effectiveDays = 6,
+      adjustmentType = AdjustmentDto.AdjustmentType.REMAND,
+      fromDate = FIRST_JAN_2015.minusDays(7),
+      toDate = FIRST_JAN_2015.minusDays(1),
+      bookingId = bookingId,
+    ),
+    AdjustmentDto(
+      person = prisonerDetails.offenderNo,
+      sentenceSequence = sequence,
+      days = 22,
+      effectiveDays = 22,
+      adjustmentType = AdjustmentDto.AdjustmentType.UNUSED_DEDUCTIONS,
+      bookingId = bookingId,
+    ),
+  )
   val returnToCustodyDate = ReturnToCustodyDate(bookingId, LocalDate.of(2022, 3, 15))
   private val offenderFineFinePayment = listOf(OffenderFinePayment(bookingId = 1, paymentDate = LocalDate.of(1, 2, 3), paymentAmount = BigDecimal("10000.88")))
-  private val sourceData = CalculationSourceData(listOf(sentenceAndOffences), prisonerDetails, AdjustmentsSourceData(prisonApiData = bookingAndSentenceAdjustment), offenderFineFinePayment, returnToCustodyDate)
+  private val sourceData = CalculationSourceData(listOf(sentenceAndOffences), prisonerDetails, AdjustmentsSourceData(adjustmentsApiData = adjustmentDtos), offenderFineFinePayment, returnToCustodyDate)
 
   @Test
   @Suppress("LongMethod")
@@ -172,9 +172,10 @@ class BookingServiceTest {
                 numberOfDays = 5,
                 fromDate = FIRST_JAN_2015.minusDays(6),
                 toDate = FIRST_JAN_2015.minusDays(1),
+                additionalInfo = AdjustmentAdditionalInfo.UALAdjustmentAdditionalInfo(null),
               ),
             ),
-            REMAND to mutableListOf(
+            RECALL_REMAND to mutableListOf(
               Adjustment(
                 appliesToSentencesFrom = FIRST_JAN_2015,
                 numberOfDays = 6,
@@ -233,9 +234,10 @@ class BookingServiceTest {
                 numberOfDays = 5,
                 fromDate = FIRST_JAN_2015.minusDays(6),
                 toDate = FIRST_JAN_2015.minusDays(1),
+                additionalInfo = AdjustmentAdditionalInfo.UALAdjustmentAdditionalInfo(null),
               ),
             ),
-            REMAND to mutableListOf(
+            RECALL_REMAND to mutableListOf(
               Adjustment(
                 appliesToSentencesFrom = FIRST_JAN_2015,
                 numberOfDays = 6,
@@ -296,9 +298,10 @@ class BookingServiceTest {
                 numberOfDays = 5,
                 fromDate = FIRST_JAN_2015.minusDays(6),
                 toDate = FIRST_JAN_2015.minusDays(1),
+                additionalInfo = AdjustmentAdditionalInfo.UALAdjustmentAdditionalInfo(null),
               ),
             ),
-            REMAND to mutableListOf(
+            RECALL_REMAND to mutableListOf(
               Adjustment(
                 appliesToSentencesFrom = FIRST_JAN_2015,
                 numberOfDays = 6,
@@ -357,9 +360,10 @@ class BookingServiceTest {
                 numberOfDays = 5,
                 fromDate = FIRST_JAN_2015.minusDays(6),
                 toDate = FIRST_JAN_2015.minusDays(1),
+                additionalInfo = AdjustmentAdditionalInfo.UALAdjustmentAdditionalInfo(null),
               ),
             ),
-            REMAND to mutableListOf(
+            RECALL_REMAND to mutableListOf(
               Adjustment(
                 appliesToSentencesFrom = FIRST_JAN_2015,
                 numberOfDays = 6,
@@ -418,9 +422,10 @@ class BookingServiceTest {
                 numberOfDays = 5,
                 fromDate = FIRST_JAN_2015.minusDays(6),
                 toDate = FIRST_JAN_2015.minusDays(1),
+                additionalInfo = AdjustmentAdditionalInfo.UALAdjustmentAdditionalInfo(null),
               ),
             ),
-            REMAND to mutableListOf(
+            RECALL_REMAND to mutableListOf(
               Adjustment(
                 appliesToSentencesFrom = FIRST_JAN_2015,
                 numberOfDays = 6,

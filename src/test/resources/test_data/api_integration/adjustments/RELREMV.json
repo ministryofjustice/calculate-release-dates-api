@@ -1,0 +1,24 @@
+[
+  {
+    "person": "RELREMV",
+    "adjustmentType": "REMAND",
+    "bookingId": 1808968469,
+    "toDate": "2021-01-31",
+    "fromDate": "2021-01-01",
+    "days": 31,
+    "sentenceSequence": 4,
+    "status": "ACTIVE",
+    "effectiveDays": 31
+  },
+  {
+    "person": "RELREMV",
+    "adjustmentType": "REMAND",
+    "bookingId": 1808968469,
+    "toDate": "2021-01-31",
+    "fromDate": "2021-01-01",
+    "days": 31,
+    "sentenceSequence": 4,
+    "status": "ACTIVE",
+    "effectiveDays": 31
+  }
+]

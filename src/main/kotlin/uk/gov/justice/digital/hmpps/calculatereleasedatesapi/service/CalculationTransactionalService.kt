@@ -44,7 +44,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmitCalcula
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ReturnToCustodyDate
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeHistoricOverrideRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationReasonRepository
@@ -351,15 +350,6 @@ class CalculationTransactionalService(
       throw PrisonApiDataNotFoundException("Prisoner details data not found for calculation $calculationRequestId")
     }
     return sourceDataMapper.mapPrisonerDetails(calculationRequest)
-  }
-
-  @Transactional(readOnly = true)
-  fun findBookingAndSentenceAdjustmentsFromCalculation(calculationRequestId: Long): BookingAndSentenceAdjustments {
-    val calculationRequest = getCalculationRequest(calculationRequestId)
-    if (calculationRequest.adjustments == null) {
-      throw PrisonApiDataNotFoundException("Adjustments data not found for calculation $calculationRequestId")
-    }
-    return sourceDataMapper.mapBookingAndSentenceAdjustments(calculationRequest)
   }
 
   @Transactional(readOnly = true)

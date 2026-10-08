@@ -1,0 +1,34 @@
+[
+  {
+    "person": "INACTIVE",
+    "adjustmentType": "ADDITIONAL_DAYS_AWARDED",
+    "bookingId": 807292011,
+    "toDate": "2021-05-12",
+    "fromDate": "2021-05-10",
+    "days": 3,
+    "status": "ACTIVE",
+    "effectiveDays": 3
+  },
+  {
+    "person": "INACTIVE",
+    "adjustmentType": "REMAND",
+    "bookingId": 807292011,
+    "toDate": "2021-06-05",
+    "fromDate": "2021-05-04",
+    "days": 33,
+    "sentenceSequence": 4,
+    "status": "ACTIVE",
+    "effectiveDays": 33
+  },
+  {
+    "person": "INACTIVE",
+    "adjustmentType": "REMAND",
+    "bookingId": 807292011,
+    "toDate": "2021-05-03",
+    "fromDate": "2021-04-03",
+    "days": 31,
+    "sentenceSequence": 4,
+    "status": "ACTIVE",
+    "effectiveDays": 31
+  }
+]

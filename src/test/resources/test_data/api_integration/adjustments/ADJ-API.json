@@ -7,7 +7,6 @@
     "toDate": null,
     "fromDate": "2017-02-03",
     "days": 23,
-    "remand": null,
     "additionalDaysAwarded": {
       "adjudicationId": [
         "1467917-1",
@@ -15,14 +14,7 @@
       ],
       "prospective": false
     },
-    "unlawfullyAtLarge": null,
-    "lawfullyAtLarge": null,
-    "specialRemission": null,
-    "taggedBail": null,
-    "timeSpentInCustodyAbroad": null,
-    "timeSpentAsAnAppealApplicant": null,
     "sentenceSequence": null,
-    "recallId": null,
     "adjustmentTypeText": "ADA (Additional days awarded)",
     "adjustmentArithmeticType": "ADDITION",
     "prisonName": "Kirkham (HMP)",
@@ -42,18 +34,10 @@
     "toDate": "2018-11-03",
     "fromDate": "2018-10-28",
     "days": 7,
-    "remand": null,
-    "additionalDaysAwarded": null,
     "unlawfullyAtLarge": {
       "type": "RECALL"
     },
-    "lawfullyAtLarge": null,
-    "specialRemission": null,
-    "taggedBail": null,
-    "timeSpentInCustodyAbroad": null,
-    "timeSpentAsAnAppealApplicant": null,
     "sentenceSequence": null,
-    "recallId": null,
     "adjustmentTypeText": "UAL (Unlawfully at large)",
     "adjustmentArithmeticType": "ADDITION",
     "prisonName": "Kirkham (HMP)",
@@ -78,15 +62,7 @@
         3453261
       ]
     },
-    "additionalDaysAwarded": null,
-    "unlawfullyAtLarge": null,
-    "lawfullyAtLarge": null,
-    "specialRemission": null,
-    "taggedBail": null,
-    "timeSpentInCustodyAbroad": null,
-    "timeSpentAsAnAppealApplicant": null,
     "sentenceSequence": 1,
-    "recallId": null,
     "adjustmentTypeText": "Remand",
     "adjustmentArithmeticType": "DEDUCTION",
     "prisonName": "Moorland (HMP & YOI)",
@@ -111,15 +87,7 @@
         3453261
       ]
     },
-    "additionalDaysAwarded": null,
-    "unlawfullyAtLarge": null,
-    "lawfullyAtLarge": null,
-    "specialRemission": null,
-    "taggedBail": null,
-    "timeSpentInCustodyAbroad": null,
-    "timeSpentAsAnAppealApplicant": null,
     "sentenceSequence": 1,
-    "recallId": null,
     "adjustmentTypeText": "Remand",
     "adjustmentArithmeticType": "DEDUCTION",
     "prisonName": "Moorland (HMP & YOI)",

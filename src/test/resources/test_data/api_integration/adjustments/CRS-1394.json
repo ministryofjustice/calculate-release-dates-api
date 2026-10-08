@@ -1,0 +1,24 @@
+[
+  {
+    "person": "CRS-1394",
+    "adjustmentType": "REMAND",
+    "bookingId": -1310645466,
+    "toDate": "2021-12-09",
+    "fromDate": "2021-11-26",
+    "days": 14,
+    "sentenceSequence": 1,
+    "status": "ACTIVE",
+    "effectiveDays": 14
+  },
+  {
+    "person": "CRS-1394",
+    "adjustmentType": "REMAND",
+    "bookingId": -1310645466,
+    "toDate": "2022-08-04",
+    "fromDate": "2022-08-04",
+    "days": 1,
+    "sentenceSequence": 9,
+    "status": "ACTIVE",
+    "effectiveDays": 1
+  }
+]

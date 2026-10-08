@@ -55,16 +55,13 @@ class PrisonApiExtension :
 
   private val jsonTransformation = JsonTransformation()
   private val objectMapper = TestUtil.objectMapper()
-  private val mockPrisonService = MockPrisonService(prisonApi, objectMapper, jsonTransformation)
+  private val mockPrisonService = MockPrisonService(prisonApi, objectMapper)
 
   override fun beforeAll(context: ExtensionContext) {
     prisonApi.start()
 
     val prisoners = jsonTransformation.getAllPrisonerDetails()
     val defaultPrisoner = prisoners[DEFAULT]!!
-
-    val adjustments = jsonTransformation.getAllPrisonApiAdjustments()
-    val defaultAdjustment = adjustments[DEFAULT]!!
 
     val v1Sentences = jsonTransformation.getAllSentenceAndOffencesJson("1")
     val defaultSentence = v1Sentences[DEFAULT]!!
@@ -92,15 +89,6 @@ class PrisonApiExtension :
         defaultPrisoner.copy(bookingId = bookingId, offenderNo = it)
       }
       prisonApi.stubGetPrisonerDetails(it, objectMapper.writeValueAsString(prisoner))
-
-      val adjustment = if (adjustments.containsKey(it)) {
-        log.info("Stubbing prison api adjustments prisonerId $it, bookingId $bookingId from file $it")
-        adjustments[it]!!
-      } else {
-        log.info("Stubbing prison api adjustments prisonerId $it, bookingId $bookingId from file $DEFAULT")
-        defaultAdjustment
-      }
-      prisonApi.stubGetSentenceAdjustments(bookingId, adjustment)
 
       val sentence = if (v1Sentences.containsKey(it)) {
         log.info("Stubbing sentences prisonerId $it, bookingId $bookingId from file $it")
@@ -167,13 +155,12 @@ class PrisonApiExtension :
 
   override fun supportsParameter(parameterContext: ParameterContext, context: ExtensionContext): Boolean = parameterContext.parameter.type == MockPrisonService::class.java
 
-  override fun resolveParameter(parameterContext: ParameterContext, context: ExtensionContext): Any = MockPrisonService(prisonApi, objectMapper, jsonTransformation)
+  override fun resolveParameter(parameterContext: ParameterContext, context: ExtensionContext): Any = MockPrisonService(prisonApi, objectMapper)
 }
 
 class MockPrisonService(
   private val prisonApi: PrisonApiMockServer,
   private val objectMapper: ObjectMapper,
-  private val jsonTransformation: JsonTransformation,
 ) {
   fun withCaseLoadsForMe(vararg caseloads: CaseLoad): MockPrisonService {
     prisonApi.stubCaseloads(objectMapper.writeValueAsString(caseloads.toList()))
@@ -295,16 +282,6 @@ class PrisonApiMockServer : WireMockServer(WIREMOCK_PORT) {
           .withStatus(404)
           .withHeader("Content-Type", "application/json")
           .withBody("""{"error": "Fixed Term Recall details not found"}"""),
-      ),
-  )
-
-  fun stubGetSentenceAdjustments(bookingId: Long, json: String): StubMapping = stubFor(
-    get("/api/adjustments/$bookingId/sentence-and-booking")
-      .willReturn(
-        aResponse()
-          .withHeader("Content-Type", "application/json")
-          .withBody(json)
-          .withStatus(200),
       ),
   )
 

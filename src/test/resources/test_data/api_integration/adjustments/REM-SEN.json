@@ -1,0 +1,13 @@
+[
+  {
+    "person": "REM-SEN",
+    "adjustmentType": "REMAND",
+    "bookingId": 1808802921,
+    "toDate": "2000-04-30",
+    "fromDate": "2000-04-28",
+    "days": 2,
+    "sentenceSequence": 2,
+    "status": "ACTIVE",
+    "effectiveDays": 2
+  }
+]

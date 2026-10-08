@@ -16,7 +16,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DeletedPrevio
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 import java.time.LocalDateTime
 
-@SpringBootTest(webEnvironment = RANDOM_PORT, properties = ["feature-toggles.use-adjustments-api=true"])
+@SpringBootTest(webEnvironment = RANDOM_PORT)
 @Sql(scripts = ["classpath:/test_data/reset-base-data.sql"])
 class DeleteOldPreliminaryCalculationsIntTest(private val mockPrisonService: MockPrisonService) : IntegrationTestBase() {
   @Autowired

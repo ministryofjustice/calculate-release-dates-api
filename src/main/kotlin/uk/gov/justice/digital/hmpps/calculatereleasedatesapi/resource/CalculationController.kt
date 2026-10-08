@@ -38,7 +38,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOf
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmitCalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ReturnToCustodyDate
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationBreakdownService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationTransactionalService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.DetailedCalculationResultsService
@@ -366,31 +365,6 @@ class CalculationController(
   }
 
   @GetMapping(value = ["/adjustments/{calculationRequestId}"])
-  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR', 'CALCULATE_RELEASE_DATES__CALCULATE__RW', 'CALCULATE_RELEASE_DATES__CALCULATE__RO')")
-  @ResponseBody
-  @Operation(
-    summary = "Get adjustments for a calculationRequestId",
-    description = "This endpoint will return the adjustments based on a calculationRequestId",
-  )
-  @ApiResponses(
-    value = [
-      ApiResponse(responseCode = "200", description = "Returns adjustments"),
-      ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
-      ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
-      ApiResponse(responseCode = "404", description = "No calculation exists for this calculationRequestId"),
-    ],
-  )
-  fun getAdjustmentsForCalculationRequest(
-    @Parameter(required = true, example = "123456", description = "The calculationRequestId of the calculation")
-    @PathVariable("calculationRequestId")
-    calculationRequestId: Long,
-  ): BookingAndSentenceAdjustments {
-    log.info("Request received to get booking and sentence adjustments from $calculationRequestId calculation")
-    return calculationTransactionalService.findBookingAndSentenceAdjustmentsFromCalculation(calculationRequestId)
-  }
-
-  // TODO remove params and GET mapping above once adjustments API integration is live.
-  @GetMapping(value = ["/adjustments/{calculationRequestId}"], params = ["adjustments-api"])
   @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR', 'CALCULATE_RELEASE_DATES__CALCULATE__RW', 'CALCULATE_RELEASE_DATES__CALCULATE__RO')")
   @ResponseBody
   @Operation(

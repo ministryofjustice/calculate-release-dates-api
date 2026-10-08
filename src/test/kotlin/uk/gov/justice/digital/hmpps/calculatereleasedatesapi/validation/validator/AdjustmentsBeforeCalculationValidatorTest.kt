@@ -6,15 +6,10 @@ import org.junit.jupiter.api.Test
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.adjustmentsapi.model.AdjustmentDto
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentsSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustment
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustment
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessage
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationUtilities
@@ -23,171 +18,6 @@ import java.time.LocalDate
 class AdjustmentsBeforeCalculationValidatorTest {
 
   private val validator = AdjustmentsBeforeCalculationValidator(ValidationUtilities(), ADJUSTMENTS_UI_URL)
-
-  @Nested
-  inner class BookingAndSentenceAdjustmentsTests {
-
-    @Test
-    fun `returns invalid date range when remand from date is after to date`() {
-      val adjustments = BookingAndSentenceAdjustments(
-        bookingAdjustments = emptyList(),
-        sentenceAdjustments = listOf(
-          SentenceAdjustment(
-            sentenceSequence = 1,
-            active = true,
-            fromDate = LocalDate.of(2024, 1, 10),
-            toDate = LocalDate.of(2024, 1, 1),
-            numberOfDays = 9,
-            type = SentenceAdjustmentType.REMAND,
-          ),
-        ),
-      )
-
-      val result = validator.validateAdjustmentsBeforeCalculation(adjustments, sourceData())
-
-      val expectedMessage = ValidationMessage(ValidationCode.ADJUSTMENT_INVALID_DATE_RANGE, listOf("remand", ADJUSTMENTS_UI_URL, OFFENDER_NO))
-      assertThat(result).containsExactly(expectedMessage)
-      assertThat(expectedMessage.message).isEqualTo("The remand 'from' date is after the remand 'to' date.<br/>Update these details in the <a href=\"https://adjustments-ui.example.com/A1234BC\">Adjustments service</a>.")
-    }
-
-    @Test
-    fun `returns remand overlap message for overlapping remand adjustments`() {
-      val adjustments = BookingAndSentenceAdjustments(
-        bookingAdjustments = emptyList(),
-        sentenceAdjustments = listOf(
-          remand(fromDate = LocalDate.of(2024, 1, 1), toDate = LocalDate.of(2024, 1, 10)),
-          remand(fromDate = LocalDate.of(2024, 1, 5), toDate = LocalDate.of(2024, 1, 15)),
-        ),
-      )
-
-      val result = validator.validateAdjustmentsBeforeCalculation(adjustments, sourceData())
-
-      assertThat(result).containsExactly(
-        ValidationMessage(
-          ValidationCode.REMAND_OVERLAPS_WITH_REMAND,
-          listOf("2024-01-01", "2024-01-10", "2024-01-05", "2024-01-15"),
-        ),
-      )
-    }
-
-    @Test
-    fun `returns inactive sentence message when adjustment sentence sequence is not in current source data`() {
-      val adjustments = BookingAndSentenceAdjustments(
-        bookingAdjustments = emptyList(),
-        sentenceAdjustments = listOf(
-          remand(sentenceSequence = 99, fromDate = LocalDate.of(2024, 1, 1), toDate = LocalDate.of(2024, 1, 2)),
-        ),
-      )
-
-      val result = validator.validateAdjustmentsBeforeCalculation(adjustments, sourceData())
-
-      assertThat(result).containsExactly(
-        ValidationMessage(
-          ValidationCode.ADJUSTMENT_LINKED_TO_INACTIVE_SENTENCE,
-          listOf(ADJUSTMENTS_UI_URL, OFFENDER_NO),
-        ),
-      )
-    }
-
-    @Test
-    fun `returns future-dated UAL message using to date`() {
-      val adjustments = BookingAndSentenceAdjustments(
-        bookingAdjustments = listOf(
-          BookingAdjustment(
-            active = true,
-            fromDate = LocalDate.now().minusDays(7),
-            toDate = LocalDate.now().plusDays(2),
-            numberOfDays = 9,
-            type = BookingAdjustmentType.UNLAWFULLY_AT_LARGE,
-          ),
-        ),
-        sentenceAdjustments = emptyList(),
-      )
-
-      val result = validator.validateAdjustmentsBeforeCalculation(adjustments, sourceData())
-
-      assertThat(result).containsExactly(
-        ValidationMessage(ValidationCode.ADJUSTMENT_FUTURE_DATED_UAL),
-      )
-    }
-
-    @Test
-    fun `returns future-dated ADA message`() {
-      val adjustments = BookingAndSentenceAdjustments(
-        bookingAdjustments = listOf(
-          BookingAdjustment(
-            active = true,
-            fromDate = LocalDate.now().plusDays(1),
-            numberOfDays = 1,
-            type = BookingAdjustmentType.ADDITIONAL_DAYS_AWARDED,
-          ),
-        ),
-        sentenceAdjustments = emptyList(),
-      )
-
-      val result = validator.validateAdjustmentsBeforeCalculation(adjustments, sourceData())
-
-      assertThat(result).containsExactly(
-        ValidationMessage(ValidationCode.ADJUSTMENT_FUTURE_DATED_ADA),
-      )
-    }
-
-    @Test
-    fun `returns future-dated RADA message`() {
-      val adjustments = BookingAndSentenceAdjustments(
-        bookingAdjustments = listOf(
-          BookingAdjustment(
-            active = true,
-            fromDate = LocalDate.now().plusDays(1),
-            numberOfDays = 1,
-            type = BookingAdjustmentType.RESTORED_ADDITIONAL_DAYS_AWARDED,
-          ),
-        ),
-        sentenceAdjustments = emptyList(),
-      )
-
-      val result = validator.validateAdjustmentsBeforeCalculation(adjustments, sourceData())
-
-      assertThat(result).containsExactly(
-        ValidationMessage(ValidationCode.ADJUSTMENT_FUTURE_DATED_RADA),
-      )
-    }
-
-    @Test
-    fun `returns REMAND_FROM_TO_DATES_REQUIRED when remand has no dates`() {
-      val adjustments = BookingAndSentenceAdjustments(
-        bookingAdjustments = emptyList(),
-        sentenceAdjustments = listOf(
-          SentenceAdjustment(
-            sentenceSequence = 1,
-            active = true,
-            fromDate = null,
-            toDate = null,
-            numberOfDays = 0,
-            type = SentenceAdjustmentType.REMAND,
-          ),
-        ),
-      )
-
-      val result = validator.validateAdjustmentsBeforeCalculation(adjustments, sourceData())
-
-      assertThat(result).contains(ValidationMessage(ValidationCode.REMAND_FROM_TO_DATES_REQUIRED))
-    }
-
-    @Test
-    fun `returns no messages for valid adjustments`() {
-      val adjustments = BookingAndSentenceAdjustments(
-        bookingAdjustments = emptyList(),
-        sentenceAdjustments = listOf(
-          remand(fromDate = LocalDate.of(2024, 1, 1), toDate = LocalDate.of(2024, 1, 10)),
-        ),
-      )
-
-      val result = validator.validateAdjustmentsBeforeCalculation(adjustments, sourceData())
-
-      assertThat(result).isEmpty()
-    }
-  }
 
   @Nested
   inner class AdjustmentsDtoTests {
@@ -362,7 +192,7 @@ class AdjustmentsBeforeCalculationValidatorTest {
   private fun sourceData(): CalculationSourceData = CalculationSourceData(
     sentenceAndOffences = listOf(sentenceAndOffence()),
     prisonerDetails = PrisonerDetails(bookingId = 1L, offenderNo = OFFENDER_NO, dateOfBirth = LocalDate.of(1980, 1, 1)),
-    bookingAndSentenceAdjustments = AdjustmentsSourceData(prisonApiData = BookingAndSentenceAdjustments(emptyList(), emptyList())),
+    bookingAndSentenceAdjustments = AdjustmentsSourceData(adjustmentsApiData = emptyList()),
     returnToCustodyDate = null,
   )
 
@@ -390,15 +220,6 @@ class AdjustmentsBeforeCalculationValidatorTest {
     courtTypeCode = null,
     fineAmount = null,
     revocationDates = emptyList(),
-  )
-
-  private fun remand(sentenceSequence: Int = 1, fromDate: LocalDate, toDate: LocalDate): SentenceAdjustment = SentenceAdjustment(
-    sentenceSequence = sentenceSequence,
-    active = true,
-    fromDate = fromDate,
-    toDate = toDate,
-    numberOfDays = 1,
-    type = SentenceAdjustmentType.REMAND,
   )
 
   private fun remandDto(sentenceSequence: Int = 1, fromDate: LocalDate, toDate: LocalDate): AdjustmentDto = AdjustmentDto(

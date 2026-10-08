@@ -42,27 +42,17 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSReleaseArr
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustment
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustmentType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustmentType.LAWFULLY_AT_LARGE
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustmentType.SPECIAL_REMISSION
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.FixedTermRecallDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderFinePayment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ReturnToCustodyDate
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustment
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustmentType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustmentType.TAGGED_BAIL
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustmentType.TIME_SPENT_AS_AN_APPEAL_APPLICANT
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustmentType.TIME_SPENT_IN_CUSTODY_ABROAD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType.FTR
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType.FTR_14_ORA
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType.FTR_56ORA
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationSourceDataService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.BookingHelperTest
@@ -213,51 +203,35 @@ class ValidationServiceTest : SpringTestBase() {
   private val validSopcRecallSentence = validSopcSentence.copy(
     sentenceCalculationType = SentenceCalculationType.LR_SOPC21.name,
   )
-  private val lawfullyAtLargeBookingAdjustment = BookingAndSentenceAdjustments(
-    listOf(
-      BookingAdjustment(
-        active = true,
-        fromDate = LocalDate.of(2020, 1, 1),
-        numberOfDays = 2,
-        type = LAWFULLY_AT_LARGE,
-      ),
-    ),
-    emptyList(),
+  private val lawfullyAtLargeBookingAdjustment = AdjustmentDto(
+    person = PRISONER_ID,
+    fromDate = LocalDate.of(2020, 1, 1),
+    days = 2,
+    effectiveDays = 2,
+    adjustmentType = AdjustmentDto.AdjustmentType.LAWFULLY_AT_LARGE,
   )
-  private val specialRemissionBookingAdjustment = BookingAndSentenceAdjustments(
-    listOf(
-      BookingAdjustment(
-        active = true,
-        fromDate = LocalDate.of(2020, 1, 1),
-        numberOfDays = 2,
-        type = SPECIAL_REMISSION,
-      ),
-    ),
-    emptyList(),
+  private val specialRemissionBookingAdjustment = AdjustmentDto(
+    person = PRISONER_ID,
+    fromDate = LocalDate.of(2020, 1, 1),
+    days = 2,
+    effectiveDays = 2,
+    adjustmentType = AdjustmentDto.AdjustmentType.SPECIAL_REMISSION,
   )
 
-  private val timeSpentInCustodyAbroadSentenceAdjustment = BookingAndSentenceAdjustments(
-    emptyList(),
-    listOf(
-      SentenceAdjustment(
-        sentenceSequence = 1,
-        active = true,
-        numberOfDays = 23,
-        type = TIME_SPENT_IN_CUSTODY_ABROAD,
-      ),
-    ),
+  private val timeSpentInCustodyAbroadSentenceAdjustment = AdjustmentDto(
+    person = PRISONER_ID,
+    sentenceSequence = 1,
+    days = 23,
+    effectiveDays = 23,
+    adjustmentType = AdjustmentDto.AdjustmentType.CUSTODY_ABROAD,
   )
 
-  private val timeSpentAsAnAppealApplicantSentenceAdjustment = BookingAndSentenceAdjustments(
-    emptyList(),
-    listOf(
-      SentenceAdjustment(
-        sentenceSequence = 1,
-        active = true,
-        numberOfDays = 32,
-        type = TIME_SPENT_AS_AN_APPEAL_APPLICANT,
-      ),
-    ),
+  private val timeSpentAsAnAppealApplicantSentenceAdjustment = AdjustmentDto(
+    person = PRISONER_ID,
+    sentenceSequence = 1,
+    days = 32,
+    effectiveDays = 32,
+    adjustmentType = AdjustmentDto.AdjustmentType.APPEAL_APPLICANT,
   )
 
   @ParameterizedTest
@@ -1021,28 +995,28 @@ class ValidationServiceTest : SpringTestBase() {
         },
         VALID_PRISONER,
         AdjustmentsSourceData(
-          prisonApiData = BookingAndSentenceAdjustments(
-            listOf(
-              BookingAdjustment(
-                active = true,
-                fromDate = LocalDate.now().plusDays(1),
-                type = BookingAdjustmentType.ADDITIONAL_DAYS_AWARDED,
-                numberOfDays = 5,
-              ),
-              BookingAdjustment(
-                active = true,
-                fromDate = LocalDate.now().plusDays(1),
-                type = BookingAdjustmentType.RESTORED_ADDITIONAL_DAYS_AWARDED,
-                numberOfDays = 5,
-              ),
-              BookingAdjustment(
-                active = true,
-                fromDate = LocalDate.now().plusDays(1),
-                type = BookingAdjustmentType.UNLAWFULLY_AT_LARGE,
-                numberOfDays = 5,
-              ),
+          listOf(
+            AdjustmentDto(
+              person = VALID_PRISONER.offenderNo,
+              fromDate = LocalDate.now().plusDays(1),
+              adjustmentType = AdjustmentDto.AdjustmentType.ADDITIONAL_DAYS_AWARDED,
+              days = 5,
+              effectiveDays = 5,
             ),
-            listOf(),
+            AdjustmentDto(
+              person = VALID_PRISONER.offenderNo,
+              fromDate = LocalDate.now().plusDays(1),
+              adjustmentType = AdjustmentDto.AdjustmentType.RESTORATION_OF_ADDITIONAL_DAYS_AWARDED,
+              days = 5,
+              effectiveDays = 5,
+            ),
+            AdjustmentDto(
+              person = VALID_PRISONER.offenderNo,
+              fromDate = LocalDate.now().plusDays(1),
+              adjustmentType = AdjustmentDto.AdjustmentType.UNLAWFULLY_AT_LARGE,
+              days = 5,
+              effectiveDays = 5,
+            ),
           ),
         ),
         listOf(),
@@ -1389,19 +1363,6 @@ class ValidationServiceTest : SpringTestBase() {
         terms = listOf(SentenceTerms(years = 1, code = "IMP")),
       ),
     )
-    val adjustments = BookingAndSentenceAdjustments(
-      bookingAdjustments = emptyList(),
-      sentenceAdjustments = listOf(
-        SentenceAdjustment(
-          sentenceSequence = 1,
-          active = true,
-          fromDate = LocalDate.of(2021, 1, 30),
-          toDate = LocalDate.of(2021, 1, 31),
-          numberOfDays = 1,
-          type = SentenceAdjustmentType.REMAND,
-        ),
-      ),
-    )
     val result =
       validationService.validate(
         CalculationSourceData(
@@ -1414,7 +1375,19 @@ class ValidationServiceTest : SpringTestBase() {
             )
           },
           VALID_PRISONER,
-          AdjustmentsSourceData(prisonApiData = adjustments),
+          AdjustmentsSourceData(
+            listOf(
+              AdjustmentDto(
+                person = VALID_PRISONER.offenderNo,
+                sentenceSequence = 1,
+                fromDate = LocalDate.of(2021, 1, 30),
+                toDate = LocalDate.of(2021, 1, 31),
+                days = 1,
+                effectiveDays = 1,
+                adjustmentType = AdjustmentDto.AdjustmentType.REMAND,
+              ),
+            ),
+          ),
           listOf(),
           null,
         ),
@@ -1446,27 +1419,6 @@ class ValidationServiceTest : SpringTestBase() {
         terms = listOf(SentenceTerms(years = 1, code = "IMP")),
       ),
     )
-    val adjustments = BookingAndSentenceAdjustments(
-      bookingAdjustments = emptyList(),
-      sentenceAdjustments = listOf(
-        SentenceAdjustment(
-          sentenceSequence = 1,
-          active = true,
-          fromDate = LocalDate.of(2021, 1, 30),
-          toDate = LocalDate.of(2021, 1, 31),
-          numberOfDays = 1,
-          type = SentenceAdjustmentType.REMAND,
-        ),
-        SentenceAdjustment(
-          sentenceSequence = 1,
-          active = true,
-          fromDate = LocalDate.of(2021, 1, 30),
-          toDate = LocalDate.of(2021, 1, 31),
-          numberOfDays = 1,
-          type = TAGGED_BAIL,
-        ),
-      ),
-    )
     val result =
       validationService.validate(
         CalculationSourceData(
@@ -1479,7 +1431,28 @@ class ValidationServiceTest : SpringTestBase() {
             )
           },
           VALID_PRISONER,
-          AdjustmentsSourceData(prisonApiData = adjustments),
+          AdjustmentsSourceData(
+            listOf(
+              AdjustmentDto(
+                person = VALID_PRISONER.offenderNo,
+                sentenceSequence = 1,
+                fromDate = LocalDate.of(2021, 1, 30),
+                toDate = LocalDate.of(2021, 1, 31),
+                days = 1,
+                effectiveDays = 1,
+                adjustmentType = AdjustmentDto.AdjustmentType.REMAND,
+              ),
+              AdjustmentDto(
+                person = VALID_PRISONER.offenderNo,
+                sentenceSequence = 1,
+                fromDate = LocalDate.of(2021, 1, 30),
+                toDate = LocalDate.of(2021, 1, 31),
+                days = 1,
+                effectiveDays = 1,
+                adjustmentType = AdjustmentDto.AdjustmentType.TAGGED_BAIL,
+              ),
+            ),
+          ),
           listOf(),
           null,
         ),
@@ -1730,7 +1703,7 @@ class ValidationServiceTest : SpringTestBase() {
           ),
         ),
         prisonerDetails = VALID_PRISONER,
-        bookingAndSentenceAdjustments = AdjustmentsSourceData(prisonApiData = lawfullyAtLargeBookingAdjustment),
+        bookingAndSentenceAdjustments = AdjustmentsSourceData(listOf(lawfullyAtLargeBookingAdjustment)),
         returnToCustodyDate = null,
       ),
       calculationUserInputs = USER_INPUTS,
@@ -1755,7 +1728,7 @@ class ValidationServiceTest : SpringTestBase() {
           ),
         ),
         prisonerDetails = VALID_PRISONER,
-        bookingAndSentenceAdjustments = AdjustmentsSourceData(prisonApiData = specialRemissionBookingAdjustment),
+        bookingAndSentenceAdjustments = AdjustmentsSourceData(listOf(specialRemissionBookingAdjustment)),
         returnToCustodyDate = null,
       ),
       calculationUserInputs = CalculationUserInputs(),
@@ -1780,7 +1753,7 @@ class ValidationServiceTest : SpringTestBase() {
           ),
         ),
         prisonerDetails = VALID_PRISONER,
-        bookingAndSentenceAdjustments = AdjustmentsSourceData(prisonApiData = timeSpentInCustodyAbroadSentenceAdjustment),
+        bookingAndSentenceAdjustments = AdjustmentsSourceData(listOf(timeSpentInCustodyAbroadSentenceAdjustment)),
         returnToCustodyDate = null,
       ),
       calculationUserInputs = CalculationUserInputs(),
@@ -1805,7 +1778,7 @@ class ValidationServiceTest : SpringTestBase() {
           ),
         ),
         prisonerDetails = VALID_PRISONER,
-        bookingAndSentenceAdjustments = AdjustmentsSourceData(prisonApiData = timeSpentAsAnAppealApplicantSentenceAdjustment),
+        bookingAndSentenceAdjustments = AdjustmentsSourceData(listOf(timeSpentAsAnAppealApplicantSentenceAdjustment)),
         returnToCustodyDate = null,
       ),
       calculationUserInputs = CalculationUserInputs(),
@@ -2483,18 +2456,6 @@ class ValidationServiceTest : SpringTestBase() {
     inner class FutureDatedAdjustmentValidation {
       @Test
       fun `Test UAL with from and to date`() {
-        val adjustment = BookingAndSentenceAdjustments(
-          listOf(
-            BookingAdjustment(
-              active = true,
-              fromDate = LocalDate.now().minusDays(10),
-              toDate = LocalDate.now().plusDays(10),
-              numberOfDays = 20,
-              type = BookingAdjustmentType.UNLAWFULLY_AT_LARGE,
-            ),
-          ),
-          emptyList(),
-        )
         val result = validationService.validate(
           CalculationSourceData(
             sentenceAndOffences = listOf(
@@ -2506,7 +2467,18 @@ class ValidationServiceTest : SpringTestBase() {
               ),
             ),
             prisonerDetails = VALID_PRISONER,
-            bookingAndSentenceAdjustments = AdjustmentsSourceData(prisonApiData = adjustment),
+            bookingAndSentenceAdjustments = AdjustmentsSourceData(
+              listOf(
+                AdjustmentDto(
+                  person = PRISONER_ID,
+                  fromDate = LocalDate.now().minusDays(10),
+                  toDate = LocalDate.now().plusDays(10),
+                  days = 20,
+                  effectiveDays = 20,
+                  adjustmentType = AdjustmentDto.AdjustmentType.UNLAWFULLY_AT_LARGE,
+                ),
+              ),
+            ),
             returnToCustodyDate = null,
           ),
           USER_INPUTS,
@@ -2520,18 +2492,6 @@ class ValidationServiceTest : SpringTestBase() {
 
       @Test
       fun `Test UAL with only from date`() {
-        val adjustment = BookingAndSentenceAdjustments(
-          listOf(
-            BookingAdjustment(
-              active = true,
-              fromDate = LocalDate.now().plusDays(10),
-              toDate = null,
-              numberOfDays = 20,
-              type = BookingAdjustmentType.UNLAWFULLY_AT_LARGE,
-            ),
-          ),
-          emptyList(),
-        )
         val result = validationService.validate(
           sourceData = CalculationSourceData(
             sentenceAndOffences = listOf(
@@ -2543,7 +2503,18 @@ class ValidationServiceTest : SpringTestBase() {
               ),
             ),
             prisonerDetails = VALID_PRISONER,
-            bookingAndSentenceAdjustments = AdjustmentsSourceData(prisonApiData = adjustment),
+            bookingAndSentenceAdjustments = AdjustmentsSourceData(
+              listOf(
+                AdjustmentDto(
+                  person = PRISONER_ID,
+                  fromDate = LocalDate.now().plusDays(10),
+                  toDate = null,
+                  days = 20,
+                  effectiveDays = 20,
+                  adjustmentType = AdjustmentDto.AdjustmentType.UNLAWFULLY_AT_LARGE,
+                ),
+              ),
+            ),
             returnToCustodyDate = null,
           ),
           calculationUserInputs = USER_INPUTS,
@@ -2557,18 +2528,6 @@ class ValidationServiceTest : SpringTestBase() {
 
       @Test
       fun `Test ADA`() {
-        val adjustment = BookingAndSentenceAdjustments(
-          listOf(
-            BookingAdjustment(
-              active = true,
-              fromDate = LocalDate.now().plusDays(10),
-              toDate = null,
-              numberOfDays = 20,
-              type = BookingAdjustmentType.ADDITIONAL_DAYS_AWARDED,
-            ),
-          ),
-          emptyList(),
-        )
         val result = validationService.validate(
           CalculationSourceData(
             sentenceAndOffences = listOf(
@@ -2580,7 +2539,18 @@ class ValidationServiceTest : SpringTestBase() {
               ),
             ),
             prisonerDetails = VALID_PRISONER,
-            bookingAndSentenceAdjustments = AdjustmentsSourceData(prisonApiData = adjustment),
+            bookingAndSentenceAdjustments = AdjustmentsSourceData(
+              listOf(
+                AdjustmentDto(
+                  person = PRISONER_ID,
+                  fromDate = LocalDate.now().plusDays(10),
+                  toDate = null,
+                  days = 20,
+                  effectiveDays = 20,
+                  adjustmentType = AdjustmentDto.AdjustmentType.ADDITIONAL_DAYS_AWARDED,
+                ),
+              ),
+            ),
             returnToCustodyDate = null,
           ),
           USER_INPUTS,
@@ -2594,18 +2564,6 @@ class ValidationServiceTest : SpringTestBase() {
 
       @Test
       fun `Test RADA`() {
-        val adjustment = BookingAndSentenceAdjustments(
-          listOf(
-            BookingAdjustment(
-              active = true,
-              fromDate = LocalDate.now().plusDays(10),
-              toDate = null,
-              numberOfDays = 20,
-              type = BookingAdjustmentType.RESTORED_ADDITIONAL_DAYS_AWARDED,
-            ),
-          ),
-          emptyList(),
-        )
         val result = validationService.validate(
           CalculationSourceData(
             sentenceAndOffences = listOf(
@@ -2617,7 +2575,18 @@ class ValidationServiceTest : SpringTestBase() {
               ),
             ),
             prisonerDetails = VALID_PRISONER,
-            bookingAndSentenceAdjustments = AdjustmentsSourceData(prisonApiData = adjustment),
+            bookingAndSentenceAdjustments = AdjustmentsSourceData(
+              listOf(
+                AdjustmentDto(
+                  person = PRISONER_ID,
+                  fromDate = LocalDate.now().plusDays(10),
+                  toDate = null,
+                  days = 20,
+                  effectiveDays = 20,
+                  adjustmentType = AdjustmentDto.AdjustmentType.RESTORATION_OF_ADDITIONAL_DAYS_AWARDED,
+                ),
+              ),
+            ),
             returnToCustodyDate = null,
           ),
           USER_INPUTS,
@@ -3571,7 +3540,7 @@ class ValidationServiceTest : SpringTestBase() {
     val returnToCustodyDate = ReturnToCustodyDate(COMPANION_BOOKING_ID, LocalDate.of(2022, 3, 15))
     private val USER_INPUTS = CalculationUserInputs()
     private val VALID_PRISONER = PrisonerDetails(offenderNo = PRISONER_ID, bookingId = 1, dateOfBirth = LocalDate.of(1, 2, 3))
-    private val VALID_ADJUSTMENTS = AdjustmentsSourceData(prisonApiData = BookingAndSentenceAdjustments(emptyList(), emptyList()))
+    private val VALID_ADJUSTMENTS = AdjustmentsSourceData(emptyList())
     private const val BOOKING_ID = 100091L
     private val RETURN_TO_CUSTODY_DATE = LocalDate.of(2022, 3, 15)
     private val FTR_DETAILS_14 = FixedTermRecallDetails(BOOKING_ID, RETURN_TO_CUSTODY_DATE, 14)

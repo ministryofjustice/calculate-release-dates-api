@@ -149,17 +149,16 @@ class ThingsToDoService(
   ): Boolean = previous.fineAmount != current.fineAmount
 
   private fun checkIfAdjustmentsHaveChanged(previousSourceData: CalculationSourceData, currentSourceData: CalculationSourceData, prisonerDetails: PrisonerDetails): AdjustmentCheckResult {
-    val setOfPreviousAdjustments = normaliseAdjustments(previousSourceData, prisonerDetails)
-    val setOfCurrentAdjustments = normaliseAdjustments(currentSourceData, prisonerDetails)
+    val setOfPreviousAdjustments = normaliseAdjustments(previousSourceData)
+    val setOfCurrentAdjustments = normaliseAdjustments(currentSourceData)
     val haveAdjustmentsChanged = setOfPreviousAdjustments != setOfCurrentAdjustments
     return AdjustmentCheckResult(haveAdjustmentsChanged, "prev only: ${setOfPreviousAdjustments - setOfCurrentAdjustments}, current only: ${setOfCurrentAdjustments - setOfPreviousAdjustments}")
   }
 
   private fun normaliseAdjustments(
     sourceData: CalculationSourceData,
-    prisonerDetails: PrisonerDetails,
   ): Set<ComparableAdjustment> = sourceData.bookingAndSentenceAdjustments
-    .fold({ it.upgrade(prisonerDetails) }, { it })
+    .adjustmentsApiData
     .filter { it.status == AdjustmentDto.Status.ACTIVE }
     .map { adjustmentDto ->
       ComparableAdjustment(

@@ -25,6 +25,7 @@ import org.mockito.kotlin.whenever
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.adjustmentsapi.model.AdjustmentDto
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ApprovedDatesSubmission
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcome
@@ -70,12 +71,9 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Calc
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderKeyDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustment
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.UpdateOffenderDates
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ApprovedDatesSubmissionRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeHistoricOverrideRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeRepository
@@ -147,12 +145,7 @@ class CalculationTransactionalServiceTest {
   private val fakeSourceData = CalculationSourceData(
     emptyList(),
     PrisonerDetails(offenderNo = "", bookingId = 1, dateOfBirth = LocalDate.of(1, 2, 3)),
-    AdjustmentsSourceData(
-      prisonApiData = BookingAndSentenceAdjustments(
-        emptyList(),
-        emptyList(),
-      ),
-    ),
+    AdjustmentsSourceData(adjustmentsApiData = emptyList()),
     listOf(),
     null,
   )
@@ -621,17 +614,15 @@ class CalculationTransactionalServiceTest {
       firstName = "Zimmy",
       lastName = "Cnys",
     )
-    private val adjustments = BookingAndSentenceAdjustments(
-      bookingAdjustments = emptyList(),
-      sentenceAdjustments = listOf(
-        SentenceAdjustment(
-          sentenceSequence = 1,
-          active = true,
-          fromDate = LocalDate.of(2021, 1, 30),
-          toDate = LocalDate.of(2021, 1, 31),
-          numberOfDays = 1,
-          type = SentenceAdjustmentType.REMAND,
-        ),
+    private val adjustments = listOf(
+      AdjustmentDto(
+        person = prisonerDetails.offenderNo,
+        sentenceSequence = 1,
+        fromDate = LocalDate.of(2021, 1, 30),
+        toDate = LocalDate.of(2021, 1, 31),
+        days = 1,
+        effectiveDays = 1,
+        adjustmentType = AdjustmentDto.AdjustmentType.REMAND,
       ),
     )
     val SOURCE_DATA =
@@ -666,7 +657,7 @@ class CalculationTransactionalServiceTest {
           ),
         ),
         prisonerDetails,
-        AdjustmentsSourceData(prisonApiData = adjustments),
+        AdjustmentsSourceData(adjustmentsApiData = adjustments),
         emptyList(),
         null,
         null,

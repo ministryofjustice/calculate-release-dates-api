@@ -1,0 +1,53 @@
+[
+  {
+    "person": "CRS-796-1-more-adas-radas",
+    "adjustmentType": "ADDITIONAL_DAYS_AWARDED",
+    "bookingId": -568199319,
+    "toDate": "2021-07-15",
+    "fromDate": "2021-06-16",
+    "days": 30,
+    "status": "ACTIVE",
+    "effectiveDays": 30
+  },
+  {
+    "person": "CRS-796-1-more-adas-radas",
+    "adjustmentType": "RESTORATION_OF_ADDITIONAL_DAYS_AWARDED",
+    "bookingId": -568199319,
+    "toDate": "2021-12-16",
+    "fromDate": "2021-12-02",
+    "days": 15,
+    "status": "ACTIVE",
+    "effectiveDays": 15
+  },
+  {
+    "person": "CRS-796-1-more-adas-radas",
+    "adjustmentType": "ADDITIONAL_DAYS_AWARDED",
+    "bookingId": -568199319,
+    "toDate": "2022-07-15",
+    "fromDate": "2022-06-16",
+    "days": 30,
+    "status": "ACTIVE",
+    "effectiveDays": 30
+  },
+  {
+    "person": "CRS-796-1-more-adas-radas",
+    "adjustmentType": "RESTORATION_OF_ADDITIONAL_DAYS_AWARDED",
+    "bookingId": -568199319,
+    "toDate": "2022-12-16",
+    "fromDate": "2022-12-02",
+    "days": 15,
+    "status": "ACTIVE",
+    "effectiveDays": 15
+  },
+  {
+    "person": "CRS-796-1-more-adas-radas",
+    "adjustmentType": "REMAND",
+    "bookingId": -568199319,
+    "toDate": "2020-02-15",
+    "fromDate": "2019-09-15",
+    "days": 154,
+    "sentenceSequence": 1,
+    "status": "ACTIVE",
+    "effectiveDays": 154
+  }
+]

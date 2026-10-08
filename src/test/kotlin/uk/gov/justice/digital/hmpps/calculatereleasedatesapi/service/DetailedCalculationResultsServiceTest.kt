@@ -14,6 +14,7 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.adjustmentsapi.model.AdjustmentDto
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.adjustmentsapi.model.AdjustmentDto.AdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.client.ManageUsersApiClient
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.LegislationName
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.SDSLegislation
@@ -49,12 +50,9 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOf
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustment
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.manageusers.UserDetails
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeHistoricOverrideRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.SecondCheckRepository
@@ -171,7 +169,7 @@ class DetailedCalculationResultsServiceTest {
     whenever(calculationRequestRepository.findById(CALCULATION_REQUEST_ID)).thenReturn(Optional.of(calculationRequestWithApprovedDates))
     whenever(sourceDataMapper.mapSentencesAndOffences(calculationRequestWithApprovedDates)).thenReturn(listOf(originalSentence))
     whenever(sourceDataMapper.mapPrisonerDetails(calculationRequestWithApprovedDates)).thenReturn(prisonerDetails)
-    whenever(sourceDataMapper.mapBookingAndSentenceAdjustments(calculationRequestWithApprovedDates)).thenReturn(adjustments)
+    whenever(sourceDataMapper.mapAdjustments(calculationRequestWithApprovedDates)).thenReturn(adjustments)
     whenever(
       calculationResultEnrichmentService.addDetailToCalculationDates(
         toReleaseDates(calculationRequestWithApprovedDates),
@@ -199,7 +197,7 @@ class DetailedCalculationResultsServiceTest {
         CalculationOriginalData(
           prisonerDetails,
           transform(SentenceAndOffenceAnalysis.SAME, listOf(originalSentence)),
-          emptyList(),
+          adjustments,
         ),
         expectedBreakdown,
         null,
@@ -318,7 +316,7 @@ class DetailedCalculationResultsServiceTest {
     whenever(calculationRequestRepository.findById(CALCULATION_REQUEST_ID)).thenReturn(Optional.of(calculationRequestWithTranches))
     whenever(sourceDataMapper.mapSentencesAndOffences(calculationRequestWithTranches)).thenReturn(listOf(originalSentence))
     whenever(sourceDataMapper.mapPrisonerDetails(calculationRequestWithTranches)).thenReturn(prisonerDetails)
-    whenever(sourceDataMapper.mapBookingAndSentenceAdjustments(calculationRequestWithTranches)).thenReturn(adjustments)
+    whenever(sourceDataMapper.mapAdjustments(calculationRequestWithTranches)).thenReturn(adjustments)
     whenever(
       calculationResultEnrichmentService.addDetailToCalculationDates(
         toReleaseDates(calculationRequestWithTranches),
@@ -342,7 +340,7 @@ class DetailedCalculationResultsServiceTest {
         calculationOriginalData = CalculationOriginalData(
           prisonerDetails,
           transform(SentenceAndOffenceAnalysis.SAME, listOf(originalSentence)),
-          emptyList(),
+          adjustments,
         ),
         calculationBreakdown = expectedBreakdown,
         breakdownMissingReason = null,
@@ -384,7 +382,7 @@ class DetailedCalculationResultsServiceTest {
     whenever(calculationRequestRepository.findById(CALCULATION_REQUEST_ID)).thenReturn(Optional.of(request))
     whenever(sourceDataMapper.mapSentencesAndOffences(request)).thenReturn(listOf(originalSentence))
     whenever(sourceDataMapper.mapPrisonerDetails(request)).thenReturn(prisonerDetails)
-    whenever(sourceDataMapper.mapBookingAndSentenceAdjustments(request)).thenReturn(adjustments)
+    whenever(sourceDataMapper.mapAdjustments(request)).thenReturn(adjustments)
     whenever(
       calculationResultEnrichmentService.addDetailToCalculationDates(
         toReleaseDates(request),
@@ -432,7 +430,7 @@ class DetailedCalculationResultsServiceTest {
     whenever(calculationRequestRepository.findById(CALCULATION_REQUEST_ID)).thenReturn(Optional.of(request))
     whenever(sourceDataMapper.mapSentencesAndOffences(request)).thenReturn(listOf(originalSentence))
     whenever(sourceDataMapper.mapPrisonerDetails(request)).thenReturn(prisonerDetails)
-    whenever(sourceDataMapper.mapBookingAndSentenceAdjustments(request)).thenReturn(adjustments)
+    whenever(sourceDataMapper.mapAdjustments(request)).thenReturn(adjustments)
     whenever(
       calculationResultEnrichmentService.addDetailToCalculationDates(
         toReleaseDates(request),
@@ -486,7 +484,7 @@ class DetailedCalculationResultsServiceTest {
     whenever(calculationRequestRepository.findById(overriddenCalcRequestId)).thenReturn(Optional.of(overridden))
     whenever(sourceDataMapper.mapSentencesAndOffences(base)).thenReturn(listOf(originalSentence))
     whenever(sourceDataMapper.mapPrisonerDetails(base)).thenReturn(prisonerDetails)
-    whenever(sourceDataMapper.mapBookingAndSentenceAdjustments(base)).thenReturn(adjustments)
+    whenever(sourceDataMapper.mapAdjustments(base)).thenReturn(adjustments)
     whenever(
       calculationResultEnrichmentService.addDetailToCalculationDates(
         toReleaseDates(base),
@@ -533,7 +531,7 @@ class DetailedCalculationResultsServiceTest {
     whenever(calculationRequestRepository.findById(CALCULATION_REQUEST_ID)).thenReturn(Optional.of(base))
     whenever(sourceDataMapper.mapSentencesAndOffences(base)).thenReturn(listOf(originalSentence))
     whenever(sourceDataMapper.mapPrisonerDetails(base)).thenReturn(prisonerDetails)
-    whenever(sourceDataMapper.mapBookingAndSentenceAdjustments(base)).thenReturn(adjustments)
+    whenever(sourceDataMapper.mapAdjustments(base)).thenReturn(adjustments)
     whenever(
       calculationResultEnrichmentService.addDetailToCalculationDates(
         toReleaseDates(base),
@@ -593,7 +591,7 @@ class DetailedCalculationResultsServiceTest {
     whenever(calculationRequestRepository.findById(CALCULATION_REQUEST_ID)).thenReturn(Optional.of(calculationRequestWithApprovedDates))
     whenever(sourceDataMapper.mapSentencesAndOffences(calculationRequestWithApprovedDates)).thenReturn(listOf(originalSentence))
     whenever(sourceDataMapper.mapPrisonerDetails(calculationRequestWithApprovedDates)).thenReturn(prisonerDetails)
-    whenever(sourceDataMapper.mapBookingAndSentenceAdjustments(calculationRequestWithApprovedDates)).thenReturn(adjustments)
+    whenever(sourceDataMapper.mapAdjustments(calculationRequestWithApprovedDates)).thenReturn(adjustments)
     whenever(
       calculationResultEnrichmentService.addDetailToCalculationDates(
         toReleaseDates(calculationRequestWithApprovedDates),
@@ -620,7 +618,7 @@ class DetailedCalculationResultsServiceTest {
         CalculationOriginalData(
           prisonerDetails,
           transform(SentenceAndOffenceAnalysis.SAME, listOf(originalSentence)),
-          emptyList(),
+          adjustments,
         ),
         null,
         BreakdownMissingReason.UNSUPPORTED_CALCULATION_BREAKDOWN,
@@ -681,17 +679,14 @@ class DetailedCalculationResultsServiceTest {
     firstName = "Zimmy",
     lastName = "Cnys",
   )
-  private val adjustments = BookingAndSentenceAdjustments(
-    bookingAdjustments = emptyList(),
-    sentenceAdjustments = listOf(
-      SentenceAdjustment(
-        sentenceSequence = 1,
-        active = true,
-        fromDate = LocalDate.of(2021, 1, 30),
-        toDate = LocalDate.of(2021, 1, 31),
-        numberOfDays = 1,
-        type = SentenceAdjustmentType.REMAND,
-      ),
+  private val adjustments = listOf(
+    AdjustmentDto(
+      person = prisonerDetails.offenderNo,
+      adjustmentType = AdjustmentType.REMAND,
+      fromDate = LocalDate.of(2021, 1, 30),
+      toDate = LocalDate.of(2021, 1, 31),
+      days = 1,
+      effectiveDays = 1,
     ),
   )
   private val calculationReference: UUID = UUID.fromString("219db65e-d7b7-4c70-9239-98babff7bcd5")

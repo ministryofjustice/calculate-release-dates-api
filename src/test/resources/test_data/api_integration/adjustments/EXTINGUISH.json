@@ -1,0 +1,13 @@
+[
+  {
+    "person": "EXTINGUISH",
+    "adjustmentType": "REMAND",
+    "bookingId": -2080011894,
+    "toDate": "2020-03-19",
+    "fromDate": "2018-03-01",
+    "days": 750,
+    "sentenceSequence": 1,
+    "status": "ACTIVE",
+    "effectiveDays": 750
+  }
+]

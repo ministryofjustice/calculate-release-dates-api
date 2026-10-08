@@ -1,0 +1,53 @@
+[
+  {
+    "person": "CRS-2151",
+    "adjustmentType": "ADDITIONAL_DAYS_AWARDED",
+    "bookingId": -1310617724,
+    "toDate": "2020-10-07",
+    "fromDate": "2020-09-07",
+    "days": 28,
+    "status": "ACTIVE",
+    "effectiveDays": 28
+  },
+  {
+    "person": "CRS-2151",
+    "adjustmentType": "ADDITIONAL_DAYS_AWARDED",
+    "bookingId": -1310617724,
+    "toDate": "2021-01-18",
+    "fromDate": "2020-12-18",
+    "days": 22,
+    "status": "ACTIVE",
+    "effectiveDays": 22
+  },
+  {
+    "person": "CRS-2151",
+    "adjustmentType": "ADDITIONAL_DAYS_AWARDED",
+    "bookingId": -1310617724,
+    "toDate": "2023-05-04",
+    "fromDate": "2023-05-04",
+    "days": 24,
+    "status": "ACTIVE",
+    "effectiveDays": 24
+  },
+  {
+    "person": "CRS-2151",
+    "adjustmentType": "RESTORATION_OF_ADDITIONAL_DAYS_AWARDED",
+    "bookingId": -1310617724,
+    "toDate": "2024-10-02",
+    "fromDate": "2024-10-02",
+    "days": 28,
+    "status": "ACTIVE",
+    "effectiveDays": 28
+  },
+  {
+    "person": "CRS-2151",
+    "adjustmentType": "REMAND",
+    "bookingId": -1310617724,
+    "toDate": "2020-09-15",
+    "fromDate": "2020-01-23",
+    "days": 237,
+    "sentenceSequence": 1,
+    "status": "ACTIVE",
+    "effectiveDays": 237
+  }
+]

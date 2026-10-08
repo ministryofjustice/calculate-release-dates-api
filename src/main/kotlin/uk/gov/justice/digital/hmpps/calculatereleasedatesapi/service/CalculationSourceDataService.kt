@@ -47,7 +47,7 @@ class CalculationSourceDataService(
     val activeOnly = sourceDataLookupOptions.activeOnly(featureToggles.supportInactiveSentencesAndAdjustments)
 
     val sentenceAndOffences = removeDuplicatedSentencesFromOlderBooking(prisonService.getSentencesAndOffences(bookingId, activeOnly), olderBooking, newerBookingSentences)
-    val adjustments = getAdjustments(prisonerDetails.offenderNo, bookingId, activeOnly, olderBooking, sourceDataLookupOptions)
+    val adjustments = getAdjustments(prisonerDetails.offenderNo, bookingId, activeOnly, olderBooking)
     val bookingHasFixedTermRecall = sentenceAndOffences.any { from(it.sentenceCalculationType).recallType?.isFixedTermRecall == true }
     val (ftrDetails, returnToCustodyDate) = prisonService.getFixedTermRecallDetails(bookingId, bookingHasFixedTermRecall)
     val bookingHasAFine = sentenceAndOffences.any { from(it.sentenceCalculationType).sentenceType == SentenceType.AFine }
@@ -99,16 +99,13 @@ class CalculationSourceDataService(
     bookingId: Long,
     activeOnly: Boolean,
     isOldBooking: Boolean,
-    lookupOptions: SourceDataLookupOptions,
-  ): AdjustmentsSourceData = if (lookupOptions.useAdjustmentsApi(featureToggles.useAdjustmentsApi)) {
+  ): AdjustmentsSourceData {
     val statuses = if (activeOnly) {
       listOf(AdjustmentDto.Status.ACTIVE)
     } else {
       listOf(AdjustmentDto.Status.ACTIVE, AdjustmentDto.Status.INACTIVE)
     }
-    AdjustmentsSourceData(adjustmentsApiData = adjustmentsApiClient.getAdjustmentsByPerson(prisonerId, statuses, currentPeriodOfCustody = !isOldBooking).filter { it.bookingId == bookingId })
-  } else {
-    AdjustmentsSourceData(prisonApiData = prisonService.getBookingAndSentenceAdjustments(bookingId, activeOnly))
+    return AdjustmentsSourceData(adjustmentsApiData = adjustmentsApiClient.getAdjustmentsByPerson(prisonerId, statuses, currentPeriodOfCustody = !isOldBooking).filter { it.bookingId == bookingId })
   }
 
   companion object {
@@ -126,7 +123,6 @@ class CalculationSourceDataService(
 
 data class SourceDataLookupOptions(
   val overrideToIncludeInactiveData: Boolean = false,
-  val overrideToUseAdjustmentsApi: Boolean = false,
 ) {
 
   fun activeOnly(featureToggle: Boolean): Boolean = !includeInactive(featureToggle)
@@ -137,16 +133,9 @@ data class SourceDataLookupOptions(
     featureToggle
   }
 
-  fun useAdjustmentsApi(featureToggle: Boolean): Boolean = if (overrideToUseAdjustmentsApi) {
-    true
-  } else {
-    featureToggle
-  }
-
   companion object {
     fun default(): SourceDataLookupOptions = SourceDataLookupOptions(false)
     fun overrideToIncludeInactiveData(): SourceDataLookupOptions = SourceDataLookupOptions(true)
-    fun overrideToIncludeInactiveDataAndForceAdjustmentsApi(): SourceDataLookupOptions = SourceDataLookupOptions(true, true)
   }
 }
 
