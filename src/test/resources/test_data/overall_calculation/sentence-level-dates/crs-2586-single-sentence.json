@@ -50,6 +50,5 @@
   },
   "params": "calculation-params",
   "featureToggles": {
-    "storeSentenceLevelDates": true
   }
 }

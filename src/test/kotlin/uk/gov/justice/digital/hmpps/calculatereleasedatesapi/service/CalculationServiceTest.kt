@@ -54,7 +54,7 @@ class CalculationServiceTest {
   private val bookingTimelineService = mock<BookingTimelineService>(lenient = false)
   private val previouslyRecordedSLEDService = mock<PreviouslyRecordedSLEDService>()
   private val sentenceLevelDatesService = mock<SentenceLevelDatesService>()
-  private val featureToggles = FeatureToggles(storeSentenceLevelDates = true, storeOperativeSentenceEnvelope = true)
+  private val featureToggles = FeatureToggles()
 
   private val service = CalculationService(sentenceIdentificationService, bookingTimelineService, featureToggles, previouslyRecordedSLEDService, sentenceLevelDatesService)
 
