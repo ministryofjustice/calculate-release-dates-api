@@ -24,7 +24,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.Calculat
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ReleaseMultiplier
 import java.time.LocalDate
 
-@SpringBootTest(webEnvironment = RANDOM_PORT, properties = ["feature-toggles.use-adjustments-api=true", "feature-toggles.store-sentence-level-dates=true", "feature-toggles.apply-post-recall-repeal-rules=false"])
+@SpringBootTest(webEnvironment = RANDOM_PORT, properties = ["feature-toggles.use-adjustments-api=true", "feature-toggles.apply-post-recall-repeal-rules=false"])
 @Sql(scripts = ["classpath:/test_data/reset-base-data.sql"])
 class SentenceLevelDatesAreStoredAlongsideACalculationIntTest(private val mockPrisonService: MockPrisonService, private val mockManageOffencesClient: MockManageOffencesClient) : IntegrationTestBase() {
   @Autowired

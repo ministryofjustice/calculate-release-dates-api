@@ -167,9 +167,7 @@ feature-toggles:
   support-inactive-sentences-and-adjustments: ${SUPPORT_INACTIVE_SENTENCES_AND_ADJUSTMENTS:false}
   useAdjustmentsApi: ${USE_ADJUSTMENTS_API:false}
   applyPostRecallRepealRules: ${APPLY_POST_RECALL_REPEAL_RULES:false}
-  storeSentenceLevelDates: ${STORE_SENTECE_LEVEL_DATES:false}
   adultHdcSuspended: ${ADULT_HDC_SUSPENDED:false}
-  storeOperativeSentenceEnvelope: ${STORE_OPERATIVE_SENTENCE_ENVELOPE:false}
 
 prisonsWithNomisCalcDisabled: ${PRISONS_WITH_NOMIS_CALC_DISABLED:}
 
