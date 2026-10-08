@@ -41,7 +41,7 @@ dependencies {
   implementation("uk.gov.service.notify:notifications-java-client:6.2.1-RELEASE")
 
   // Enable kotlin reflect
-  implementation("org.jetbrains.kotlin:kotlin-reflect:2.4.20")
+  implementation("org.jetbrains.kotlin:kotlin-reflect:2.4.21")
 
   // Three Ten Date Calculations
   implementation("org.threeten:threeten-extra:1.10.0")
@@ -51,7 +51,7 @@ dependencies {
   // Database dependencies
   runtimeOnly("org.flywaydb:flyway-core")
   runtimeOnly("org.flywaydb:flyway-database-postgresql")
-  runtimeOnly("org.postgresql:postgresql:42.7.13")
+  runtimeOnly("org.postgresql:postgresql:42.7.14")
 
   implementation("io.arrow-kt:arrow-core:2.2.3")
   implementation("io.hypersistence:hypersistence-utils-hibernate-71:3.16.0")
