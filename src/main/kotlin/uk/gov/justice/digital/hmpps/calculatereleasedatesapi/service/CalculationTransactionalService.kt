@@ -266,9 +266,7 @@ class CalculationTransactionalService(
       )
     }
 
-    if (featureToggles.storeSentenceLevelDates) {
-      sentenceLevelDatesService.storeSentenceLevelDates(calculationOutput.sentenceLevelDates, sourceData, calculationRequest)
-    }
+    sentenceLevelDatesService.storeSentenceLevelDates(calculationOutput.sentenceLevelDates, sourceData, calculationRequest)
 
     return CalculatedReleaseDates(
       dates = calculationResult.dates,
