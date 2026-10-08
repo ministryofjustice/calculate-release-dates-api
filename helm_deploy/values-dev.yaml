@@ -48,7 +48,7 @@ generic-prometheus-alerts:
 
 deleteOldPreliminaryCalculationsCronJob:
   enabled: true
-  schedule: "00 15 * * *" # 1500 UTC daily
+  schedule: "00 12 * * *" # 1200 UTC daily
   timeZone: Etc/UTC
   securityContext:
     capabilities:
