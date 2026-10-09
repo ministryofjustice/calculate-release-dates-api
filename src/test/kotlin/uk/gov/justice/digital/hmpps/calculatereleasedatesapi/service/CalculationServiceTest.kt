@@ -3,8 +3,6 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import org.junit.jupiter.params.ParameterizedTest
-import org.junit.jupiter.params.provider.CsvSource
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
@@ -56,7 +54,7 @@ class CalculationServiceTest {
   private val bookingTimelineService = mock<BookingTimelineService>(lenient = false)
   private val previouslyRecordedSLEDService = mock<PreviouslyRecordedSLEDService>()
   private val sentenceLevelDatesService = mock<SentenceLevelDatesService>()
-  private val featureToggles = FeatureToggles(storeSentenceLevelDates = true, storeOperativeSentenceEnvelope = true, progressionModelScheduleExclusionEnabled = true)
+  private val featureToggles = FeatureToggles()
 
   private val service = CalculationService(sentenceIdentificationService, bookingTimelineService, featureToggles, previouslyRecordedSLEDService, sentenceLevelDatesService)
 
@@ -272,13 +270,8 @@ class CalculationServiceTest {
     )
   }
 
-  @ParameterizedTest
-  @CsvSource(
-    "true,true",
-    "false,",
-  )
-  fun `should mark operative sentence envelope with progression model exclusion if there was an excluded sentence and the feature toggle is on`(featureToggle: Boolean, expected: Boolean?) {
-    featureToggles.progressionModelScheduleExclusionEnabled = featureToggle
+  @Test
+  fun `should mark operative sentence envelope with progression model exclusion if there was an excluded sentence`() {
     val calculationOutputWithSdsPlus = CALCULATION_OUTPUT.copy(
       sentences = listOf(
         SDS_SENTENCE.copy(
@@ -304,7 +297,7 @@ class CalculationServiceTest {
           earliestSentenceStartDate = LocalDate.of(2021, 2, 3),
           isPostRecallSentenceEnvelope = false,
           containsAnSDSPlusSentence = false,
-          containsOffenceExcludedFromProgressionModel = expected,
+          containsOffenceExcludedFromProgressionModel = true,
           sentenceEnvelopeSource = OperativeSentenceEnvelopeSource.CRDS,
           bookingId = BOOKING_ID,
         ),

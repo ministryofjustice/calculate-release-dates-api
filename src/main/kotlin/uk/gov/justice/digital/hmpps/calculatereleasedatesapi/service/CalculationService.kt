@@ -39,7 +39,7 @@ class CalculationService(
     }
 
     var calculatedReleaseDates = bookingTimelineService.calculate(booking.sentences, booking.adjustments, booking.offender, booking.returnToCustodyDate, options, booking.externalMovements)
-    if (calculateSentenceLevelDates && featureToggles.storeSentenceLevelDates) {
+    if (calculateSentenceLevelDates) {
       calculatedReleaseDates = calculatedReleaseDates.copy(sentenceLevelDates = sentenceLevelDatesService.extractSentenceLevelDates(calculatedReleaseDates))
     }
 
@@ -54,23 +54,21 @@ class CalculationService(
       calculatedReleaseDates = usePreviouslyRecordedSLED(calculatedReleaseDates, sledToOverrideTheCalculatedOneWith)
     }
 
-    if (featureToggles.storeOperativeSentenceEnvelope) {
-      val earliestSentenceDate = calculatedReleaseDates.sentences.minOfOrNull { it.sentencedAt }
-      val sledOrSed = calculatedReleaseDates.calculationResult.dates[ReleaseDateType.SLED] ?: calculatedReleaseDates.calculationResult.dates[ReleaseDateType.SED]
-      if (earliestSentenceDate != null && sledOrSed != null) {
-        val allSentenceParts = calculatedReleaseDates.sentences.flatMap { it.sentenceParts() }
-        calculatedReleaseDates = calculatedReleaseDates.copy(
-          operativeSentenceEnvelope = OperativeSentenceEnvelope(
-            sentenceEnvelopeLengthInDays = ChronoUnit.DAYS.between(earliestSentenceDate, sledOrSed) + 1, // start and end date should be inclusive
-            earliestSentenceStartDate = earliestSentenceDate,
-            isPostRecallSentenceEnvelope = allSentenceParts.any { it.isRecall() },
-            containsAnSDSPlusSentence = allSentenceParts.any { it is StandardDeterminateSentence && it.releaseArrangements.isSDSPlus },
-            containsOffenceExcludedFromProgressionModel = if (featureToggles.progressionModelScheduleExclusionEnabled) allSentenceParts.any { it is StandardDeterminateSentence && SDSEarlyReleaseExclusionType.SA2026_PROGRESSION_MODEL_SCHEDULE in it.releaseArrangements.sdsEarlyReleaseExclusions } else null,
-            sentenceEnvelopeSource = OperativeSentenceEnvelopeSource.CRDS,
-            bookingId = booking.bookingId,
-          ),
-        )
-      }
+    val earliestSentenceDate = calculatedReleaseDates.sentences.minOfOrNull { it.sentencedAt }
+    val sledOrSed = calculatedReleaseDates.calculationResult.dates[ReleaseDateType.SLED] ?: calculatedReleaseDates.calculationResult.dates[ReleaseDateType.SED]
+    if (earliestSentenceDate != null && sledOrSed != null) {
+      val allSentenceParts = calculatedReleaseDates.sentences.flatMap { it.sentenceParts() }
+      calculatedReleaseDates = calculatedReleaseDates.copy(
+        operativeSentenceEnvelope = OperativeSentenceEnvelope(
+          sentenceEnvelopeLengthInDays = ChronoUnit.DAYS.between(earliestSentenceDate, sledOrSed) + 1, // start and end date should be inclusive
+          earliestSentenceStartDate = earliestSentenceDate,
+          isPostRecallSentenceEnvelope = allSentenceParts.any { it.isRecall() },
+          containsAnSDSPlusSentence = allSentenceParts.any { it is StandardDeterminateSentence && it.releaseArrangements.isSDSPlus },
+          containsOffenceExcludedFromProgressionModel = allSentenceParts.any { it is StandardDeterminateSentence && SDSEarlyReleaseExclusionType.SA2026_PROGRESSION_MODEL_SCHEDULE in it.releaseArrangements.sdsEarlyReleaseExclusions },
+          sentenceEnvelopeSource = OperativeSentenceEnvelopeSource.CRDS,
+          bookingId = booking.bookingId,
+        ),
+      )
     }
 
     return calculatedReleaseDates
