@@ -5,9 +5,15 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito
+import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.isNull
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest
+import org.springframework.data.domain.PageImpl
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.web.PageableHandlerMethodArgumentResolver
 import org.springframework.http.MediaType
 import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter
 import org.springframework.test.context.ActiveProfiles
@@ -57,6 +63,7 @@ class ComparisonControllerTest {
       .standaloneSetup(ComparisonController(comparisonService, objectMapper))
       .setControllerAdvice(ControllerAdvice())
       .setMessageConverters(this.jackson2HttpMessageConverter)
+      .setCustomArgumentResolvers(PageableHandlerMethodArgumentResolver())
       .build()
   }
 
@@ -100,6 +107,87 @@ class ComparisonControllerTest {
       .andReturn()
 
     assertThat(result.response.contentAsString).contains("\"comparisonShortReference\":\"ABCD1234\"")
+  }
+
+  @Test
+  fun `Test GET search of comparisons filtered by prison`() {
+    val comparisonList = listOf(ComparisonSummary("ABCD1234", "MDI", ComparisonType.ESTABLISHMENT_FULL, ComparisonStatus.COMPLETED, LocalDateTime.now(), "JOEL", 0, 0, 0, 0))
+    whenever(comparisonService.searchComparisons(eq("MDI"), eq(false), any())).thenReturn(PageImpl(comparisonList, PageRequest.of(0, 20), comparisonList.size.toLong()))
+
+    val result = mvc.perform(
+      MockMvcRequestBuilders.get("/comparison/search")
+        .param("prison", "MDI")
+        .param("calculatedByCurrentUser", "false")
+        .accept(MediaType.APPLICATION_JSON),
+    )
+      .andExpect(MockMvcResultMatchers.status().isOk)
+      .andReturn()
+
+    assertThat(result.response.contentAsString).contains("\"comparisonShortReference\":\"ABCD1234\"")
+  }
+
+  @Test
+  fun `Test GET search of comparisons for the current user`() {
+    val comparisonList = listOf(ComparisonSummary("ABCD1234", "MDI", ComparisonType.ESTABLISHMENT_FULL, ComparisonStatus.COMPLETED, LocalDateTime.now(), "JOEL", 0, 0, 0, 0))
+    whenever(comparisonService.searchComparisons(isNull(), eq(true), any())).thenReturn(PageImpl(comparisonList, PageRequest.of(0, 20), comparisonList.size.toLong()))
+
+    val result = mvc.perform(
+      MockMvcRequestBuilders.get("/comparison/search")
+        .param("calculatedByCurrentUser", "true")
+        .accept(MediaType.APPLICATION_JSON),
+    )
+      .andExpect(MockMvcResultMatchers.status().isOk)
+      .andReturn()
+
+    assertThat(result.response.contentAsString).contains("\"comparisonShortReference\":\"ABCD1234\"")
+  }
+
+  @Test
+  fun `Test GET search of comparisons without mandatory calculatedByCurrentUser parameter returns error`() {
+    mvc.perform(
+      MockMvcRequestBuilders.get("/comparison/search")
+        .accept(MediaType.APPLICATION_JSON),
+    )
+      .andExpect(MockMvcResultMatchers.status().isInternalServerError)
+  }
+
+  @Test
+  fun `Test GET distinct prisons for comparisons calculated by the current user`() {
+    whenever(comparisonService.getDistinctPrisons(true)).thenReturn(listOf("MDI", "LEI"))
+
+    val result = mvc.perform(
+      MockMvcRequestBuilders.get("/comparison/prisons")
+        .param("calculatedByCurrentUser", "true")
+        .accept(MediaType.APPLICATION_JSON),
+    )
+      .andExpect(MockMvcResultMatchers.status().isOk)
+      .andReturn()
+
+    assertThat(result.response.contentAsString).contains("MDI", "LEI")
+  }
+
+  @Test
+  fun `Test GET distinct prisons for comparisons not calculated by the current user`() {
+    whenever(comparisonService.getDistinctPrisons(false)).thenReturn(listOf("MDI"))
+
+    val result = mvc.perform(
+      MockMvcRequestBuilders.get("/comparison/prisons")
+        .param("calculatedByCurrentUser", "false")
+        .accept(MediaType.APPLICATION_JSON),
+    )
+      .andExpect(MockMvcResultMatchers.status().isOk)
+      .andReturn()
+
+    assertThat(result.response.contentAsString).contains("MDI")
+  }
+
+  @Test
+  fun `Test GET distinct prisons without mandatory calculatedByCurrentUser parameter returns error`() {
+    mvc.perform(
+      MockMvcRequestBuilders.get("/comparison/prisons")
+        .accept(MediaType.APPLICATION_JSON),
+    )
+      .andExpect(MockMvcResultMatchers.status().isInternalServerError)
   }
 
   @Test

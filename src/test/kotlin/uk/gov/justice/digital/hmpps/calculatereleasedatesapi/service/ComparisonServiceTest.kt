@@ -11,9 +11,12 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.springframework.data.domain.PageImpl
+import org.springframework.data.domain.PageRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.adjustmentsapi.model.AdjustmentDto
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcome
@@ -143,6 +146,121 @@ class ComparisonServiceTest {
     val comparisonList = comparisonService.listComparisons()
 
     assertEquals(comparisonList.size, 1)
+  }
+
+  @Test
+  fun `Search a list of comparisons`() {
+    whenever(prisonService.getCurrentUserPrisonsList()).thenReturn(listOf("ABC"))
+    whenever(
+      comparisonRepository.findAllByComparisonTypeIsInAndPrisonIsInAndCalculatedByUsernameNot(any(), any(), eq(USERNAME), any()),
+    ).thenReturn(
+      PageImpl(
+        listOf(
+          Comparison(
+            1,
+            UUID.randomUUID(),
+            "ABCD1234",
+            JsonNodeFactory.instance.objectNode(),
+            "ABC",
+            ComparisonType.ESTABLISHMENT_FULL,
+            LocalDateTime.now(),
+            USERNAME,
+            ComparisonStatus.PROCESSING,
+          ),
+        ),
+      ),
+    )
+
+    val comparisonList = comparisonService.searchComparisons(null, false, PageRequest.of(0, 10))
+
+    assertEquals(comparisonList.content.size, 1)
+  }
+
+  @Test
+  fun `Search a list of comparisons filtered by prison`() {
+    whenever(prisonService.getCurrentUserPrisonsList()).thenReturn(listOf("ABC"))
+    whenever(
+      comparisonRepository.findAllByComparisonTypeIsInAndPrisonIsInAndCalculatedByUsernameNot(any(), eq(listOf("ABC")), eq(USERNAME), any()),
+    ).thenReturn(
+      PageImpl(
+        listOf(
+          Comparison(
+            1,
+            UUID.randomUUID(),
+            "ABCD1234",
+            JsonNodeFactory.instance.objectNode(),
+            "ABC",
+            ComparisonType.ESTABLISHMENT_FULL,
+            LocalDateTime.now(),
+            USERNAME,
+            ComparisonStatus.PROCESSING,
+          ),
+        ),
+      ),
+    )
+
+    val comparisonList = comparisonService.searchComparisons("ABC", false, PageRequest.of(0, 10))
+
+    assertEquals(comparisonList.content.size, 1)
+  }
+
+  @Test
+  fun `Search a list of comparisons filtered by an inaccessible prison returns empty`() {
+    whenever(prisonService.getCurrentUserPrisonsList()).thenReturn(listOf("ABC"))
+
+    val comparisonList = comparisonService.searchComparisons("XYZ", false, PageRequest.of(0, 10))
+
+    assertEquals(comparisonList.content.size, 0)
+  }
+
+  @Test
+  fun `Search a list of comparisons for the current user`() {
+    whenever(prisonService.getCurrentUserPrisonsList()).thenReturn(listOf("ABC"))
+    whenever(
+      comparisonRepository.findAllByComparisonTypeIsInAndPrisonIsInAndCalculatedByUsername(any(), any(), eq(USERNAME), any()),
+    ).thenReturn(
+      PageImpl(
+        listOf(
+          Comparison(
+            1,
+            UUID.randomUUID(),
+            "ABCD1234",
+            JsonNodeFactory.instance.objectNode(),
+            "ABC",
+            ComparisonType.ESTABLISHMENT_FULL,
+            LocalDateTime.now(),
+            USERNAME,
+            ComparisonStatus.PROCESSING,
+          ),
+        ),
+      ),
+    )
+
+    val comparisonList = comparisonService.searchComparisons(null, true, PageRequest.of(0, 10))
+
+    assertEquals(comparisonList.content.size, 1)
+  }
+
+  @Test
+  fun `Get distinct prisons for comparisons calculated by the current user`() {
+    whenever(
+      comparisonRepository.findDistinctPrisonByComparisonTypeInAndCalculatedByUsername(any(), eq(USERNAME)),
+    ).thenReturn(listOf("ABC", "DEF"))
+
+    val prisons = comparisonService.getDistinctPrisons(true)
+
+    assertEquals(listOf("ABC", "DEF"), prisons)
+  }
+
+  @Test
+  fun `Get distinct prisons for comparisons not calculated by the current user`() {
+    whenever(
+      comparisonRepository.findDistinctPrisonByComparisonTypeInAndCalculatedByUsernameNot(any(), eq(USERNAME)),
+    ).thenReturn(listOf("ABC"))
+
+    val prisons = comparisonService.getDistinctPrisons(false)
+
+    assertEquals(listOf("ABC"), prisons)
   }
 
   @Test
