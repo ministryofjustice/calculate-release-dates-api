@@ -9,6 +9,10 @@ import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Sort
+import org.springframework.data.web.PageableDefault
+import org.springframework.data.web.PagedModel
 import org.springframework.http.MediaType
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.GetMapping
@@ -17,6 +21,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.UserContext
@@ -80,6 +85,74 @@ class ComparisonController(
   fun getComparisons(): List<ComparisonSummary> {
     log.info("Requested a list of Comparisons")
     return comparisonService.listComparisons()
+  }
+
+  @GetMapping("/search")
+  @PreAuthorize("hasAnyRole('ROLE_RELEASE_DATE_COMPARER', 'CALCULATE_RELEASE_DATES__ADMIN__RW', 'CALCULATE_RELEASE_DATES__ADMIN__RO')")
+  @ResponseBody
+  @Operation(
+    summary = "Search Comparisons performed using presets, with paging and a prison filter",
+    description = "This endpoint will return a page of comparisons for your caseload, optionally filtered by prison",
+  )
+  @ApiResponses(
+    value = [
+      ApiResponse(responseCode = "200", description = "Returns a page of comparisons"),
+      ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
+      ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
+    ],
+  )
+  fun searchComparisons(
+    @Parameter(
+      example = "MDI",
+      description = "The prison code to filter comparisons by. If omitted or blank, comparisons for all prisons accessible to the caller are returned",
+    )
+    @RequestParam(required = false)
+    prison: String?,
+    @Parameter(
+      required = true,
+      example = "true",
+      description = "Whether to only return comparisons calculated by the logged in (current) user. If true, comparisons calculated by the current user are returned. If false, comparisons NOT calculated by the current user are returned",
+    )
+    @RequestParam(required = true)
+    calculatedByCurrentUser: Boolean,
+    @Parameter(description = "Pagination and sorting parameters, e.g. page=0&size=20&sort=calculatedAt,desc")
+    @PageableDefault(size = 10, sort = ["calculatedAt"], direction = Sort.Direction.DESC)
+    pageable: Pageable,
+  ): PagedModel<ComparisonSummary> {
+    log.info(
+      "Requested a page of Comparisons with prison={} calculatedByCurrentUser={} pageable={}",
+      prison,
+      calculatedByCurrentUser,
+      pageable,
+    )
+    return PagedModel(comparisonService.searchComparisons(prison, calculatedByCurrentUser, pageable))
+  }
+
+  @GetMapping("/prisons")
+  @PreAuthorize("hasAnyRole('ROLE_RELEASE_DATE_COMPARER', 'CALCULATE_RELEASE_DATES__ADMIN__RW', 'CALCULATE_RELEASE_DATES__ADMIN__RO')")
+  @ResponseBody
+  @Operation(
+    summary = "List the distinct prisons that comparisons have been calculated for",
+    description = "This endpoint will return the distinct list of prisons for comparisons calculated by the current user, or by anyone other than the current user",
+  )
+  @ApiResponses(
+    value = [
+      ApiResponse(responseCode = "200", description = "Returns a list of distinct prison codes"),
+      ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
+      ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
+    ],
+  )
+  fun getComparisonPrisons(
+    @Parameter(
+      required = true,
+      example = "true",
+      description = "Whether to only consider comparisons calculated by the logged in (current) user. If true, prisons for comparisons calculated by the current user are returned. If false, prisons for comparisons NOT calculated by the current user are returned",
+    )
+    @RequestParam(required = true)
+    calculatedByCurrentUser: Boolean,
+  ): List<String> {
+    log.info("Requested a list of distinct comparison prisons with calculatedByCurrentUser={}", calculatedByCurrentUser)
+    return comparisonService.getDistinctPrisons(calculatedByCurrentUser)
   }
 
   @GetMapping(value = ["{comparisonReference}/count"])
