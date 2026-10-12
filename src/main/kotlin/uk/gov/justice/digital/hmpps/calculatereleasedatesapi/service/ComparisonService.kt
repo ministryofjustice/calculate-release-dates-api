@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import jakarta.persistence.EntityNotFoundException
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcome
@@ -69,6 +71,45 @@ class ComparisonService(
       nonManualComparisonTypes(),
       prisons,
     ).map {
+      populateNumberOfMismatches(it)
+      transform(it)
+    }
+  }
+
+  fun searchComparisons(prison: String?, calculatedByCurrentUser: Boolean, pageable: Pageable): Page<ComparisonSummary> {
+    val accessiblePrisons = prisonService.getCurrentUserPrisonsList().toMutableList()
+    accessiblePrisons.add("all")
+
+    val prisonFilter = prison?.takeIf { it.isNotBlank() }
+    val prisons = if (prisonFilter != null) {
+      if (accessiblePrisons.contains(prisonFilter)) listOf(prisonFilter) else emptyList()
+    } else {
+      accessiblePrisons
+    }
+
+    if (prisons.isEmpty()) {
+      return Page.empty(pageable)
+    }
+
+    // The calculatedByCurrentUser flag determines whether comparisons calculated by the logged in user are
+    // returned, or all comparisons calculated by anyone else.
+    val comparisonsPage = if (calculatedByCurrentUser) {
+      comparisonRepository.findAllByComparisonTypeIsInAndPrisonIsInAndCalculatedByUsername(
+        nonManualComparisonTypes(),
+        prisons,
+        serviceUserService.getUsername(),
+        pageable,
+      )
+    } else {
+      comparisonRepository.findAllByComparisonTypeIsInAndPrisonIsInAndCalculatedByUsernameNot(
+        nonManualComparisonTypes(),
+        prisons,
+        serviceUserService.getUsername(),
+        pageable,
+      )
+    }
+
+    return comparisonsPage.map {
       populateNumberOfMismatches(it)
       transform(it)
     }
