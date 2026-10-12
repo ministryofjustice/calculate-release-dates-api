@@ -152,45 +152,6 @@ class ComparisonControllerTest {
   }
 
   @Test
-  fun `Test GET distinct prisons for comparisons calculated by the current user`() {
-    whenever(comparisonService.getDistinctPrisons(true)).thenReturn(listOf("MDI", "LEI"))
-
-    val result = mvc.perform(
-      MockMvcRequestBuilders.get("/comparison/prisons")
-        .param("calculatedByCurrentUser", "true")
-        .accept(MediaType.APPLICATION_JSON),
-    )
-      .andExpect(MockMvcResultMatchers.status().isOk)
-      .andReturn()
-
-    assertThat(result.response.contentAsString).contains("MDI", "LEI")
-  }
-
-  @Test
-  fun `Test GET distinct prisons for comparisons not calculated by the current user`() {
-    whenever(comparisonService.getDistinctPrisons(false)).thenReturn(listOf("MDI"))
-
-    val result = mvc.perform(
-      MockMvcRequestBuilders.get("/comparison/prisons")
-        .param("calculatedByCurrentUser", "false")
-        .accept(MediaType.APPLICATION_JSON),
-    )
-      .andExpect(MockMvcResultMatchers.status().isOk)
-      .andReturn()
-
-    assertThat(result.response.contentAsString).contains("MDI")
-  }
-
-  @Test
-  fun `Test GET distinct prisons without mandatory calculatedByCurrentUser parameter returns error`() {
-    mvc.perform(
-      MockMvcRequestBuilders.get("/comparison/prisons")
-        .accept(MediaType.APPLICATION_JSON),
-    )
-      .andExpect(MockMvcResultMatchers.status().isInternalServerError)
-  }
-
-  @Test
   fun `Test GET of count of person in a comparison`() {
     val shortReference = "ABCD1234"
     whenever(comparisonService.getCountOfPersonsInComparisonByComparisonReference(shortReference)).thenReturn(7)

@@ -115,18 +115,6 @@ class ComparisonService(
     }
   }
 
-  fun getDistinctPrisons(calculatedByCurrentUser: Boolean): List<String> = if (calculatedByCurrentUser) {
-    comparisonRepository.findDistinctPrisonByComparisonTypeInAndCalculatedByUsername(
-      nonManualComparisonTypes(),
-      serviceUserService.getUsername(),
-    )
-  } else {
-    comparisonRepository.findDistinctPrisonByComparisonTypeInAndCalculatedByUsernameNot(
-      nonManualComparisonTypes(),
-      serviceUserService.getUsername(),
-    )
-  }
-
   fun getCountOfPersonsInComparisonByComparisonReference(shortReference: String): Long {
     val comparison = comparisonRepository.findByComparisonShortReference(shortReference)
 

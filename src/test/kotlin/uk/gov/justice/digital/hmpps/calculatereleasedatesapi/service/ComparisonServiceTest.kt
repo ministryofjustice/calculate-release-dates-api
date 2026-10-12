@@ -242,28 +242,6 @@ class ComparisonServiceTest {
   }
 
   @Test
-  fun `Get distinct prisons for comparisons calculated by the current user`() {
-    whenever(
-      comparisonRepository.findDistinctPrisonByComparisonTypeInAndCalculatedByUsername(any(), eq(USERNAME)),
-    ).thenReturn(listOf("ABC", "DEF"))
-
-    val prisons = comparisonService.getDistinctPrisons(true)
-
-    assertEquals(listOf("ABC", "DEF"), prisons)
-  }
-
-  @Test
-  fun `Get distinct prisons for comparisons not calculated by the current user`() {
-    whenever(
-      comparisonRepository.findDistinctPrisonByComparisonTypeInAndCalculatedByUsernameNot(any(), eq(USERNAME)),
-    ).thenReturn(listOf("ABC"))
-
-    val prisons = comparisonService.getDistinctPrisons(false)
-
-    assertEquals(listOf("ABC"), prisons)
-  }
-
-  @Test
   fun `Get a count of people associated with a single calculation reference with unknown reference`() {
     val numberOfPeople = comparisonService.getCountOfPersonsInComparisonByComparisonReference("ABCD1234")
     assertEquals(0, numberOfPeople)

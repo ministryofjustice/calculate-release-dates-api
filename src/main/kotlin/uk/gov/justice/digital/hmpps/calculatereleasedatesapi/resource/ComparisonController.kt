@@ -128,33 +128,6 @@ class ComparisonController(
     return PagedModel(comparisonService.searchComparisons(prison, calculatedByCurrentUser, pageable))
   }
 
-  @GetMapping("/prisons")
-  @PreAuthorize("hasAnyRole('ROLE_RELEASE_DATE_COMPARER', 'CALCULATE_RELEASE_DATES__ADMIN__RW', 'CALCULATE_RELEASE_DATES__ADMIN__RO')")
-  @ResponseBody
-  @Operation(
-    summary = "List the distinct prisons that comparisons have been calculated for",
-    description = "This endpoint will return the distinct list of prisons for comparisons calculated by the current user, or by anyone other than the current user",
-  )
-  @ApiResponses(
-    value = [
-      ApiResponse(responseCode = "200", description = "Returns a list of distinct prison codes"),
-      ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
-      ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
-    ],
-  )
-  fun getComparisonPrisons(
-    @Parameter(
-      required = true,
-      example = "true",
-      description = "Whether to only consider comparisons calculated by the logged in (current) user. If true, prisons for comparisons calculated by the current user are returned. If false, prisons for comparisons NOT calculated by the current user are returned",
-    )
-    @RequestParam(required = true)
-    calculatedByCurrentUser: Boolean,
-  ): List<String> {
-    log.info("Requested a list of distinct comparison prisons with calculatedByCurrentUser={}", calculatedByCurrentUser)
-    return comparisonService.getDistinctPrisons(calculatedByCurrentUser)
-  }
-
   @GetMapping(value = ["{comparisonReference}/count"])
   @PreAuthorize("hasAnyRole('ROLE_RELEASE_DATE_COMPARER', 'CALCULATE_RELEASE_DATES__ADMIN__RW', 'CALCULATE_RELEASE_DATES__ADMIN__RO')")
   @ResponseBody
