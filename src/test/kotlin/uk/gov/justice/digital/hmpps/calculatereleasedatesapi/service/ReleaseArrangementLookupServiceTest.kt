@@ -335,8 +335,7 @@ class ReleaseArrangementLookupServiceTest {
   }
 
   @Test
-  fun `should set has an SDS exclusion if offence is progression model exclusion and feature toggle is on`() {
-    featureToggles.progressionModelScheduleExclusionEnabled = true
+  fun `should set has an SDS exclusion if offence is progression model exclusion`() {
     whenever(mockManageOffencesService.getSdsOffenceDetailsForOffenceCodes(listOf(OFFENCE_CODE_NON_SDS_PLUS))).thenReturn(
       listOf(
         nonSdsPlusExclusion(OFFENCE_CODE_NON_SDS_PLUS, listOf(OffenceSdsExclusionIndicator.SENTENCING_ACT_2026_PROGRESSION_MODEL)),
@@ -345,19 +344,6 @@ class ReleaseArrangementLookupServiceTest {
 
     val withReleaseArrangements = underTest.populateReleaseArrangements(listOf(nonSDSPlusSentenceAndOffenceFourYears))
     assertThat(withReleaseArrangements[0].sdsReleaseArrangements!!.sdsEarlyReleaseExclusions.firstOrNull()).isEqualTo(SDSEarlyReleaseExclusionType.SA2026_PROGRESSION_MODEL_SCHEDULE)
-  }
-
-  @Test
-  fun `should not set an SDS exclusion if offence is progression model exclusion but feature toggle is off`() {
-    featureToggles.progressionModelScheduleExclusionEnabled = false
-    whenever(mockManageOffencesService.getSdsOffenceDetailsForOffenceCodes(listOf(OFFENCE_CODE_NON_SDS_PLUS))).thenReturn(
-      listOf(
-        nonSdsPlusExclusion(OFFENCE_CODE_NON_SDS_PLUS, listOf(OffenceSdsExclusionIndicator.SENTENCING_ACT_2026_PROGRESSION_MODEL)),
-      ),
-    )
-
-    val withReleaseArrangements = underTest.populateReleaseArrangements(listOf(nonSDSPlusSentenceAndOffenceFourYears))
-    assertThat(withReleaseArrangements[0].sdsReleaseArrangements!!.sdsEarlyReleaseExclusions).isEmpty()
   }
 
   @Test
