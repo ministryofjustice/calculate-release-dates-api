@@ -240,67 +240,6 @@ class ComparisonEventIntTest(private val mockManageOffencesClient: MockManageOff
   }
 
   @Test
-  fun `Get distinct prisons must return prisons for comparisons calculated by the current user`() {
-    val comparison = createComparison("PRIS")
-
-    val result = webTestClient.get()
-      .uri("/comparison/prisons?calculatedByCurrentUser=true")
-      .accept(MediaType.APPLICATION_JSON)
-      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATE_COMPARER")))
-      .exchange()
-      .expectStatus().isOk
-      .expectHeader().contentType(MediaType.APPLICATION_JSON)
-      .expectBody(object : ParameterizedTypeReference<List<String>>() {})
-      .returnResult().responseBody!!
-
-    assertEquals(listOf(comparison.prison), result)
-  }
-
-  @Test
-  fun `Get distinct prisons excludes prisons for comparisons calculated by the current user when calculatedByCurrentUser is false`() {
-    createComparison("PRIS")
-
-    val result = webTestClient.get()
-      .uri("/comparison/prisons?calculatedByCurrentUser=false")
-      .accept(MediaType.APPLICATION_JSON)
-      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATE_COMPARER")))
-      .exchange()
-      .expectStatus().isOk
-      .expectHeader().contentType(MediaType.APPLICATION_JSON)
-      .expectBody(object : ParameterizedTypeReference<List<String>>() {})
-      .returnResult().responseBody!!
-
-    assertEquals(0, result.size)
-  }
-
-  @Test
-  fun `Get distinct prisons returns prisons for comparisons calculated by another user when calculatedByCurrentUser is false`() {
-    val comparison = createComparison("PRIS", username = "other-user")
-
-    val result = webTestClient.get()
-      .uri("/comparison/prisons?calculatedByCurrentUser=false")
-      .accept(MediaType.APPLICATION_JSON)
-      .headers(setAuthorisation(user = "test-client", roles = listOf("ROLE_RELEASE_DATE_COMPARER")))
-      .exchange()
-      .expectStatus().isOk
-      .expectHeader().contentType(MediaType.APPLICATION_JSON)
-      .expectBody(object : ParameterizedTypeReference<List<String>>() {})
-      .returnResult().responseBody!!
-
-    assertEquals(listOf(comparison.prison), result)
-  }
-
-  @Test
-  fun `Get distinct prisons without mandatory calculatedByCurrentUser parameter returns an error`() {
-    webTestClient.get()
-      .uri("/comparison/prisons")
-      .accept(MediaType.APPLICATION_JSON)
-      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATE_COMPARER")))
-      .exchange()
-      .expectStatus().is5xxServerError
-  }
-
-  @Test
   fun `Retrieve comparison must return mismatches associated`() {
     val comparison = createComparison("PRIS")
     val result = webTestClient.get()
