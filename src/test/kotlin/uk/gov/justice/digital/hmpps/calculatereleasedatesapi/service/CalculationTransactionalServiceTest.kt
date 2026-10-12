@@ -138,7 +138,7 @@ class CalculationTransactionalServiceTest {
     calculationConfirmationService,
     TEST_BUILD_PROPERTIES,
     trancheOutcomeRepository,
-    FeatureToggles(storeSentenceLevelDates = true),
+    FeatureToggles(),
     sentenceLevelDatesService,
     operativeSentenceEnvelopeRepository,
     secondCheckRepository,

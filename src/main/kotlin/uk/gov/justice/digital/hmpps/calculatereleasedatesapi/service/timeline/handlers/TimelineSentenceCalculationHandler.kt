@@ -231,8 +231,7 @@ class TimelineSentenceCalculationHandler(
         previousChainOrSingleSentence?.let { it to newSentence }
       }
       .onEach { (previousChainOrSingleSentence, newSentence) ->
-        val ersed = previousChainOrSingleSentence.sentenceCalculation.earlyReleaseSchemeEligibilityDate
-        if (featureToggles.useLatestErsedFromPreConsecutivelyImposedSnapshot && ersed != null) {
+        if (previousChainOrSingleSentence.sentenceCalculation.earlyReleaseSchemeEligibilityDate != null) {
           newSentence.sentenceCalculation.ersedSnapshotPriorToLatestSentenceBeingImposedConsecutively = previousChainOrSingleSentence.sentenceCalculation.breakdownByReleaseDateType[ReleaseDateType.ERSED]?.let {
             SentenceSnapshotCalculationBreakdown(timelineCalculationDate, it, newSentence.sentenceCalculation.adjustments.awardedDuringCustody)
           }
