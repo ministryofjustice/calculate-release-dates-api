@@ -54,4 +54,4 @@ generic-prometheus-alerts:
     - "calculate-release-dates-team-prod-bulk_comparison_dlq"
   sqsAlertsOldestThreshold: 2
   sqsAlertsTotalMessagesThreshold: 1
-  alertSeverity: legacy-replacement-alerts
+  alertSeverityOverride: legacy-replacement-alerts

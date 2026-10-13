@@ -1,0 +1,38 @@
+{
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "2000-01-01",
+      "isActiveSexOffender": true
+    },
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2022-09-12"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 11
+          }
+        },
+        "sentencedAt": "2022-09-12",
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": ["SA2026_PROGRESSION_MODEL_SCHEDULE"],
+          "isSection250": false
+        }
+      }
+    ],
+    "adjustments": {}
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "sds-progression-model-october",
+  "assertSds40": true,
+  "featureToggles": {
+    "applyPostRecallRepealRules": true
+  }
+}
