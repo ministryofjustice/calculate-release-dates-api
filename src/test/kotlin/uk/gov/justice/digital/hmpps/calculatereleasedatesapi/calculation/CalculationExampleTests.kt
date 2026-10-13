@@ -103,7 +103,9 @@ abstract class CalculationExampleTests : SpringTestBase() {
         )
       }
       if (calculationTestFile.assertSds40 == true) {
-        assertEquals(expectedResult.affectedBySds40, calculatedReleaseDates.calculationResult.affectedBySds40)
+        assertThat(calculatedReleaseDates.calculationResult.affectedBySds40)
+          .describedAs("affectedBySds40")
+          .isEqualTo(expectedResult.affectedBySds40)
       }
       if (expectedResult.sdsEarlyReleaseAllocatedTranche != null) {
         assertEquals(
