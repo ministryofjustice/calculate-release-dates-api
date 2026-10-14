@@ -10,7 +10,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationR
 interface CalculationRequestSentenceOutcomeRepository : JpaRepository<CalculationRequestSentenceOutcome, Long> {
   fun findByCalculationRequestSentenceId(calculationRequestSentenceId: Long): List<CalculationRequestSentenceOutcome>
 
-  @Query("DELETE FROM CalculationRequestSentenceOutcome WHERE calculationRequestSentenceId = :calculationRequestSentenceId")
+  @Query("DELETE FROM CalculationRequestSentenceOutcome o WHERE o.calculationRequestSentenceId IN (SELECT s.id FROM CalculationRequestSentence s WHERE s.calculationRequestId = :calculationRequestId)")
   @Modifying
-  fun deleteByCalculationRequestSentenceId(calculationRequestSentenceId: Long)
+  fun deleteByCalculationRequestId(calculationRequestId: Long)
 }

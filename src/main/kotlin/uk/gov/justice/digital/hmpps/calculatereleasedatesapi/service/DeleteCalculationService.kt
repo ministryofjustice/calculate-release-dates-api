@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
-import jakarta.persistence.EntityNotFoundException
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeRepository
@@ -8,7 +7,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.Calculat
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestSentenceOutcomeRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestSentenceRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.OperativeSentenceEnvelopeRepository
-import kotlin.jvm.optionals.getOrElse
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.TrancheOutcomeRepository
 
 @Service
 class DeleteCalculationService(
@@ -17,22 +16,35 @@ class DeleteCalculationService(
   private val calculationRequestSentenceRepository: CalculationRequestSentenceRepository,
   private val calculationRequestSentenceOutcomeRepository: CalculationRequestSentenceOutcomeRepository,
   private val operativeSentenceEnvelopeRepository: OperativeSentenceEnvelopeRepository,
+  private val trancheOutcomeRepository: TrancheOutcomeRepository,
 ) {
 
-  // REQUIRES_NEW so that the batch clean up of old preliminary calculations only fails for a single calculation request.
+  /**
+   * REQUIRES_NEW so that the batch clean up of old preliminary calculations only fails for a single calculation request.
+   *
+   * Deletes from the following tables with constrains on calculation request
+   * calculation_outcome
+   * calculation_request_sentence
+   * calculation_request_user_input
+   * operative_sentence_envelope
+   * tranche_outcome
+   * calculation_request
+   *
+   * The following are not applicable to PRELIMINARY calculations so are skipped
+   * approved_dates_submission
+   * calculation_outcome_historic_sled_override
+   * comparison_person
+   * calculation_request_second_check
+   * calculation_request_manual_reason
+   */
   @Transactional(Transactional.TxType.REQUIRES_NEW)
-  fun delete(calculationRequestId: Long) {
-    val calculationRequest = calculationRequestRepository.findById(calculationRequestId).getOrElse { throw EntityNotFoundException("Tried to delete a calculation request that doesn't exist: $calculationRequestId") }
-
-    // delete entities unlinked in JPA but with constraints in the database
+  fun deletePreliminary(calculationRequestId: Long) {
     calculationOutcomeRepository.deleteByCalculationRequestId(calculationRequestId)
-    calculationRequestSentenceRepository.findByCalculationRequestId(calculationRequestId).forEach { calculationRequestSentence ->
-      calculationRequestSentenceOutcomeRepository.deleteByCalculationRequestSentenceId(calculationRequestSentence.id!!)
-      calculationRequestSentenceRepository.delete(calculationRequestSentence)
-    }
+    calculationRequestSentenceOutcomeRepository.deleteByCalculationRequestId(calculationRequestId)
+    calculationRequestSentenceRepository.deleteByCalculationRequestId(calculationRequestId)
     operativeSentenceEnvelopeRepository.deleteByCalculationRequestId(calculationRequestId)
-
-    // finally delete calculation request that will cascade to certain entities with required mappings as well
-    calculationRequestRepository.delete(calculationRequest)
+    trancheOutcomeRepository.deleteByCalculationRequestId(calculationRequestId)
+    calculationRequestRepository.deleteUserInput(calculationRequestId)
+    calculationRequestRepository.deleteByCalculationRequestId(calculationRequestId)
   }
 }
