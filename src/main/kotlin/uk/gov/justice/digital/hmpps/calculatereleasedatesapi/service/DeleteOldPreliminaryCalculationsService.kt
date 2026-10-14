@@ -20,7 +20,7 @@ class DeleteOldPreliminaryCalculationsService(
     val calcsDeletedSuccessfully = calcsToDelete.count { calculationRequestId ->
       log.info("Deleting preliminary calculation request $calculationRequestId")
       try {
-        deleteCalculationService.delete(calculationRequestId)
+        deleteCalculationService.deletePreliminary(calculationRequestId)
         true
       } catch (e: Exception) {
         log.error("Unable to delete preliminary calculation request: $calculationRequestId", e)
