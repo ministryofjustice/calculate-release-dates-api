@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.CsvSource
 import org.junit.jupiter.params.provider.ValueSource
 import org.mockito.Mockito.mock
 import org.mockito.kotlin.any
@@ -3363,6 +3364,74 @@ class ValidationServiceTest : SpringTestBase() {
       ValidationOrder.allValidations(),
     )
     assertThat(result).containsExactly(ValidationMessage(ValidationCode.REPATRIATED_PRISONER))
+  }
+
+  @ParameterizedTest
+  @CsvSource(
+    "SCOTCT",
+    "NICT",
+    "GUERNS",
+    "IOM",
+    "IOMCTS",
+    "JERSEY",
+  )
+  fun `Cases that are not from English or Welsh courts should be unsupported`(courtId: String) {
+    val sentenceWithCourtId = SentenceAndOffenceWithReleaseArrangements(
+      source = validSdsSentence.copy(courtId = courtId),
+      isSdsPlus = false,
+      isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+      hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
+    )
+
+    val sentenceWithSupportedType = SentenceAndOffenceWithReleaseArrangements(
+      source = validSdsSentence.copy(sentenceCalculationType = SentenceCalculationType.ADIMP.name),
+      isSdsPlus = false,
+      isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+      hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
+    )
+
+    val result = validationService.validate(
+      CalculationSourceData(
+        listOf(sentenceWithCourtId, sentenceWithSupportedType),
+        VALID_PRISONER,
+        VALID_ADJUSTMENTS,
+        listOf(),
+        null,
+      ),
+      USER_INPUTS,
+      ValidationOrder.allValidations(),
+    )
+    assertThat(result).containsExactly(ValidationMessage(ValidationCode.CASE_NOT_FROM_ENGLISH_OR_WELSH_COURT))
+  }
+
+  @Test
+  fun `Indeterminate sentence types should supersede cases that are not from English or Welsh courts`() {
+    val sentenceWithUnsupportedCourtId = SentenceAndOffenceWithReleaseArrangements(
+      source = validSdsSentence.copy(courtId = "SCOTCT"),
+      isSdsPlus = false,
+      isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+      hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
+    )
+
+    val sentenceWithIndeterminateType = SentenceAndOffenceWithReleaseArrangements(
+      source = validSdsSentence.copy(sentenceCalculationType = SentenceCalculationType.LIFE.name),
+      isSdsPlus = false,
+      isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+      hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
+    )
+
+    val result = validationService.validate(
+      CalculationSourceData(
+        listOf(sentenceWithUnsupportedCourtId, sentenceWithIndeterminateType),
+        VALID_PRISONER,
+        VALID_ADJUSTMENTS,
+        listOf(),
+        null,
+      ),
+      USER_INPUTS,
+      ValidationOrder.allValidations(),
+    )
+    assertThat(result).containsExactly(ValidationMessage(UNSUPPORTED_SENTENCE_TYPE, listOf(SentenceCalculationType.LIFE.displayName!!)))
   }
 
   @Test

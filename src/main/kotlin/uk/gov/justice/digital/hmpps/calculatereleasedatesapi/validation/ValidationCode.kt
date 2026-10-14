@@ -154,4 +154,5 @@ enum class ValidationCode(val message: String, val validationType: ValidationTyp
   PROGRESSION_TRANCHE_ONE_ALLOCATION("This person was in Tranche 1 of the Progression Model legislation change", MANUAL_ENTRY_JOURNEY_REQUIRED),
   PROGRESSION_MODEL_SCHEDULE_EXCLUSION("This person has one or more offences that appear on the SA2026 Excluded Offences for Progression Model schedule", MANUAL_ENTRY_JOURNEY_REQUIRED),
   INVALID_NOMIS_OFFENCE_CODE("The offence %s %s%s is invalid.", ValidationType.INVALID_OFFENCE, ValidationMessageContentType.HTML),
+  CASE_NOT_FROM_ENGLISH_OR_WELSH_COURT("The calculation includes a case that is not from an English or Welsh court", MANUAL_ENTRY_JOURNEY_REQUIRED),
 }
