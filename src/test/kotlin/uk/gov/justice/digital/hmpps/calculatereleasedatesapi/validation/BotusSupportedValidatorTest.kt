@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.adjustmentsapi.model.AdjustmentDto
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentsSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NormalisedSentenceAndOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
@@ -11,7 +12,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Offe
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.BOTUS_CONSECUTIVE_TO_OTHER_SENTENCE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.validator.BotusSupportedValidator
 import java.time.LocalDate
@@ -83,7 +83,7 @@ class BotusSupportedValidatorTest {
 
     private val VALID_PRISONER =
       PrisonerDetails(offenderNo = "A12345B", bookingId = 1, dateOfBirth = LocalDate.of(1, 2, 3))
-    private val VALID_ADJUSTMENTS = BookingAndSentenceAdjustments(emptyList(), emptyList())
+    private val VALID_ADJUSTMENTS = emptyList<AdjustmentDto>()
 
     private val CONSECUTIVE_BOTUS_SENTENCES = listOf(
       BASE_SENTENCE.copy(
@@ -145,7 +145,7 @@ class BotusSupportedValidatorTest {
         )
       },
       prisonerDetails = VALID_PRISONER,
-      bookingAndSentenceAdjustments = AdjustmentsSourceData(prisonApiData = VALID_ADJUSTMENTS),
+      bookingAndSentenceAdjustments = AdjustmentsSourceData(adjustmentsApiData = VALID_ADJUSTMENTS),
       offenderFinePayments = listOf(),
       returnToCustodyDate = null,
     )
@@ -160,7 +160,7 @@ class BotusSupportedValidatorTest {
         )
       },
       prisonerDetails = VALID_PRISONER,
-      bookingAndSentenceAdjustments = AdjustmentsSourceData(prisonApiData = VALID_ADJUSTMENTS),
+      bookingAndSentenceAdjustments = AdjustmentsSourceData(adjustmentsApiData = VALID_ADJUSTMENTS),
       offenderFinePayments = listOf(),
       returnToCustodyDate = null,
     )
@@ -175,7 +175,7 @@ class BotusSupportedValidatorTest {
         )
       },
       prisonerDetails = VALID_PRISONER,
-      bookingAndSentenceAdjustments = AdjustmentsSourceData(prisonApiData = VALID_ADJUSTMENTS),
+      bookingAndSentenceAdjustments = AdjustmentsSourceData(adjustmentsApiData = VALID_ADJUSTMENTS),
       offenderFinePayments = listOf(),
       returnToCustodyDate = null,
     )

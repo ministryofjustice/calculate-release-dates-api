@@ -1,0 +1,33 @@
+[
+  {
+    "person": "ERSRETURN",
+    "adjustmentType": "UNLAWFULLY_AT_LARGE",
+    "bookingId": -216485386,
+    "toDate": null,
+    "fromDate": "2022-03-20",
+    "days": 3,
+    "status": "ACTIVE",
+    "effectiveDays": 3
+  },
+  {
+    "person": "ERSRETURN",
+    "adjustmentType": "ADDITIONAL_DAYS_AWARDED",
+    "bookingId": -216485386,
+    "toDate": null,
+    "fromDate": "2021-12-14",
+    "days": 10,
+    "status": "ACTIVE",
+    "effectiveDays": 10
+  },
+  {
+    "person": "ERSRETURN",
+    "adjustmentType": "REMAND",
+    "bookingId": -216485386,
+    "toDate": "2020-04-01",
+    "fromDate": "2019-01-03",
+    "days": 455,
+    "sentenceSequence": 1,
+    "status": "ACTIVE",
+    "effectiveDays": 455
+  }
+]

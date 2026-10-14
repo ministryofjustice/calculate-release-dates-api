@@ -8,11 +8,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RelevantRemandCalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RelevantRemandCalculationResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustment
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustmentType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffence
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.unuseddeductions.service.UnusedDeductionsCalculationService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isBeforeOrEqualTo
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode
@@ -65,35 +60,7 @@ class RelevantRemandService(
 
   private fun filterSentencesAndAdjustmentsForRelevantRemandCalc(sourceData: CalculationSourceData, request: RelevantRemandCalculationRequest): CalculationSourceData = sourceData.copy(
     sentenceAndOffences = sourceData.sentenceAndOffences.filter { it.sentenceDate.isBeforeOrEqualTo(request.calculateAt) },
-    bookingAndSentenceAdjustments = sourceData.bookingAndSentenceAdjustments.fold(
-      { filterAdjustmentsFromPrisonApi(it, sourceData, request) },
-      { filterAdjustmentsFromAdjustmentsApi(it, sourceData, request) },
-    ),
-  )
-
-  private fun filterAdjustmentsFromPrisonApi(
-    bookingAndSentenceAdjustments: BookingAndSentenceAdjustments,
-    sourceData: CalculationSourceData,
-    request: RelevantRemandCalculationRequest,
-  ): AdjustmentsSourceData = AdjustmentsSourceData(
-    prisonApiData = bookingAndSentenceAdjustments.copy(
-      sentenceAdjustments = bookingAndSentenceAdjustments.sentenceAdjustments.filter { !listOf(SentenceAdjustmentType.REMAND, SentenceAdjustmentType.RECALL_SENTENCE_REMAND, SentenceAdjustmentType.UNUSED_REMAND).contains(it.type) } +
-        request.relevantRemands.map {
-          val sentence = findSentence(sourceData.sentenceAndOffences, it.sentenceSequence)
-          val adjustmentType: SentenceAdjustmentType =
-            if (sentence != null && SentenceCalculationType.isCalculable(sentence.sentenceCalculationType)) {
-              val sentenceType = SentenceCalculationType.from(sentence.sentenceCalculationType)
-              if (sentenceType.recallType != null) {
-                SentenceAdjustmentType.RECALL_SENTENCE_REMAND
-              } else {
-                SentenceAdjustmentType.REMAND
-              }
-            } else {
-              SentenceAdjustmentType.REMAND
-            }
-          SentenceAdjustment(it.sentenceSequence, true, it.from, it.to, it.days, adjustmentType)
-        },
-    ),
+    bookingAndSentenceAdjustments = filterAdjustmentsFromAdjustmentsApi(sourceData.bookingAndSentenceAdjustments.adjustmentsApiData, sourceData, request),
   )
 
   private fun filterAdjustmentsFromAdjustmentsApi(
@@ -115,8 +82,6 @@ class RelevantRemandService(
         )
       },
   )
-
-  private fun findSentence(sentenceAndOffences: List<SentenceAndOffence>, sentenceSequence: Int): SentenceAndOffence? = sentenceAndOffences.find { it.sentenceSequence == sentenceSequence }
 
   companion object {
     private val VALIDATION_CODES_TO_IGNORE_BECAUSE_IDENTIFY_REMAND_MAY_RESOLVE_THEM = setOf(

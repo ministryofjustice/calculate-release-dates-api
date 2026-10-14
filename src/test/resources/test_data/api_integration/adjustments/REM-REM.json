@@ -1,0 +1,24 @@
+[
+  {
+    "person": "REM-REM",
+    "adjustmentType": "REMAND",
+    "bookingId": 1808801959,
+    "toDate": "2000-04-30",
+    "fromDate": "2000-04-28",
+    "days": 2,
+    "sentenceSequence": 1,
+    "status": "ACTIVE",
+    "effectiveDays": 2
+  },
+  {
+    "person": "REM-REM",
+    "adjustmentType": "REMAND",
+    "bookingId": 1808801959,
+    "toDate": "2000-04-30",
+    "fromDate": "2000-04-01",
+    "days": 29,
+    "sentenceSequence": 1,
+    "status": "ACTIVE",
+    "effectiveDays": 29
+  }
+]

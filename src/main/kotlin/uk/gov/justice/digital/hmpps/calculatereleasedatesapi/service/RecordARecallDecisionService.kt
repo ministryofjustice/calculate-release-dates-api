@@ -117,7 +117,7 @@ class RecordARecallDecisionService(
   }
 
   private fun getSourceData(prisonerId: String, penultimateBookingId: Long?): CalculationSourceData {
-    val sourceDataLookupOptions = SourceDataLookupOptions.overrideToIncludeInactiveDataAndForceAdjustmentsApi()
+    val sourceDataLookupOptions = SourceDataLookupOptions.overrideToIncludeInactiveData()
     return calculationSourceDataService.getCalculationSourceData(prisonerId, sourceDataLookupOptions, listOfNotNull(penultimateBookingId))
   }
 

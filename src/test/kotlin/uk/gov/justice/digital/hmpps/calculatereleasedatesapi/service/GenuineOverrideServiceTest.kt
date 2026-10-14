@@ -32,7 +32,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSReleaseArr
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.service.DateValidationService
@@ -382,12 +381,7 @@ class GenuineOverrideServiceTest {
     private val FAKE_SOURCE_DATA = CalculationSourceData(
       emptyList(),
       PrisonerDetails(offenderNo = "", bookingId = 1, dateOfBirth = LocalDate.of(1, 2, 3)),
-      AdjustmentsSourceData(
-        prisonApiData = BookingAndSentenceAdjustments(
-          emptyList(),
-          emptyList(),
-        ),
-      ),
+      AdjustmentsSourceData(emptyList()),
       listOf(),
       null,
     )

@@ -499,7 +499,7 @@ class ThingsToDoServiceTest {
       ),
       prisonerDetails = PRISONER_DETAILS,
       bookingAndSentenceAdjustments = AdjustmentsSourceData(
-        prisonApiData = BookingAndSentenceAdjustments(
+        adjustmentsApiData = BookingAndSentenceAdjustments(
           bookingAdjustments = emptyList(),
           sentenceAdjustments = listOf(
             SentenceAdjustment(
@@ -519,7 +519,7 @@ class ThingsToDoServiceTest {
               sentenceSequence = 1,
             ),
           ),
-        ),
+        ).upgrade(PRISONER_DETAILS),
       ),
       offenderFinePayments = emptyList(),
       returnToCustodyDate = null,
@@ -564,7 +564,7 @@ class ThingsToDoServiceTest {
       ),
       prisonerDetails = PRISONER_DETAILS,
       bookingAndSentenceAdjustments = AdjustmentsSourceData(
-        prisonApiData = BookingAndSentenceAdjustments(
+        BookingAndSentenceAdjustments(
           bookingAdjustments = listOf(
             BookingAdjustment(
               type = BookingAdjustmentType.ADDITIONAL_DAYS_AWARDED,
@@ -584,7 +584,7 @@ class ThingsToDoServiceTest {
               sentenceSequence = 1,
             ),
           ),
-        ),
+        ).upgrade(PRISONER_DETAILS),
       ),
       offenderFinePayments = emptyList(),
       returnToCustodyDate = null,

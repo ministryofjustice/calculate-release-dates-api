@@ -1,0 +1,13 @@
+[
+  {
+    "person": "crs-2107",
+    "adjustmentType": "REMAND",
+    "bookingId": -2123782449,
+    "toDate": "2023-09-23",
+    "fromDate": "2023-06-16",
+    "days": 100,
+    "sentenceSequence": 1,
+    "status": "ACTIVE",
+    "effectiveDays": 100
+  }
+]

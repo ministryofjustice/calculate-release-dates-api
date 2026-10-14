@@ -1,0 +1,23 @@
+[
+  {
+    "person": "CRS-1191-1",
+    "adjustmentType": "ADDITIONAL_DAYS_AWARDED",
+    "bookingId": -1106723579,
+    "toDate": "2022-02-14",
+    "fromDate": "2022-02-13",
+    "days": 2,
+    "status": "ACTIVE",
+    "effectiveDays": 2
+  },
+  {
+    "person": "CRS-1191-1",
+    "adjustmentType": "REMAND",
+    "bookingId": -1106723579,
+    "toDate": "2022-01-18",
+    "fromDate": "2022-01-14",
+    "days": 5,
+    "sentenceSequence": 1,
+    "status": "ACTIVE",
+    "effectiveDays": 5
+  }
+]

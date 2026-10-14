@@ -1,0 +1,35 @@
+[
+  {
+    "person": "RELREMT",
+    "adjustmentType": "REMAND",
+    "bookingId": 1808968467,
+    "toDate": "2021-01-31",
+    "fromDate": "2021-01-01",
+    "days": 31,
+    "sentenceSequence": 4,
+    "status": "ACTIVE",
+    "effectiveDays": 31
+  },
+  {
+    "person": "RELREMT",
+    "adjustmentType": "REMAND",
+    "bookingId": 1808968467,
+    "toDate": "2021-01-31",
+    "fromDate": "2021-01-01",
+    "days": 31,
+    "sentenceSequence": 4,
+    "status": "ACTIVE",
+    "effectiveDays": 31
+  },
+  {
+    "person": "RELREMT",
+    "adjustmentType": "TAGGED_BAIL",
+    "bookingId": 1808968467,
+    "toDate": "2021-01-31",
+    "fromDate": "2021-01-01",
+    "days": 300,
+    "sentenceSequence": 4,
+    "status": "ACTIVE",
+    "effectiveDays": 300
+  }
+]

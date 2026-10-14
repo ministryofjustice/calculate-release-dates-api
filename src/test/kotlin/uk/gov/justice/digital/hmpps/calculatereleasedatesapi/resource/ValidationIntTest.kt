@@ -258,11 +258,6 @@ class ValidationIntTest(private val mockManageOffencesClient: MockManageOffences
   }
 
   @Test
-  fun `Run validation on zero day adjustment`() {
-    runValidationAndCheckMessages("ZERO", emptyList())
-  }
-
-  @Test
   fun `Run validation on no terms`() {
     runValidationAndCheckMessages("NO_TERM", listOf(ValidationMessage(ValidationCode.SENTENCE_HAS_NO_IMPRISONMENT_TERM, arguments = listOf("1", "1"))))
   }

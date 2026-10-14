@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AnalysedAdjustment
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AnalysedBookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AnalysedSentenceAndOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ProgressionModelExclusionResponse
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource.ManualCalculationController.Companion.log
@@ -42,22 +41,6 @@ class SourceDataProxyController(
     ],
   )
   fun getSentencesAndOffences(@PathVariable bookingId: Long): List<AnalysedSentenceAndOffence> = sentenceAndOffenceService.getSentencesAndOffences(bookingId)
-
-  @GetMapping(value = ["/booking-and-sentence-adjustments/{bookingId}"])
-  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR', 'CALCULATE_RELEASE_DATES__CALCULATE__RW', 'CALCULATE_RELEASE_DATES__CALCULATE__RO')")
-  @ResponseBody
-  @Operation(
-    summary = "Get booking and sentence adjustments",
-    description = "This endpoint will return a response model which shows booking and sentence adjustments. It will notify if there are new adjustments since last calculation",
-  )
-  @ApiResponses(
-    value = [
-      ApiResponse(responseCode = "200", description = "Returns a List<AnalysedBookingAndSentenceAdjustments"),
-      ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
-      ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
-    ],
-  )
-  fun getBookingAndSentenceAdjustments(@PathVariable bookingId: Long): AnalysedBookingAndSentenceAdjustments = adjustmentsService.getAnalysedBookingAndSentenceAdjustments(bookingId)
 
   @GetMapping(value = ["/adjustments/{prisonerId}"])
   @PreAuthorize("hasAnyRole('VIEW_PRISONER_DATA', 'RELEASE_DATES_CALCULATOR', 'CALCULATE_RELEASE_DATES__CALCULATE__RW', 'CALCULATE_RELEASE_DATES__CALCULATE__RO')")

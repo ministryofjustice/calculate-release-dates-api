@@ -102,19 +102,15 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOf
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SopcSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ComparisonInput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.FixedTermRecallDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderKeyDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ReturnToCustodyDate
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustment
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.PrisonApiExternalMovement
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessage
 import java.time.LocalDate
@@ -310,10 +306,7 @@ fun transform(prisonerDetails: PrisonerDetails): Offender = Offender(
 fun transform(
   adjustmentsSource: AdjustmentsSourceData,
   sentencesAndOffences: List<SentenceAndOffence>,
-): Adjustments = adjustmentsSource.fold(
-  { transform(it, sentencesAndOffences) },
-  { transform(it, sentencesAndOffences) },
-)
+): Adjustments = transform(adjustmentsSource.adjustmentsApiData, sentencesAndOffences)
 
 fun transform(
   adjustmentsSource: List<AdjustmentDto>,
@@ -342,101 +335,6 @@ fun transform(
       }
     }
   return adjustments
-}
-
-fun transform(
-  bookingAndSentenceAdjustments: BookingAndSentenceAdjustments,
-  sentencesAndOffences: List<SentenceAndOffence>,
-): Adjustments {
-  val adjustments = Adjustments()
-  bookingAndSentenceAdjustments.bookingAdjustments.forEach {
-    val adjustmentType = transform(it.type)
-    if (adjustmentType != null) {
-      adjustments.addAdjustment(
-        adjustmentType,
-        Adjustment(
-          appliesToSentencesFrom = it.fromDate,
-          numberOfDays = it.numberOfDays,
-          fromDate = it.fromDate,
-          toDate = it.toDate,
-        ),
-      )
-    }
-  }
-  bookingAndSentenceAdjustments.sentenceAdjustments.forEach {
-    val adjustmentType = transform(it.type)
-    if (adjustmentType != null) {
-      val sentence: SentenceAndOffence? = findSentenceForAdjustment(it, sentencesAndOffences)
-      // If sentence is not present it could be that the adjustment is linked to an inactive sentence, which needs filtering out.
-      if (sentence != null) {
-        adjustments.addAdjustment(
-          adjustmentType,
-          Adjustment(
-            appliesToSentencesFrom = sentence.sentenceDate,
-            fromDate = it.fromDate,
-            toDate = it.toDate,
-            numberOfDays = it.numberOfDays,
-          ),
-        )
-      }
-    }
-  }
-  return adjustments
-}
-
-private fun findSentenceForAdjustment(
-  adjustment: SentenceAdjustment,
-  sentencesAndOffences: List<SentenceAndOffence>,
-): SentenceAndOffence? {
-  val sentence = sentencesAndOffences.find { adjustment.sentenceSequence == it.sentenceSequence && (adjustment.bookingId == null || adjustment.bookingId == it.bookingId) }
-  if (sentence == null) {
-    return null
-  } else {
-    val recallType = SentenceCalculationType.from(sentence.sentenceCalculationType).recallType
-    if (listOf(
-        SentenceAdjustmentType.REMAND,
-        SentenceAdjustmentType.TAGGED_BAIL,
-      ).contains(adjustment.type) &&
-      recallType != null
-    ) {
-      val firstDeterminate = sentencesAndOffences.sortedBy { it.sentenceDate }
-        .find { SentenceCalculationType.from(it.sentenceCalculationType).recallType == null }
-      if (firstDeterminate != null) {
-        return firstDeterminate
-      }
-    }
-    if (listOf(
-        SentenceAdjustmentType.RECALL_SENTENCE_REMAND,
-        SentenceAdjustmentType.RECALL_SENTENCE_TAGGED_BAIL,
-      ).contains(adjustment.type) &&
-      recallType == null
-    ) {
-      val firstRecall = sentencesAndOffences.sortedBy { it.sentenceDate }
-        .find { SentenceCalculationType.from(it.sentenceCalculationType).recallType != null }
-      if (firstRecall != null) {
-        return firstRecall
-      }
-    }
-    return sentence
-  }
-}
-
-fun transform(sentenceAdjustmentType: SentenceAdjustmentType): AdjustmentType? = when (sentenceAdjustmentType) {
-  SentenceAdjustmentType.RECALL_SENTENCE_REMAND -> RECALL_REMAND
-  SentenceAdjustmentType.RECALL_SENTENCE_TAGGED_BAIL -> RECALL_TAGGED_BAIL
-  SentenceAdjustmentType.REMAND -> REMAND
-  SentenceAdjustmentType.TAGGED_BAIL -> TAGGED_BAIL
-  SentenceAdjustmentType.UNUSED_REMAND -> null
-  SentenceAdjustmentType.TIME_SPENT_IN_CUSTODY_ABROAD -> null
-  SentenceAdjustmentType.TIME_SPENT_AS_AN_APPEAL_APPLICANT -> null
-}
-
-fun transform(bookingAdjustmentType: BookingAdjustmentType): AdjustmentType? = when (bookingAdjustmentType) {
-  BookingAdjustmentType.ADDITIONAL_DAYS_AWARDED -> ADDITIONAL_DAYS_AWARDED
-  BookingAdjustmentType.LAWFULLY_AT_LARGE -> null
-  BookingAdjustmentType.RESTORED_ADDITIONAL_DAYS_AWARDED -> RESTORATION_OF_ADDITIONAL_DAYS_AWARDED
-  BookingAdjustmentType.SPECIAL_REMISSION -> null
-  BookingAdjustmentType.UNLAWFULLY_AT_LARGE -> UNLAWFULLY_AT_LARGE
 }
 
 fun transform(adjustmentType: AdjustmentDto.AdjustmentType, sentence: SentenceAndOffence?): AdjustmentType? {
@@ -477,11 +375,8 @@ fun transform(
   inputData = objectToJson(booking, objectMapper),
   sentenceAndOffences = objectToJson(sourceData.sentenceAndOffences, objectMapper),
   prisonerDetails = objectToJson(sourceData.prisonerDetails, objectMapper),
-  adjustments = sourceData.bookingAndSentenceAdjustments.fold(
-    { objectToJson(it, objectMapper) },
-    { objectToJson(it, objectMapper) },
-  ),
-  adjustmentsVersion = sourceData.bookingAndSentenceAdjustments.fold({ 0 }, { 1 }),
+  adjustments = objectToJson(sourceData.bookingAndSentenceAdjustments.adjustmentsApiData, objectMapper),
+  adjustmentsVersion = 1,
   offenderFinePayments = objectToJson(sourceData.offenderFinePayments, objectMapper),
   returnToCustodyDate = if (sourceData.returnToCustodyDate != null) objectToJson(sourceData.returnToCustodyDate, objectMapper) else null,
   calculationRequestUserInput = transform(calculationUserInputs),

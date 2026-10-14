@@ -34,7 +34,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OffenderKeyDa
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.SecondCheckRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource.JsonTransformation
 import java.io.File
@@ -233,12 +232,7 @@ class HintTextTest : SpringTestBase() {
     private val SOURCE_DATA = CalculationSourceData(
       emptyList(),
       PrisonerDetails(offenderNo = "", bookingId = 1, dateOfBirth = LocalDate.of(1, 2, 3)),
-      AdjustmentsSourceData(
-        prisonApiData = BookingAndSentenceAdjustments(
-          emptyList(),
-          emptyList(),
-        ),
-      ),
+      AdjustmentsSourceData(emptyList()),
       listOf(),
       null,
     )

@@ -14,11 +14,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentAnalysisResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AnalysedAdjustment
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustment
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustmentType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustment
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustmentType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 import java.time.LocalDate
 
@@ -43,40 +38,6 @@ class CalculationAdjustmentsApiIntTest : IntegrationTestBase() {
     assertThat(result).isNotNull
     assertThat(result.dates[SLED]).isEqualTo(LocalDate.of(2024, 10, 2))
 
-    // Get stored adjustments in prison-api structure
-    val storedPrisonApiStructuredAdjustments = getStoredAdjustmentsPrisonApiStructure(result.calculationRequestId)
-
-    assertThat(storedPrisonApiStructuredAdjustments.sentenceAdjustments.size).isEqualTo(1)
-    assertThat(storedPrisonApiStructuredAdjustments.sentenceAdjustments[0]).isEqualTo(
-      SentenceAdjustment(
-        type = SentenceAdjustmentType.REMAND,
-        fromDate = LocalDate.of(2023, 2, 1),
-        toDate = LocalDate.of(2023, 4, 1),
-        active = true,
-        numberOfDays = 60,
-        sentenceSequence = 1,
-      ),
-    )
-    assertThat(storedPrisonApiStructuredAdjustments.bookingAdjustments.size).isEqualTo(2)
-    assertThat(storedPrisonApiStructuredAdjustments.bookingAdjustments[0]).isEqualTo(
-      BookingAdjustment(
-        type = BookingAdjustmentType.ADDITIONAL_DAYS_AWARDED,
-        fromDate = LocalDate.of(2017, 2, 3),
-        toDate = null,
-        active = true,
-        numberOfDays = 23,
-      ),
-    )
-    assertThat(storedPrisonApiStructuredAdjustments.bookingAdjustments[1]).isEqualTo(
-      BookingAdjustment(
-        type = BookingAdjustmentType.UNLAWFULLY_AT_LARGE,
-        fromDate = LocalDate.of(2018, 10, 28),
-        toDate = LocalDate.of(2018, 11, 3),
-        active = true,
-        numberOfDays = 7,
-      ),
-    )
-
     // Get stored adjustments in adjustments-api structure
     val storedAdjustmentsApiAdjustments = getStoredAdjustmentsApiStructure(result.calculationRequestId)
 
@@ -97,7 +58,7 @@ class CalculationAdjustmentsApiIntTest : IntegrationTestBase() {
   }
 
   private fun getStoredAdjustmentsApiStructure(calculationRequestId: Long) = webTestClient.get()
-    .uri("/calculation/adjustments/$calculationRequestId?adjustments-api=true")
+    .uri("/calculation/adjustments/$calculationRequestId")
     .accept(MediaType.APPLICATION_JSON)
     .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
     .exchange()
@@ -106,15 +67,6 @@ class CalculationAdjustmentsApiIntTest : IntegrationTestBase() {
     .expectBody(object : ParameterizedTypeReference<List<AdjustmentDto>>() {})
     .returnResult().responseBody!!
 
-  private fun getStoredAdjustmentsPrisonApiStructure(calculationRequestId: Long) = webTestClient.get()
-    .uri("/calculation/adjustments/$calculationRequestId")
-    .accept(MediaType.APPLICATION_JSON)
-    .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
-    .exchange()
-    .expectStatus().isOk
-    .expectHeader().contentType(MediaType.APPLICATION_JSON)
-    .expectBody(BookingAndSentenceAdjustments::class.java)
-    .returnResult().responseBody!!
   private fun getAnalysedAdjustments(prisoner: String) = webTestClient.get()
     .uri("/adjustments/$prisoner")
     .accept(MediaType.APPLICATION_JSON)

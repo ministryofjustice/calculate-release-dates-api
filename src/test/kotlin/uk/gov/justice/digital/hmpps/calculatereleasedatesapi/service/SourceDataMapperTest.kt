@@ -402,9 +402,6 @@ class SourceDataMapperTest {
       sentenceAndOffencesVersion = 3,
     )
 
-    // for old adjustments APIs
-    assertThat(sourceDataMapper.mapBookingAndSentenceAdjustments(calculationRequest)).isEqualTo(adjustments)
-    // for new APIs
     val adjustmentDtos = listOf(
       AdjustmentDto(
         person = "A1234BC",
@@ -473,31 +470,6 @@ class SourceDataMapperTest {
       sentenceAndOffencesVersion = 3,
     )
 
-    // for old adjustments APIs
-    assertThat(sourceDataMapper.mapBookingAndSentenceAdjustments(calculationRequest)).isEqualTo(
-      BookingAndSentenceAdjustments(
-        bookingAdjustments = listOf(
-          BookingAdjustment(
-            type = BookingAdjustmentType.ADDITIONAL_DAYS_AWARDED,
-            numberOfDays = 10,
-            fromDate = LocalDate.of(2015, 1, 2),
-            toDate = LocalDate.of(2015, 12, 31),
-            active = true,
-          ),
-        ),
-        sentenceAdjustments = listOf(
-          SentenceAdjustment(
-            type = SentenceAdjustmentType.REMAND, // adjustments API doesn't have recall remand so is mapped back to just REMAND
-            numberOfDays = 20,
-            fromDate = LocalDate.of(2015, 2, 3),
-            toDate = LocalDate.of(2015, 2, 28),
-            active = true,
-            sentenceSequence = 1,
-          ),
-        ),
-      ),
-    )
-    // for new APIs
     assertThat(sourceDataMapper.mapAdjustments(calculationRequest)).isEqualTo(adjustments)
     assertThat(sourceDataMapper.getSourceData(calculationRequest).bookingAndSentenceAdjustments).isEqualTo(AdjustmentsSourceData(adjustmentsApiData = adjustments))
   }

@@ -56,7 +56,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmittedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.UserInputType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ReturnToCustodyDate
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 import java.time.Duration
 import java.time.LocalDate
@@ -430,18 +429,6 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
 
     assertThat(prisonerDetails).isNotNull
 
-    val bookingAndSentenceAdjustments = webTestClient.get()
-      .uri("/calculation/adjustments/${calc.calculationRequestId}")
-      .accept(APPLICATION_JSON)
-      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
-      .exchange()
-      .expectStatus().isOk
-      .expectHeader().contentType(APPLICATION_JSON)
-      .expectBody(BookingAndSentenceAdjustments::class.java)
-      .returnResult().responseBody!!
-
-    assertThat(bookingAndSentenceAdjustments).isNotNull
-
     val adjustments = webTestClient.get()
       .uri("/calculation/adjustments/${calc.calculationRequestId}?adjustments-api=true")
       .accept(APPLICATION_JSON)
@@ -453,8 +440,6 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
       .returnResult().responseBody!!
 
     assertThat(adjustments).isNotNull
-
-    assertThat(adjustments.size).isEqualTo(bookingAndSentenceAdjustments.bookingAdjustments.size + bookingAndSentenceAdjustments.sentenceAdjustments.size)
 
     val returnToCustody = webTestClient.get()
       .uri("/calculation/return-to-custody/${calc.calculationRequestId}")
@@ -604,49 +589,6 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
         assertThat(responseBody).contains("No valid Return To Custody Date found") // Basic check for relevant message
         assertThat(responseBody).contains("\"status\":500") // Check for field mention
       }
-  }
-
-  @Test
-  fun `Run calculation on pre prod bug where adjustments are applied to wrong sentences CRS-829 AC-1`() {
-    mockManageOffencesClient.notSDSPlusAndNoExclusions(listOf("FI68421", "MD71131C", "MD71230", "MD71239"))
-    val calculation: CalculatedReleaseDates = webTestClient.post()
-      .uri("/calculation/CRS-829-1")
-      .accept(APPLICATION_JSON)
-      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
-      .bodyValue(calculationRequestModel)
-      .exchange()
-      .expectStatus().isOk
-      .expectHeader().contentType(APPLICATION_JSON)
-      .expectBody(CalculatedReleaseDates::class.java)
-      .returnResult().responseBody!!
-
-    assertThat(calculation.dates[CRD]).isEqualTo(
-      LocalDate.of(2015, 8, 28),
-    )
-    assertThat(calculation.dates[SLED]).isEqualTo(
-      LocalDate.of(2019, 3, 28),
-    )
-  }
-
-  @Test
-  fun `Run calculation on pre prod bug where adjustments are applied to wrong sentences CRS-829 AC-2`() {
-    val calculation: CalculatedReleaseDates = webTestClient.post()
-      .uri("/calculation/CRS-829-2")
-      .accept(APPLICATION_JSON)
-      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
-      .bodyValue(calculationRequestModel)
-      .exchange()
-      .expectStatus().isOk
-      .expectHeader().contentType(APPLICATION_JSON)
-      .expectBody(CalculatedReleaseDates::class.java)
-      .returnResult().responseBody!!
-
-    assertThat(calculation.dates[CRD]).isEqualTo(
-      LocalDate.of(2015, 8, 30),
-    )
-    assertThat(calculation.dates[SLED]).isEqualTo(
-      LocalDate.of(2019, 3, 30),
-    )
   }
 
   @Test
@@ -954,6 +896,7 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
   @Test
   fun `Run calculation on EDS recall sentence`() {
     mockManageOffencesClient.notSDSPlusAndNoExclusions(listOf("A1234BC"))
+
     val calculation: CalculatedReleaseDates = webTestClient.post()
       .uri("/calculation/EDSRECALL")
       .accept(APPLICATION_JSON)
@@ -965,10 +908,10 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
       .expectBody(CalculatedReleaseDates::class.java)
       .returnResult().responseBody!!
 
-    assertThat(calculation.dates[PRRD]).isEqualTo(
+    assertThat(calculation.dates[PRRD]).describedAs("PRRD").isEqualTo(
       LocalDate.of(2024, 4, 1),
     )
-    assertThat(calculation.dates[SLED]).isEqualTo(
+    assertThat(calculation.dates[SLED]).describedAs("SLED").isEqualTo(
       LocalDate.of(2024, 4, 1),
     )
   }

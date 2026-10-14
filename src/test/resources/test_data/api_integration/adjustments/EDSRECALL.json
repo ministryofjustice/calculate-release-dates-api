@@ -1,0 +1,13 @@
+[
+  {
+    "person": "EDSRECALL",
+    "adjustmentType": "REMAND",
+    "bookingId": 1,
+    "toDate": null,
+    "fromDate": null,
+    "days": 74,
+    "sentenceSequence": 1,
+    "status": "ACTIVE",
+    "effectiveDays": 74
+  }
+]
