@@ -44,7 +44,7 @@ dependencies {
   implementation("org.jetbrains.kotlin:kotlin-reflect:2.4.21")
 
   // Three Ten Date Calculations
-  implementation("org.threeten:threeten-extra:1.10.0")
+  implementation("org.threeten:threeten-extra:1.11.0")
 
   compileOnly("javax.servlet:javax.servlet-api:4.0.1")
 
