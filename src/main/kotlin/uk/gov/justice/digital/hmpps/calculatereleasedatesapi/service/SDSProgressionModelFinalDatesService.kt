@@ -69,14 +69,21 @@ class SDSProgressionModelFinalDatesService {
       }
     }
 
+    val affectedByProgressionModel = mergedDates != standardReleaseCalculation.dates || standardReleaseCalculation.affectedByProgressionModel
+    val affectedBySds40 = if (!affectedByProgressionModel && earlyReleaseCalculation.affectedByProgressionModel) {
+      // if we were NOT affected by progression even though the early release calculation WAS affected then we must have used the standard release dates
+      standardReleaseCalculation.affectedBySds40
+    } else {
+      earlyReleaseCalculation.affectedBySds40
+    }
     return CalculationResult(
       dates = mergedDates,
       breakdownByReleaseDateType = mergedBreakdown,
       otherDates = earlyReleaseCalculation.otherDates,
       effectiveSentenceLength = earlyReleaseCalculation.effectiveSentenceLength,
       sentencesImpactingFinalReleaseDate = earlyReleaseCalculation.sentencesImpactingFinalReleaseDate,
-      affectedBySds40 = earlyReleaseCalculation.affectedBySds40,
-      affectedByProgressionModel = mergedDates != standardReleaseCalculation.dates || standardReleaseCalculation.affectedByProgressionModel,
+      affectedBySds40 = affectedBySds40,
+      affectedByProgressionModel = affectedByProgressionModel,
     )
   }
 
