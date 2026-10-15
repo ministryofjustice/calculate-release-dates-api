@@ -12,7 +12,11 @@ import org.springframework.test.web.reactive.server.expectBody
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.dbhelper.TestCalculationRequestService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.MockPrisonService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationRequestModel
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationSentenceUserInput
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DeletedPreviousCalculationResult
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.UserInputType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 import java.time.LocalDateTime
 
@@ -32,13 +36,23 @@ class DeleteOldPreliminaryCalculationsIntTest(private val mockPrisonService: Moc
 
   @Test
   fun `Removes only old preliminary calculations`() {
-    val prelimOld = createPreliminaryCalculation(PRISONER_ID)
+    val requestWithUserInputs = CalculationRequestModel(
+      calculationReasonId = 1L,
+      calculationUserInputs = CalculationUserInputs(
+        calculateErsed = true,
+        sentenceCalculationUserInputs = listOf(
+          CalculationSentenceUserInput(1, "SX0001", UserInputType.UPDATED, true),
+        ),
+      ),
+    )
+
+    val prelimOld = createPreliminaryCalculation(PRISONER_ID, requestWithUserInputs)
     val confirmedOld = createConfirmCalculationForPrisoner(prelimOld.calculationRequestId)
     val aDateOldEnoughToBeRemoved = LocalDateTime.now().minusDays(1).minusYears(2)
     testCalculationRequestService.updateCalculatedAt(prelimOld.calculationRequestId, aDateOldEnoughToBeRemoved)
     testCalculationRequestService.updateCalculatedAt(confirmedOld.calculationRequestId, aDateOldEnoughToBeRemoved)
 
-    val prelimNew = createPreliminaryCalculation(PRISONER_ID)
+    val prelimNew = createPreliminaryCalculation(PRISONER_ID, requestWithUserInputs)
     val confirmedNew = createConfirmCalculationForPrisoner(prelimNew.calculationRequestId)
 
     val response = webTestClient.post()

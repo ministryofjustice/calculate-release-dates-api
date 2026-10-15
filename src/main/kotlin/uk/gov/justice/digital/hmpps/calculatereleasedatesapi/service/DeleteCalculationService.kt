@@ -26,6 +26,7 @@ class DeleteCalculationService(
    * calculation_outcome
    * calculation_request_sentence
    * calculation_request_user_input
+   * calculation_request_sentence_user_input
    * operative_sentence_envelope
    * tranche_outcome
    * calculation_request
@@ -44,6 +45,7 @@ class DeleteCalculationService(
     calculationRequestSentenceRepository.deleteByCalculationRequestId(calculationRequestId)
     operativeSentenceEnvelopeRepository.deleteByCalculationRequestId(calculationRequestId)
     trancheOutcomeRepository.deleteByCalculationRequestId(calculationRequestId)
+    calculationRequestRepository.deleteSentenceUserInput(calculationRequestId)
     calculationRequestRepository.deleteUserInput(calculationRequestId)
     calculationRequestRepository.deleteByCalculationRequestId(calculationRequestId)
   }

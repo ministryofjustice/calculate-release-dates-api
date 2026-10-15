@@ -106,4 +106,8 @@ interface CalculationRequestRepository : JpaRepository<CalculationRequest, Long>
   @Query("DELETE FROM CalculationRequestUserInput WHERE calculationRequest.id = :calculationRequestId")
   @Modifying
   fun deleteUserInput(calculationRequestId: Long)
+
+  @Query("DELETE FROM CalculationRequestSentenceUserInput WHERE calculationRequestUserInput.calculationRequest.id = :calculationRequestId")
+  @Modifying
+  fun deleteSentenceUserInput(calculationRequestId: Long)
 }
