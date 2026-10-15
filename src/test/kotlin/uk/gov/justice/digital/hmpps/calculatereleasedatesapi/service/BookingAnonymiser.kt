@@ -15,20 +15,18 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SopcSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource.JsonTransformation
 import java.time.LocalDate
-import kotlin.test.Ignore
 
 /**
  * This test just takes a booking JSON file and anonymises any data and removes duplicate sentences.
  * Work in progress. Copy data from build file after.
  */
-@Ignore
 class BookingAnonymiser {
   private val jsonTransformation = JsonTransformation()
 
   @Test
   fun anonymiseSingleTestCases() {
     val exampleType = "progression-model"
-    val exampleNumber = "crs-2851"
+    val exampleNumber = "crs-2869-bug"
 
     anonymiseTestCase("$exampleType/$exampleNumber")
   }

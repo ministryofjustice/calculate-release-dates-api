@@ -1,0 +1,81 @@
+{
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01",
+      "isActiveSexOffender": true
+    },
+    "sentences": [
+      {
+        "offence": {
+          "committedAt": "2024-10-08",
+          "offenceCode": "MD71131C"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 5,
+            "MONTHS": 5
+          }
+        },
+        "sentencedAt": "2026-05-27",
+        "identifier": "f9799d77-8149-3fa6-bb71-7697eb9ce980",
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
+      },
+      {
+        "offence": {
+          "committedAt": "2024-06-09",
+          "offenceCode": "SE20001"
+        },
+        "duration": {
+          "durationElements": {
+            "WEEKS": 10
+          }
+        },
+        "sentencedAt": "2024-11-22",
+        "identifier": "4bd14689-eac8-39c7-a5b9-9a307c98e609",
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
+      }
+    ],
+    "adjustments": {
+      "ADDITIONAL_DAYS_AWARDED": [
+        {
+          "appliesToSentencesFrom": "2025-02-19",
+          "numberOfDays": 32,
+          "fromDate": "2025-02-19"
+        }
+      ],
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2026-05-27",
+          "numberOfDays": 44,
+          "fromDate": "2024-10-09",
+          "toDate": "2024-11-21"
+        },
+        {
+          "appliesToSentencesFrom": "2026-05-27",
+          "numberOfDays": 523,
+          "fromDate": "2024-12-20",
+          "toDate": "2026-05-26"
+        }
+      ]
+    }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "sds-progression-model-october",
+  "assertSds40": true,
+  "featureToggles": {
+    "applyPostRecallRepealRules": true
+  }
+}
