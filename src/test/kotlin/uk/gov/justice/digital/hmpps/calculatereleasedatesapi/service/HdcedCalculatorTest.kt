@@ -16,6 +16,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Calcul
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentDuration
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AffectedBySdsLegislation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationTrigger
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
@@ -235,6 +236,7 @@ class HdcedCalculatorTest {
         adjustedDays = 0,
         releaseDate = LocalDate.of(2020, 2, 5),
         unadjustedDate = LocalDate.of(2020, 1, 1),
+        affectedBySdsLegislation = AffectedBySdsLegislation(sds40 = false, progressionModel = false),
       ),
     ) // Shows hint as Sentence date plus HDCED adjustment (35) plus/minus regular adjustment (0)
   }
@@ -314,6 +316,7 @@ class HdcedCalculatorTest {
         adjustedDays = 0,
         releaseDate = LocalDate.of(2020, 1, 29),
         unadjustedDate = LocalDate.of(2020, 1, 1),
+        affectedBySdsLegislation = AffectedBySdsLegislation(sds40 = false, progressionModel = false),
       ),
     ) // Shows hint as Sentence date plus HDCED adjustment (35) plus/minus regular adjustment (0)
   }
@@ -351,6 +354,7 @@ class HdcedCalculatorTest {
         adjustedDays = 0,
         releaseDate = LocalDate.of(2020, 1, 15),
         unadjustedDate = LocalDate.of(2020, 1, 1),
+        affectedBySdsLegislation = AffectedBySdsLegislation(sds40 = false, progressionModel = false),
       ),
     )
   }
@@ -387,6 +391,7 @@ class HdcedCalculatorTest {
         adjustedDays = 0,
         releaseDate = LocalDate.of(2020, 6, 30),
         unadjustedDate = LocalDate.of(2020, 12, 26),
+        affectedBySdsLegislation = AffectedBySdsLegislation(sds40 = false, progressionModel = false),
       ),
     ) // Hint shown as adjusted CRD minus 179 days
   }
@@ -453,6 +458,7 @@ class HdcedCalculatorTest {
         adjustedDays = 0,
         releaseDate = LocalDate.of(2020, 1, 15),
         unadjustedDate = LocalDate.of(2020, 1, 1),
+        affectedBySdsLegislation = AffectedBySdsLegislation(sds40 = false, progressionModel = false),
       ),
     )
   }
@@ -661,11 +667,14 @@ class HdcedCalculatorTest {
     )
     unadjustedReleaseDate = spy(unadjustedReleaseDate)
     lenient().whenever(unadjustedReleaseDate.releaseDateCalculation).thenReturn(releaseDateCalculation)
-    return SentenceCalculation(
+    val sentenceCalculation = SentenceCalculation(
       unadjustedReleaseDate,
       adjustments,
       false,
+      sentence,
     )
+    sentence.sentenceCalculation = sentenceCalculation
+    return sentenceCalculation
   }
 
   private fun calc(

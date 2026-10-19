@@ -5,6 +5,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggl
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.HDCED
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AffectedBySdsLegislation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
@@ -112,7 +113,8 @@ class HdcedExtractionService(
     hdcedSentenceDate: LocalDate,
   ): Pair<LocalDate, ReleaseDateCalculationBreakdown> {
     val adjustedReleaseDate = latestConflictingSentence.second!!
-    val releaseDateTypes = latestConflictingSentence.first!!.releaseDateTypes
+    val sentence = latestConflictingSentence.first!!
+    val releaseDateTypes = sentence.releaseDateTypes
     val calculationRule = when {
       ReleaseDateType.ARD in releaseDateTypes -> CalculationRule.HDCED_ADJUSTED_TO_CONCURRENT_ACTUAL_RELEASE
       ReleaseDateType.PRRD in releaseDateTypes -> CalculationRule.HDCED_ADJUSTED_TO_CONCURRENT_PRRD
@@ -125,6 +127,7 @@ class HdcedExtractionService(
       unadjustedDate = hdcedSentenceDate,
       adjustedDays = ChronoUnit.DAYS.between(adjustedReleaseDate, hdcedSentenceDate),
       appliedAdjustments = null,
+      affectedBySdsLegislation = AffectedBySdsLegislation.from(sentence),
     )
   }
 

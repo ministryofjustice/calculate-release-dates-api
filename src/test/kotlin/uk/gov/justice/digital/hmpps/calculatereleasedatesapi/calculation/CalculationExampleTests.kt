@@ -14,6 +14,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil.Companion.
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.PRELIMINARY
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.SpringTestBase
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AffectedBySdsLegislation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOutput
@@ -102,11 +103,6 @@ abstract class CalculationExampleTests : SpringTestBase() {
           calculatedReleaseDates.calculationResult.effectiveSentenceLength,
         )
       }
-      if (calculationTestFile.assertSds40 == true) {
-        assertThat(calculatedReleaseDates.calculationResult.affectedBySds40)
-          .describedAs("affectedBySds40")
-          .isEqualTo(expectedResult.affectedBySds40)
-      }
       if (expectedResult.sdsEarlyReleaseAllocatedTranche != null) {
         assertEquals(
           expectedResult.sdsEarlyReleaseAllocatedTranche,
@@ -122,6 +118,11 @@ abstract class CalculationExampleTests : SpringTestBase() {
           expectedResult.trancheAllocationByLegislationName,
           calculatedReleaseDates.calculationResult.trancheAllocationByLegislationName,
         )
+      }
+      if (calculationTestFile.assertSds40 == true) {
+        assertThat(calculatedReleaseDates.calculationResult.affectedBySds40)
+          .describedAs("affectedBySds40")
+          .isEqualTo(expectedResult.affectedBySds40)
       }
       if (expectedResult.affectedByProgressionModel != null) {
         assertThat(calculatedReleaseDates.calculationResult.affectedByProgressionModel)
@@ -200,7 +201,10 @@ abstract class CalculationExampleTests : SpringTestBase() {
       JSONCompareMode.LENIENT,
     )
 
-    assertThat(calculationBreakdown).isEqualTo(jsonTransformation.loadCalculationBreakdown(example))
+    assertThat(calculationBreakdown)
+      .usingRecursiveComparison()
+      .ignoringFieldsOfTypes(AffectedBySdsLegislation::class.java) // not written in JSON so ignored in test
+      .isEqualTo(jsonTransformation.loadCalculationBreakdown(example))
   }
 
   companion object {

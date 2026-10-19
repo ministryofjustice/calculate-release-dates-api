@@ -72,5 +72,7 @@
     "useOffenceIndicators": true
   },
   "params": "calculation-params",
-  "assertSds40": true
+  "assertSds40": true,
+  "featureToggles": {
+  }
 }

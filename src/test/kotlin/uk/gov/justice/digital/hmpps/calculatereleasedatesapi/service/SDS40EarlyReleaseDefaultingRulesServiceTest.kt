@@ -19,6 +19,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.TrancheName
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustments
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AffectedBySdsLegislation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationTrigger
@@ -242,18 +243,30 @@ class SDS40EarlyReleaseDefaultingRulesServiceTest {
   fun `should use commencement point if the standard is after commencement`(type: ReleaseDateType) {
     val early = CalculationResult(
       mapOf(type to LocalDate.of(2024, 7, 25)),
-      emptyMap(),
+      mapOf(
+        type to ReleaseDateCalculationBreakdown(
+          emptySet(),
+          releaseDate = LocalDate.of(2024, 7, 25),
+          unadjustedDate = LocalDate.of(2024, 7, 25),
+          affectedBySdsLegislation = AffectedBySdsLegislation(sds40 = true, progressionModel = false),
+        ),
+      ),
       emptyMap(),
       Period.ofYears(5),
-      affectedBySds40 = true,
     )
 
     val standard = CalculationResult(
       mapOf(type to LocalDate.of(2024, 8, 1)),
-      emptyMap(),
+      mapOf(
+        type to ReleaseDateCalculationBreakdown(
+          emptySet(),
+          releaseDate = LocalDate.of(2024, 7, 25),
+          unadjustedDate = LocalDate.of(2024, 7, 25),
+          affectedBySdsLegislation = AffectedBySdsLegislation(sds40 = false, progressionModel = false),
+        ),
+      ),
       emptyMap(),
       Period.ofYears(5),
-      affectedBySds40 = true,
     )
 
     assertThat(
@@ -270,11 +283,11 @@ class SDS40EarlyReleaseDefaultingRulesServiceTest {
             setOf(CalculationRule.SDS_EARLY_RELEASE_ADJUSTED_TO_TRANCHE_1_COMMENCEMENT),
             releaseDate = testCommencementDate,
             unadjustedDate = LocalDate.of(2024, 7, 25),
+            affectedBySdsLegislation = AffectedBySdsLegislation(sds40 = true, progressionModel = false),
           ),
         ),
         emptyMap(),
         Period.ofYears(5),
-        affectedBySds40 = true,
       ),
     )
   }
@@ -284,15 +297,39 @@ class SDS40EarlyReleaseDefaultingRulesServiceTest {
     // should keep CRD & PED, adjust ERSED to 50% and adjust HDCED to commencement
     val early = CalculationResult(
       mapOf(
-        ReleaseDateType.CRD to LocalDate.of(2024, 8, 10),
-        ReleaseDateType.PED to LocalDate.of(2024, 8, 10),
+        ReleaseDateType.CRD to LocalDate.of(2024, 8, 9),
+        ReleaseDateType.PED to LocalDate.of(2024, 8, 9),
         ReleaseDateType.ERSED to LocalDate.of(2024, 7, 25),
         ReleaseDateType.HDCED to LocalDate.of(2024, 7, 25),
       ),
-      emptyMap(),
+      mapOf(
+        ReleaseDateType.CRD to ReleaseDateCalculationBreakdown(
+          emptySet(),
+          releaseDate = LocalDate.of(2024, 8, 9),
+          unadjustedDate = LocalDate.of(2024, 8, 9),
+          affectedBySdsLegislation = AffectedBySdsLegislation(sds40 = true, progressionModel = false),
+        ),
+        ReleaseDateType.PED to ReleaseDateCalculationBreakdown(
+          emptySet(),
+          releaseDate = LocalDate.of(2024, 8, 9),
+          unadjustedDate = LocalDate.of(2024, 8, 9),
+          affectedBySdsLegislation = AffectedBySdsLegislation(sds40 = true, progressionModel = false),
+        ),
+        ReleaseDateType.ERSED to ReleaseDateCalculationBreakdown(
+          emptySet(),
+          releaseDate = LocalDate.of(2024, 7, 25),
+          unadjustedDate = LocalDate.of(2024, 7, 25),
+          affectedBySdsLegislation = AffectedBySdsLegislation(sds40 = true, progressionModel = false),
+        ),
+        ReleaseDateType.HDCED to ReleaseDateCalculationBreakdown(
+          emptySet(),
+          releaseDate = LocalDate.of(2024, 7, 25),
+          unadjustedDate = LocalDate.of(2024, 7, 25),
+          affectedBySdsLegislation = AffectedBySdsLegislation(sds40 = true, progressionModel = false),
+        ),
+      ),
       emptyMap(),
       Period.ofYears(5),
-      affectedBySds40 = true,
     )
 
     val standard = CalculationResult(
@@ -302,10 +339,34 @@ class SDS40EarlyReleaseDefaultingRulesServiceTest {
         ReleaseDateType.ERSED to LocalDate.of(2024, 7, 26),
         ReleaseDateType.HDCED to LocalDate.of(2024, 7, 30),
       ),
-      emptyMap(),
+      mapOf(
+        ReleaseDateType.CRD to ReleaseDateCalculationBreakdown(
+          emptySet(),
+          releaseDate = LocalDate.of(2024, 8, 10),
+          unadjustedDate = LocalDate.of(2024, 8, 10),
+          affectedBySdsLegislation = AffectedBySdsLegislation(sds40 = false, progressionModel = false),
+        ),
+        ReleaseDateType.PED to ReleaseDateCalculationBreakdown(
+          emptySet(),
+          releaseDate = LocalDate.of(2024, 8, 10),
+          unadjustedDate = LocalDate.of(2024, 8, 10),
+          affectedBySdsLegislation = AffectedBySdsLegislation(sds40 = false, progressionModel = false),
+        ),
+        ReleaseDateType.ERSED to ReleaseDateCalculationBreakdown(
+          emptySet(),
+          releaseDate = LocalDate.of(2024, 7, 26),
+          unadjustedDate = LocalDate.of(2024, 7, 26),
+          affectedBySdsLegislation = AffectedBySdsLegislation(sds40 = false, progressionModel = false),
+        ),
+        ReleaseDateType.HDCED to ReleaseDateCalculationBreakdown(
+          emptySet(),
+          releaseDate = LocalDate.of(2024, 7, 30),
+          unadjustedDate = LocalDate.of(2024, 7, 30),
+          affectedBySdsLegislation = AffectedBySdsLegislation(sds40 = false, progressionModel = false),
+        ),
+      ),
       emptyMap(),
       Period.ofYears(5),
-      affectedBySds40 = true,
     )
 
     assertThat(
@@ -317,21 +378,39 @@ class SDS40EarlyReleaseDefaultingRulesServiceTest {
     ).isEqualTo(
       CalculationResult(
         mapOf(
-          ReleaseDateType.CRD to LocalDate.of(2024, 8, 10),
-          ReleaseDateType.PED to LocalDate.of(2024, 8, 10),
+          ReleaseDateType.CRD to LocalDate.of(2024, 8, 9),
+          ReleaseDateType.PED to LocalDate.of(2024, 8, 9),
           ReleaseDateType.ERSED to LocalDate.of(2024, 7, 26),
           ReleaseDateType.HDCED to testCommencementDate,
         ),
         mapOf(
+          ReleaseDateType.CRD to ReleaseDateCalculationBreakdown(
+            setOf(CalculationRule.SDS_EARLY_RELEASE_APPLIES),
+            releaseDate = LocalDate.of(2024, 8, 9),
+            unadjustedDate = LocalDate.of(2024, 8, 9),
+            affectedBySdsLegislation = AffectedBySdsLegislation(sds40 = true, progressionModel = false),
+          ),
+          ReleaseDateType.PED to ReleaseDateCalculationBreakdown(
+            setOf(CalculationRule.SDS_EARLY_RELEASE_APPLIES),
+            releaseDate = LocalDate.of(2024, 8, 9),
+            unadjustedDate = LocalDate.of(2024, 8, 9),
+            affectedBySdsLegislation = AffectedBySdsLegislation(sds40 = true, progressionModel = false),
+          ),
+          ReleaseDateType.ERSED to ReleaseDateCalculationBreakdown(
+            setOf(CalculationRule.SDS_STANDARD_RELEASE_APPLIES),
+            releaseDate = LocalDate.of(2024, 7, 26),
+            unadjustedDate = LocalDate.of(2024, 7, 26),
+            affectedBySdsLegislation = AffectedBySdsLegislation(sds40 = false, progressionModel = false),
+          ),
           ReleaseDateType.HDCED to ReleaseDateCalculationBreakdown(
             setOf(CalculationRule.SDS_EARLY_RELEASE_ADJUSTED_TO_TRANCHE_1_COMMENCEMENT),
             releaseDate = testCommencementDate,
             unadjustedDate = LocalDate.of(2024, 7, 25),
+            affectedBySdsLegislation = AffectedBySdsLegislation(sds40 = true, progressionModel = false),
           ),
         ),
         emptyMap(),
         Period.ofYears(5),
-        affectedBySds40 = true,
       ),
     )
   }
@@ -340,18 +419,30 @@ class SDS40EarlyReleaseDefaultingRulesServiceTest {
   fun `should correctly handle two sentences where one has a PED release date and is sentenced before the other`() {
     val early = CalculationResult(
       mapOf(ReleaseDateType.CRD to LocalDate.of(2024, 7, 25)),
-      emptyMap(),
+      mapOf(
+        ReleaseDateType.CRD to ReleaseDateCalculationBreakdown(
+          emptySet(),
+          releaseDate = LocalDate.of(2024, 7, 25),
+          unadjustedDate = LocalDate.of(2024, 7, 25),
+          affectedBySdsLegislation = AffectedBySdsLegislation(sds40 = true, progressionModel = false),
+        ),
+      ),
       emptyMap(),
       Period.ofYears(5),
-      affectedBySds40 = true,
     )
 
     val standard = CalculationResult(
       mapOf(ReleaseDateType.PED to LocalDate.of(2024, 8, 1)),
-      emptyMap(),
+      mapOf(
+        ReleaseDateType.PED to ReleaseDateCalculationBreakdown(
+          emptySet(),
+          releaseDate = LocalDate.of(2024, 8, 1),
+          unadjustedDate = LocalDate.of(2024, 8, 1),
+          affectedBySdsLegislation = AffectedBySdsLegislation(sds40 = false, progressionModel = false),
+        ),
+      ),
       emptyMap(),
       Period.ofYears(5),
-      affectedBySds40 = true,
     )
 
     assertThat(
@@ -366,10 +457,16 @@ class SDS40EarlyReleaseDefaultingRulesServiceTest {
     ).isEqualTo(
       CalculationResult(
         mapOf(ReleaseDateType.CRD to LocalDate.of(2024, 7, 25)),
-        mapOf(),
+        mapOf(
+          ReleaseDateType.CRD to ReleaseDateCalculationBreakdown(
+            setOf(CalculationRule.SDS_EARLY_RELEASE_APPLIES),
+            releaseDate = LocalDate.of(2024, 7, 25),
+            unadjustedDate = LocalDate.of(2024, 7, 25),
+            affectedBySdsLegislation = AffectedBySdsLegislation(sds40 = true, progressionModel = false),
+          ),
+        ),
         emptyMap(),
         Period.ofYears(5),
-        affectedBySds40 = true,
       ),
     )
   }

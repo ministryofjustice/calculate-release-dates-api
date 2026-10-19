@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import io.swagger.v3.oas.annotations.media.ArraySchema
 import io.swagger.v3.oas.annotations.media.Schema
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
@@ -24,4 +25,8 @@ data class ReleaseDateCalculationBreakdown(
   val unadjustedDate: LocalDate = LocalDate.now(),
   @Schema(description = "The breakdown of adjustments applied to this date")
   val appliedAdjustments: AppliedAdjustments? = null,
+  // only used internally
+  @JsonIgnore
+  @Schema(description = "Any legislation that impacted the release date")
+  val affectedBySdsLegislation: AffectedBySdsLegislation? = null,
 )
