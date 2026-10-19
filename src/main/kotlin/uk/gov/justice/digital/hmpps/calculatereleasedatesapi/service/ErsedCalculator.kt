@@ -7,6 +7,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.ErsedConfigu
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentDuration
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AffectedBySdsLegislation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AppliedAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
@@ -87,6 +88,7 @@ class ErsedCalculator(
         adjustedDays = daysAwarded,
         rules = setOf(CalculationRule.ERSED_ADJUSTED_TO_ERS30_COMMENCEMENT),
         appliedAdjustments = AppliedAdjustments.forInitialRelease(sentenceCalculation.adjustments),
+        affectedBySdsLegislation = AffectedBySdsLegislation.from(sentenceCalculation.sentence),
       )
     }
   }
@@ -141,6 +143,7 @@ class ErsedCalculator(
           adjustedDays = addedDays,
           rules = setOf(CalculationRule.ERSED_BEFORE_SENTENCE_DATE),
           appliedAdjustments = AppliedAdjustments.forInitialRelease(params.sentenceCalculation.adjustments),
+          affectedBySdsLegislation = AffectedBySdsLegislation.from(params.sentenceCalculation.sentence),
         ),
         params.sentence.sentencedAt.plusDays(params.sentenceCalculation.adjustments.ualDuringCustody),
       )
@@ -175,6 +178,7 @@ class ErsedCalculator(
         CalculationRule.ERSED_MAX_PERIOD to AdjustmentDuration(-params.maxPeriodAmount, params.maxPeriodUnit),
       ),
       appliedAdjustments = AppliedAdjustments.forInitialRelease(params.sentenceCalculation.adjustments),
+      affectedBySdsLegislation = AffectedBySdsLegislation.from(params.sentenceCalculation.sentence),
     )
 
     val daysUntilRelease =
@@ -193,6 +197,7 @@ class ErsedCalculator(
       unadjustedDate = unadjustedMinimumErsed,
       adjustedDays = ChronoUnit.DAYS.between(unadjustedMinimumErsed, minimumEffectiveErsed),
       appliedAdjustments = AppliedAdjustments.forInitialRelease(params.sentenceCalculation.adjustments),
+      affectedBySdsLegislation = AffectedBySdsLegislation.from(params.sentenceCalculation.sentence),
     )
 
     return if (minimumEffectiveErsed.isAfter(maxEffectiveErsed)) {

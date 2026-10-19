@@ -5,6 +5,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggl
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.TUSED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentDuration
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AffectedBySdsLegislation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BotusSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
@@ -100,6 +101,7 @@ class TusedCalculator(private val featureToggles: FeatureToggles) {
     releaseDate = sentenceCalculation.topUpSupervisionDate!!,
     unadjustedDate = sentenceCalculation.unadjustedDeterminateReleaseDate,
     appliedAdjustments = null,
+    affectedBySdsLegislation = AffectedBySdsLegislation.from(sentenceCalculation.sentence),
   )
 
   fun getCalculationBreakdownForBotus(sentenceCalculation: SentenceCalculation, postRepeal: Boolean = false): ReleaseDateCalculationBreakdown {
@@ -121,6 +123,7 @@ class TusedCalculator(private val featureToggles: FeatureToggles) {
       releaseDate = sentenceCalculation.topUpSupervisionDate!!,
       unadjustedDate = sentenceCalculation.unadjustedDeterminateReleaseDate,
       appliedAdjustments = null,
+      affectedBySdsLegislation = AffectedBySdsLegislation.from(sentenceCalculation.sentence),
     )
   }
 

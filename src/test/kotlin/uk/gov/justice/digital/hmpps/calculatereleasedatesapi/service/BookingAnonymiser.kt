@@ -1,8 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import com.fasterxml.jackson.databind.node.ObjectNode
-import org.junit.jupiter.api.Test
-import org.mockito.kotlin.any
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.core.io.ClassPathResource
@@ -23,10 +21,10 @@ import java.time.LocalDate
 class BookingAnonymiser {
   private val jsonTransformation = JsonTransformation()
 
-  @Test
+//  @Test
   fun anonymiseSingleTestCases() {
     val exampleType = "progression-model"
-    val exampleNumber = "crs-2869-bug"
+    val exampleNumber = "crs-2869-bug-2"
 
     anonymiseTestCase("$exampleType/$exampleNumber")
   }

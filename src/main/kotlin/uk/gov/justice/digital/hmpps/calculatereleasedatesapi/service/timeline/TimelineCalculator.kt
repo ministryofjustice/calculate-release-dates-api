@@ -26,7 +26,6 @@ class TimelineCalculator(
     sentences: List<List<CalculableSentence>>,
     offender: Offender,
     returnToCustodyDate: LocalDate? = null,
-    snapshots: Map<SnapshotName, CalculationSnapshot>,
     enabledLegislation: List<ERSLegislation>,
   ): CalculationResult {
     calculateUnusedAdas(sentences)

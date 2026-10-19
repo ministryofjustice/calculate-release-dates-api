@@ -97,7 +97,7 @@ class BookingTimelineService(
       sentences = sentences.sortedBy { it.sentencedAt },
     )
 
-    val calculationsByDate = getCalculationsByDate(sentences, futureData, externalMovements, options.calculateErsed)
+    val calculationsByDate = getCalculationsByDate(sentences, futureData, externalMovements)
 
     val earliestSentence = futureData.sentences.minBy { it.sentencedAt }
 
@@ -165,7 +165,6 @@ class BookingTimelineService(
           releasedSentenceGroups.map { it.sentences },
           offender,
           returnToCustodyDate,
-          snapshots,
           applicableErsLegislation,
         )
 
@@ -186,6 +185,8 @@ class BookingTimelineService(
           trancheAllocationByLegislationName = timelineTrackingData.trancheAllocationByLegislationName,
           sdsEarlyReleaseTranche = sds40TrancheName,
           sdsEarlyReleaseAllocatedTranche = sds40TrancheName,
+          affectedBySds40 = latestCalculation.breakdownByReleaseDateType.values.any { it.affectedBySdsLegislation?.sds40 == true },
+          affectedByProgressionModel = latestCalculation.breakdownByReleaseDateType.values.any { it.affectedBySdsLegislation?.progressionModel == true },
         ),
       )
     }
@@ -226,7 +227,7 @@ class BookingTimelineService(
           }
           currentSentenceGroup.clear()
         }
-        latestCalculation = timelineCalculator.getLatestCalculation(releasedSentenceGroups.map { it.sentences }, offender, returnToCustodyDate, snapshots, applicableErsLegislation)
+        latestCalculation = timelineCalculator.getLatestCalculation(releasedSentenceGroups.map { it.sentences }, offender, returnToCustodyDate, applicableErsLegislation)
       }
       if (licenceSentences.isNotEmpty()) {
         val sentencesThatHaveExpired = licenceSentences.filter { date.isAfter(it.sentenceCalculation.licenceExpiryAtInitialRelease) }
@@ -236,7 +237,7 @@ class BookingTimelineService(
     }
   }
 
-  private fun getCalculationsByDate(sentences: List<CalculableSentence>, futureData: TimelineFutureData, externalMovements: List<ExternalMovement>, calculateErsed: Boolean): Map<LocalDate, List<TimelineCalculationEvent>> {
+  private fun getCalculationsByDate(sentences: List<CalculableSentence>, futureData: TimelineFutureData, externalMovements: List<ExternalMovement>): Map<LocalDate, List<TimelineCalculationEvent>> {
     val sentenceParts = sentences.flatMap { it.sentenceParts() }
     return (
       sentenceParts.flatMap { part ->

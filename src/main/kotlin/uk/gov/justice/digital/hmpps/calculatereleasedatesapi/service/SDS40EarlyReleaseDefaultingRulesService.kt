@@ -85,13 +85,11 @@ class SDS40EarlyReleaseDefaultingRulesService {
     breakdownByReleaseDateType: Map<ReleaseDateType, ReleaseDateCalculationBreakdown>,
     earlyReleaseResult: CalculationResult,
     standardReleaseResult: CalculationResult,
-  ): CalculationResult = CalculationResult(
+  ) = CalculationResult(
     dates = dates,
     breakdownByReleaseDateType = breakdownByReleaseDateType,
     otherDates = earlyReleaseResult.otherDates,
     effectiveSentenceLength = earlyReleaseResult.effectiveSentenceLength,
-    affectedBySds40 = (dates != standardReleaseResult.dates) || standardReleaseResult.affectedBySds40,
-    affectedByProgressionModel = if (dates != standardReleaseResult.dates) earlyReleaseResult.affectedByProgressionModel else standardReleaseResult.affectedByProgressionModel,
     sentencesImpactingFinalReleaseDate = if (dates != standardReleaseResult.dates) earlyReleaseResult.sentencesImpactingFinalReleaseDate else standardReleaseResult.sentencesImpactingFinalReleaseDate,
   )
 
@@ -351,6 +349,7 @@ class SDS40EarlyReleaseDefaultingRulesService {
       releaseDate = earliestApplicableDate,
       unadjustedDate = early,
       appliedAdjustments = context.earlyReleaseResult.breakdownByReleaseDateType[context.dateType]?.appliedAdjustments,
+      affectedBySdsLegislation = context.earlyReleaseResult.breakdownByReleaseDateType[context.dateType]?.affectedBySdsLegislation,
     )
   }
 

@@ -9,6 +9,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Calcul
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule.HDC_180
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentDuration
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AffectedBySdsLegislation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
@@ -181,6 +182,7 @@ class HdcedCalculator(
           releaseDate = adjustedDate,
           unadjustedDate = input.sentence.sentencedAt,
           appliedAdjustments = null,
+          affectedBySdsLegislation = AffectedBySdsLegislation.from(input.sentence),
         ),
 
       )
@@ -212,6 +214,7 @@ class HdcedCalculator(
           releaseDate = adjustedDate,
           unadjustedDate = adjustedDate.plusDays(input.custodialPeriodAboveMidpointDeductionDays),
           appliedAdjustments = null,
+          affectedBySdsLegislation = AffectedBySdsLegislation.from(input.sentence),
         ),
 
       )
@@ -240,6 +243,7 @@ class HdcedCalculator(
         releaseDate = adjustedDate,
         unadjustedDate = input.sentence.sentencedAt,
         appliedAdjustments = null,
+        affectedBySdsLegislation = AffectedBySdsLegislation.from(input.sentence),
       ),
     )
   }

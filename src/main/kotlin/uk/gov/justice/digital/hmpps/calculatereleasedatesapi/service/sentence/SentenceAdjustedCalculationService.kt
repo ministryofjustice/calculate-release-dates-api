@@ -18,6 +18,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SLED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.TUSED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentDuration
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AffectedBySdsLegislation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AppliedAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BotusSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
@@ -50,7 +51,9 @@ class SentenceAdjustedCalculationService(
   fun calculateDatesFromAdjustments(sentence: CalculableSentence, offender: Offender, enabledERSLegislation: List<ERSLegislation>): SentenceCalculation {
     val sentenceCalculation: SentenceCalculation = sentence.sentenceCalculation
     // Other adjustments need to be included in the sentence calculation here
-    setCrdOrArdDetails(sentence, sentenceCalculation)
+    if (!sentence.isRecall()) {
+      setCrdOrArdDetails(sentence, sentenceCalculation)
+    }
     setSedOrSledDetails(sentence, sentenceCalculation)
     setPedDetails(sentence, sentenceCalculation)
 
@@ -122,6 +125,7 @@ class SentenceAdjustedCalculationService(
           sentenceCalculation.extendedDeterminateParoleEligibilityDate,
         ),
         appliedAdjustments = AppliedAdjustments.forInitialRelease(sentenceCalculation.adjustments),
+        affectedBySdsLegislation = AffectedBySdsLegislation.from(sentenceCalculation.sentence),
       )
     }
   }
@@ -158,6 +162,7 @@ class SentenceAdjustedCalculationService(
       sentenceCalculation.adjustedExpiryDate,
     ),
     appliedAdjustments = null,
+    affectedBySdsLegislation = null,
   )
 
   private fun getBreakdownForReleaseDate(sentenceCalculation: SentenceCalculation): ReleaseDateCalculationBreakdown {
@@ -181,6 +186,7 @@ class SentenceAdjustedCalculationService(
         emptyMap()
       },
       appliedAdjustments = AppliedAdjustments.forInitialRelease(sentenceCalculation.adjustments),
+      affectedBySdsLegislation = AffectedBySdsLegislation.from(sentenceCalculation.sentence),
     )
   }
 
@@ -225,6 +231,7 @@ class SentenceAdjustedCalculationService(
             emptyMap()
           },
           appliedAdjustments = null,
+          affectedBySdsLegislation = null,
         )
     } else {
       sentenceCalculation.numberOfDaysToLicenceExpiryDate =

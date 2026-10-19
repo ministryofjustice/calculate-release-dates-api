@@ -1,0 +1,166 @@
+{
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01",
+      "isActiveSexOffender": true
+    },
+    "sentences": [
+      {
+        "offence": {
+          "committedAt": "2024-01-04",
+          "offenceCode": "TH68023"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 3
+          }
+        },
+        "sentencedAt": "2024-07-26",
+        "identifier": "c241c26a-4b81-39b7-825e-38127629edaa",
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
+      },
+      {
+        "offence": {
+          "committedAt": "2024-01-15",
+          "offenceCode": "TH68023"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 6
+          }
+        },
+        "sentencedAt": "2024-07-26",
+        "identifier": "c1a8cbda-8149-345c-ac86-e3d81ec08f7e",
+        "releaseArrangements": {
+          "sdsEarlyReleaseExclusions": [
+            "VIOLENT"
+          ],
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "isSection250": false
+        }
+      },
+      {
+        "offence": {
+          "committedAt": "2024-01-04",
+          "offenceCode": "CJ88144"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 6
+          }
+        },
+        "sentencedAt": "2024-07-26",
+        "identifier": "25a95c82-3d90-31f0-8ac9-92ab068bacca",
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
+      },
+      {
+        "offence": {
+          "committedAt": "2024-01-04",
+          "offenceCode": "FA06001"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 3
+          }
+        },
+        "sentencedAt": "2024-07-26",
+        "identifier": "2d326e4c-3fc9-3226-a685-3c409a1a3b7f",
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
+      },
+      {
+        "offence": {
+          "committedAt": "2024-01-07",
+          "offenceCode": "CJ88154"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 9
+          }
+        },
+        "sentencedAt": "2024-07-26",
+        "identifier": "cac727c9-23d0-327e-b4f3-669e7d6d6bb7",
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
+      },
+      {
+        "offence": {
+          "committedAt": "2024-01-27",
+          "offenceCode": "MD71530"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 1
+          }
+        },
+        "sentencedAt": "2024-07-26",
+        "identifier": "c005a4a6-f8a0-3471-98a9-6d501824fc32",
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
+      }
+    ],
+    "adjustments": {
+      "ADDITIONAL_DAYS_AWARDED": [
+        {
+          "appliesToSentencesFrom": "2024-11-13",
+          "numberOfDays": 14,
+          "fromDate": "2024-11-13",
+          "additionalInfo": {
+            "type": "NONE"
+          }
+        },
+        {
+          "appliesToSentencesFrom": "2024-12-02",
+          "numberOfDays": 18,
+          "fromDate": "2024-12-02",
+          "additionalInfo": {
+            "type": "NONE"
+          }
+        }
+      ],
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2024-07-26",
+          "numberOfDays": 179,
+          "fromDate": "2024-01-29",
+          "toDate": "2024-07-25",
+          "additionalInfo": {
+            "type": "NONE"
+          }
+        }
+      ]
+    }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "sds-progression-model-october",
+  "assertSds40": true,
+  "featureToggles": {
+    "applyPostRecallRepealRules": true
+  }
+}

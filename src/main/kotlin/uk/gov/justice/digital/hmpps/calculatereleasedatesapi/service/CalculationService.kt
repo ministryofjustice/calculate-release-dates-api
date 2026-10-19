@@ -86,6 +86,7 @@ class CalculationService(
       unadjustedDate = sledToOverrideTheCalculatedOneWith.calculatedDate,
       rules = setOf(CalculationRule.PREVIOUSLY_RECORDED_SLED_USED),
       appliedAdjustments = null,
+      affectedBySdsLegislation = null,
     )
     if (newDates.containsKey(ReleaseDateType.TUSED) && sledToOverrideTheCalculatedOneWith.previouslyRecordedSLEDDate.isAfter(newDates[ReleaseDateType.TUSED])) {
       newDates.remove(ReleaseDateType.TUSED)
