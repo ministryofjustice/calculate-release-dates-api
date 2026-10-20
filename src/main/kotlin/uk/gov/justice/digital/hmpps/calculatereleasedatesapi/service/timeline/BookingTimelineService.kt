@@ -178,6 +178,7 @@ class BookingTimelineService(
       }
 
       val sds40TrancheName = timelineTrackingData.trancheAllocationByLegislationName[LegislationName.SDS_40] ?: TrancheName.TRANCHE_0
+      val onlyTheBreakdownsForFinalReleaseDates = latestCalculation.breakdownByReleaseDateType.filter { (key, _) -> key in latestCalculation.dates }
       return CalculationOutput(
         releasedSentenceGroups.flatMap { it.sentences },
         releasedSentenceGroups,
@@ -185,8 +186,8 @@ class BookingTimelineService(
           trancheAllocationByLegislationName = timelineTrackingData.trancheAllocationByLegislationName,
           sdsEarlyReleaseTranche = sds40TrancheName,
           sdsEarlyReleaseAllocatedTranche = sds40TrancheName,
-          affectedBySds40 = latestCalculation.breakdownByReleaseDateType.values.any { it.affectedBySdsLegislation?.sds40 == true },
-          affectedByProgressionModel = latestCalculation.breakdownByReleaseDateType.values.any { it.affectedBySdsLegislation?.progressionModel == true },
+          affectedBySds40 = onlyTheBreakdownsForFinalReleaseDates.values.any { it.affectedBySdsLegislation?.sds40 == true },
+          affectedByProgressionModel = onlyTheBreakdownsForFinalReleaseDates.values.any { it.affectedBySdsLegislation?.progressionModel == true },
         ),
       )
     }

@@ -1,0 +1,75 @@
+{
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
+      {
+        "offence": {
+          "committedAt": "2026-07-18",
+          "offenceCode": "PH97006"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 4
+          }
+        },
+        "sentencedAt": "2026-09-29",
+        "identifier": "6b09998c-4415-32f5-83aa-7e45ceac278e",
+        "releaseArrangements": {
+          "sdsEarlyReleaseExclusions": [
+            "DOMESTIC_ABUSE"
+          ],
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "isSection250": false
+        }
+      },
+      {
+        "offence": {
+          "committedAt": "2022-11-23",
+          "offenceCode": "OF61102"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 8
+          }
+        },
+        "sentencedAt": "2026-09-29",
+        "identifier": "5695db5a-6ebf-3948-9db2-7b979b900012",
+        "consecutiveSentenceUUIDs": [
+          "6b09998c-4415-32f5-83aa-7e45ceac278e"
+        ],
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
+      }
+    ],
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2026-09-29",
+          "numberOfDays": 70,
+          "fromDate": "2026-07-21",
+          "toDate": "2026-09-28",
+          "additionalInfo": {
+            "type": "NONE"
+          }
+        }
+      ]
+    }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true
+  },
+  "params": "sds-progression-model-october",
+  "assertSds40": true,
+  "featureToggles": {
+    "applyPostRecallRepealRules": true,
+    "adultHdcSuspended": true
+  }
+}
