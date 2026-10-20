@@ -44,10 +44,10 @@ class CalculationSourceDataService(
     olderBooking: Boolean = false,
     newerBookingSentences: List<DistinctSentenceData> = emptyList(),
   ): BookingLevelSourceData {
-    val activeOnly = sourceDataLookupOptions.activeOnly(featureToggles.supportInactiveSentencesAndAdjustments)
+    val isActiveOnly = sourceDataLookupOptions.isActiveOnly()
 
-    val sentenceAndOffences = removeDuplicatedSentencesFromOlderBooking(prisonService.getSentencesAndOffences(bookingId, activeOnly), olderBooking, newerBookingSentences)
-    val adjustments = getAdjustments(prisonerDetails.offenderNo, bookingId, activeOnly, olderBooking)
+    val sentenceAndOffences = removeDuplicatedSentencesFromOlderBooking(prisonService.getSentencesAndOffences(bookingId, isActiveOnly), olderBooking, newerBookingSentences)
+    val adjustments = getAdjustments(prisonerDetails.offenderNo, bookingId, isActiveOnly, olderBooking)
     val bookingHasFixedTermRecall = sentenceAndOffences.any { from(it.sentenceCalculationType).recallType?.isFixedTermRecall == true }
     val (ftrDetails, returnToCustodyDate) = prisonService.getFixedTermRecallDetails(bookingId, bookingHasFixedTermRecall)
     val bookingHasAFine = sentenceAndOffences.any { from(it.sentenceCalculationType).sentenceType == SentenceType.AFine }
@@ -117,21 +117,11 @@ class CalculationSourceDataService(
  * Class to represent if inactive data should be included within calculation.
  *
  * 1. Inactive data is always included for OUT prisoners.
- * 2. The default behaviour is defined by a feature toggle
- * 3. Some endpoints override this behaviour because they require inactive data e.g. recalls, IR
+ * 2. Some endpoints override this behaviour because they require inactive data e.g. recalls, IR
  */
+data class SourceDataLookupOptions(val overrideToIncludeInactiveData: Boolean = false) {
 
-data class SourceDataLookupOptions(
-  val overrideToIncludeInactiveData: Boolean = false,
-) {
-
-  fun activeOnly(featureToggle: Boolean): Boolean = !includeInactive(featureToggle)
-
-  private fun includeInactive(featureToggle: Boolean): Boolean = if (overrideToIncludeInactiveData) {
-    true
-  } else {
-    featureToggle
-  }
+  fun isActiveOnly(): Boolean = !overrideToIncludeInactiveData
 
   companion object {
     fun default(): SourceDataLookupOptions = SourceDataLookupOptions(false)
