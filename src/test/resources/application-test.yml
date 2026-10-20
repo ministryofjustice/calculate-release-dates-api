@@ -69,7 +69,6 @@ domain-events-sns:
   provider: localstack
 
 feature-toggles:
-  support-inactive-sentences-and-adjustments: false
   applyPostRecallRepealRules: false
 
 hdced4:
