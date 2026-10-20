@@ -39,4 +39,14 @@ interface ComparisonPersonRepository : JpaRepository<ComparisonPerson, Long> {
   """,
   )
   fun countMismatches(comparisonId: Long): Long
+
+  @Query(
+    """
+    SELECT COUNT(cp)
+    FROM ComparisonPerson cp
+    WHERE cp.comparisonId = :comparisonId
+      AND cp.isFatal = false
+  """,
+  )
+  fun countFailures(comparisonId: Long): Long
 }

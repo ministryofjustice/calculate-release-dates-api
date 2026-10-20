@@ -75,6 +75,8 @@ class BulkComparisonEventHandlerService(
       val count = comparisonPersonRepository.countByComparisonId(comparisonId = comparison.id())
       comparison.numberOfPeopleCompared = count
       if (comparison.numberOfPeopleCompared >= comparison.numberOfPeopleExpected) {
+        val failedCount = comparisonPersonRepository.countFailures(comparisonId = comparison.id())
+        comparison.numberOfPeopleComparisonFailedFor = failedCount
         comparison.comparisonStatus = ComparisonStatus.COMPLETED
         comparisonRepository.save(comparison)
       }
