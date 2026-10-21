@@ -90,6 +90,7 @@ class ComparisonEventIntTest(private val mockManageOffencesClient: MockManageOff
     assertEquals(0, result.numberOfPeopleCompared)
     val completedComparison = getComparison(result.comparisonShortReference)
     assertEquals(4, completedComparison.numberOfPeopleCompared)
+    assertEquals(0, completedComparison.numberOfPeopleComparisonFailedFor)
     val comparison = comparisonRepository.findByComparisonShortReference(result.comparisonShortReference)
     val personComparison = comparisonPersonRepository.findByComparisonId(comparison!!.id()).find { it.person == "default" }!!
     assertTrue(personComparison.isValid)
@@ -108,6 +109,7 @@ class ComparisonEventIntTest(private val mockManageOffencesClient: MockManageOff
     assertEquals(0, result.numberOfPeopleCompared)
     val completedComparison = getComparison(result.comparisonShortReference)
     assertEquals(4, completedComparison.numberOfPeopleCompared)
+    assertEquals(4, completedComparison.numberOfPeopleComparisonFailedFor)
     val comparison = comparisonRepository.findByComparisonShortReference(result.comparisonShortReference)
     val personComparison = comparisonPersonRepository.findByComparisonId(comparison!!.id()).find { it.person == "default" }!!
     assertFalse(personComparison.isValid)
