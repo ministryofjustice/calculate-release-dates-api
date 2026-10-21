@@ -45,7 +45,7 @@ interface ComparisonPersonRepository : JpaRepository<ComparisonPerson, Long> {
     SELECT COUNT(cp)
     FROM ComparisonPerson cp
     WHERE cp.comparisonId = :comparisonId
-      AND cp.isFatal = false
+      AND cp.isFatal = true
   """,
   )
   fun countFailures(comparisonId: Long): Long
