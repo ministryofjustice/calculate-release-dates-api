@@ -11,6 +11,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Agency
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AgencySwitchUpdateResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.AgencySwitch
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.AgencySwitchAgency
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.apiclients.PrisonApiClient
 
 class AgencySwitchServiceTest {
 

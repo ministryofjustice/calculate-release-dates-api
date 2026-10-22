@@ -24,6 +24,7 @@ generic-service:
     NOMIS-SYNC-MAPPING_API_URL: https://nomis-sync-prisoner-mapping-dev.hmpps.service.justice.gov.uk
     MANAGE-USERS_API_URL: https://manage-users-api-dev.hmpps.service.justice.gov.uk
     ADJUSTMENTS_UI_URL: https://adjustments-dev.hmpps.service.justice.gov.uk
+    REMAND-AND-SENTENCING_API_URL: https://remand-and-sentencing-api-dev.hmpps.service.justice.gov.uk
 
   # Switches off the allow list in the DEV env only.
   allowlist: null

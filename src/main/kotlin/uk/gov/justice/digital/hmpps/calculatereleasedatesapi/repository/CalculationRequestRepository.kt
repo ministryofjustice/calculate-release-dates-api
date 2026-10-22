@@ -33,6 +33,14 @@ interface CalculationRequestRepository : JpaRepository<CalculationRequest, Long>
   fun findAllByPrisonerIdAndCalculationStatus(prisonerId: String, calculationStatus: String): List<CalculationRequest>
 
   @EntityGraph(value = "CalculationRequest.detail", type = EntityGraphType.LOAD)
+  fun findAllByPrisonerIdAndCalculationStatusAndCalculatedAtBetween(
+    prisonerId: String,
+    calculationStatus: String,
+    startDate: LocalDateTime,
+    endDate: LocalDateTime,
+  ): List<CalculationRequest>
+
+  @EntityGraph(value = "CalculationRequest.detail", type = EntityGraphType.LOAD)
   fun findFirstByBookingIdAndCalculationStatusOrderByCalculatedAtDesc(bookingId: Long, status: String = CalculationStatus.CONFIRMED.name): Optional<CalculationRequest>
 
   @EntityGraph(value = "CalculationRequest.detail", type = EntityGraphType.LOAD)
