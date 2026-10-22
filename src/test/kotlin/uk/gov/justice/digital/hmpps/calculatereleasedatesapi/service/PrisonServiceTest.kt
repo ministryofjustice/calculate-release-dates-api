@@ -12,7 +12,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CaseLo
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CaseLoadType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Agency
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CaseLoad
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NomisTusedData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NormalisedSentenceAndOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OffenderKeyDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RestResponsePage
@@ -89,15 +88,6 @@ class PrisonServiceTest {
     whenever(prisonApiClient.getOffenderKeyDates(bookingId)).thenReturn(expected.right())
     val keyDates = prisonService.getOffenderKeyDates(bookingId)
     assertThat(keyDates).isEqualTo(expected.right())
-  }
-
-  @Test
-  fun `Latest Tused Data should be returned`() {
-    val nomisId = "A1234AA"
-    val expected = NomisTusedData(LocalDate.of(2023, 1, 3), LocalDate.of(2023, 1, 3), null, nomisId)
-    whenever(prisonApiClient.getLatestTusedDataForBotus(nomisId)).thenReturn(expected.right())
-    val latestTusedData = prisonService.getLatestTusedDataForBotus(nomisId)
-    assertThat(latestTusedData).isEqualTo(expected.right())
   }
 
   @Test

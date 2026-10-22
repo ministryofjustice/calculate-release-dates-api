@@ -3,7 +3,6 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule.ERSED_ADJUSTED_TO_MTD
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.HistoricalTusedSource
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ARD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.CRD
@@ -20,7 +19,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.PRRD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SLED
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.TUSED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.NoSentencesProvidedException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AFineSentence
@@ -38,7 +36,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.sentence.or
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
 import java.time.LocalDate
 import java.time.Period
-import java.time.temporal.ChronoUnit
 import java.time.temporal.ChronoUnit.MONTHS
 
 @Service
@@ -64,7 +61,6 @@ class BookingExtractionService(
   private fun extractSingle(sentence: CalculableSentence): CalculationResult {
     val dates: MutableMap<ReleaseDateType, LocalDate> = mutableMapOf()
     val sentenceCalculation = sentence.sentenceCalculation
-    var historicalTusedSource: HistoricalTusedSource? = null
     val sentenceIsOrExclusivelyBotus = sentence.isOrExclusivelyBotus()
     val breakdownByReleaseDateType = sentenceCalculation.breakdownByReleaseDateType.toMutableMap()
 
@@ -84,10 +80,6 @@ class BookingExtractionService(
 
     if (sentenceCalculation.nonParoleDate != null) {
       dates[NPD] = sentenceCalculation.nonParoleDate!!
-    }
-
-    if (sentenceCalculation.topUpSupervisionDate != null) {
-      dates[TUSED] = sentenceCalculation.topUpSupervisionDate!!
     }
 
     if (sentenceCalculation.homeDetentionCurfewEligibilityDate != null && !sentence.releaseDateTypes.contains(PED)) {
@@ -121,23 +113,13 @@ class BookingExtractionService(
       dates[ESED] = sentenceCalculation.unadjustedExpiryDate
     }
 
-    if (
-      sentenceIsOrExclusivelyBotus &&
-      sentence is BotusSentence &&
-      sentence.latestTusedDate != null &&
-      sentenceCalculation.expiryDate.isBefore(sentence.latestTusedDate)
-    ) {
-      dates[TUSED] = sentence.latestTusedDate!!
-      historicalTusedSource = sentence.latestTusedSource!!
-    }
-
     return CalculationResult(
       dates.toMap(),
       breakdownByReleaseDateType,
       emptyMap(),
       getEffectiveSentenceLength(sentence.sentencedAt, sentenceCalculation.unadjustedExpiryDate),
       false,
-      historicalTusedSource,
+      null,
       sentencesImpactingFinalReleaseDate = sentence.sentenceParts(),
     )
   }
@@ -188,21 +170,6 @@ class BookingExtractionService(
 
     val latestHDCEDAndBreakdown =
       hdcedExtractionService.extractManyHomeDetentionCurfewEligibilityDate(sentences, mostRecentSentencesByReleaseDate)
-
-    val latestTUSEDAndBreakdown = if (latestLicenceExpiryDate != null) {
-      extractManyTopUpSuperVisionDate(sentences, latestLicenceExpiryDate)
-    } else if (isTusedableDtos(sentences, offender)) {
-      sentences.filter { it.sentenceCalculation.topUpSupervisionDate != null }
-        .maxByOrNull { it.sentenceCalculation.topUpSupervisionDate!! }?.let { latestTUSEDSentence ->
-          latestTUSEDSentence.sentenceCalculation.topUpSupervisionDate?.let { tusedDate ->
-            latestTUSEDSentence.sentenceCalculation.breakdownByReleaseDateType[TUSED]?.let { breakdown ->
-              tusedDate to breakdown
-            }
-          }
-        }
-    } else {
-      null
-    }
 
     val concurrentOraAndNonOraDetails = extractConcurrentOraAndNonOraDetails(
       mostRecentSentenceByAdjustedDeterminateReleaseDate.releaseDateTypes.getReleaseDateTypes(),
@@ -303,11 +270,6 @@ class BookingExtractionService(
 
     if (latestNonParoleDate != null) {
       dates[NPD] = latestNonParoleDate
-    }
-
-    if (latestTUSEDAndBreakdown != null) {
-      dates[TUSED] = latestTUSEDAndBreakdown.first
-      breakdownByReleaseDateType[TUSED] = latestTUSEDAndBreakdown.second
     }
 
     if (latestHDCEDAndBreakdown != null) {
@@ -535,10 +497,6 @@ class BookingExtractionService(
     return notApplicableDueToDtoLaterThanCrdFlag
   }
 
-  private fun isTusedableDtos(sentences: List<CalculableSentence>, offender: Offender): Boolean = sentences.all { it.isDto() } &&
-    !sentences.all { offender.underEighteenAt(it.sentenceCalculation.releaseDate) } &&
-    sentences.all { it.durationIsLessThan(2, ChronoUnit.YEARS) }
-
   private fun calculateErsedWhereDtoIsPresent(
     dates: MutableMap<ReleaseDateType, LocalDate>,
     latestEarlyReleaseSchemeEligibilitySentence: CalculableSentence,
@@ -625,46 +583,6 @@ class BookingExtractionService(
       latestReleaseDate
     } else {
       null
-    }
-  }
-
-  private fun extractManyTopUpSuperVisionDate(
-    sentences: List<CalculableSentence>,
-    latestLicenceExpiryDate: LocalDate,
-  ): Pair<LocalDate, ReleaseDateCalculationBreakdown>? {
-    val (historicTUSEDs, calculatedTUSEDs) = sentences.partition { it is BotusSentence }
-
-    val latestTUSEDSentence = calculatedTUSEDs
-      .filter { it.isCalculationInitialised() && it.sentenceCalculation.topUpSupervisionDate != null }
-      .maxByOrNull { it.sentenceCalculation.topUpSupervisionDate!! }
-
-    val latestHistoricTUSEDSentence = historicTUSEDs
-      .filter { it.isCalculationInitialised() && it.sentenceCalculation.topUpSupervisionDate != null }
-      .maxByOrNull { it.sentenceCalculation.topUpSupervisionDate!! }
-
-    // Use the latest calculated TUSED, otherwise use historic TUSED
-    val latestTUSED = latestTUSEDSentence ?: latestHistoricTUSEDSentence
-
-    return latestTUSED?.let { sentence ->
-      // if DTO has sentence expiry date greater than top-up date, exclude TUSED in place of the SED
-      sentences
-        .filter { it.isDto() && it.isCalculationInitialised() && it.releaseDateTypes.contains(SED) }
-        .maxByOrNull { it.sentenceCalculation.expiryDate }
-        ?.let {
-          if (it.sentenceCalculation.expiryDate > sentence.sentenceCalculation.topUpSupervisionDate) {
-            return null
-          }
-        }
-
-      val topUpDate = sentence.sentenceCalculation.topUpSupervisionDate
-      val breakdown = sentence.sentenceCalculation.breakdownByReleaseDateType[TUSED]
-
-      // CRS-2260 Added breakdown != null check - this can be null in this BOTUS scenario via the full-validation endpoint (fullValidationFromBookingData)
-      if (topUpDate != null && breakdown != null && topUpDate.isAfter(latestLicenceExpiryDate)) {
-        topUpDate to breakdown
-      } else {
-        null
-      }
     }
   }
 

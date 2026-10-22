@@ -55,20 +55,18 @@ class SHPOContaingSx03OffencesValidator(private val trancheConfiguration: SDS40T
   }
 
   /**
-   * Only return where sentence is post SDS-40 commencement date AND
-   * is either a Recall with a top-up supervision date OR the sentence is not a Recall
+   * Only return where sentence is post SDS-40 commencement date AND the sentence is not a Recall
    * AND the release date is before the Tranche 3 commencement date
    *
    * All releases post Tranche 3 commencement date are SDS-50
    */
   private fun filterSXOffenceDates(sentence: CalculableSentence): Boolean = sentence.sentenceCalculation.adjustedDeterminateReleaseDate.isAfterOrEqualTo(trancheConfiguration.trancheOneCommencementDate) &&
     sentence.sentenceCalculation.adjustedDeterminateReleaseDate.isBefore(trancheConfiguration.trancheThreeCommencementDate) &&
-    (!sentence.isRecall() || sentence.sentenceCalculation.topUpSupervisionDate != null)
+    (!sentence.isRecall())
 
   override fun validationOrder() = ValidationOrder.UNSUPPORTED
 
   companion object {
-    private const val TWELVE = 12L
     private val shpoSX03OffenceCodes = listOf("SX03220", "SX03220A", "SX03244", "SX03244A", "SX03247", "SX03247A")
     val log: Logger = LoggerFactory.getLogger(this::class.java)
   }

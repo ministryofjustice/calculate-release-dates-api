@@ -30,12 +30,12 @@ class TimelineCalculator(
   ): CalculationResult {
     calculateUnusedAdas(sentences)
     sentences.flatten().forEach {
-      sentenceAdjustedCalculationService.calculateDatesFromAdjustments(it, offender, enabledLegislation)
+      sentenceAdjustedCalculationService.calculateDatesFromAdjustments(it, enabledLegislation)
     }
     val adjustAgain = calculateUnusedLicenceAdas(sentences)
     if (adjustAgain) {
       sentences.flatten().forEach {
-        sentenceAdjustedCalculationService.calculateDatesFromAdjustments(it, offender, enabledLegislation)
+        sentenceAdjustedCalculationService.calculateDatesFromAdjustments(it, enabledLegislation)
       }
     }
     return bookingExtractionService.extract(

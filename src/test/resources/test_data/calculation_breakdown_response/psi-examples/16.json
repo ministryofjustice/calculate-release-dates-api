@@ -77,20 +77,6 @@
       "unadjustedDate": "2015-06-12",
       "appliedAdjustments": { "awarded": 0 }
     },
-    "TUSED": {
-      "rules": [
-        "TUSED_LICENCE_PERIOD_LT_1Y"
-      ],
-      "rulesWithExtraAdjustments": {
-        "TUSED_LICENCE_PERIOD_LT_1Y": {
-          "adjustmentValue": 12,
-          "type": "MONTHS"
-        }
-      },
-      "adjustedDays": -14,
-      "releaseDate": "2016-04-29",
-      "unadjustedDate": "2015-05-13"
-    },
     "HDCED": {
       "rules": [
         "HDCED_GE_MIN_PERIOD_LT_MIDPOINT",

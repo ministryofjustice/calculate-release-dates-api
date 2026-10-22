@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource
 
-import com.github.tomakehurst.wiremock.client.WireMock.get
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -13,7 +12,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Calcul
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.CRD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SLED
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.TUSED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.MockPrisonService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.PrisonApiExtension.Companion.prisonApi
@@ -72,7 +70,6 @@ class PreviouslyRecordedSLEDCalculationIntTest(private val mockPrisonService: Mo
       oldConfirmedCalc.dates,
       LocalDate.of(2025, 9, 12),
       LocalDate.of(2025, 3, 28),
-      LocalDate.of(2026, 3, 28),
     )
     updatedSentencesToVersion("2")
 
@@ -82,7 +79,6 @@ class PreviouslyRecordedSLEDCalculationIntTest(private val mockPrisonService: Mo
       prelimWithoutPreviouslyRecordedSLED.dates,
       LocalDate.of(2025, 6, 26),
       LocalDate.of(2025, 5, 24),
-      LocalDate.of(2026, 5, 24),
     )
     assertThat(prelimWithoutPreviouslyRecordedSLED.usedPreviouslyRecordedSLED).describedAs("prelim calc has no previously recorded SLED").isNull()
     val confirmedWithoutPreviouslyRecordedSLED = createConfirmCalculationForPrisoner(prelimWithoutPreviouslyRecordedSLED.calculationRequestId)
@@ -91,7 +87,6 @@ class PreviouslyRecordedSLEDCalculationIntTest(private val mockPrisonService: Mo
       confirmedWithoutPreviouslyRecordedSLED.dates,
       LocalDate.of(2025, 6, 26),
       LocalDate.of(2025, 5, 24),
-      LocalDate.of(2026, 5, 24),
     )
     assertThat(confirmedWithoutPreviouslyRecordedSLED.usedPreviouslyRecordedSLED).describedAs("confirmed calc has no previously recorded SLED").isNull()
 
@@ -101,7 +96,6 @@ class PreviouslyRecordedSLEDCalculationIntTest(private val mockPrisonService: Mo
       prelimWithPreviouslyRecordedSLED.dates,
       LocalDate.of(2025, 9, 12),
       LocalDate.of(2025, 5, 24),
-      LocalDate.of(2026, 5, 24),
     )
     assertThat(prelimWithPreviouslyRecordedSLED.usedPreviouslyRecordedSLED).describedAs("prelim calc with previously recorded SLED").isEqualTo(
       PreviouslyRecordedSLED(
@@ -116,7 +110,6 @@ class PreviouslyRecordedSLEDCalculationIntTest(private val mockPrisonService: Mo
       confirmedWithPreviouslyRecordedSLED.dates,
       LocalDate.of(2025, 9, 12),
       LocalDate.of(2025, 5, 24),
-      LocalDate.of(2026, 5, 24),
     )
     assertThat(confirmedWithPreviouslyRecordedSLED.usedPreviouslyRecordedSLED).describedAs("confirmed calc with previously recorded SLED").isEqualTo(
       PreviouslyRecordedSLED(
@@ -136,7 +129,6 @@ class PreviouslyRecordedSLEDCalculationIntTest(private val mockPrisonService: Mo
       oldConfirmedCalc.dates,
       LocalDate.of(2025, 9, 12),
       LocalDate.of(2025, 3, 28),
-      LocalDate.of(2026, 3, 28),
     )
     updatedSentencesToVersion("2")
 
@@ -146,7 +138,6 @@ class PreviouslyRecordedSLEDCalculationIntTest(private val mockPrisonService: Mo
       prelimWithPreviouslyRecordedSLED.dates,
       LocalDate.of(2025, 6, 26),
       LocalDate.of(2025, 5, 24),
-      LocalDate.of(2026, 5, 24),
     )
     assertThat(prelimWithPreviouslyRecordedSLED.usedPreviouslyRecordedSLED).describedAs("prelim calc with previously recorded SLED not found as it wasn't a 2 day check").isNull()
   }
@@ -160,7 +151,6 @@ class PreviouslyRecordedSLEDCalculationIntTest(private val mockPrisonService: Mo
       oldConfirmedCalc.dates,
       LocalDate.of(2025, 9, 12),
       LocalDate.of(2025, 3, 28),
-      LocalDate.of(2026, 3, 28),
     )
 
     updatedSentencesToVersion("2")
@@ -184,7 +174,6 @@ class PreviouslyRecordedSLEDCalculationIntTest(private val mockPrisonService: Mo
       prelimWithPreviouslyRecordedSLED.dates,
       LocalDate.of(2025, 10, 13),
       LocalDate.of(2025, 5, 24),
-      LocalDate.of(2026, 5, 24),
     )
     assertThat(prelimWithPreviouslyRecordedSLED.usedPreviouslyRecordedSLED).describedAs("prelim calc with previously recorded SLED").isEqualTo(
       PreviouslyRecordedSLED(
@@ -217,7 +206,6 @@ class PreviouslyRecordedSLEDCalculationIntTest(private val mockPrisonService: Mo
       prelimWithPreviouslyRecordedSLED.dates,
       LocalDate.of(2025, 6, 26),
       LocalDate.of(2025, 5, 24),
-      LocalDate.of(2026, 5, 24),
     )
     assertThat(prelimWithPreviouslyRecordedSLED.usedPreviouslyRecordedSLED).describedAs("prelim calc with previously recorded SLED").isNull()
   }
@@ -231,7 +219,6 @@ class PreviouslyRecordedSLEDCalculationIntTest(private val mockPrisonService: Mo
       oldConfirmedCalc.dates,
       LocalDate.of(2025, 9, 12),
       LocalDate.of(2025, 3, 28),
-      LocalDate.of(2026, 3, 28),
     )
 
     updatedSentencesToVersion("2")
@@ -256,7 +243,6 @@ class PreviouslyRecordedSLEDCalculationIntTest(private val mockPrisonService: Mo
       prelimWithPreviouslyRecordedSLED.dates,
       LocalDate.of(2025, 10, 13),
       LocalDate.of(2025, 5, 24),
-      LocalDate.of(2026, 5, 24),
     )
     assertThat(prelimWithPreviouslyRecordedSLED.usedPreviouslyRecordedSLED).describedAs("prelim calc with previously recorded SLED").isEqualTo(
       PreviouslyRecordedSLED(
@@ -289,7 +275,6 @@ class PreviouslyRecordedSLEDCalculationIntTest(private val mockPrisonService: Mo
       prelimWithPreviouslyRecordedSLED.dates,
       LocalDate.of(2025, 9, 12),
       LocalDate.of(2025, 3, 28),
-      LocalDate.of(2026, 3, 28),
     )
     assertThat(prelimWithPreviouslyRecordedSLED.usedPreviouslyRecordedSLED).describedAs("prelim calc with previously recorded SLED").isNull()
   }
@@ -371,81 +356,6 @@ class PreviouslyRecordedSLEDCalculationIntTest(private val mockPrisonService: Mo
   }
 
   @Test
-  fun `Should remove the TUSED if the Previously Recorded SLED is later than then TUSED`() {
-    val oldPreliminaryCalc = createPreliminaryCalculation(PRISONER_ID, CalculationRequestModel(calculationUserInputs = CalculationUserInputs(usePreviouslyRecordedSLEDIfFound = false), calculationReasonId = 9L))
-    val oldConfirmedCalc = createConfirmCalculationForPrisoner(oldPreliminaryCalc.calculationRequestId)
-    assertDates(
-      "original",
-      oldConfirmedCalc.dates,
-      LocalDate.of(2025, 9, 12),
-      LocalDate.of(2025, 3, 28),
-      LocalDate.of(2026, 3, 28),
-    )
-
-    updatedSentencesToVersion("2")
-
-    // GO has later SLED than the newly updated TUSED
-    val expectedNewTused = LocalDate.of(2026, 5, 24)
-    val sledOverriddenTo = expectedNewTused.plusDays(1)
-    val newPreliminaryCalc = createPreliminaryCalculation(PRISONER_ID, CalculationRequestModel(calculationUserInputs = CalculationUserInputs(usePreviouslyRecordedSLEDIfFound = true), calculationReasonId = TWO_DAY_CHECK_REASON_ID))
-    val genuineOverrideResponse = createGenuineOverride(
-      newPreliminaryCalc.calculationRequestId,
-      GenuineOverrideRequest(
-        dates = listOf(
-          GenuineOverrideDate(ReleaseDateType.SED, sledOverriddenTo),
-          GenuineOverrideDate(ReleaseDateType.LED, sledOverriddenTo),
-        ),
-        reason = GenuineOverrideReason.AGGRAVATING_FACTOR_OFFENCE,
-        reasonFurtherDetail = null,
-      ),
-    )
-
-    val prelimWithPreviouslyRecordedSLED = createPreliminaryCalculation(PRISONER_ID, CalculationRequestModel(calculationUserInputs = CalculationUserInputs(usePreviouslyRecordedSLEDIfFound = true), calculationReasonId = INITIAL_CALC_REASON_ID))
-    assertDates(
-      "prelim using previously recorded SLED",
-      prelimWithPreviouslyRecordedSLED.dates,
-      sledOverriddenTo,
-      LocalDate.of(2025, 5, 24),
-      null,
-    )
-    assertThat(prelimWithPreviouslyRecordedSLED.usedPreviouslyRecordedSLED).describedAs("prelim calc with previously recorded SLED").isEqualTo(
-      PreviouslyRecordedSLED(
-        previouslyRecordedSLEDDate = sledOverriddenTo,
-        calculatedDate = LocalDate.of(2025, 6, 26),
-        previouslyRecordedSLEDCalculationRequestId = genuineOverrideResponse.newCalculationRequestId!!,
-      ),
-    )
-
-    val detailedReleaseDatesResponse = webTestClient.get()
-      .uri("/calculation/detailed-results/${prelimWithPreviouslyRecordedSLED.calculationRequestId}")
-      .accept(MediaType.APPLICATION_JSON)
-      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
-      .exchange()
-      .expectStatus().isOk
-      .expectHeader().contentType(MediaType.APPLICATION_JSON)
-      .expectBody(DetailedCalculationResults::class.java)
-      .returnResult().responseBody!!
-    assertThat(detailedReleaseDatesResponse.dates[SLED]?.date).isEqualTo(sledOverriddenTo)
-    assertThat(detailedReleaseDatesResponse.dates[TUSED]).isNull()
-    assertThat(detailedReleaseDatesResponse.calculationBreakdown?.breakdownByReleaseDateType[SLED]).isEqualTo(
-      ReleaseDateCalculationBreakdown(
-        releaseDate = sledOverriddenTo,
-        unadjustedDate = LocalDate.of(2025, 6, 26),
-        rules = setOf(CalculationRule.PREVIOUSLY_RECORDED_SLED_USED),
-      ),
-    )
-    assertThat(detailedReleaseDatesResponse.calculationBreakdown?.breakdownByReleaseDateType[TUSED]).isNull()
-    assertThat(detailedReleaseDatesResponse.usedPreviouslyRecordedSLED).isEqualTo(
-      PreviouslyRecordedSLED(
-        previouslyRecordedSLEDDate = sledOverriddenTo,
-        calculatedDate = LocalDate.of(2025, 6, 26),
-        previouslyRecordedSLEDCalculationRequestId = genuineOverrideResponse.newCalculationRequestId,
-      ),
-    )
-    assertThat(detailedReleaseDatesResponse.context.usePreviouslyRecordedSLEDIfFound).isTrue
-  }
-
-  @Test
   fun `Use the most recent two day check rather than the latest SLED date`() {
     val originalCalculatedSLED = LocalDate.of(2025, 9, 12)
 
@@ -470,7 +380,6 @@ class PreviouslyRecordedSLEDCalculationIntTest(private val mockPrisonService: Mo
       oldConfirmedCalc.dates,
       originalCalculatedSLED,
       LocalDate.of(2025, 3, 28),
-      LocalDate.of(2026, 3, 28),
     )
     updatedSentencesToVersion("2")
 
@@ -480,7 +389,6 @@ class PreviouslyRecordedSLEDCalculationIntTest(private val mockPrisonService: Mo
       prelimWithPreviouslyRecordedSLED.dates,
       originalCalculatedSLED,
       LocalDate.of(2025, 5, 24),
-      LocalDate.of(2026, 5, 24),
     )
     assertThat(prelimWithPreviouslyRecordedSLED.usedPreviouslyRecordedSLED).describedAs("prelim calc with previously recorded SLED").isEqualTo(
       PreviouslyRecordedSLED(
@@ -491,10 +399,9 @@ class PreviouslyRecordedSLEDCalculationIntTest(private val mockPrisonService: Mo
     )
   }
 
-  private fun assertDates(calcDescription: String, dates: Map<ReleaseDateType, LocalDate?>, expectedSled: LocalDate, expectedCrd: LocalDate, expectedTused: LocalDate?) {
+  private fun assertDates(calcDescription: String, dates: Map<ReleaseDateType, LocalDate?>, expectedSled: LocalDate, expectedCrd: LocalDate) {
     assertThat(dates[SLED]).describedAs("$calcDescription SLED").isEqualTo(expectedSled)
     assertThat(dates[CRD]).describedAs("$calcDescription CRD").isEqualTo(expectedCrd)
-    assertThat(dates[TUSED]).describedAs("$calcDescription TUSED").isEqualTo(expectedTused)
   }
 
   private fun updatedSentencesToVersion(version: String) {

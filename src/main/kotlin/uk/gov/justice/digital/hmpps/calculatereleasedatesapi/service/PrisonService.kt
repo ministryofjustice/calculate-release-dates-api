@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.NoValidReturnToCustodyDateException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NomisCalculationReason
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NomisTusedData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NormalisedSentenceAndOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OffenderKeyDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
@@ -112,8 +111,6 @@ class PrisonService(
   fun getNOMISCalcReasons(): List<NomisCalculationReason> = prisonApiClient.getNOMISCalcReasons()
 
   fun getNOMISOffenderKeyDates(offenderSentCalcId: Long): Either<String, OffenderKeyDates> = prisonApiClient.getNOMISOffenderKeyDates(offenderSentCalcId)
-
-  fun getLatestTusedDataForBotus(nomisId: String): Either<String, NomisTusedData> = prisonApiClient.getLatestTusedDataForBotus(nomisId)
 
   fun getPrisonerInPrisonSummary(prisonerId: String): PrisonerInPrisonSummary = prisonApiClient.getPrisonerInPrisonSummary(prisonerId)
 

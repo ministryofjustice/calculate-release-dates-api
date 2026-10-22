@@ -4,7 +4,6 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.adjustmentsapi.model.AdjustmentDto
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentsSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
@@ -19,8 +18,6 @@ import java.time.LocalDate
 @Service
 class CalculationSourceDataService(
   private val prisonService: PrisonService,
-  private val featureToggles: FeatureToggles,
-  private val botusTusedService: BotusTusedService,
   private val adjustmentsApiClient: AdjustmentsApiClient,
 ) {
 
@@ -77,11 +74,7 @@ class CalculationSourceDataService(
   }
 
   private fun getCalculationSourceData(prisonerDetails: PrisonerDetails, bookingLevelSourceData: BookingLevelSourceData): CalculationSourceData {
-    val bookingHasBotus = !featureToggles.applyPostRecallRepealRules && bookingLevelSourceData.sentenceAndOffences.any { from(it.sentenceCalculationType).sentenceType == SentenceType.Botus }
-    val tusedData = if (bookingHasBotus) prisonService.getLatestTusedDataForBotus(prisonerDetails.offenderNo).getOrNull() else null
-    val historicalTusedData = tusedData?.let { botusTusedService.identifyTused(it) }
     val externalMovements = prisonService.getExternalMovements(bookingLevelSourceData.sentenceAndOffences, prisonerDetails.offenderNo)
-
     return CalculationSourceData(
       bookingLevelSourceData.sentenceAndOffences,
       prisonerDetails,
@@ -89,7 +82,7 @@ class CalculationSourceDataService(
       bookingLevelSourceData.offenderFinePayments,
       bookingLevelSourceData.returnToCustodyDate,
       bookingLevelSourceData.fixedTermRecallDetails,
-      historicalTusedData,
+      null,
       externalMovements,
     )
   }
