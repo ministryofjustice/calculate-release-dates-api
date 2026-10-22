@@ -44,7 +44,7 @@ dependencies {
   implementation("org.jetbrains.kotlin:kotlin-reflect:2.4.21")
 
   // Three Ten Date Calculations
-  implementation("org.threeten:threeten-extra:1.10.0")
+  implementation("org.threeten:threeten-extra:1.11.0")
 
   compileOnly("javax.servlet:javax.servlet-api:4.0.1")
 
@@ -64,7 +64,7 @@ dependencies {
   implementation("io.awspring.cloud:spring-cloud-aws-core:4.2.0")
   implementation("io.awspring.cloud:spring-cloud-aws-sns:4.2.0")
   implementation("io.awspring.cloud:spring-cloud-aws-sqs:4.2.0")
-  implementation("org.springframework:spring-jms:7.0.9")
+  implementation("org.springframework:spring-jms:7.0.10")
   implementation("org.apache.commons:commons-text:1.15.0")
 
   // SQS
@@ -77,7 +77,7 @@ dependencies {
   testImplementation("org.springframework.boot:spring-boot-starter-security-test")
   testImplementation("org.springframework.boot:spring-boot-webtestclient")
   testImplementation("org.awaitility:awaitility-kotlin:4.3.0")
-  testImplementation("net.javacrumbs.json-unit:json-unit-assertj:6.3.0")
+  testImplementation("net.javacrumbs.json-unit:json-unit-assertj:6.4.0")
   testImplementation("io.swagger.parser.v3:swagger-parser-v2-converter:2.1.48")
   testImplementation("org.mockito:mockito-inline:5.2.0")
   testImplementation("org.junit.jupiter:junit-jupiter:6.1.3")
@@ -85,7 +85,7 @@ dependencies {
   testImplementation("org.testcontainers:localstack:1.21.4")
   testImplementation("org.testcontainers:postgresql:1.21.4")
   testImplementation("org.testcontainers:junit-jupiter:1.21.4")
-  testImplementation("io.github.hakky54:logcaptor:2.12.7")
+  testImplementation("io.github.hakky54:logcaptor:2.13.0")
   testImplementation("org.mockito.kotlin:mockito-kotlin")
   testImplementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter-test:3.0.3")
   testImplementation("javax.xml.bind:jaxb-api:2.3.1")
