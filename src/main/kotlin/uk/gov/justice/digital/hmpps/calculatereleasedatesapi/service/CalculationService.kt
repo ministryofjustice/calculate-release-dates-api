@@ -88,11 +88,6 @@ class CalculationService(
       appliedAdjustments = null,
       affectedBySdsLegislation = null,
     )
-    if (newDates.containsKey(ReleaseDateType.TUSED) && sledToOverrideTheCalculatedOneWith.previouslyRecordedSLEDDate.isAfter(newDates[ReleaseDateType.TUSED])) {
-      newDates.remove(ReleaseDateType.TUSED)
-      newBreakdowns.remove(ReleaseDateType.TUSED)
-    }
-
     return calculationOutput.copy(
       calculationResult = calculationOutput.calculationResult.copy(
         dates = newDates,

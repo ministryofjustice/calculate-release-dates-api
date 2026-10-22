@@ -27,10 +27,6 @@ data class SentenceAdjustments(
 
   fun adjustmentsForLicenceExpiry(): Long = deductionsAndUalForWholeSentencePeriod()
 
-  fun adjustmentsForTused(): Long = deductionsAndUalForWholeSentencePeriod()
-
-  fun adjustmentsForStandardRecall(): Long = deductionsAndUalForWholeSentencePeriod()
-
   fun adjustmentsForFixedTermRecall(): Long = ualAfterFtr + awardedAfterDeterminateRelease
 
   fun totalAdjustmentDays(): Long = taggedBail +

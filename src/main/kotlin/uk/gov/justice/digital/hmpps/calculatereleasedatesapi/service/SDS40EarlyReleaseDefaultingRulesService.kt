@@ -11,9 +11,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.TrancheName
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import java.time.LocalDate
 
 @Service
@@ -33,7 +31,6 @@ class SDS40EarlyReleaseDefaultingRulesService {
       dates,
       breakdownByReleaseDateType,
       sentences,
-      preLegislationCalculation.legislationApplied.legislation.commencementDate(),
     )
 
     return createFinalCalculationResult(
@@ -51,7 +48,6 @@ class SDS40EarlyReleaseDefaultingRulesService {
     dates: MutableMap<ReleaseDateType, LocalDate>,
     breakdownByReleaseDateType: MutableMap<ReleaseDateType, ReleaseDateCalculationBreakdown>,
     sentences: List<CalculableSentence>,
-    legislationCommencementDate: LocalDate,
   ) {
     adjustDatesForEarlyOrStandardRelease(
       earlyReleaseResult,
@@ -59,14 +55,6 @@ class SDS40EarlyReleaseDefaultingRulesService {
       applicableLegislation,
       dates,
       breakdownByReleaseDateType,
-    )
-
-    adjustTusedForPreTrancheOneRecalls(
-      dates,
-      standardReleaseResult,
-      breakdownByReleaseDateType,
-      sentences,
-      legislationCommencementDate,
     )
 
     adjustHdcedAndPrrdBasedOnCrdOrArd(
@@ -186,51 +174,6 @@ class SDS40EarlyReleaseDefaultingRulesService {
       }
     }
   }
-
-  fun adjustTusedForPreTrancheOneRecalls(
-    dates: MutableMap<ReleaseDateType, LocalDate>,
-    standardReleaseResult: CalculationResult,
-    breakdownByReleaseDateType: MutableMap<ReleaseDateType, ReleaseDateCalculationBreakdown>,
-    sentences: List<CalculableSentence>,
-    legislationCommencementDate: LocalDate,
-  ) {
-    val originalCrd = standardReleaseResult.dates[ReleaseDateType.CRD]
-
-    if (originalCrd != null && shouldAdjustTused(dates, originalCrd, legislationCommencementDate) && hasEligibleRecallTusedSentence(sentences)) {
-      applyStandardTused(dates, standardReleaseResult, breakdownByReleaseDateType)
-    }
-  }
-
-  private fun shouldAdjustTused(
-    dates: Map<ReleaseDateType, LocalDate>,
-    latestReleaseDate: LocalDate,
-    legislationCommencementDate: LocalDate,
-  ): Boolean = dates.containsKey(ReleaseDateType.TUSED) && latestReleaseDate.isBefore(legislationCommencementDate)
-
-  private fun applyStandardTused(
-    dates: MutableMap<ReleaseDateType, LocalDate>,
-    standardReleaseResult: CalculationResult,
-    breakdownByReleaseDateType: MutableMap<ReleaseDateType, ReleaseDateCalculationBreakdown>,
-  ) {
-    standardReleaseResult.dates[ReleaseDateType.TUSED]?.let {
-      dates[ReleaseDateType.TUSED] = it
-    }
-    standardReleaseResult.breakdownByReleaseDateType[ReleaseDateType.TUSED]?.let {
-      breakdownByReleaseDateType[ReleaseDateType.TUSED] = it
-    }
-  }
-
-  private fun hasEligibleRecallTusedSentence(sentences: List<CalculableSentence>): Boolean = sentences.any { sentence ->
-    sentence.releaseDateTypes.contains(ReleaseDateType.TUSED) &&
-      sentence.recallType != null &&
-      when (sentence) {
-        is StandardDeterminateSentence -> true
-        is ConsecutiveSentence -> hasStandardDeterminateSentence(sentence)
-        else -> false
-      }
-  }
-
-  private fun hasStandardDeterminateSentence(sentence: ConsecutiveSentence): Boolean = sentence.orderedSentences.any { it is StandardDeterminateSentence }
 
   fun hasAnyReleaseBeforeTrancheCommencement(
     early: CalculationResult,
@@ -360,8 +303,6 @@ class SDS40EarlyReleaseDefaultingRulesService {
         rules = it.rules + CalculationRule.SDS_STANDARD_RELEASE_APPLIES,
       )
     }
-    // Handle TUSED adjustment to standard when normal CRD is being used.
-    useStandardTusedIfCrdExists(context)
   }
 
   private fun applyEarlyReleaseRule(context: ReleaseDateContext) {
@@ -369,17 +310,6 @@ class SDS40EarlyReleaseDefaultingRulesService {
       context.breakdownByReleaseDateType[context.dateType] = it.copy(
         rules = it.rules + CalculationRule.SDS_EARLY_RELEASE_APPLIES,
       )
-    }
-  }
-
-  private fun useStandardTusedIfCrdExists(context: ReleaseDateContext) {
-    if (context.dateType != ReleaseDateType.CRD) return
-
-    context.standardReleaseResult.dates[ReleaseDateType.TUSED]?.let { standardTusedDate ->
-      context.dates[ReleaseDateType.TUSED] = standardTusedDate
-      context.standardReleaseResult.breakdownByReleaseDateType[ReleaseDateType.TUSED]?.let { standardTusedBreakdown ->
-        context.breakdownByReleaseDateType[ReleaseDateType.TUSED] = standardTusedBreakdown
-      }
     }
   }
 

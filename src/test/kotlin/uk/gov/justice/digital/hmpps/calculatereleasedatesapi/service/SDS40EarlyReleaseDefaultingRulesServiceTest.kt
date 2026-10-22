@@ -26,8 +26,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationTr
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Recall
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateTypes
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSReleaseArrangements
@@ -115,122 +113,6 @@ class SDS40EarlyReleaseDefaultingRulesServiceTest {
         affectedBySds40 = false,
       ),
     )
-  }
-
-  @Test
-  fun `should take original TUSED and breakdown if recall CRD is before Tranche 1 Commencement`() {
-    val testBreakdown = ReleaseDateCalculationBreakdown()
-
-    val standard = CalculationResult(
-      mapOf(ReleaseDateType.TUSED to LocalDate.of(2024, 8, 1), ReleaseDateType.CRD to testCommencementDate.minusDays(1)),
-      mapOf(
-        ReleaseDateType.TUSED to testBreakdown,
-      ),
-      emptyMap(),
-      Period.ofYears(5),
-    )
-
-    val testOffender = Offender("a", LocalDate.of(1980, 1, 1), true)
-
-    val sentence = StandardDeterminateSentence(
-      sentencedAt = LocalDate.of(2020, 1, 1),
-      duration = Duration(mutableMapOf(DAYS to 0L, WEEKS to 0L, MONTHS to 0L, YEARS to 5L)),
-      offence = Offence(committedAt = LocalDate.of(2019, 1, 1)),
-      identifier = UUID.randomUUID(),
-      caseSequence = 1,
-      lineSequence = 1,
-      releaseArrangements = SDSReleaseArrangements(
-        isSDSPlus = false,
-        isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-        isSection250 = false,
-        sdsEarlyReleaseExclusions = emptyList(),
-      ),
-      recall = Recall(RecallType.STANDARD_RECALL),
-    ).apply { releaseMultiplier = ReleaseMultiplier.ONE_HALF }
-    sentence.releaseDateTypes = ReleaseDateTypes(listOf(ReleaseDateType.TUSED), sentence, testOffender)
-    sentence.identificationTrack = SentenceIdentificationTrack.SDS
-    val earlyTused = LocalDate.of(2024, 12, 2)
-    val sentenceCalculation = SentenceCalculation(
-      UnadjustedReleaseDate(
-        sentence,
-        CalculationTrigger(LocalDate.now()),
-      ),
-      SentenceAdjustments(),
-      false,
-    )
-
-    sentence.sentenceCalculation = sentenceCalculation
-
-    val resultDates = mutableMapOf<ReleaseDateType, LocalDate>(ReleaseDateType.TUSED to earlyTused)
-    val resultBreakdown = mutableMapOf<ReleaseDateType, ReleaseDateCalculationBreakdown>()
-    service.adjustTusedForPreTrancheOneRecalls(
-      resultDates,
-      standard,
-      resultBreakdown,
-      listOf(sentence),
-      trancheConfiguration.trancheOneCommencementDate,
-    )
-
-    assertThat(resultDates[ReleaseDateType.TUSED]).isEqualTo(LocalDate.of(2024, 8, 1))
-    assertThat(resultBreakdown[ReleaseDateType.TUSED]).isEqualTo(testBreakdown)
-  }
-
-  @Test
-  fun `should retain existing TUSED and breakdown if recall CRD is after Tranche 1 Commencement`() {
-    val testBreakdown = ReleaseDateCalculationBreakdown()
-
-    val standard = CalculationResult(
-      mapOf(ReleaseDateType.TUSED to LocalDate.of(2024, 11, 1), ReleaseDateType.CRD to testCommencementDate.plusDays(1)),
-      mapOf(
-        ReleaseDateType.TUSED to testBreakdown,
-      ),
-      emptyMap(),
-      Period.ofYears(5),
-    )
-
-    val testOffender = Offender("a", LocalDate.of(1980, 1, 1), true)
-
-    val sentence = StandardDeterminateSentence(
-      sentencedAt = LocalDate.of(2020, 1, 1),
-      duration = Duration(mutableMapOf(DAYS to 0L, WEEKS to 0L, MONTHS to 0L, YEARS to 5L)),
-      offence = Offence(committedAt = LocalDate.of(2019, 1, 1)),
-      identifier = UUID.randomUUID(),
-      caseSequence = 1,
-      lineSequence = 1,
-      releaseArrangements = SDSReleaseArrangements(
-        isSDSPlus = false,
-        isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-        isSection250 = false,
-        sdsEarlyReleaseExclusions = emptyList(),
-      ),
-      recall = Recall(RecallType.STANDARD_RECALL),
-    ).apply { releaseMultiplier = ReleaseMultiplier.ONE_HALF }
-    sentence.releaseDateTypes = ReleaseDateTypes(listOf(ReleaseDateType.TUSED), sentence, testOffender)
-    sentence.identificationTrack = SentenceIdentificationTrack.SDS
-    val earlyTused = LocalDate.of(2024, 1, 1)
-    val sentenceCalculation = SentenceCalculation(
-      UnadjustedReleaseDate(
-        sentence,
-        CalculationTrigger(LocalDate.now()),
-      ),
-      SentenceAdjustments(),
-      false,
-    )
-
-    sentence.sentenceCalculation = sentenceCalculation
-
-    val resultDates = mutableMapOf<ReleaseDateType, LocalDate>(ReleaseDateType.TUSED to earlyTused)
-    val resultBreakdown = mutableMapOf<ReleaseDateType, ReleaseDateCalculationBreakdown>()
-    service.adjustTusedForPreTrancheOneRecalls(
-      resultDates,
-      standard,
-      resultBreakdown,
-      listOf(sentence),
-      trancheConfiguration.trancheOneCommencementDate,
-    )
-
-    assertThat(resultDates[ReleaseDateType.TUSED]).isEqualTo(earlyTused)
-    assertThat(resultBreakdown).doesNotContainKeys(ReleaseDateType.TUSED)
   }
 
   @ParameterizedTest

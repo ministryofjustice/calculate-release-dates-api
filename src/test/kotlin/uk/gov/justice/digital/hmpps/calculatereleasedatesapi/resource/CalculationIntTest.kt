@@ -15,7 +15,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.ErrorRespons
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule.HDCED_GE_MIN_PERIOD_LT_MIDPOINT
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule.HDC_180
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule.TUSED_LICENCE_PERIOD_LT_1Y
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.APD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ARD
@@ -30,7 +29,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.PRRD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SLED
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.TUSED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.MockManageOffencesClient
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.MockPrisonService
@@ -80,7 +78,6 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
     assertThat(result).isNotNull
     assertThat(result.dates[SLED]).isEqualTo(LocalDate.of(2016, 11, 6))
     assertThat(result.dates[CRD]).isEqualTo(LocalDate.of(2016, 1, 6))
-    assertThat(result.dates[TUSED]).isEqualTo(LocalDate.of(2017, 1, 6))
     assertThat(result.dates[HDCED]).isEqualTo(LocalDate.of(2015, 8, 7))
     assertThat(result.dates[ESED]).isEqualTo(LocalDate.of(2016, 11, 16))
     assertThat(calculationRequest.inputData["offender"]["reference"].asText()).isEqualTo(PRISONER_ID)
@@ -98,7 +95,6 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
 
     assertThat(confirmed.dates[SLED]).isEqualTo(LocalDate.of(2016, 11, 6))
     assertThat(confirmed.dates[CRD]).isEqualTo(LocalDate.of(2016, 1, 6))
-    assertThat(confirmed.dates[TUSED]).isEqualTo(LocalDate.of(2017, 1, 6))
 
     assertThat(calculationRequest.calculationStatus).isEqualTo("CONFIRMED")
     assertThat(calculationRequest.inputData["offender"]["reference"].asText()).isEqualTo(PRISONER_ID)
@@ -162,9 +158,6 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
     if (result != null && result.dates.containsKey(CRD)) {
       assertThat(result.dates[CRD]).isEqualTo(LocalDate.of(2016, 1, 6))
     }
-    if (result != null && result.dates.containsKey(TUSED)) {
-      assertThat(result.dates[TUSED]).isEqualTo(LocalDate.of(2017, 1, 6))
-    }
   }
 
   @Test
@@ -190,9 +183,6 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
     if (result != null && result.dates.containsKey(CRD)) {
       assertThat(result.dates[CRD]).isEqualTo(LocalDate.of(2016, 1, 6))
     }
-    if (result != null && result.dates.containsKey(TUSED)) {
-      assertThat(result.dates[TUSED]).isEqualTo(LocalDate.of(2017, 1, 6))
-    }
   }
 
   @Test
@@ -217,9 +207,6 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
     }
     if (result != null && result.dates.containsKey(CRD)) {
       assertThat(result.dates[CRD]).isEqualTo(LocalDate.of(2016, 1, 6))
-    }
-    if (result != null && result.dates.containsKey(TUSED)) {
-      assertThat(result.dates[TUSED]).isEqualTo(LocalDate.of(2017, 1, 6))
     }
   }
 
@@ -285,8 +272,7 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
     assertThat(result.concurrentSentences[0].dates[SLED]!!.unadjusted).isEqualTo(LocalDate.of(2016, 11, 16))
     assertThat(result.concurrentSentences[0].dates[SLED]!!.adjusted).isEqualTo(LocalDate.of(2016, 11, 6))
     assertThat(result.concurrentSentences[0].dates[SLED]!!.adjustedByDays).isEqualTo(10)
-    assertThat(result.breakdownByReleaseDateType.keys).isEqualTo(setOf(CRD, SLED, TUSED, HDCED))
-    assertThat(result.breakdownByReleaseDateType[TUSED]!!.rules).isEqualTo(setOf(TUSED_LICENCE_PERIOD_LT_1Y))
+    assertThat(result.breakdownByReleaseDateType.keys).isEqualTo(setOf(CRD, SLED, HDCED))
     assertThat(result.breakdownByReleaseDateType[HDCED]!!.rules).isEqualTo(setOf(HDCED_GE_MIN_PERIOD_LT_MIDPOINT, HDC_180))
   }
 
@@ -320,7 +306,6 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
 
     assertThat(result.dates[SLED]).isEqualTo(LocalDate.of(2016, 11, 6))
     assertThat(result.dates[CRD]).isEqualTo(LocalDate.of(2016, 1, 6))
-    assertThat(result.dates[TUSED]).isEqualTo(LocalDate.of(2017, 1, 6))
     assertThat(result.dates[ESED]).isEqualTo(LocalDate.of(2016, 11, 16))
     assertThat(calculationRequest.inputData["offender"]["reference"].asText()).isEqualTo(PRISONER_ID_SEX_OFFENDER)
     assertThat(calculationRequest.inputData["sentences"][0]["offence"]["committedAt"].asText())
@@ -337,7 +322,6 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
 
     assertThat(result.dates[SLED]).isEqualTo(LocalDate.of(2016, 11, 6))
     assertThat(result.dates[CRD]).isEqualTo(LocalDate.of(2016, 1, 6))
-    assertThat(result.dates[TUSED]).isEqualTo(LocalDate.of(2017, 1, 6))
     assertThat(result.dates[ESED]).isEqualTo(LocalDate.of(2016, 11, 16))
     assertThat(calculationRequest.inputData["offender"]["reference"].asText()).isEqualTo(
       PRISONER_ID_ON_SEX_OFFENDER_REGISTER,
@@ -867,7 +851,6 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
       .returnResult().responseBody!!
     assertThat(calculation.dates[SED]).isEqualTo("2022-11-22")
     assertThat(calculation.dates[MTD]).isEqualTo("2022-02-21")
-    assertThat(calculation.dates[TUSED]).isEqualTo("2023-02-21")
     assertThat(calculation.dates[ETD]).isEqualTo("2021-12-21")
     assertThat(calculation.dates[LTD]).isEqualTo("2022-04-21")
   }

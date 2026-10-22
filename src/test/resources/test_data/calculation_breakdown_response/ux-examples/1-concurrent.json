@@ -174,20 +174,6 @@
       "unadjustedDate": "2022-06-20",
       "appliedAdjustments": { "awarded": 5 }
     },
-    "TUSED": {
-      "rules": [
-        "TUSED_LICENCE_PERIOD_LT_1Y"
-      ],
-      "rulesWithExtraAdjustments": {
-        "TUSED_LICENCE_PERIOD_LT_1Y": {
-          "adjustmentValue": 12,
-          "type": "MONTHS"
-        }
-      },
-      "adjustedDays": -23,
-      "releaseDate": "2023-05-28",
-      "unadjustedDate": "2022-06-20"
-    },
     "HDCED": {
       "rules": [
         "HDCED_GE_MIN_PERIOD_LT_MIDPOINT",

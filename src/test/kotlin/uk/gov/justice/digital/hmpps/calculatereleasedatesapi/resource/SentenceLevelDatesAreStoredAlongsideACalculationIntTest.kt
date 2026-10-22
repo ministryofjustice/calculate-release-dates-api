@@ -10,7 +10,6 @@ import org.springframework.test.context.jdbc.Sql
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.CRD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.HDCED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SLED
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.TUSED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.MockManageOffencesClient
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.MockPrisonService
@@ -87,10 +86,9 @@ class SentenceLevelDatesAreStoredAlongsideACalculationIntTest(private val mockPr
     assertThat(thirdEntity.impactsFinalReleaseDate).isFalse
     assertThat(thirdEntity.releaseMultiplier).isEqualTo(ReleaseMultiplier.ONE_HALF)
     val thirdDates = calculationRequestSentenceOutcomeRepository.findByCalculationRequestSentenceId(thirdEntity.id!!)
-    assertThat(thirdDates).hasSize(3)
+    assertThat(thirdDates).hasSize(2)
     assertThat(thirdDates.find { it.calculationDateType == SLED }?.outcomeDate).isEqualTo(LocalDate.of(2024, 1, 1))
     assertThat(thirdDates.find { it.calculationDateType == CRD }?.outcomeDate).isEqualTo(LocalDate.of(2024, 1, 1))
-    assertThat(thirdDates.find { it.calculationDateType == TUSED }?.outcomeDate).isEqualTo(LocalDate.of(2025, 1, 1))
     assertThat(thirdDates.find { it.calculationDateType == HDCED }?.outcomeDate).isNull()
   }
 

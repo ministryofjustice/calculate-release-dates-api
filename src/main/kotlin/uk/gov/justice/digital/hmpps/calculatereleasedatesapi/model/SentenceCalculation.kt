@@ -46,7 +46,6 @@ data class SentenceCalculation(
     ReleaseDateType.LED -> licenceExpiryDate
     ReleaseDateType.SED -> expiryDate
     ReleaseDateType.NPD -> nonParoleDate
-    ReleaseDateType.TUSED -> topUpSupervisionDate
     ReleaseDateType.PED -> extendedDeterminateParoleEligibilityDate
     ReleaseDateType.SLED -> expiryDate
     ReleaseDateType.HDCED -> homeDetentionCurfewEligibilityDate
@@ -215,7 +214,6 @@ data class SentenceCalculation(
     get() {
       return listOfNotNull(adjustedExpiryDate, sentence.sentencedAt, lastDayOfUal?.plusDays(1)).max()
     }
-  var topUpSupervisionDate: LocalDate? = null
   var isReleaseDateConditional: Boolean = false
 
   private fun isDateDefaultedToCommencement(releaseDate: LocalDate): Boolean = applicableSdsLegislation?.earliestApplicableDate != null && releaseDate.isBeforeOrEqualTo(applicableSdsLegislation?.earliestApplicableDate!!)
@@ -248,8 +246,6 @@ data class SentenceCalculation(
       "Home Detention Curfew Eligibility Date (HDCED)\t:\t" +
       "${homeDetentionCurfewEligibilityDate?.format(formatter)}\n" +
       "Effective $expiryDateType\t:\t${expiryDate.format(formatter)}\n" +
-      "Effective $releaseDateType\t:\t${releaseDate.format(formatter)}\n" +
-      "Top-up Expiry Date (Post Sentence Supervision PSS)\t:\t" +
-      "${topUpSupervisionDate?.format(formatter)}\n"
+      "Effective $releaseDateType\t:\t${releaseDate.format(formatter)}\n"
   }
 }

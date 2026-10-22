@@ -18,7 +18,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.LED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SLED
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.TUSED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOutput
@@ -83,7 +82,7 @@ class CalculationServiceTest {
   }
 
   @Test
-  fun `should use dominant historic SLED with TUSED retained if user requested it be used and one is found that is before the TUSED`() {
+  fun `should use dominant historic SLED if user requested it be used`() {
     whenever(bookingTimelineService.calculate(anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull()))
       .thenReturn(CALCULATION_OUTPUT)
     val expectedPreviouslyRecordedSled = PreviouslyRecordedSLED(
@@ -105,7 +104,6 @@ class CalculationServiceTest {
             SLED to LocalDate.of(2026, 6, 15),
             CRD to LocalDate.of(2023, 8, 4),
             HDCED to LocalDate.of(2023, 2, 6),
-            TUSED to LocalDate.of(2027, 2, 2),
             ESED to LocalDate.of(2026, 2, 2),
           ),
           usedPreviouslyRecordedSLED = expectedPreviouslyRecordedSled,
@@ -115,64 +113,10 @@ class CalculationServiceTest {
               unadjustedDate = LocalDate.of(2026, 2, 2),
               rules = setOf(CalculationRule.PREVIOUSLY_RECORDED_SLED_USED),
             ),
-            TUSED to ReleaseDateCalculationBreakdown(
-              releaseDate = LocalDate.of(2027, 2, 2),
-              unadjustedDate = LocalDate.of(2027, 2, 2),
-              rules = emptySet(),
-            ),
           ),
         ),
         operativeSentenceEnvelope = OperativeSentenceEnvelope(
           sentenceEnvelopeLengthInDays = 1959, // from historic SLED
-          earliestSentenceStartDate = LocalDate.of(2021, 2, 3),
-          isPostRecallSentenceEnvelope = false,
-          containsAnSDSPlusSentence = false,
-          containsOffenceExcludedFromProgressionModel = false,
-          sentenceEnvelopeSource = OperativeSentenceEnvelopeSource.CRDS,
-          bookingId = BOOKING_ID,
-        ),
-      ),
-    )
-
-    verify(previouslyRecordedSLEDService).findPreviouslyRecordedSLEDThatShouldOverrideTheCalculatedSLED(any(), any())
-  }
-
-  @Test
-  fun `should use dominant historic SLED with TUSED removed if user requested it be used and one is found that is after the TUSED`() {
-    whenever(bookingTimelineService.calculate(anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull()))
-      .thenReturn(CALCULATION_OUTPUT)
-    val expectedPreviouslyRecordedSled = PreviouslyRecordedSLED(
-      previouslyRecordedSLEDDate = LocalDate.of(2028, 6, 15),
-      calculatedDate = LocalDate.of(2026, 2, 2),
-      previouslyRecordedSLEDCalculationRequestId = 99999,
-    )
-    whenever(previouslyRecordedSLEDService.findPreviouslyRecordedSLEDThatShouldOverrideTheCalculatedSLED(any(), any())).thenReturn(expectedPreviouslyRecordedSled)
-
-    val result = service.calculateReleaseDates(BOOKING, CalculationUserInputs(usePreviouslyRecordedSLEDIfFound = true), calculateSentenceLevelDates = false)
-
-    assertThat(result).isEqualTo(
-      CalculationOutput(
-        listOf(SDS_SENTENCE),
-        emptyList(),
-        CalculationResult(
-          effectiveSentenceLength = Period.of(1, 0, 0),
-          dates = mapOf(
-            SLED to LocalDate.of(2028, 6, 15),
-            CRD to LocalDate.of(2023, 8, 4),
-            HDCED to LocalDate.of(2023, 2, 6),
-            ESED to LocalDate.of(2026, 2, 2),
-          ),
-          usedPreviouslyRecordedSLED = expectedPreviouslyRecordedSled,
-          breakdownByReleaseDateType = mapOf(
-            SLED to ReleaseDateCalculationBreakdown(
-              releaseDate = LocalDate.of(2028, 6, 15),
-              unadjustedDate = LocalDate.of(2026, 2, 2),
-              rules = setOf(CalculationRule.PREVIOUSLY_RECORDED_SLED_USED),
-            ),
-          ),
-        ),
-        operativeSentenceEnvelope = OperativeSentenceEnvelope(
-          sentenceEnvelopeLengthInDays = 2690, // from historic SLED
           earliestSentenceStartDate = LocalDate.of(2021, 2, 3),
           isPostRecallSentenceEnvelope = false,
           containsAnSDSPlusSentence = false,
@@ -314,7 +258,6 @@ class CalculationServiceTest {
         LED to LocalDate.of(2026, 2, 2),
         CRD to LocalDate.of(2023, 8, 4),
         HDCED to LocalDate.of(2023, 2, 6),
-        TUSED to LocalDate.of(2027, 2, 2),
         ESED to LocalDate.of(2026, 2, 2),
       ),
       breakdownByReleaseDateType = mapOf(
@@ -326,11 +269,6 @@ class CalculationServiceTest {
         LED to ReleaseDateCalculationBreakdown(
           releaseDate = LocalDate.of(2026, 2, 2),
           unadjustedDate = LocalDate.of(2026, 2, 2),
-          rules = emptySet(),
-        ),
-        TUSED to ReleaseDateCalculationBreakdown(
-          releaseDate = LocalDate.of(2027, 2, 2),
-          unadjustedDate = LocalDate.of(2027, 2, 2),
           rules = emptySet(),
         ),
       ),
@@ -390,18 +328,12 @@ class CalculationServiceTest {
           SLED to LocalDate.of(2026, 2, 2),
           CRD to LocalDate.of(2023, 8, 4),
           HDCED to LocalDate.of(2023, 2, 6),
-          TUSED to LocalDate.of(2027, 2, 2),
           ESED to LocalDate.of(2026, 2, 2),
         ),
         breakdownByReleaseDateType = mapOf(
           SLED to ReleaseDateCalculationBreakdown(
             releaseDate = LocalDate.of(2026, 2, 2),
             unadjustedDate = LocalDate.of(2026, 2, 2),
-            rules = emptySet(),
-          ),
-          TUSED to ReleaseDateCalculationBreakdown(
-            releaseDate = LocalDate.of(2027, 2, 2),
-            unadjustedDate = LocalDate.of(2027, 2, 2),
             rules = emptySet(),
           ),
         ),

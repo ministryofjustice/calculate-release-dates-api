@@ -13,8 +13,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.PRRD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SLED
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.TUSED
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.AFINE_ARD_AT_FULL_TERM
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.AFINE_ARD_AT_HALFWAY
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.BOTUS
@@ -44,16 +42,12 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDa
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.CJA_DATE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.LASPO_DATE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.PCSC_COMMENCEMENT_DATE
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.TusedCalculator
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
 import java.math.BigDecimal
 import java.time.temporal.ChronoUnit
 
 @Service
-class SentenceIdentificationService(
-  val tusedCalculator: TusedCalculator,
-  val hdcedCalculator: HdcedCalculator,
-) {
+class SentenceIdentificationService(val hdcedCalculator: HdcedCalculator) {
 
   fun identify(sentence: CalculableSentence, offender: Offender) {
     val releaseDateTypes = mutableListOf<ReleaseDateType>()
@@ -96,12 +90,7 @@ class SentenceIdentificationService(
 
   private fun identifyBotusSentence(sentence: BotusSentence): List<ReleaseDateType> {
     sentence.identificationTrack = BOTUS
-    var releaseDateTypes: List<ReleaseDateType> = mutableListOf(ARD, SED)
-    if (sentence.latestTusedDate != null) {
-      sentence.identificationTrack = SentenceIdentificationTrack.BOTUS_WITH_HISTORIC_TUSED
-      releaseDateTypes += TUSED
-    }
-    return releaseDateTypes
+    return mutableListOf(ARD, SED)
   }
 
   private fun identifyDtoSentence(sentence: CalculableSentence): List<ReleaseDateType> {
@@ -123,7 +112,6 @@ class SentenceIdentificationService(
       MTD,
       ETD,
       LTD,
-      TUSED,
     )
   }
 
@@ -184,7 +172,6 @@ class SentenceIdentificationService(
             MTD,
             ETD,
             LTD,
-            TUSED,
           ),
         )
       } else if (sentence.isMadeUpOfBeforeAndAfterCjaLaspoSentences()) {
@@ -220,10 +207,6 @@ class SentenceIdentificationService(
         }
       } else if (sentence.isMadeUpOfOnlyBeforeCjaLaspoSentences()) {
         beforeCJAAndLASPO(sentence, releaseDateTypes)
-      }
-
-      if (tusedCalculator.sentenceIsEligibleForTused(sentence, offender)) {
-        releaseDateTypes += TUSED
       }
 
       if (hdcedCalculator.doesHdcedDateApply(sentence, offender)) {
@@ -302,9 +285,6 @@ class SentenceIdentificationService(
       afterCJAAndLASPOorSDSPlus(sentence, releaseDateTypes)
     }
 
-    if (tusedCalculator.sentenceIsEligibleForTused(sentence, offender)) {
-      releaseDateTypes += TUSED
-    }
     if (hdcedCalculator.doesHdcedDateApply(sentence, offender)) {
       releaseDateTypes += HDCED
     }

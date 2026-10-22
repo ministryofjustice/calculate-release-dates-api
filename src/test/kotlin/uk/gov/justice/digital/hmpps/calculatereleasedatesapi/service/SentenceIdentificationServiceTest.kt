@@ -8,7 +8,6 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 import org.mockito.junit.jupiter.MockitoExtension
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.hdcedConfigurationForTests
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
@@ -25,10 +24,8 @@ import java.time.temporal.ChronoUnit.YEARS
 
 @ExtendWith(MockitoExtension::class)
 class SentenceIdentificationServiceTest {
-  private val tusedCalculator = TusedCalculator(FeatureToggles(applyPostRecallRepealRules = false))
   private val hdcedCalculator = HdcedCalculator(hdcedConfigurationForTests())
-  private val sentenceIdentificationService: SentenceIdentificationService =
-    SentenceIdentificationService(tusedCalculator, hdcedCalculator)
+  private val sentenceIdentificationService: SentenceIdentificationService = SentenceIdentificationService(hdcedCalculator)
   private val jsonTransformation = JsonTransformation()
   private val offender = jsonTransformation.loadOffender("john_doe")
   private val offenderU18 = jsonTransformation.loadOffender("john_doe_under18")
@@ -131,7 +128,7 @@ class SentenceIdentificationServiceTest {
       sentence,
       offender,
     )
-    assertEquals("[SLED, CRD, TUSED, HDCED]", sentence.releaseDateTypes.getReleaseDateTypes().toString())
+    assertEquals("[SLED, CRD, HDCED]", sentence.releaseDateTypes.getReleaseDateTypes().toString())
   }
 
   // sentenced after: 03/12/2012
@@ -145,7 +142,7 @@ class SentenceIdentificationServiceTest {
       sentence,
       offender,
     )
-    assertEquals("[SLED, CRD, TUSED, HDCED]", sentence.releaseDateTypes.getReleaseDateTypes().toString())
+    assertEquals("[SLED, CRD, HDCED]", sentence.releaseDateTypes.getReleaseDateTypes().toString())
   }
 
   // sentenced after: 03/12/2012
@@ -183,7 +180,7 @@ class SentenceIdentificationServiceTest {
       sentence,
       offender,
     )
-    assertEquals("[SLED, CRD, TUSED, HDCED]", sentence.releaseDateTypes.getReleaseDateTypes().toString())
+    assertEquals("[SLED, CRD, HDCED]", sentence.releaseDateTypes.getReleaseDateTypes().toString())
   }
 
   // sentenced after: 03/12/2012

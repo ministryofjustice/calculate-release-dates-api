@@ -44,20 +44,6 @@
       "unadjustedDate": "2023-05-27",
       "appliedAdjustments": { "awarded": 0 }
     },
-    "TUSED": {
-      "rules": [
-        "TUSED_LICENCE_PERIOD_LT_1Y"
-      ],
-      "rulesWithExtraAdjustments": {
-        "TUSED_LICENCE_PERIOD_LT_1Y": {
-          "adjustmentValue": 12,
-          "type": "MONTHS"
-        }
-      },
-      "adjustedDays": -45,
-      "releaseDate": "2024-04-12",
-      "unadjustedDate": "2023-05-27"
-    },
     "HDCED": {
       "rules": [
         "HDCED_ADJUSTED_TO_CONCURRENT_CONDITIONAL_RELEASE"

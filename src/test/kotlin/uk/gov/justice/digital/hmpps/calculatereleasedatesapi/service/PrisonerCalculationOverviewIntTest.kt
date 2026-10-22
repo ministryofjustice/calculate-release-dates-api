@@ -1,10 +1,11 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
-import com.github.tomakehurst.wiremock.client.WireMock.get
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.dbhelper.TestCalculationRequestService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.IntegrationTestBase
@@ -28,6 +29,9 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 
 class PrisonerCalculationOverviewIntTest(private val mockPrisonService: MockPrisonService, private val mockManageUsersClient: MockManageUsersClient) : IntegrationTestBase() {
+
+  @Autowired
+  lateinit var testCalculationRequestService: TestCalculationRequestService
 
   @BeforeEach
   fun setUp() {
@@ -79,6 +83,7 @@ class PrisonerCalculationOverviewIntTest(private val mockPrisonService: MockPris
         "From NOMIS",
         conditionalReleaseDate = LocalDate.of(2030, 1, 6),
         sentenceExpiryDate = LocalDate.of(2025, 2, 14),
+        topupSupervisionExpiryDate = LocalDate.of(2017, 1, 6),
         conditionalReleaseDateOverridden = true,
         calculatedByUserId = "user1",
         calculatedByFirstName = "User",
@@ -167,6 +172,7 @@ class PrisonerCalculationOverviewIntTest(private val mockPrisonService: MockPris
                 ),
               ),
             ),
+            DetailedDate(ReleaseDateType.TUSED, ReleaseDateType.TUSED.description, LocalDate.of(2017, 1, 6), emptyList()),
           ),
           "user1",
           null,
@@ -210,6 +216,9 @@ class PrisonerCalculationOverviewIntTest(private val mockPrisonService: MockPris
   @Test
   fun `should be able to get overview when the latest calculation is from CRDS`() {
     val (bookingId, prisonerId, confirmed) = createCrdsCalculation()
+
+    // ensure we can still load TUSED even though no longer calculated
+    testCalculationRequestService.addATused(confirmed.calculationRequestId, LocalDate.of(2017, 1, 6))
 
     mockPrisonService.stubHistoricCalculations(
       prisonerId,

@@ -16,31 +16,24 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.PED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SLED
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.TUSED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentDuration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AffectedBySdsLegislation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AppliedAdjustments
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BotusSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ERSLegislation
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ErsedCalculator
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.HdcedCalculator
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ReleaseMultiplier
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.TusedCalculator
 import java.math.RoundingMode
-import java.time.LocalDate
 import java.time.temporal.ChronoUnit.DAYS
 import java.time.temporal.ChronoUnit.MONTHS
-import kotlin.collections.set
 
 @Service
 class SentenceAdjustedCalculationService(
-  val tusedCalculator: TusedCalculator,
   val hdcedCalculator: HdcedCalculator,
   val ersedCalculator: ErsedCalculator,
 ) {
@@ -48,7 +41,7 @@ class SentenceAdjustedCalculationService(
     This function calculates dates after adjustments have been decided.
     It can be run many times to recalculate dates. It needs to be run if there is a change to adjustments.
    */
-  fun calculateDatesFromAdjustments(sentence: CalculableSentence, offender: Offender, enabledERSLegislation: List<ERSLegislation>): SentenceCalculation {
+  fun calculateDatesFromAdjustments(sentence: CalculableSentence, enabledERSLegislation: List<ERSLegislation>): SentenceCalculation {
     val sentenceCalculation: SentenceCalculation = sentence.sentenceCalculation
     // Other adjustments need to be included in the sentence calculation here
     if (!sentence.isRecall()) {
@@ -59,12 +52,6 @@ class SentenceAdjustedCalculationService(
 
     if (sentenceCalculation.calculateErsed) {
       ersedCalculator.generateEarlyReleaseSchemeEligibilityDateBreakdown(sentence, sentenceCalculation, enabledERSLegislation)
-    }
-
-    if (sentence is BotusSentence) {
-      tusedCalculator.updateBotusSentenceTused(sentence)
-    } else {
-      determineTUSED(sentenceCalculation, sentence, offender)
     }
 
     if (sentence.releaseDateTypes.contains(ReleaseDateType.ETD) && !sentenceCalculation.isImmediateRelease()) {
@@ -253,29 +240,6 @@ class SentenceAdjustedCalculationService(
     sentenceCalculation.nonParoleDate = sentence.sentencedAt.plusDays(
       sentenceCalculation.numberOfDaysToNonParoleDate,
     ).minusDays(ONE)
-  }
-
-  private fun determineTUSED(
-    sentenceCalculation: SentenceCalculation,
-    sentence: CalculableSentence,
-    offender: Offender,
-  ) {
-    if (!tusedCalculator.sentenceMatchesTusedCriteria(sentence, offender)) {
-      sentenceCalculation.topUpSupervisionDate = null
-      sentenceCalculation.breakdownByReleaseDateType.remove(TUSED)
-      return
-    }
-
-    val tused = tusedCalculator.calculateTused(sentenceCalculation)
-
-    if (tused is LocalDate) {
-      sentenceCalculation.topUpSupervisionDate = tused
-      sentenceCalculation.breakdownByReleaseDateType[TUSED] =
-        tusedCalculator.getCalculationBreakdown(sentenceCalculation)
-    } else {
-      sentenceCalculation.topUpSupervisionDate = null
-      sentenceCalculation.breakdownByReleaseDateType.remove(TUSED)
-    }
   }
 
   // If a sentence needs to calculate an NPD, but it is an aggregated sentence made up of "old" and "new" type sentences
