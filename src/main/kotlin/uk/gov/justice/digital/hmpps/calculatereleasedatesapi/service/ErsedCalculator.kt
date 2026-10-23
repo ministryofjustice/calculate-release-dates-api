@@ -12,8 +12,11 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AppliedAdjust
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ERSLegislation
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SopcSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ReleaseMultiplier.Companion.toLongReleaseDays
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.hasSentencesBeforeAndAfter
@@ -21,16 +24,18 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqual
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
-import kotlin.collections.set
 
 @Service
 class ErsedCalculator(
   private val ersedConfiguration: ErsedConfiguration,
 ) {
 
-  fun generateEarlyReleaseSchemeEligibilityDateBreakdown(sentence: CalculableSentence, sentenceCalculation: SentenceCalculation, enabledLegislation: List<ERSLegislation>) {
+  fun generateEarlyReleaseSchemeEligibilityDateBreakdown(sentence: CalculableSentence, currentSentenceGroup: List<CalculableSentence>, enabledLegislation: List<ERSLegislation>) {
+    val sentenceCalculation = sentence.sentenceCalculation
     if (isSentenceEligible(sentence)) {
-      if (ERSLegislation.ERS30 in enabledLegislation) {
+      sentenceCalculation.breakdownByReleaseDateType[ReleaseDateType.ERSED] = if (ERSLegislation.ERS_ZERO in enabledLegislation) {
+        calculateUsingERSZeroERS30AndERS50(sentence, sentenceCalculation, currentSentenceGroup)
+      } else if (ERSLegislation.ERS30 in enabledLegislation) {
         calculateUsingBothERS30AndERS50(sentence, sentenceCalculation)
       } else {
         calculateUsingJustERS50(sentence, sentenceCalculation)
@@ -38,7 +43,37 @@ class ErsedCalculator(
     }
   }
 
-  private fun calculateUsingBothERS30AndERS50(sentence: CalculableSentence, sentenceCalculation: SentenceCalculation) {
+  private fun calculateUsingERSZeroERS30AndERS50(
+    sentence: CalculableSentence,
+    sentenceCalculation: SentenceCalculation,
+    currentSentenceGroup: List<CalculableSentence>,
+  ): ReleaseDateCalculationBreakdown {
+    val ers50Or30 = calculateUsingBothERS30AndERS50(sentence, sentenceCalculation)
+    return if (ers50Or30.releaseDate.isBefore(ImportantDates.ERS_ZERO_COMMENCEMENT_DATE) || isExcludedFromErsZero(currentSentenceGroup)) {
+      ers50Or30
+    } else {
+      // TODO post-commencement sentences should default to the sentence date
+      ReleaseDateCalculationBreakdown(
+        releaseDate = ImportantDates.ERS_ZERO_COMMENCEMENT_DATE,
+        unadjustedDate = ImportantDates.ERS_ZERO_COMMENCEMENT_DATE,
+        adjustedDays = 0,
+        rules = setOf(CalculationRule.ERSED_ADJUSTED_TO_ERS_ZERO_COMMENCEMENT),
+        appliedAdjustments = AppliedAdjustments(0),
+        affectedBySdsLegislation = AffectedBySdsLegislation.from(sentenceCalculation.sentence),
+      )
+    }
+  }
+
+  private fun isExcludedFromErsZero(currentSentenceGroup: List<CalculableSentence>): Boolean = currentSentenceGroup.flatMap { it.sentenceParts() }.any {
+    when (it) {
+      is SopcSentence -> true
+      is ExtendedDeterminateSentence -> true
+      is StandardDeterminateSentence -> SDSEarlyReleaseExclusionType.SA2026_PROGRESSION_MODEL_SCHEDULE in it.releaseArrangements.sdsEarlyReleaseExclusions
+      else -> false
+    }
+  }
+
+  private fun calculateUsingBothERS30AndERS50(sentence: CalculableSentence, sentenceCalculation: SentenceCalculation): ReleaseDateCalculationBreakdown {
     val isConsideredPostErs30CommencementSentence = isSentencedOnOrAfterCommencement(sentence) || isConsecutiveSentenceWithSentencesBeforeAndAfterCommencement(sentence)
     val ers50Result = if (isConsideredPostErs30CommencementSentence) {
       null
@@ -63,8 +98,8 @@ class ErsedCalculator(
       ),
     )
 
-    if (ers50Result != null && ers50Result.adjustedDateExcludingAwarded.isBefore(ImportantDates.ERS30_COMMENCEMENT_DATE)) {
-      sentenceCalculation.breakdownByReleaseDateType[ReleaseDateType.ERSED] = ers50Result.breakdown
+    return if (ers50Result != null && ers50Result.adjustedDateExcludingAwarded.isBefore(ImportantDates.ERS30_COMMENCEMENT_DATE)) {
+      ers50Result.breakdown
     } else if (isConsideredPostErs30CommencementSentence) {
       val priorErsedSnapshot = sentenceCalculation.ersedSnapshotPriorToLatestSentenceBeingImposedConsecutively
       if (
@@ -72,17 +107,17 @@ class ErsedCalculator(
         priorErsedSnapshot.breakdown.releaseDate.minusDays(priorErsedSnapshot.awardedDuringCustodyAtSnapshot).isAfter(ers30Result.adjustedDateExcludingAwarded) &&
         priorErsedSnapshot.breakdown.releaseDate.isBefore(priorErsedSnapshot.snapshotDate)
       ) {
-        sentenceCalculation.breakdownByReleaseDateType[ReleaseDateType.ERSED] = priorErsedSnapshot.breakdown
+        priorErsedSnapshot.breakdown
       } else {
-        sentenceCalculation.breakdownByReleaseDateType[ReleaseDateType.ERSED] = ers30Result.breakdown
+        ers30Result.breakdown
       }
     } else if (ers30Result.adjustedDateExcludingAwarded.isAfterOrEqualTo(ImportantDates.ERS30_COMMENCEMENT_DATE)) {
-      sentenceCalculation.breakdownByReleaseDateType[ReleaseDateType.ERSED] = ers30Result.breakdown
+      ers30Result.breakdown
     } else {
       val daysAwarded = sentenceCalculation.adjustments.awardedDuringCustody -
         sentenceCalculation.adjustments.unusedAdaDays -
         sentenceCalculation.adjustments.servedAdaDays
-      sentenceCalculation.breakdownByReleaseDateType[ReleaseDateType.ERSED] = ReleaseDateCalculationBreakdown(
+      ReleaseDateCalculationBreakdown(
         releaseDate = ImportantDates.ERS30_COMMENCEMENT_DATE.plusDays(daysAwarded),
         unadjustedDate = ImportantDates.ERS30_COMMENCEMENT_DATE,
         adjustedDays = daysAwarded,
@@ -93,18 +128,15 @@ class ErsedCalculator(
     }
   }
 
-  private fun calculateUsingJustERS50(sentence: CalculableSentence, sentenceCalculation: SentenceCalculation) {
-    val ers50Result = calculate(
-      Params(
-        sentence = sentence,
-        sentenceCalculation = sentenceCalculation,
-        maxPeriodUnit = ersedConfiguration.ers50MaxPeriodUnit,
-        maxPeriodAmount = ersedConfiguration.ers50MaxPeriodAmount,
-        releaseMultiplier = ersedConfiguration.ers50ReleasePoint.value,
-      ),
-    )
-    sentenceCalculation.breakdownByReleaseDateType[ReleaseDateType.ERSED] = ers50Result.breakdown
-  }
+  private fun calculateUsingJustERS50(sentence: CalculableSentence, sentenceCalculation: SentenceCalculation): ReleaseDateCalculationBreakdown = calculate(
+    Params(
+      sentence = sentence,
+      sentenceCalculation = sentenceCalculation,
+      maxPeriodUnit = ersedConfiguration.ers50MaxPeriodUnit,
+      maxPeriodAmount = ersedConfiguration.ers50MaxPeriodAmount,
+      releaseMultiplier = ersedConfiguration.ers50ReleasePoint.value,
+    ),
+  ).breakdown
 
   private fun isConsecutiveSentenceWithSentencesBeforeAndAfterCommencement(sentence: CalculableSentence): Boolean = (sentence is ConsecutiveSentence) && sentence.hasSentencesBeforeAndAfter(ImportantDates.ERS30_COMMENCEMENT_DATE)
 
