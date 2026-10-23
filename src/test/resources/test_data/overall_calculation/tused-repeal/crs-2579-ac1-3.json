@@ -45,6 +45,5 @@
   },
   "params": "calculation-params",
   "featureToggles": {
-    "applyPostRecallRepealRules": true
   }
 }
