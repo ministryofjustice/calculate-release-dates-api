@@ -68,6 +68,5 @@
     "calculateErsed": true
   },
   "featureToggles": {
-    "applyPostRecallRepealRules": true
   }
 }

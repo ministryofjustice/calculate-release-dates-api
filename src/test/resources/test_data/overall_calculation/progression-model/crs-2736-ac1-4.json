@@ -42,6 +42,5 @@
   "params": "sds-progression-model-october",
   "expectedValidationException": "RELEASE_DATE_BEFORE_SENTENCE_DATE",
   "featureToggles": {
-    "applyPostRecallRepealRules": true
   }
 }
