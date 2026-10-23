@@ -165,6 +165,7 @@ domain-events-sns:
 
 feature-toggles:
   adultHdcSuspended: ${ADULT_HDC_SUSPENDED:false}
+  ersZeroEnabled: ${ERS_ZERO_ENABLED:false}
 
 prisonsWithNomisCalcDisabled: ${PRISONS_WITH_NOMIS_CALC_DISABLED:}
 
