@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository
 
 import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonPerson
@@ -49,4 +50,8 @@ interface ComparisonPersonRepository : JpaRepository<ComparisonPerson, Long> {
   """,
   )
   fun countFailures(comparisonId: Long): Long
+
+  @Query("DELETE FROM ComparisonPerson cp WHERE cp.calculationRequestId = :calculationRequestId")
+  @Modifying
+  fun deleteByCalculationRequestId(calculationRequestId: Long)
 }
