@@ -52,6 +52,8 @@ jobs:
       postgres-db: calculate_release_dates
       postgres-username: calculate_release_dates
       postgres-password: calculate_release_dates
+    needs:
+      - app_version
   build:
     name: Build docker image from hmpps-github-actions
     if: github.ref == 'refs/heads/main'
