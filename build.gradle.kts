@@ -6,7 +6,7 @@ import org.jlleitschuh.gradle.ktlint.tasks.KtLintFormatTask
 import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "11.0.12"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "11.0.14"
   id("org.springdoc.openapi-gradle-plugin") version "1.9.0"
   kotlin("plugin.spring") version "2.4.21"
   kotlin("plugin.jpa") version "2.4.21"
@@ -53,11 +53,11 @@ dependencies {
   runtimeOnly("org.flywaydb:flyway-database-postgresql")
   runtimeOnly("org.postgresql:postgresql:42.7.14")
 
-  implementation("io.arrow-kt:arrow-core:2.2.3")
+  implementation("io.arrow-kt:arrow-core:2.3.0")
   implementation("io.hypersistence:hypersistence-utils-hibernate-71:3.16.0")
 
   // OpenAPI
-  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.1.1")
+  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.2.0")
 
   implementation("com.amazonaws:amazon-sqs-java-messaging-lib:2.1.4")
   implementation("io.awspring.cloud:spring-cloud-aws-starter:4.2.0")
@@ -97,7 +97,7 @@ dependencies {
 
 jacoco {
   // You may modify the Jacoco version here
-  toolVersion = "0.8.15"
+  toolVersion = "0.8.16"
 }
 
 tasks.jacocoTestCoverageVerification {
