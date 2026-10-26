@@ -23,24 +23,28 @@ class TimelineCalculator(
 ) {
 
   fun getLatestCalculation(
-    sentences: List<List<CalculableSentence>>,
+    sentenceGroups: List<List<CalculableSentence>>,
     offender: Offender,
     returnToCustodyDate: LocalDate? = null,
     enabledLegislation: List<ERSLegislation>,
   ): CalculationResult {
-    calculateUnusedAdas(sentences)
-    sentences.flatten().forEach {
-      sentenceAdjustedCalculationService.calculateDatesFromAdjustments(it, enabledLegislation)
+    calculateUnusedAdas(sentenceGroups)
+    sentenceGroups.forEach { sentenceGroup ->
+      sentenceGroup.forEach { sentence ->
+        sentenceAdjustedCalculationService.calculateDatesFromAdjustments(sentence, enabledLegislation, sentenceGroup)
+      }
     }
-    val adjustAgain = calculateUnusedLicenceAdas(sentences)
+    val adjustAgain = calculateUnusedLicenceAdas(sentenceGroups)
     if (adjustAgain) {
-      sentences.flatten().forEach {
-        sentenceAdjustedCalculationService.calculateDatesFromAdjustments(it, enabledLegislation)
+      sentenceGroups.forEach { sentenceGroup ->
+        sentenceGroup.forEach { sentence ->
+          sentenceAdjustedCalculationService.calculateDatesFromAdjustments(sentence, enabledLegislation, sentenceGroup)
+        }
       }
     }
     return bookingExtractionService.extract(
-      sentences.flatten(),
-      sentences,
+      sentenceGroups.flatten(),
+      sentenceGroups,
       offender,
       returnToCustodyDate,
     )
