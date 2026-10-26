@@ -5,7 +5,7 @@ ARG BUILD_NUMBER
 ENV BUILD_NUMBER=${BUILD_NUMBER:-1_0_0}
 
 WORKDIR /builder
-COPY hmpps-template-kotlin-${BUILD_NUMBER}.jar app.jar
+COPY calculate-release-dates-api-${BUILD_NUMBER}.jar app.jar
 RUN java -Djarmode=tools -jar app.jar extract --layers --destination extracted
 
 FROM ${BASE_IMAGE}
