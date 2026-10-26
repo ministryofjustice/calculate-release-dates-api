@@ -6,6 +6,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.Calculat
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestSentenceOutcomeRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestSentenceRepository
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonPersonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.OperativeSentenceEnvelopeRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.TrancheOutcomeRepository
 
@@ -17,6 +18,7 @@ class DeleteCalculationService(
   private val calculationRequestSentenceOutcomeRepository: CalculationRequestSentenceOutcomeRepository,
   private val operativeSentenceEnvelopeRepository: OperativeSentenceEnvelopeRepository,
   private val trancheOutcomeRepository: TrancheOutcomeRepository,
+  private val comparisonPersonRepository: ComparisonPersonRepository,
 ) {
 
   /**
@@ -45,6 +47,8 @@ class DeleteCalculationService(
     calculationRequestSentenceRepository.deleteByCalculationRequestId(calculationRequestId)
     operativeSentenceEnvelopeRepository.deleteByCalculationRequestId(calculationRequestId)
     trancheOutcomeRepository.deleteByCalculationRequestId(calculationRequestId)
+    // older bulk calcs were preleminary calculations
+    comparisonPersonRepository.deleteByCalculationRequestId(calculationRequestId)
     calculationRequestRepository.deleteSentenceUserInput(calculationRequestId)
     calculationRequestRepository.deleteUserInput(calculationRequestId)
     calculationRequestRepository.deleteByCalculationRequestId(calculationRequestId)
