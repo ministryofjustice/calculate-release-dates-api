@@ -69,7 +69,6 @@ domain-events-sns:
   provider: localstack
 
 feature-toggles:
-  applyPostRecallRepealRules: false
 
 hdced4:
   hdc4-commencement-date: 2025-01-01

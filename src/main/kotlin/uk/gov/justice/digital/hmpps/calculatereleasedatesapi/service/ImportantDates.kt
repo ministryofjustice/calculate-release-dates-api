@@ -22,4 +22,5 @@ object ImportantDates {
   val FTR_48_COMMENCEMENT_DATE: LocalDate = LocalDate.of(2025, 9, 2)
   val ERS30_COMMENCEMENT_DATE: LocalDate = LocalDate.of(2025, 9, 23)
   val HDC_CLEAN_STOP_DATE: LocalDate = LocalDate.of(2026, 9, 2)
+  val ERS_ZERO_COMMENCEMENT_DATE: LocalDate = LocalDate.of(2027, 2, 12)
 }

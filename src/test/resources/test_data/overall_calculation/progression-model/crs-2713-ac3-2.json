@@ -63,6 +63,5 @@
   },
   "params": "sds-progression-model-october",
   "featureToggles": {
-    "applyPostRecallRepealRules": true
   }
 }

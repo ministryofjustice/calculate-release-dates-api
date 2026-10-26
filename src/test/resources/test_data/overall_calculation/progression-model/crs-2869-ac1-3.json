@@ -57,6 +57,5 @@
   "params": "sds-progression-model-october",
   "assertSds40": true,
   "featureToggles": {
-    "applyPostRecallRepealRules": true
   }
 }
