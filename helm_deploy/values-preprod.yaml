@@ -57,8 +57,8 @@ generic-prometheus-alerts:
 
 deleteOldPreliminaryCalculationsCronJob:
   enabled: true
-  schedule: "0 9-17 * * *" # Every hour 9am-5pm
-  timeZone: Etc/UTC
+  schedule: "0 20,22,0,2,4 * * *" # 8pm, 10pm, midnight, 2am and 4am every day
+  timeZone: Europe/London # so it still runs out of hours on BST
   securityContext:
     capabilities:
       drop:
