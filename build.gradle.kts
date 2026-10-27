@@ -59,11 +59,11 @@ dependencies {
   // OpenAPI
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.2.0")
 
-  implementation("com.amazonaws:amazon-sqs-java-messaging-lib:2.1.4")
-  implementation("io.awspring.cloud:spring-cloud-aws-starter:4.2.0")
-  implementation("io.awspring.cloud:spring-cloud-aws-core:4.2.0")
-  implementation("io.awspring.cloud:spring-cloud-aws-sns:4.2.0")
-  implementation("io.awspring.cloud:spring-cloud-aws-sqs:4.2.0")
+  implementation("com.amazonaws:amazon-sqs-java-messaging-lib:2.1.5")
+  implementation("io.awspring.cloud:spring-cloud-aws-starter:4.2.1")
+  implementation("io.awspring.cloud:spring-cloud-aws-core:4.2.1")
+  implementation("io.awspring.cloud:spring-cloud-aws-sns:4.2.1")
+  implementation("io.awspring.cloud:spring-cloud-aws-sqs:4.2.1")
   implementation("org.springframework:spring-jms:7.0.10")
   implementation("org.apache.commons:commons-text:1.15.0")
 
