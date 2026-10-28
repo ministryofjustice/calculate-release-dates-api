@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util
 
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -59,5 +60,15 @@ class LocalDateExtTest {
     val secondDayOfMonth = LocalDate.of(2021, 5, 2)
     assertEquals(LocalDate.of(2021, 5, 31), firstDayOfMonth.plusDaysUntilEndOfMonth())
     assertEquals(LocalDate.of(2021, 5, 31), secondDayOfMonth.plusDaysUntilEndOfMonth())
+  }
+
+  @Test
+  fun `should return date x business days ago`() {
+    // Monday 1 day ago should be the Friday before
+    assertThat(LocalDate.of(2026, 10, 26).businessDaysAgo(1)).isEqualTo(LocalDate.of(2026, 10, 23))
+    // Tuesday 1 day ago should be Monday
+    assertThat(LocalDate.of(2026, 10, 27).businessDaysAgo(1)).isEqualTo(LocalDate.of(2026, 10, 26))
+    // Tuesday 2 days ago should be the Friday before
+    assertThat(LocalDate.of(2026, 10, 27).businessDaysAgo(2)).isEqualTo(LocalDate.of(2026, 10, 23))
   }
 }

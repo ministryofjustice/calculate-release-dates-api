@@ -1,6 +1,9 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import org.awaitility.kotlin.await
+import org.awaitility.kotlin.matches
+import org.awaitility.kotlin.untilCallTo
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
@@ -19,6 +22,8 @@ import org.testcontainers.containers.PostgreSQLContainer
 import org.testcontainers.containers.localstack.LocalStackContainer
 import org.testcontainers.containers.localstack.LocalStackContainer.Service
 import org.testcontainers.utility.DockerImageName
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonStatus
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.AdjustmentsApiExtension
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.BankHolidayApiExtension
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.ManageOffencesApiExtension
@@ -30,6 +35,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedRel
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationFragments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationRequestModel
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonDto
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonOverview
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.GenuineOverrideCreatedResponse
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.GenuineOverrideRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualCalculationResponse
@@ -39,6 +46,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecordARecall
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecordARecallRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecordARecallValidationResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmitCalculationRequest
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ComparisonInput
 import uk.gov.justice.hmpps.test.kotlin.auth.JwtAuthorisationHelper
 
 /*
@@ -166,6 +174,33 @@ open class IntegrationTestBase internal constructor() {
     .expectStatus().isOk
     .expectHeader().contentType(MediaType.APPLICATION_JSON)
     .expectBody(GenuineOverrideCreatedResponse::class.java)
+    .returnResult().responseBody!!
+
+  protected fun createComparison(prisonId: String, comparisonType: ComparisonType = ComparisonType.ESTABLISHMENT_FULL, completeStatus: ComparisonStatus = ComparisonStatus.COMPLETED, username: String = "test-client"): ComparisonDto {
+    val request = ComparisonInput(emptyMap(), prisonId, comparisonType)
+    val result = webTestClient.post()
+      .uri("/comparison")
+      .accept(MediaType.APPLICATION_JSON)
+      .bodyValue(request)
+      .headers(setAuthorisation(user = username, roles = listOf("ROLE_RELEASE_DATE_COMPARER")))
+      .exchange()
+      .expectStatus().isOk
+      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectBody(ComparisonDto::class.java)
+      .returnResult().responseBody!!
+    await untilCallTo { getComparison(result.comparisonShortReference) } matches {
+      it!!.comparisonStatus.name == completeStatus.name
+    }
+    return result
+  }
+  protected fun getComparison(comparisonRef: String): ComparisonOverview = webTestClient.get()
+    .uri("/comparison/{comparisonId}", comparisonRef)
+    .accept(MediaType.APPLICATION_JSON)
+    .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATE_COMPARER")))
+    .exchange()
+    .expectStatus().isOk
+    .expectHeader().contentType(MediaType.APPLICATION_JSON)
+    .expectBody(ComparisonOverview::class.java)
     .returnResult().responseBody!!
 
   companion object {

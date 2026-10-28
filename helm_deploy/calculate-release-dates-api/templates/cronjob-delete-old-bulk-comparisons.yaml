@@ -1,0 +1,42 @@
+{{- $genericValues := index .Values "generic-service" -}}
+{{- $generic := dict
+  "Chart" ((index .Subcharts "generic-service").Chart)
+  "Values" $genericValues
+  "Release" .Release
+  "Capabilities" .Capabilities
+  "Files" .Files
+  "Template" .Template
+-}}
+{{- $fullName := include "generic-service.fullname" $generic -}}
+{{- if .Values.deleteOldBulkComparisonsCronJob.enabled -}}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ $fullName }}-delete-old-bulk-comparisons
+  labels:
+    {{- $genericWithParentChart := merge (dict "Chart" .Chart) $generic -}}
+    {{ include "generic-service.labels" $genericWithParentChart | nindent 4 }}
+
+spec:
+  schedule: "{{ .Values.deleteOldBulkComparisonsCronJob.schedule }}"
+  timeZone: "{{ .Values.deleteOldBulkComparisonsCronJob.timeZone }}"
+  concurrencyPolicy: Forbid
+  failedJobsHistoryLimit: 5
+  startingDeadlineSeconds: 600
+  successfulJobsHistoryLimit: 5
+  jobTemplate:
+    spec:
+      backoffLimit: 0 # Ensure the job controller does not retry if the pod fails
+      template:
+        spec:
+          restartPolicy: Never # Ensure the kubelet does not restart the container on failure
+          containers:
+            - name: delete-old-bulk-comparisons-job
+              image: ghcr.io/ministryofjustice/hmpps-devops-tools:latest
+              imagePullPolicy: IfNotPresent
+              command: [ "/bin/sh", "-c" ]
+              args:
+                - curl -XPOST --connect-timeout 30 http://{{ $fullName }}/scheduled-task/delete-old-bulk-comparisons && echo "Done"
+              securityContext:
+                {{- toYaml .Values.deleteOldBulkComparisonsCronJob.securityContext | nindent 16 }}
+{{- end }}

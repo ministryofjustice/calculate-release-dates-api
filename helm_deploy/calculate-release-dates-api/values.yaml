@@ -87,3 +87,6 @@ generic-data-analytics-extractor:
 deleteOldPreliminaryCalculationsCronJob:
   enabled: false
 
+deleteOldBulkComparisonsCronJob:
+  enabled: false
+

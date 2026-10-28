@@ -5,7 +5,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.dbhelper.TestCalculationRequestService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.dbhelper.TestTransactionalService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.IntegrationTestBase
@@ -31,7 +31,7 @@ import java.time.LocalDateTime
 class PrisonerCalculationOverviewIntTest(private val mockPrisonService: MockPrisonService, private val mockManageUsersClient: MockManageUsersClient) : IntegrationTestBase() {
 
   @Autowired
-  lateinit var testCalculationRequestService: TestCalculationRequestService
+  lateinit var testTransactionalService: TestTransactionalService
 
   @BeforeEach
   fun setUp() {
@@ -218,7 +218,7 @@ class PrisonerCalculationOverviewIntTest(private val mockPrisonService: MockPris
     val (bookingId, prisonerId, confirmed) = createCrdsCalculation()
 
     // ensure we can still load TUSED even though no longer calculated
-    testCalculationRequestService.addATused(confirmed.calculationRequestId, LocalDate.of(2017, 1, 6))
+    testTransactionalService.addATused(confirmed.calculationRequestId, LocalDate.of(2017, 1, 6))
 
     mockPrisonService.stubHistoricCalculations(
       prisonerId,
