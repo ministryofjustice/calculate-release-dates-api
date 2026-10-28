@@ -12,7 +12,7 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: {{ $fullName }}-delete-old-bulk-comparisons
+  name: {{ $fullName }}-delete-old-bulk-comps
   labels:
     {{- $genericWithParentChart := merge (dict "Chart" .Chart) $generic -}}
     {{ include "generic-service.labels" $genericWithParentChart | nindent 4 }}
@@ -31,7 +31,7 @@ spec:
         spec:
           restartPolicy: Never # Ensure the kubelet does not restart the container on failure
           containers:
-            - name: delete-old-bulk-comparisons-job
+            - name: delete-old-bulk-comps-job
               image: ghcr.io/ministryofjustice/hmpps-devops-tools:latest
               imagePullPolicy: IfNotPresent
               command: [ "/bin/sh", "-c" ]
