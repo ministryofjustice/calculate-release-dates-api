@@ -1,8 +1,5 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource
 
-import org.awaitility.kotlin.await
-import org.awaitility.kotlin.matches
-import org.awaitility.kotlin.untilCallTo
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -37,7 +34,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonPer
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonSummary
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CreateComparisonDiscrepancyRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DiscrepancyCause
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ComparisonInput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonPersonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.PrisonService
@@ -317,34 +313,6 @@ class ComparisonEventIntTest(private val mockManageOffencesClient: MockManageOff
 
     val errorComparison = getComparison(result.comparisonShortReference)
     assertEquals(ComparisonStatus.ERROR.name, errorComparison.comparisonStatus.name)
-  }
-
-  private fun getComparison(comparisonRef: String): ComparisonOverview = webTestClient.get()
-    .uri("/comparison/{comparisonId}", comparisonRef)
-    .accept(MediaType.APPLICATION_JSON)
-    .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATE_COMPARER")))
-    .exchange()
-    .expectStatus().isOk
-    .expectHeader().contentType(MediaType.APPLICATION_JSON)
-    .expectBody(ComparisonOverview::class.java)
-    .returnResult().responseBody!!
-
-  private fun createComparison(prisonId: String, comparisonType: ComparisonType = ComparisonType.ESTABLISHMENT_FULL, completeStatus: ComparisonStatus = ComparisonStatus.COMPLETED, username: String = "test-client"): ComparisonDto {
-    val request = ComparisonInput(emptyMap(), prisonId, comparisonType)
-    val result = webTestClient.post()
-      .uri("/comparison")
-      .accept(MediaType.APPLICATION_JSON)
-      .bodyValue(request)
-      .headers(setAuthorisation(user = username, roles = listOf("ROLE_RELEASE_DATE_COMPARER")))
-      .exchange()
-      .expectStatus().isOk
-      .expectHeader().contentType(MediaType.APPLICATION_JSON)
-      .expectBody(ComparisonDto::class.java)
-      .returnResult().responseBody!!
-    await untilCallTo { getComparison(result.comparisonShortReference) } matches {
-      it!!.comparisonStatus.name == completeStatus.name
-    }
-    return result
   }
 
   private fun createComparisonPersonDiscrepancy(comparison: ComparisonDto, comparisonPerson: ComparisonPerson): ComparisonDiscrepancySummary {

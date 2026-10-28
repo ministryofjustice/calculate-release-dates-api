@@ -3,16 +3,20 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.dbhelper
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcome
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonDto
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeRepository
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.service.DateValidationService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonRepository
 import java.time.LocalDate
 import java.time.LocalDateTime
 
+/**
+ * You can add methods here for test specific manipulations that require a transaction without making the test itself transactional.
+ */
 @Service
-class TestCalculationRequestService(
+class TestTransactionalService(
   private val calculationRequestRepository: TestCalculationRequestRepository,
   private val calculationOutcomeRepository: CalculationOutcomeRepository,
-  private val dateValidationService: DateValidationService,
+  private val comparisonRepository: ComparisonRepository,
 ) {
 
   @Transactional
@@ -29,5 +33,11 @@ class TestCalculationRequestService(
         outcomeDate = tused,
       ),
     )
+  }
+
+  @Transactional
+  fun setComparisonCalculatedAt(comparison: ComparisonDto, newComparisonTimestamp: LocalDateTime) {
+    val comparison = comparisonRepository.findByComparisonShortReference(comparison.comparisonShortReference)!!
+    comparisonRepository.saveAndFlush(comparison.copy(calculatedAt = newComparisonTimestamp))
   }
 }

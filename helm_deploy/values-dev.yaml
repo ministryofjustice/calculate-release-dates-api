@@ -58,3 +58,16 @@ deleteOldPreliminaryCalculationsCronJob:
     allowPrivilegeEscalation: false
     seccompProfile:
       type: RuntimeDefault
+
+deleteOldBulkComparisonsCronJob:
+  enabled: true
+  schedule: "0 17 * * *" # 5pm every day
+  timeZone: Etc/UTC
+  securityContext:
+    capabilities:
+      drop:
+        - ALL
+    runAsNonRoot: true
+    allowPrivilegeEscalation: false
+    seccompProfile:
+      type: RuntimeDefault

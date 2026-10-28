@@ -21,7 +21,7 @@ import java.util.UUID
 
 @Entity
 @Table
-class Comparison(
+data class Comparison(
   @JsonIgnore
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)

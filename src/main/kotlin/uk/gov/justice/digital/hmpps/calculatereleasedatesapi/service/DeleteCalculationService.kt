@@ -32,22 +32,21 @@ class DeleteCalculationService(
    * operative_sentence_envelope
    * tranche_outcome
    * calculation_request
+   * comparison_person
    *
-   * The following are not applicable to PRELIMINARY calculations so are skipped
+   * The following are not applicable to PRELIMINARY or BULK calculations so are skipped
    * approved_dates_submission
    * calculation_outcome_historic_sled_override
-   * comparison_person
    * calculation_request_second_check
    * calculation_request_manual_reason
    */
   @Transactional(Transactional.TxType.REQUIRES_NEW)
-  fun deletePreliminary(calculationRequestId: Long) {
+  fun deletePreliminaryOrBulk(calculationRequestId: Long) {
     calculationOutcomeRepository.deleteByCalculationRequestId(calculationRequestId)
     calculationRequestSentenceOutcomeRepository.deleteByCalculationRequestId(calculationRequestId)
     calculationRequestSentenceRepository.deleteByCalculationRequestId(calculationRequestId)
     operativeSentenceEnvelopeRepository.deleteByCalculationRequestId(calculationRequestId)
     trancheOutcomeRepository.deleteByCalculationRequestId(calculationRequestId)
-    // older bulk calcs were preleminary calculations
     comparisonPersonRepository.deleteByCalculationRequestId(calculationRequestId)
     calculationRequestRepository.deleteSentenceUserInput(calculationRequestId)
     calculationRequestRepository.deleteUserInput(calculationRequestId)

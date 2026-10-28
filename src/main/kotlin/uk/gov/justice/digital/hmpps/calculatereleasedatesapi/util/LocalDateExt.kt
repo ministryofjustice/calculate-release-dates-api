@@ -17,3 +17,16 @@ fun LocalDate.isFirstDayOfMonth(): Boolean = this.dayOfMonth == 1
   Adds days to the date until it reaches the last day of the month.
  */
 fun LocalDate.plusDaysUntilEndOfMonth(): LocalDate = this.plusDays((this.month.length(this.isLeapYear) - this.dayOfMonth).toLong())
+
+fun LocalDate.businessDaysAgo(days: Long): LocalDate {
+  var date = this
+  var remaining = days
+  while (remaining > 0) {
+    date = date.minusDays(1)
+    if (!date.isWeekend()) {
+      remaining--
+    }
+  }
+
+  return date
+}

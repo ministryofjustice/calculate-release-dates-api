@@ -11,13 +11,18 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.RestController
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DeletedBulkComparisonsResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DeletedPreviousCalculationResult
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.DeleteOldBulkCalculationsService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.DeleteOldPreliminaryCalculationsService
 
 @RestController
 @RequestMapping("/scheduled-task", produces = [MediaType.APPLICATION_JSON_VALUE])
 @Tag(name = "Scheduled Tasks", description = "Endpoints for scheduled admin tasks that can only be called locally")
-class ScheduledTaskController(private val deleteOldPreliminaryCalculationsService: DeleteOldPreliminaryCalculationsService) {
+class ScheduledTaskController(
+  private val deleteOldPreliminaryCalculationsService: DeleteOldPreliminaryCalculationsService,
+  private val deleteOldBulkCalculationsService: DeleteOldBulkCalculationsService,
+) {
 
   @PostMapping(value = ["/delete-old-preliminary-calculations"])
   @ResponseBody
@@ -37,6 +42,27 @@ class ScheduledTaskController(private val deleteOldPreliminaryCalculationsServic
     log.info("Received request to delete preliminary calculations older than $MIN_AGE_YEARS years old with a maximum of $MAX_ITEMS removed in one go")
     val result = deleteOldPreliminaryCalculationsService.deleteBatch(MIN_AGE_YEARS, MAX_ITEMS)
     log.info("Successfully deleted ${result.numberDeletedSuccessfully} of ${result.numberFound} old preliminary calculations.")
+    return ResponseEntity.ok(result)
+  }
+
+  @PostMapping(value = ["/delete-old-bulk-comparisons"])
+  @ResponseBody
+  @Operation(
+    summary = "Delete old bulk comparisons up to the maximum number of items or a single comparison",
+    description = "An API that can only be called locally within an environment to allow it to be triggered by a cron job. " +
+      "It will delete bulk comparisons older than the specified number of business days while always keeping the latest 2. We take at least $MAX_ITEMS comparison people to delete at a time which may be one or more comparisons depending on if they were manual or not.",
+  )
+  @ApiResponses(
+    value = [
+      ApiResponse(responseCode = "200", description = "The task was processed and a count of deleted comparison persons returned"),
+      ApiResponse(responseCode = "401", description = "Unauthorised, can only be called by trusted services within the namespace and not through ingress"),
+      ApiResponse(responseCode = "404", description = "Couldn't find the requested prisoner"),
+    ],
+  )
+  fun deleteOldBulkComparison(): ResponseEntity<DeletedBulkComparisonsResult> {
+    log.info("Received request to delete bulk comparisons with a maximum of $MAX_ITEMS removed in one go")
+    val result = deleteOldBulkCalculationsService.deleteBatch(MAX_ITEMS)
+    log.info("Successfully deleted ${result.numberDeletedSuccessfully} of ${result.numberFound} old comparisons.")
     return ResponseEntity.ok(result)
   }
 
