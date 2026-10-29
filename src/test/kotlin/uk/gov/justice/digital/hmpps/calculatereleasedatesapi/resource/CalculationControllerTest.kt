@@ -400,6 +400,7 @@ class CalculationControllerTest {
       CalculationBreakdown(listOf(), null, ersedNotApplicableDueToDtoLaterThanCrd = true),
       null,
       TrancheName.TRANCHE_1,
+      hasIndeterminateSentences = false,
     )
     whenever(detailedCalculationResultsService.findDetailedCalculationResults(calculationRequestId)).thenReturn(
       calculatedReleaseDates,

@@ -186,28 +186,29 @@ class DetailedCalculationResultsServiceTest {
     val results = service.findDetailedCalculationResults(CALCULATION_REQUEST_ID)
     assertThat(results).isEqualTo(
       DetailedCalculationResults(
-        expectedCalcContext,
-        enrichedReleaseDates,
-        null,
-        mapOf(
+        context = expectedCalcContext,
+        dates = enrichedReleaseDates,
+        overriddenDates = null,
+        approvedDates = mapOf(
           ReleaseDateType.HDCAD to DetailedDate(ReleaseDateType.HDCAD, ReleaseDateType.HDCAD.description, LocalDate.of(2024, 1, 2), emptyList()),
           ReleaseDateType.ROTL to DetailedDate(ReleaseDateType.ROTL, ReleaseDateType.ROTL.description, LocalDate.of(2024, 1, 2), emptyList()),
         ),
         secondCheckDetails = secondCheckDto,
-        CalculationOriginalData(
+        calculationOriginalData = CalculationOriginalData(
           prisonerDetails,
           transform(SentenceAndOffenceAnalysis.SAME, listOf(originalSentence)),
           adjustments,
         ),
-        expectedBreakdown,
-        null,
-        TrancheName.TRANCHE_1,
-        TrancheName.FTR_56_TRANCHE_1,
-        TrancheName.TRANCHE_10,
-        listOf(
+        calculationBreakdown = expectedBreakdown,
+        breakdownMissingReason = null,
+        sds40Tranche = TrancheName.TRANCHE_1,
+        ftr56Tranche = TrancheName.FTR_56_TRANCHE_1,
+        progressionModelTranche = TrancheName.TRANCHE_10,
+        allocatedTranches = listOf(
           AllocatedTranche(LegislationName.FTR_56, TrancheName.FTR_56_TRANCHE_1, LocalDate.of(2024, 12, 3)),
           AllocatedTranche(LegislationName.SDS_PROGRESSION_MODEL, TrancheName.TRANCHE_10, LocalDate.of(2026, 9, 2)),
         ),
+        hasIndeterminateSentences = false,
       ),
     )
     verify(calculationResultEnrichmentService).addDetailToCalculationDates(
@@ -278,6 +279,7 @@ class DetailedCalculationResultsServiceTest {
         ftr56Tranche = null,
         progressionModelTranche = null,
         allocatedTranches = emptyList(),
+        hasIndeterminateSentences = false,
       ),
     )
     verify(calculationResultEnrichmentService).addDetailToCalculationDates(
@@ -287,6 +289,65 @@ class DetailedCalculationResultsServiceTest {
       null,
       null,
       null,
+    )
+  }
+
+  @Test
+  fun `should return manual calculation with indeterminate sentences as detailed dates`() {
+    val anIndeterminateSentence = originalSentence.copy(sentenceCalculationType = SentenceCalculationType.LIFE.name)
+    val calculationRequest = calculationRequestWithOutcomes().copy(
+      prisonerDetails = objectToJson(prisonerDetails, objectMapper),
+      sentenceAndOffences = objectToJson(listOf(anIndeterminateSentence), objectMapper),
+      adjustments = objectToJson(adjustments, objectMapper),
+      calculationOutcomes = listOf(
+        CalculationOutcome(calculationRequestId = CALCULATION_REQUEST_ID, calculationDateType = "CRD", outcomeDate = LocalDate.of(2026, 6, 26)),
+      ),
+      calculationType = CalculationType.MANUAL_INDETERMINATE,
+      calculatedByUsername = "username",
+      prisonerLocation = "BXI",
+    )
+    val enrichedReleaseDates = mapOf(ReleaseDateType.CRD to DetailedDate(ReleaseDateType.CRD, ReleaseDateType.CRD.description, LocalDate.of(2026, 6, 26), emptyList()))
+    val expectedBreakdown = CalculationBreakdown(emptyList(), null, mapOf(ReleaseDateType.CRD to ReleaseDateCalculationBreakdown(emptySet())), mapOf(ReleaseDateType.PRRD to LocalDate.of(2026, 6, 27)))
+    val expectedAdjustments = listOf(AdjustmentDto(person = "A1234BC", adjustmentType = AdjustmentDto.AdjustmentType.REMAND))
+
+    whenever(calculationRequestRepository.findById(CALCULATION_REQUEST_ID)).thenReturn(Optional.of(calculationRequest))
+    whenever(sourceDataMapper.mapSentencesAndOffences(calculationRequest)).thenReturn(listOf(anIndeterminateSentence))
+    whenever(sourceDataMapper.mapPrisonerDetails(calculationRequest)).thenReturn(prisonerDetails)
+    whenever(sourceDataMapper.mapAdjustments(calculationRequest)).thenReturn(expectedAdjustments)
+    whenever(
+      calculationResultEnrichmentService.addDetailToCalculationDates(
+        toReleaseDates(calculationRequest),
+        listOf(anIndeterminateSentence),
+        expectedBreakdown,
+        null,
+        null,
+        null,
+      ),
+    ).thenReturn(enrichedReleaseDates)
+    whenever(calculationBreakdownService.getBreakdownSafely(any())).thenReturn(expectedBreakdown.right())
+    whenever(manageUsersApiClient.getUserByUsername("username")).thenReturn(UserDetails("username", "User Name"))
+    whenever(secondCheckRepository.findLatestByCalculationRequestId(any())).thenReturn(null)
+    val results = service.findDetailedCalculationResults(CALCULATION_REQUEST_ID)
+    assertThat(results).isEqualTo(
+      DetailedCalculationResults(
+        context = expectedCalcContext.copy(calculationType = CalculationType.MANUAL_INDETERMINATE),
+        dates = enrichedReleaseDates,
+        overriddenDates = null,
+        approvedDates = null,
+        secondCheckDetails = null,
+        calculationOriginalData = CalculationOriginalData(
+          prisonerDetails = prisonerDetails,
+          sentencesAndOffences = transform(SentenceAndOffenceAnalysis.SAME, listOf(anIndeterminateSentence)),
+          adjustments = expectedAdjustments,
+        ),
+        calculationBreakdown = expectedBreakdown,
+        breakdownMissingReason = null,
+        sds40Tranche = null,
+        ftr56Tranche = null,
+        progressionModelTranche = null,
+        allocatedTranches = emptyList(),
+        hasIndeterminateSentences = true,
+      ),
     )
   }
 
@@ -351,6 +412,7 @@ class DetailedCalculationResultsServiceTest {
           AllocatedTranche(LegislationName.FTR_56, TrancheName.FTR_56_TRANCHE_4, LocalDate.of(2025, 1, 3)),
           AllocatedTranche(LegislationName.SDS_PROGRESSION_MODEL, TrancheName.TRANCHE_10, LocalDate.of(2026, 9, 2)),
         ),
+        hasIndeterminateSentences = false,
       ),
     )
   }
@@ -607,21 +669,22 @@ class DetailedCalculationResultsServiceTest {
     val results = service.findDetailedCalculationResults(CALCULATION_REQUEST_ID)
     assertThat(results).isEqualTo(
       DetailedCalculationResults(
-        expectedCalcContext,
-        enrichedReleaseDates,
-        null,
-        mapOf(
+        context = expectedCalcContext,
+        dates = enrichedReleaseDates,
+        overriddenDates = null,
+        approvedDates = mapOf(
           ReleaseDateType.HDCAD to DetailedDate(ReleaseDateType.HDCAD, ReleaseDateType.HDCAD.description, LocalDate.of(2024, 1, 2), emptyList()),
           ReleaseDateType.ROTL to DetailedDate(ReleaseDateType.ROTL, ReleaseDateType.ROTL.description, LocalDate.of(2024, 1, 2), emptyList()),
         ),
         secondCheckDetails = null,
-        CalculationOriginalData(
+        calculationOriginalData = CalculationOriginalData(
           prisonerDetails,
           transform(SentenceAndOffenceAnalysis.SAME, listOf(originalSentence)),
           adjustments,
         ),
-        null,
-        BreakdownMissingReason.UNSUPPORTED_CALCULATION_BREAKDOWN,
+        calculationBreakdown = null,
+        breakdownMissingReason = BreakdownMissingReason.UNSUPPORTED_CALCULATION_BREAKDOWN,
+        hasIndeterminateSentences = false,
       ),
     )
     verify(calculationResultEnrichmentService).addDetailToCalculationDates(
