@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+# Blocks commits of booking test data that differs from the output of BookingAnonymiser.
+#
+# Overrides (when you genuinely need case information or a specific date of birth):
+#   - SKIP_BOOKING_ANONYMISER=1 git commit ...   skip the check for this commit
+#   - add the file's repo relative path to .booking-anonymiser-allowlist   permanently exempt a file
+#   - git commit --no-verify                      skips all hooks
+set -euo pipefail
+
+if [[ "${SKIP_BOOKING_ANONYMISER:-}" == "1" ]]; then
+  echo "pre-commit: SKIP_BOOKING_ANONYMISER=1, skipping booking anonymisation check"
+  exit 0
+fi
+
+cd "$(git rev-parse --show-toplevel)"
+
+allowlist=".booking-anonymiser-allowlist"
+files=()
+while IFS= read -r f; do
+  [[ "$f" == src/test/resources/test_data/overall_calculation/*.json ]] || continue
+  if [[ -f "$allowlist" ]] && grep -qxF "$f" <(grep -v '^\s*#' "$allowlist"); then
+    continue
+  fi
+  files+=("$f")
+done < <(git diff --cached --name-only --diff-filter=AM)
+
+[[ ${#files[@]} -eq 0 ]] && exit 0
+
+joined=$(IFS=,; echo "${files[*]}")
+if ! ./gradlew -q checkBookingAnonymisation "-Pfiles=$joined"; then
+  cat >&2 <<MSG
+
+Commit blocked: the files above may contain PII.
+Anonymise them with BookingAnonymiser, or if the data is intentional either:
+  SKIP_BOOKING_ANONYMISER=1 git commit ...
+  add the path to $allowlist
+MSG
+  exit 1
+fi
