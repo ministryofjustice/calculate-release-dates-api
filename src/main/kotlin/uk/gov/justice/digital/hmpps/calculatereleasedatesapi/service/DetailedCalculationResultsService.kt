@@ -21,6 +21,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.PreviouslyRec
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SecondCheckDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceAnalysis
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeHistoricOverrideRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.SecondCheckRepository
@@ -64,6 +65,7 @@ open class DetailedCalculationResultsService(
       .map { ReleaseDate(it.outcomeDate!!, ReleaseDateType.valueOf(it.calculationDateType)) }
 
     val historicSledOverride = calculationOutcomeHistoricOverrideRepository.findByCalculationRequestId(calculationRequestId)
+    val hasIndeterminateSentences = sentenceAndOffences?.any { SentenceCalculationType.isIndeterminate(it.sentenceCalculationType) } == true
     return DetailedCalculationResults(
       context = calculationContext(calculationRequestId, calculationRequest),
       dates = calculationResultEnrichmentService.addDetailToCalculationDates(
@@ -109,6 +111,7 @@ open class DetailedCalculationResultsService(
           previouslyRecordedSLEDCalculationRequestId = it.historicCalculationRequestId,
         )
       },
+      hasIndeterminateSentences = hasIndeterminateSentences,
     )
   }
 
@@ -155,38 +158,41 @@ open class DetailedCalculationResultsService(
     val allocated = calculationRequest.allocatedSDSTranche ?: return emptyList()
     val tranches = mutableListOf<AllocatedTranche>()
 
-    if (allocated.ftr56Tranche != null && allocated.ftr56Tranche !== TrancheName.FTR_56_TRANCHE_0) {
+    val ftr56Tranche = allocated.ftr56Tranche
+    if (ftr56Tranche != null && ftr56Tranche !== TrancheName.FTR_56_TRANCHE_0) {
       tranches.add(
         AllocatedTranche(
           legislationName = LegislationName.FTR_56,
-          trancheName = allocated.ftr56Tranche!!,
+          trancheName = ftr56Tranche,
           trancheDate = sdsLegislationConfiguration.sds40Legislation.tranches
-            .firstOrNull { it.name == allocated.ftr56Tranche }
+            .firstOrNull { it.name == ftr56Tranche }
             ?.date,
         ),
       )
     }
 
-    if (allocated.progressionModelTranche != null && allocated.progressionModelTranche !== TrancheName.TRANCHE_0) {
+    val progressionModelTranche = allocated.progressionModelTranche
+    if (progressionModelTranche != null && progressionModelTranche !== TrancheName.TRANCHE_0) {
       tranches.add(
         AllocatedTranche(
           legislationName = LegislationName.SDS_PROGRESSION_MODEL,
-          trancheName = allocated.progressionModelTranche!!,
+          trancheName = progressionModelTranche,
           trancheDate = sdsLegislationConfiguration.progressionModelLegislation
             ?.tranches
-            ?.firstOrNull { it.name == allocated.progressionModelTranche }
+            ?.firstOrNull { it.name == progressionModelTranche }
             ?.date,
         ),
       )
     }
 
-    if (allocated.tranche !== TrancheName.TRANCHE_0 && allocated.affectedBySds40) {
+    val sds40Tranche = allocated.tranche
+    if (sds40Tranche !== TrancheName.TRANCHE_0 && allocated.affectedBySds40) {
       tranches.add(
         AllocatedTranche(
           legislationName = LegislationName.SDS_40,
-          trancheName = allocated.tranche,
+          trancheName = sds40Tranche,
           trancheDate = sdsLegislationConfiguration.sds40Legislation.tranches
-            .firstOrNull { it.name == allocated.tranche }
+            .firstOrNull { it.name == sds40Tranche }
             ?.date,
         ),
       )
