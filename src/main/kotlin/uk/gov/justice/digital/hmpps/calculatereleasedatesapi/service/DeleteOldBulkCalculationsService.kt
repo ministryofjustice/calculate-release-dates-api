@@ -4,6 +4,7 @@ import jakarta.transaction.Transactional
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DeletedBulkComparisonsResult
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonPersonDiscrepancyRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonPersonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.businessDaysAgo
@@ -13,6 +14,7 @@ import java.time.LocalDate
 class DeleteOldBulkCalculationsService(
   private val comparisonRepository: ComparisonRepository,
   private val comparisonPersonRepository: ComparisonPersonRepository,
+  private val comparisonPersonDiscrepancyRepository: ComparisonPersonDiscrepancyRepository,
   private val deleteCalculationService: DeleteCalculationService,
 ) {
 
@@ -42,7 +44,10 @@ class DeleteOldBulkCalculationsService(
             log.info("Deleting bulk comparison calculation request $calculationRequestId")
             deleteCalculationService.deletePreliminaryOrBulk(calculationRequestId)
           } else {
-            comparisonPersonRepository.deleteById(comparisonPerson.id!!)
+            val comparisonPersonId = comparisonPerson.id!!
+            comparisonPersonDiscrepancyRepository.deleteCauseByComparisonPersonId(comparisonPersonId)
+            comparisonPersonDiscrepancyRepository.deleteByComparisonPersonId(comparisonPersonId)
+            comparisonPersonRepository.deleteById(comparisonPersonId)
           }
           true
         } catch (e: Exception) {

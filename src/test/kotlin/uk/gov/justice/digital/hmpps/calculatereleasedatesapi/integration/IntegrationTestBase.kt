@@ -22,8 +22,13 @@ import org.testcontainers.containers.PostgreSQLContainer
 import org.testcontainers.containers.localstack.LocalStackContainer
 import org.testcontainers.containers.localstack.LocalStackContainer.Service
 import org.testcontainers.utility.DockerImageName
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonPerson
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.DiscrepancyCategory
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.DiscrepancyImpact
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.DiscrepancyPriority
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.DiscrepancySubCategory
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.AdjustmentsApiExtension
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.BankHolidayApiExtension
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.ManageOffencesApiExtension
@@ -35,8 +40,11 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedRel
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationFragments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationRequestModel
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonDiscrepancySummary
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonDto
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonOverview
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CreateComparisonDiscrepancyRequest
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DiscrepancyCause
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.GenuineOverrideCreatedResponse
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.GenuineOverrideRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualCalculationResponse
@@ -202,6 +210,22 @@ open class IntegrationTestBase internal constructor() {
     .expectHeader().contentType(MediaType.APPLICATION_JSON)
     .expectBody(ComparisonOverview::class.java)
     .returnResult().responseBody!!
+
+  protected fun createComparisonPersonDiscrepancy(comparison: ComparisonDto, comparisonPerson: ComparisonPerson): ComparisonDiscrepancySummary {
+    val discrepancyCauses = listOf(DiscrepancyCause(DiscrepancyCategory.PED, DiscrepancySubCategory.DATE_NOT_CALCULATED))
+    val request = CreateComparisonDiscrepancyRequest(DiscrepancyImpact.POTENTIAL_UNLAWFUL_DETENTION, discrepancyCauses, "detail", DiscrepancyPriority.HIGH_RISK, "action")
+    val result = webTestClient.post()
+      .uri("/comparison/{comparisonReference}/mismatch/{mismatchReference}/discrepancy", comparison.comparisonShortReference, comparisonPerson.shortReference)
+      .accept(MediaType.APPLICATION_JSON)
+      .bodyValue(request)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATE_COMPARER")))
+      .exchange()
+      .expectStatus().isOk
+      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectBody(ComparisonDiscrepancySummary::class.java)
+      .returnResult().responseBody!!
+    return result
+  }
 
   companion object {
     @JvmStatic

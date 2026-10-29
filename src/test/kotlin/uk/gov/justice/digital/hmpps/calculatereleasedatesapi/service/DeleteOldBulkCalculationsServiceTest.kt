@@ -13,6 +13,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonPerson
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DeletedBulkComparisonsResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.MismatchType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonPersonDiscrepancyRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonPersonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonToDelete
@@ -24,8 +25,10 @@ class DeleteOldBulkCalculationsServiceTest {
   private val objectMapper: ObjectMapper = TestUtil.objectMapper()
   private val comparisonRepository: ComparisonRepository = mock()
   private val comparisonPersonRepository: ComparisonPersonRepository = mock()
+  private val comparisonPersonDiscrepancyRepository: ComparisonPersonDiscrepancyRepository = mock()
   private val deleteCalculationService: DeleteCalculationService = mock()
-  private val service = DeleteOldBulkCalculationsService(comparisonRepository, comparisonPersonRepository, deleteCalculationService)
+
+  private val service = DeleteOldBulkCalculationsService(comparisonRepository, comparisonPersonRepository, comparisonPersonDiscrepancyRepository, deleteCalculationService)
 
   @Test
   fun `should delete multiple bulk calcs if they are all small`() {
@@ -90,13 +93,48 @@ class DeleteOldBulkCalculationsServiceTest {
     verify(comparisonRepository).deleteById(4)
   }
 
+  @Test
+  fun `should delete comparison people without calculation request`() {
+    val comparisonToDelete1 = ComparisonToDelete(1, 2, LocalDateTime.now().minusDays(20).toInstant(ZoneOffset.UTC))
+
+    whenever(comparisonRepository.allComparisonsOlderThanDateExceptTheLatestTwo(any())).thenReturn(listOf(comparisonToDelete1))
+    whenever(comparisonPersonRepository.findByComparisonId(1)).thenReturn(
+      listOf(
+        aComparisonPerson(1, "A1234BC", 101, 10),
+        aComparisonPerson(1, "A1234DE", null, 20),
+      ),
+    )
+
+    doNothing().whenever(deleteCalculationService).deletePreliminaryOrBulk(101)
+    doNothing().whenever(comparisonRepository).deleteById(1)
+
+    val result = service.deleteBatch(100)
+
+    assertThat(result).isEqualTo(DeletedBulkComparisonsResult(2, 2))
+
+    // person 1 deleted via delete calculation service
+    verify(deleteCalculationService).deletePreliminaryOrBulk(101)
+    verify(comparisonPersonDiscrepancyRepository, never()).deleteCauseByComparisonPersonId(10)
+    verify(comparisonPersonDiscrepancyRepository, never()).deleteByComparisonPersonId(10)
+    verify(comparisonPersonRepository, never()).deleteById(10)
+
+    // person 2 has no calculation request so is deleted directly
+    verify(comparisonPersonDiscrepancyRepository).deleteCauseByComparisonPersonId(20)
+    verify(comparisonPersonDiscrepancyRepository).deleteByComparisonPersonId(20)
+    verify(comparisonPersonRepository).deleteById(20)
+
+    verify(comparisonRepository).deleteById(1)
+  }
+
   private fun aComparisonPerson(
     comparisonId: Long,
     person: String,
+    calculationRequestId: Long? = comparisonId + 100,
+    comparisonPersonId: Long = 1,
   ): ComparisonPerson {
     val emptyObjectNode = objectMapper.createObjectNode()
     return ComparisonPerson(
-      1,
+      comparisonPersonId,
       comparisonId,
       person = person,
       lastName = "Smith",
@@ -113,7 +151,7 @@ class DeleteOldBulkCalculationsServiceTest {
       sdsPlusSentencesIdentified = emptyObjectNode,
       establishment = "BMI",
       hasIndeterminateSentences = false,
-      calculationRequestId = comparisonId + 100,
+      calculationRequestId = calculationRequestId,
     )
   }
 }
