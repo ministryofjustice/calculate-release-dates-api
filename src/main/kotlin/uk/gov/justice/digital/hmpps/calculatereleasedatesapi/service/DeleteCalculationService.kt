@@ -6,6 +6,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.Calculat
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestSentenceOutcomeRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestSentenceRepository
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonPersonDiscrepancyRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonPersonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.OperativeSentenceEnvelopeRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.TrancheOutcomeRepository
@@ -19,12 +20,13 @@ class DeleteCalculationService(
   private val operativeSentenceEnvelopeRepository: OperativeSentenceEnvelopeRepository,
   private val trancheOutcomeRepository: TrancheOutcomeRepository,
   private val comparisonPersonRepository: ComparisonPersonRepository,
+  private val comparisonPersonDiscrepancyRepository: ComparisonPersonDiscrepancyRepository,
 ) {
 
   /**
    * REQUIRES_NEW so that the batch clean up of old preliminary calculations only fails for a single calculation request.
    *
-   * Deletes from the following tables with constrains on calculation request
+   * Deletes from the following tables with constraints on calculation request or dependent entities
    * calculation_outcome
    * calculation_request_sentence
    * calculation_request_user_input
@@ -32,6 +34,8 @@ class DeleteCalculationService(
    * operative_sentence_envelope
    * tranche_outcome
    * calculation_request
+   * comparison_person_discrepancy_cause
+   * comparison_person_discrepancy
    * comparison_person
    *
    * The following are not applicable to PRELIMINARY or BULK calculations so are skipped
@@ -47,6 +51,8 @@ class DeleteCalculationService(
     calculationRequestSentenceRepository.deleteByCalculationRequestId(calculationRequestId)
     operativeSentenceEnvelopeRepository.deleteByCalculationRequestId(calculationRequestId)
     trancheOutcomeRepository.deleteByCalculationRequestId(calculationRequestId)
+    comparisonPersonDiscrepancyRepository.deleteCauseByCalculationRequestId(calculationRequestId)
+    comparisonPersonDiscrepancyRepository.deleteByCalculationRequestId(calculationRequestId)
     comparisonPersonRepository.deleteByCalculationRequestId(calculationRequestId)
     calculationRequestRepository.deleteSentenceUserInput(calculationRequestId)
     calculationRequestRepository.deleteUserInput(calculationRequestId)

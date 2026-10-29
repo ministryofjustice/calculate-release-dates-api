@@ -58,13 +58,18 @@ class DeleteOldBulkComparisonIntTest(private val mockManageOffencesClient: MockM
 
   @Test
   fun `Keeps the latest 2 comparisons based on age even if older than 10 business days`() {
-    val comparison1 = createComparison("PRIS")
-    val comparison2 = createComparison("PRIS")
-    val comparison3 = createComparison("PRIS")
+    val oldestComparison = createComparison("PRIS")
+    val secondComparison = createComparison("PRIS")
+    val latestComparison = createComparison("PRIS")
 
-    testTransactionalService.setComparisonCalculatedAt(comparison1, LocalDate.now().businessDaysAgo(20).atStartOfDay())
-    testTransactionalService.setComparisonCalculatedAt(comparison2, LocalDate.now().businessDaysAgo(21).atStartOfDay())
-    testTransactionalService.setComparisonCalculatedAt(comparison3, LocalDate.now().businessDaysAgo(22).atStartOfDay())
+    val storedComparison = comparisonRepository.findByComparisonShortReference(oldestComparison.comparisonShortReference)
+    comparisonPersonRepository.findByComparisonId(storedComparison!!.id()).forEach { comparisonPerson ->
+      createComparisonPersonDiscrepancy(oldestComparison, comparisonPerson)
+    }
+
+    testTransactionalService.setComparisonCalculatedAt(oldestComparison, LocalDate.now().businessDaysAgo(22).atStartOfDay())
+    testTransactionalService.setComparisonCalculatedAt(secondComparison, LocalDate.now().businessDaysAgo(21).atStartOfDay())
+    testTransactionalService.setComparisonCalculatedAt(latestComparison, LocalDate.now().businessDaysAgo(20).atStartOfDay())
 
     val response = webTestClient.post()
       .uri("/scheduled-task/delete-old-bulk-comparisons")
@@ -76,9 +81,9 @@ class DeleteOldBulkComparisonIntTest(private val mockManageOffencesClient: MockM
 
     assertThat(response).isEqualTo(DeletedBulkComparisonsResult(4, 4))
 
-    assertThat(comparisonRepository.findByComparisonShortReference(comparison1.comparisonShortReference)).describedAs("comparison 1").isNotNull()
-    assertThat(comparisonRepository.findByComparisonShortReference(comparison2.comparisonShortReference)).describedAs("comparison 2").isNotNull()
-    assertThat(comparisonRepository.findByComparisonShortReference(comparison3.comparisonShortReference)).describedAs("comparison 3").isNull()
+    assertThat(comparisonRepository.findByComparisonShortReference(oldestComparison.comparisonShortReference)).describedAs("oldest comparison").isNull()
+    assertThat(comparisonRepository.findByComparisonShortReference(secondComparison.comparisonShortReference)).describedAs("second comparison").isNotNull()
+    assertThat(comparisonRepository.findByComparisonShortReference(latestComparison.comparisonShortReference)).describedAs("latest comparison").isNotNull()
   }
 
   @Test
