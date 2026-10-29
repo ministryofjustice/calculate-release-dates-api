@@ -17,4 +17,5 @@ data class DetailedCalculationResults(
   val progressionModelTranche: TrancheName? = null,
   val allocatedTranches: List<AllocatedTranche> = emptyList(),
   val usedPreviouslyRecordedSLED: PreviouslyRecordedSLED? = null,
+  val hasIndeterminateSentences: Boolean,
 )
