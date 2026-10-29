@@ -213,6 +213,21 @@ tasks {
   }
 }
 
+tasks.register<JavaExec>("checkBookingAnonymisation") {
+  description = "Fails if the given staged booking test data files (-Pfiles=a,b) differ from their anonymised form"
+  dependsOn("testClasses")
+  classpath = sourceSets["test"].runtimeClasspath
+  mainClass.set("uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.BookingAnonymiser")
+  args((findProperty("files") as String? ?: "").split(",").filter { it.isNotBlank() })
+}
+
+tasks.register<Exec>("installGitHooks") {
+  description = "Points git at the hooks in .githooks"
+  commandLine("git", "config", "core.hooksPath", ".githooks")
+}
+
+tasks.named("compileKotlin") { dependsOn("installGitHooks") }
+
 models.forEach {
   tasks.register(it.name, GenerateTask::class) {
     generatorName.set("kotlin")

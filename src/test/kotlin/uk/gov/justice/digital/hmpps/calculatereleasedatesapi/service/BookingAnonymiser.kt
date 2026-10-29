@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
+import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -12,6 +13,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeter
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SopcSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource.JsonTransformation
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.CalculationTestFile
 import java.time.LocalDate
 
 /**
@@ -39,6 +41,13 @@ class BookingAnonymiser {
 
   private fun anonymiseTestCase(example: String) {
     val calculationFile = jsonTransformation.loadCalculationTestFile("overall_calculation/$example")
+    val jsonTree = anonymise(calculationFile)
+    log.info("Anonomised data: ${TestUtil.minimalTestCaseMapper().writeValueAsString(jsonTree)}")
+    TestUtil.minimalTestCaseMapper().writeValue(ClassPathResource("test_data/overall_calculation/$example.json").file, jsonTree)
+    // Then copy file manually from build dir.
+  }
+
+  fun anonymise(calculationFile: CalculationTestFile, removeDuplicateSentences: Boolean = true): ObjectNode {
     var sentences = calculationFile.booking.sentences.map {
       if (it is StandardDeterminateSentence) {
         return@map it.copy(
@@ -80,18 +89,20 @@ class BookingAnonymiser {
       }
     }
 
-    sentences = sentences.distinctBy {
-      if (calculationFile.booking.sentences.any { consec ->
-          consec.consecutiveSentenceUUIDs.contains(it.identifier)
+    if (removeDuplicateSentences) {
+      sentences = sentences.distinctBy {
+        if (calculationFile.booking.sentences.any { consec ->
+            consec.consecutiveSentenceUUIDs.contains(it.identifier)
+          }
+        ) {
+          return@distinctBy "${it.identifier}"
+        } else if (it is StandardDeterminateSentence) {
+          return@distinctBy "${it.duration}${it.sentencedAt}${it.recallType}${it.releaseArrangements}${it.consecutiveSentenceUUIDs.firstOrNull()}"
+        } else if (it is ExtendedDeterminateSentence) {
+          return@distinctBy "${it.custodialDuration}${it.extensionDuration}${it.sentencedAt}${it.recallType}${it.consecutiveSentenceUUIDs.firstOrNull()}"
+        } else {
+          return@distinctBy "${it.identifier}"
         }
-      ) {
-        return@distinctBy "${it.identifier}"
-      } else if (it is StandardDeterminateSentence) {
-        return@distinctBy "${it.duration}${it.sentencedAt}${it.recallType}${it.releaseArrangements}${it.consecutiveSentenceUUIDs.firstOrNull()}"
-      } else if (it is ExtendedDeterminateSentence) {
-        return@distinctBy "${it.custodialDuration}${it.extensionDuration}${it.sentencedAt}${it.recallType}${it.consecutiveSentenceUUIDs.firstOrNull()}"
-      } else {
-        return@distinctBy "${it.identifier}"
       }
     }
 
@@ -144,11 +155,53 @@ class BookingAnonymiser {
       jsonTree.remove("adjustments")
     }
 
-    log.info("Anonomised data: ${TestUtil.minimalTestCaseMapper().writeValueAsString(jsonTree)}")
-    TestUtil.minimalTestCaseMapper().writeValue(ClassPathResource("test_data/overall_calculation/$example.json").file, jsonTree)
-    // Then copy file manually from build dir.
+    return jsonTree
   }
+
   companion object {
     val log: Logger = LoggerFactory.getLogger(this::class.java)
+
+    private const val STAGED_TEST_CASE_DIR = "src/test/resources/test_data/overall_calculation/"
+
+    private val SENTENCE_PII_FIELDS = listOf("caseReference", "caseSequence", "lineSequence", "externalSentenceId")
+
+    // Only the fields the anonymiser scrubs are compared, so serialisation noise in older files isn't flagged.
+    private fun piiView(tree: JsonNode): List<Any?> {
+      val booking = tree.get("booking")
+      val offender = booking?.get("offender")
+      return listOf(
+        booking?.get("bookingId")?.asLong() ?: 0L,
+        offender?.get("reference")?.asText(),
+        offender?.get("dateOfBirth")?.asText(),
+        booking?.get("sentences")?.map { sentence -> SENTENCE_PII_FIELDS.map { sentence.get(it)?.takeIf { v -> !v.isNull } } },
+      )
+    }
+
+    /**
+     * Pre-commit check. Args are repo relative paths of staged files. Exits 1 if any staged
+     * booking differs from its anonymised form. Run via `./gradlew checkBookingAnonymisation`.
+     */
+    @JvmStatic
+    fun main(args: Array<String>) {
+      val anonymiser = BookingAnonymiser()
+      val mapper = TestUtil.minimalTestCaseMapper()
+      val failures = args.filter { it.startsWith(STAGED_TEST_CASE_DIR) && it.endsWith(".json") }.mapNotNull { path ->
+        val staged = ProcessBuilder("git", "show", ":$path").redirectErrorStream(false).start()
+          .let { it.inputStream.readBytes().toString(Charsets.UTF_8).also { _ -> it.waitFor() } }
+        val reason = try {
+          val actual = mapper.readTree(staged)
+          val anonymised = mapper.readTree(mapper.writeValueAsString(anonymiser.anonymise(mapper.readValue(staged, CalculationTestFile::class.java), removeDuplicateSentences = false)))
+          if (piiView(actual) == piiView(anonymised)) null else "differs from the anonymised booking (case references/sequences, booking id, offender reference or date of birth)"
+        } catch (e: Exception) {
+          "could not be anonymised: ${e.message}"
+        }
+        reason?.let { "  $path $it" }
+      }
+      if (failures.isNotEmpty()) {
+        System.err.println("Possible PII in staged booking test data:")
+        failures.forEach { System.err.println(it) }
+        System.exit(1)
+      }
+    }
   }
 }
