@@ -1,0 +1,46 @@
+{
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
+      {
+        "type": "ExtendedDeterminateSentence",
+        "offence": {
+          "committedAt": "2025-11-03"
+        },
+        "custodialDuration": {
+          "durationElements": {
+            "YEARS": 18
+          }
+        },
+        "extensionDuration": {
+          "durationElements": {
+            "YEARS": 7
+          }
+        },
+        "sentencedAt": "2025-11-03"
+      }
+    ],
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2025-11-03",
+          "numberOfDays": 10,
+          "fromDate": "2025-10-23",
+          "toDate": "2025-11-02"
+        }
+      ]
+    }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true,
+    "calculateErsed": true
+  },
+  "params": "sds-progression-model-october",
+  "featureToggles": {
+    "adultHdcSuspended": true,
+    "ersZeroEnabled": true
+  }
+}
