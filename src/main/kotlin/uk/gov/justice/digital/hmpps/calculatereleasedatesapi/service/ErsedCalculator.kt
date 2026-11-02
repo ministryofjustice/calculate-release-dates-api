@@ -14,7 +14,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSe
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ERSLegislation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SopcSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
@@ -64,11 +63,11 @@ class ErsedCalculator(
     }
   }
 
-  private fun isExcludedFromErsZero(currentSentenceGroup: List<CalculableSentence>): Boolean = currentSentenceGroup.flatMap { it.sentenceParts() }.any {
-    when (it) {
+  private fun isExcludedFromErsZero(currentSentenceGroup: List<CalculableSentence>): Boolean = currentSentenceGroup.flatMap { it.sentenceParts() }.any { sentencePart ->
+    when (sentencePart) {
       is SopcSentence -> true
       is ExtendedDeterminateSentence -> true
-      is StandardDeterminateSentence -> SDSEarlyReleaseExclusionType.SA2026_PROGRESSION_MODEL_SCHEDULE in it.releaseArrangements.sdsEarlyReleaseExclusions
+      is StandardDeterminateSentence -> sentencePart.releaseArrangements.sdsEarlyReleaseExclusions.any { it.ersZeroExclusion }
       else -> false
     }
   }
