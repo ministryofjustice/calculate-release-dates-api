@@ -28,6 +28,7 @@ generic-service:
   postgresDatabaseRestore:
     enabled: true
     timeout: 9000 # Two and a half hours
+    serviceAccountName: calculate-release-dates-api-preprod-restore
     namespace_secrets:
       rds-instance-output:
         DB_NAME: "database_name"
@@ -39,6 +40,8 @@ generic-service:
         DB_USER_PREPROD: "database_username"
         DB_PASS_PREPROD: "database_password"
         DB_HOST_PREPROD: "rds_instance_address"
+      s3-db-restore-bucket:
+        BUCKET_NAME: "bucket_name"
 
   namespace_secrets:
     sqs-bulk-comparison-queue:
