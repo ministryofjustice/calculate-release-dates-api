@@ -28,9 +28,9 @@ class AdjustmentsAfterReleaseDateValidator(@Value($$"${adjudications.api.url}") 
     adjustments.forEach { (type, adjustment) ->
       if (adjustment.appliesToSentencesFrom.isAfter(latestReleaseDate)) {
         if (type == AdjustmentType.ADDITIONAL_DAYS_AWARDED) {
-          messages.add(ValidationMessage(ValidationCode.ADJUSTMENT_AFTER_RELEASE_ADA, listOf(adjudicationsApiUrl, "")))
+          messages.add(ValidationMessage(ValidationCode.ADJUSTMENT_AFTER_RELEASE_ADA, listOf(adjudicationsApiUrl, booking.offender.reference)))
         } else {
-          messages.add(ValidationMessage(ValidationCode.ADJUSTMENT_AFTER_RELEASE_RADA, listOf(adjudicationsApiUrl, "")))
+          messages.add(ValidationMessage(ValidationCode.ADJUSTMENT_AFTER_RELEASE_RADA, listOf(adjudicationsApiUrl, booking.offender.reference)))
         }
       }
     }
