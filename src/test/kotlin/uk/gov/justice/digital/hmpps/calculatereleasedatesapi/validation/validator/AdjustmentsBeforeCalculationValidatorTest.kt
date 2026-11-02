@@ -17,7 +17,7 @@ import java.time.LocalDate
 
 class AdjustmentsBeforeCalculationValidatorTest {
 
-  private val validator = AdjustmentsBeforeCalculationValidator(ValidationUtilities(), ADJUSTMENTS_UI_URL)
+  private val validator = AdjustmentsBeforeCalculationValidator(ValidationUtilities(), ADJUSTMENTS_UI_URL, ADJUDICATIONS_API_URL)
 
   @Nested
   inner class AdjustmentsDtoTests {
@@ -139,7 +139,7 @@ class AdjustmentsBeforeCalculationValidatorTest {
       val result = validator.validateAdjustmentsBeforeCalculation(adjustments, sourceData())
 
       assertThat(result).containsExactly(
-        ValidationMessage(ValidationCode.ADJUSTMENT_FUTURE_DATED_UAL),
+        ValidationMessage(ValidationCode.ADJUSTMENT_FUTURE_DATED_UAL, listOf(ADJUSTMENTS_UI_URL, OFFENDER_NO)),
       )
     }
 
@@ -156,7 +156,7 @@ class AdjustmentsBeforeCalculationValidatorTest {
       val result = validator.validateAdjustmentsBeforeCalculation(adjustments, sourceData())
 
       assertThat(result).containsExactly(
-        ValidationMessage(ValidationCode.ADJUSTMENT_FUTURE_DATED_ADA),
+        ValidationMessage(ValidationCode.ADJUSTMENT_FUTURE_DATED_ADA, listOf(ADJUDICATIONS_API_URL, OFFENDER_NO)),
       )
     }
 
@@ -173,7 +173,7 @@ class AdjustmentsBeforeCalculationValidatorTest {
       val result = validator.validateAdjustmentsBeforeCalculation(adjustments, sourceData())
 
       assertThat(result).containsExactly(
-        ValidationMessage(ValidationCode.ADJUSTMENT_FUTURE_DATED_RADA),
+        ValidationMessage(ValidationCode.ADJUSTMENT_FUTURE_DATED_RADA, listOf(ADJUDICATIONS_API_URL, OFFENDER_NO)),
       )
     }
 
@@ -233,5 +233,6 @@ class AdjustmentsBeforeCalculationValidatorTest {
   companion object {
     private const val OFFENDER_NO = "A1234BC"
     private const val ADJUSTMENTS_UI_URL = "https://adjustments-ui.example.com"
+    private const val ADJUDICATIONS_API_URL = "https://adjudications-api.example.com"
   }
 }
