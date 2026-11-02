@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.validator
 
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustment
@@ -11,7 +12,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.Validati
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationOrder
 
 @Component
-class AdjustmentsAfterReleaseDateValidator : PostCalculationValidator {
+class AdjustmentsAfterReleaseDateValidator(@Value($$"${adjudications.api.url}") private val adjudicationsApiUrl: String) : PostCalculationValidator {
 
   override fun validate(calculationOutput: CalculationOutput, booking: Booking): List<ValidationMessage> {
     val adjustments = getSortedAdjustments(booking)
@@ -27,9 +28,9 @@ class AdjustmentsAfterReleaseDateValidator : PostCalculationValidator {
     adjustments.forEach { (type, adjustment) ->
       if (adjustment.appliesToSentencesFrom.isAfter(latestReleaseDate)) {
         if (type == AdjustmentType.ADDITIONAL_DAYS_AWARDED) {
-          messages.add(ValidationMessage(ValidationCode.ADJUSTMENT_AFTER_RELEASE_ADA))
+          messages.add(ValidationMessage(ValidationCode.ADJUSTMENT_AFTER_RELEASE_ADA, listOf(adjudicationsApiUrl, "")))
         } else {
-          messages.add(ValidationMessage(ValidationCode.ADJUSTMENT_AFTER_RELEASE_RADA))
+          messages.add(ValidationMessage(ValidationCode.ADJUSTMENT_AFTER_RELEASE_RADA, listOf(adjudicationsApiUrl, "")))
         }
       }
     }

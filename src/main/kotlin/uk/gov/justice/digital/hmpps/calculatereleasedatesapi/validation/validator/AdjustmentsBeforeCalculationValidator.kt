@@ -11,9 +11,10 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.Validati
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationOrder
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationUtilities
 import java.time.LocalDate
+import kotlin.collections.listOf
 
 @Component
-class AdjustmentsBeforeCalculationValidator(private val validationUtilities: ValidationUtilities, @Value($$"${adjustments.ui.url}") private val adjustmentsUiUrl: String) : PreCalculationSourceDataValidator {
+class AdjustmentsBeforeCalculationValidator(private val validationUtilities: ValidationUtilities, @Value($$"${adjustments.ui.url}") private val adjustmentsUiUrl: String, @Value($$"${adjudications.api.url}") private val adjudicationsApiUrl: String) : PreCalculationSourceDataValidator {
 
   override fun validate(sourceData: CalculationSourceData): List<ValidationMessage> = validateAdjustmentsBeforeCalculation(sourceData.bookingAndSentenceAdjustments.adjustmentsApiData, sourceData)
 
@@ -35,10 +36,24 @@ class AdjustmentsBeforeCalculationValidator(private val validationUtilities: Val
     addAll(validateAllAdjustmentsAreLinkedToCurrentSentences(adjustments.mapNotNull { adjustment -> adjustment.sentenceSequence }.toSet(), sourceData))
   }
 
-  private fun validateAdjustmentFutureDates(adjustments: List<AdjustmentDto>): List<ValidationMessage> = adjustments.filter {
+  private fun validateAdjustmentFutureDates(adjustments: List<AdjustmentDto>): Collection<ValidationMessage> = adjustments.filter {
     val dateToValidate = if (it.adjustmentType == AdjustmentDto.AdjustmentType.UNLAWFULLY_AT_LARGE && it.toDate != null) it.toDate else it.fromDate
     FUTURE_DATED_ADJUSTMENT_TYPES_TO_VALIDATE.contains(it.adjustmentType) && dateToValidate!!.isAfter(LocalDate.now())
-  }.map { it.adjustmentType }.distinct().map { ValidationMessage(FUTURE_DATED_ADJUSTMENT_TYPES_MAP[it]!!) }
+  }.map { it }.distinct().map {
+    when (it.adjustmentType) {
+      AdjustmentDto.AdjustmentType.UNLAWFULLY_AT_LARGE -> {
+        ValidationMessage(FUTURE_DATED_ADJUSTMENT_TYPES_MAP[it.adjustmentType]!!, listOf(adjustmentsUiUrl, it.person))
+      }
+
+      AdjustmentDto.AdjustmentType.ADDITIONAL_DAYS_AWARDED, AdjustmentDto.AdjustmentType.RESTORATION_OF_ADDITIONAL_DAYS_AWARDED -> {
+        ValidationMessage(FUTURE_DATED_ADJUSTMENT_TYPES_MAP[it.adjustmentType]!!, listOf(adjudicationsApiUrl, it.person))
+      }
+
+      else -> {
+        ValidationMessage(FUTURE_DATED_ADJUSTMENT_TYPES_MAP[it.adjustmentType]!!)
+      }
+    }
+  }
 
   private fun logIntersectionWarning(range1: LocalDateRange, range2: LocalDateRange, messageTemplate: String) {
     val args = listOf(range1.toString(), range2.toString())
