@@ -15,6 +15,7 @@ ersed:
   ers-30-max-period-amount: 4
   ers-30-max-period-unit: YEARS
   ers-30-release-point: THIRTY_PERCENT
+  ers-zero-commencement-date: 2027-02-12
 
 sds-40-early-release-tranches:
   tranche-one-date: 2024-09-10

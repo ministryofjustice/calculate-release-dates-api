@@ -1,0 +1,10 @@
+{
+  "dates": {
+    "SLED": "2031-03-26",
+    "CRD": "2028-08-14",
+    "ERSED": "2027-03-27",
+    "ESED": "2031-03-26"
+  },
+  "effectiveSentenceLength": "P4Y",
+  "trancheAllocationByLegislationName": {}
+}

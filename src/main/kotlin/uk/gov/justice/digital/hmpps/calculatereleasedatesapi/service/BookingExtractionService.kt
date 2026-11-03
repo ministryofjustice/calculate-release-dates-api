@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule.ERSED_ADJUSTED_TO_MTD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
@@ -29,6 +30,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AppliedAdjust
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BotusSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ERSLegislation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
@@ -44,6 +46,7 @@ class BookingExtractionService(
   val hdcedExtractionService: HdcedExtractionService,
   val extractionService: SentencesExtractionService,
   val fixedTermRecallsService: FixedTermRecallsService,
+  val featureToggles: FeatureToggles,
 ) {
 
   fun extract(
@@ -316,6 +319,7 @@ class BookingExtractionService(
       breakdownByReleaseDateType,
       dates,
       sentenceGroups,
+      mostRecentSentenceByAdjustedDeterminateReleaseDate,
     )
 
     if (mostRecentSentencesByReleaseDate.any { it.isRecall() }) {
@@ -447,12 +451,29 @@ class BookingExtractionService(
     breakdownByReleaseDateType: MutableMap<ReleaseDateType, ReleaseDateCalculationBreakdown>,
     dates: MutableMap<ReleaseDateType, LocalDate>,
     sentenceGroups: List<List<CalculableSentence>>,
+    mostRecentSentenceByAdjustedDeterminateReleaseDate: CalculableSentence,
   ): Boolean {
-    val latestEarlyReleaseSchemeEligibilitySentence =
+    val latestEarlyReleaseSchemeEligibilitySentence = if (featureToggles.ersZeroEnabled) {
+      // find the latest of the latest ERS30/50 or earliest ERS Zero in the latest release sentence group
+      val releaseSentenceGroup = requireNotNull(sentenceGroups.find { group -> group.any { it == mostRecentSentenceByAdjustedDeterminateReleaseDate } }) { "Couldn't find release sentence group" }
+      val latestErs30Or50Sentence =
+        extractionService.mostRecentSentenceOrNull(
+          releaseSentenceGroup,
+          SentenceCalculation::earlyReleaseSchemeEligibilityDate,
+        ) { !it.sentenceCalculation.isImmediateRelease() && it.sentenceCalculation.breakdownByReleaseDateType[ERSED]!!.applicableErsLegislation in listOf(ERSLegislation.ERS50, ERSLegislation.ERS30) }
+
+      val earliestErsZeroSentence =
+        extractionService.earliestSentenceOrNull(
+          releaseSentenceGroup,
+          SentenceCalculation::earlyReleaseSchemeEligibilityDate,
+        ) { !it.sentenceCalculation.isImmediateRelease() && it.sentenceCalculation.breakdownByReleaseDateType[ERSED]!!.applicableErsLegislation == ERSLegislation.ERS_ZERO }
+      listOfNotNull(latestErs30Or50Sentence, earliestErsZeroSentence).maxByOrNull { it.sentenceCalculation.earlyReleaseSchemeEligibilityDate!! }
+    } else {
       extractionService.mostRecentSentenceOrNull(
         sentences,
         SentenceCalculation::earlyReleaseSchemeEligibilityDate,
       ) { !it.sentenceCalculation.isImmediateRelease() }
+    }
 
     val notApplicableDueToDtoLaterThanCrdFlag = if (latestEarlyReleaseSchemeEligibilitySentence != null) {
       val sentenceGroup = sentenceGroups.find { it.contains(latestEarlyReleaseSchemeEligibilitySentence) }!!
