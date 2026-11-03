@@ -61,3 +61,7 @@ sds-legislations:
       - type: FINAL
         date: 2027-06-08
         name: TRANCHE_10
+
+adjudications:
+  api:
+    url: https://manage-adjudications-api-dev.hmpps.service.justice.gov.uk

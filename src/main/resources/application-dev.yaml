@@ -40,6 +40,10 @@ manage-offences:
   api:
     url: https://manage-offences-api-dev.hmpps.service.justice.gov.uk
 
+adjudications:
+  api:
+    url: https://manage-adjudications-api-dev.hmpps.service.justice.gov.uk
+
 system:
   client:
     id: calculate-release-dates-admin

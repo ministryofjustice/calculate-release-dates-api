@@ -86,3 +86,7 @@ ftr-legislations:
       - type: FINAL
         date: 2026-05-12
         name: FTR_56_TRANCHE_6
+
+adjudications:
+  api:
+    url: https://manage-adjudications-api-dev.hmpps.service.justice.gov.uk
