@@ -16,7 +16,13 @@ hmpps.sqs:
       dlqName: "bulkcomparison-dlq"
       dlqMaxReceiveCount: 3
       visibilityTimeout: 120
-
-bulk.calculation:
-  process: true
+    prisonerevents:
+      queueName: "prisonerevents-${random.uuid}"
+      dlqName: "prisonerevents-dlq-${random.uuid}"
+      subscribeTopicId: domainevents
+      subscribeFilter: "{\"eventType\":[\"prison-offender-events.prisoner.merged\", \"prison-offender-events.prisoner.booking.moved\"]}"
+      dlqMaxReceiveCount: 3
+      visibilityTimeout: 120
+crds.listeners:
+  process: SQS
   concurrency: 5

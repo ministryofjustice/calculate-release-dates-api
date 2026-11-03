@@ -25,6 +25,7 @@ import org.hibernate.annotations.BatchSize
 import org.hibernate.annotations.Type
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.HistoricalTusedSource
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.GenuineOverrideReason
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.PrisonerModifiedReason
 import java.time.LocalDateTime
 import java.util.UUID
 
@@ -152,6 +153,13 @@ data class CalculationRequest(
   @JoinColumn(name = "calculationRequestId")
   @OneToMany(fetch = FetchType.LAZY)
   val secondChecks: MutableList<CalculationRequestSecondCheck> = mutableListOf(),
+
+  @Enumerated(value = EnumType.STRING)
+  val prisonerModifiedReason: PrisonerModifiedReason? = null,
+
+  val prisonerModifiedPreviousPrisonerId: String? = null,
+
+  val prisonerModifiedAt: LocalDateTime? = null,
 
 ) {
   init {

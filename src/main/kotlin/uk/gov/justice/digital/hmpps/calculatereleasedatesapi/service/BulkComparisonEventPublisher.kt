@@ -19,7 +19,7 @@ const val CALCULATION_MESSAGE_TYPE = "calculate_release_dates_bulk_comparison_re
 const val UNUSED_DEDUCTIONS_MESSAGE_TYPE = "calculate_release_dates_unused_deductions_comparison_request"
 
 @Service
-@ConditionalOnProperty(value = ["bulk.calculation.process"], havingValue = "SQS", matchIfMissing = true)
+@ConditionalOnProperty(value = ["crds.listeners.process"], havingValue = "SQS", matchIfMissing = true)
 class BulkComparisonEventPublisher(
   private val hmppsQueueService: HmppsQueueService,
   private val objectMapper: ObjectMapper,

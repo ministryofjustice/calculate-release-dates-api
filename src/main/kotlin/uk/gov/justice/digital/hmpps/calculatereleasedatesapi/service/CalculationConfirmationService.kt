@@ -74,7 +74,7 @@ class CalculationConfirmationService(
       )
     }
     runCatching {
-      eventService.publishReleaseDatesChangedEvent(prisonerId, booking.bookingId)
+      eventService.publishReleaseDatesChangedEvent(prisonerId)
     }.onFailure { error ->
       log.error(
         "Failed to send release-dates-changed-event for prisoner ID $prisonerId",

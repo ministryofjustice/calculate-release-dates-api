@@ -430,7 +430,7 @@ class ManualCalculationServiceTest {
       reason = "UPDATE",
     )
     verify(prisonService).postReleaseDates(BOOKING_ID, expectedUpdatedOffenderDates)
-    verify(eventService).publishReleaseDatesChangedEvent(PRISONER_ID, BOOKING_ID)
+    verify(eventService).publishReleaseDatesChangedEvent(PRISONER_ID)
   }
 
   @Test
@@ -465,7 +465,7 @@ class ManualCalculationServiceTest {
       reason = "UPDATE",
     )
     verify(prisonService).postReleaseDates(BOOKING_ID, expectedUpdatedOffenderDates)
-    verify(eventService).publishReleaseDatesChangedEvent(PRISONER_ID, BOOKING_ID)
+    verify(eventService).publishReleaseDatesChangedEvent(PRISONER_ID)
   }
 
   @Test

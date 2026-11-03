@@ -166,9 +166,10 @@ domain-events-sns:
 feature-toggles:
   adultHdcSuspended: ${ADULT_HDC_SUSPENDED:false}
   ersZeroEnabled: ${ERS_ZERO_ENABLED:false}
+  moveAndMergeEventsEnabled: ${MOVE_AND_MERGE_EVENTS_ENABLED:false}
 
 prisonsWithNomisCalcDisabled: ${PRISONS_WITH_NOMIS_CALC_DISABLED:}
 
-bulk.calculation:
+crds.listeners:
   process: SQS
   concurrency: ${BULK_CALC_CONCURRENCY:5}

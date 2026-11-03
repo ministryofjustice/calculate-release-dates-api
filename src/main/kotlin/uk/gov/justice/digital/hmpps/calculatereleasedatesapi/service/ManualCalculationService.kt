@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
-import arrow.core.getOrElse
 import com.fasterxml.jackson.databind.ObjectMapper
 import jakarta.persistence.EntityNotFoundException
 import org.slf4j.Logger
@@ -175,7 +174,7 @@ class ManualCalculationService(
       )
     }
     runCatching {
-      eventService.publishReleaseDatesChangedEvent(prisonerId, booking.bookingId)
+      eventService.publishReleaseDatesChangedEvent(prisonerId)
     }.onFailure { error ->
       log.error(
         "Failed to send release-dates-changed-event for prisoner ID $prisonerId",

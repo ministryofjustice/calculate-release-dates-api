@@ -227,6 +227,17 @@ class MockPrisonService(
     )
   }
 
+  fun stubPrisonerNotFound(offenderNo: String) {
+    withStub(
+      get("/api/offenders/$offenderNo")
+        .willReturn(
+          aResponse()
+            .withHeader("Content-Type", "application/json")
+            .withStatus(404),
+        ),
+    )
+  }
+
   fun stubPostOffenderDates(bookingId: Long): StubMapping = prisonApi.stubPostOffenderDates(bookingId)
 
   fun stubPostOffenderDatesFails(bookingId: Long): StubMapping = prisonApi.stubPostOffenderDatesFails(bookingId)

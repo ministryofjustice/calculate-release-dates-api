@@ -8,7 +8,19 @@ hmpps.sqs:
       dlqName: "bulkcomparison-dlq-${random.uuid}"
       dlqMaxReceiveCount: 3
       visibilityTimeout: 120
+    prisonerevents:
+      queueName: "prisonerevents-${random.uuid}"
+      dlqName: "prisonerevents-dlq-${random.uuid}"
+      dlqMaxReceiveCount: 3
+      visibilityTimeout: 120
+    hmppseventqueue:
+      queueName: "hmppseventqueue-${random.uuid}"
+      dlqName: "hmppseventqueue-dlq-${random.uuid}"
+      subscribeTopicId: hmppseventtopic
+  topics:
+    hmppseventtopic:
+      arn: arn:aws:sns:eu-west-2:000000000000:${random.uuid}
 
-bulk.calculation:
-  process: true
+crds.listeners:
+  process: SQS
   concurrency: 5
