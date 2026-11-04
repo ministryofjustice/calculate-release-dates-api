@@ -33,9 +33,9 @@
       "dates": {
         "SLED": {
           "unadjusted": "2024-08-22",
-          "adjusted": "2024-07-25",
+          "adjusted": "2024-08-15",
           "daysFromSentenceStart": 14,
-          "adjustedByDays": 28
+          "adjustedByDays": 7
         },
         "CRD": {
           "unadjusted": "2024-08-15",
