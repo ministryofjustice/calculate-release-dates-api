@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema
 
 @Schema(description = "Validation fix source")
 enum class ValidationFixSource {
+  NULL,
   ADJUSTMENTS,
   ADJUDICATIONS,
 }

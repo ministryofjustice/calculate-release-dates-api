@@ -10,7 +10,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.Validati
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationType.VALIDATION
 
 @Schema(description = "Validation code details")
-enum class ValidationCode(val message: String, val validationType: ValidationType = VALIDATION, val contentType: ValidationMessageContentType = ValidationMessageContentType.PLAIN_TEXT, val validationFixSource: ValidationFixSource = ValidationFixSource.DEFAULT) {
+enum class ValidationCode(val message: String, val validationType: ValidationType = VALIDATION, val contentType: ValidationMessageContentType = ValidationMessageContentType.PLAIN_TEXT, val validationFixSource: ValidationFixSource = ValidationFixSource.NULL) {
   ADJUSTMENT_AFTER_RELEASE_ADA("The from date for Additional days awarded (ADA) should be the date of the adjudication hearing.", ValidationType.VALIDATION, ValidationMessageContentType.PLAIN_TEXT, ValidationFixSource.ADJUDICATIONS),
   ADJUSTMENT_AFTER_RELEASE_RADA("The from date for Restored additional days awarded (RADA) must be the date the additional days were remitted.", ValidationType.VALIDATION, ValidationMessageContentType.PLAIN_TEXT, ValidationFixSource.ADJUDICATIONS),
   ADJUSTMENT_FUTURE_DATED_ADA("The from date for Additional days awarded (ADA) should be the date of the adjudication hearing.", ValidationType.VALIDATION, ValidationMessageContentType.PLAIN_TEXT, ValidationFixSource.ADJUDICATIONS),
