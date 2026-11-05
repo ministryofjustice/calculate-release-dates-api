@@ -35,9 +35,9 @@ class ErsedCalculator(
       sentenceCalculation.breakdownByReleaseDateType[ReleaseDateType.ERSED] = if (ERSLegislation.ERS_ZERO in enabledLegislation) {
         calculateUsingERSZeroERS30AndERS50(sentence, sentenceCalculation, currentSentenceGroup)
       } else if (ERSLegislation.ERS30 in enabledLegislation) {
-        calculateUsingBothERS30AndERS50(sentence, sentenceCalculation)
+        calculateUsingBothERS30AndERS50(sentence, sentenceCalculation).breakdown
       } else {
-        calculateUsingJustERS50(sentence, sentenceCalculation)
+        calculateUsingJustERS50(sentence, sentenceCalculation).breakdown
       }
     }
   }
@@ -48,17 +48,55 @@ class ErsedCalculator(
     currentSentenceGroup: List<CalculableSentence>,
   ): ReleaseDateCalculationBreakdown {
     val ers50Or30 = calculateUsingBothERS30AndERS50(sentence, sentenceCalculation)
-    return if (ers50Or30.releaseDate.isBefore(ImportantDates.ERS_ZERO_COMMENCEMENT_DATE) || isExcludedFromErsZero(currentSentenceGroup)) {
-      ers50Or30
-    } else {
-      // TODO post-commencement sentences should default to the sentence date
+    val sentenceDate = sentence.sentencedAt
+    val awarded = AppliedAdjustments.forErsed(sentence).awarded
+    val isExcludedFromErsZero = isExcludedFromErsZero(currentSentenceGroup)
+    return if (ers50Or30.breakdown.releaseDate.isBefore(ersedConfiguration.ersZeroCommencementDate)) {
+      // if we're before ERS0 while including ADAs then we can use the ERS30 as-is
+      ers50Or30.breakdown
+    } else if (isExcludedFromErsZero) {
+      if (ers50Or30.adjustedDateExcludingAwarded.isAfter(ersedConfiguration.ersZeroCommencementDate)) {
+        // if we're after ERS0 without including ADAs then we use the ERS30 with no ADAs applied
+        ReleaseDateCalculationBreakdown(
+          releaseDate = ers50Or30.adjustedDateExcludingAwarded,
+          unadjustedDate = ers50Or30.breakdown.releaseDate,
+          adjustedDays = ers50Or30.breakdown.adjustedDays.minus(awarded),
+          rules = setOf(CalculationRule.ERSED_ADJUSTED_FOR_REMAINING_ADAS_POST_ERS_ZERO),
+          appliedAdjustments = AppliedAdjustments(0),
+          affectedBySdsLegislation = AffectedBySdsLegislation.from(sentenceCalculation.sentence),
+          applicableErsLegislation = ers50Or30.breakdown.applicableErsLegislation,
+        )
+      } else {
+        // but if we're only partially after ERS0 because of ADAs we adjust to the commencement date retaining the original legislation used
+        ReleaseDateCalculationBreakdown(
+          releaseDate = ersedConfiguration.ersZeroCommencementDate,
+          unadjustedDate = ers50Or30.adjustedDateExcludingAwarded,
+          adjustedDays = 0,
+          rules = setOf(CalculationRule.ERSED_ADJUSTED_FOR_REMAINING_ADAS_POST_ERS_ZERO),
+          appliedAdjustments = AppliedAdjustments(0),
+          affectedBySdsLegislation = AffectedBySdsLegislation.from(sentenceCalculation.sentence),
+          applicableErsLegislation = ers50Or30.breakdown.applicableErsLegislation,
+        )
+      }
+    } else if (sentenceDate.isAfter(ersedConfiguration.ersZeroCommencementDate)) {
       ReleaseDateCalculationBreakdown(
-        releaseDate = ImportantDates.ERS_ZERO_COMMENCEMENT_DATE,
-        unadjustedDate = ImportantDates.ERS_ZERO_COMMENCEMENT_DATE,
+        releaseDate = sentenceDate,
+        unadjustedDate = sentenceDate,
+        adjustedDays = 0,
+        rules = setOf(CalculationRule.ERSED_ERS_ZERO),
+        appliedAdjustments = AppliedAdjustments(0),
+        affectedBySdsLegislation = AffectedBySdsLegislation.from(sentenceCalculation.sentence),
+        applicableErsLegislation = ERSLegislation.ERS_ZERO,
+      )
+    } else {
+      ReleaseDateCalculationBreakdown(
+        releaseDate = ersedConfiguration.ersZeroCommencementDate,
+        unadjustedDate = ersedConfiguration.ersZeroCommencementDate,
         adjustedDays = 0,
         rules = setOf(CalculationRule.ERSED_ADJUSTED_TO_ERS_ZERO_COMMENCEMENT),
         appliedAdjustments = AppliedAdjustments(0),
         affectedBySdsLegislation = AffectedBySdsLegislation.from(sentenceCalculation.sentence),
+        applicableErsLegislation = ERSLegislation.ERS_ZERO,
       )
     }
   }
@@ -72,7 +110,7 @@ class ErsedCalculator(
     }
   }
 
-  private fun calculateUsingBothERS30AndERS50(sentence: CalculableSentence, sentenceCalculation: SentenceCalculation): ReleaseDateCalculationBreakdown {
+  private fun calculateUsingBothERS30AndERS50(sentence: CalculableSentence, sentenceCalculation: SentenceCalculation): Result {
     val isConsideredPostErs30CommencementSentence = isSentencedOnOrAfterCommencement(sentence) || isConsecutiveSentenceWithSentencesBeforeAndAfterCommencement(sentence)
     val ers50Result = if (isConsideredPostErs30CommencementSentence) {
       null
@@ -84,6 +122,7 @@ class ErsedCalculator(
           maxPeriodUnit = ersedConfiguration.ers50MaxPeriodUnit,
           maxPeriodAmount = ersedConfiguration.ers50MaxPeriodAmount,
           releaseMultiplier = ersedConfiguration.ers50ReleasePoint.value,
+          applicableLegislation = ERSLegislation.ERS50,
         ),
       )
     }
@@ -94,11 +133,12 @@ class ErsedCalculator(
         maxPeriodUnit = ersedConfiguration.ers30MaxPeriodUnit,
         maxPeriodAmount = ersedConfiguration.ers30MaxPeriodAmount,
         releaseMultiplier = ersedConfiguration.ers30ReleasePoint.value,
+        applicableLegislation = ERSLegislation.ERS30,
       ),
     )
 
     return if (ers50Result != null && ers50Result.adjustedDateExcludingAwarded.isBefore(ImportantDates.ERS30_COMMENCEMENT_DATE)) {
-      ers50Result.breakdown
+      ers50Result
     } else if (isConsideredPostErs30CommencementSentence) {
       val priorErsedSnapshot = sentenceCalculation.ersedSnapshotPriorToLatestSentenceBeingImposedConsecutively
       if (
@@ -106,36 +146,41 @@ class ErsedCalculator(
         priorErsedSnapshot.breakdown.releaseDate.minusDays(priorErsedSnapshot.awardedDuringCustodyAtSnapshot).isAfter(ers30Result.adjustedDateExcludingAwarded) &&
         priorErsedSnapshot.breakdown.releaseDate.isBefore(priorErsedSnapshot.snapshotDate)
       ) {
-        priorErsedSnapshot.breakdown
+        Result(priorErsedSnapshot.breakdown, priorErsedSnapshot.breakdown.releaseDate.minusDays(priorErsedSnapshot.breakdown.appliedAdjustments?.awarded ?: 0))
       } else {
-        ers30Result.breakdown
+        ers30Result
       }
     } else if (ers30Result.adjustedDateExcludingAwarded.isAfterOrEqualTo(ImportantDates.ERS30_COMMENCEMENT_DATE)) {
-      ers30Result.breakdown
+      ers30Result
     } else {
-      val daysAwarded = sentenceCalculation.adjustments.awardedDuringCustody -
+      val daysAwarded = sentenceCalculation.adjustments.awardedDuringCustodyPriorToErsZero -
         sentenceCalculation.adjustments.unusedAdaDays -
         sentenceCalculation.adjustments.servedAdaDays
-      ReleaseDateCalculationBreakdown(
-        releaseDate = ImportantDates.ERS30_COMMENCEMENT_DATE.plusDays(daysAwarded),
-        unadjustedDate = ImportantDates.ERS30_COMMENCEMENT_DATE,
-        adjustedDays = daysAwarded,
-        rules = setOf(CalculationRule.ERSED_ADJUSTED_TO_ERS30_COMMENCEMENT),
-        appliedAdjustments = AppliedAdjustments.forInitialRelease(sentenceCalculation.adjustments),
-        affectedBySdsLegislation = AffectedBySdsLegislation.from(sentenceCalculation.sentence),
+      Result(
+        ReleaseDateCalculationBreakdown(
+          releaseDate = ImportantDates.ERS30_COMMENCEMENT_DATE.plusDays(daysAwarded),
+          unadjustedDate = ImportantDates.ERS30_COMMENCEMENT_DATE,
+          adjustedDays = daysAwarded,
+          rules = setOf(CalculationRule.ERSED_ADJUSTED_TO_ERS30_COMMENCEMENT),
+          appliedAdjustments = AppliedAdjustments.forErsed(sentenceCalculation.sentence),
+          affectedBySdsLegislation = AffectedBySdsLegislation.from(sentenceCalculation.sentence),
+          applicableErsLegislation = ERSLegislation.ERS30,
+        ),
+        ImportantDates.ERS30_COMMENCEMENT_DATE,
       )
     }
   }
 
-  private fun calculateUsingJustERS50(sentence: CalculableSentence, sentenceCalculation: SentenceCalculation): ReleaseDateCalculationBreakdown = calculate(
+  private fun calculateUsingJustERS50(sentence: CalculableSentence, sentenceCalculation: SentenceCalculation): Result = calculate(
     Params(
       sentence = sentence,
       sentenceCalculation = sentenceCalculation,
       maxPeriodUnit = ersedConfiguration.ers50MaxPeriodUnit,
       maxPeriodAmount = ersedConfiguration.ers50MaxPeriodAmount,
       releaseMultiplier = ersedConfiguration.ers50ReleasePoint.value,
+      applicableLegislation = ERSLegislation.ERS50,
     ),
-  ).breakdown
+  )
 
   private fun isConsecutiveSentenceWithSentencesBeforeAndAfterCommencement(sentence: CalculableSentence): Boolean = (sentence is ConsecutiveSentence) && sentence.hasSentencesBeforeAndAfter(ImportantDates.ERS30_COMMENCEMENT_DATE)
 
@@ -156,6 +201,7 @@ class ErsedCalculator(
     val maxPeriodUnit: ChronoUnit,
     val maxPeriodAmount: Long,
     val releaseMultiplier: BigDecimal,
+    val applicableLegislation: ERSLegislation,
   )
 
   private data class Result(val breakdown: ReleaseDateCalculationBreakdown, val adjustedDateExcludingAwarded: LocalDate)
@@ -163,7 +209,7 @@ class ErsedCalculator(
   private fun calculate(params: Params): Result {
     val ersed = calculateErsedMinOrMax(params)
 
-    val addedDays = params.sentenceCalculation.adjustments.ualDuringCustody + params.sentenceCalculation.adjustments.awardedDuringCustody
+    val addedDays = params.sentenceCalculation.adjustments.ualDuringCustody + params.sentenceCalculation.adjustments.awardedDuringCustodyPriorToErsZero
     val adjustedErsed = ersed.releaseDate.minusDays(addedDays)
 
     return if (adjustedErsed.isBefore(params.sentence.sentencedAt)) {
@@ -173,8 +219,9 @@ class ErsedCalculator(
           unadjustedDate = params.sentence.sentencedAt,
           adjustedDays = addedDays,
           rules = setOf(CalculationRule.ERSED_BEFORE_SENTENCE_DATE),
-          appliedAdjustments = AppliedAdjustments.forInitialRelease(params.sentenceCalculation.adjustments),
+          appliedAdjustments = AppliedAdjustments.forErsed(params.sentence),
           affectedBySdsLegislation = AffectedBySdsLegislation.from(params.sentenceCalculation.sentence),
+          applicableErsLegislation = params.applicableLegislation,
         ),
         params.sentence.sentencedAt.plusDays(params.sentenceCalculation.adjustments.ualDuringCustody),
       )
@@ -185,15 +232,12 @@ class ErsedCalculator(
 
   private fun calculateErsedMinOrMax(params: Params): ReleaseDateCalculationBreakdown {
     val isExtended = params.sentenceCalculation.extendedDeterminateParoleEligibilityDate != null
-    val effectiveRelease = if (isExtended) {
-      params.sentenceCalculation.extendedDeterminateParoleEligibilityDate!!
+    val adjustmentsForErsed = params.sentenceCalculation.adjustments.adjustmentsForErsed()
+    val (unadjustedEffectiveRelease, effectiveRelease) = if (isExtended) {
+      params.sentenceCalculation.unadjustedExtendedDeterminateParoleEligibilityDate!! to params.sentenceCalculation.unadjustedExtendedDeterminateParoleEligibilityDate!!.plusDays(adjustmentsForErsed)
     } else {
-      params.sentenceCalculation.adjustedDeterminateReleaseDate
+      params.sentenceCalculation.unadjustedDeterminateReleaseDate to params.sentenceCalculation.unadjustedDeterminateReleaseDate.plusDays(adjustmentsForErsed)
     }
-
-    val unadjustedEffectiveRelease =
-      params.sentenceCalculation.unadjustedExtendedDeterminateParoleEligibilityDate
-        ?: params.sentenceCalculation.unadjustedReleaseDate.unadjustedDeterminateReleaseDate
 
     val maxEffectiveErsed = effectiveRelease.minus(params.maxPeriodAmount, params.maxPeriodUnit)
 
@@ -201,15 +245,13 @@ class ErsedCalculator(
       rules = setOf(CalculationRule.ERSED_MAX_PERIOD),
       releaseDate = maxEffectiveErsed,
       unadjustedDate = unadjustedEffectiveRelease,
-      adjustedDays = ChronoUnit.DAYS.between(
-        params.sentenceCalculation.unadjustedReleaseDate.unadjustedDeterminateReleaseDate,
-        params.sentenceCalculation.adjustedDeterminateReleaseDate,
-      ),
+      adjustedDays = adjustmentsForErsed,
       rulesWithExtraAdjustments = mapOf(
         CalculationRule.ERSED_MAX_PERIOD to AdjustmentDuration(-params.maxPeriodAmount, params.maxPeriodUnit),
       ),
-      appliedAdjustments = AppliedAdjustments.forInitialRelease(params.sentenceCalculation.adjustments),
+      appliedAdjustments = AppliedAdjustments.forErsed(params.sentence),
       affectedBySdsLegislation = AffectedBySdsLegislation.from(params.sentenceCalculation.sentence),
+      applicableErsLegislation = params.applicableLegislation,
     )
 
     val daysUntilRelease =
@@ -219,7 +261,7 @@ class ErsedCalculator(
       .plusDays(BigDecimal.valueOf(daysUntilRelease.toLong()).multiply(params.releaseMultiplier).toLongReleaseDays())
 
     val minimumEffectiveErsed = unadjustedMinimumErsed
-      .plusDays(params.sentenceCalculation.adjustments.adjustmentsForInitialRelease())
+      .plusDays(adjustmentsForErsed)
       .coerceAtMost(effectiveRelease)
 
     val minimumEffectiveErsedBreakdown = ReleaseDateCalculationBreakdown(
@@ -227,8 +269,9 @@ class ErsedCalculator(
       releaseDate = minimumEffectiveErsed,
       unadjustedDate = unadjustedMinimumErsed,
       adjustedDays = ChronoUnit.DAYS.between(unadjustedMinimumErsed, minimumEffectiveErsed),
-      appliedAdjustments = AppliedAdjustments.forInitialRelease(params.sentenceCalculation.adjustments),
+      appliedAdjustments = AppliedAdjustments.forErsed(params.sentence),
       affectedBySdsLegislation = AffectedBySdsLegislation.from(params.sentenceCalculation.sentence),
+      applicableErsLegislation = params.applicableLegislation,
     )
 
     return if (minimumEffectiveErsed.isAfter(maxEffectiveErsed)) {

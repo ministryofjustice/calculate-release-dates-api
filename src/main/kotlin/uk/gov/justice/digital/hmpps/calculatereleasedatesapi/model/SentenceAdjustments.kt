@@ -6,6 +6,7 @@ data class SentenceAdjustments(
   val recallTaggedBail: Long = 0,
   val recallRemand: Long = 0,
   val awardedDuringCustody: Long = 0,
+  val awardedDuringCustodyPriorToErsZero: Long = 0,
   val ualDuringCustody: Long = 0,
   val awardedAfterDeterminateRelease: Long = 0,
   val ualAfterDeterminateRelease: Long = 0,
@@ -22,6 +23,8 @@ data class SentenceAdjustments(
   fun adjustmentsForInitialReleaseWithoutAwarded(): Long = ualDuringCustody - deductions
 
   fun adjustmentsForInitialRelease(): Long = adjustmentsForInitialReleaseWithoutAwarded() + awardedDuringCustody - servedAdaDays
+
+  fun adjustmentsForErsed(): Long = adjustmentsForInitialReleaseWithoutAwarded() + awardedDuringCustodyPriorToErsZero - servedAdaDays
 
   private fun deductionsAndUalForWholeSentencePeriod(): Long = ualDuringCustody + ualAfterDeterminateRelease - deductions
 

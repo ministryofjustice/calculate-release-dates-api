@@ -59,6 +59,14 @@ class SentencesExtractionService {
     .filter { property.get(it.sentenceCalculation) != null && filter(it) }
     .maxByOrNull { property.get(it.sentenceCalculation)!! }
 
+  fun earliestSentenceOrNull(
+    sentences: List<CalculableSentence>,
+    property: KProperty1<SentenceCalculation, LocalDate?>,
+    filter: (CalculableSentence) -> Boolean = { true },
+  ): CalculableSentence? = sentences
+    .filter { property.get(it.sentenceCalculation) != null && filter(it) }
+    .minByOrNull { property.get(it.sentenceCalculation)!! }
+
   companion object {
     val log: Logger = LoggerFactory.getLogger(this::class.java)
   }

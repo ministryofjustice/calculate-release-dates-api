@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers
 
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.ErsedConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Term
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculationEvent.AwardedAdjustmentTimelineCalculationEvent
@@ -12,6 +13,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqual
 @Service
 class TimelineAwardedAdjustmentCalculationHandler(
   timelineCalculator: TimelineCalculator,
+  private val ersedConfiguration: ErsedConfiguration,
 ) : TimelineCalculationHandler<AwardedAdjustmentTimelineCalculationEvent>(timelineCalculator) {
   override fun handle(event: AwardedAdjustmentTimelineCalculationEvent, timelineTrackingData: TimelineTrackingData): TimelineHandleResult {
     with(timelineTrackingData) {
@@ -33,6 +35,7 @@ class TimelineAwardedAdjustmentCalculationHandler(
         } else if (licenceSentences.none { it.isRecall() }) {
           // This is a PADA. No calculation required. Set value here to be applied to later sentences.
           padas += adaDays - radaDays
+          padasPriorToErsZero += if (event.date.isBefore(ersedConfiguration.ersZeroCommencementDate)) adaDays - radaDays else 0
           return TimelineHandleResult(requiresCalculation = false)
         } else {
           // standard recall
@@ -46,6 +49,7 @@ class TimelineAwardedAdjustmentCalculationHandler(
             currentSentenceGroup,
             SentenceAdjustments(
               awardedDuringCustody = adaDays - radaDays,
+              awardedDuringCustodyPriorToErsZero = if (event.date.isBefore(ersedConfiguration.ersZeroCommencementDate)) adaDays - radaDays else 0,
             ),
           )
         }

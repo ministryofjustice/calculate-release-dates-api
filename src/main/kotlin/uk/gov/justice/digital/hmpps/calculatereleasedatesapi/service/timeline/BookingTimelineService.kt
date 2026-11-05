@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.ErsedConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.FTRLegislationConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config.LegislationName
@@ -78,6 +79,7 @@ class BookingTimelineService(
   private val simpleSnapshotTimelineCalculationHandler: SimpleSnapshotTimelineCalculationHandler,
   private val ersCommencementTimelineCalculationHandler: ERSCommencementTimelineCalculationHandler,
   private val featureToggles: FeatureToggles,
+  private val ersedConfiguration: ErsedConfiguration,
 ) {
 
   fun calculate(
@@ -257,7 +259,7 @@ class BookingTimelineService(
         externalMovements.map { ExternalMovementTimelineCalculationEvent(it.movementDate) } +
         listOfNotNull(
           ERSLegislationCommencementTimelineCalculationEvent(ImportantDates.ERS30_COMMENCEMENT_DATE, ERSLegislation.ERS30),
-          if (featureToggles.ersZeroEnabled) ERSLegislationCommencementTimelineCalculationEvent(ImportantDates.ERS_ZERO_COMMENCEMENT_DATE, ERSLegislation.ERS_ZERO) else null,
+          if (featureToggles.ersZeroEnabled) ERSLegislationCommencementTimelineCalculationEvent(ersedConfiguration.ersZeroCommencementDate, ERSLegislation.ERS_ZERO) else null,
         )
       )
       .sortedBy { it.date }

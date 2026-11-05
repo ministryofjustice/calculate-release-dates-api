@@ -1,0 +1,46 @@
+{
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2026-10-09"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 5
+          }
+        },
+        "sentencedAt": "2026-10-09",
+        "releaseArrangements": {
+          "isSDSPlus": true,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": true,
+          "sdsEarlyReleaseExclusions": ["SA2026_PROGRESSION_MODEL_SCHEDULE"],
+          "isSection250": false
+        }
+      }
+    ],
+    "adjustments": {
+      "ADDITIONAL_DAYS_AWARDED": [
+        {
+          "appliesToSentencesFrom": "2026-10-09",
+          "numberOfDays": 30,
+          "fromDate": "2026-10-09"
+        }
+      ]
+    }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true,
+    "calculateErsed": true
+  },
+  "params": "sds-progression-model-october",
+  "featureToggles": {
+    "adultHdcSuspended": true,
+    "ersZeroEnabled": true
+  }
+}

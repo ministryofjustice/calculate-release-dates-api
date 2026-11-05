@@ -29,4 +29,7 @@ data class ReleaseDateCalculationBreakdown(
   @JsonIgnore
   @Schema(description = "Any legislation that impacted the release date")
   val affectedBySdsLegislation: AffectedBySdsLegislation? = null,
+  @JsonIgnore
+  @Schema(description = "The applicable ERS legislation if this is an ERSED")
+  val applicableErsLegislation: ERSLegislation? = null,
 )

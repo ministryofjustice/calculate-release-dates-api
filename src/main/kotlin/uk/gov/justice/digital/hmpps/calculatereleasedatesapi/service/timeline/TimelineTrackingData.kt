@@ -31,6 +31,7 @@ data class TimelineTrackingData(
   val previousUalPeriods: MutableList<Pair<LocalDate, LocalDate>> = mutableListOf(),
 
   var padas: Long = 0,
+  var padasPriorToErsZero: Long = 0,
   var snapshots: MutableMap<SnapshotName, CalculationSnapshot> = mutableMapOf(),
 
   var applicableFtrLegislation: ApplicableLegislation<FTRLegislation>? = null,

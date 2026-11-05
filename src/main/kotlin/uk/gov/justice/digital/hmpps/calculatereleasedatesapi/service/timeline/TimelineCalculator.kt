@@ -104,6 +104,7 @@ class TimelineCalculator(
       if (sentence.sentenceParts().all { it is Term }) {
         adjustments = adjustments.copy(
           awardedDuringCustody = 0,
+          awardedDuringCustodyPriorToErsZero = 0,
         )
       }
 
@@ -144,6 +145,7 @@ class TimelineCalculator(
         recallTaggedBail = existingAdjustments.recallTaggedBail + adjustments.recallTaggedBail,
         ualDuringCustody = existingAdjustments.ualDuringCustody + adjustments.ualDuringCustody,
         awardedDuringCustody = existingAdjustments.awardedDuringCustody + adjustments.awardedDuringCustody,
+        awardedDuringCustodyPriorToErsZero = existingAdjustments.awardedDuringCustodyPriorToErsZero + adjustments.awardedDuringCustodyPriorToErsZero,
 
         awardedAfterDeterminateRelease = existingAdjustments.awardedAfterDeterminateRelease + adjustments.awardedAfterDeterminateRelease,
         ualAfterDeterminateRelease = existingAdjustments.ualAfterDeterminateRelease + adjustments.ualAfterDeterminateRelease,
