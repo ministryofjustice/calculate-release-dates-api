@@ -67,8 +67,15 @@ data class SentenceCalculation(
 
   val adjustedExpiryDate: LocalDate
     get() {
+      val isNotExtended = extendedDeterminateParoleEligibilityDate == null
+      val maxDeterminateDeductions = numberOfDaysToDeterminateReleaseDate.toLong() + adjustments.additionsAppliedToDeterminateRelease()
+      val amountOfAdjustmentsToApply = if (isNotExtended && !sentence.isRecall() && isImmediateRelease() && adjustments.deductions > maxDeterminateDeductions) {
+        -maxDeterminateDeductions
+      } else {
+        adjustments.adjustmentsForLicenceExpiry()
+      }
       return unadjustedReleaseDate.unadjustedExpiryDate
-        .plusDays(adjustments.adjustmentsForLicenceExpiry())
+        .plusDays(amountOfAdjustmentsToApply)
     }
 
   val releaseDateWithoutAwarded: LocalDate

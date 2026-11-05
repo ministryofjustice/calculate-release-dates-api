@@ -1,0 +1,282 @@
+{
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "2008-07-02"
+    },
+    "sentences": [
+      {
+        "type": "DetentionAndTrainingOrderSentence",
+        "offence": {
+          "committedAt": "2025-11-15",
+          "offenceCode": "TH68023"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 12
+          }
+        },
+        "sentencedAt": "2026-03-26",
+        "identifier": "e8e0b846-4686-3edc-9f18-0390c8e7a075"
+      },
+      {
+        "type": "DetentionAndTrainingOrderSentence",
+        "offence": {
+          "committedAt": "2026-03-17",
+          "offenceCode": "CJ88144"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 4
+          }
+        },
+        "sentencedAt": "2026-03-26",
+        "identifier": "bccb653f-0fbf-3e8e-ab5a-19214376bce0"
+      },
+      {
+        "type": "DetentionAndTrainingOrderSentence",
+        "offence": {
+          "committedAt": "2026-03-17",
+          "offenceCode": "SE20001"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 4
+          }
+        },
+        "sentencedAt": "2026-03-26",
+        "identifier": "8dadb8c2-6017-3a9b-bda4-2914968f859a"
+      },
+      {
+        "type": "DetentionAndTrainingOrderSentence",
+        "offence": {
+          "committedAt": "2025-06-20",
+          "offenceCode": "TH68023"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 5
+          }
+        },
+        "sentencedAt": "2026-03-26",
+        "identifier": "9aa84b30-98e3-3495-818f-60d40279fe04"
+      },
+      {
+        "type": "DetentionAndTrainingOrderSentence",
+        "offence": {
+          "committedAt": "2025-06-20",
+          "offenceCode": "CJ88116"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 4
+          }
+        },
+        "sentencedAt": "2026-03-26",
+        "identifier": "5c80c557-6bef-3ace-ad54-06264480ed05"
+      },
+      {
+        "type": "DetentionAndTrainingOrderSentence",
+        "offence": {
+          "committedAt": "2025-06-20",
+          "offenceCode": "CJ88116"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 4
+          }
+        },
+        "sentencedAt": "2026-03-26",
+        "identifier": "b8df677c-3b7b-34ea-a82f-92269c8f8cac"
+      },
+      {
+        "type": "DetentionAndTrainingOrderSentence",
+        "offence": {
+          "committedAt": "2025-08-24",
+          "offenceCode": "CJ88001"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 4
+          }
+        },
+        "sentencedAt": "2026-03-26",
+        "identifier": "14ab8591-3df7-3edb-ac8c-4e35b7abade4"
+      },
+      {
+        "type": "DetentionAndTrainingOrderSentence",
+        "offence": {
+          "committedAt": "2025-08-24",
+          "offenceCode": "PC53001"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 4
+          }
+        },
+        "sentencedAt": "2026-03-26",
+        "identifier": "9baa601a-b22d-3786-9b9c-c734d29f337f"
+      },
+      {
+        "type": "DetentionAndTrainingOrderSentence",
+        "offence": {
+          "committedAt": "2025-08-24",
+          "offenceCode": "CJ88160"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 4
+          }
+        },
+        "sentencedAt": "2026-03-26",
+        "identifier": "02eb22a1-e8aa-3e78-b905-f6afb100b698"
+      },
+      {
+        "type": "DetentionAndTrainingOrderSentence",
+        "offence": {
+          "committedAt": "2025-08-24",
+          "offenceCode": "CJ88160"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 4
+          }
+        },
+        "sentencedAt": "2026-03-26",
+        "identifier": "a9990e8d-35a7-3476-8180-da6bcc9b7ac2"
+      },
+      {
+        "type": "DetentionAndTrainingOrderSentence",
+        "offence": {
+          "committedAt": "2025-05-26",
+          "offenceCode": "TH68023"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 12
+          }
+        },
+        "sentencedAt": "2026-03-26",
+        "identifier": "2c649032-bec6-35c3-9b5c-71d9ea978948",
+        "consecutiveSentenceUUIDs": [
+          "8dadb8c2-6017-3a9b-bda4-2914968f859a"
+        ]
+      },
+      {
+        "type": "DetentionAndTrainingOrderSentence",
+        "offence": {
+          "committedAt": "2025-11-15",
+          "offenceCode": "TH68023"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 5
+          }
+        },
+        "sentencedAt": "2026-03-26",
+        "identifier": "6c521851-d44e-3db3-8135-ec11c0ca2c99",
+        "consecutiveSentenceUUIDs": [
+          "2c649032-bec6-35c3-9b5c-71d9ea978948"
+        ]
+      },
+      {
+        "type": "DetentionAndTrainingOrderSentence",
+        "offence": {
+          "committedAt": "2025-11-15",
+          "offenceCode": "TH68023"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 4
+          }
+        },
+        "sentencedAt": "2026-03-26",
+        "identifier": "35c67be9-c35d-337f-8381-c0dafd16ba74"
+      },
+      {
+        "type": "DetentionAndTrainingOrderSentence",
+        "offence": {
+          "committedAt": "2025-08-24",
+          "offenceCode": "CJ88160"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 4
+          }
+        },
+        "sentencedAt": "2026-03-26",
+        "identifier": "14178e35-beaf-3998-8f47-38e434a388d4"
+      },
+      {
+        "type": "DetentionAndTrainingOrderSentence",
+        "offence": {
+          "committedAt": "2025-08-24",
+          "offenceCode": "CJ88160"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 4
+          }
+        },
+        "sentencedAt": "2026-03-26",
+        "identifier": "bb97621a-ded6-35cd-add3-5ab0e5766909"
+      },
+      {
+        "offence": {
+          "committedAt": "2026-04-21",
+          "offenceCode": "CJ88160"
+        },
+        "duration": {
+          "durationElements": {
+            "WEEKS": 12
+          }
+        },
+        "sentencedAt": "2026-10-15",
+        "identifier": "016110bb-0f9c-3fcd-a3ed-8650fa03f96e",
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
+      }
+    ],
+    "adjustments": {
+      "TAGGED_BAIL": [
+        {
+          "appliesToSentencesFrom": "2026-03-26",
+          "numberOfDays": 70,
+          "additionalInfo": {
+            "type": "NONE"
+          }
+        }
+      ],
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2026-03-26",
+          "numberOfDays": 32,
+          "fromDate": "2025-11-17",
+          "toDate": "2025-12-18",
+          "additionalInfo": {
+            "type": "NONE"
+          }
+        }
+      ]
+    },
+    "externalMovements": [
+      {
+        "movementDate": "2026-03-26",
+        "movementReason": "SENTENCE",
+        "direction": "IN"
+      }
+    ]
+  },
+  "userInputs": {
+    "calculateErsed": true,
+    "useOffenceIndicators": true
+  },
+  "params": "sds-progression-model-october",
+  "featureToggles": {
+    "adultHdcSuspended": true
+  }
+}
