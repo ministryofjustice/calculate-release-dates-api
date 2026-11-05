@@ -19,6 +19,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedRel
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOutput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationReasonDto
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ERSLegislation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource.ExpectedSentenceLevelDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource.JsonTransformation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationService
@@ -203,7 +204,7 @@ abstract class CalculationExampleTests : SpringTestBase() {
 
     assertThat(calculationBreakdown)
       .usingRecursiveComparison()
-      .ignoringFieldsOfTypes(AffectedBySdsLegislation::class.java) // not written in JSON so ignored in test
+      .ignoringFieldsOfTypes(AffectedBySdsLegislation::class.java, ERSLegislation::class.java) // not written in JSON so ignored in test
       .isEqualTo(jsonTransformation.loadCalculationBreakdown(example))
   }
 

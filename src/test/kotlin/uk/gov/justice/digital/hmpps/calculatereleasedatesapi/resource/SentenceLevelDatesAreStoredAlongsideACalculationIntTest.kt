@@ -87,7 +87,7 @@ class SentenceLevelDatesAreStoredAlongsideACalculationIntTest(private val mockPr
     assertThat(thirdEntity.releaseMultiplier).isEqualTo(ReleaseMultiplier.ONE_HALF)
     val thirdDates = calculationRequestSentenceOutcomeRepository.findByCalculationRequestSentenceId(thirdEntity.id!!)
     assertThat(thirdDates).hasSize(2)
-    assertThat(thirdDates.find { it.calculationDateType == SLED }?.outcomeDate).isEqualTo(LocalDate.of(2024, 1, 1))
+    assertThat(thirdDates.find { it.calculationDateType == SLED }?.outcomeDate).isEqualTo(LocalDate.of(2024, 1, 3))
     assertThat(thirdDates.find { it.calculationDateType == CRD }?.outcomeDate).isEqualTo(LocalDate.of(2024, 1, 1))
     assertThat(thirdDates.find { it.calculationDateType == HDCED }?.outcomeDate).isNull()
   }

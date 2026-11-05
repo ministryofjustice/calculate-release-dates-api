@@ -1,7 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers
 
 import org.springframework.stereotype.Service
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AbstractSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
@@ -26,7 +25,6 @@ import java.time.temporal.ChronoUnit
 class TimelineSentenceCalculationHandler(
   timelineCalculator: TimelineCalculator,
   private val sentenceCombinationService: SentenceCombinationService,
-  private val featureToggles: FeatureToggles,
 ) : TimelineCalculationHandler<SentenceTimelineCalculationEvent>(timelineCalculator) {
 
   override fun handle(
@@ -152,10 +150,12 @@ class TimelineSentenceCalculationHandler(
             ?: 0L,
           recallRemand = recallRemand.map { it.numberOfDays }.reduceOrNull { acc, it -> acc + it }?.toLong() ?: 0L,
           awardedDuringCustody = padas,
+          awardedDuringCustodyPriorToErsZero = padasPriorToErsZero,
         ),
       )
 
       padas = 0
+      padasPriorToErsZero = 0
       futureData.taggedBail -= taggedBail
       futureData.remand -= remand
       futureData.recallTaggedBail -= recallTaggedBail
@@ -176,6 +176,7 @@ class TimelineSentenceCalculationHandler(
         recallRemand = existingAdjustments.recallRemand,
         recallTaggedBail = existingAdjustments.recallTaggedBail,
         awardedDuringCustody = existingAdjustments.awardedDuringCustody,
+        awardedDuringCustodyPriorToErsZero = existingAdjustments.awardedDuringCustodyPriorToErsZero,
         servedAdaDays = existingAdjustments.servedAdaDays + servedAdas,
       ),
     )
@@ -233,7 +234,7 @@ class TimelineSentenceCalculationHandler(
       .onEach { (previousChainOrSingleSentence, newSentence) ->
         if (previousChainOrSingleSentence.sentenceCalculation.earlyReleaseSchemeEligibilityDate != null) {
           newSentence.sentenceCalculation.ersedSnapshotPriorToLatestSentenceBeingImposedConsecutively = previousChainOrSingleSentence.sentenceCalculation.breakdownByReleaseDateType[ReleaseDateType.ERSED]?.let {
-            SentenceSnapshotCalculationBreakdown(timelineCalculationDate, it, newSentence.sentenceCalculation.adjustments.awardedDuringCustody)
+            SentenceSnapshotCalculationBreakdown(timelineCalculationDate, it, newSentence.sentenceCalculation.adjustments.awardedDuringCustodyPriorToErsZero)
           }
         }
       }
