@@ -10,5 +10,5 @@ data class ValidationMessage(
   val type: ValidationType = code.validationType,
   val calculationUnsupported: Boolean = code.validationType.isUnsupported(),
   val contentType: ValidationMessageContentType = code.contentType,
-  val fixSource: ValidationFixSource = code.validationFixSource,
+  val fixSource: ValidationFixSource? = code.validationFixSource,
 )

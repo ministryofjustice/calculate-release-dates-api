@@ -10,7 +10,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.Validati
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationType.VALIDATION
 
 @Schema(description = "Validation code details")
-enum class ValidationCode(val message: String, val validationType: ValidationType = VALIDATION, val contentType: ValidationMessageContentType = ValidationMessageContentType.PLAIN_TEXT, val validationFixSource: ValidationFixSource = ValidationFixSource.NULL) {
+enum class ValidationCode(val message: String, val validationType: ValidationType = VALIDATION, val contentType: ValidationMessageContentType = ValidationMessageContentType.PLAIN_TEXT, val validationFixSource: ValidationFixSource?) {
   ADJUSTMENT_AFTER_RELEASE_ADA("The from date for Additional days awarded (ADA) should be the date of the adjudication hearing.", ValidationType.VALIDATION, ValidationMessageContentType.PLAIN_TEXT, ValidationFixSource.ADJUDICATIONS),
   ADJUSTMENT_AFTER_RELEASE_RADA("The from date for Restored additional days awarded (RADA) must be the date the additional days were remitted.", ValidationType.VALIDATION, ValidationMessageContentType.PLAIN_TEXT, ValidationFixSource.ADJUDICATIONS),
   ADJUSTMENT_FUTURE_DATED_ADA("The from date for Additional days awarded (ADA) should be the date of the adjudication hearing.", ValidationType.VALIDATION, ValidationMessageContentType.PLAIN_TEXT, ValidationFixSource.ADJUDICATIONS),
@@ -155,4 +155,9 @@ enum class ValidationCode(val message: String, val validationType: ValidationTyp
   PROGRESSION_MODEL_SCHEDULE_EXCLUSION("This person has one or more offences that appear on the SA2026 Excluded Offences for Progression Model schedule", MANUAL_ENTRY_JOURNEY_REQUIRED),
   INVALID_NOMIS_OFFENCE_CODE("The offence %s %s%s is invalid.", ValidationType.INVALID_OFFENCE, ValidationMessageContentType.HTML),
   CASE_NOT_FROM_ENGLISH_OR_WELSH_COURT("The calculation includes a case that is not from an English or Welsh court", MANUAL_ENTRY_JOURNEY_REQUIRED),
+  ;
+
+  constructor(message: String) : this(message, VALIDATION)
+  constructor(message: String, validationType: ValidationType) : this(message, validationType, ValidationMessageContentType.PLAIN_TEXT)
+  constructor(message: String, validationType: ValidationType, contentType: ValidationMessageContentType) : this(message, validationType, contentType, null)
 }
