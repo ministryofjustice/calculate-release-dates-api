@@ -26,6 +26,8 @@ data class SentenceAdjustments(
 
   fun adjustmentsForErsed(): Long = adjustmentsForInitialReleaseWithoutAwarded() + awardedDuringCustodyPriorToErsZero - servedAdaDays
 
+  fun additionsAppliedToDeterminateRelease(): Long = ualDuringCustody + awardedDuringCustody - servedAdaDays
+
   private fun deductionsAndUalForWholeSentencePeriod(): Long = ualDuringCustody + ualAfterDeterminateRelease - deductions
 
   fun adjustmentsForLicenceExpiry(): Long = deductionsAndUalForWholeSentencePeriod()

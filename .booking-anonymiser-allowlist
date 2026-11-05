@@ -1,1 +1,2 @@
 # Repo relative paths of booking test data exempt from the pre-commit anonymisation check
+src/test/resources/test_data/overall_calculation/progression-model/CRS-2916-prisoner-1.json

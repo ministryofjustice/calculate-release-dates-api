@@ -1,0 +1,14 @@
+{
+  "dates": {
+    "SED": "2027-09-14",
+    "LED": "2026-12-09",
+    "CRD": "2026-10-15",
+    "MTD": "2026-10-29",
+    "ETD": "2026-08-29",
+    "LTD": "2026-12-29 ",
+    "ESED": "2027-12-25"
+  },
+  "effectiveSentenceLength": "P1Y9M",
+  "trancheAllocationByLegislationName": {},
+  "affectedByProgressionModel": true
+}
