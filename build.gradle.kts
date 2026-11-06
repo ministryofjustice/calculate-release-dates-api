@@ -35,7 +35,7 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-flyway")
 
   // MoJ libraries
-  implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter:3.0.3")
+  implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter:3.1.0")
 
   // GOVUK Notify:
   implementation("uk.gov.service.notify:notifications-java-client:6.2.1-RELEASE")
@@ -87,7 +87,7 @@ dependencies {
   testImplementation("org.testcontainers:junit-jupiter:1.21.4")
   testImplementation("io.github.hakky54:logcaptor:2.13.0")
   testImplementation("org.mockito.kotlin:mockito-kotlin")
-  testImplementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter-test:3.0.3")
+  testImplementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter-test:3.1.0")
   testImplementation("javax.xml.bind:jaxb-api:2.3.1")
   testImplementation(kotlin("test"))
   if (project.hasProperty("docs")) {
