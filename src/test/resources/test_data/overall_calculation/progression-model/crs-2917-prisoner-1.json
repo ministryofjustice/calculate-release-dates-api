@@ -1,0 +1,72 @@
+{
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
+      {
+        "offence": {
+          "committedAt": "2024-04-16",
+          "offenceCode": "FI68010"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 5
+          }
+        },
+        "sentencedAt": "2026-06-12",
+        "identifier": "a55897d4-f8d4-3cac-b065-c51e7f284b9d",
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        }
+      },
+      {
+        "offence": {
+          "committedAt": "2025-04-16",
+          "offenceCode": "FI68320"
+        },
+        "duration": {
+          "durationElements": {
+            "YEARS": 5
+          }
+        },
+        "sentencedAt": "2026-06-12",
+        "identifier": "4a46400d-9f30-3dce-8ebd-942472cf5d8e",
+        "releaseArrangements": {
+          "sdsEarlyReleaseExclusions": [
+            "VIOLENT"
+          ],
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "isSection250": false
+        }
+      }
+    ],
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2026-06-12",
+          "numberOfDays": 623,
+          "fromDate": "2024-09-27",
+          "toDate": "2026-06-11",
+          "additionalInfo": {
+            "type": "NONE"
+          }
+        }
+      ]
+    }
+  },
+  "userInputs": {
+    "calculateErsed": true,
+    "useOffenceIndicators": true
+  },
+  "params": "sds-progression-model-october",
+  "featureToggles": {
+    "adultHdcSuspended": true
+  },
+  "expectedValidationException": "PROGRESSION_MODEL_UNSUPPORTED_EXTINGUISHED_SENTENCE"
+}

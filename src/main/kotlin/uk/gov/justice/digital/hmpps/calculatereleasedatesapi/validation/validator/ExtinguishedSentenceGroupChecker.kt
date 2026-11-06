@@ -6,7 +6,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.earlyrelease.config
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOutput
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceGroup
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.sentence.SentencesExtractionService
 
@@ -38,10 +37,7 @@ class ExtinguishedSentenceGroupChecker(
     val determinateSentences = sentenceGroup.sentences.filter { !it.isRecall() }
     if (determinateSentences.isNotEmpty()) {
       val earliestSentenceDate = determinateSentences.minOf { it.sentencedAt }
-      val latestReleaseDateSentence = extractionService.mostRecentSentence(
-        determinateSentences,
-        SentenceCalculation::adjustedUncappedDeterminateReleaseDate,
-      )
+      val latestReleaseDateSentence = extractionService.mostRecentSentences(determinateSentences) { it.releaseDateDefaultedByCommencement() }.first()
       val uncappedCrd = latestReleaseDateSentence.sentenceCalculation.adjustedUncappedDeterminateReleaseDate
       if (earliestSentenceDate.minusDays(1).isAfter(uncappedCrd)) {
         val hasRemand = latestReleaseDateSentence.sentenceCalculation.adjustments.remand != 0L
