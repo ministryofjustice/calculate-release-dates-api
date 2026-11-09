@@ -9,12 +9,14 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.unuseddeductions.service.UnusedDeductionsComparisonHandlerService
 
 @Service
 @ConditionalOnProperty(value = ["bulk.calculation.process"], havingValue = "SQS", matchIfMissing = true)
 class BulkComparisonEventListener(
   private val objectMapper: ObjectMapper,
   private val bulkComparisonEventService: BulkComparisonEventHandlerService,
+  private val unusedDeductionsComparisonHandlerService: UnusedDeductionsComparisonHandlerService,
 ) {
 
   private val tracer = GlobalOpenTelemetry.getTracer("uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service")
@@ -41,10 +43,15 @@ class BulkComparisonEventListener(
     try {
       val sqsMessage: SQSMessage = objectMapper.readValue(rawMessage)
       return when (sqsMessage.Type) {
-        MESSAGE_TYPE -> {
+        CALCULATION_MESSAGE_TYPE -> {
           val message = objectMapper.readValue<InternalMessage<BulkComparisonMessageBody>>(sqsMessage.Message)
           bulkComparisonEventService.handleBulkComparisonMessage(message)
           bulkComparisonEventService.updateCountsAndCheckIfComparisonIsComplete(message)
+        }
+        UNUSED_DEDUCTIONS_MESSAGE_TYPE -> {
+          val message = objectMapper.readValue<InternalMessage<BulkComparisonMessageBody>>(sqsMessage.Message)
+          unusedDeductionsComparisonHandlerService.handleMessage(message)
+          unusedDeductionsComparisonHandlerService.updateCountsAndCheckIfComparisonIsComplete(message.body.comparisonId)
         }
         else -> {}
       }

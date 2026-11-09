@@ -6,6 +6,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentsSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOutput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.UnusedDeductionCalculationResponse
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.BookingService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationService
@@ -27,7 +28,9 @@ class UnusedDeductionsCalculationService(
   private val sourceDataService: CalculationSourceDataService,
 ) {
 
-  fun calculate(adjustments: List<AdjustmentDto>, offenderNo: String): UnusedDeductionCalculationResponse {
+  fun calculate(adjustments: List<AdjustmentDto>, offenderNo: String): UnusedDeductionCalculationResponse = calculateDetailed(adjustments, offenderNo).response
+
+  fun calculateDetailed(adjustments: List<AdjustmentDto>, offenderNo: String): UnusedDeductionsCalculationDetail {
     val prisoner = prisonService.getOffenderDetail(offenderNo)
     val sourceData = sourceDataService.getCalculationSourceData(prisoner, SourceDataLookupOptions.default())
       .copy(bookingAndSentenceAdjustments = AdjustmentsSourceData(adjustmentsApiData = adjustments.map { it.copy(effectiveDays = it.days) }))
@@ -37,20 +40,24 @@ class UnusedDeductionsCalculationService(
     val validationMessages = validationService.validate(sourceData, calculationUserInputs, ValidationOrder.INVALID)
       .filterNot { listOf(ValidationCode.CUSTODIAL_PERIOD_EXTINGUISHED_TAGGED_BAIL, ValidationCode.CUSTODIAL_PERIOD_EXTINGUISHED_REMAND, ValidationCode.RELEASE_DATE_BEFORE_SENTENCE_DATE).contains(it.code) }
     if (validationMessages.isNotEmpty()) {
-      return UnusedDeductionCalculationResponse(null, validationMessages)
+      return UnusedDeductionsCalculationDetail(UnusedDeductionCalculationResponse(null, validationMessages), null, null, prisoner)
     }
 
     val booking = bookingService.getBooking(sourceData)
     val result = calculationService.calculateReleaseDates(booking, calculationUserInputs, calculateSentenceLevelDates = false)
 
-    return calculate(result)
+    return calculateDetailed(result, prisoner)
   }
 
-  fun calculate(result: CalculationOutput): UnusedDeductionCalculationResponse {
+  fun calculate(result: CalculationOutput): UnusedDeductionCalculationResponse = calculateDetailed(result, null).response
+
+  private fun calculateDetailed(result: CalculationOutput, prisoner: PrisonerDetails?): UnusedDeductionsCalculationDetail {
     val sentences = result.sentenceGroup.last().sentences
     val releaseDateTypes = listOf(ReleaseDateType.CRD, ReleaseDateType.ARD, ReleaseDateType.MTD)
     val calculationResult = result.calculationResult
     val releaseDate = calculationResult.dates.filter { releaseDateTypes.contains(it.key) }.minOfOrNull { it.value }
+    val deductions = sentences.maxOfOrNull { it.sentenceCalculation.adjustments.deductions } ?: 0
+    var custodialDays: Long? = null
     val unusedDeductions = if (releaseDate != null) {
       val maxNonDeductionAdjustedReleaseDateSentence = sentences.maxBy {
         it.sentenceCalculation.releaseDateWithoutDeductions
@@ -66,11 +73,22 @@ class UnusedDeductionsCalculationService(
         maxNonDeductionAdjustedReleaseDateSentence.sentenceCalculation.numberOfDaysToDeterminateReleaseDate + allAdjustmentDaysExceptDeductions
       }
 
-      val deductions = sentences.maxOf { it.sentenceCalculation.adjustments.deductions }
+      custodialDays = maxDeductions
       max(0, deductions - maxDeductions)
     } else {
       0
     }
-    return UnusedDeductionCalculationResponse(unusedDeductions, emptyList())
+    return UnusedDeductionsCalculationDetail(UnusedDeductionCalculationResponse(unusedDeductions, emptyList()), custodialDays, deductions, prisoner)
   }
 }
+
+/**
+ * The unused deductions response along with the intermediate values used to derive it.
+ * custodialDays is the number of days of custody that deductions can be applied against (null when no release date could be determined).
+ */
+data class UnusedDeductionsCalculationDetail(
+  val response: UnusedDeductionCalculationResponse,
+  val custodialDays: Long?,
+  val totalDeductions: Long?,
+  val prisoner: PrisonerDetails?,
+)
