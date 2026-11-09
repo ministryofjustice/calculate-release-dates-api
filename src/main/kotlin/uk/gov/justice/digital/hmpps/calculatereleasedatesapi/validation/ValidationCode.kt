@@ -10,12 +10,12 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.Validati
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationType.VALIDATION
 
 @Schema(description = "Validation code details")
-enum class ValidationCode(val message: String, val validationType: ValidationType = VALIDATION, val contentType: ValidationMessageContentType = ValidationMessageContentType.PLAIN_TEXT) {
-  ADJUSTMENT_AFTER_RELEASE_ADA("The from date for Additional days awarded (ADA) should be the date of the adjudication hearing."),
-  ADJUSTMENT_AFTER_RELEASE_RADA("The from date for Restored additional days awarded (RADA) must be the date the additional days were remitted."),
-  ADJUSTMENT_FUTURE_DATED_ADA("The from date for Additional days awarded (ADA) should be the date of the adjudication hearing."),
-  ADJUSTMENT_FUTURE_DATED_RADA("The from date for Restored additional days awarded (RADA) must be the date the additional days were remitted."),
-  ADJUSTMENT_FUTURE_DATED_UAL("The from date for Unlawfully at Large (UAL) must be the first day the prisoner was deemed UAL."),
+enum class ValidationCode(val message: String, val validationType: ValidationType = VALIDATION, val contentType: ValidationMessageContentType = ValidationMessageContentType.PLAIN_TEXT, val validationFixSource: ValidationFixSource? = null) {
+  ADJUSTMENT_AFTER_RELEASE_ADA("The from date for Additional days awarded (ADA) should be the date of the adjudication hearing.", ValidationType.VALIDATION, ValidationMessageContentType.PLAIN_TEXT, ValidationFixSource.ADJUDICATIONS),
+  ADJUSTMENT_AFTER_RELEASE_RADA("The from date for Restored additional days awarded (RADA) must be the date the additional days were remitted.", ValidationType.VALIDATION, ValidationMessageContentType.PLAIN_TEXT, ValidationFixSource.ADJUDICATIONS),
+  ADJUSTMENT_FUTURE_DATED_ADA("The from date for Additional days awarded (ADA) should be the date of the adjudication hearing.", ValidationType.VALIDATION, ValidationMessageContentType.PLAIN_TEXT, ValidationFixSource.ADJUDICATIONS),
+  ADJUSTMENT_FUTURE_DATED_RADA("The from date for Restored additional days awarded (RADA) must be the date the additional days were remitted.", ValidationType.VALIDATION, ValidationMessageContentType.PLAIN_TEXT, ValidationFixSource.ADJUDICATIONS),
+  ADJUSTMENT_FUTURE_DATED_UAL("The from date for Unlawfully at Large (UAL) must be the first day the prisoner was deemed UAL.", ValidationType.VALIDATION, ValidationMessageContentType.PLAIN_TEXT, ValidationFixSource.ADJUSTMENTS),
   ADJUSTMENT_INVALID_DATE_RANGE($$"The %1$s 'from' date is after the %1$s 'to' date.<br/>Update these details in the <a href=\"%2$s/%3$s\">Adjustments service</a>.", ValidationType.VALIDATION_FIXABLE_IN_DPS, ValidationMessageContentType.HTML),
   A_FINE_SENTENCE_CONSECUTIVE("A sentence is consecutive to a default term.", UNSUPPORTED_CALCULATION),
   A_FINE_SENTENCE_CONSECUTIVE_TO(
