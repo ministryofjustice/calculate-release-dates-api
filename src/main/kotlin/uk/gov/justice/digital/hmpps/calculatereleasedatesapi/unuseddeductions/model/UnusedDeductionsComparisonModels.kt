@@ -12,7 +12,7 @@ import java.util.UUID
 
 @Schema(description = "Request to run an unused deductions comparison. Provide prisonerIds for a manual list, otherwise a prison code or 'all'.")
 data class UnusedDeductionsComparisonInput(
-  @Schema(description = "A prison code, or 'all' for every prison in the callers caseload. Ignored when prisonerIds are provided", example = "MDI")
+  @Schema(description = "A prison code, or 'all' for every prison . Ignored when prisonerIds are provided", example = "MDI")
   val prison: String? = null,
   @Schema(description = "A manual list of prisoner numbers to compare")
   val prisonerIds: List<String>? = null,

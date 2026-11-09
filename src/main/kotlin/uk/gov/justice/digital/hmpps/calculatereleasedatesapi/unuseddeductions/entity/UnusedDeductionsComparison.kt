@@ -62,6 +62,6 @@ enum class UnusedDeductionsComparisonType {
   /** Every calculable prisoner in a single prison */
   PRISON,
 
-  /** Every calculable prisoner in every prison in the user's caseload */
+  /** Every calculable prisoner in every prison  */
   ALL_PRISONS,
 }
