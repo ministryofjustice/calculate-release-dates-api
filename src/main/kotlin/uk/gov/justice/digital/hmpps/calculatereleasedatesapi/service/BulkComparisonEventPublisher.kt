@@ -15,7 +15,7 @@ import uk.gov.justice.hmpps.sqs.DEFAULT_RETRY_POLICY
 import uk.gov.justice.hmpps.sqs.HmppsQueueService
 import java.util.UUID
 
-const val MESSAGE_TYPE = "calculate_release_dates_bulk_comparison_request"
+const val CALCULATION_MESSAGE_TYPE = "calculate_release_dates_bulk_comparison_request"
 const val UNUSED_DEDUCTIONS_MESSAGE_TYPE = "calculate_release_dates_unused_deductions_comparison_request"
 
 @Service
@@ -25,7 +25,7 @@ class BulkComparisonEventPublisher(
   private val objectMapper: ObjectMapper,
 ) {
 
-  fun sendMessageBatch(comparisonId: Long, persons: List<String>, username: String, establishment: String?) = sendMessageBatch(MESSAGE_TYPE, comparisonId, persons, username, establishment)
+  fun sendMessageBatch(comparisonId: Long, persons: List<String>, username: String, establishment: String?) = sendMessageBatch(CALCULATION_MESSAGE_TYPE, comparisonId, persons, username, establishment)
 
   // Shares the bulk comparison queue, listeners distinguish the messages by type.
   fun sendUnusedDeductionsMessageBatch(comparisonId: Long, persons: List<String>, username: String, establishment: String?) = sendMessageBatch(UNUSED_DEDUCTIONS_MESSAGE_TYPE, comparisonId, persons, username, establishment)
