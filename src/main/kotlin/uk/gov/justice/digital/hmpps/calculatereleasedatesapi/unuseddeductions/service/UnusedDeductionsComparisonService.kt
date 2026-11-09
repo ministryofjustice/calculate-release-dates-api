@@ -139,8 +139,9 @@ class UnusedDeductionsComparisonService(
     calculatedByUsername = comparison.calculatedByUsername,
     numberOfMismatches = people.count { it.outcome == UnusedDeductionsComparisonOutcome.MISMATCH }.toLong(),
     numberOfValidationErrors = people.count { it.outcome == UnusedDeductionsComparisonOutcome.VALIDATION_ERROR }.toLong(),
-    numberOfPeopleExpected = comparison.numberOfPeopleExpected,
-    numberOfPeopleCompared = if (comparison.comparisonStatus == ComparisonStatus.PROCESSING) people.size.toLong() else comparison.numberOfPeopleCompared,
+    // While still in setup the expected total is only a placeholder, as messages are already being processed.
+    numberOfPeopleExpected = if (comparison.comparisonStatus == ComparisonStatus.SETUP) maxOf(comparison.numberOfPeopleExpected, people.size.toLong()) else comparison.numberOfPeopleExpected,
+    numberOfPeopleCompared = if (comparison.comparisonStatus == ComparisonStatus.PROCESSING || comparison.comparisonStatus == ComparisonStatus.SETUP) people.size.toLong() else comparison.numberOfPeopleCompared,
     numberOfPeopleComparisonFailedFor = people.count { it.outcome == UnusedDeductionsComparisonOutcome.FATAL_ERROR }.toLong(),
   )
 

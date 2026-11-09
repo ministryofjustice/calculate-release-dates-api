@@ -2,17 +2,47 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.unuseddeductions.c
 
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.adjustmentsapi.model.AdjustmentDto
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.MockManageOffencesClient
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.UnusedDeductionCalculationResponse
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.unuseddeductions.service.UnusedDeductionsCalculationService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessage
 import java.time.LocalDate
 import java.util.UUID
 
 class UnusedDeductionsControllerIntTest(private val mockManageOffencesClient: MockManageOffencesClient) : IntegrationTestBase() {
+
+  @Autowired
+  private lateinit var unusedDeductionsCalculationService: UnusedDeductionsCalculationService
+
+  @Test
+  fun `Detailed unused deductions calculation exposes the custodial days and total deductions`() {
+    mockManageOffencesClient.notSDSPlusAndNoExclusions(listOf("TH68010A", "TH68037"))
+    val adjustments = listOf(
+      AdjustmentDto(
+        fromDate = LocalDate.of(2020, 2, 1),
+        toDate = LocalDate.of(2021, 1, 31),
+        days = 396,
+        effectiveDays = 91,
+        bookingId = "UNUSED".hashCode().toLong(),
+        sentenceSequence = 4,
+        adjustmentType = AdjustmentDto.AdjustmentType.REMAND,
+        person = "UNUSED",
+        id = UUID.randomUUID(),
+      ),
+    )
+
+    val detail = unusedDeductionsCalculationService.calculateDetailed(adjustments, "UNUSED")
+
+    Assertions.assertThat(detail.response.unusedDeductions).isEqualTo(305)
+    Assertions.assertThat(detail.totalDeductions).isEqualTo(396)
+    Assertions.assertThat(detail.custodialDays).isEqualTo(91)
+    Assertions.assertThat(detail.prisoner?.offenderNo).isEqualTo("UNUSED")
+  }
 
   @Test
   fun `Run unused deductions calculation`() {
