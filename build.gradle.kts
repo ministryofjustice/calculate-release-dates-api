@@ -7,7 +7,7 @@ import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 
 plugins {
   id("uk.gov.justice.hmpps.gradle-spring-boot") version "11.0.15"
-  id("org.springdoc.openapi-gradle-plugin") version "1.9.0"
+  id("org.springdoc.openapi-gradle-plugin") version "2.1.0"
   kotlin("plugin.spring") version "2.4.21"
   kotlin("plugin.jpa") version "2.4.21"
   id("jacoco")
@@ -35,7 +35,7 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-flyway")
 
   // MoJ libraries
-  implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter:3.0.3")
+  implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter:3.1.0")
 
   // GOVUK Notify:
   implementation("uk.gov.service.notify:notifications-java-client:6.2.1-RELEASE")
@@ -87,7 +87,7 @@ dependencies {
   testImplementation("org.testcontainers:junit-jupiter:1.21.4")
   testImplementation("io.github.hakky54:logcaptor:2.13.0")
   testImplementation("org.mockito.kotlin:mockito-kotlin")
-  testImplementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter-test:3.0.3")
+  testImplementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter-test:3.1.0")
   testImplementation("javax.xml.bind:jaxb-api:2.3.1")
   testImplementation(kotlin("test"))
   if (project.hasProperty("docs")) {
@@ -132,20 +132,6 @@ openApi {
   customBootRun.environment.set(
     mapOf("AWS_REGION" to "eu-west-2"),
   )
-}
-
-afterEvaluate {
-  tasks.named("forkedSpringBootRun") {
-    notCompatibleWithConfigurationCache(
-      "See https://github.com/springdoc/springdoc-openapi-gradle-plugin/issues/102",
-    )
-  }
-
-  tasks.named("forkedSpringBootStop") {
-    notCompatibleWithConfigurationCache(
-      "See https://github.com/springdoc/springdoc-openapi-gradle-plugin/issues/102",
-    )
-  }
 }
 
 data class ModelConfiguration(val name: String, val input: String, val output: String, val packageName: String)
