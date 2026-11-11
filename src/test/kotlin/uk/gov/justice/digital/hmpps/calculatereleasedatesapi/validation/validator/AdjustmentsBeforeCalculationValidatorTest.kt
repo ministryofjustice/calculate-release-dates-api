@@ -11,6 +11,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Offe
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationFixSource
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessage
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationUtilities
 import java.time.LocalDate
@@ -126,6 +127,17 @@ class AdjustmentsBeforeCalculationValidatorTest {
     }
 
     @Test
+    fun `returns null validation fix source when adjustment sentence sequence is not in current source data`() {
+      val adjustments = listOf(
+        remandDto(sentenceSequence = 99, fromDate = LocalDate.of(2024, 1, 1), toDate = LocalDate.of(2024, 1, 2)),
+      )
+
+      val result = validator.validateAdjustmentsBeforeCalculation(adjustments, sourceData())
+
+      assertThat(result[0].fixSource).isNull()
+    }
+
+    @Test
     fun `returns future-dated UAL message using to date`() {
       val adjustments = listOf(
         AdjustmentDto(
@@ -141,6 +153,22 @@ class AdjustmentsBeforeCalculationValidatorTest {
       assertThat(result).containsExactly(
         ValidationMessage(ValidationCode.ADJUSTMENT_FUTURE_DATED_UAL),
       )
+    }
+
+    @Test
+    fun `returns ADJUSTMENTS validation fix source for UAL validation error`() {
+      val adjustments = listOf(
+        AdjustmentDto(
+          person = OFFENDER_NO,
+          adjustmentType = AdjustmentDto.AdjustmentType.UNLAWFULLY_AT_LARGE,
+          fromDate = LocalDate.now().minusDays(3),
+          toDate = LocalDate.now().plusDays(1),
+        ),
+      )
+
+      val result = validator.validateAdjustmentsBeforeCalculation(adjustments, sourceData())
+
+      assertThat(result[0].fixSource).isEqualTo(ValidationFixSource.ADJUSTMENTS)
     }
 
     @Test
@@ -161,6 +189,21 @@ class AdjustmentsBeforeCalculationValidatorTest {
     }
 
     @Test
+    fun `returns ADJUDICATIONS validation fix source for ADA validation error`() {
+      val adjustments = listOf(
+        AdjustmentDto(
+          person = OFFENDER_NO,
+          adjustmentType = AdjustmentDto.AdjustmentType.ADDITIONAL_DAYS_AWARDED,
+          fromDate = LocalDate.now().plusDays(1),
+        ),
+      )
+
+      val result = validator.validateAdjustmentsBeforeCalculation(adjustments, sourceData())
+
+      assertThat(result[0].fixSource).isEqualTo(ValidationFixSource.ADJUDICATIONS)
+    }
+
+    @Test
     fun `returns future-dated RADA message`() {
       val adjustments = listOf(
         AdjustmentDto(
@@ -175,6 +218,21 @@ class AdjustmentsBeforeCalculationValidatorTest {
       assertThat(result).containsExactly(
         ValidationMessage(ValidationCode.ADJUSTMENT_FUTURE_DATED_RADA),
       )
+    }
+
+    @Test
+    fun `returns ADJUDICATIONS validation fix source for RADA validation error`() {
+      val adjustments = listOf(
+        AdjustmentDto(
+          person = OFFENDER_NO,
+          adjustmentType = AdjustmentDto.AdjustmentType.RESTORATION_OF_ADDITIONAL_DAYS_AWARDED,
+          fromDate = LocalDate.now().plusDays(1),
+        ),
+      )
+
+      val result = validator.validateAdjustmentsBeforeCalculation(adjustments, sourceData())
+
+      assertThat(result[0].fixSource).isEqualTo(ValidationFixSource.ADJUDICATIONS)
     }
 
     @Test

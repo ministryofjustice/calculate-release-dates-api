@@ -267,6 +267,7 @@ class ValidationServiceTest : SpringTestBase() {
     // Assert
     assertThat(result).isNotEmpty
     assertThat(result[0].code).isEqualTo(ValidationCode.INCORRECT_SUSPENDED_OFFENCE)
+    assertThat(result[0].fixSource).isNull()
   }
 
   @ParameterizedTest
@@ -340,6 +341,7 @@ class ValidationServiceTest : SpringTestBase() {
     assertThat(result[0].code).isEqualTo(ValidationCode.INCORRECT_OFFENCE_BREACH_97)
     assertThat(result[0].type).isEqualTo(ValidationType.INCORRECT_OFFENCE)
     assertThat(result[0].type.order).isEqualTo(ValidationOrder.INVALID)
+    assertThat(result[0].fixSource).isNull()
   }
 
   @ParameterizedTest
@@ -376,6 +378,7 @@ class ValidationServiceTest : SpringTestBase() {
     assertThat(result[0].code).isEqualTo(ValidationCode.INCORRECT_OFFENCE_GENERIC_CONSPIRACY)
     assertThat(result[0].type).isEqualTo(ValidationType.INCORRECT_OFFENCE)
     assertThat(result[0].type.order).isEqualTo(ValidationOrder.INVALID)
+    assertThat(result[0].fixSource).isNull()
   }
 
   @ParameterizedTest
@@ -412,6 +415,7 @@ class ValidationServiceTest : SpringTestBase() {
     assertThat(result[0].code).isEqualTo(ValidationCode.INCORRECT_OFFENCE_ENCOURAGING_OR_ASSISTING)
     assertThat(result[0].type).isEqualTo(ValidationType.INCORRECT_OFFENCE)
     assertThat(result[0].type.order).isEqualTo(ValidationOrder.INVALID)
+    assertThat(result[0].fixSource).isNull()
   }
 
   @ParameterizedTest
@@ -465,6 +469,7 @@ class ValidationServiceTest : SpringTestBase() {
       ValidationOrder.allValidations(),
     )
     assertThat(result).isEqualTo(listOf(ValidationMessage(FTR_NO_RETURN_TO_CUSTODY_DATE)))
+    assertThat(result[0].fixSource).isEqualTo(ValidationFixSource.FIXED_TERM_RECALLS)
   }
 
   @Test
@@ -2061,6 +2066,7 @@ class ValidationServiceTest : SpringTestBase() {
         )
 
         assertThat(result).isEqualTo(listOf(ValidationMessage(FTR_TYPE_14_DAYS_SENTENCE_GE_12_MONTHS)))
+        assertThat(result[0].fixSource).isEqualTo(ValidationFixSource.FIXED_TERM_RECALLS_28)
       }
     }
 
@@ -2080,6 +2086,7 @@ class ValidationServiceTest : SpringTestBase() {
       )
 
       assertThat(result).containsExactly(ValidationMessage(ValidationCode.NO_SENTENCES))
+      assertThat(result[0].fixSource).isNull()
     }
 
     @Test
