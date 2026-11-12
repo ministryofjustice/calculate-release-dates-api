@@ -57,11 +57,15 @@ class UnusedDeductionsComparisonController(
   @GetMapping
   @PreAuthorize("hasAnyRole('ROLE_RELEASE_DATE_COMPARER', 'ROLE_RELEASE_DATE_MANUAL_COMPARER', 'CALCULATE_RELEASE_DATES__ADMIN__RW', 'CALCULATE_RELEASE_DATES__ADMIN__RO')")
   @ResponseBody
-  @Operation(summary = "List unused deductions comparisons")
+  @Operation(
+    summary = "List unused deductions comparisons",
+    description = "If calculatedByCurrentUser is true only comparisons calculated by the current user are returned, if false only those calculated by other users. If omitted all are returned",
+  )
   fun list(
     @RequestParam(defaultValue = "0") page: Int,
     @RequestParam(defaultValue = "10") size: Int,
-  ): UnusedDeductionsComparisonPage = comparisonService.list(page, size)
+    @RequestParam(required = false) calculatedByCurrentUser: Boolean?,
+  ): UnusedDeductionsComparisonPage = comparisonService.list(page, size, calculatedByCurrentUser)
 
   @GetMapping("/{comparisonReference}")
   @PreAuthorize("hasAnyRole('ROLE_RELEASE_DATE_COMPARER', 'ROLE_RELEASE_DATE_MANUAL_COMPARER', 'CALCULATE_RELEASE_DATES__ADMIN__RW', 'CALCULATE_RELEASE_DATES__ADMIN__RO')")

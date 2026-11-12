@@ -10,6 +10,8 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.springframework.data.domain.PageImpl
+import org.springframework.data.domain.PageRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CrdWebException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.PrisonService
@@ -41,12 +43,12 @@ class UnusedDeductionsComparisonServiceTest {
 
   private fun UnusedDeductionsComparison.withId() = UnusedDeductionsComparison(1, comparisonReference, comparisonShortReference, criteria, prison, comparisonType, calculatedAt, calculatedByUsername)
 
-  private fun comparison(type: UnusedDeductionsComparisonType, prison: String?) = UnusedDeductionsComparison(
+  private fun comparison(type: UnusedDeductionsComparisonType, prison: String?, username: String = "OTHER") = UnusedDeductionsComparison(
     id = 1,
     criteria = objectMapper.createObjectNode(),
     prison = prison,
     comparisonType = type,
-    calculatedByUsername = "OTHER",
+    calculatedByUsername = username,
   )
 
   @Test
@@ -99,41 +101,30 @@ class UnusedDeductionsComparisonServiceTest {
   }
 
   @Test
-  fun `list hides single prison runs outside the caseload but keeps manual and all prison runs`() {
-    whenever(comparisonRepository.findAllByOrderByCalculatedAtDesc()).thenReturn(
-      listOf(
-        comparison(UnusedDeductionsComparisonType.PRISON, "LEI"),
-        comparison(UnusedDeductionsComparisonType.PRISON, "MDI"),
-        comparison(UnusedDeductionsComparisonType.MANUAL, null),
-        comparison(UnusedDeductionsComparisonType.ALL_PRISONS, "all"),
-      ),
+  fun `list pages the runs viewable by the current user's prisons`() {
+    val pageable = PageRequest.of(1, 2)
+    whenever(comparisonRepository.findViewable(listOf("MDI"), pageable)).thenReturn(
+      PageImpl(listOf(comparison(UnusedDeductionsComparisonType.MANUAL, null)), pageable, 3),
     )
 
-    val types = service.list().content.map { it.comparisonType to it.prison }
+    val result = service.list(page = 1, size = 2)
 
-    assertThat(types).containsExactly(
-      UnusedDeductionsComparisonType.PRISON to "MDI",
-      UnusedDeductionsComparisonType.MANUAL to null,
-      UnusedDeductionsComparisonType.ALL_PRISONS to "all",
-    )
+    assertThat(result.content.map { it.comparisonType }).containsExactly(UnusedDeductionsComparisonType.MANUAL)
+    assertThat(result.page).isEqualTo(UnusedDeductionsPageInfo(number = 1, size = 2, totalElements = 3, totalPages = 2))
   }
 
   @Test
-  fun `list is paged after hiding runs outside the caseload`() {
-    whenever(comparisonRepository.findAllByOrderByCalculatedAtDesc()).thenReturn(
-      listOf(
-        comparison(UnusedDeductionsComparisonType.PRISON, "LEI"),
-        comparison(UnusedDeductionsComparisonType.MANUAL, null),
-        comparison(UnusedDeductionsComparisonType.ALL_PRISONS, "all"),
-        comparison(UnusedDeductionsComparisonType.PRISON, "MDI"),
-        comparison(UnusedDeductionsComparisonType.MANUAL, null),
-      ),
+  fun `list can be limited to runs by the current user or by other users`() {
+    val pageable = PageRequest.of(0, 10)
+    whenever(comparisonRepository.findViewableCalculatedBy(listOf("MDI"), "FOO", pageable)).thenReturn(
+      PageImpl(listOf(comparison(UnusedDeductionsComparisonType.MANUAL, null, "FOO")), pageable, 1),
+    )
+    whenever(comparisonRepository.findViewableNotCalculatedBy(listOf("MDI"), "FOO", pageable)).thenReturn(
+      PageImpl(listOf(comparison(UnusedDeductionsComparisonType.ALL_PRISONS, "all", "OTHER")), pageable, 1),
     )
 
-    val second = service.list(page = 1, size = 2)
-
-    assertThat(second.content.map { it.comparisonType }).containsExactly(UnusedDeductionsComparisonType.PRISON, UnusedDeductionsComparisonType.MANUAL)
-    assertThat(second.page).isEqualTo(UnusedDeductionsPageInfo(number = 1, size = 2, totalElements = 4, totalPages = 2))
+    assertThat(service.list(calculatedByCurrentUser = true).content.map { it.calculatedByUsername }).containsExactly("FOO")
+    assertThat(service.list(calculatedByCurrentUser = false).content.map { it.calculatedByUsername }).containsExactly("OTHER")
   }
 
   @Test
