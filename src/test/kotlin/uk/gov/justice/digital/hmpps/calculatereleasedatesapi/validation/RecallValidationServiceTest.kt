@@ -47,6 +47,7 @@ class RecallValidationServiceTest {
 
       assertThat(messages).isNotEmpty
       assertThat(messages[0].code).isEqualTo(ValidationCode.FTR_RTC_DATE_BEFORE_SENTENCE_DATE)
+      assertThat(messages[0].fixSource).isEqualTo(ValidationFixSource.FIXED_TERM_RECALLS)
     }
 
     @Test
@@ -57,6 +58,7 @@ class RecallValidationServiceTest {
 
       assertThat(messages).isNotEmpty
       assertThat(messages[0].code).isEqualTo(ValidationCode.FTR_RTC_DATE_IN_FUTURE)
+      assertThat(messages[0].fixSource).isEqualTo(ValidationFixSource.FIXED_TERM_RECALLS)
     }
   }
 
@@ -90,6 +92,7 @@ class RecallValidationServiceTest {
 
       assertThat(messages).isNotEmpty
       assertThat(messages[0].code).isEqualTo(ValidationCode.RECALL_MISSING_REVOCATION_DATE)
+      assertThat(messages[0].fixSource).isNull()
     }
 
     @Test
@@ -100,6 +103,7 @@ class RecallValidationServiceTest {
 
       assertThat(messages).isNotEmpty
       assertThat(messages[0].code).isEqualTo(ValidationCode.REVOCATION_DATE_IN_THE_FUTURE)
+      assertThat(messages[0].fixSource).isNull()
     }
 
     @Test
@@ -129,6 +133,7 @@ class RecallValidationServiceTest {
       )
 
       assertEquals(ValidationCode.FTR_SENTENCES_CONFLICT_WITH_EACH_OTHER, result.first().code)
+      assertEquals(ValidationFixSource.FIXED_TERM_RECALLS, result.first().fixSource)
     }
 
     @Test
@@ -143,6 +148,7 @@ class RecallValidationServiceTest {
       )
 
       assertEquals(ValidationCode.FTR_SENTENCES_CONFLICT_WITH_EACH_OTHER, result.first().code)
+      assertEquals(ValidationFixSource.FIXED_TERM_RECALLS, result.first().fixSource)
     }
 
     @Test
@@ -157,6 +163,7 @@ class RecallValidationServiceTest {
       )
 
       assertEquals(ValidationCode.FTR_SENTENCES_CONFLICT_WITH_EACH_OTHER, result.first().code)
+      assertEquals(ValidationFixSource.FIXED_TERM_RECALLS, result.first().fixSource)
     }
 
     @Test
@@ -171,6 +178,7 @@ class RecallValidationServiceTest {
       )
 
       assertEquals(ValidationCode.FTR_SENTENCES_CONFLICT_WITH_EACH_OTHER, result.first().code)
+      assertEquals(ValidationFixSource.FIXED_TERM_RECALLS, result.first().fixSource)
     }
   }
 
