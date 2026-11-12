@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param
 import org.springframework.stereotype.Repository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.PrisonerModifiedReason
 import java.time.LocalDateTime
 import java.util.Optional
 import java.util.UUID
@@ -110,4 +111,12 @@ interface CalculationRequestRepository : JpaRepository<CalculationRequest, Long>
   @Query("DELETE FROM CalculationRequestSentenceUserInput WHERE calculationRequestUserInput.calculationRequest.id = :calculationRequestId")
   @Modifying
   fun deleteSentenceUserInput(calculationRequestId: Long)
+
+  @Query("UPDATE CalculationRequest SET prisonerId = :toPrisoner, prisonerModifiedReason = :reason, prisonerModifiedPreviousPrisonerId = :fromPrisoner, prisonerModifiedAt = :timestamp WHERE bookingId = :bookingId and prisonerId = :fromPrisoner")
+  @Modifying
+  fun moveBooking(bookingId: Long, fromPrisoner: String, toPrisoner: String, reason: PrisonerModifiedReason, timestamp: LocalDateTime = LocalDateTime.now())
+
+  @Query("UPDATE CalculationRequest SET prisonerId = :toPrisoner, prisonerModifiedReason = :reason, prisonerModifiedPreviousPrisonerId = :fromPrisoner, prisonerModifiedAt = :timestamp WHERE prisonerId = :fromPrisoner")
+  @Modifying
+  fun mergePrisoners(fromPrisoner: String, toPrisoner: String, reason: PrisonerModifiedReason, timestamp: LocalDateTime = LocalDateTime.now())
 }

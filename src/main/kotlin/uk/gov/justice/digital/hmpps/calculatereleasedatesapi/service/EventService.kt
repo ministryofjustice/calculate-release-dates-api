@@ -6,10 +6,9 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import software.amazon.awssdk.services.sns.model.MessageAttributeValue
 import software.amazon.awssdk.services.sns.model.PublishRequest
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.event.CalculateReleaseDatesAdditionalInformation
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.event.ReleaseDateChangedEvent
 import uk.gov.justice.hmpps.sqs.HmppsQueueService
-import java.time.Instant
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
 
 @Service
 class EventService(
@@ -21,9 +20,8 @@ class EventService(
     hmppsQueueService.findByTopicId("hmppseventtopic") ?: throw IllegalStateException("hmppseventtopic topic not found")
   }
 
-  fun publishReleaseDatesChangedEvent(prisonerId: String, bookingId: Long) {
-    val event =
-      ReleaseDateChangedEvent(additionalInformation = (CalculateReleaseDatesAdditionalInformation(prisonerId, bookingId)))
+  fun publishReleaseDatesChangedEvent(prisonerId: String) {
+    val event = ReleaseDateChangedEvent(additionalInformation = (CalculateReleaseDatesAdditionalInformation(prisonerId)))
     domainTopic.snsClient.publish(
       PublishRequest.builder()
         .topicArn(domainTopic.arn)
@@ -38,24 +36,3 @@ class EventService(
     val log: Logger = LoggerFactory.getLogger(this::class.java)
   }
 }
-
-data class CalculateReleaseDatesAdditionalInformation(
-  val prisonerId: String,
-  val bookingId: Long,
-)
-
-abstract class CalculateReleaseDatesDomainEvent {
-  abstract val additionalInformation: CalculateReleaseDatesAdditionalInformation
-  val occurredAt: String =
-    DateTimeFormatter.ISO_OFFSET_DATE_TIME.withZone(ZoneId.of("Europe/London")).format(Instant.now())
-  abstract val eventType: String
-  abstract val version: Int
-  abstract var description: String
-}
-
-class ReleaseDateChangedEvent(
-  override val eventType: String = "calculate-release-dates.prisoner.changed",
-  override var description: String = "Prisoners release dates have been re-calculated",
-  override val additionalInformation: CalculateReleaseDatesAdditionalInformation,
-  override val version: Int = 1,
-) : CalculateReleaseDatesDomainEvent()

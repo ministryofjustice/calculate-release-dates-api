@@ -320,7 +320,7 @@ class CalculationTransactionalServiceTest {
         reason = "UPDATE",
       ),
     )
-    verify(eventService).publishReleaseDatesChangedEvent(PRISONER_ID, BOOKING_ID)
+    verify(eventService).publishReleaseDatesChangedEvent(PRISONER_ID)
   }
 
   @Test
@@ -370,7 +370,7 @@ class CalculationTransactionalServiceTest {
       ),
     )
     whenever(
-      eventService.publishReleaseDatesChangedEvent(PRISONER_ID, BOOKING_ID),
+      eventService.publishReleaseDatesChangedEvent(PRISONER_ID),
     ).thenThrow(EntityNotFoundException("test ex"))
 
     try {
@@ -579,7 +579,7 @@ class CalculationTransactionalServiceTest {
         reason = "UPDATE",
       ),
     )
-    verify(eventService).publishReleaseDatesChangedEvent(PRISONER_ID, BOOKING_ID)
+    verify(eventService).publishReleaseDatesChangedEvent(PRISONER_ID)
   }
 
   @Test

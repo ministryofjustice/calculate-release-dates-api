@@ -3,6 +3,8 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.unuseddeductions.c
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageRequest
 import org.springframework.http.MediaType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.IntegrationTestBase
@@ -108,5 +110,32 @@ class UnusedDeductionsComparisonControllerIntTest : IntegrationTestBase() {
       .bodyValue("{}")
       .exchange()
       .expectStatus().isBadRequest
+  }
+
+  @Test
+  fun `viewable comparisons are filtered by prison and user in the database`() {
+    fun save(type: UnusedDeductionsComparisonType, prison: String?, username: String) = comparisonRepository.save(
+      UnusedDeductionsComparison(
+        criteria = objectMapper.createObjectNode(),
+        prison = prison,
+        comparisonType = type,
+        calculatedByUsername = username,
+      ),
+    ).comparisonShortReference
+    val mine = save(UnusedDeductionsComparisonType.PRISON, "MDI", "QUERY_ME")
+    val hiddenPrison = save(UnusedDeductionsComparisonType.PRISON, "LEI", "QUERY_ME")
+    val manual = save(UnusedDeductionsComparisonType.MANUAL, null, "QUERY_ME")
+    val others = save(UnusedDeductionsComparisonType.ALL_PRISONS, "all", "QUERY_OTHER")
+
+    val pageable = PageRequest.of(0, 1000)
+    val prisons = listOf("MDI")
+    fun refs(page: Page<UnusedDeductionsComparison>) = page.content.map { it.comparisonShortReference }
+
+    assertThat(refs(comparisonRepository.findViewableCalculatedBy(prisons, "QUERY_ME", pageable)))
+      .containsExactlyInAnyOrder(mine, manual)
+    assertThat(refs(comparisonRepository.findViewableNotCalculatedBy(prisons, "QUERY_ME", pageable)))
+      .contains(others).doesNotContain(mine, manual, hiddenPrison)
+    assertThat(refs(comparisonRepository.findViewable(prisons, pageable)))
+      .contains(mine, manual, others).doesNotContain(hiddenPrison)
   }
 }

@@ -2,6 +2,8 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity
 
 import jakarta.persistence.CascadeType
 import jakarta.persistence.Entity
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
 import jakarta.persistence.FetchType
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
@@ -12,6 +14,7 @@ import jakarta.persistence.OneToMany
 import jakarta.persistence.Table
 import jakarta.validation.constraints.NotNull
 import org.hibernate.Hibernate
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.PrisonerModifiedReason
 import java.time.LocalDateTime
 
 @Entity
@@ -35,6 +38,11 @@ data class ApprovedDatesSubmission(
   @NotNull
   @OneToMany(targetEntity = ApprovedDates::class, cascade = [CascadeType.ALL], fetch = FetchType.EAGER, orphanRemoval = true)
   val approvedDates: List<ApprovedDates> = emptyList(),
+  @Enumerated(value = EnumType.STRING)
+  val prisonerModifiedReason: PrisonerModifiedReason? = null,
+  val prisonerModifiedPreviousPrisonerId: String? = null,
+  val prisonerModifiedAt: LocalDateTime? = null,
+
 ) {
   @Override
   override fun equals(other: Any?): Boolean {

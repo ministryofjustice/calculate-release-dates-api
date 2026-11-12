@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.unuseddeductions.service.UnusedDeductionsComparisonHandlerService
 
 @Service
-@ConditionalOnProperty(value = ["bulk.calculation.process"], havingValue = "SQS", matchIfMissing = true)
+@ConditionalOnProperty(value = ["crds.listeners.process"], havingValue = "SQS", matchIfMissing = true)
 class BulkComparisonEventListener(
   private val objectMapper: ObjectMapper,
   private val bulkComparisonEventService: BulkComparisonEventHandlerService,
@@ -28,8 +28,8 @@ class BulkComparisonEventListener(
   @SqsListener(
     "bulkcomparison",
     factory = "hmppsQueueContainerFactoryProxy",
-    maxConcurrentMessages = $$"${bulk.calculation.concurrency}",
-    maxMessagesPerPoll = $$"${bulk.calculation.concurrency}",
+    maxConcurrentMessages = $$"${crds.listeners.concurrency}",
+    maxMessagesPerPoll = $$"${crds.listeners.concurrency}",
   )
   fun onMessage(
     rawMessage: String,
