@@ -18,6 +18,7 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.DynamicPropertyRegistry
 import org.springframework.test.context.DynamicPropertySource
 import org.springframework.test.web.reactive.server.WebTestClient
+import org.springframework.test.web.reactive.server.expectBody
 import org.testcontainers.containers.PostgreSQLContainer
 import org.testcontainers.containers.localstack.LocalStackContainer
 import org.testcontainers.containers.localstack.LocalStackContainer.Service
@@ -50,6 +51,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.GenuineOverri
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualCalculationResponse
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualEntryRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManuallyEnteredDate
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.PrisonerCalculationOverview
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecordARecallDecisionResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecordARecallRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecordARecallValidationResult
@@ -226,6 +228,15 @@ open class IntegrationTestBase internal constructor() {
       .returnResult().responseBody!!
     return result
   }
+  protected fun getPrisonerOverview(prisonerId: String) = webTestClient.get()
+    .uri("/calculation/$prisonerId/overview")
+    .accept(MediaType.APPLICATION_JSON)
+    .headers(setAuthorisation(roles = listOf("CALCULATE_RELEASE_DATES__CALCULATE__RO")))
+    .exchange()
+    .expectStatus().isOk
+    .expectHeader().contentType(MediaType.APPLICATION_JSON)
+    .expectBody<PrisonerCalculationOverview>()
+    .returnResult().responseBody!!
 
   companion object {
     @JvmStatic
