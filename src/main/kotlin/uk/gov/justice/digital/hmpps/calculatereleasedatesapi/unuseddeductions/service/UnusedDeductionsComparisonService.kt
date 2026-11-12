@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import jakarta.persistence.EntityNotFoundException
+import org.springframework.data.domain.PageRequest
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonStatus
@@ -70,14 +71,20 @@ class UnusedDeductionsComparisonService(
     return summarise(comparison)
   }
 
-  fun list(page: Int = 0, size: Int = DEFAULT_LIST_PAGE_SIZE): UnusedDeductionsComparisonPage {
+  fun list(page: Int = 0, size: Int = DEFAULT_LIST_PAGE_SIZE, calculatedByCurrentUser: Boolean? = null): UnusedDeductionsComparisonPage {
     val prisons = prisonService.getCurrentUserPrisonsList()
     val pageNumber = page.coerceAtLeast(0)
     val pageSize = size.coerceIn(1, MAX_PAGE_SIZE)
-    val viewable = comparisonRepository.findAllByOrderByCalculatedAtDesc().filter { canView(it, prisons) }
+    val username = serviceUserService.getUsername()
+    val pageRequest = PageRequest.of(pageNumber, pageSize)
+    val result = when (calculatedByCurrentUser) {
+      null -> comparisonRepository.findViewable(prisons, pageRequest)
+      true -> comparisonRepository.findViewableCalculatedBy(prisons, username, pageRequest)
+      false -> comparisonRepository.findViewableNotCalculatedBy(prisons, username, pageRequest)
+    }
     return UnusedDeductionsComparisonPage(
-      content = viewable.drop(pageNumber * pageSize).take(pageSize).map { summarise(it) },
-      page = UnusedDeductionsPageInfo(pageNumber, pageSize, viewable.size.toLong(), (viewable.size + pageSize - 1) / pageSize),
+      content = result.content.map { summarise(it) },
+      page = UnusedDeductionsPageInfo(pageNumber, pageSize, result.totalElements, result.totalPages),
     )
   }
 
