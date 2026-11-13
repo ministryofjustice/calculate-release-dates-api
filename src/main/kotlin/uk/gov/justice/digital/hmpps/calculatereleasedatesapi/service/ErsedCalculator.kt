@@ -159,7 +159,7 @@ class ErsedCalculator(
     } else {
       val daysAwarded = sentenceCalculation.adjustments.awardedDuringCustodyPriorToErsZero -
         sentenceCalculation.adjustments.unusedAdaDays -
-        sentenceCalculation.adjustments.servedAdaDays
+        sentenceCalculation.adjustments.servedAdaDaysPriorToErsZero
       Result(
         ReleaseDateCalculationBreakdown(
           releaseDate = ImportantDates.ERS30_COMMENCEMENT_DATE.plusDays(daysAwarded),
@@ -215,7 +215,7 @@ class ErsedCalculator(
   private fun calculate(params: Params): Result {
     val ersed = calculateErsedMinOrMax(params)
 
-    val addedDays = params.sentenceCalculation.adjustments.ualDuringCustody + params.sentenceCalculation.adjustments.awardedDuringCustodyPriorToErsZero
+    val addedDays = params.sentenceCalculation.adjustments.ualDuringCustody + params.sentenceCalculation.adjustments.awardedDuringCustodyPriorToErsZero - params.sentenceCalculation.adjustments.servedAdaDaysPriorToErsZero
     val adjustedErsed = ersed.releaseDate.minusDays(addedDays)
 
     return if (adjustedErsed.isBefore(params.sentence.sentencedAt)) {
