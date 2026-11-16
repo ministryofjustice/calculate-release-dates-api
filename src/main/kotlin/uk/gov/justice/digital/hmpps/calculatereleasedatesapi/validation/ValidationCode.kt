@@ -69,7 +69,7 @@ enum class ValidationCode(val message: String, val validationType: ValidationTyp
   REMAND_FROM_TO_DATES_REQUIRED("Remand periods must have a from and to date."),
   REMAND_OVERLAPS_WITH_REMAND("Remand time can only be added once, it can cannot overlap with other remand dates."),
   REMAND_OVERLAPS_WITH_SENTENCE("Remand time cannot be credited when a custodial sentence is being served."),
-  SEC236A_SENTENCE_TYPE_INCORRECT("The sentence type for court case %s NOMIS line reference %s is invalid for the sentence date entered.", ValidationType.VALIDATION, ValidationMessageContentType.PLAIN_TEXT, ValidationFixSource.COURT_CASES),
+  SEC236A_SENTENCE_TYPE_INCORRECT($$"The sentence type %2$s %3$s for offence %4$s is invalid for the sentence date %1$s entered.", ValidationType.VALIDATION, ValidationMessageContentType.PLAIN_TEXT, ValidationFixSource.COURT_CASES),
   SEC_91_SENTENCE_TYPE_INCORRECT($$"The sentence type %2$s %3$s for offence %4$s is invalid for the sentence date %1$s entered.", ValidationType.VALIDATION, ValidationMessageContentType.PLAIN_TEXT, ValidationFixSource.COURT_CASES),
   SENTENCE_HAS_MULTIPLE_TERMS($$"%2$s %3$s for offence %4$s must only have one term.", ValidationType.VALIDATION, ValidationMessageContentType.PLAIN_TEXT, ValidationFixSource.COURT_CASES),
   SENTENCE_HAS_NO_IMPRISONMENT_TERM($$"%2$s %3$s for offence %4$s must include an imprisonment term.", ValidationType.VALIDATION, ValidationMessageContentType.PLAIN_TEXT, ValidationFixSource.COURT_CASES),
