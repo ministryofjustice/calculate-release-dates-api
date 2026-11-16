@@ -826,32 +826,35 @@ class ValidationServiceTest : SpringTestBase() {
 
     assertThat(result).isEqualTo(
       listOf(
-        ValidationMessage(EDS18_EDS21_EDSU18_SENTENCE_TYPE_INCORRECT,
+        ValidationMessage(
+          EDS18_EDS21_EDSU18_SENTENCE_TYPE_INCORRECT,
           listOf(
             ImportantDates.EDS18_SENTENCE_TYPES_START_DATE.minusDays(1).toString(),
             "",
             "",
             "A123456",
             "TEST OFFENCE 2",
-          )
+          ),
         ),
-        ValidationMessage(EDS18_EDS21_EDSU18_SENTENCE_TYPE_INCORRECT,
+        ValidationMessage(
+          EDS18_EDS21_EDSU18_SENTENCE_TYPE_INCORRECT,
           listOf(
             ImportantDates.EDS18_SENTENCE_TYPES_START_DATE.minusDays(1).toString(),
             "",
             "",
             "A123456",
             "TEST OFFENCE 2",
-          )
+          ),
         ),
-        ValidationMessage(EDS18_EDS21_EDSU18_SENTENCE_TYPE_INCORRECT,
+        ValidationMessage(
+          EDS18_EDS21_EDSU18_SENTENCE_TYPE_INCORRECT,
           listOf(
             ImportantDates.EDS18_SENTENCE_TYPES_START_DATE.minusDays(1).toString(),
             "",
             "",
             "A123456",
             "TEST OFFENCE 2",
-          )
+          ),
         ),
       ),
     )
@@ -895,7 +898,8 @@ class ValidationServiceTest : SpringTestBase() {
 
     assertThat(result).isEqualTo(
       listOf(
-        ValidationMessage(LASPO_AR_SENTENCE_TYPE_INCORRECT,
+        ValidationMessage(
+          LASPO_AR_SENTENCE_TYPE_INCORRECT,
           listOf(
             ImportantDates.LASPO_AR_SENTENCE_TYPES_END_DATE.plusDays(1).toString(),
             "",
@@ -1020,23 +1024,25 @@ class ValidationServiceTest : SpringTestBase() {
 
     assertThat(result).isEqualTo(
       listOf(
-        ValidationMessage(SOPC18_SOPC21_SENTENCE_TYPE_INCORRECT,
+        ValidationMessage(
+          SOPC18_SOPC21_SENTENCE_TYPE_INCORRECT,
           listOf(
             ImportantDates.SEC_91_END_DATE.minusDays(1).toString(),
             "",
             "",
             "A123456",
             "TEST OFFENCE 2",
-          )
+          ),
         ),
-        ValidationMessage(SOPC18_SOPC21_SENTENCE_TYPE_INCORRECT,
+        ValidationMessage(
+          SOPC18_SOPC21_SENTENCE_TYPE_INCORRECT,
           listOf(
             ImportantDates.SEC_91_END_DATE.minusDays(1).toString(),
             "",
             "",
             "A123456",
             "TEST OFFENCE 2",
-          )
+          ),
         ),
       ),
     )
@@ -1712,7 +1718,8 @@ class ValidationServiceTest : SpringTestBase() {
 
     assertThat(result).isEqualTo(
       listOf(
-        ValidationMessage(A_FINE_SENTENCE_MISSING_FINE_AMOUNT,
+        ValidationMessage(
+          A_FINE_SENTENCE_MISSING_FINE_AMOUNT,
           listOf(
             FIRST_MAY_2021.toString(),
             "",
