@@ -13,6 +13,7 @@ data class SentenceAdjustments(
   // UAL after FTR will also be included in the above UAL after determinate release.
   val ualAfterFtr: Long = 0,
   val servedAdaDays: Long = 0,
+  val servedAdaDaysPriorToErsZero: Long = 0,
   val unusedAdaDays: Long = 0,
   val unusedLicenceAdaDays: Long = 0,
 ) {
@@ -24,7 +25,7 @@ data class SentenceAdjustments(
 
   fun adjustmentsForInitialRelease(): Long = adjustmentsForInitialReleaseWithoutAwarded() + awardedDuringCustody - servedAdaDays
 
-  fun adjustmentsForErsed(): Long = adjustmentsForInitialReleaseWithoutAwarded() + awardedDuringCustodyPriorToErsZero - servedAdaDays
+  fun adjustmentsForErsed(): Long = adjustmentsForInitialReleaseWithoutAwarded() + awardedDuringCustodyPriorToErsZero - servedAdaDaysPriorToErsZero
 
   fun additionsAppliedToDeterminateRelease(): Long = ualDuringCustody + awardedDuringCustody - servedAdaDays
 
