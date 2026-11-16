@@ -88,9 +88,9 @@ class ValidationIntTest(private val mockManageOffencesClient: MockManageOffences
         ValidationMessage(code = OFFENCE_DATE_AFTER_SENTENCE_RANGE_DATE, arguments = listOf("1", "2")),
         ValidationMessage(code = OFFENCE_MISSING_DATE, arguments = listOf("2", "1")),
         ValidationMessage(code = ZERO_IMPRISONMENT_TERM, arguments = listOf("2", "1")),
-        ValidationMessage(code = SENTENCE_HAS_MULTIPLE_TERMS, arguments = listOf("2", "2")),
-        ValidationMessage(code = SEC_91_SENTENCE_TYPE_INCORRECT, arguments = listOf("2", "4")),
-        ValidationMessage(code = SEC_91_SENTENCE_TYPE_INCORRECT, arguments = listOf("2", "4")),
+        ValidationMessage(code = SENTENCE_HAS_MULTIPLE_TERMS, arguments = listOf("2", "2", "2")),
+        ValidationMessage(code = SEC_91_SENTENCE_TYPE_INCORRECT, arguments = listOf("2", "4", "6")),
+        ValidationMessage(code = SEC_91_SENTENCE_TYPE_INCORRECT, arguments = listOf("2", "4", "6")),
         ValidationMessage(code = REMAND_FROM_TO_DATES_REQUIRED),
         ValidationMessage(code = REMAND_FROM_TO_DATES_REQUIRED),
         ValidationMessage(code = ADJUSTMENT_FUTURE_DATED_ADA),
@@ -259,7 +259,7 @@ class ValidationIntTest(private val mockManageOffencesClient: MockManageOffences
 
   @Test
   fun `Run validation on no terms`() {
-    runValidationAndCheckMessages("NO_TERM", listOf(ValidationMessage(ValidationCode.SENTENCE_HAS_NO_IMPRISONMENT_TERM, arguments = listOf("1", "1"))))
+    runValidationAndCheckMessages("NO_TERM", listOf(ValidationMessage(ValidationCode.SENTENCE_HAS_NO_IMPRISONMENT_TERM, arguments = listOf("1", "1", "1"))))
   }
 
   @Test
