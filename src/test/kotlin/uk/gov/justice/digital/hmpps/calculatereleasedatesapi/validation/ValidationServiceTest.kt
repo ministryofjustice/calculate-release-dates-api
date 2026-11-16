@@ -542,7 +542,13 @@ class ValidationServiceTest : SpringTestBase() {
       listOf(
         ValidationMessage(
           SENTENCE_HAS_NO_IMPRISONMENT_TERM,
-          listOf(CASE_SEQ.toString(), LINE_SEQ.toString()),
+          listOf(
+            FIRST_MAY_2021.toString(),
+            "",
+            "",
+            "A123456",
+            "TEST OFFENCE 2",
+          ),
         ),
       ),
     )
@@ -617,7 +623,13 @@ class ValidationServiceTest : SpringTestBase() {
       listOf(
         ValidationMessage(
           SENTENCE_HAS_NO_LICENCE_TERM,
-          listOf(CASE_SEQ.toString(), LINE_SEQ.toString()),
+          listOf(
+            FIRST_MAY_2021.toString(),
+            "",
+            "",
+            "A123456",
+            "TEST OFFENCE 2",
+          ),
         ),
       ),
     )
@@ -814,9 +826,33 @@ class ValidationServiceTest : SpringTestBase() {
 
     assertThat(result).isEqualTo(
       listOf(
-        ValidationMessage(EDS18_EDS21_EDSU18_SENTENCE_TYPE_INCORRECT, listOf(CASE_SEQ.toString(), LINE_SEQ.toString())),
-        ValidationMessage(EDS18_EDS21_EDSU18_SENTENCE_TYPE_INCORRECT, listOf(CASE_SEQ.toString(), LINE_SEQ.toString())),
-        ValidationMessage(EDS18_EDS21_EDSU18_SENTENCE_TYPE_INCORRECT, listOf(CASE_SEQ.toString(), LINE_SEQ.toString())),
+        ValidationMessage(EDS18_EDS21_EDSU18_SENTENCE_TYPE_INCORRECT,
+          listOf(
+            ImportantDates.EDS18_SENTENCE_TYPES_START_DATE.minusDays(1).toString(),
+            "",
+            "",
+            "A123456",
+            "TEST OFFENCE 2",
+          )
+        ),
+        ValidationMessage(EDS18_EDS21_EDSU18_SENTENCE_TYPE_INCORRECT,
+          listOf(
+            ImportantDates.EDS18_SENTENCE_TYPES_START_DATE.minusDays(1).toString(),
+            "",
+            "",
+            "A123456",
+            "TEST OFFENCE 2",
+          )
+        ),
+        ValidationMessage(EDS18_EDS21_EDSU18_SENTENCE_TYPE_INCORRECT,
+          listOf(
+            ImportantDates.EDS18_SENTENCE_TYPES_START_DATE.minusDays(1).toString(),
+            "",
+            "",
+            "A123456",
+            "TEST OFFENCE 2",
+          )
+        ),
       ),
     )
   }
@@ -859,7 +895,15 @@ class ValidationServiceTest : SpringTestBase() {
 
     assertThat(result).isEqualTo(
       listOf(
-        ValidationMessage(LASPO_AR_SENTENCE_TYPE_INCORRECT, listOf(CASE_SEQ.toString(), LINE_SEQ.toString())),
+        ValidationMessage(LASPO_AR_SENTENCE_TYPE_INCORRECT,
+          listOf(
+            ImportantDates.LASPO_AR_SENTENCE_TYPES_END_DATE.plusDays(1).toString(),
+            "",
+            "",
+            "A123456",
+            "TEST OFFENCE 2",
+          ),
+        ),
       ),
     )
   }
@@ -976,8 +1020,24 @@ class ValidationServiceTest : SpringTestBase() {
 
     assertThat(result).isEqualTo(
       listOf(
-        ValidationMessage(SOPC18_SOPC21_SENTENCE_TYPE_INCORRECT, listOf(CASE_SEQ.toString(), LINE_SEQ.toString())),
-        ValidationMessage(SOPC18_SOPC21_SENTENCE_TYPE_INCORRECT, listOf(CASE_SEQ.toString(), LINE_SEQ.toString())),
+        ValidationMessage(SOPC18_SOPC21_SENTENCE_TYPE_INCORRECT,
+          listOf(
+            ImportantDates.SEC_91_END_DATE.minusDays(1).toString(),
+            "",
+            "",
+            "A123456",
+            "TEST OFFENCE 2",
+          )
+        ),
+        ValidationMessage(SOPC18_SOPC21_SENTENCE_TYPE_INCORRECT,
+          listOf(
+            ImportantDates.SEC_91_END_DATE.minusDays(1).toString(),
+            "",
+            "",
+            "A123456",
+            "TEST OFFENCE 2",
+          )
+        ),
       ),
     )
   }
@@ -1652,7 +1712,15 @@ class ValidationServiceTest : SpringTestBase() {
 
     assertThat(result).isEqualTo(
       listOf(
-        ValidationMessage(A_FINE_SENTENCE_MISSING_FINE_AMOUNT, listOf(CASE_SEQ.toString(), LINE_SEQ.toString())),
+        ValidationMessage(A_FINE_SENTENCE_MISSING_FINE_AMOUNT,
+          listOf(
+            FIRST_MAY_2021.toString(),
+            "",
+            "",
+            "A123456",
+            "TEST OFFENCE 2",
+          ),
+        ),
       ),
     )
   }
