@@ -13,7 +13,7 @@ data class AppliedAdjustments(
       sentenceAdjustments.awardedDuringCustody - sentenceAdjustments.servedAdaDays,
     )
     fun forErsed(sentence: CalculableSentence): AppliedAdjustments = AppliedAdjustments(
-      sentence.sentenceCalculation.adjustments.awardedDuringCustody - sentence.sentenceCalculation.adjustments.servedAdaDays,
+      sentence.sentenceCalculation.adjustments.awardedDuringCustodyPriorToErsZero - sentence.sentenceCalculation.adjustments.servedAdaDaysPriorToErsZero,
     )
   }
 }
