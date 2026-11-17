@@ -161,6 +161,7 @@ class PrisonApiClient(
         }
       }
     }
+    .loggingRetry(log, "getOffenderKeyDates($bookingId)")
     .block()!!
 
   fun getAgenciesByType(agencyType: String): List<Agency> {
@@ -193,6 +194,7 @@ class PrisonApiClient(
         else -> Mono.just("Offender Key Dates for offenderSentCalcId ($offenderSentCalcId) could not be loaded for an unknown reason. Status ${response.statusCode().value()}".left())
       }
     }
+    .loggingRetry(log, "getNOMISOffenderKeyDates($offenderSentCalcId)")
     .block()!!
 
   fun getExternalMovements(prisonerId: String, earliestSentenceDate: LocalDate): List<PrisonApiExternalMovement> {
