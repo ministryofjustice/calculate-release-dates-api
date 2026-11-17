@@ -29,6 +29,7 @@ class ManageUsersApiClient(@param:Qualifier("manageUsersApiWebClient") private v
       log.debug("Couldn't find user with username: {}", username)
       Mono.empty()
     }
+    .loggingRetry(log, "getUserByUsername($username)")
     .block()
 
   fun getUsersByUsernames(usernames: Set<String>): Map<String, PrisonUserBasicDetails>? = manageUsersApiWebClient
@@ -45,5 +46,6 @@ class ManageUsersApiClient(@param:Qualifier("manageUsersApiWebClient") private v
         Mono.error(e)
       }
     }
+    .loggingRetry(log, "getUsersByUsernames($usernames)")
     .block()
 }
