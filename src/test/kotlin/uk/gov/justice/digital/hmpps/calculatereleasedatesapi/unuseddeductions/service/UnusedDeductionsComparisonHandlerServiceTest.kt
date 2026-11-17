@@ -22,6 +22,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.unuseddeductions.en
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.unuseddeductions.entity.UnusedDeductionsComparisonType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.unuseddeductions.repository.UnusedDeductionsComparisonPersonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.unuseddeductions.repository.UnusedDeductionsComparisonRepository
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessage
 import java.util.Optional
 
 class UnusedDeductionsComparisonHandlerServiceTest {
@@ -47,6 +49,8 @@ class UnusedDeductionsComparisonHandlerServiceTest {
   private fun adjustment(type: AdjustmentDto.AdjustmentType, days: Int, effectiveDays: Int) = AdjustmentDto(person = "A1234BC", adjustmentType = type, days = days, effectiveDays = effectiveDays)
 
   private fun detail(unused: Long?) = UnusedDeductionsCalculationDetail(UnusedDeductionCalculationResponse(unused), 122, 183, PrisonerDetails(bookingId = 123, offenderNo = "A1234BC", dateOfBirth = java.time.LocalDate.of(1990, 1, 1), lastName = "SMITH"))
+
+  private fun prisoner() = PrisonerDetails(bookingId = 123, offenderNo = "A1234BC", dateOfBirth = java.time.LocalDate.of(1990, 1, 1), lastName = "SMITH")
 
   private fun saved(): UnusedDeductionsComparisonPerson {
     val captor = argumentCaptor<UnusedDeductionsComparisonPerson>()
@@ -99,6 +103,27 @@ class UnusedDeductionsComparisonHandlerServiceTest {
     service.handleMessage(message)
 
     assertThat(saved().outcome).isEqualTo(UnusedDeductionsComparisonOutcome.VALIDATION_ERROR)
+  }
+
+  @Test
+  fun `unsupported calculations are recorded as unsupported even with a recall`() {
+    givenAdjustments()
+    val messages = listOf(ValidationMessage(ValidationCode.UNSUPPORTED_CALCULATION_DTO_WITH_RECALL))
+    whenever(calculationService.calculateDetailed(any(), any())).thenReturn(UnusedDeductionsCalculationDetail(UnusedDeductionCalculationResponse(null, messages), null, null, prisoner(), hasRecall = true))
+
+    service.handleMessage(message)
+
+    assertThat(saved().outcome).isEqualTo(UnusedDeductionsComparisonOutcome.UNSUPPORTED)
+  }
+
+  @Test
+  fun `recalls are recorded as recall rather than compared`() {
+    givenAdjustments(adjustment(AdjustmentDto.AdjustmentType.UNUSED_DEDUCTIONS, 61, 61))
+    whenever(calculationService.calculateDetailed(any(), any())).thenReturn(UnusedDeductionsCalculationDetail(UnusedDeductionCalculationResponse(10), 122, 183, prisoner(), hasRecall = true))
+
+    service.handleMessage(message)
+
+    assertThat(saved().outcome).isEqualTo(UnusedDeductionsComparisonOutcome.RECALL)
   }
 
   @Test
