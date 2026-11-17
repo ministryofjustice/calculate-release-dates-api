@@ -22,7 +22,7 @@ class ValidationUtilities {
 
   internal fun getCourtCaseArguments(sentencesAndOffence: SentenceAndOffence) = listOf(
     sentencesAndOffence.sentenceDate.toString(),
-    sentencesAndOffence.caseReference?.let { " in Court case $it" } ?: "",
+    sentencesAndOffence.caseReference?.let { " $it" } ?: "",
     sentencesAndOffence.courtDescription?.let { " at $it" } ?: "",
     sentencesAndOffence.offence.offenceCode,
     sentencesAndOffence.offence.offenceDescription,
