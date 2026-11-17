@@ -7,6 +7,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentsSo
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOutput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.UnusedDeductionCalculationResponse
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.BookingService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationService
@@ -37,21 +38,23 @@ class UnusedDeductionsCalculationService(
 
     val calculationUserInputs = CalculationUserInputs(useOffenceIndicators = true)
 
+    val hasRecall = sourceData.sentenceAndOffences.any { SentenceCalculationType.from(it.sentenceCalculationType).recallType != null }
+
     val validationMessages = validationService.validate(sourceData, calculationUserInputs, ValidationOrder.INVALID)
       .filterNot { listOf(ValidationCode.CUSTODIAL_PERIOD_EXTINGUISHED_TAGGED_BAIL, ValidationCode.CUSTODIAL_PERIOD_EXTINGUISHED_REMAND, ValidationCode.RELEASE_DATE_BEFORE_SENTENCE_DATE).contains(it.code) }
     if (validationMessages.isNotEmpty()) {
-      return UnusedDeductionsCalculationDetail(UnusedDeductionCalculationResponse(null, validationMessages), null, null, prisoner)
+      return UnusedDeductionsCalculationDetail(UnusedDeductionCalculationResponse(null, validationMessages), null, null, prisoner, hasRecall)
     }
 
     val booking = bookingService.getBooking(sourceData)
     val result = calculationService.calculateReleaseDates(booking, calculationUserInputs, calculateSentenceLevelDates = false)
 
-    return calculateDetailed(result, prisoner)
+    return calculateDetailed(result, prisoner, hasRecall)
   }
 
-  fun calculate(result: CalculationOutput): UnusedDeductionCalculationResponse = calculateDetailed(result, null).response
+  fun calculate(result: CalculationOutput): UnusedDeductionCalculationResponse = calculateDetailed(result, null, false).response
 
-  private fun calculateDetailed(result: CalculationOutput, prisoner: PrisonerDetails?): UnusedDeductionsCalculationDetail {
+  private fun calculateDetailed(result: CalculationOutput, prisoner: PrisonerDetails?, hasRecall: Boolean): UnusedDeductionsCalculationDetail {
     val sentences = result.sentenceGroup.last().sentences
     val releaseDateTypes = listOf(ReleaseDateType.CRD, ReleaseDateType.ARD, ReleaseDateType.MTD)
     val calculationResult = result.calculationResult
@@ -78,7 +81,7 @@ class UnusedDeductionsCalculationService(
     } else {
       0
     }
-    return UnusedDeductionsCalculationDetail(UnusedDeductionCalculationResponse(unusedDeductions, emptyList()), custodialDays, deductions, prisoner)
+    return UnusedDeductionsCalculationDetail(UnusedDeductionCalculationResponse(unusedDeductions, emptyList()), custodialDays, deductions, prisoner, hasRecall)
   }
 }
 
@@ -91,4 +94,5 @@ data class UnusedDeductionsCalculationDetail(
   val custodialDays: Long?,
   val totalDeductions: Long?,
   val prisoner: PrisonerDetails?,
+  val hasRecall: Boolean = false,
 )
