@@ -14,5 +14,6 @@ DELETE FROM tranche_outcome;
 DELETE FROM calculation_request_manual_reason;
 DELETE FROM calculation_outcome_historic_sled_override;
 DELETE FROM operative_sentence_envelope;
+DELETE FROM legacy_sentence_calculations;
 DELETE FROM calculation_request;
 DELETE FROM bank_holiday_cache;

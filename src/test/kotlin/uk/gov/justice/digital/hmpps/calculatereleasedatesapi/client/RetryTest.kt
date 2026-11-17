@@ -18,6 +18,7 @@ import org.springframework.web.reactive.function.client.ExchangeFunction
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.bodyToMono
 import reactor.core.publisher.Mono
+import reactor.netty.http.client.PrematureCloseException
 import java.io.IOException
 import java.time.Duration
 
@@ -81,6 +82,31 @@ class RetryTest {
       Mono.error(IOException("Test")),
       Mono.error(IOException("Test")),
       Mono.error(IOException("Test")),
+      Mono.just(successResponse),
+    )
+
+    val body = webClient.get()
+      .uri("/test")
+      .retrieve()
+      .bodyToMono<Body>()
+      .loggingRetry(log, "test", maxAttempts = 3, minBackoff = Duration.ofMillis(10), maxBackoff = Duration.ofSeconds(10))
+      .block()
+
+    assertThat(body).isEqualTo(Body(true))
+
+    verify(exchangeFunction, times(4)).exchange(any())
+  }
+
+  @Test
+  fun `should retry PrematureCloseException up to the max times and still get the response if successful`() {
+    val successResponse = ClientResponse.create(HttpStatus.OK)
+      .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+      .body("{ \"answer\": true }").build()
+
+    whenever(exchangeFunction.exchange(any())).thenReturn(
+      Mono.error(PrematureCloseException.TEST_EXCEPTION),
+      Mono.error(PrematureCloseException.TEST_EXCEPTION),
+      Mono.error(PrematureCloseException.TEST_EXCEPTION),
       Mono.just(successResponse),
     )
 
