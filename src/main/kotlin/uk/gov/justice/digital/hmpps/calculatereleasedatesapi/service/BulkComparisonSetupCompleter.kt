@@ -17,9 +17,14 @@ class BulkComparisonSetupCompleter(
 ) {
 
   @Transactional
-  fun completeSetup(comparisonId: Long, total: Long) {
+  fun completeSetup(
+    comparisonId: Long,
+    total: Long,
+    prisonsFailed: List<String> = emptyList(),
+  ) {
     val comparison = getComparison(comparisonId)
     comparison.numberOfPeopleExpected = total
+    comparison.prisonsFailed = prisonsFailed
     comparison.comparisonStatus = ComparisonStatus.PROCESSING
     comparisonRepository.save(comparison)
   }

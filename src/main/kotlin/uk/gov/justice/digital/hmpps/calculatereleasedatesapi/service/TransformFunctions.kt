@@ -707,6 +707,7 @@ fun transform(
   comparison.numberOfPeopleComparisonFailedFor,
   mismatches.map { transform(it, objectMapper) },
   comparison.comparisonStatus.name,
+  prisonsFailed = comparison.prisonsFailed,
 )
 
 internal fun transform(comparisonPerson: ComparisonPerson, objectMapper: ObjectMapper): ComparisonMismatchSummary = ComparisonMismatchSummary(
