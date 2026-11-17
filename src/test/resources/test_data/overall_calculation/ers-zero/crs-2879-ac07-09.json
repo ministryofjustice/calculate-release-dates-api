@@ -1,0 +1,77 @@
+{
+  "booking": {
+    "offender": {
+      "reference": "ABC123",
+      "dateOfBirth": "1990-01-01"
+    },
+    "sentences": [
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2026-09-30"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 5
+          }
+        },
+        "sentencedAt": "2026-09-30",
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        },
+        "identifier": "d211f333-aa1a-3e25-ac8d-0459c1f98868"
+      },
+      {
+        "type": "StandardSentence",
+        "offence": {
+          "committedAt": "2026-09-30"
+        },
+        "duration": {
+          "durationElements": {
+            "MONTHS": 14
+          }
+        },
+        "sentencedAt": "2026-09-30",
+        "releaseArrangements": {
+          "isSDSPlus": false,
+          "isSDSPlusEligibleSentenceTypeLengthAndOffence": false,
+          "sdsEarlyReleaseExclusions": [],
+          "isSection250": false
+        },
+        "consecutiveSentenceUUIDs": [
+          "d211f333-aa1a-3e25-ac8d-0459c1f98868"
+        ]
+      }
+    ],
+    "adjustments": {
+      "REMAND": [
+        {
+          "appliesToSentencesFrom": "2026-09-30",
+          "numberOfDays": 45,
+          "fromDate": "2026-08-16",
+          "toDate": "2026-09-29"
+        }
+      ],
+      "ADDITIONAL_DAYS_AWARDED": [
+        {
+          "appliesToSentencesFrom": "2027-02-13",
+          "numberOfDays": 27,
+          "fromDate": "2027-02-13"
+        }
+      ]
+
+    }
+  },
+  "userInputs": {
+    "useOffenceIndicators": true,
+    "calculateErsed": true
+  },
+  "params": "sds-progression-model-october",
+  "featureToggles": {
+    "adultHdcSuspended": true,
+    "ersZeroEnabled": true
+  }
+}

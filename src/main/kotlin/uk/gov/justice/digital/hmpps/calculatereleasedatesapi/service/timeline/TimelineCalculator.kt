@@ -152,6 +152,7 @@ class TimelineCalculator(
         ualAfterFtr = existingAdjustments.ualAfterFtr + adjustments.ualAfterFtr,
 
         servedAdaDays = existingAdjustments.servedAdaDays + adjustments.servedAdaDays,
+        servedAdaDaysPriorToErsZero = existingAdjustments.servedAdaDaysPriorToErsZero + adjustments.servedAdaDaysPriorToErsZero,
         unusedAdaDays = existingAdjustments.unusedAdaDays + adjustments.unusedAdaDays,
         unusedLicenceAdaDays = existingAdjustments.unusedLicenceAdaDays + adjustments.unusedLicenceAdaDays,
       )
