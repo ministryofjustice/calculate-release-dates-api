@@ -67,5 +67,11 @@ enum class UnusedDeductionsComparisonOutcome {
   MATCH,
   MISMATCH,
   VALIDATION_ERROR,
+
+  /** Cannot be calculated automatically as the calculation is unsupported; unused deductions must be entered manually. */
+  UNSUPPORTED,
+
+  /** Cannot be calculated automatically as the person has a recall sentence; unused deductions must be entered manually. */
+  RECALL,
   FATAL_ERROR,
 }
