@@ -201,13 +201,13 @@ class BookingTimelineService(
     with(timelineTrackingData) {
       if (currentSentenceGroup.isNotEmpty()) {
         val latestReleaseSentence = currentSentenceGroup.maxBy { it.sentenceCalculation.adjustedDeterminateReleaseDate }
-        val earliestApplicableDateForLatestSentence = latestReleaseSentence.sentenceCalculation.applicableSdsLegislation?.earliestApplicableDate
-        val releaseDate =
-          if (earliestApplicableDateForLatestSentence != null && latestReleaseSentence.sentenceCalculation.adjustedDeterminateReleaseDate.isBefore(earliestApplicableDateForLatestSentence)) {
-            earliestApplicableDateForLatestSentence
-          } else {
-            latestReleaseSentence.sentenceCalculation.adjustedDeterminateReleaseDate
-          }
+        val applicableSdsLegislation = latestReleaseSentence.sentenceCalculation.applicableSdsLegislation
+        val adjustedDeterminateReleaseDate = latestReleaseSentence.sentenceCalculation.adjustedDeterminateReleaseDate
+        val releaseDate = if (applicableSdsLegislation != null && applicableSdsLegislation.earliestApplicableDate != null) {
+          applicableSdsLegislation.legislation.applyDefaulting(adjustedDeterminateReleaseDate, applicableSdsLegislation.earliestApplicableDate, latestReleaseSentence.sentenceCalculation.adjustments.awardedDuringCustody).date
+        } else {
+          adjustedDeterminateReleaseDate
+        }
         latestRelease = maxOf(latestReleaseSentence.sentencedAt, workingDayService.previousWorkingDay(releaseDate).date) to latestReleaseSentence
       }
     }
