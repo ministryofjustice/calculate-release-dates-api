@@ -26,6 +26,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonDis
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonOverview
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonPersonOverview
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonSummary
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ComparisonInput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonPersonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.PrisonService
@@ -84,6 +85,28 @@ class ComparisonEventIntTest(private val mockManageOffencesClient: MockManageOff
     assertTrue(personComparison.isValid)
     assertTrue(personComparison.isMatch)
     assertEquals("default", personComparison.person)
+  }
+
+  @Test
+  fun `Run comparison on all prisons only runs caseload prisons that are active in prison-register`() {
+    val result = createComparison("all")
+
+    val completedComparison = getComparison(result.comparisonShortReference)
+    assertEquals(4, completedComparison.numberOfPeopleCompared)
+    assertEquals(emptyList<String>(), completedComparison.prisonsFailed)
+  }
+
+  @Test
+  fun `Run comparison on an inactive prison is rejected with a 400 and nothing is created`() {
+    webTestClient.post()
+      .uri("/comparison")
+      .accept(MediaType.APPLICATION_JSON)
+      .bodyValue(ComparisonInput(emptyMap(), "DAI", ComparisonType.ESTABLISHMENT_FULL))
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATE_COMPARER")))
+      .exchange()
+      .expectStatus().isBadRequest
+
+    assertEquals(0, comparisonRepository.count())
   }
 
   @Test

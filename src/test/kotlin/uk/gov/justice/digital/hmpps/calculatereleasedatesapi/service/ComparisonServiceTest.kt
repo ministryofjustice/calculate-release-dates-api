@@ -11,12 +11,15 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.any
+import org.mockito.kotlin.doThrow
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
+import org.springframework.http.HttpStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.adjustmentsapi.model.AdjustmentDto
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcome
@@ -82,6 +85,7 @@ class ComparisonServiceTest {
   private val sourceDataMapper = mock<SourceDataMapper>()
   private val bookingService = mock<BookingService>()
   private val latestCalculationService = mock<LatestCalculationService>()
+  private val eligiblePrisonsService = mock<EligiblePrisonsService>()
 
   private val comparisonService = ComparisonService(
     calculationOutcomeRepository,
@@ -97,6 +101,7 @@ class ComparisonServiceTest {
     sourceDataMapper,
     bookingService,
     latestCalculationService,
+    eligiblePrisonsService,
   )
 
   @BeforeEach
@@ -122,6 +127,38 @@ class ComparisonServiceTest {
     val comparisonInput = ComparisonInput(null, prison = "ABC")
     val comparison = comparisonService.create(comparisonInput, "")
     assertEquals(outputComparison, comparison)
+  }
+
+  @Test
+  fun `An inactive prison is rejected before anything is saved or queued`() {
+    doThrow(CrdWebException("Bulk calculation cannot be run for inactive prison DAI.", HttpStatus.BAD_REQUEST, "INACTIVE_PRISON"))
+      .whenever(eligiblePrisonsService).checkPrisonCanBeCompared("DAI")
+
+    val exception = assertThrows(CrdWebException::class.java) {
+      comparisonService.create(ComparisonInput(emptyMap(), prison = "DAI"), "")
+    }
+
+    assertEquals(HttpStatus.BAD_REQUEST, exception.status)
+    verify(comparisonRepository, never()).save(any<Comparison>())
+    verify(bulkComparisonEventSenderService, never()).processPrisonComparison(any(), any(), any())
+  }
+
+  @Test
+  fun `A single prison is checked against prison-register before the comparison is created`() {
+    whenever(comparisonRepository.save(any<Comparison>())).thenReturn(aComparison())
+
+    comparisonService.create(ComparisonInput(emptyMap(), prison = "ABC"), "")
+
+    verify(eligiblePrisonsService).checkPrisonCanBeCompared("ABC")
+  }
+
+  @Test
+  fun `An all prisons comparison is not checked as a single prison`() {
+    whenever(comparisonRepository.save(any<Comparison>())).thenReturn(aComparison())
+
+    comparisonService.create(ComparisonInput(emptyMap(), prison = "all"), "")
+
+    verify(eligiblePrisonsService, never()).checkPrisonCanBeCompared(any())
   }
 
   @Test
