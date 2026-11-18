@@ -37,28 +37,23 @@ class SDSProgressionModelFinalDatesService {
         val early = earlyReleaseCalculation.dates[releaseDateType]
         val standard = standardReleaseCalculation.dates[releaseDateType]
 
-        if (standard != null && early != null && early.isAfter(standard)) {
+        val earlyAwarded = early?.let { getAwardedDaysForReleaseDateType(releaseDateType, earlyReleaseCalculation, "post") } ?: 0
+        val standardAwarded = standard?.let { getAwardedDaysForReleaseDateType(releaseDateType, standardReleaseCalculation, "pre") } ?: 0
+
+        if (standard != null && early != null && early.minusDays(earlyAwarded).isAfter(standard.minusDays(standardAwarded))) {
           // the early date is after the standard likely due to a post-commencement sentence being imposed consecutively. in this case the early date should be retained without defaulting
           mergedDates[releaseDateType] = early
           earlyReleaseCalculation.breakdownByReleaseDateType[releaseDateType]?.let { earlyBreakdown ->
             mergedBreakdown[releaseDateType] = earlyBreakdown
           }
         } else if (standard != null &&
-          legislation.applyDefaulting(
-            standard,
-            earliestApplicableDate,
-            getAwardedDaysForReleaseDateType(releaseDateType, standardReleaseCalculation, "pre"),
-          ).outcome == DefaultingOutcome.DEFAULTED
+          legislation.applyDefaulting(standard, earliestApplicableDate, standardAwarded).outcome == DefaultingOutcome.DEFAULTED
         ) {
           // if the standard date is defaulted using PM rules then it was before the tranche date and should be retained here.
           mergedDates[releaseDateType] = standard
           standardReleaseCalculation.breakdownByReleaseDateType[releaseDateType]?.let { standardBreakdown -> mergedBreakdown[releaseDateType] = standardBreakdown }
         } else if (early != null) {
-          val defaultingResult = legislation.applyDefaulting(
-            early,
-            earliestApplicableDate,
-            getAwardedDaysForReleaseDateType(releaseDateType, earlyReleaseCalculation, "post"),
-          )
+          val defaultingResult = legislation.applyDefaulting(early, earliestApplicableDate, earlyAwarded)
           mergedDates[releaseDateType] = defaultingResult.date
           earlyReleaseCalculation.breakdownByReleaseDateType[releaseDateType]?.let { earlyBreakdown ->
             mergedBreakdown[releaseDateType] = earlyBreakdown.copy(
