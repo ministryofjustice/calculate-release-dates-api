@@ -10,12 +10,14 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.event.PrisonerMerge
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.PrisonerModifiedReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ApprovedDatesSubmissionRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.LegacySentenceCalculationRepository
 
 @Service
 class PrisonerEventService(
   private val featureToggles: FeatureToggles,
   private val calculationRequestRepository: CalculationRequestRepository,
   private val approvedDatesSubmissionRepository: ApprovedDatesSubmissionRepository,
+  private val legacySentenceCalculationRepository: LegacySentenceCalculationRepository,
   private val eventService: EventService,
 ) {
 
@@ -25,6 +27,7 @@ class PrisonerEventService(
       LOGGER.info("Handling prisoner merge event from ${event.additionalInformation.removedNomsNumber} to ${event.additionalInformation.nomsNumber}.")
       calculationRequestRepository.mergePrisoners(fromPrisoner = event.additionalInformation.removedNomsNumber, toPrisoner = event.additionalInformation.nomsNumber, reason = PrisonerModifiedReason.PRISONER_MERGE)
       approvedDatesSubmissionRepository.mergePrisoners(fromPrisoner = event.additionalInformation.removedNomsNumber, toPrisoner = event.additionalInformation.nomsNumber, reason = PrisonerModifiedReason.PRISONER_MERGE)
+      legacySentenceCalculationRepository.mergePrisoners(fromPrisoner = event.additionalInformation.removedNomsNumber, toPrisoner = event.additionalInformation.nomsNumber)
       eventService.publishReleaseDatesChangedEvent(event.additionalInformation.nomsNumber)
       eventService.publishReleaseDatesChangedEvent(event.additionalInformation.removedNomsNumber)
     } else {
@@ -38,6 +41,7 @@ class PrisonerEventService(
       LOGGER.info("Handling booking move event for booking ${event.additionalInformation.bookingId} from ${event.additionalInformation.movedFromNomsNumber} to ${event.additionalInformation.movedToNomsNumber}.")
       calculationRequestRepository.moveBooking(bookingId = event.additionalInformation.bookingId.toLong(), fromPrisoner = event.additionalInformation.movedFromNomsNumber, toPrisoner = event.additionalInformation.movedToNomsNumber, reason = PrisonerModifiedReason.BOOKING_MOVE)
       approvedDatesSubmissionRepository.moveBooking(bookingId = event.additionalInformation.bookingId.toLong(), fromPrisoner = event.additionalInformation.movedFromNomsNumber, toPrisoner = event.additionalInformation.movedToNomsNumber, reason = PrisonerModifiedReason.BOOKING_MOVE)
+      legacySentenceCalculationRepository.moveBooking(bookingId = event.additionalInformation.bookingId.toLong(), fromPrisoner = event.additionalInformation.movedFromNomsNumber, toPrisoner = event.additionalInformation.movedToNomsNumber)
       eventService.publishReleaseDatesChangedEvent(event.additionalInformation.movedFromNomsNumber)
       eventService.publishReleaseDatesChangedEvent(event.additionalInformation.movedToNomsNumber)
     } else {

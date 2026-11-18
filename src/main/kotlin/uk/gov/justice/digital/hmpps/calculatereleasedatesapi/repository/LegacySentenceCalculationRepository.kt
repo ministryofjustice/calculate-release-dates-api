@@ -15,4 +15,12 @@ interface LegacySentenceCalculationRepository : JpaRepository<LegacySentenceCalc
 
   @Query("SELECT c FROM LegacySentenceCalculation c WHERE c.prisonerId = :prisonerId")
   fun getByPrisonerId(prisonerId: String): List<LegacySentenceCalculation>
+
+  @Query("UPDATE LegacySentenceCalculation SET prisonerId = :toPrisoner WHERE prisonerId = :fromPrisoner")
+  @Modifying
+  fun mergePrisoners(fromPrisoner: String, toPrisoner: String)
+
+  @Query("UPDATE LegacySentenceCalculation SET prisonerId = :toPrisoner WHERE bookingId = :bookingId and prisonerId = :fromPrisoner")
+  @Modifying
+  fun moveBooking(bookingId: Long, fromPrisoner: String, toPrisoner: String)
 }
