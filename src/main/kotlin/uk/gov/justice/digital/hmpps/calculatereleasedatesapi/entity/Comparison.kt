@@ -63,6 +63,10 @@ data class Comparison(
 
   @Transient
   var numberOfMismatches: Long = 0,
+
+  @Type(value = JsonType::class)
+  @Column(columnDefinition = "jsonb")
+  var prisonsFailed: List<String> = emptyList(),
 ) {
   override fun toString(): String = "Comparison(id=$id, comparisonReference=$comparisonReference, comparisonShortReference='$comparisonShortReference', criteria=$criteria, prison=$prison, comparisonType=$comparisonType, calculatedAt=$calculatedAt, calculatedByUsername='$calculatedByUsername')"
 

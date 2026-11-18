@@ -20,6 +20,7 @@ class WebClientConfiguration(
   @Value("\${manage-offences.api.url}") private val manageOffencesApiUrl: String,
   @Value("\${nomis-sync-mapping.api.url}") private val nomisSyncMappingApiUrl: String,
   @Value("\${manage-users.api.url}") private val manageUsersApiUrl: String,
+  @Value("\${prison-register.api.url}") private val prisonRegisterApiUrl: String,
 ) {
 
   /*
@@ -51,6 +52,9 @@ class WebClientConfiguration(
 
   @Bean
   fun oauthApiHealthWebClient(builder: WebClient.Builder): WebClient = builder.baseUrl(oauthApiUrl).build()
+
+  @Bean
+  fun prisonRegisterApiWebClient(builder: WebClient.Builder): WebClient = builder.baseUrl(prisonRegisterApiUrl).build()
 
   @Bean
   fun bankHolidayApiWebClient(builder: WebClient.Builder): WebClient = builder.baseUrl(bankHolidayApiUrl).build()

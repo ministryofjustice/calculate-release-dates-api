@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 
+import io.swagger.v3.oas.annotations.media.Schema
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonType
 import java.time.LocalDateTime
@@ -18,4 +19,6 @@ data class ComparisonOverview(
   val mismatches: List<ComparisonMismatchSummary>,
   val status: String,
   val comparisonProgress: ComparisonProgress = ComparisonProgress.from(comparisonStatus, numberOfPeopleCompared, numberOfPeopleExpected, calculatedAt),
+  @Schema(description = "Eligible prisons that prison-api could not provide calculable prisoners for")
+  val prisonsFailed: List<String> = emptyList(),
 )

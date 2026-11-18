@@ -46,9 +46,13 @@ class ComparisonService(
   private val sourceDataMapper: SourceDataMapper,
   private val bookingService: BookingService,
   private val latestCalculationService: LatestCalculationService,
+  private val eligiblePrisonsService: EligiblePrisonsService,
 ) {
 
   fun create(comparisonInput: ComparisonInput, token: String): Comparison {
+    comparisonInput.prison
+      ?.takeIf { it != "all" }
+      ?.let { eligiblePrisonsService.checkPrisonCanBeCompared(it) }
     val comparisonToCreate = transform(comparisonInput, serviceUserService.getUsername(), objectMapper)
     log.info("Creating new comparison $comparisonToCreate")
     val initialComparisonCreated = comparisonRepository.save(

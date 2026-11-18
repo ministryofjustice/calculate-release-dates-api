@@ -21,4 +21,8 @@ interface ApprovedDatesSubmissionRepository : JpaRepository<ApprovedDatesSubmiss
   @Query("UPDATE ApprovedDatesSubmission SET prisonerId = :toPrisoner, prisonerModifiedReason = :reason, prisonerModifiedPreviousPrisonerId = :fromPrisoner, prisonerModifiedAt = :timestamp WHERE prisonerId = :fromPrisoner")
   @Modifying
   fun mergePrisoners(fromPrisoner: String, toPrisoner: String, reason: PrisonerModifiedReason, timestamp: LocalDateTime = LocalDateTime.now())
+
+  @Query("UPDATE ApprovedDatesSubmission SET prisonerId = :toPrisoner, prisonerModifiedReason = :reason, prisonerModifiedPreviousPrisonerId = :fromPrisoner, prisonerModifiedAt = :timestamp WHERE calculationRequest.id = :calculationRequestId")
+  @Modifying
+  fun setPrisonerIdForCalculationRequest(calculationRequestId: Long, fromPrisoner: String, toPrisoner: String, reason: PrisonerModifiedReason, timestamp: LocalDateTime = LocalDateTime.now())
 }
