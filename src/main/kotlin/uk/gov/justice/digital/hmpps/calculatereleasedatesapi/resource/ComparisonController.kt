@@ -53,6 +53,7 @@ class ComparisonController(
   @ApiResponses(
     value = [
       ApiResponse(responseCode = "200", description = "Returns a new Comparison"),
+      ApiResponse(responseCode = "400", description = "The prison is unknown to, or inactive in, prison-register"),
       ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
       ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
     ],

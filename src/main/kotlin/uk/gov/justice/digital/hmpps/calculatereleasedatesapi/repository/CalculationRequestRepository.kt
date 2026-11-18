@@ -119,4 +119,8 @@ interface CalculationRequestRepository : JpaRepository<CalculationRequest, Long>
   @Query("UPDATE CalculationRequest SET prisonerId = :toPrisoner, prisonerModifiedReason = :reason, prisonerModifiedPreviousPrisonerId = :fromPrisoner, prisonerModifiedAt = :timestamp WHERE prisonerId = :fromPrisoner")
   @Modifying
   fun mergePrisoners(fromPrisoner: String, toPrisoner: String, reason: PrisonerModifiedReason, timestamp: LocalDateTime = LocalDateTime.now())
+
+  @Query("UPDATE CalculationRequest SET prisonerId = :toPrisoner, prisonerModifiedReason = :reason, prisonerModifiedPreviousPrisonerId = :fromPrisoner, prisonerModifiedAt = :timestamp WHERE id = :calculationRequestId")
+  @Modifying
+  fun setPrisonerIdForCalculationRequest(calculationRequestId: Long, fromPrisoner: String, toPrisoner: String, reason: PrisonerModifiedReason, timestamp: LocalDateTime = LocalDateTime.now())
 }

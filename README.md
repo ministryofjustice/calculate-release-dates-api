@@ -85,6 +85,7 @@ Then you can either use ./run-local.sh which is missing a lot of required env va
       <env name="MANAGE-OFFENCES_API_URL" value="https://manage-offences-api-dev.hmpps.service.justice.gov.uk" />
       <env name="NOMIS-SYNC-MAPPING_API_URL" value="https://nomis-sync-prisoner-mapping-dev.hmpps.service.justice.gov.uk" />
       <env name="MANAGE-USERS_API_URL" value="https://manage-users-api-dev.hmpps.service.justice.gov.uk" />
+      <env name="PRISON-REGISTER_API_URL" value="https://prison-register-dev.hmpps.service.justice.gov.uk" />
       <env name="SDS_EARLY_RELEASE_FEATURE_TOGGLE" value="true" />
       <env name="SERVER_PORT" value="8089" />
       <env name="SPRING_DATASOURCE_URL" value="jdbc:postgresql://${DB_SERVER}/${DB_NAME}" />
