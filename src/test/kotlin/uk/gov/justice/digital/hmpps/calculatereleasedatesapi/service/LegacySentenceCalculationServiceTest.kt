@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.mockito.Mockito.mock
 import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -12,9 +13,11 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationR
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.LegacySentenceCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.LegacySentenceCalculationTest.Companion.aFullyCompletedLegacySentenceCalculationDto
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.LegacySentenceCalculationTest.Companion.aMinimalLegacySentenceCalculationDto
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.PrisonerModifiedReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.migration.LegacySentenceCalculationMigrationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.migration.LegacySentenceCalculationMigrationResponse
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.migration.LegacySentenceCalculationToCrdsMappingResult
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ApprovedDatesSubmissionRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.LegacySentenceCalculationRepository
 import java.util.Optional
@@ -25,8 +28,9 @@ class LegacySentenceCalculationServiceTest {
 
   private val calculationRequestRepository: CalculationRequestRepository = mock()
   private val legacySentenceCalculationRepository: LegacySentenceCalculationRepository = mock()
+  private val approvedDatesSubmissionRepository: ApprovedDatesSubmissionRepository = mock()
 
-  private val service = LegacySentenceCalculationService(calculationRequestRepository, legacySentenceCalculationRepository)
+  private val service = LegacySentenceCalculationService(calculationRequestRepository, legacySentenceCalculationRepository, approvedDatesSubmissionRepository)
 
   @Test
   fun `migration maps all fields from request to entity when there is no mapping to a CRDS calculation`() {
@@ -70,7 +74,7 @@ class LegacySentenceCalculationServiceTest {
     val aMinimalRequestWithNoMatch = aMinimalLegacySentenceCalculationDto()
     val aFullyCompletedRequestWithAMatchingCalculationRequest = aFullyCompletedLegacySentenceCalculationDto().copy(commentText = "A CRDS calc: $calculationReference")
 
-    val calculationRequest = CalculationRequest(id = calculationRequestId, calculationReference = calculationReference)
+    val calculationRequest = CalculationRequest(id = calculationRequestId, calculationReference = calculationReference, prisonerId = aFullyCompletedRequestWithAMatchingCalculationRequest.prisonerId)
 
     val expectedMinimalEntity = LegacySentenceCalculation.fromDto(aMinimalRequestWithNoMatch, null)
     val expectedFullyCompleteEntity = LegacySentenceCalculation.fromDto(aFullyCompletedRequestWithAMatchingCalculationRequest, calculationRequest)
@@ -101,6 +105,51 @@ class LegacySentenceCalculationServiceTest {
 
     verify(legacySentenceCalculationRepository).saveAndFlush(expectedMinimalEntity)
     verify(legacySentenceCalculationRepository).saveAndFlush(expectedFullyCompleteEntity)
+    verify(calculationRequestRepository, never()).setPrisonerIdForCalculationRequest(any(), any(), any(), any(), any())
+    verify(approvedDatesSubmissionRepository, never()).setPrisonerIdForCalculationRequest(any(), any(), any(), any(), any())
+  }
+
+  @Test
+  fun `migration finds a calculation but it's for a different prisoner so we update the prisoner id on the calc and approved dates submissions`() {
+    val calculationReference = UUID.randomUUID()
+    val calculationRequestId = 123456L
+
+    val aMinimalRequestWithNoMatch = aMinimalLegacySentenceCalculationDto()
+    val aFullyCompletedRequestWithAMatchingCalculationRequest = aFullyCompletedLegacySentenceCalculationDto().copy(commentText = "A CRDS calc: $calculationReference")
+
+    val calculationRequestForADifferentPrisonerId = CalculationRequest(id = calculationRequestId, calculationReference = calculationReference, prisonerId = "Someone Else")
+
+    val expectedMinimalEntity = LegacySentenceCalculation.fromDto(aMinimalRequestWithNoMatch, null)
+    val expectedFullyCompleteEntity = LegacySentenceCalculation.fromDto(aFullyCompletedRequestWithAMatchingCalculationRequest, calculationRequestForADifferentPrisonerId)
+
+    whenever(legacySentenceCalculationRepository.saveAndFlush(any<LegacySentenceCalculation>())).thenAnswer { invocation ->
+      val entity = invocation.getArgument<LegacySentenceCalculation>(0)
+      when (entity.nomisCalculationId) {
+        aMinimalRequestWithNoMatch.nomisCalculationId -> expectedMinimalEntity
+        expectedFullyCompleteEntity.nomisCalculationId -> expectedFullyCompleteEntity
+        else -> fail("Unexpected id")
+      }
+    }
+
+    whenever(calculationRequestRepository.findByCalculationReference(calculationReference)).thenReturn(Optional.of(calculationRequestForADifferentPrisonerId))
+
+    val request = LegacySentenceCalculationMigrationRequest(listOf(aMinimalRequestWithNoMatch, aFullyCompletedRequestWithAMatchingCalculationRequest))
+
+    val response = service.migrate("AB1234C", request)
+
+    assertThat(response).isEqualTo(
+      LegacySentenceCalculationMigrationResponse(
+        listOf(
+          LegacySentenceCalculationToCrdsMappingResult(1, null),
+          LegacySentenceCalculationToCrdsMappingResult(2, calculationRequestId),
+        ),
+      ),
+    )
+
+    verify(legacySentenceCalculationRepository).saveAndFlush(expectedMinimalEntity)
+    verify(legacySentenceCalculationRepository).saveAndFlush(expectedFullyCompleteEntity)
+    verify(calculationRequestRepository).setPrisonerIdForCalculationRequest(eq(calculationRequestId), eq("Someone Else"), eq("AB1234C"), eq(PrisonerModifiedReason.MIGRATION), any())
+    verify(approvedDatesSubmissionRepository).setPrisonerIdForCalculationRequest(eq(calculationRequestId), eq("Someone Else"), eq("AB1234C"), eq(PrisonerModifiedReason.MIGRATION), any())
   }
 
   @Test
