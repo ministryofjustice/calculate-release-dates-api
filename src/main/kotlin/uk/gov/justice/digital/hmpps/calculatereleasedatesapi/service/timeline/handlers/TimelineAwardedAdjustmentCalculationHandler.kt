@@ -42,8 +42,14 @@ class TimelineAwardedAdjustmentCalculationHandler(
           return TimelineHandleResult(requiresCalculation = false)
         }
       } else {
-        val maxReleaseNonTermRelease =
-          currentSentenceGroup.filterNot { it is Term }.maxOfOrNull { it.sentenceCalculation.releaseDate }
+        val latestReleaseSentence = currentSentenceGroup.filterNot { it is Term }.maxByOrNull { it.sentenceCalculation.adjustedDeterminateReleaseDate }
+        val applicableSdsLegislation = latestReleaseSentence?.sentenceCalculation?.applicableSdsLegislation
+        val adjustedDeterminateReleaseDate = latestReleaseSentence?.sentenceCalculation?.adjustedDeterminateReleaseDate
+        val maxReleaseNonTermRelease = if (applicableSdsLegislation != null && applicableSdsLegislation.earliestApplicableDate != null && adjustedDeterminateReleaseDate != null) {
+          applicableSdsLegislation.legislation.applyDefaulting(adjustedDeterminateReleaseDate, applicableSdsLegislation.earliestApplicableDate, latestReleaseSentence.sentenceCalculation.adjustments.awardedDuringCustody).date
+        } else {
+          adjustedDeterminateReleaseDate
+        }
         if (maxReleaseNonTermRelease != null && maxReleaseNonTermRelease.isAfterOrEqualTo(event.date)) {
           timelineCalculator.setAdjustments(
             currentSentenceGroup,
