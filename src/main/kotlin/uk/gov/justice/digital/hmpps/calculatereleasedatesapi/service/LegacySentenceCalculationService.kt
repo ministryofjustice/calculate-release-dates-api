@@ -27,32 +27,20 @@ class LegacySentenceCalculationService(
   fun migrate(prisonerId: String, request: LegacySentenceCalculationMigrationRequest): LegacySentenceCalculationMigrationResponse {
     legacySentenceCalculationRepository.deleteAllByPrisonerId(prisonerId)
     val mappingResults = request.sentenceCalculations.map { legacySentenceCalculation ->
-      val maybeAnExistingCalculationRequest = findCalculationRequestFromNomisComment(legacySentenceCalculation)
       // TODO if this is for a prisoner with indeterminate sentences and the latest calculation is not from CRDS then create a new calculation request from the NOMIS calculation
-      val entity = LegacySentenceCalculation.fromDto(legacySentenceCalculation, maybeAnExistingCalculationRequest)
-      legacySentenceCalculationRepository.saveAndFlush(entity)
-
-      maybeAnExistingCalculationRequest?.let { existingCalculationRequest ->
-        if (existingCalculationRequest.prisonerId != legacySentenceCalculation.prisonerId) {
-          // this will be from a booking move or prisoner merge that occurred before CRDS supported it
-          logger.info("Moving existing calculation ${existingCalculationRequest.id()} from prisoner ${existingCalculationRequest.prisonerId} to prisoner ${legacySentenceCalculation.prisonerId}")
-          calculationRequestRepository.setPrisonerIdForCalculationRequest(
-            calculationRequestId = existingCalculationRequest.id(),
-            fromPrisoner = existingCalculationRequest.prisonerId,
-            toPrisoner = legacySentenceCalculation.prisonerId,
-            reason = PrisonerModifiedReason.MIGRATION,
-          )
-          approvedDatesSubmissionRepository.setPrisonerIdForCalculationRequest(
-            calculationRequestId = existingCalculationRequest.id(),
-            fromPrisoner = existingCalculationRequest.prisonerId,
-            toPrisoner = legacySentenceCalculation.prisonerId,
-            reason = PrisonerModifiedReason.MIGRATION,
-          )
-        }
-      }
-      LegacySentenceCalculationToCrdsMappingResult(legacySentenceCalculation.nomisCalculationId, maybeAnExistingCalculationRequest?.id)
+      sync(legacySentenceCalculation)
     }
     return LegacySentenceCalculationMigrationResponse(mappingResults)
+  }
+
+  fun sync(legacySentenceCalculation: LegacySentenceCalculationDto): LegacySentenceCalculationToCrdsMappingResult {
+    val maybeAnExistingCalculationRequest = findCalculationRequestFromNomisComment(legacySentenceCalculation)
+    val entity = LegacySentenceCalculation.fromDto(legacySentenceCalculation, maybeAnExistingCalculationRequest)
+    legacySentenceCalculationRepository.saveAndFlush(entity)
+    maybeAnExistingCalculationRequest?.let { existingCalculationRequest ->
+      moveCalculationRequestToNewPrisonerIfRequired(existingCalculationRequest, legacySentenceCalculation)
+    }
+    return LegacySentenceCalculationToCrdsMappingResult(legacySentenceCalculation.nomisCalculationId, maybeAnExistingCalculationRequest?.id)
   }
 
   private fun findCalculationRequestFromNomisComment(legacySentenceCalculation: LegacySentenceCalculationDto): CalculationRequest? {
@@ -64,6 +52,25 @@ class LegacySentenceCalculationService(
     require(uuids.size <= 1) { "Found ${uuids.size} UUIDs in the comment for NOMIS calculation ${legacySentenceCalculation.nomisCalculationId}" }
     return uuids.firstOrNull()?.let {
       calculationRequestRepository.findByCalculationReference(it).getOrNull()
+    }
+  }
+
+  private fun moveCalculationRequestToNewPrisonerIfRequired(existingCalculationRequest: CalculationRequest, legacySentenceCalculation: LegacySentenceCalculationDto) {
+    if (existingCalculationRequest.prisonerId != legacySentenceCalculation.prisonerId) {
+      // this will be from a booking move or prisoner merge that occurred before CRDS supported it
+      logger.info("Moving existing calculation ${existingCalculationRequest.id()} from prisoner ${existingCalculationRequest.prisonerId} to prisoner ${legacySentenceCalculation.prisonerId}")
+      calculationRequestRepository.setPrisonerIdForCalculationRequest(
+        calculationRequestId = existingCalculationRequest.id(),
+        fromPrisoner = existingCalculationRequest.prisonerId,
+        toPrisoner = legacySentenceCalculation.prisonerId,
+        reason = PrisonerModifiedReason.MIGRATION,
+      )
+      approvedDatesSubmissionRepository.setPrisonerIdForCalculationRequest(
+        calculationRequestId = existingCalculationRequest.id(),
+        fromPrisoner = existingCalculationRequest.prisonerId,
+        toPrisoner = legacySentenceCalculation.prisonerId,
+        reason = PrisonerModifiedReason.MIGRATION,
+      )
     }
   }
 

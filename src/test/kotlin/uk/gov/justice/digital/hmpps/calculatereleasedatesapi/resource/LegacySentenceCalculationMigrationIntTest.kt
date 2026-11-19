@@ -4,9 +4,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.test.context.jdbc.Sql
-import org.springframework.test.web.reactive.server.expectBody
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.LegacySentenceCalculationTest.Companion.aFullyCompletedLegacySentenceCalculationDto
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.LegacySentenceCalculationTest.Companion.aMinimalLegacySentenceCalculationDto
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
@@ -172,17 +170,6 @@ class LegacySentenceCalculationMigrationIntTest(private val mockPrisonService: M
     val persistedApprovedDates = approvedDatesSubmissionRepository.findByCalculationRequestId(confirmed.calculationRequestId)
     assertThat(persistedApprovedDates?.prisonerId).isEqualTo(CHANGED_PRISONER_ID)
   }
-
-  private fun migrateAPrisoner(request: LegacySentenceCalculationMigrationRequest, prisonerId: String) = webTestClient.post()
-    .uri("/legacy-data/migrate/$prisonerId")
-    .accept(APPLICATION_JSON)
-    .contentType(APPLICATION_JSON)
-    .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
-    .bodyValue(request)
-    .exchange()
-    .expectStatus().isOk
-    .expectBody<LegacySentenceCalculationMigrationResponse>()
-    .returnResult().responseBody!!
 
   private fun stubKeyDates(calc: LegacySentenceCalculationDto) {
     mockPrisonService.stubHistoricCalculations(
