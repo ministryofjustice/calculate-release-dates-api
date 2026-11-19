@@ -601,7 +601,10 @@ class ValidationServiceTest : SpringTestBase() {
       ),
     )
 
-    assertEquals("Court case $caseReference at Bristol Crown Court for offence A123456 must include an imprisonment term.", result[0].message)
+    assertEquals(
+      "Court case $caseReference at Bristol Crown Court for offence A123456 must include an imprisonment term.",
+      result[0].message,
+    )
   }
 
   @Test
@@ -910,9 +913,11 @@ class ValidationServiceTest : SpringTestBase() {
     )
 
     val resultList: List<ValidationMessage> = result
-    resultList.forEach { validationMessage -> assertEquals(
-      "The sentence type for Court case at Bristol Crown Court for offence A123456 TEST OFFENCE 2 is invalid for the sentence date 2020-11-30 entered.",
-      validationMessage.message)
+    resultList.forEach { validationMessage ->
+      assertEquals(
+        "The sentence type for Court case at Bristol Crown Court for offence A123456 TEST OFFENCE 2 is invalid for the sentence date 2020-11-30 entered.",
+        validationMessage.message,
+      )
     }
   }
 
@@ -1012,9 +1017,11 @@ class ValidationServiceTest : SpringTestBase() {
     )
 
     val resultList: List<ValidationMessage> = result
-    resultList.forEach { validationMessage -> assertEquals(
-      "The sentence type for Court case $caseReference at Bristol Crown Court for offence A123456 TEST OFFENCE 2 is invalid for the sentence date 2020-11-30 entered.",
-      validationMessage.message)
+    resultList.forEach { validationMessage ->
+      assertEquals(
+        "The sentence type for Court case $caseReference at Bristol Crown Court for offence A123456 TEST OFFENCE 2 is invalid for the sentence date 2020-11-30 entered.",
+        validationMessage.message,
+      )
     }
   }
 
@@ -1069,7 +1076,10 @@ class ValidationServiceTest : SpringTestBase() {
       ),
     )
 
-    assertEquals("The sentence type for Court case at Bristol Crown Court for offence A123456 is invalid for the sentence date 2015-04-14 entered.", result[0].message)
+    assertEquals(
+      "The sentence type for Court case at Bristol Crown Court for offence A123456 is invalid for the sentence date 2015-04-14 entered.",
+      result[0].message,
+    )
   }
 
   @Test
@@ -1891,7 +1901,10 @@ class ValidationServiceTest : SpringTestBase() {
       ),
     )
 
-    assertEquals("Sentence starting on 2021-05-01 in Court case at Bristol Crown Court for offence A123456 must include a fine amount", result[0].message)
+    assertEquals(
+      "Sentence starting on 2021-05-01 in Court case at Bristol Crown Court for offence A123456 must include a fine amount",
+      result[0].message,
+    )
   }
 
   @Test
@@ -1938,7 +1951,10 @@ class ValidationServiceTest : SpringTestBase() {
       ),
     )
 
-    assertEquals("Sentence starting on 2021-05-01 in Court case $caseReference at Bristol Crown Court for offence A123456 must include a fine amount", result[0].message)
+    assertEquals(
+      "Sentence starting on 2021-05-01 in Court case $caseReference at Bristol Crown Court for offence A123456 must include a fine amount",
+      result[0].message,
+    )
   }
 
   @Test
