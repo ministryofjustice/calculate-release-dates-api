@@ -7,7 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.test.context.jdbc.Sql
 import org.springframework.test.web.reactive.server.expectBody
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.LegacySentenceCalculationTest
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.LegacySentenceCalculationTest.Companion.aFullyCompletedLegacySentenceCalculationDto
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.LegacySentenceCalculationTest.Companion.aMinimalLegacySentenceCalculationDto
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.MockPrisonService
@@ -59,8 +60,8 @@ class LegacySentenceCalculationMigrationIntTest(private val mockPrisonService: M
     val prelim = createPreliminaryCalculation(PRISONER_ID)
     val confirmed = createConfirmCalculationForPrisoner(prelim.calculationRequestId)
 
-    val aNomisCalc = LegacySentenceCalculationTest.aMinimalLegacySentenceCalculationDto().copy(prisonerId = PRISONER_ID)
-    val aCrdsCalc = LegacySentenceCalculationTest.aFullyCompletedLegacySentenceCalculationDto().copy(prisonerId = PRISONER_ID, commentText = "CRDS: ${confirmed.calculationReference}")
+    val aNomisCalc = aMinimalLegacySentenceCalculationDto().copy(prisonerId = PRISONER_ID)
+    val aCrdsCalc = aFullyCompletedLegacySentenceCalculationDto().copy(prisonerId = PRISONER_ID, commentText = "CRDS: ${confirmed.calculationReference}")
     val request = LegacySentenceCalculationMigrationRequest(listOf(aNomisCalc, aCrdsCalc))
 
     val response = migrateAPrisoner(request, PRISONER_ID)
@@ -85,8 +86,8 @@ class LegacySentenceCalculationMigrationIntTest(private val mockPrisonService: M
     val prelim = createPreliminaryCalculation(PRISONER_ID)
     val confirmed = createConfirmCalculationForPrisoner(prelim.calculationRequestId)
 
-    val aNomisCalc = LegacySentenceCalculationTest.aMinimalLegacySentenceCalculationDto().copy(prisonerId = PRISONER_ID)
-    val aCrdsCalc = LegacySentenceCalculationTest.aFullyCompletedLegacySentenceCalculationDto().copy(prisonerId = PRISONER_ID, commentText = "CRDS: ${confirmed.calculationReference}")
+    val aNomisCalc = aMinimalLegacySentenceCalculationDto().copy(prisonerId = PRISONER_ID)
+    val aCrdsCalc = aFullyCompletedLegacySentenceCalculationDto().copy(prisonerId = PRISONER_ID, commentText = "CRDS: ${confirmed.calculationReference}")
 
     val firstRequest = LegacySentenceCalculationMigrationRequest(listOf(aNomisCalc, aCrdsCalc))
 
@@ -106,8 +107,8 @@ class LegacySentenceCalculationMigrationIntTest(private val mockPrisonService: M
     assertThat(firstPassLegacySentenceCalculation.find { it.nomisCalculationId == aNomisCalc.nomisCalculationId }).isNotNull
     assertThat(firstPassLegacySentenceCalculation.find { it.nomisCalculationId == aCrdsCalc.nomisCalculationId }).isNotNull
 
-    val aChangedNomisCalc = LegacySentenceCalculationTest.aMinimalLegacySentenceCalculationDto().copy(nomisCalculationId = 98, prisonerId = PRISONER_ID)
-    val aChangedCrdsCalc = LegacySentenceCalculationTest.aFullyCompletedLegacySentenceCalculationDto().copy(nomisCalculationId = 99, prisonerId = PRISONER_ID, commentText = "CRDS: ${confirmed.calculationReference}")
+    val aChangedNomisCalc = aMinimalLegacySentenceCalculationDto().copy(nomisCalculationId = 98, prisonerId = PRISONER_ID)
+    val aChangedCrdsCalc = aFullyCompletedLegacySentenceCalculationDto().copy(nomisCalculationId = 99, prisonerId = PRISONER_ID, commentText = "CRDS: ${confirmed.calculationReference}")
     val request = LegacySentenceCalculationMigrationRequest(listOf(aChangedNomisCalc, aChangedCrdsCalc))
 
     val secondResponse = migrateAPrisoner(request, PRISONER_ID)
@@ -138,7 +139,7 @@ class LegacySentenceCalculationMigrationIntTest(private val mockPrisonService: M
     val prelim = createPreliminaryCalculation(PRISONER_ID)
     val confirmed = createConfirmCalculationForPrisoner(prelim.calculationRequestId, listOf(ManuallyEnteredDate(ReleaseDateType.ROTL, SubmittedDate(21, 6, 2027))))
 
-    val aCrdsCalc = LegacySentenceCalculationTest.aFullyCompletedLegacySentenceCalculationDto().copy(prisonerId = CHANGED_PRISONER_ID, bookingId = expectedNewBookingId, commentText = "CRDS: ${confirmed.calculationReference}")
+    val aCrdsCalc = aFullyCompletedLegacySentenceCalculationDto().copy(prisonerId = CHANGED_PRISONER_ID, bookingId = expectedNewBookingId, commentText = "CRDS: ${confirmed.calculationReference}")
     val request = LegacySentenceCalculationMigrationRequest(listOf(aCrdsCalc))
 
     val response = migrateAPrisoner(request, CHANGED_PRISONER_ID)
