@@ -8,7 +8,9 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
 import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.test.context.jdbc.Sql
+import org.springframework.test.web.reactive.server.expectBody
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.dbhelper.TestTransactionalService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.LegacySentenceCalculationTest.Companion.aMinimalLegacySentenceCalculationDto
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.SqsIntegrationTestBase
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.AdjustmentsApiExtension.Companion.adjustmentsApi
@@ -25,8 +27,11 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.PrisonerModif
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculationSummary
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmittedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.migration.LegacySentenceCalculationMigrationRequest
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.migration.LegacySentenceCalculationMigrationResponse
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ApprovedDatesSubmissionRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.LegacySentenceCalculationRepository
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -42,6 +47,9 @@ class PrisonerMergeAndBookingMoveIntTest(private val mockPrisonService: MockPris
 
   @Autowired
   lateinit var approvedDatesSubmissionRepository: ApprovedDatesSubmissionRepository
+
+  @Autowired
+  lateinit var legacySentenceCalculationRepository: LegacySentenceCalculationRepository
 
   private val jsonTransformation = JsonTransformation()
 
@@ -104,6 +112,25 @@ class PrisonerMergeAndBookingMoveIntTest(private val mockPrisonService: MockPris
     assertThat(latestCalculationPrisonerOneAfterNewBooking.latestCalculation?.bookingId).isEqualTo(BOOKING_ID_TO_MOVE)
     assertThat(latestCalculationPrisonerOneAfterNewBooking.latestCalculation?.calculationRequestId).isEqualTo(confirmedPrisonerOneNewBookingId.calculationRequestId)
 
+    // import all the legacy sentence calcs to ensure they are also moved
+    migrateAPrisoner(
+      LegacySentenceCalculationMigrationRequest(
+        listOf(
+          aMinimalLegacySentenceCalculationDto().copy(nomisCalculationId = 199, prisonerId = PRISONER_ONE_ID, bookingId = PRISONER_ONE_OLD_BOOKING_ID, commentText = "CRDS calc: ${confirmedPrisonerOneOldBookingId.calculationReference}"),
+          aMinimalLegacySentenceCalculationDto().copy(nomisCalculationId = 200, prisonerId = PRISONER_ONE_ID, bookingId = BOOKING_ID_TO_MOVE, commentText = "CRDS calc: ${confirmedPrisonerOneNewBookingId.calculationReference}"),
+        ),
+      ),
+      PRISONER_ONE_ID,
+    )
+    migrateAPrisoner(
+      LegacySentenceCalculationMigrationRequest(
+        listOf(
+          aMinimalLegacySentenceCalculationDto().copy(nomisCalculationId = 201, prisonerId = PRISONER_TWO_ID, bookingId = PRISONER_TWO_OLD_BOOKING_ID, commentText = "CRDS calc: ${confirmedPrisonerTwoOldBookingId.calculationReference}"),
+        ),
+      ),
+      PRISONER_TWO_ID,
+    )
+
     // now simulate a move in NOMIS by changing the new booking id from prisoner one to prisoner two and generate a move event
     mockPrisonService.stubPrisoner(PrisonerDetails(bookingId = PRISONER_ONE_OLD_BOOKING_ID, offenderNo = PRISONER_ONE_ID, dateOfBirth = LocalDate.of(2000, 1, 1)))
     mockPrisonService.stubPrisoner(PrisonerDetails(bookingId = BOOKING_ID_TO_MOVE, offenderNo = PRISONER_TWO_ID, dateOfBirth = LocalDate.of(2000, 1, 1)))
@@ -150,6 +177,16 @@ class PrisonerMergeAndBookingMoveIntTest(private val mockPrisonService: MockPris
       assertThat(approvedDateSubmission.prisonerModifiedReason).isEqualTo(PrisonerModifiedReason.BOOKING_MOVE)
       assertThat(approvedDateSubmission.prisonerModifiedPreviousPrisonerId).isEqualTo(PRISONER_ONE_ID)
     }
+    // legacy sentences for prisoner one should only contain the original booking id and for prisoner two should have both
+    legacySentenceCalculationRepository.getByPrisonerId(PRISONER_ONE_ID).let { legacyCalcs ->
+      assertThat(legacyCalcs).hasSize(1)
+      assertThat(legacyCalcs.first().calculationRequestId).isEqualTo(confirmedPrisonerOneOldBookingId.calculationRequestId)
+    }
+    legacySentenceCalculationRepository.getByPrisonerId(PRISONER_TWO_ID).let { legacyCalcs ->
+      assertThat(legacyCalcs).hasSize(2)
+      assertThat(legacyCalcs.find { it.calculationRequestId == confirmedPrisonerOneNewBookingId.calculationRequestId }).isNotNull
+      assertThat(legacyCalcs.find { it.calculationRequestId == confirmedPrisonerTwoOldBookingId.calculationRequestId }).isNotNull
+    }
   }
 
   @Test
@@ -183,6 +220,25 @@ class PrisonerMergeAndBookingMoveIntTest(private val mockPrisonService: MockPris
     val latestCalculationPrisonerOneAfterNewBooking = getPrisonerOverview(PRISONER_ONE_ID)
     assertThat(latestCalculationPrisonerOneAfterNewBooking.latestCalculation?.bookingId).isEqualTo(BOOKING_ID_TO_MOVE)
     assertThat(latestCalculationPrisonerOneAfterNewBooking.latestCalculation?.calculationRequestId).isEqualTo(confirmedPrisonerOneNewBookingId.calculationRequestId)
+
+    // import all the legacy sentence calcs to ensure they are also moved
+    migrateAPrisoner(
+      LegacySentenceCalculationMigrationRequest(
+        listOf(
+          aMinimalLegacySentenceCalculationDto().copy(nomisCalculationId = 199, prisonerId = PRISONER_ONE_ID, bookingId = PRISONER_ONE_OLD_BOOKING_ID, commentText = "CRDS calc: ${confirmedPrisonerOneOldBookingId.calculationReference}"),
+          aMinimalLegacySentenceCalculationDto().copy(nomisCalculationId = 200, prisonerId = PRISONER_ONE_ID, bookingId = BOOKING_ID_TO_MOVE, commentText = "CRDS calc: ${confirmedPrisonerOneNewBookingId.calculationReference}"),
+        ),
+      ),
+      PRISONER_ONE_ID,
+    )
+    migrateAPrisoner(
+      LegacySentenceCalculationMigrationRequest(
+        listOf(
+          aMinimalLegacySentenceCalculationDto().copy(nomisCalculationId = 201, prisonerId = PRISONER_TWO_ID, bookingId = PRISONER_TWO_OLD_BOOKING_ID, commentText = "CRDS calc: ${confirmedPrisonerTwoOldBookingId.calculationReference}"),
+        ),
+      ),
+      PRISONER_TWO_ID,
+    )
 
     // now simulate a merge of prisoner one into prisoner two in NOMIS by changing the new booking id from prisoner one to prisoner two with prisoner one not returning not found
     mockPrisonService.stubPrisonerNotFound(PRISONER_ONE_ID)
@@ -240,6 +296,17 @@ class PrisonerMergeAndBookingMoveIntTest(private val mockPrisonService: MockPris
       assertThat(approvedDateSubmission.prisonerModifiedReason).isEqualTo(PrisonerModifiedReason.PRISONER_MERGE)
       assertThat(approvedDateSubmission.prisonerModifiedPreviousPrisonerId).isEqualTo(PRISONER_ONE_ID)
     }
+
+    // legacy sentences for prisoner one should all be moved to the new prisoner id
+    legacySentenceCalculationRepository.getByPrisonerId(PRISONER_ONE_ID).let { legacyCalcs ->
+      assertThat(legacyCalcs).isEmpty()
+    }
+    legacySentenceCalculationRepository.getByPrisonerId(PRISONER_TWO_ID).let { legacyCalcs ->
+      assertThat(legacyCalcs).hasSize(3)
+      assertThat(legacyCalcs.find { it.calculationRequestId == confirmedPrisonerOneOldBookingId.calculationRequestId }).isNotNull
+      assertThat(legacyCalcs.find { it.calculationRequestId == confirmedPrisonerOneNewBookingId.calculationRequestId }).isNotNull
+      assertThat(legacyCalcs.find { it.calculationRequestId == confirmedPrisonerTwoOldBookingId.calculationRequestId }).isNotNull
+    }
   }
 
   private fun stubKeyDates(prisonerId: String, bookingId: Long, calc: CalculatedReleaseDates) {
@@ -282,6 +349,17 @@ class PrisonerMergeAndBookingMoveIntTest(private val mockPrisonService: MockPris
       ),
     )
   }
+
+  private fun migrateAPrisoner(request: LegacySentenceCalculationMigrationRequest, prisonerId: String) = webTestClient.post()
+    .uri("/legacy-data/migrate/$prisonerId")
+    .accept(APPLICATION_JSON)
+    .contentType(APPLICATION_JSON)
+    .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+    .bodyValue(request)
+    .exchange()
+    .expectStatus().isOk
+    .expectBody<LegacySentenceCalculationMigrationResponse>()
+    .returnResult().responseBody!!
 
   companion object {
     const val PRISONER_ONE_ID = "pris01"
