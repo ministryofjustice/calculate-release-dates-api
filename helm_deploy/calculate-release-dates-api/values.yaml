@@ -37,6 +37,8 @@ generic-service:
     ADULT_HDC_SUSPENDED: "true"
     ERS_ZERO_ENABLED: "false"
     MOVE_AND_MERGE_EVENTS_ENABLED: "true"
+    # Remove below after Java4Shell is resolved
+    JAVA_TOOL_OPTIONS: "-XX:+ExitOnOutOfMemoryError -XX:MaxRAMPercentage=50.0 -XX:-UseBASE64Intrinsics"
 
   # Pre-existing kubernetes secrets to load as environment variables in the deployment.
   # namespace_secrets:
