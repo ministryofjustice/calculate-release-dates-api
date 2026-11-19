@@ -52,6 +52,7 @@ jobs:
       postgres-db: calculate_release_dates
       postgres-username: calculate_release_dates
       postgres-password: calculate_release_dates
+      test-report-continue-on-error: true
     needs:
       - app_version
   build:
