@@ -14,6 +14,7 @@ import org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTest
 import org.springframework.context.annotation.Import
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
+import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.DynamicPropertyRegistry
 import org.springframework.test.context.DynamicPropertySource
@@ -58,6 +59,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecordARecall
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecordARecallValidationResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmitCalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ComparisonInput
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.migration.LegacySentenceCalculationMigrationRequest
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.migration.LegacySentenceCalculationMigrationResponse
 import uk.gov.justice.hmpps.test.kotlin.auth.JwtAuthorisationHelper
 
 /*
@@ -238,6 +241,17 @@ open class IntegrationTestBase internal constructor() {
     .expectStatus().isOk
     .expectHeader().contentType(MediaType.APPLICATION_JSON)
     .expectBody<PrisonerCalculationOverview>()
+    .returnResult().responseBody!!
+
+  protected fun migrateAPrisoner(request: LegacySentenceCalculationMigrationRequest, prisonerId: String) = webTestClient.post()
+    .uri("/legacy-data/migrate/$prisonerId")
+    .accept(APPLICATION_JSON)
+    .contentType(APPLICATION_JSON)
+    .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+    .bodyValue(request)
+    .exchange()
+    .expectStatus().isOk
+    .expectBody<LegacySentenceCalculationMigrationResponse>()
     .returnResult().responseBody!!
 
   companion object {

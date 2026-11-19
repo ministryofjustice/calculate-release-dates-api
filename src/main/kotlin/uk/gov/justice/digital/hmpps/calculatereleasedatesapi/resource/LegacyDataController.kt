@@ -14,8 +14,10 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.RestController
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.migration.LegacySentenceCalculationDto
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.migration.LegacySentenceCalculationMigrationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.migration.LegacySentenceCalculationMigrationResponse
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.migration.LegacySentenceCalculationToCrdsMappingResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.LegacySentenceCalculationService
 
 @RestController
@@ -47,6 +49,24 @@ class LegacyDataController(private val legacySentenceCalculationService: LegacyS
   ): LegacySentenceCalculationMigrationResponse {
     LOGGER.info("Migrating legacy sentence calculations for prisoner $prisonerId")
     return legacySentenceCalculationService.migrate(prisonerId, request)
+  }
+
+  @PostMapping(value = ["/sync"])
+  @ResponseBody
+  @Operation(
+    summary = "Sync a single sentence calculation from NOMIS into CRDS",
+    description = "Creates an entry in the legacy sentence calculation table for use in calculation history.\n\n " +
+      "If possible we link it to an existing CRDS calculation otherwise it is left as a NOMIS calculation for historical purposes.",
+  )
+  @ApiResponses(
+    value = [
+      ApiResponse(responseCode = "200", description = "If we successfully synced the sentence calculation to CRDS"),
+      ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
+    ],
+  )
+  fun sync(@RequestBody request: LegacySentenceCalculationDto): LegacySentenceCalculationToCrdsMappingResult {
+    LOGGER.info("Syncing legacy sentence calculation for prisoner $${request.prisonerId} with id ${request.nomisCalculationId}")
+    return legacySentenceCalculationService.sync(request)
   }
 
   companion object {
