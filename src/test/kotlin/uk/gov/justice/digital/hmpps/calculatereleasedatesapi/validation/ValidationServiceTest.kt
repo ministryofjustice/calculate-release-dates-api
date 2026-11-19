@@ -106,6 +106,7 @@ import java.time.temporal.ChronoUnit.MONTHS
 import java.time.temporal.ChronoUnit.WEEKS
 import java.time.temporal.ChronoUnit.YEARS
 import java.util.UUID
+import kotlin.test.assertEquals
 
 @ActiveProfiles("calculation-params")
 @ExtendWith(OAuthExtension::class, ManageOffencesApiExtension::class)
@@ -140,7 +141,7 @@ class ValidationServiceTest : SpringTestBase() {
     caseReference = null,
     fineAmount = null,
     courtId = null,
-    courtDescription = null,
+    courtDescription = "Bristol Crown Court",
     courtTypeCode = null,
     consecutiveToSequence = null,
     revocationDates = emptyList(),
@@ -545,13 +546,62 @@ class ValidationServiceTest : SpringTestBase() {
           listOf(
             FIRST_MAY_2021.toString(),
             "",
-            "",
+            " at Bristol Crown Court",
             "A123456",
             "TEST OFFENCE 2",
           ),
         ),
       ),
     )
+
+    assertEquals("Court case at Bristol Crown Court for offence A123456 must include an imprisonment term.", result[0].message)
+  }
+
+  @Test
+  fun `Test SENTENCE HAS NO IMPRISONMENT TERM validation message with Case Reference`() {
+    val caseReference = "444555666"
+    val sentence = validEdsSentence.copy(
+      terms = listOf(
+        SentenceTerms(2, 0, 0, 0, SentenceTerms.LICENCE_TERM_CODE),
+      ),
+      caseReference = caseReference,
+    )
+    val result =
+      validationService.validate(
+        CalculationSourceData(
+          listOf(
+            SentenceAndOffenceWithReleaseArrangements(
+              source = sentence,
+              isSdsPlus = false,
+              isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+              hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
+            ),
+          ),
+          VALID_PRISONER,
+          VALID_ADJUSTMENTS,
+          listOf(),
+          null,
+        ),
+        USER_INPUTS,
+        ValidationOrder.allValidations(),
+      )
+
+    assertThat(result).isEqualTo(
+      listOf(
+        ValidationMessage(
+          SENTENCE_HAS_NO_IMPRISONMENT_TERM,
+          listOf(
+            FIRST_MAY_2021.toString(),
+            " $caseReference",
+            " at Bristol Crown Court",
+            "A123456",
+            "TEST OFFENCE 2",
+          ),
+        ),
+      ),
+    )
+
+    assertEquals("Court case $caseReference at Bristol Crown Court for offence A123456 must include an imprisonment term.", result[0].message)
   }
 
   @Test
@@ -626,7 +676,7 @@ class ValidationServiceTest : SpringTestBase() {
           listOf(
             FIRST_MAY_2021.toString(),
             "",
-            "",
+            " at Bristol Crown Court",
             "A123456",
             "TEST OFFENCE 2",
           ),
@@ -831,7 +881,7 @@ class ValidationServiceTest : SpringTestBase() {
           listOf(
             ImportantDates.EDS18_SENTENCE_TYPES_START_DATE.minusDays(1).toString(),
             "",
-            "",
+            " at Bristol Crown Court",
             "A123456",
             "TEST OFFENCE 2",
           ),
@@ -841,7 +891,7 @@ class ValidationServiceTest : SpringTestBase() {
           listOf(
             ImportantDates.EDS18_SENTENCE_TYPES_START_DATE.minusDays(1).toString(),
             "",
-            "",
+            " at Bristol Crown Court",
             "A123456",
             "TEST OFFENCE 2",
           ),
@@ -851,13 +901,121 @@ class ValidationServiceTest : SpringTestBase() {
           listOf(
             ImportantDates.EDS18_SENTENCE_TYPES_START_DATE.minusDays(1).toString(),
             "",
-            "",
+            " at Bristol Crown Court",
             "A123456",
             "TEST OFFENCE 2",
           ),
         ),
       ),
     )
+
+    val resultList: List<ValidationMessage> = result
+    resultList.forEach { validationMessage -> assertEquals(
+      "The sentence type for Court case at Bristol Crown Court for offence A123456 TEST OFFENCE 2 is invalid for the sentence date 2020-11-30 entered.",
+      validationMessage.message)
+    }
+  }
+
+  @Test
+  fun `Test EDS18 EDS21 EDSU18 SENTENCE TYPE INCORRECT validation message with Case Reference`() {
+    val caseReference = "333222111"
+    val sentences = listOf(
+      validEdsSentence.copy(
+        sentenceCalculationType = SentenceCalculationType.EDS18.name,
+        sentenceDate = ImportantDates.EDS18_SENTENCE_TYPES_START_DATE.minusDays(1),
+        caseReference = caseReference,
+      ),
+      validEdsSentence.copy(
+        sentenceCalculationType = SentenceCalculationType.EDSU18.name,
+        sentenceDate = ImportantDates.EDS18_SENTENCE_TYPES_START_DATE.minusDays(1),
+        caseReference = caseReference,
+      ),
+      validEdsSentence.copy(
+        sentenceCalculationType = SentenceCalculationType.EDS21.name,
+        sentenceDate = ImportantDates.EDS18_SENTENCE_TYPES_START_DATE.minusDays(1),
+        caseReference = caseReference,
+      ),
+      validEdsSentence.copy(
+        sentenceCalculationType = SentenceCalculationType.LASPO_DR.name,
+        sentenceDate = ImportantDates.EDS18_SENTENCE_TYPES_START_DATE.minusDays(1),
+        caseReference = caseReference,
+      ),
+      validEdsSentence.copy(
+        sentenceCalculationType = SentenceCalculationType.EDS18.name,
+        sentenceDate = ImportantDates.EDS18_SENTENCE_TYPES_START_DATE.plusDays(1),
+        caseReference = caseReference,
+      ),
+      validEdsSentence.copy(
+        sentenceCalculationType = SentenceCalculationType.EDSU18.name,
+        sentenceDate = ImportantDates.EDS18_SENTENCE_TYPES_START_DATE.plusDays(1),
+        caseReference = caseReference,
+      ),
+      validEdsSentence.copy(
+        sentenceCalculationType = SentenceCalculationType.EDS21.name,
+        sentenceDate = ImportantDates.EDS18_SENTENCE_TYPES_START_DATE.plusDays(1),
+        caseReference = caseReference,
+      ),
+    )
+    val result =
+      validationService.validate(
+        CalculationSourceData(
+          sentences.map {
+            SentenceAndOffenceWithReleaseArrangements(
+              source = it,
+              isSdsPlus = false,
+              isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+              hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
+            )
+          },
+          VALID_PRISONER,
+          VALID_ADJUSTMENTS,
+          listOf(),
+          null,
+        ),
+        USER_INPUTS,
+        ValidationOrder.allValidations(),
+      )
+
+    assertThat(result).isEqualTo(
+      listOf(
+        ValidationMessage(
+          EDS18_EDS21_EDSU18_SENTENCE_TYPE_INCORRECT,
+          listOf(
+            ImportantDates.EDS18_SENTENCE_TYPES_START_DATE.minusDays(1).toString(),
+            " $caseReference",
+            " at Bristol Crown Court",
+            "A123456",
+            "TEST OFFENCE 2",
+          ),
+        ),
+        ValidationMessage(
+          EDS18_EDS21_EDSU18_SENTENCE_TYPE_INCORRECT,
+          listOf(
+            ImportantDates.EDS18_SENTENCE_TYPES_START_DATE.minusDays(1).toString(),
+            " $caseReference",
+            " at Bristol Crown Court",
+            "A123456",
+            "TEST OFFENCE 2",
+          ),
+        ),
+        ValidationMessage(
+          EDS18_EDS21_EDSU18_SENTENCE_TYPE_INCORRECT,
+          listOf(
+            ImportantDates.EDS18_SENTENCE_TYPES_START_DATE.minusDays(1).toString(),
+            " $caseReference",
+            " at Bristol Crown Court",
+            "A123456",
+            "TEST OFFENCE 2",
+          ),
+        ),
+      ),
+    )
+
+    val resultList: List<ValidationMessage> = result
+    resultList.forEach { validationMessage -> assertEquals(
+      "The sentence type for Court case $caseReference at Bristol Crown Court for offence A123456 TEST OFFENCE 2 is invalid for the sentence date 2020-11-30 entered.",
+      validationMessage.message)
+    }
   }
 
   @Test
@@ -903,13 +1061,15 @@ class ValidationServiceTest : SpringTestBase() {
           listOf(
             ImportantDates.LASPO_AR_SENTENCE_TYPES_END_DATE.plusDays(1).toString(),
             "",
-            "",
+            " at Bristol Crown Court",
             "A123456",
             "TEST OFFENCE 2",
           ),
         ),
       ),
     )
+
+    assertEquals("The sentence type for Court case at Bristol Crown Court for offence A123456 is invalid for the sentence date 2015-04-14 entered.", result[0].message)
   }
 
   @Test
@@ -1029,7 +1189,7 @@ class ValidationServiceTest : SpringTestBase() {
           listOf(
             ImportantDates.SEC_91_END_DATE.minusDays(1).toString(),
             "",
-            "",
+            " at Bristol Crown Court",
             "A123456",
             "TEST OFFENCE 2",
           ),
@@ -1039,7 +1199,7 @@ class ValidationServiceTest : SpringTestBase() {
           listOf(
             ImportantDates.SEC_91_END_DATE.minusDays(1).toString(),
             "",
-            "",
+            " at Bristol Crown Court",
             "A123456",
             "TEST OFFENCE 2",
           ),
@@ -1723,13 +1883,62 @@ class ValidationServiceTest : SpringTestBase() {
           listOf(
             FIRST_MAY_2021.toString(),
             "",
-            "",
+            " at Bristol Crown Court",
             "A123456",
             "TEST OFFENCE 2",
           ),
         ),
       ),
     )
+
+    assertEquals("Sentence starting on 2021-05-01 in Court case at Bristol Crown Court for offence A123456 must include a fine amount", result[0].message)
+  }
+
+  @Test
+  fun `Test A FINE SENTENCE MISSING FINE AMOUNT validation message with a case reference`() {
+    val caseReference = "111222333"
+    val sentences = listOf(
+      validAFineSentence.copy(
+        caseReference = caseReference,
+        fineAmount = null,
+      ),
+    )
+    val result =
+      validationService.validate(
+        CalculationSourceData(
+          sentences.map {
+            SentenceAndOffenceWithReleaseArrangements(
+              source = it,
+              isSdsPlus = false,
+              isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+              hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
+            )
+          },
+          VALID_PRISONER,
+          VALID_ADJUSTMENTS,
+          listOf(),
+          null,
+        ),
+        USER_INPUTS,
+        ValidationOrder.allValidations(),
+      )
+
+    assertThat(result).isEqualTo(
+      listOf(
+        ValidationMessage(
+          A_FINE_SENTENCE_MISSING_FINE_AMOUNT,
+          listOf(
+            FIRST_MAY_2021.toString(),
+            " $caseReference",
+            " at Bristol Crown Court",
+            "A123456",
+            "TEST OFFENCE 2",
+          ),
+        ),
+      ),
+    )
+
+    assertEquals("Sentence starting on 2021-05-01 in Court case $caseReference at Bristol Crown Court for offence A123456 must include a fine amount", result[0].message)
   }
 
   @Test
