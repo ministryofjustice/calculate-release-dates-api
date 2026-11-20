@@ -7,7 +7,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.slf4j.LoggerFactory
 import org.springframework.http.MediaType
+import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
@@ -85,6 +87,28 @@ class LegacyDataController(private val legacySentenceCalculationService: LegacyS
   fun syncUpdated(@RequestBody request: LegacySentenceCalculationDto): LegacySentenceCalculationToCrdsMappingResult {
     LOGGER.info("Syncing updated legacy sentence calculation for prisoner $${request.prisonerId} with id ${request.nomisCalculationId}")
     return legacySentenceCalculationService.syncUpdated(request)
+  }
+
+  @DeleteMapping(value = ["/sync/{nomisCalculationId}"])
+  @ResponseBody
+  @Operation(
+    summary = "Sync a deleted sentence calculation from NOMIS into CRDS",
+    description = "Deletes an existing sentence calculation that has already been imported via sync new or migration.",
+  )
+  @ApiResponses(
+    value = [
+      ApiResponse(responseCode = "204", description = "If we successfully deleted the sentence calculation from CRDS"),
+      ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
+    ],
+  )
+  fun syncDeleted(
+    @Parameter(required = true, example = "123456", description = "The the id of the sentence calc from NOMIS")
+    @PathVariable("nomisCalculationId")
+    nomisCalculationId: Long,
+  ): ResponseEntity<Unit> {
+    LOGGER.info("Syncing deleted legacy sentence calculation with id $nomisCalculationId")
+    legacySentenceCalculationService.syncDeleted(nomisCalculationId)
+    return ResponseEntity.noContent().build()
   }
 
   companion object {

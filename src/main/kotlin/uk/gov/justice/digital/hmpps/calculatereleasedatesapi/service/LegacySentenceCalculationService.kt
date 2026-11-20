@@ -42,6 +42,11 @@ class LegacySentenceCalculationService(
     return linkAndSave(legacySentenceCalculation)
   }
 
+  @Transactional
+  fun syncDeleted(nomisCalculationId: Long) {
+    legacySentenceCalculationRepository.deleteById(nomisCalculationId)
+  }
+
   private fun linkAndSave(legacySentenceCalculation: LegacySentenceCalculationDto): LegacySentenceCalculationToCrdsMappingResult {
     val maybeAnExistingCalculationRequest = findCalculationRequestFromNomisComment(legacySentenceCalculation)
     val entity = LegacySentenceCalculation.fromDto(legacySentenceCalculation, maybeAnExistingCalculationRequest)
