@@ -10,6 +10,7 @@ import org.springframework.http.MediaType
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.ResponseBody
@@ -54,7 +55,7 @@ class LegacyDataController(private val legacySentenceCalculationService: LegacyS
   @PostMapping(value = ["/sync"])
   @ResponseBody
   @Operation(
-    summary = "Sync a single sentence calculation from NOMIS into CRDS",
+    summary = "Sync a new sentence calculation from NOMIS into CRDS",
     description = "Creates an entry in the legacy sentence calculation table for use in calculation history.\n\n " +
       "If possible we link it to an existing CRDS calculation otherwise it is left as a NOMIS calculation for historical purposes.",
   )
@@ -64,9 +65,26 @@ class LegacyDataController(private val legacySentenceCalculationService: LegacyS
       ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
     ],
   )
-  fun sync(@RequestBody request: LegacySentenceCalculationDto): LegacySentenceCalculationToCrdsMappingResult {
-    LOGGER.info("Syncing legacy sentence calculation for prisoner $${request.prisonerId} with id ${request.nomisCalculationId}")
-    return legacySentenceCalculationService.sync(request)
+  fun syncNew(@RequestBody request: LegacySentenceCalculationDto): LegacySentenceCalculationToCrdsMappingResult {
+    LOGGER.info("Syncing new legacy sentence calculation for prisoner $${request.prisonerId} with id ${request.nomisCalculationId}")
+    return legacySentenceCalculationService.syncNew(request)
+  }
+
+  @PutMapping(value = ["/sync"])
+  @ResponseBody
+  @Operation(
+    summary = "Sync an update to an sentence calculation from NOMIS into CRDS",
+    description = "Updates an existing sentence calculation that has already been imported via sync new or migration.",
+  )
+  @ApiResponses(
+    value = [
+      ApiResponse(responseCode = "200", description = "If we successfully synced the sentence calculation to CRDS"),
+      ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
+    ],
+  )
+  fun syncUpdated(@RequestBody request: LegacySentenceCalculationDto): LegacySentenceCalculationToCrdsMappingResult {
+    LOGGER.info("Syncing updated legacy sentence calculation for prisoner $${request.prisonerId} with id ${request.nomisCalculationId}")
+    return legacySentenceCalculationService.syncUpdated(request)
   }
 
   companion object {
