@@ -106,11 +106,39 @@ class LegacySentenceCalculationSyncIntTest(private val mockPrisonService: MockPr
     assertThat(legacySentenceCalculation.first().crdsCalculationReference).isEqualTo(secondConfirmed.calculationReference)
   }
 
+  @Test
+  fun `Can delete a NOMIS only calc via sync`() {
+    val aNomisCalc = aMinimalLegacySentenceCalculationDto().copy(prisonerId = PRISONER_ID)
+
+    val response = syncANewLegacyCalc(aNomisCalc)
+    assertThat(response).isEqualTo(LegacySentenceCalculationToCrdsMappingResult(aNomisCalc.nomisCalculationId, null))
+
+    syncADeletedLegacyCalc(aNomisCalc.nomisCalculationId)
+
+    val legacySentenceCalculation = legacySentenceCalculationRepository.getByPrisonerId(PRISONER_ID)
+    assertThat(legacySentenceCalculation).isEmpty()
+  }
+
+  @Test
+  fun `Can delete a CRDS calc via sync`() {
+    val prelim = createPreliminaryCalculation(PRISONER_ID)
+    val confirmed = createConfirmCalculationForPrisoner(prelim.calculationRequestId, listOf(ManuallyEnteredDate(ReleaseDateType.ROTL, SubmittedDate(21, 6, 2027))))
+    val aCrdsCalc = aMinimalLegacySentenceCalculationDto().copy(prisonerId = PRISONER_ID, commentText = "CRDS comment: ${confirmed.calculationReference}")
+
+    val response = syncANewLegacyCalc(aCrdsCalc)
+    assertThat(response).isEqualTo(LegacySentenceCalculationToCrdsMappingResult(aCrdsCalc.nomisCalculationId, confirmed.calculationRequestId))
+
+    syncADeletedLegacyCalc(aCrdsCalc.nomisCalculationId)
+
+    val legacySentenceCalculation = legacySentenceCalculationRepository.getByPrisonerId(PRISONER_ID)
+    assertThat(legacySentenceCalculation).isEmpty()
+  }
+
   private fun syncANewLegacyCalc(request: LegacySentenceCalculationDto) = webTestClient.post()
-    .uri("/legacy-data/sync")
+    .uri("/legacy-sentence-calculation/sync")
     .accept(APPLICATION_JSON)
     .contentType(APPLICATION_JSON)
-    .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+    .headers(setAuthorisation(roles = listOf("ROLE_CALCULATE_RELEASE_DATES__LEGACY_SENTENCE_CALCULATION__RW")))
     .bodyValue(request)
     .exchange()
     .expectStatus().isOk
@@ -118,15 +146,25 @@ class LegacySentenceCalculationSyncIntTest(private val mockPrisonService: MockPr
     .returnResult().responseBody!!
 
   private fun syncAnUpdatedLegacyCalc(request: LegacySentenceCalculationDto) = webTestClient.put()
-    .uri("/legacy-data/sync")
+    .uri("/legacy-sentence-calculation/sync")
     .accept(APPLICATION_JSON)
     .contentType(APPLICATION_JSON)
-    .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+    .headers(setAuthorisation(roles = listOf("ROLE_CALCULATE_RELEASE_DATES__LEGACY_SENTENCE_CALCULATION__RW")))
     .bodyValue(request)
     .exchange()
     .expectStatus().isOk
     .expectBody<LegacySentenceCalculationToCrdsMappingResult>()
     .returnResult().responseBody!!
+
+  private fun syncADeletedLegacyCalc(id: Long) {
+    webTestClient.delete()
+      .uri("/legacy-sentence-calculation/sync/$id")
+      .accept(APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_CALCULATE_RELEASE_DATES__LEGACY_SENTENCE_CALCULATION__RW")))
+      .exchange()
+      .expectStatus().isNoContent
+      .returnResult()
+  }
 
   companion object {
     private const val PRISONER_ID = "default"

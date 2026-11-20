@@ -244,10 +244,10 @@ open class IntegrationTestBase internal constructor() {
     .returnResult().responseBody!!
 
   protected fun migrateAPrisoner(request: LegacySentenceCalculationMigrationRequest, prisonerId: String) = webTestClient.post()
-    .uri("/legacy-data/migrate/$prisonerId")
+    .uri("/legacy-sentence-calculation/migrate/$prisonerId")
     .accept(APPLICATION_JSON)
     .contentType(APPLICATION_JSON)
-    .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+    .headers(setAuthorisation(roles = listOf("ROLE_CALCULATE_RELEASE_DATES__LEGACY_SENTENCE_CALCULATION__RW")))
     .bodyValue(request)
     .exchange()
     .expectStatus().isOk

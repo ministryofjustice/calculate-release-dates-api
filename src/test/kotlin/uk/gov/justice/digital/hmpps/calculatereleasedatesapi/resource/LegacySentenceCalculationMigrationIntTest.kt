@@ -4,7 +4,9 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.test.context.jdbc.Sql
+import org.springframework.test.web.reactive.server.expectBodyList
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.LegacySentenceCalculationTest.Companion.aFullyCompletedLegacySentenceCalculationDto
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.LegacySentenceCalculationTest.Companion.aMinimalLegacySentenceCalculationDto
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
@@ -73,10 +75,15 @@ class LegacySentenceCalculationMigrationIntTest(private val mockPrisonService: M
       ),
     )
 
-    val legacySentenceCalculation = legacySentenceCalculationRepository.getByPrisonerId(PRISONER_ID)
-    assertThat(legacySentenceCalculation).hasSize(2)
-    assertThat(legacySentenceCalculation.find { it.nomisCalculationId == aNomisCalc.nomisCalculationId }).isNotNull
-    assertThat(legacySentenceCalculation.find { it.nomisCalculationId == aCrdsCalc.nomisCalculationId }).isNotNull
+    val legacySentenceCalculationsFromDb = legacySentenceCalculationRepository.getByPrisonerId(PRISONER_ID)
+    assertThat(legacySentenceCalculationsFromDb).hasSize(2)
+    assertThat(legacySentenceCalculationsFromDb.find { it.nomisCalculationId == aNomisCalc.nomisCalculationId }).isNotNull
+    assertThat(legacySentenceCalculationsFromDb.find { it.nomisCalculationId == aCrdsCalc.nomisCalculationId }).isNotNull
+
+    val legacySentenceCalculationFromReconciliationEndpoint = getAllByPrisonerId(PRISONER_ID)
+    assertThat(legacySentenceCalculationFromReconciliationEndpoint).hasSize(2)
+    assertThat(legacySentenceCalculationFromReconciliationEndpoint.find { it.nomisCalculationId == aNomisCalc.nomisCalculationId }).isNotNull
+    assertThat(legacySentenceCalculationFromReconciliationEndpoint.find { it.nomisCalculationId == aCrdsCalc.nomisCalculationId }).isNotNull
   }
 
   @Test
@@ -211,6 +218,15 @@ class LegacySentenceCalculationMigrationIntTest(private val mockPrisonService: M
       ),
     )
   }
+
+  private fun getAllByPrisonerId(prisonerId: String) = webTestClient.get()
+    .uri("/legacy-sentence-calculation/$prisonerId")
+    .accept(APPLICATION_JSON)
+    .headers(setAuthorisation(roles = listOf("ROLE_CALCULATE_RELEASE_DATES__LEGACY_SENTENCE_CALCULATION__RO")))
+    .exchange()
+    .expectStatus().isOk
+    .expectBodyList<LegacySentenceCalculationDto>()
+    .returnResult().responseBody!!
 
   companion object {
     private const val PRISONER_ID = "default"
