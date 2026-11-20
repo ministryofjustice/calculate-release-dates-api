@@ -1,7 +1,7 @@
 version: "3"
 services:
   calculate-release-dates-db:
-    image: postgres:18
+    image: postgres:19
     networks:
       - hmpps
     container_name: calculate-release-dates-db
