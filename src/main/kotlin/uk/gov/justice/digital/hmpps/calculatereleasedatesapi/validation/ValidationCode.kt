@@ -56,7 +56,7 @@ enum class ValidationCode(val message: String, val validationType: ValidationTyp
   FTR_TYPE_56_UNSUPPORTED_RECALL("Fixed term recall while on %s", MANUAL_ENTRY_JOURNEY_REQUIRED),
   FTR_RTC_DATE_IN_FUTURE("Return to custody date must not be in the future.", ValidationType.VALIDATION, ValidationMessageContentType.PLAIN_TEXT, ValidationFixSource.RECALLS),
   FTR_RTC_DATE_BEFORE_SENTENCE_DATE("Return to custody date cannot be before the sentence date.", ValidationType.VALIDATION, ValidationMessageContentType.PLAIN_TEXT, ValidationFixSource.RECALLS),
-  FTR_RTC_DATE_BEFORE_REVOCATION_DATE("Return to custody date must not be before the revocation date"),
+  FTR_RTC_DATE_BEFORE_REVOCATION_DATE("Return to custody date must not be before the revocation date.", ValidationType.VALIDATION, ValidationMessageContentType.PLAIN_TEXT, ValidationFixSource.RECALLS),
   LASPO_AR_SENTENCE_TYPE_INCORRECT($$"The sentence type for Court case%2$s%3$s for offence %4$s is invalid for the sentence date %1$s entered.", ValidationType.VALIDATION, ValidationMessageContentType.PLAIN_TEXT, ValidationFixSource.COURT_CASES),
   MORE_THAN_ONE_IMPRISONMENT_TERM("Court case %s NOMIS line reference %s must only have one imprisonment term."),
   MORE_THAN_ONE_LICENCE_TERM("Court case %s NOMIS line reference %s must only have one licence term."),

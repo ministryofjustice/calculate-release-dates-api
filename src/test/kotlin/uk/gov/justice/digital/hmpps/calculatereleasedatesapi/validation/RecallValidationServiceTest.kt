@@ -1,7 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation
 
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -47,6 +46,7 @@ class RecallValidationServiceTest {
 
       assertThat(messages).isNotEmpty
       assertThat(messages[0].code).isEqualTo(ValidationCode.FTR_RTC_DATE_BEFORE_SENTENCE_DATE)
+      assertThat(messages[0].message).isEqualTo("Return to custody date cannot be before the sentence date.")
     }
 
     @Test
@@ -57,6 +57,7 @@ class RecallValidationServiceTest {
 
       assertThat(messages).isNotEmpty
       assertThat(messages[0].code).isEqualTo(ValidationCode.FTR_RTC_DATE_IN_FUTURE)
+      assertThat(messages[0].message).isEqualTo("Return to custody date must not be in the future.")
     }
   }
 
@@ -90,6 +91,7 @@ class RecallValidationServiceTest {
 
       assertThat(messages).isNotEmpty
       assertThat(messages[0].code).isEqualTo(ValidationCode.RECALL_MISSING_REVOCATION_DATE)
+      assertThat(messages[0].message).isEqualTo("An active recall sentence is present with no associated court event with a Recall to prison \"court outcome\"")
     }
 
     @Test
@@ -128,7 +130,12 @@ class RecallValidationServiceTest {
         ),
       )
 
-      assertEquals(ValidationCode.FTR_SENTENCES_CONFLICT_WITH_EACH_OTHER, result.first().code)
+      assertThat(result.first().code).isEqualTo(ValidationCode.FTR_SENTENCES_CONFLICT_WITH_EACH_OTHER)
+
+      val resultList: List<ValidationMessage> = result
+      resultList.forEach { validationMessage ->
+        assertThat(validationMessage.message).isEqualTo("The fixed term recalls in this calculation must all be the same, either 14, 28 or 56 days.")
+      }
     }
 
     @Test
@@ -142,7 +149,8 @@ class RecallValidationServiceTest {
         ),
       )
 
-      assertEquals(ValidationCode.FTR_SENTENCES_CONFLICT_WITH_EACH_OTHER, result.first().code)
+      assertThat(result.first().code).isEqualTo(ValidationCode.FTR_SENTENCES_CONFLICT_WITH_EACH_OTHER)
+      assertThat(result.first().message).isEqualTo("The fixed term recalls in this calculation must all be the same, either 14, 28 or 56 days.")
     }
 
     @Test
@@ -156,7 +164,8 @@ class RecallValidationServiceTest {
         ),
       )
 
-      assertEquals(ValidationCode.FTR_SENTENCES_CONFLICT_WITH_EACH_OTHER, result.first().code)
+      assertThat(result.first().code).isEqualTo(ValidationCode.FTR_SENTENCES_CONFLICT_WITH_EACH_OTHER)
+      assertThat(result.first().message).isEqualTo("The fixed term recalls in this calculation must all be the same, either 14, 28 or 56 days.")
     }
 
     @Test
@@ -170,7 +179,8 @@ class RecallValidationServiceTest {
         ),
       )
 
-      assertEquals(ValidationCode.FTR_SENTENCES_CONFLICT_WITH_EACH_OTHER, result.first().code)
+      assertThat(result.first().code).isEqualTo(ValidationCode.FTR_SENTENCES_CONFLICT_WITH_EACH_OTHER)
+      assertThat(result.first().message).isEqualTo("The fixed term recalls in this calculation must all be the same, either 14, 28 or 56 days.")
     }
   }
 
