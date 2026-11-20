@@ -138,7 +138,7 @@ class LegacySentenceCalculationSyncIntTest(private val mockPrisonService: MockPr
     .uri("/legacy-sentence-calculation/sync")
     .accept(APPLICATION_JSON)
     .contentType(APPLICATION_JSON)
-    .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+    .headers(setAuthorisation(roles = listOf("ROLE_CALCULATE_RELEASE_DATES__LEGACY_SENTENCE_CALCULATION__RW")))
     .bodyValue(request)
     .exchange()
     .expectStatus().isOk
@@ -149,7 +149,7 @@ class LegacySentenceCalculationSyncIntTest(private val mockPrisonService: MockPr
     .uri("/legacy-sentence-calculation/sync")
     .accept(APPLICATION_JSON)
     .contentType(APPLICATION_JSON)
-    .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+    .headers(setAuthorisation(roles = listOf("ROLE_CALCULATE_RELEASE_DATES__LEGACY_SENTENCE_CALCULATION__RW")))
     .bodyValue(request)
     .exchange()
     .expectStatus().isOk
@@ -160,7 +160,7 @@ class LegacySentenceCalculationSyncIntTest(private val mockPrisonService: MockPr
     webTestClient.delete()
       .uri("/legacy-sentence-calculation/sync/$id")
       .accept(APPLICATION_JSON)
-      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+      .headers(setAuthorisation(roles = listOf("ROLE_CALCULATE_RELEASE_DATES__LEGACY_SENTENCE_CALCULATION__RW")))
       .exchange()
       .expectStatus().isNoContent
       .returnResult()

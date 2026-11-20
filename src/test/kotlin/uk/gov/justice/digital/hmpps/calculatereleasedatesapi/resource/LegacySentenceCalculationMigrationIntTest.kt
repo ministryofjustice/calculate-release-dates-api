@@ -222,7 +222,7 @@ class LegacySentenceCalculationMigrationIntTest(private val mockPrisonService: M
   private fun getAllByPrisonerId(prisonerId: String) = webTestClient.get()
     .uri("/legacy-sentence-calculation/$prisonerId")
     .accept(APPLICATION_JSON)
-    .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+    .headers(setAuthorisation(roles = listOf("ROLE_CALCULATE_RELEASE_DATES__LEGACY_SENTENCE_CALCULATION__RO")))
     .exchange()
     .expectStatus().isOk
     .expectBodyList<LegacySentenceCalculationDto>()
