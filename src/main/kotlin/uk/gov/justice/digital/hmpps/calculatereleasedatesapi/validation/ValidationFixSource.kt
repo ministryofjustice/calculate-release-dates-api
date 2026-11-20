@@ -6,4 +6,5 @@ import io.swagger.v3.oas.annotations.media.Schema
 enum class ValidationFixSource {
   ADJUSTMENTS,
   ADJUDICATIONS,
+  COURT_CASES,
 }
