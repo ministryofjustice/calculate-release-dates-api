@@ -8,8 +8,10 @@ import io.swagger.v3.oas.annotations.tags.Tag
 import org.slf4j.LoggerFactory
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.DeleteMapping
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
@@ -24,10 +26,10 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.migration.Leg
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.LegacySentenceCalculationService
 
 @RestController
-@RequestMapping("/legacy-data", produces = [MediaType.APPLICATION_JSON_VALUE])
-@Tag(name = "legacy-data-controller", description = "Provides migrate and sync APIs for managing legacy data")
+@RequestMapping("/legacy-sentence-calculation", produces = [MediaType.APPLICATION_JSON_VALUE])
+@Tag(name = "legacy-sentence-calculation-controller", description = "Provides migrate and sync APIs for managing legacy sentence calculations")
 @Validated
-class LegacyDataController(private val legacySentenceCalculationService: LegacySentenceCalculationService) {
+class LegacySentenceCalculationController(private val legacySentenceCalculationService: LegacySentenceCalculationService) {
 
   @PostMapping(value = ["/migrate/{prisonerId}"])
   @ResponseBody
@@ -35,7 +37,8 @@ class LegacyDataController(private val legacySentenceCalculationService: LegacyS
     summary = "Migrate sentence calculations from NOMIS into CRDS",
     description = "Creates an entry in the legacy sentence calculation table for use in calculation history.\n\n " +
       "If possible we link it to an existing CRDS calculation otherwise it is left as a NOMIS calculation for historical purposes.\n\n" +
-      "Migrating a prisoner will first remove all current entries in the legacy sentence calculation table for that prisoner meaning it can be retried from scratch if required.\n\n",
+      "Migrating a prisoner will first remove all current entries in the legacy sentence calculation table for that prisoner meaning it can be retried from scratch if required.\n\n" +
+      "Required role: ROLE_CALCULATE_RELEASE_DATES__LEGACY_SENTENCE_CALCULATION__RW",
   )
   @ApiResponses(
     value = [
@@ -43,6 +46,7 @@ class LegacyDataController(private val legacySentenceCalculationService: LegacyS
       ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
     ],
   )
+  @PreAuthorize("hasAnyRole('ROLE_CALCULATE_RELEASE_DATES__LEGACY_SENTENCE_CALCULATION__RW')")
   fun migrate(
     @Parameter(required = true, example = "A1234AB", description = "The prisoners ID (aka nomsId)")
     @PathVariable("prisonerId")
@@ -59,7 +63,8 @@ class LegacyDataController(private val legacySentenceCalculationService: LegacyS
   @Operation(
     summary = "Sync a new sentence calculation from NOMIS into CRDS",
     description = "Creates an entry in the legacy sentence calculation table for use in calculation history.\n\n " +
-      "If possible we link it to an existing CRDS calculation otherwise it is left as a NOMIS calculation for historical purposes.",
+      "If possible we link it to an existing CRDS calculation otherwise it is left as a NOMIS calculation for historical purposes\n\n" +
+      "Required role: ROLE_CALCULATE_RELEASE_DATES__LEGACY_SENTENCE_CALCULATION__RW",
   )
   @ApiResponses(
     value = [
@@ -67,6 +72,7 @@ class LegacyDataController(private val legacySentenceCalculationService: LegacyS
       ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
     ],
   )
+  @PreAuthorize("hasAnyRole('ROLE_CALCULATE_RELEASE_DATES__LEGACY_SENTENCE_CALCULATION__RW')")
   fun syncNew(@RequestBody request: LegacySentenceCalculationDto): LegacySentenceCalculationToCrdsMappingResult {
     LOGGER.info("Syncing new legacy sentence calculation for prisoner $${request.prisonerId} with id ${request.nomisCalculationId}")
     return legacySentenceCalculationService.syncNew(request)
@@ -76,7 +82,8 @@ class LegacyDataController(private val legacySentenceCalculationService: LegacyS
   @ResponseBody
   @Operation(
     summary = "Sync an update to an sentence calculation from NOMIS into CRDS",
-    description = "Updates an existing sentence calculation that has already been imported via sync new or migration.",
+    description = "Updates an existing sentence calculation that has already been imported via sync new or migration\n\n" +
+      "Required role: ROLE_CALCULATE_RELEASE_DATES__LEGACY_SENTENCE_CALCULATION__RW",
   )
   @ApiResponses(
     value = [
@@ -84,6 +91,7 @@ class LegacyDataController(private val legacySentenceCalculationService: LegacyS
       ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
     ],
   )
+  @PreAuthorize("hasAnyRole('ROLE_CALCULATE_RELEASE_DATES__LEGACY_SENTENCE_CALCULATION__RW')")
   fun syncUpdated(@RequestBody request: LegacySentenceCalculationDto): LegacySentenceCalculationToCrdsMappingResult {
     LOGGER.info("Syncing updated legacy sentence calculation for prisoner $${request.prisonerId} with id ${request.nomisCalculationId}")
     return legacySentenceCalculationService.syncUpdated(request)
@@ -93,7 +101,8 @@ class LegacyDataController(private val legacySentenceCalculationService: LegacyS
   @ResponseBody
   @Operation(
     summary = "Sync a deleted sentence calculation from NOMIS into CRDS",
-    description = "Deletes an existing sentence calculation that has already been imported via sync new or migration.",
+    description = "Deletes an existing sentence calculation that has already been imported via sync new or migration\n\n" +
+      "Required role: ROLE_CALCULATE_RELEASE_DATES__LEGACY_SENTENCE_CALCULATION__RW",
   )
   @ApiResponses(
     value = [
@@ -101,6 +110,7 @@ class LegacyDataController(private val legacySentenceCalculationService: LegacyS
       ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
     ],
   )
+  @PreAuthorize("hasAnyRole('ROLE_CALCULATE_RELEASE_DATES__LEGACY_SENTENCE_CALCULATION__RW')")
   fun syncDeleted(
     @Parameter(required = true, example = "123456", description = "The the id of the sentence calc from NOMIS")
     @PathVariable("nomisCalculationId")
@@ -111,7 +121,31 @@ class LegacyDataController(private val legacySentenceCalculationService: LegacyS
     return ResponseEntity.noContent().build()
   }
 
+  @GetMapping(value = ["/{prisonerId}"])
+  @ResponseBody
+  @Operation(
+    summary = "Get all legacy sentence calculations for a prisoner - FOR RECONCILIATION ONLY",
+    description = "Gets all legacy sentence calculations for a prisoner\n\n " +
+      "This is to be used for migrate and sync reconciliation purposes only and not for any user facing feature. Use the regular consumer APIs if you need historical calculation data\n\n" +
+      "Required role: ROLE_CALCULATE_RELEASE_DATES__LEGACY_SENTENCE_CALCULATION__RO or ROLE_CALCULATE_RELEASE_DATES__LEGACY_SENTENCE_CALCULATION__RW",
+  )
+  @ApiResponses(
+    value = [
+      ApiResponse(responseCode = "200", description = "All legacy sentence calculations that have been migrated or synced to CRDS"),
+      ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
+    ],
+  )
+  @PreAuthorize("hasAnyRole('ROLE_CALCULATE_RELEASE_DATES__LEGACY_SENTENCE_CALCULATION__RW', 'ROLE_CALCULATE_RELEASE_DATES__LEGACY_SENTENCE_CALCULATION__RO')")
+  fun getAllForPrisoner(
+    @Parameter(required = true, example = "A1234AB", description = "The prisoners ID (aka nomsId)")
+    @PathVariable("prisonerId")
+    prisonerId: String,
+  ): List<LegacySentenceCalculationDto> {
+    LOGGER.info("Fetching legacy sentence calculations for prisoner $prisonerId")
+    return legacySentenceCalculationService.getAllForPrisoner(prisonerId)
+  }
+
   companion object {
-    private val LOGGER = LoggerFactory.getLogger(LegacyDataController::class.java)
+    private val LOGGER = LoggerFactory.getLogger(LegacySentenceCalculationController::class.java)
   }
 }
