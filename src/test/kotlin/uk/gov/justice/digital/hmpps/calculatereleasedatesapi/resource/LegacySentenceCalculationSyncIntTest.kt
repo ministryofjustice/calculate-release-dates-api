@@ -135,7 +135,7 @@ class LegacySentenceCalculationSyncIntTest(private val mockPrisonService: MockPr
   }
 
   private fun syncANewLegacyCalc(request: LegacySentenceCalculationDto) = webTestClient.post()
-    .uri("/legacy-data/sync")
+    .uri("/legacy-sentence-calculation/sync")
     .accept(APPLICATION_JSON)
     .contentType(APPLICATION_JSON)
     .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
@@ -146,7 +146,7 @@ class LegacySentenceCalculationSyncIntTest(private val mockPrisonService: MockPr
     .returnResult().responseBody!!
 
   private fun syncAnUpdatedLegacyCalc(request: LegacySentenceCalculationDto) = webTestClient.put()
-    .uri("/legacy-data/sync")
+    .uri("/legacy-sentence-calculation/sync")
     .accept(APPLICATION_JSON)
     .contentType(APPLICATION_JSON)
     .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
@@ -158,7 +158,7 @@ class LegacySentenceCalculationSyncIntTest(private val mockPrisonService: MockPr
 
   private fun syncADeletedLegacyCalc(id: Long) {
     webTestClient.delete()
-      .uri("/legacy-data/sync/$id")
+      .uri("/legacy-sentence-calculation/sync/$id")
       .accept(APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
       .exchange()

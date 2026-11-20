@@ -10,6 +10,7 @@ import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.DeleteMapping
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
@@ -24,10 +25,10 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.migration.Leg
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.LegacySentenceCalculationService
 
 @RestController
-@RequestMapping("/legacy-data", produces = [MediaType.APPLICATION_JSON_VALUE])
-@Tag(name = "legacy-data-controller", description = "Provides migrate and sync APIs for managing legacy data")
+@RequestMapping("/legacy-sentence-calculation", produces = [MediaType.APPLICATION_JSON_VALUE])
+@Tag(name = "legacy-sentence-calculation-controller", description = "Provides migrate and sync APIs for managing legacy sentence calculations")
 @Validated
-class LegacyDataController(private val legacySentenceCalculationService: LegacySentenceCalculationService) {
+class LegacySentenceCalculationController(private val legacySentenceCalculationService: LegacySentenceCalculationService) {
 
   @PostMapping(value = ["/migrate/{prisonerId}"])
   @ResponseBody
@@ -111,7 +112,29 @@ class LegacyDataController(private val legacySentenceCalculationService: LegacyS
     return ResponseEntity.noContent().build()
   }
 
+  @GetMapping(value = ["/{prisonerId}"])
+  @ResponseBody
+  @Operation(
+    summary = "Get all legacy sentence calculations for a prisoner - FOR RECONCILIATION ONLY",
+    description = "Gets all legacy sentence calculations for a prisoner\n\n " +
+      "This is to be used for migrate and sync reconciliation purposes only and not for any user facing feature. Use the regular consumer APIs if you need historical calculation data.",
+  )
+  @ApiResponses(
+    value = [
+      ApiResponse(responseCode = "200", description = "All legacy sentence calculations that have been migrated or synced to CRDS"),
+      ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
+    ],
+  )
+  fun getAllForPrisoner(
+    @Parameter(required = true, example = "A1234AB", description = "The prisoners ID (aka nomsId)")
+    @PathVariable("prisonerId")
+    prisonerId: String,
+  ): List<LegacySentenceCalculationDto> {
+    LOGGER.info("Fetching legacy sentence calculations for prisoner $prisonerId")
+    return legacySentenceCalculationService.getAllForPrisoner(prisonerId)
+  }
+
   companion object {
-    private val LOGGER = LoggerFactory.getLogger(LegacyDataController::class.java)
+    private val LOGGER = LoggerFactory.getLogger(LegacySentenceCalculationController::class.java)
   }
 }
