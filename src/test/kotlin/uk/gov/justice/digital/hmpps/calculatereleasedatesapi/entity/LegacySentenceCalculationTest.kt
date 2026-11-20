@@ -68,6 +68,7 @@ class LegacySentenceCalculationTest {
         nomisRecordedBy = null,
       ),
     )
+    assertThat(result.toDto()).describedAs("Round trip to entity and back to DTO produced a different result").isEqualTo(dto)
   }
 
   @Test
@@ -129,6 +130,7 @@ class LegacySentenceCalculationTest {
         nomisRecordedBy = "RECORDER",
       ),
     )
+    assertThat(result.toDto()).describedAs("Round trip to entity and back to DTO produced a different result").isEqualTo(dto)
   }
 
   @Test
@@ -193,6 +195,7 @@ class LegacySentenceCalculationTest {
         nomisRecordedBy = "RECORDER",
       ),
     )
+    assertThat(result.toDto()).describedAs("Round trip to entity and back to DTO produced a different result").isEqualTo(dto)
   }
 
   companion object {
