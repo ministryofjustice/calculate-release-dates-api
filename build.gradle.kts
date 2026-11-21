@@ -6,7 +6,7 @@ import org.jlleitschuh.gradle.ktlint.tasks.KtLintFormatTask
 import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "11.0.15"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "11.1.1"
   id("org.springdoc.openapi-gradle-plugin") version "2.1.0"
   kotlin("plugin.spring") version "2.4.21"
   kotlin("plugin.jpa") version "2.4.21"
@@ -57,14 +57,14 @@ dependencies {
   implementation("io.hypersistence:hypersistence-utils-hibernate-71:3.16.0")
 
   // OpenAPI
-  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.2.0")
+  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.2.1")
 
   implementation("com.amazonaws:amazon-sqs-java-messaging-lib:2.1.5")
   implementation("io.awspring.cloud:spring-cloud-aws-starter:4.2.2")
   implementation("io.awspring.cloud:spring-cloud-aws-core:4.2.2")
   implementation("io.awspring.cloud:spring-cloud-aws-sns:4.2.2")
   implementation("io.awspring.cloud:spring-cloud-aws-sqs:4.2.2")
-  implementation("org.springframework:spring-jms:7.0.10")
+  implementation("org.springframework:spring-jms:7.1.0")
   implementation("org.apache.commons:commons-text:1.15.0")
 
   // SQS
@@ -78,7 +78,7 @@ dependencies {
   testImplementation("org.springframework.boot:spring-boot-webtestclient")
   testImplementation("org.awaitility:awaitility-kotlin:4.3.0")
   testImplementation("net.javacrumbs.json-unit:json-unit-assertj:6.4.0")
-  testImplementation("io.swagger.parser.v3:swagger-parser-v2-converter:2.1.48")
+  testImplementation("io.swagger.parser.v3:swagger-parser-v2-converter:2.1.49")
   testImplementation("org.mockito:mockito-inline:5.2.0")
   testImplementation("org.junit.jupiter:junit-jupiter:6.1.3")
   testImplementation("org.testcontainers:testcontainers:2.0.5")
