@@ -19,4 +19,12 @@ class ValidationUtilities {
     range2.start.toString(),
     range2.end.toString(),
   )
+
+  internal fun getCourtCaseArguments(sentencesAndOffence: SentenceAndOffence) = listOf(
+    sentencesAndOffence.sentenceDate.toString(),
+    sentencesAndOffence.caseReference?.let { " $it" } ?: "",
+    sentencesAndOffence.courtDescription?.let { " at $it" } ?: "",
+    sentencesAndOffence.offence.offenceCode,
+    sentencesAndOffence.offence.offenceDescription,
+  )
 }
