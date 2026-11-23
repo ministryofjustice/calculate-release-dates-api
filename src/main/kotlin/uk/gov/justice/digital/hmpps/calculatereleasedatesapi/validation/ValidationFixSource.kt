@@ -7,4 +7,5 @@ enum class ValidationFixSource {
   ADJUSTMENTS,
   ADJUDICATIONS,
   COURT_CASES,
+  RECALLS,
 }

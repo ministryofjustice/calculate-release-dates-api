@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation
 
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -466,6 +467,11 @@ class ValidationServiceTest : SpringTestBase() {
       ValidationOrder.allValidations(),
     )
     assertThat(result).isEqualTo(listOf(ValidationMessage(FTR_NO_RETURN_TO_CUSTODY_DATE)))
+
+    val resultList: List<ValidationMessage> = result
+    resultList.forEach { validationMessage ->
+      assertThat(validationMessage.message).isEqualTo("A return to custody date must be entered for a fixed term recall sentence.")
+    }
   }
 
   @Test
@@ -486,6 +492,11 @@ class ValidationServiceTest : SpringTestBase() {
       ValidationOrder.allValidations(),
     )
     assertThat(result).isEqualTo(listOf(ValidationMessage(FTR_NO_RETURN_TO_CUSTODY_DATE)))
+
+    val resultList: List<ValidationMessage> = result
+    resultList.forEach { validationMessage ->
+      assertThat(validationMessage.message).isEqualTo("A return to custody date must be entered for a fixed term recall sentence.")
+    }
   }
 
   @Test
@@ -2161,6 +2172,11 @@ class ValidationServiceTest : SpringTestBase() {
     )
 
     assertThat(result).isEqualTo(listOf(ValidationMessage(FTR_SENTENCES_CONFLICT_WITH_EACH_OTHER)))
+
+    val resultList: List<ValidationMessage> = result
+    resultList.forEach { validationMessage ->
+      assertThat(validationMessage.message).isEqualTo("The fixed term recalls in this calculation must all be the same, either 14, 28 or 56 days.")
+    }
   }
 
   @Test
@@ -2183,6 +2199,11 @@ class ValidationServiceTest : SpringTestBase() {
     )
 
     assertThat(result).isEqualTo(listOf(ValidationMessage(FTR_TYPE_14_DAYS_BUT_LENGTH_IS_28)))
+
+    val resultList: List<ValidationMessage> = result
+    resultList.forEach { validationMessage ->
+      assertThat(validationMessage.message).isEqualTo("You cannot have 28 days recall for a 14 day fixed term recall sentence type.")
+    }
   }
 
   @Test
@@ -2205,6 +2226,11 @@ class ValidationServiceTest : SpringTestBase() {
     )
 
     assertThat(result).isEqualTo(listOf(ValidationMessage(FTR_TYPE_28_DAYS_BUT_LENGTH_IS_14)))
+
+    val resultList: List<ValidationMessage> = result
+    resultList.forEach { validationMessage ->
+      assertThat(validationMessage.message).isEqualTo("You cannot have 14 days recall for a 28 day fixed term recall sentence type.")
+    }
   }
 
   @Test
@@ -2218,6 +2244,11 @@ class ValidationServiceTest : SpringTestBase() {
     )
 
     assertThat(result).isEqualTo(listOf(ValidationMessage(FTR_14_DAYS_SENTENCE_GE_12_MONTHS)))
+
+    val resultList: List<ValidationMessage> = result
+    resultList.forEach { validationMessage ->
+      assertThat(validationMessage.message).isEqualTo("The sentence length is 12 months or more, so the fixed term recall should be 28 days.")
+    }
   }
 
   @Nested
@@ -2249,6 +2280,11 @@ class ValidationServiceTest : SpringTestBase() {
         )
 
         assertThat(result).isEqualTo(listOf(ValidationMessage(FTR_SENTENCES_CONFLICT_WITH_EACH_OTHER)))
+
+        val resultList: List<ValidationMessage> = result
+        resultList.forEach { validationMessage ->
+          assertThat(validationMessage.message).isEqualTo("The fixed term recalls in this calculation must all be the same, either 14, 28 or 56 days.")
+        }
       }
 
       @Test
@@ -2271,6 +2307,11 @@ class ValidationServiceTest : SpringTestBase() {
         )
 
         assertThat(result).isEqualTo(listOf(ValidationMessage(FTR_TYPE_14_DAYS_BUT_LENGTH_IS_28)))
+
+        val resultList: List<ValidationMessage> = result
+        resultList.forEach { validationMessage ->
+          assertThat(validationMessage.message).isEqualTo("You cannot have 28 days recall for a 14 day fixed term recall sentence type.")
+        }
       }
 
       @Test
@@ -2293,6 +2334,11 @@ class ValidationServiceTest : SpringTestBase() {
         )
 
         assertThat(result).isEqualTo(listOf(ValidationMessage(FTR_TYPE_28_DAYS_BUT_LENGTH_IS_14)))
+
+        val resultList: List<ValidationMessage> = result
+        resultList.forEach { validationMessage ->
+          assertThat(validationMessage.message).isEqualTo("You cannot have 14 days recall for a 28 day fixed term recall sentence type.")
+        }
       }
     }
 
@@ -2309,6 +2355,11 @@ class ValidationServiceTest : SpringTestBase() {
         )
 
         assertThat(result).isEqualTo(listOf(ValidationMessage(FTR_14_DAYS_SENTENCE_GE_12_MONTHS)))
+
+        val resultList: List<ValidationMessage> = result
+        resultList.forEach { validationMessage ->
+          assertThat(validationMessage.message).isEqualTo("The sentence length is 12 months or more, so the fixed term recall should be 28 days.")
+        }
       }
 
       @Test
@@ -2332,6 +2383,14 @@ class ValidationServiceTest : SpringTestBase() {
             ValidationMessage(FTR_TYPE_28_DAYS_SENTENCE_LT_12_MONTHS),
           ),
         )
+
+        val resultList: List<ValidationMessage> = result
+        resultList.forEach { validationMessage ->
+          assertTrue(
+            validationMessage.message == "The sentence is less than 12 months so the fixed term recall should be 14 days." ||
+              validationMessage.message == "The sentence length is less than 12 months, so the fixed term sentence type should be 14 days.",
+          )
+        }
       }
 
       @Test
@@ -2361,6 +2420,11 @@ class ValidationServiceTest : SpringTestBase() {
         )
 
         assertThat(result).isEqualTo(listOf(ValidationMessage(FTR_TYPE_14_DAYS_SENTENCE_GE_12_MONTHS)))
+
+        val resultList: List<ValidationMessage> = result
+        resultList.forEach { validationMessage ->
+          assertThat(validationMessage.message).isEqualTo("The sentence length is 12 months or more, so the fixed term sentence type should be 28 days.")
+        }
       }
     }
 
@@ -2447,6 +2511,14 @@ class ValidationServiceTest : SpringTestBase() {
             ValidationMessage(FTR_TYPE_14_DAYS_AGGREGATE_GE_12_MONTHS),
           ),
         )
+
+        val resultList: List<ValidationMessage> = result
+        resultList.forEach { validationMessage ->
+          assertTrue(
+            validationMessage.message == "The aggregate sentence length for the consecutive sentences is 12 months or more, so the fixed term recall should be 28 days." ||
+              validationMessage.message == "The aggregate sentence length for the consecutive sentences is 12 months or more, so the fixed term sentence type should be 28 days.",
+          )
+        }
       }
 
       @Test
@@ -2479,6 +2551,11 @@ class ValidationServiceTest : SpringTestBase() {
         )
 
         assertThat(result).isEqualTo(listOf(ValidationMessage(FTR_28_DAYS_AGGREGATE_LT_12_MONTHS)))
+
+        val resultList: List<ValidationMessage> = result
+        resultList.forEach { validationMessage ->
+          assertThat(validationMessage.message).isEqualTo("The aggregate sentence length for the consecutive sentences is less than 12 months, so the fixed term recall should be 14 days.")
+        }
       }
 
       @Test
@@ -2516,6 +2593,14 @@ class ValidationServiceTest : SpringTestBase() {
             ValidationMessage(FTR_TYPE_28_DAYS_AGGREGATE_LT_12_MONTHS),
           ),
         )
+
+        val resultList: List<ValidationMessage> = result
+        resultList.forEach { validationMessage ->
+          assertTrue(
+            validationMessage.message == "The aggregate sentence length for the consecutive sentences is less than 12 months, so the fixed term sentence type should be 14 days." ||
+              validationMessage.message == "The aggregate sentence length for the consecutive sentences is less than 12 months, so the fixed term recall should be 14 days.",
+          )
+        }
       }
 
       // Copying this
@@ -2549,6 +2634,11 @@ class ValidationServiceTest : SpringTestBase() {
         )
 
         assertThat(result).isEqualTo(listOf(ValidationMessage(FTR_TYPE_14_DAYS_AGGREGATE_GE_12_MONTHS)))
+
+        val resultList: List<ValidationMessage> = result
+        resultList.forEach { validationMessage ->
+          assertThat(validationMessage.message).isEqualTo("The aggregate sentence length for the consecutive sentences is 12 months or more, so the fixed term sentence type should be 28 days.")
+        }
       }
     }
 
@@ -3753,6 +3843,11 @@ class ValidationServiceTest : SpringTestBase() {
       ValidationOrder.allValidations(),
     )
     assertThat(result).isEqualTo(listOf(ValidationMessage(ValidationCode.RECALL_MISSING_REVOCATION_DATE)))
+
+    val resultList: List<ValidationMessage> = result
+    resultList.forEach { validationMessage ->
+      assertThat(validationMessage.message).isEqualTo("An active recall sentence is present with no associated court event with a Recall to prison \"court outcome\"")
+    }
   }
 
   @Test
@@ -3776,6 +3871,11 @@ class ValidationServiceTest : SpringTestBase() {
       ValidationOrder.allValidations(),
     )
     assertThat(result).isEqualTo(listOf(ValidationMessage(ValidationCode.FTR_RTC_DATE_BEFORE_REVOCATION_DATE)))
+
+    val resultList: List<ValidationMessage> = result
+    resultList.forEach { validationMessage ->
+      assertThat(validationMessage.message).isEqualTo("Return to custody date must not be before the revocation date.")
+    }
   }
 
   @Test
