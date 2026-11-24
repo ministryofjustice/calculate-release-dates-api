@@ -28,12 +28,29 @@ class LegacySentenceCalculationService(
     legacySentenceCalculationRepository.deleteAllByPrisonerId(prisonerId)
     val mappingResults = request.sentenceCalculations.map { legacySentenceCalculation ->
       // TODO if this is for a prisoner with indeterminate sentences and the latest calculation is not from CRDS then create a new calculation request from the NOMIS calculation
-      sync(legacySentenceCalculation)
+      linkAndSave(legacySentenceCalculation)
     }
     return LegacySentenceCalculationMigrationResponse(mappingResults)
   }
 
-  fun sync(legacySentenceCalculation: LegacySentenceCalculationDto): LegacySentenceCalculationToCrdsMappingResult {
+  @Transactional
+  fun syncNew(legacySentenceCalculation: LegacySentenceCalculationDto): LegacySentenceCalculationToCrdsMappingResult = linkAndSave(legacySentenceCalculation)
+
+  @Transactional
+  fun syncUpdated(legacySentenceCalculation: LegacySentenceCalculationDto): LegacySentenceCalculationToCrdsMappingResult {
+    legacySentenceCalculationRepository.deleteById(legacySentenceCalculation.nomisCalculationId)
+    return linkAndSave(legacySentenceCalculation)
+  }
+
+  @Transactional
+  fun syncDeleted(nomisCalculationId: Long) {
+    legacySentenceCalculationRepository.deleteById(nomisCalculationId)
+  }
+
+  @Transactional
+  fun getAllForPrisoner(prisonerId: String): List<LegacySentenceCalculationDto> = legacySentenceCalculationRepository.getByPrisonerId(prisonerId).map { it.toDto() }
+
+  private fun linkAndSave(legacySentenceCalculation: LegacySentenceCalculationDto): LegacySentenceCalculationToCrdsMappingResult {
     val maybeAnExistingCalculationRequest = findCalculationRequestFromNomisComment(legacySentenceCalculation)
     val entity = LegacySentenceCalculation.fromDto(legacySentenceCalculation, maybeAnExistingCalculationRequest)
     legacySentenceCalculationRepository.saveAndFlush(entity)
