@@ -44,6 +44,7 @@ class ApprovedDatesService(
       when (latestCalculationRequest.calculationType) {
         CalculationType.MANUAL_DETERMINATE, CalculationType.MANUAL_INDETERMINATE -> unavailable(ApprovedDatesUnavailableReason.PREVIOUS_CALCULATION_MANUAL)
         CalculationType.GENUINE_OVERRIDE -> unavailable(ApprovedDatesUnavailableReason.PREVIOUS_CALCULATION_GENUINE_OVERRIDE)
+        CalculationType.ENTERED_IN_NOMIS -> unavailable(ApprovedDatesUnavailableReason.NOMIS_CALCULATION)
         CalculationType.CALCULATED -> handlePreviousIsCalculated(latestCalculationRequest)
       }
     }

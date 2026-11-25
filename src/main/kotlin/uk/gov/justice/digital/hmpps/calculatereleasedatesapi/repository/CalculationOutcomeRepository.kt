@@ -15,6 +15,8 @@ interface CalculationOutcomeRepository : JpaRepository<CalculationOutcome, Long>
   )
   fun findForComparisonAndReleaseDatesMismatch(comparisonId: Long): List<CalculationOutcome>
 
+  fun findByCalculationRequestId(calculationRequestId: Long): List<CalculationOutcome>
+
   @Query("DELETE FROM CalculationOutcome WHERE calculationRequestId = :calculationRequestId")
   @Modifying
   fun deleteByCalculationRequestId(@Param("calculationRequestId") calculationRequestId: Long)

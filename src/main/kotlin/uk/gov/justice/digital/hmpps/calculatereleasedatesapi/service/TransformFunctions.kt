@@ -376,7 +376,6 @@ fun transform(
   sentenceAndOffences = objectToJson(sourceData.sentenceAndOffences, objectMapper),
   prisonerDetails = objectToJson(sourceData.prisonerDetails, objectMapper),
   adjustments = objectToJson(sourceData.bookingAndSentenceAdjustments.adjustmentsApiData, objectMapper),
-  adjustmentsVersion = 1,
   offenderFinePayments = objectToJson(sourceData.offenderFinePayments, objectMapper),
   returnToCustodyDate = if (sourceData.returnToCustodyDate != null) objectToJson(sourceData.returnToCustodyDate, objectMapper) else null,
   calculationRequestUserInput = transform(calculationUserInputs),
