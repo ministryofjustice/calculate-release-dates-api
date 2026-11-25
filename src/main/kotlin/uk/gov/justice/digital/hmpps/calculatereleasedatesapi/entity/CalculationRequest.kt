@@ -71,23 +71,20 @@ data class CalculationRequest(
   @Column(columnDefinition = "jsonb")
   val inputData: JsonNode = JacksonUtil.toJsonNode("{}"),
 
-  @NotNull
   @Type(value = JsonType::class)
   @Column(columnDefinition = "jsonb")
   val sentenceAndOffences: JsonNode? = null,
   val sentenceAndOffencesVersion: Int? = 4,
 
-  @NotNull
   @Type(value = JsonType::class)
   @Column(columnDefinition = "jsonb")
   val prisonerDetails: JsonNode? = null,
   val prisonerDetailsVersion: Int? = 0,
 
-  @NotNull
   @Type(value = JsonType::class)
   @Column(columnDefinition = "jsonb")
   val adjustments: JsonNode? = null,
-  val adjustmentsVersion: Int? = 0,
+  val adjustmentsVersion: Int? = 1,
 
   @Type(value = JsonType::class)
   @Column(columnDefinition = "jsonb")
