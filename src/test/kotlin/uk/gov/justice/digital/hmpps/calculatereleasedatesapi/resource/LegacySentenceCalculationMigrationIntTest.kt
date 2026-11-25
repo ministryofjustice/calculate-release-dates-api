@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.test.context.jdbc.Sql
+import org.springframework.test.web.reactive.server.expectBody
 import org.springframework.test.web.reactive.server.expectBodyList
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.LegacySentenceCalculationTest.Companion.aFullyCompletedLegacySentenceCalculationDto
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.LegacySentenceCalculationTest.Companion.aMinimalLegacySentenceCalculationDto
@@ -15,6 +16,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremoc
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.PrisonApiExtension.Companion.prisonApi
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Agency
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationSource
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedCalculationResults
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.LatestCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManuallyEnteredDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NomisCalculationReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OffenderKeyDates
@@ -26,6 +29,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.migration.Leg
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.migration.LegacySentenceCalculationMigrationResponse
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.migration.LegacySentenceCalculationToCrdsMappingResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ApprovedDatesSubmissionRepository
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.LegacySentenceCalculationRepository
 import java.time.LocalDate
@@ -38,6 +42,9 @@ class LegacySentenceCalculationMigrationIntTest(private val mockPrisonService: M
 
   @Autowired
   lateinit var calculationRequestRepository: CalculationRequestRepository
+
+  @Autowired
+  lateinit var calculationOutcomeRepository: CalculationOutcomeRepository
 
   @Autowired
   lateinit var approvedDatesSubmissionRepository: ApprovedDatesSubmissionRepository
@@ -56,23 +63,19 @@ class LegacySentenceCalculationMigrationIntTest(private val mockPrisonService: M
   }
 
   @Test
-  fun `Can migrate legacy calculations for a prisoner with some matching CRDS calcs and some not`() {
+  fun `Can migrate legacy calculations for a prisoner with some matching CRDS calcs and some not but CRDS is the latest`() {
     val prelim = createPreliminaryCalculation(PRISONER_ID)
     val confirmed = createConfirmCalculationForPrisoner(prelim.calculationRequestId)
 
-    val aNomisCalc = aMinimalLegacySentenceCalculationDto().copy(prisonerId = PRISONER_ID)
-    val aCrdsCalc = aFullyCompletedLegacySentenceCalculationDto().copy(prisonerId = PRISONER_ID, commentText = "CRDS: ${confirmed.calculationReference}")
+    val aNomisCalc = aMinimalLegacySentenceCalculationDto().copy(prisonerId = PRISONER_ID, calculationDate = LocalDateTime.of(2020, 1, 1, 10, 45))
+    val aCrdsCalc = aFullyCompletedLegacySentenceCalculationDto().copy(prisonerId = PRISONER_ID, commentText = "CRDS: ${confirmed.calculationReference}", calculationDate = LocalDateTime.of(2020, 1, 2, 15, 30))
     val request = LegacySentenceCalculationMigrationRequest(listOf(aNomisCalc, aCrdsCalc))
 
     val response = migrateAPrisoner(request, PRISONER_ID)
 
-    assertThat(response).isEqualTo(
-      LegacySentenceCalculationMigrationResponse(
-        listOf(
-          LegacySentenceCalculationToCrdsMappingResult(aNomisCalc.nomisCalculationId, null),
-          LegacySentenceCalculationToCrdsMappingResult(aCrdsCalc.nomisCalculationId, confirmed.calculationRequestId),
-        ),
-      ),
+    assertThat(response.mappingResults).containsExactlyInAnyOrder(
+      LegacySentenceCalculationToCrdsMappingResult(aNomisCalc.nomisCalculationId, null),
+      LegacySentenceCalculationToCrdsMappingResult(aCrdsCalc.nomisCalculationId, confirmed.calculationRequestId),
     )
 
     val legacySentenceCalculationsFromDb = legacySentenceCalculationRepository.getByPrisonerId(PRISONER_ID)
@@ -87,24 +90,116 @@ class LegacySentenceCalculationMigrationIntTest(private val mockPrisonService: M
   }
 
   @Test
+  fun `Can migrate legacy calculations for a prisoner with some matching CRDS calcs and some not but NOMIS is the latest so a calculation request is created`() {
+    val prelim = createPreliminaryCalculation(PRISONER_ID)
+    val confirmed = createConfirmCalculationForPrisoner(prelim.calculationRequestId)
+
+    val bookingId = PRISONER_ID.hashCode().toLong()
+
+    val aNomisCalc = aFullyCompletedLegacySentenceCalculationDto().copy(
+      nomisCalculationId = 745,
+      prisonerId = PRISONER_ID,
+      bookingId = bookingId,
+      commentText = "Not CRDS.",
+      calculationDate = LocalDateTime.of(2020, 1, 3, 10, 45),
+    )
+    val aCrdsCalc = aFullyCompletedLegacySentenceCalculationDto().copy(
+      nomisCalculationId = 845,
+      prisonerId = PRISONER_ID,
+      bookingId = bookingId,
+      commentText = "CRDS: ${confirmed.calculationReference}",
+      calculationDate = LocalDateTime.of(2020, 1, 2, 15, 30),
+    )
+    val request = LegacySentenceCalculationMigrationRequest(listOf(aNomisCalc, aCrdsCalc))
+
+    val response = migrateAPrisoner(request, PRISONER_ID)
+
+    val nomisCalcMappingResult = response.mappingResults.find { it.nomisCalculationId == aNomisCalc.nomisCalculationId }
+    assertThat(nomisCalcMappingResult!!.crdsCalculationId).isNotNull
+    assertThat(response.mappingResults.find { it.nomisCalculationId == aCrdsCalc.nomisCalculationId }).isEqualTo(LegacySentenceCalculationToCrdsMappingResult(aCrdsCalc.nomisCalculationId, confirmed.calculationRequestId))
+
+    mockPrisonService.stubPrisoner(PrisonerDetails(bookingId = bookingId, offenderNo = CHANGED_PRISONER_ID, dateOfBirth = LocalDate.of(2000, 1, 1)))
+    prisonApi.stubGetSentencesAndOffences(bookingId, jsonTransformation.getAllSentenceAndOffencesJson("1")[PRISONER_ID]!!)
+    stubKeyDates(aCrdsCalc)
+
+    val detailedReleaseDatesResponse = webTestClient.get()
+      .uri("/calculation/detailed-results/${nomisCalcMappingResult.crdsCalculationId}")
+      .accept(APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+      .exchange()
+      .expectStatus().isOk
+      .expectHeader().contentType(APPLICATION_JSON)
+      .expectBody<DetailedCalculationResults>()
+      .returnResult().responseBody!!
+
+    assertThat(detailedReleaseDatesResponse.dates).isNotEmpty
+
+    val latestCalculation = webTestClient.get()
+      .uri("/calculation/${PRISONER_ID}/latest")
+      .accept(APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+      .exchange()
+      .expectStatus().isOk
+      .expectHeader().contentType(APPLICATION_JSON)
+      .expectBody<LatestCalculation>()
+      .returnResult().responseBody!!
+    assertThat(latestCalculation.dates).isNotNull
+
+    val overview = getPrisonerOverview(PRISONER_ID)
+    assertThat(overview.latestCalculation?.dates).isNotEmpty
+
+    val calculationOutcomes = calculationOutcomeRepository.findByCalculationRequestId(nomisCalcMappingResult.crdsCalculationId!!)
+    assertThat(calculationOutcomes).hasSize(19)
+  }
+
+  @Test
+  fun `Creating a CRDS calc with no dates add None as a date type`() {
+    val bookingId = PRISONER_ID.hashCode().toLong()
+
+    val aNomisCalc = aMinimalLegacySentenceCalculationDto().copy(
+      prisonerId = PRISONER_ID,
+      bookingId = bookingId,
+      calculationDate = LocalDateTime.of(2020, 1, 3, 10, 45),
+      sedCalculatedDate = LocalDate.of(2019, 6, 10),
+    )
+    val request = LegacySentenceCalculationMigrationRequest(listOf(aNomisCalc))
+
+    val response = migrateAPrisoner(request, PRISONER_ID)
+
+    val nomisCalcMappingResult = response.mappingResults.find { it.nomisCalculationId == aNomisCalc.nomisCalculationId }
+    assertThat(nomisCalcMappingResult!!.crdsCalculationId).isNotNull
+
+    mockPrisonService.stubPrisoner(PrisonerDetails(bookingId = bookingId, offenderNo = CHANGED_PRISONER_ID, dateOfBirth = LocalDate.of(2000, 1, 1)))
+    prisonApi.stubGetSentencesAndOffences(bookingId, jsonTransformation.getAllSentenceAndOffencesJson("1")[PRISONER_ID]!!)
+    stubKeyDates(aNomisCalc)
+
+    webTestClient.get()
+      .uri("/calculation/detailed-results/${nomisCalcMappingResult.crdsCalculationId}")
+      .accept(APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+      .exchange()
+      .expectStatus().isOk
+
+    val calculationOutcomes = calculationOutcomeRepository.findByCalculationRequestId(nomisCalcMappingResult.crdsCalculationId!!)
+    assertThat(calculationOutcomes).hasSize(1)
+    assertThat(calculationOutcomes.first()).isNotNull
+  }
+
+  @Test
   fun `Can remigrate legacy calculations for a prisoner which should remove any existing ones`() {
     val prelim = createPreliminaryCalculation(PRISONER_ID)
     val confirmed = createConfirmCalculationForPrisoner(prelim.calculationRequestId)
 
-    val aNomisCalc = aMinimalLegacySentenceCalculationDto().copy(prisonerId = PRISONER_ID)
-    val aCrdsCalc = aFullyCompletedLegacySentenceCalculationDto().copy(prisonerId = PRISONER_ID, commentText = "CRDS: ${confirmed.calculationReference}")
+    val aNomisCalc = aMinimalLegacySentenceCalculationDto().copy(prisonerId = PRISONER_ID, calculationDate = LocalDateTime.of(2020, 1, 1, 10, 45))
+    val aCrdsCalc = aFullyCompletedLegacySentenceCalculationDto().copy(prisonerId = PRISONER_ID, commentText = "CRDS: ${confirmed.calculationReference}", calculationDate = LocalDateTime.of(2020, 1, 2, 15, 30))
 
     val firstRequest = LegacySentenceCalculationMigrationRequest(listOf(aNomisCalc, aCrdsCalc))
 
     val firstResponse = migrateAPrisoner(firstRequest, PRISONER_ID)
 
-    assertThat(firstResponse).isEqualTo(
-      LegacySentenceCalculationMigrationResponse(
-        listOf(
-          LegacySentenceCalculationToCrdsMappingResult(aNomisCalc.nomisCalculationId, null),
-          LegacySentenceCalculationToCrdsMappingResult(aCrdsCalc.nomisCalculationId, confirmed.calculationRequestId),
-        ),
-      ),
+    assertThat(firstResponse.mappingResults).containsExactlyInAnyOrder(
+      LegacySentenceCalculationToCrdsMappingResult(aNomisCalc.nomisCalculationId, null),
+      LegacySentenceCalculationToCrdsMappingResult(aCrdsCalc.nomisCalculationId, confirmed.calculationRequestId),
     )
 
     val firstPassLegacySentenceCalculation = legacySentenceCalculationRepository.getByPrisonerId(PRISONER_ID)
@@ -112,19 +207,15 @@ class LegacySentenceCalculationMigrationIntTest(private val mockPrisonService: M
     assertThat(firstPassLegacySentenceCalculation.find { it.nomisCalculationId == aNomisCalc.nomisCalculationId }).isNotNull
     assertThat(firstPassLegacySentenceCalculation.find { it.nomisCalculationId == aCrdsCalc.nomisCalculationId }).isNotNull
 
-    val aChangedNomisCalc = aMinimalLegacySentenceCalculationDto().copy(nomisCalculationId = 98, prisonerId = PRISONER_ID)
-    val aChangedCrdsCalc = aFullyCompletedLegacySentenceCalculationDto().copy(nomisCalculationId = 99, prisonerId = PRISONER_ID, commentText = "CRDS: ${confirmed.calculationReference}")
+    val aChangedNomisCalc = aNomisCalc.copy(nomisCalculationId = 98, prisonerId = PRISONER_ID)
+    val aChangedCrdsCalc = aCrdsCalc.copy(nomisCalculationId = 99, prisonerId = PRISONER_ID, commentText = "CRDS: ${confirmed.calculationReference}")
     val request = LegacySentenceCalculationMigrationRequest(listOf(aChangedNomisCalc, aChangedCrdsCalc))
 
     val secondResponse = migrateAPrisoner(request, PRISONER_ID)
 
-    assertThat(secondResponse).isEqualTo(
-      LegacySentenceCalculationMigrationResponse(
-        listOf(
-          LegacySentenceCalculationToCrdsMappingResult(aChangedNomisCalc.nomisCalculationId, null),
-          LegacySentenceCalculationToCrdsMappingResult(aChangedCrdsCalc.nomisCalculationId, confirmed.calculationRequestId),
-        ),
-      ),
+    assertThat(secondResponse.mappingResults).containsExactlyInAnyOrder(
+      LegacySentenceCalculationToCrdsMappingResult(aChangedNomisCalc.nomisCalculationId, null),
+      LegacySentenceCalculationToCrdsMappingResult(aChangedCrdsCalc.nomisCalculationId, confirmed.calculationRequestId),
     )
 
     val secondPassLegacySentenceCalculation = legacySentenceCalculationRepository.getByPrisonerId(PRISONER_ID)
