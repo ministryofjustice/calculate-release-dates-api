@@ -135,6 +135,7 @@ enum class SentenceCalculationType(
   STS21(sentenceType = UNIMPLEMENTED_SENTENCE_TYPE, displayName = "Serious terrorism sentence sec 282A (21+)"),
   TISCS(sentenceType = UNIMPLEMENTED_SENTENCE_TYPE, displayName = "Term of imprisonment, intensive supervision court sanction - schedule 10, sentencing act 2020"),
   YRO(sentenceType = UNIMPLEMENTED_SENTENCE_TYPE, displayName = "Youth rehabilitation order"),
+  SCHED20B(sentenceType = UNIMPLEMENTED_SENTENCE_TYPE, displayName = "Legacy Sentence (CJA 2003 Schedule 20B)"),
   //endregion
 
   //region UNSUPPORTED(null) Recall Sentences
