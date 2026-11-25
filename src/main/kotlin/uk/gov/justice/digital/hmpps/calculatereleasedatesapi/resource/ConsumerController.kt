@@ -18,12 +18,15 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Source
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDatesSource
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.LatestCalculationService
 import java.time.LocalDate
 
 @RestController
 @RequestMapping("/person", produces = [MediaType.APPLICATION_JSON_VALUE])
 @Tag(name = "consumer-controller", description = "Release dates for one prisoner")
-class ConsumerController {
+class ConsumerController(
+  private val latestCalculationService: LatestCalculationService,
+) {
   @GetMapping(value = ["/{prisonerNumber}/release-dates"])
   @ResponseBody
   @Operation(
@@ -56,6 +59,7 @@ class ConsumerController {
     prisonerNumber: String,
   ): ReleaseDates {
     log.info("Request received to get release dates for prisoner $prisonerNumber")
+    val result = latestCalculationService.latestCalculationForPrisoner(prisonerNumber)
     return ReleaseDates(
       "",
       ReleaseDatesSource(SourceType.BOOKING, 123456),
