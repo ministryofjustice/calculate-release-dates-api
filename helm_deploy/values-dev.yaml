@@ -25,6 +25,7 @@ generic-service:
     PRISON-REGISTER_API_URL: https://prison-register-dev.hmpps.service.justice.gov.uk
     ADJUSTMENTS_UI_URL: https://adjustments-dev.hmpps.service.justice.gov.uk
     MOVE_AND_MERGE_EVENTS_ENABLED: "true"
+    ERS_ZERO_ENABLED: "true"
 
   # Switches off the allow list in the DEV env only.
   allowlist: null

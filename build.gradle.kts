@@ -6,7 +6,7 @@ import org.jlleitschuh.gradle.ktlint.tasks.KtLintFormatTask
 import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "11.1.1"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "11.1.2"
   id("org.springdoc.openapi-gradle-plugin") version "2.1.0"
   kotlin("plugin.spring") version "2.4.21"
   kotlin("plugin.jpa") version "2.4.21"
@@ -51,9 +51,9 @@ dependencies {
   // Database dependencies
   runtimeOnly("org.flywaydb:flyway-core")
   runtimeOnly("org.flywaydb:flyway-database-postgresql")
-  runtimeOnly("org.postgresql:postgresql:42.7.14")
+  runtimeOnly("org.postgresql:postgresql:42.7.15")
 
-  implementation("io.arrow-kt:arrow-core:2.3.0")
+  implementation("io.arrow-kt:arrow-core:2.3.0.1")
   implementation("io.hypersistence:hypersistence-utils-hibernate-71:3.16.0")
 
   // OpenAPI
