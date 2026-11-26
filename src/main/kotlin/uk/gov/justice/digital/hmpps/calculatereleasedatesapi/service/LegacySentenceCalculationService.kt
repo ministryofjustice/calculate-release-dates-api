@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import io.hypersistence.utils.hibernate.type.json.internal.JacksonUtil
 import jakarta.transaction.Transactional
 import org.slf4j.LoggerFactory
@@ -21,6 +20,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.Approved
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationReasonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.LegacyCalculationReasonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.LegacySentenceCalculationRepository
 import java.time.LocalDate
 import java.util.UUID
@@ -33,8 +33,8 @@ class LegacySentenceCalculationService(
   private val approvedDatesSubmissionRepository: ApprovedDatesSubmissionRepository,
   private val buildProperties: BuildProperties,
   private val calculationReasonRepository: CalculationReasonRepository,
+  private val legacyCalculationReasonRepository: LegacyCalculationReasonRepository,
   private val calculationOutcomeRepository: CalculationOutcomeRepository,
-  private val objectMapper: ObjectMapper,
 ) {
 
   @Transactional
@@ -109,7 +109,10 @@ class LegacySentenceCalculationService(
   }
 
   private fun createCalculationRequestFromLegacySentenceCalculation(legacySentenceCalculation: LegacySentenceCalculationDto): CalculationRequest {
-    val calculationReason = calculationReasonRepository.findAllByIsActiveTrueOrderByDisplayRankAsc().firstOrNull { it.nomisReason == legacySentenceCalculation.calculationReasonCode }
+    val nomisCalculationReason = legacyCalculationReasonRepository.findByCode(legacySentenceCalculation.calculationReasonCode)
+    val calculationReason = nomisCalculationReason?.calculationReason ?: calculationReasonRepository.findTopByIsOtherTrue().getOrNull()
+    val calculationReasonFurtherDetail = if (calculationReason?.isOther == true) nomisCalculationReason?.description ?: legacySentenceCalculation.calculationReasonCode else null
+
     val calculationRequest = calculationRequestRepository.saveAndFlush(
       CalculationRequest(
         prisonerId = legacySentenceCalculation.prisonerId,
@@ -121,6 +124,7 @@ class LegacySentenceCalculationService(
         inputData = JacksonUtil.toJsonNode("{}"),
         calculationType = CalculationType.ENTERED_IN_NOMIS,
         reasonForCalculation = calculationReason,
+        otherReasonForCalculation = calculationReasonFurtherDetail,
         version = buildProperties.version ?: "",
       ),
     )
