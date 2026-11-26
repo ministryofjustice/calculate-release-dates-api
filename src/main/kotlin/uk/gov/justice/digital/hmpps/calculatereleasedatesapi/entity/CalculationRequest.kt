@@ -122,7 +122,6 @@ data class CalculationRequest(
 
   @JoinColumn(name = "reasonForCalculation")
   @ManyToOne
-  @NotNull
   val reasonForCalculation: CalculationReason? = null,
 
   val otherReasonForCalculation: String? = null,

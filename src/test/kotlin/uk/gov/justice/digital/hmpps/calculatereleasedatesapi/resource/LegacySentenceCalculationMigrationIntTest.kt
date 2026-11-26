@@ -160,7 +160,6 @@ class LegacySentenceCalculationMigrationIntTest(private val mockPrisonService: M
       prisonerId = PRISONER_ID,
       bookingId = bookingId,
       calculationDate = LocalDateTime.of(2020, 1, 3, 10, 45),
-      sedCalculatedDate = LocalDate.of(2019, 6, 10),
     )
     val request = LegacySentenceCalculationMigrationRequest(listOf(aNomisCalc))
 
@@ -182,7 +181,33 @@ class LegacySentenceCalculationMigrationIntTest(private val mockPrisonService: M
 
     val calculationOutcomes = calculationOutcomeRepository.findByCalculationRequestId(nomisCalcMappingResult.crdsCalculationId!!)
     assertThat(calculationOutcomes).hasSize(1)
-    assertThat(calculationOutcomes.first()).isNotNull
+    assertThat(calculationOutcomes.first().calculationDateType).isEqualTo("None")
+  }
+
+  @Test
+  fun `Creating a CRDS calc with no matching reason should be allowed`() {
+    val bookingId = PRISONER_ID.hashCode().toLong()
+
+    val aNomisCalc = aMinimalLegacySentenceCalculationDto().copy(
+      prisonerId = PRISONER_ID,
+      bookingId = bookingId,
+      calculationDate = LocalDateTime.of(2020, 1, 3, 10, 45),
+      sedCalculatedDate = LocalDate.of(2019, 6, 10),
+      calculationReasonCode = "blurg",
+    )
+    val request = LegacySentenceCalculationMigrationRequest(listOf(aNomisCalc))
+
+    val response = migrateAPrisoner(request, PRISONER_ID)
+
+    val nomisCalcMappingResult = response.mappingResults.find { it.nomisCalculationId == aNomisCalc.nomisCalculationId }
+    assertThat(nomisCalcMappingResult!!.crdsCalculationId).isNotNull
+
+    mockPrisonService.stubPrisoner(PrisonerDetails(bookingId = bookingId, offenderNo = CHANGED_PRISONER_ID, dateOfBirth = LocalDate.of(2000, 1, 1)))
+    prisonApi.stubGetSentencesAndOffences(bookingId, jsonTransformation.getAllSentenceAndOffencesJson("1")[PRISONER_ID]!!)
+    stubKeyDates(aNomisCalc)
+
+    val overview = getPrisonerOverview(PRISONER_ID)
+    assertThat(overview.latestCalculation?.dates).isNotEmpty
   }
 
   @Test
