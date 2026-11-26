@@ -17,7 +17,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.unuseddeductions.mo
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.unuseddeductions.repository.UnusedDeductionsComparisonPersonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.unuseddeductions.repository.UnusedDeductionsComparisonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessage
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationType
 import kotlin.jvm.optionals.getOrElse
 
 @Service
@@ -66,7 +65,7 @@ class UnusedDeductionsComparisonHandlerService(
       val calculated = detail.response.unusedDeductions
       // Same precedence as the adjustments API: unsupported, then recall, then validation.
       val outcome = when {
-        detail.response.validationMessages.any { it.type != ValidationType.VALIDATION } -> UnusedDeductionsComparisonOutcome.UNSUPPORTED
+        detail.response.validationMessages.any { it.type.isUnsupported() } -> UnusedDeductionsComparisonOutcome.UNSUPPORTED
         detail.hasRecall -> UnusedDeductionsComparisonOutcome.RECALL
         calculated == null -> UnusedDeductionsComparisonOutcome.VALIDATION_ERROR
         calculated == existing -> UnusedDeductionsComparisonOutcome.MATCH

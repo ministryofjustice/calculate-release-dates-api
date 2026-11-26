@@ -106,6 +106,17 @@ class UnusedDeductionsComparisonHandlerServiceTest {
   }
 
   @Test
+  fun `fixable in DPS validation messages are recorded as validation errors`() {
+    givenAdjustments()
+    val messages = listOf(ValidationMessage(ValidationCode.DUPLICATE_OR_OVERLAPPING_UAL, listOf("url", "A1234BC")))
+    whenever(calculationService.calculateDetailed(any(), any())).thenReturn(UnusedDeductionsCalculationDetail(UnusedDeductionCalculationResponse(null, messages), null, null, prisoner(), hasRecall = false))
+
+    service.handleMessage(message)
+
+    assertThat(saved().outcome).isEqualTo(UnusedDeductionsComparisonOutcome.VALIDATION_ERROR)
+  }
+
+  @Test
   fun `unsupported calculations are recorded as unsupported even with a recall`() {
     givenAdjustments()
     val messages = listOf(ValidationMessage(ValidationCode.UNSUPPORTED_CALCULATION_DTO_WITH_RECALL))
