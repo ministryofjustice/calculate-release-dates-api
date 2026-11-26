@@ -102,6 +102,7 @@ class LegacySentenceCalculationMigrationIntTest(private val mockPrisonService: M
       bookingId = bookingId,
       commentText = "Not CRDS.",
       calculationDate = LocalDateTime.of(2020, 1, 3, 10, 45),
+      calculationReasonCode = "CORRECTN",
     )
     val aCrdsCalc = aFullyCompletedLegacySentenceCalculationDto().copy(
       nomisCalculationId = 845,
@@ -148,6 +149,10 @@ class LegacySentenceCalculationMigrationIntTest(private val mockPrisonService: M
     val overview = getPrisonerOverview(PRISONER_ID)
     assertThat(overview.latestCalculation?.dates).isNotEmpty
 
+    val calculationRequest = calculationRequestRepository.findById(nomisCalcMappingResult.crdsCalculationId!!).get()
+    assertThat(calculationRequest.reasonForCalculation?.displayName).isEqualTo("Correcting an earlier sentence")
+    assertThat(calculationRequest.otherReasonForCalculation).isNull()
+
     val calculationOutcomes = calculationOutcomeRepository.findByCalculationRequestId(nomisCalcMappingResult.crdsCalculationId!!)
     assertThat(calculationOutcomes).hasSize(19)
   }
@@ -185,7 +190,37 @@ class LegacySentenceCalculationMigrationIntTest(private val mockPrisonService: M
   }
 
   @Test
-  fun `Creating a CRDS calc with no matching reason should be allowed`() {
+  fun `Creating a CRDS calc with a matching NOMIS reason with no equivalent to CRDS should use Other with the NOMIS description`() {
+    val bookingId = PRISONER_ID.hashCode().toLong()
+
+    val aNomisCalc = aMinimalLegacySentenceCalculationDto().copy(
+      prisonerId = PRISONER_ID,
+      bookingId = bookingId,
+      calculationDate = LocalDateTime.of(2020, 1, 3, 10, 45),
+      sedCalculatedDate = LocalDate.of(2019, 6, 10),
+      calculationReasonCode = "PTD",
+    )
+    val request = LegacySentenceCalculationMigrationRequest(listOf(aNomisCalc))
+
+    val response = migrateAPrisoner(request, PRISONER_ID)
+
+    val nomisCalcMappingResult = response.mappingResults.find { it.nomisCalculationId == aNomisCalc.nomisCalculationId }
+    assertThat(nomisCalcMappingResult!!.crdsCalculationId).isNotNull
+
+    mockPrisonService.stubPrisoner(PrisonerDetails(bookingId = bookingId, offenderNo = CHANGED_PRISONER_ID, dateOfBirth = LocalDate.of(2000, 1, 1)))
+    prisonApi.stubGetSentencesAndOffences(bookingId, jsonTransformation.getAllSentenceAndOffencesJson("1")[PRISONER_ID]!!)
+    stubKeyDates(aNomisCalc)
+
+    val overview = getPrisonerOverview(PRISONER_ID)
+    assertThat(overview.latestCalculation?.dates).isNotEmpty
+
+    val calculationRequest = calculationRequestRepository.findById(nomisCalcMappingResult.crdsCalculationId!!).get()
+    assertThat(calculationRequest.reasonForCalculation?.displayName).isEqualTo("Other")
+    assertThat(calculationRequest.otherReasonForCalculation).isEqualTo("S244ZB Power to Detain")
+  }
+
+  @Test
+  fun `Creating a CRDS calc with no matching NOMIS reason should be allowed and map to OTHER with the code used as the description, this is probably bad data`() {
     val bookingId = PRISONER_ID.hashCode().toLong()
 
     val aNomisCalc = aMinimalLegacySentenceCalculationDto().copy(
@@ -208,6 +243,10 @@ class LegacySentenceCalculationMigrationIntTest(private val mockPrisonService: M
 
     val overview = getPrisonerOverview(PRISONER_ID)
     assertThat(overview.latestCalculation?.dates).isNotEmpty
+
+    val calculationRequest = calculationRequestRepository.findById(nomisCalcMappingResult.crdsCalculationId!!).get()
+    assertThat(calculationRequest.reasonForCalculation?.displayName).isEqualTo("Other")
+    assertThat(calculationRequest.otherReasonForCalculation).isEqualTo("blurg")
   }
 
   @Test

@@ -15,10 +15,10 @@ import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.boot.info.BuildProperties
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcome
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.LegacyCalculationReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.LegacySentenceCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.LegacySentenceCalculationTest.Companion.aFullyCompletedLegacySentenceCalculationDto
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.LegacySentenceCalculationTest.Companion.aMinimalLegacySentenceCalculationDto
@@ -32,6 +32,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.Approved
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationReasonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.LegacyCalculationReasonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.LegacySentenceCalculationRepository
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -48,6 +49,7 @@ class LegacySentenceCalculationServiceTest {
   private val buildProperties: BuildProperties = BuildProperties(Properties().apply { setProperty("version", "somever") })
   private val calculationReasonRepository: CalculationReasonRepository = mock()
   private val calculationOutcomeRepository: CalculationOutcomeRepository = mock()
+  private val legacyCalculationReasonRepository: LegacyCalculationReasonRepository = mock()
 
   private val service = LegacySentenceCalculationService(
     calculationRequestRepository,
@@ -55,8 +57,8 @@ class LegacySentenceCalculationServiceTest {
     approvedDatesSubmissionRepository,
     buildProperties,
     calculationReasonRepository,
+    legacyCalculationReasonRepository,
     calculationOutcomeRepository,
-    TestUtil.objectMapper(),
   )
   private val newReason = CalculationReason(
     1,
@@ -73,13 +75,13 @@ class LegacySentenceCalculationServiceTest {
     furtherDetailDescription = null,
     isSecondCheck = false,
   )
-  private val updateReason = CalculationReason(
-    2,
+  private val otherReason = CalculationReason(
+    3,
     isActive = true,
-    isOther = false,
+    isOther = true,
     isBulk = false,
-    displayName = "Reason 2",
-    nomisReason = "UPDATE",
+    displayName = "Other",
+    nomisReason = "OTHER",
     nomisComment = "NOMIS_COMMENT",
     displayRank = 20,
     useForApprovedDates = false,
@@ -91,7 +93,9 @@ class LegacySentenceCalculationServiceTest {
 
   @BeforeEach
   fun setUp() {
-    whenever(calculationReasonRepository.findAllByIsActiveTrueOrderByDisplayRankAsc()).thenReturn(listOf(newReason, updateReason))
+    whenever(calculationReasonRepository.findTopByIsOtherTrue()).thenReturn(Optional.of(otherReason))
+    whenever(legacyCalculationReasonRepository.findByCode("NEW")).thenReturn(LegacyCalculationReason(1, "NEW", "New from NOMIS", newReason))
+    whenever(legacyCalculationReasonRepository.findByCode("UPDATE")).thenReturn(LegacyCalculationReason(1, "UPDATE", "Update from NOMIS", null))
   }
 
   @Test
@@ -255,6 +259,61 @@ class LegacySentenceCalculationServiceTest {
 
     verify(legacySentenceCalculationRepository).saveAndFlush(expectedMinimalEntity)
     verify(calculationOutcomeRepository).saveAndFlush(CalculationOutcome(null, 100000L, null, ReleaseDateType.None.name))
+
+    val calculationRequest = argumentCaptor<CalculationRequest>()
+    verify(calculationRequestRepository).saveAndFlush(calculationRequest.capture())
+    assertThat(calculationRequest.firstValue.reasonForCalculation).isEqualTo(newReason)
+    assertThat(calculationRequest.firstValue.otherReasonForCalculation).isNull()
+  }
+
+  @Test
+  fun `migration can create a new calculation request with no matching CRDS reason`() {
+    val aMinimalRequest = aMinimalLegacySentenceCalculationDto().copy(sedCalculatedDate = LocalDate.now(), calculationReasonCode = "UPDATE")
+    val calculationReferenceInNewCalc = UUID.randomUUID()
+
+    whenever(legacySentenceCalculationRepository.saveAndFlush(any<LegacySentenceCalculation>())).thenAnswer { invocation ->
+      invocation.getArgument<LegacySentenceCalculation>(0)
+    }
+    whenever(calculationRequestRepository.saveAndFlush(any<CalculationRequest>())).thenAnswer { invocation -> invocation.getArgument<CalculationRequest>(0).copy(id = 100000, calculationReference = calculationReferenceInNewCalc) }
+    whenever(calculationOutcomeRepository.saveAndFlush(any<CalculationOutcome>())).thenAnswer { invocation -> invocation.getArgument<CalculationOutcome>(0) }
+
+    val request = LegacySentenceCalculationMigrationRequest(listOf(aMinimalRequest))
+
+    val response = service.migrate("AB1234C", request)
+
+    assertThat(response.mappingResults).containsExactlyInAnyOrder(
+      LegacySentenceCalculationToCrdsMappingResult(1, 100000),
+    )
+
+    val calculationRequest = argumentCaptor<CalculationRequest>()
+    verify(calculationRequestRepository).saveAndFlush(calculationRequest.capture())
+    assertThat(calculationRequest.firstValue.reasonForCalculation).isEqualTo(otherReason)
+    assertThat(calculationRequest.firstValue.otherReasonForCalculation).isEqualTo("Update from NOMIS")
+  }
+
+  @Test
+  fun `migration can create a new calculation request with no matching NOMIS reason`() {
+    val aMinimalRequest = aMinimalLegacySentenceCalculationDto().copy(sedCalculatedDate = LocalDate.now(), calculationReasonCode = "blurg")
+    val calculationReferenceInNewCalc = UUID.randomUUID()
+
+    whenever(legacySentenceCalculationRepository.saveAndFlush(any<LegacySentenceCalculation>())).thenAnswer { invocation ->
+      invocation.getArgument<LegacySentenceCalculation>(0)
+    }
+    whenever(calculationRequestRepository.saveAndFlush(any<CalculationRequest>())).thenAnswer { invocation -> invocation.getArgument<CalculationRequest>(0).copy(id = 100000, calculationReference = calculationReferenceInNewCalc) }
+    whenever(calculationOutcomeRepository.saveAndFlush(any<CalculationOutcome>())).thenAnswer { invocation -> invocation.getArgument<CalculationOutcome>(0) }
+
+    val request = LegacySentenceCalculationMigrationRequest(listOf(aMinimalRequest))
+
+    val response = service.migrate("AB1234C", request)
+
+    assertThat(response.mappingResults).containsExactlyInAnyOrder(
+      LegacySentenceCalculationToCrdsMappingResult(1, 100000),
+    )
+
+    val calculationRequest = argumentCaptor<CalculationRequest>()
+    verify(calculationRequestRepository).saveAndFlush(calculationRequest.capture())
+    assertThat(calculationRequest.firstValue.reasonForCalculation).isEqualTo(otherReason)
+    assertThat(calculationRequest.firstValue.otherReasonForCalculation).isEqualTo("blurg")
   }
 
   @ParameterizedTest
