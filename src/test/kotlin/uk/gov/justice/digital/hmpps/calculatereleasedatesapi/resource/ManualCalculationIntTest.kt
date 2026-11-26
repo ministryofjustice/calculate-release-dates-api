@@ -185,8 +185,6 @@ class ManualCalculationIntTest(private val mockPrisonService: MockPrisonService)
         calculatedAt = LocalDateTime.now(),
         comment = "From NOMIS",
         calculatedByUserId = "user1",
-        calculatedByFirstName = "User",
-        calculatedByLastName = "One",
       ),
     )
 
@@ -246,8 +244,6 @@ class ManualCalculationIntTest(private val mockPrisonService: MockPrisonService)
         comment = "From CRDS: $calculationReference",
         paroleEligibilityDate = LocalDate.of(2040, 1, 1),
         calculatedByUserId = "user1",
-        calculatedByFirstName = "User",
-        calculatedByLastName = "One",
       ),
     )
 

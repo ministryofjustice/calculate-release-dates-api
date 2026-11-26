@@ -37,6 +37,7 @@ generic-service:
     ADULT_HDC_SUSPENDED: "true"
     MOVE_AND_MERGE_EVENTS_ENABLED: "true"
     ERS_ZERO_ENABLED: "true"
+    USE_MIGRATED_NOMIS_DATA: "false"
     # Remove below after Java4Shell is resolved
     JAVA_TOOL_OPTIONS: "-XX:+ExitOnOutOfMemoryError -XX:MaxRAMPercentage=50.0 -XX:-UseBASE64Intrinsics"
 

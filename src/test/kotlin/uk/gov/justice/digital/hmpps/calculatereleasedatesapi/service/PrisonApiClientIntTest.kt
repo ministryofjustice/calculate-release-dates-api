@@ -46,7 +46,7 @@ class PrisonApiClientIntTest(private val mockPrisonService: MockPrisonService) :
             .withStatus(200),
         ),
     )
-    assertThat(prisonApiClient.getOffenderKeyDates(bookingId)).isEqualTo(OffenderKeyDates("NEW", LocalDateTime.of(2025, 1, 2, 10, 30, 0), calculatedByUserId = "username", calculatedByFirstName = "User", calculatedByLastName = "One").right())
+    assertThat(prisonApiClient.getOffenderKeyDates(bookingId)).isEqualTo(OffenderKeyDates("NEW", LocalDateTime.of(2025, 1, 2, 10, 30, 0), calculatedByUserId = "username").right())
   }
 
   @ParameterizedTest
@@ -129,8 +129,6 @@ class PrisonApiClientIntTest(private val mockPrisonService: MockPrisonService) :
     assertThat(offenderKeyDates.conditionalReleaseDate).isEqualTo(LocalDate.of(2019, 5, 24))
     assertThat(offenderKeyDates.dtoPostRecallReleaseDate).isEqualTo(LocalDate.of(2020, 3, 22))
     assertThat(offenderKeyDates.calculatedByUserId).isEqualTo("username")
-    assertThat(offenderKeyDates.calculatedByFirstName).isEqualTo("User")
-    assertThat(offenderKeyDates.calculatedByLastName).isEqualTo("One")
   }
 
   @ParameterizedTest

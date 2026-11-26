@@ -1,17 +1,23 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
+import arrow.core.left
 import arrow.core.right
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoMoreInteractions
 import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.LegacyCalculationReason
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.LegacySentenceCalculation
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.LegacySentenceCalculationTest.Companion.aMinimalLegacySentenceCalculationDto
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CaseLoadFunction
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CaseLoadType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Agency
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CaseLoad
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NomisCalculationReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NormalisedSentenceAndOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OffenderKeyDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RestResponsePage
@@ -21,13 +27,17 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalcu
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.prisonapi.model.CalculablePrisoner
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.LegacyCalculationReasonRepository
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.LegacySentenceCalculationRepository
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.util.Optional
 
 class PrisonServiceTest {
   private val prisonApiClient = mock<PrisonApiClient>()
   private val releaseArrangementLookupService = mock<ReleaseArrangementLookupService>()
-  private val prisonService = PrisonService(prisonApiClient, releaseArrangementLookupService, FeatureToggles())
+  private val legacyCalculationReasonRepository = mock<LegacyCalculationReasonRepository>()
+  private val legacySentenceCalculationRepository = mock<LegacySentenceCalculationRepository>()
 
   @Test
   fun `getCurrentUserPrisonsList should exclude prisons where the establishment is KTI`() {
@@ -39,7 +49,7 @@ class PrisonServiceTest {
 
     whenever(prisonApiClient.getCurrentUserCaseLoads()).thenReturn(caseLoads)
 
-    val result = prisonService.getCurrentUserPrisonsList()
+    val result = getPrisonService().getCurrentUserPrisonsList()
 
     assertThat(result).containsExactlyInAnyOrder("ABC", "XYZ")
     assertThat(result).doesNotContain("KTI")
@@ -50,7 +60,7 @@ class PrisonServiceTest {
     whenever(prisonApiClient.getCalculablePrisonerByPrison("LEI", 0)).thenReturn(firstPage)
     whenever(prisonApiClient.getCalculablePrisonerByPrison("LEI", 1)).thenReturn(secondPage)
 
-    prisonService.getCalculablePrisonerByPrison("LEI")
+    getPrisonService().getCalculablePrisonerByPrison("LEI")
 
     verify(prisonApiClient).getCalculablePrisonerByPrison("LEI", 0)
     verify(prisonApiClient).getCalculablePrisonerByPrison("LEI", 1)
@@ -61,10 +71,10 @@ class PrisonServiceTest {
   fun `should get calculation history for an offender`() {
     val prisonId = "G0127UG"
     val agencyDescription = "Cookham Wood (HMP)"
-    val sentenceCalculationSummary = SentenceCalculationSummary(47, prisonId, "first name", "last name", "CKI", agencyDescription, 28, LocalDateTime.now(), 4, "comment", "Lodged warrant", "user", calculatedByFirstName = "User", calculatedByLastName = "One")
+    val sentenceCalculationSummary = SentenceCalculationSummary(47, prisonId, "first name", "last name", "CKI", agencyDescription, 28, LocalDateTime.now(), 4, "comment", "Lodged warrant", "user")
     whenever(prisonApiClient.getCalculationsForAPrisonerId(prisonId)).thenReturn(listOf(sentenceCalculationSummary))
 
-    val history = prisonService.getCalculationsForAPrisonerId(prisonId)
+    val history = getPrisonService().getCalculationsForAPrisonerId(prisonId)
 
     assertThat(history).isNotNull()
     assertThat(history).hasSize(1)
@@ -76,27 +86,103 @@ class PrisonServiceTest {
   fun `should get agencies by type`() {
     val prisonApiAgencies = listOf(Agency("LWI", "Lewes (HMP)"), Agency("RSI", "Risley (HMP)"))
     whenever(prisonApiClient.getAgenciesByType("INST")).thenReturn(prisonApiAgencies)
-    val returnedAgencies = prisonService.getAgenciesByType("INST")
+    val returnedAgencies = getPrisonService().getAgenciesByType("INST")
 
     assertThat(returnedAgencies).isEqualTo(prisonApiAgencies)
   }
 
   @Test
-  fun `should get offender key dates`() {
+  fun `should get offender key dates from prison API if feature toggle is off`() {
     val bookingId = 123456L
-    val expected = OffenderKeyDates(reasonCode = "NEW", calculatedAt = LocalDateTime.now(), calculatedByUserId = "username", calculatedByFirstName = "User", calculatedByLastName = "One")
+    val expected = OffenderKeyDates(reasonCode = "NEW", calculatedAt = LocalDateTime.now(), calculatedByUserId = "username")
     whenever(prisonApiClient.getOffenderKeyDates(bookingId)).thenReturn(expected.right())
-    val keyDates = prisonService.getOffenderKeyDates(bookingId)
+    val keyDates = getPrisonService(FeatureToggles(useMigratedNomisData = false)).getOffenderKeyDates(bookingId)
     assertThat(keyDates).isEqualTo(expected.right())
   }
 
   @Test
-  fun `should get offender key dates by using offender sent calc id`() {
+  fun `should get offender key dates from CRDS db if feature toggle is on`() {
+    val bookingId = 123456L
+    val entity = LegacySentenceCalculation.fromDto(aMinimalLegacySentenceCalculationDto(), null)
+
+    whenever(legacySentenceCalculationRepository.findFirstByBookingIdOrderByCalculationDateDesc(bookingId)).thenReturn(Optional.of(entity))
+
+    val keyDates = getPrisonService(FeatureToggles(useMigratedNomisData = true)).getOffenderKeyDates(bookingId)
+
+    assertThat(keyDates).isEqualTo(entity.toOffenderKeyDates().right())
+
+    verify(prisonApiClient, never()).getOffenderKeyDates(bookingId)
+  }
+
+  @Test
+  fun `should handle no calculations for booking id when getting offender key dates from CRDS db if feature toggle is on`() {
+    val bookingId = 123456L
+
+    whenever(legacySentenceCalculationRepository.findFirstByBookingIdOrderByCalculationDateDesc(bookingId)).thenReturn(Optional.empty())
+
+    val keyDates = getPrisonService(FeatureToggles(useMigratedNomisData = true)).getOffenderKeyDates(bookingId)
+    assertThat(keyDates).isEqualTo("Booking (123456) not found or has no calculations".left())
+
+    verify(prisonApiClient, never()).getOffenderKeyDates(bookingId)
+  }
+
+  @Test
+  fun `should get offender key dates by using offender sent calc id with feature toggle off`() {
     val offenderSentCalcId = 123456L
-    val expected = OffenderKeyDates(reasonCode = "NEW", calculatedAt = LocalDateTime.now(), calculatedByUserId = "username", calculatedByFirstName = "User", calculatedByLastName = "One")
+    val expected = OffenderKeyDates(reasonCode = "NEW", calculatedAt = LocalDateTime.now(), calculatedByUserId = "username")
     whenever(prisonApiClient.getNOMISOffenderKeyDates(offenderSentCalcId)).thenReturn(expected.right())
-    val keyDates = prisonService.getNOMISOffenderKeyDates(offenderSentCalcId)
+    val keyDates = getPrisonService(FeatureToggles(useMigratedNomisData = false)).getNOMISOffenderKeyDates(offenderSentCalcId)
     assertThat(keyDates).isEqualTo(expected.right())
+  }
+
+  @Test
+  fun `should get offender key dates by using offender sent calc id with feature toggle on`() {
+    val offenderSentCalcId = 123456L
+    val entity = LegacySentenceCalculation.fromDto(aMinimalLegacySentenceCalculationDto(), null)
+    whenever(legacySentenceCalculationRepository.findById(offenderSentCalcId)).thenReturn(Optional.of(entity))
+    val keyDates = getPrisonService(FeatureToggles(useMigratedNomisData = true)).getNOMISOffenderKeyDates(offenderSentCalcId)
+    assertThat(keyDates).isEqualTo(entity.toOffenderKeyDates().right())
+
+    verify(prisonApiClient, never()).getNOMISOffenderKeyDates(offenderSentCalcId)
+  }
+
+  @Test
+  fun `should handle offender key dates by using offender sent calc id not found with feature toggle on`() {
+    val offenderSentCalcId = 123456L
+    whenever(legacySentenceCalculationRepository.findById(offenderSentCalcId)).thenReturn(Optional.empty())
+    val keyDates = getPrisonService(FeatureToggles(useMigratedNomisData = true)).getNOMISOffenderKeyDates(offenderSentCalcId)
+    assertThat(keyDates).isEqualTo("Offender Key Dates for offenderSentCalcId ($offenderSentCalcId) not found".left())
+
+    verify(prisonApiClient, never()).getNOMISOffenderKeyDates(offenderSentCalcId)
+  }
+
+  @Test
+  fun `should get NOMIS calc reasons from prison API if feature toggle off`() {
+    val expected = listOf(NomisCalculationReason("NEW", "New"), NomisCalculationReason("UPDATE", "Update"))
+    whenever(prisonApiClient.getNOMISCalcReasons()).thenReturn(expected)
+
+    val actual = getPrisonService(FeatureToggles(useMigratedNomisData = false)).getNOMISCalcReasons()
+
+    assertThat(actual).isEqualTo(expected)
+
+    verify(legacyCalculationReasonRepository, never()).findAll()
+  }
+
+  @Test
+  fun `should get NOMIS calc reasons from CRDS db if feature toggle on`() {
+    val expected = listOf(NomisCalculationReason("NEW", "New"), NomisCalculationReason("UPDATE", "Update"))
+    whenever(legacyCalculationReasonRepository.findAll()).thenReturn(
+      listOf(
+        LegacyCalculationReason(1, "NEW", "New", null),
+        LegacyCalculationReason(2, "UPDATE", "Update", null),
+      ),
+    )
+
+    val actual = getPrisonService(FeatureToggles(useMigratedNomisData = true)).getNOMISCalcReasons()
+
+    assertThat(actual).isEqualTo(expected)
+
+    verify(prisonApiClient, never()).getNOMISCalcReasons()
   }
 
   @Test
@@ -172,7 +258,7 @@ class PrisonServiceTest {
     }
     whenever(prisonApiClient.getSentencesAndOffences(1)).thenReturn(prisonApiSentencesAndOffences)
     whenever(releaseArrangementLookupService.populateReleaseArrangements(normalisedOffences)).thenReturn(withReleaseArrangements)
-    assertThat(prisonService.getSentencesAndOffences(1, true)).isEqualTo(withReleaseArrangements)
+    assertThat(getPrisonService().getSentencesAndOffences(1, true)).isEqualTo(withReleaseArrangements)
   }
 
   @Test
@@ -219,7 +305,7 @@ class PrisonServiceTest {
         ),
       ),
     )
-    assertThat(prisonService.getSentencesAndOffences(1, true)).isEqualTo(
+    assertThat(getPrisonService().getSentencesAndOffences(1, true)).isEqualTo(
       listOf(
         SentenceAndOffenceWithReleaseArrangements(
           source = activeOffence,
@@ -282,7 +368,7 @@ class PrisonServiceTest {
         ),
       ),
     )
-    assertThat(prisonService.getSentencesAndOffences(1, false)).isEqualTo(
+    assertThat(getPrisonService().getSentencesAndOffences(1, false)).isEqualTo(
       listOf(
         SentenceAndOffenceWithReleaseArrangements(
           source = activeOffence,
@@ -346,7 +432,7 @@ class PrisonServiceTest {
     )
 
     whenever(prisonApiClient.getSentencesAndOffences(1)).thenReturn(listOf(latest, earliestButInactive, earliestActive))
-    assertThat(prisonService.getEarliestSentenceDate(1)).isEqualTo(LocalDate.of(2014, 1, 1))
+    assertThat(getPrisonService().getEarliestSentenceDate(1)).isEqualTo(LocalDate.of(2014, 1, 1))
   }
 
   @Test
@@ -367,8 +453,10 @@ class PrisonServiceTest {
     )
 
     whenever(prisonApiClient.getSentencesAndOffences(1)).thenReturn(listOf(inactive))
-    assertThat(prisonService.getEarliestSentenceDate(1)).isNull()
+    assertThat(getPrisonService().getEarliestSentenceDate(1)).isNull()
   }
+
+  private fun getPrisonService(featureToggles: FeatureToggles = FeatureToggles()) = PrisonService(prisonApiClient, releaseArrangementLookupService, legacyCalculationReasonRepository, legacySentenceCalculationRepository, featureToggles)
 
   companion object {
 

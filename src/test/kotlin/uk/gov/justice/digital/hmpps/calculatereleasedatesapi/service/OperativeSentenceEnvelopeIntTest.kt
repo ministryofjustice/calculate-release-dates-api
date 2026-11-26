@@ -35,8 +35,6 @@ class OperativeSentenceEnvelopeIntTest(private val mockPrisonService: MockPrison
         sentenceExpiryDate = LocalDate.of(2025, 2, 14),
         conditionalReleaseDateOverridden = true,
         calculatedByUserId = "user1",
-        calculatedByFirstName = "User",
-        calculatedByLastName = "One",
       ),
     )
     stubSentencesAndOffencesFromPrisonApi()
@@ -76,8 +74,6 @@ class OperativeSentenceEnvelopeIntTest(private val mockPrisonService: MockPrison
       now,
       "From CRDS: ${confirmed.calculationReference}",
       calculatedByUserId = "user1",
-      calculatedByFirstName = "User",
-      calculatedByLastName = "One",
     )
     mockPrisonService.stubKeyDates(bookingId, offenderKeyDates)
     val operativeSentenceEnvelope = webTestClient.get()

@@ -38,6 +38,4 @@ data class OffenderKeyDates(
   val topupSupervisionExpiryDateOverridden: Boolean = false,
   val paroleEligibilityDateOverridden: Boolean = false,
   val calculatedByUserId: String,
-  val calculatedByFirstName: String,
-  val calculatedByLastName: String,
 )

@@ -5,6 +5,7 @@ import jakarta.persistence.Entity
 import jakarta.persistence.Id
 import jakarta.persistence.Table
 import jakarta.validation.constraints.NotNull
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OffenderKeyDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.migration.LegacySentenceCalculationDto
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -220,7 +221,48 @@ data class LegacySentenceCalculation(
     nomisRecordedBy = this.nomisRecordedBy,
   )
 
+  fun toOffenderKeyDates(): OffenderKeyDates = OffenderKeyDates(
+    reasonCode = calculationReasonCode,
+    comment = commentText,
+    calculatedAt = calculationDate,
+    calculatedByUserId = nomisCreatedBy,
+    homeDetentionCurfewEligibilityDate = hdcedOverriddenDate ?: hdcedCalculatedDate,
+    earlyTermDate = etdOverriddenDate ?: etdCalculatedDate,
+    midTermDate = mtdOverriddenDate ?: mtdCalculatedDate,
+    lateTermDate = ltdOverriddenDate ?: ltdCalculatedDate,
+    dtoPostRecallReleaseDate = dprrdOverriddenDate ?: dprrdCalculatedDate,
+    automaticReleaseDate = ardOverriddenDate ?: ardCalculatedDate,
+    conditionalReleaseDate = crdOverriddenDate ?: crdCalculatedDate,
+    paroleEligibilityDate = pedOverriddenDate ?: pedCalculatedDate,
+    nonParoleDate = npdOverriddenDate ?: npdCalculatedDate,
+    licenceExpiryDate = ledOverriddenDate ?: ledCalculatedDate,
+    postRecallReleaseDate = prrdOverriddenDate ?: prrdCalculatedDate,
+    sentenceExpiryDate = sedOverriddenDate ?: sedCalculatedDate,
+    topupSupervisionExpiryDate = tusedOverriddenDate ?: tusedCalculatedDate,
+    homeDetentionCurfewApprovedDate = hdcadOverriddenDate ?: hdcadCalculatedDate,
+    tariffDate = tariffOverriddenDate ?: tariffCalculatedDate,
+    approvedParoleDate = apdOverriddenDate ?: apdCalculatedDate,
+    earlyRemovalSchemeEligibilityDate = ersedOverriddenDate,
+    tariffExpiredRemovalSchemeEligibilityDate = tersedOverriddenDate,
+    releaseOnTemporaryLicenceDate = rotlOverriddenDate,
+    homeDetentionCurfewEligibilityDateOverridden = isOverridden(hdcedCalculatedDate, hdcedOverriddenDate),
+    conditionalReleaseDateOverridden = isOverridden(crdCalculatedDate, crdOverriddenDate),
+    licenceExpiryDateOverridden = isOverridden(ledCalculatedDate, ledOverriddenDate),
+    sentenceExpiryDateOverridden = isOverridden(sedCalculatedDate, sedOverriddenDate),
+    nonParoleDateOverridden = isOverridden(npdCalculatedDate, npdOverriddenDate),
+    automaticReleaseDateOverridden = isOverridden(ardCalculatedDate, ardOverriddenDate),
+    topupSupervisionExpiryDateOverridden = isOverridden(tusedCalculatedDate, tusedOverriddenDate),
+    paroleEligibilityDateOverridden = isOverridden(pedCalculatedDate, pedOverriddenDate),
+    // these are not supported by CRDS
+    judiciallyImposedSentenceLength = null,
+    effectiveSentenceEndDate = null,
+    sentenceLength = null,
+  )
+
   companion object {
+
+    private fun isOverridden(calculatedDate: LocalDate?, overrideDate: LocalDate?): Boolean = overrideDate != null && (calculatedDate == null || !overrideDate.isEqual(calculatedDate))
+
     fun fromDto(legacySentenceCalculation: LegacySentenceCalculationDto, calculationRequest: CalculationRequest?): LegacySentenceCalculation = LegacySentenceCalculation(
       nomisCalculationId = legacySentenceCalculation.nomisCalculationId,
       prisonerId = legacySentenceCalculation.prisonerId,

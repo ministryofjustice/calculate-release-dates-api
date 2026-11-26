@@ -257,7 +257,7 @@ class HistoricCalculationsServiceTest {
     assertThat(result.page.totalItems).describedAs("total items").isEqualTo(0)
   }
 
-  private fun sentenceCalculationSummary(comment: String): SentenceCalculationSummary = SentenceCalculationSummary(456, "123", "bob", "davies", "RNI", "Ranby (HMP)", 1, LocalDateTime.now(), 4, comment, "reason", "user", "User", "One")
+  private fun sentenceCalculationSummary(comment: String): SentenceCalculationSummary = SentenceCalculationSummary(456, "123", "bob", "davies", "RNI", "Ranby (HMP)", 1, LocalDateTime.now(), 4, comment, "reason", "user")
 
   private fun calculationRequest(): CalculationRequest = CalculationRequest(1, reference, "123", 4565, CalculationStatus.CONFIRMED.name, calculatedAt = LocalDateTime.now(), prisonerLocation = "CDI")
   private fun secondCheckRecord(): CalculationRequestSecondCheck = CalculationRequestSecondCheck(1, calculationRequest().id(), "123", checkedByUsername = "CRD_TEST_USER")

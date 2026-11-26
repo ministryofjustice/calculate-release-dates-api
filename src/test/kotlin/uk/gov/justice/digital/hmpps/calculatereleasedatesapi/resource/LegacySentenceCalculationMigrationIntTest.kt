@@ -349,8 +349,6 @@ class LegacySentenceCalculationMigrationIntTest(private val mockPrisonService: M
           staffId = 321,
           calculationReason = "NEW",
           calculatedByUserId = "user1",
-          calculatedByFirstName = "User",
-          calculatedByLastName = "Name",
           commentText = calc.commentText,
         ),
       ),
@@ -368,8 +366,6 @@ class LegacySentenceCalculationMigrationIntTest(private val mockPrisonService: M
         sentenceExpiryDate = LocalDate.of(2016, 11, 6),
         licenceExpiryDate = LocalDate.of(2016, 11, 6),
         calculatedByUserId = "test-client",
-        calculatedByFirstName = "User",
-        calculatedByLastName = "One",
       ),
     )
   }

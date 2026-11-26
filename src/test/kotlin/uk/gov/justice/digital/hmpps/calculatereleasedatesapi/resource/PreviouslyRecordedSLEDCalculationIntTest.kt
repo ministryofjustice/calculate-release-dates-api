@@ -300,8 +300,6 @@ class PreviouslyRecordedSLEDCalculationIntTest(private val mockPrisonService: Mo
         calculatedAt = LocalDateTime.now(),
         comment = "Stub calc for ${confirmedCalcWithOverride.calculationReference}",
         calculatedByUserId = "user1",
-        calculatedByFirstName = "User",
-        calculatedByLastName = "One",
       ),
     )
 

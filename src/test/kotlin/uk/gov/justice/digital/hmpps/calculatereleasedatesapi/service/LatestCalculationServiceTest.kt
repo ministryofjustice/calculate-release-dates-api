@@ -175,7 +175,7 @@ class LatestCalculationServiceTest {
   fun `if there are no CRDS calcs then return as NOMIS`(name: String, getLatestCalculation: (prisonerId: String, latestCalculationService: LatestCalculationService) -> Either<String, LatestCalculation>) {
     whenever(prisonService.getOffenderDetail(prisonerId)).thenReturn(prisonerDetails)
     whenever(prisonService.getNOMISCalcReasons()).thenReturn(listOf(NomisCalculationReason("NEW", "New Sentence")))
-    val offenderKeyDates = OffenderKeyDates(reasonCode = "NEW", calculatedAt = now, calculatedByUserId = "username", calculatedByFirstName = "User", calculatedByLastName = "One")
+    val offenderKeyDates = OffenderKeyDates(reasonCode = "NEW", calculatedAt = now, calculatedByUserId = "username")
     whenever(prisonService.getOffenderKeyDates(bookingId)).thenReturn(offenderKeyDates.right())
     whenever(calculationRequestRepository.findFirstByPrisonerIdAndCalculationStatusOrderByCalculatedAtDesc(prisonerId)).thenReturn(Optional.empty())
     whenever(manageUsersApiClient.getUsersByUsernames(ArgumentMatchers.anySet())).thenReturn(usersDetails)
@@ -214,7 +214,7 @@ class LatestCalculationServiceTest {
   ) {
     whenever(prisonService.getOffenderDetail(prisonerId)).thenReturn(prisonerDetails)
     whenever(prisonService.getNOMISCalcReasons()).thenReturn(listOf(NomisCalculationReason("NEW", "New Sentence")))
-    val offenderKeyDates = OffenderKeyDates(reasonCode = "NEW", calculatedAt = now, calculatedByUserId = "username", calculatedByFirstName = "User", calculatedByLastName = "Overridden By Manage Users Name")
+    val offenderKeyDates = OffenderKeyDates(reasonCode = "NEW", calculatedAt = now, calculatedByUserId = "username")
     whenever(prisonService.getOffenderKeyDates(bookingId)).thenReturn(offenderKeyDates.right())
     whenever(calculationRequestRepository.findFirstByPrisonerIdAndCalculationStatusOrderByCalculatedAtDesc(prisonerId)).thenReturn(Optional.empty())
     whenever(manageUsersApiClient.getUsersByUsernames(ArgumentMatchers.anySet())).thenReturn(usersDetails)
@@ -251,7 +251,7 @@ class LatestCalculationServiceTest {
     name: String,
     getLatestCalculation: (prisonerId: String, latestCalculationService: LatestCalculationService) -> Either<String, LatestCalculation>,
   ) {
-    val offenderKeyDates = OffenderKeyDates(reasonCode = "NEW", calculatedAt = now, comment = "Not this one", calculatedByUserId = "username", calculatedByFirstName = "User", calculatedByLastName = "One")
+    val offenderKeyDates = OffenderKeyDates(reasonCode = "NEW", calculatedAt = now, comment = "Not this one", calculatedByUserId = "username")
     val calculationRequest = CalculationRequest(calculationReference = UUID.randomUUID())
 
     whenever(prisonService.getOffenderDetail(prisonerId)).thenReturn(prisonerDetails)
@@ -288,7 +288,7 @@ class LatestCalculationServiceTest {
   @MethodSource("latestCalculationGenerators")
   fun `Should use the NOMIS calculation if the comment is null`(name: String, getLatestCalculation: (prisonerId: String, latestCalculationService: LatestCalculationService) -> Either<String, LatestCalculation>) {
     val calculationRequest = CalculationRequest(calculationReference = UUID.randomUUID())
-    val offenderKeyDates = OffenderKeyDates(reasonCode = "NEW", calculatedAt = now, calculatedByUserId = "username", calculatedByFirstName = "User", calculatedByLastName = "One")
+    val offenderKeyDates = OffenderKeyDates(reasonCode = "NEW", calculatedAt = now, calculatedByUserId = "username")
     whenever(prisonService.getOffenderDetail(prisonerId)).thenReturn(prisonerDetails)
     whenever(prisonService.getNOMISCalcReasons()).thenReturn(listOf(NomisCalculationReason("NEW", "New Sentence")))
     whenever(prisonService.getOffenderKeyDates(bookingId)).thenReturn(offenderKeyDates.right())
@@ -322,7 +322,7 @@ class LatestCalculationServiceTest {
   @ParameterizedTest
   @MethodSource("latestCalculationGenerators")
   fun `Should use the NOMIS reason code for reason if we can't find the looked up code`(name: String, getLatestCalculation: (prisonerId: String, latestCalculationService: LatestCalculationService) -> Either<String, LatestCalculation>) {
-    val offenderKeyDates = OffenderKeyDates(reasonCode = "FOO", calculatedAt = now, calculatedByUserId = "username", calculatedByFirstName = "User", calculatedByLastName = "One")
+    val offenderKeyDates = OffenderKeyDates(reasonCode = "FOO", calculatedAt = now, calculatedByUserId = "username")
     whenever(prisonService.getOffenderDetail(prisonerId)).thenReturn(prisonerDetails)
     whenever(prisonService.getOffenderKeyDates(bookingId)).thenReturn(offenderKeyDates.right())
     whenever(calculationRequestRepository.findFirstByPrisonerIdAndCalculationStatusOrderByCalculatedAtDesc(prisonerId)).thenReturn(Optional.empty())
@@ -368,8 +368,6 @@ class LatestCalculationServiceTest {
       calculatedAt = calculatedAt,
       comment = "Some stuff and then the ref: $calculationReference",
       calculatedByUserId = "user1",
-      calculatedByFirstName = "User",
-      calculatedByLastName = "One",
     )
     val secondCheck = secondCheckRecord()
 
@@ -439,8 +437,6 @@ class LatestCalculationServiceTest {
       calculatedAt = calculatedAt,
       comment = "Some stuff and then the ref: $calculationReference",
       calculatedByUserId = "user1",
-      calculatedByFirstName = "User",
-      calculatedByLastName = "One",
     )
     val secondCheck = secondCheckRecordWithUnknownUsername()
 
@@ -509,8 +505,6 @@ class LatestCalculationServiceTest {
       calculatedAt = calculatedAt,
       comment = "Some stuff and then the ref: $calculationReference",
       calculatedByUserId = "user1",
-      calculatedByFirstName = "User",
-      calculatedByLastName = "One",
     )
 
     whenever(prisonService.getOffenderDetail(prisonerId)).thenReturn(prisonerDetails)
@@ -576,8 +570,6 @@ class LatestCalculationServiceTest {
       calculatedAt = calculatedAt,
       comment = "Some stuff and then the ref: $calculationReference",
       calculatedByUserId = "user1",
-      calculatedByFirstName = "User",
-      calculatedByLastName = "One",
     )
     val calculationRequest = CalculationRequest(
       id = 654321,
@@ -615,8 +607,6 @@ class LatestCalculationServiceTest {
       calculatedAt = calculatedAt,
       comment = "Some stuff and then the ref: $calculationReference",
       calculatedByUserId = "user1",
-      calculatedByFirstName = "User",
-      calculatedByLastName = "One",
     )
     val calculationRequest = CalculationRequest(
       id = 654321,
@@ -652,8 +642,6 @@ class LatestCalculationServiceTest {
       comment = "Some stuff and then the ref: $calculationReference",
       sentenceExpiryDate = LocalDate.of(2025, 1, 1),
       calculatedByUserId = "user1",
-      calculatedByFirstName = "User",
-      calculatedByLastName = "One",
     )
 
     whenever(prisonService.getOffenderDetail(prisonerId)).thenReturn(prisonerDetails)
@@ -709,8 +697,6 @@ class LatestCalculationServiceTest {
       comment = "Some stuff and then the ref: $calculationReference",
       sentenceExpiryDate = LocalDate.of(2025, 1, 1),
       calculatedByUserId = "user1",
-      calculatedByFirstName = "User",
-      calculatedByLastName = "One",
     )
 
     whenever(prisonService.getOffenderDetail(prisonerId)).thenReturn(prisonerDetails)
@@ -762,8 +748,6 @@ class LatestCalculationServiceTest {
       comment = "Some stuff and then the ref: $calculationReference",
       sentenceExpiryDate = LocalDate.of(2025, 1, 1),
       calculatedByUserId = "user1",
-      calculatedByFirstName = "User",
-      calculatedByLastName = "One",
     )
 
     whenever(prisonService.getOffenderDetail(prisonerId)).thenReturn(prisonerDetails)
@@ -823,8 +807,6 @@ class LatestCalculationServiceTest {
       comment = "Some stuff and then the ref: $calculationReference",
       sentenceExpiryDate = LocalDate.of(2025, 1, 1),
       calculatedByUserId = "user1",
-      calculatedByFirstName = "User",
-      calculatedByLastName = "One",
     )
 
     whenever(prisonService.getOffenderDetail(prisonerId)).thenReturn(prisonerDetails)
@@ -883,8 +865,6 @@ class LatestCalculationServiceTest {
       comment = "Some stuff and then the ref: $calculationReference",
       sentenceExpiryDate = LocalDate.of(2025, 1, 1),
       calculatedByUserId = "username",
-      calculatedByFirstName = "User",
-      calculatedByLastName = "One",
     )
 
     whenever(prisonService.getOffenderDetail(prisonerId)).thenReturn(prisonerDetails)
@@ -945,8 +925,6 @@ class LatestCalculationServiceTest {
       calculatedAt = calculatedAt,
       comment = "Some stuff and then the ref: $latestCalculationReference",
       calculatedByUserId = "username1",
-      calculatedByFirstName = "User",
-      calculatedByLastName = "One",
     )
 
     whenever(prisonService.getOffenderDetail(prisonerId)).thenReturn(prisonerDetails)
@@ -992,8 +970,6 @@ class LatestCalculationServiceTest {
       staffId = 123,
       calculationReason = offenderKeyDates.reasonCode,
       calculatedByUserId = offenderKeyDates.calculatedByUserId,
-      calculatedByFirstName = offenderKeyDates.calculatedByFirstName,
-      calculatedByLastName = offenderKeyDates.calculatedByLastName,
       commentText = "Nomis Calc 1 ${latestCalculationRequest.calculationReference}",
     )
     val nomisCalcSummary2 = latestNomisCalcSummary.copy(calculationDate = calculatedAt.minusHours(12), commentText = "Nomis Calc 3", offenderSentCalculationId = 2)
@@ -1095,8 +1071,6 @@ class LatestCalculationServiceTest {
       calculatedAt = calculatedAt,
       comment = "Some stuff and then the ref: $calculationReference",
       calculatedByUserId = "user1",
-      calculatedByFirstName = "User",
-      calculatedByLastName = "One",
     )
 
     whenever(prisonService.getOffenderDetail(prisonerId)).thenReturn(prisonerDetails)
@@ -1143,8 +1117,6 @@ class LatestCalculationServiceTest {
     staffId = 123,
     calculationReason = offenderKeyDates.reasonCode,
     calculatedByUserId = offenderKeyDates.calculatedByUserId,
-    calculatedByFirstName = offenderKeyDates.calculatedByFirstName,
-    calculatedByLastName = offenderKeyDates.calculatedByLastName,
     commentText = offenderKeyDates.comment,
   )
 

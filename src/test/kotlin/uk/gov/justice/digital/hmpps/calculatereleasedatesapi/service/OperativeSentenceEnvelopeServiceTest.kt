@@ -88,8 +88,6 @@ class OperativeSentenceEnvelopeServiceTest {
       reasonCode = "NEW",
       calculatedAt = LocalDateTime.now(),
       calculatedByUserId = "username",
-      calculatedByFirstName = "User",
-      calculatedByLastName = "One",
       sentenceExpiryDate = LocalDate.of(2000, 1, 10),
     )
     whenever(prisonService.getOffenderDetail(prisonerId)).thenReturn(prisonerDetails)
@@ -116,8 +114,6 @@ class OperativeSentenceEnvelopeServiceTest {
       reasonCode = "NEW",
       calculatedAt = LocalDateTime.now(),
       calculatedByUserId = "username",
-      calculatedByFirstName = "User",
-      calculatedByLastName = "One",
       sentenceExpiryDate = null,
     )
     whenever(prisonService.getOffenderDetail(prisonerId)).thenReturn(prisonerDetails)
@@ -134,8 +130,6 @@ class OperativeSentenceEnvelopeServiceTest {
       reasonCode = "NEW",
       calculatedAt = LocalDateTime.now(),
       calculatedByUserId = "username",
-      calculatedByFirstName = "User",
-      calculatedByLastName = "One",
       sentenceExpiryDate = LocalDate.of(2000, 1, 10),
     )
     whenever(prisonService.getOffenderDetail(prisonerId)).thenReturn(prisonerDetails)
@@ -152,8 +146,6 @@ class OperativeSentenceEnvelopeServiceTest {
       reasonCode = "NEW",
       calculatedAt = LocalDateTime.now(),
       calculatedByUserId = "username",
-      calculatedByFirstName = "User",
-      calculatedByLastName = "One",
       sentenceExpiryDate = LocalDate.of(2000, 1, 10),
     )
     whenever(prisonService.getOffenderDetail(prisonerId)).thenReturn(prisonerDetails)
@@ -182,8 +174,6 @@ class OperativeSentenceEnvelopeServiceTest {
       reasonCode = "NEW",
       calculatedAt = LocalDateTime.now(),
       calculatedByUserId = "username",
-      calculatedByFirstName = "User",
-      calculatedByLastName = "One",
       sentenceExpiryDate = LocalDate.of(2000, 1, 10),
       comment = "This was a CRDS calc $calculationRequestRefence",
     )
@@ -214,8 +204,6 @@ class OperativeSentenceEnvelopeServiceTest {
       reasonCode = "NEW",
       calculatedAt = LocalDateTime.now(),
       calculatedByUserId = "username",
-      calculatedByFirstName = "User",
-      calculatedByLastName = "One",
       sentenceExpiryDate = LocalDate.of(2000, 1, 10),
       comment = "This was a CRDS calc $calculationRequestRefence",
     )

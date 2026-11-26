@@ -86,8 +86,6 @@ class PrisonerCalculationOverviewIntTest(private val mockPrisonService: MockPris
         topupSupervisionExpiryDate = LocalDate.of(2017, 1, 6),
         conditionalReleaseDateOverridden = true,
         calculatedByUserId = "user1",
-        calculatedByFirstName = "User",
-        calculatedByLastName = "One",
       ),
     )
     mockPrisonService.stubSentenceDetails(
@@ -112,8 +110,6 @@ class PrisonerCalculationOverviewIntTest(private val mockPrisonService: MockPris
           staffId = 321,
           calculationReason = "NEW",
           calculatedByUserId = "user1",
-          calculatedByFirstName = "User",
-          calculatedByLastName = "Name",
           commentText = "NOMIS calc",
         ),
         SentenceCalculationSummary(
@@ -128,8 +124,6 @@ class PrisonerCalculationOverviewIntTest(private val mockPrisonService: MockPris
           staffId = 321,
           calculationReason = "NEW",
           calculatedByUserId = "user1",
-          calculatedByFirstName = "User",
-          calculatedByLastName = "Name",
           commentText = "CRDS calc ${confirmed.calculationReference}",
         ),
       ),
@@ -235,8 +229,6 @@ class PrisonerCalculationOverviewIntTest(private val mockPrisonService: MockPris
           staffId = 321,
           calculationReason = "NEW",
           calculatedByUserId = "user1",
-          calculatedByFirstName = "User",
-          calculatedByLastName = "Name",
           commentText = "CRDS calc ${confirmed.calculationReference}",
         ),
         SentenceCalculationSummary(
@@ -251,8 +243,6 @@ class PrisonerCalculationOverviewIntTest(private val mockPrisonService: MockPris
           staffId = 321,
           calculationReason = "NEW",
           calculatedByUserId = "user1",
-          calculatedByFirstName = "User",
-          calculatedByLastName = "Name",
           commentText = "NOMIS calc",
         ),
       ),
@@ -354,8 +344,6 @@ class PrisonerCalculationOverviewIntTest(private val mockPrisonService: MockPris
       sentenceExpiryDate = LocalDate.of(2016, 11, 6),
       licenceExpiryDate = LocalDate.of(2016, 11, 6),
       calculatedByUserId = "test-client",
-      calculatedByFirstName = "User",
-      calculatedByLastName = "One",
     )
     mockPrisonService.stubKeyDates(bookingId, offenderKeyDates)
     return Triple(bookingId, prisonerId, confirmed)

@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
 import org.springframework.stereotype.Repository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.LegacySentenceCalculation
+import java.util.Optional
 
 @Repository
 interface LegacySentenceCalculationRepository : JpaRepository<LegacySentenceCalculation, Long> {
@@ -23,4 +24,6 @@ interface LegacySentenceCalculationRepository : JpaRepository<LegacySentenceCalc
   @Query("UPDATE LegacySentenceCalculation SET prisonerId = :toPrisoner WHERE bookingId = :bookingId and prisonerId = :fromPrisoner")
   @Modifying
   fun moveBooking(bookingId: Long, fromPrisoner: String, toPrisoner: String)
+
+  fun findFirstByBookingIdOrderByCalculationDateDesc(bookingId: Long): Optional<LegacySentenceCalculation>
 }

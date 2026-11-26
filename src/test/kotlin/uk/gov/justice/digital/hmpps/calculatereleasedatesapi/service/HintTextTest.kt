@@ -132,8 +132,6 @@ class HintTextTest : SpringTestBase() {
         topupSupervisionExpiryDateOverridden = calculatedReleaseDates.dates.containsKey(ReleaseDateType.TUSED),
         paroleEligibilityDateOverridden = calculatedReleaseDates.dates.containsKey(ReleaseDateType.PED),
         calculatedByUserId = "user1",
-        calculatedByFirstName = "User",
-        calculatedByLastName = "One",
       ),
       booking = calculationFile.booking,
       null,

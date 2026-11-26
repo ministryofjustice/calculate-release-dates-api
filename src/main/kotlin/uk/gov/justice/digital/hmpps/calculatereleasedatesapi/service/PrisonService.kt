@@ -1,6 +1,9 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import arrow.core.Either
+import arrow.core.left
+import arrow.core.right
+import jakarta.transaction.Transactional
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.core.codec.DecodingException
@@ -20,12 +23,17 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.pris
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.PrisonApiExternalMovement
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.PrisonerInPrisonSummary
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.prisonapi.model.CalculablePrisoner
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.LegacyCalculationReasonRepository
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.LegacySentenceCalculationRepository
 import java.time.LocalDate
+import kotlin.jvm.optionals.getOrNull
 
 @Service
 class PrisonService(
   private val prisonApiClient: PrisonApiClient,
   private val releaseArrangementLookupService: ReleaseArrangementLookupService,
+  private val legacyCalculationReasonRepository: LegacyCalculationReasonRepository,
+  private val legacySentenceCalculationRepository: LegacySentenceCalculationRepository,
   private val featureToggles: FeatureToggles,
 ) {
 
@@ -106,11 +114,29 @@ class PrisonService(
 
   fun getAgenciesByType(type: String) = prisonApiClient.getAgenciesByType(type)
 
-  fun getOffenderKeyDates(bookingId: Long): Either<String, OffenderKeyDates> = prisonApiClient.getOffenderKeyDates(bookingId)
+  fun getOffenderKeyDates(bookingId: Long): Either<String, OffenderKeyDates> {
+    if (featureToggles.useMigratedNomisData) {
+      val latestByBookingId = legacySentenceCalculationRepository.findFirstByBookingIdOrderByCalculationDateDesc(bookingId).getOrNull()
+      return latestByBookingId?.toOffenderKeyDates()?.right() ?: "Booking ($bookingId) not found or has no calculations".left()
+    }
+    return prisonApiClient.getOffenderKeyDates(bookingId)
+  }
 
-  fun getNOMISCalcReasons(): List<NomisCalculationReason> = prisonApiClient.getNOMISCalcReasons()
+  fun getNOMISOffenderKeyDates(offenderSentCalcId: Long): Either<String, OffenderKeyDates> {
+    if (featureToggles.useMigratedNomisData) {
+      val legacySentenceCalculation = legacySentenceCalculationRepository.findById(offenderSentCalcId).getOrNull()
+      return legacySentenceCalculation?.toOffenderKeyDates()?.right() ?: "Offender Key Dates for offenderSentCalcId ($offenderSentCalcId) not found".left()
+    }
+    return prisonApiClient.getNOMISOffenderKeyDates(offenderSentCalcId)
+  }
 
-  fun getNOMISOffenderKeyDates(offenderSentCalcId: Long): Either<String, OffenderKeyDates> = prisonApiClient.getNOMISOffenderKeyDates(offenderSentCalcId)
+  @Transactional
+  fun getNOMISCalcReasons(): List<NomisCalculationReason> {
+    if (featureToggles.useMigratedNomisData) {
+      return legacyCalculationReasonRepository.findAll().map { NomisCalculationReason(it.code, it.description) }
+    }
+    return prisonApiClient.getNOMISCalcReasons()
+  }
 
   fun getPrisonerInPrisonSummary(prisonerId: String): PrisonerInPrisonSummary = prisonApiClient.getPrisonerInPrisonSummary(prisonerId)
 
