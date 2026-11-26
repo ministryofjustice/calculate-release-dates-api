@@ -10,8 +10,10 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.RestController
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.ErsedConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ConfigItem
+import java.time.format.DateTimeFormatter
 
 @RestController
 @RequestMapping("/configuration", produces = [MediaType.APPLICATION_JSON_VALUE])
@@ -19,6 +21,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Config
 @Validated
 class ConfigurationController(
   private val featureToggles: FeatureToggles,
+  private val ersedConfiguration: ErsedConfiguration,
 ) {
 
   @GetMapping(value = ["/all"])
@@ -35,6 +38,7 @@ class ConfigurationController(
   )
   fun getAllConfiguration(): List<ConfigItem> {
     val scheduledRemovalConfigItem = ConfigItem("Delete Preliminary Calculations Config", "Max ${ScheduledTaskController.MAX_ITEMS} over ${ScheduledTaskController.MIN_AGE_YEARS} years old")
-    return featureToggles.toConfigItems() + listOf(scheduledRemovalConfigItem)
+    val ers0CommencementConfigItem = ConfigItem("ERS0 Commencement Date", ersedConfiguration.ersZeroCommencementDate.format(DateTimeFormatter.ISO_DATE))
+    return featureToggles.toConfigItems() + listOf(scheduledRemovalConfigItem, ers0CommencementConfigItem)
   }
 }
