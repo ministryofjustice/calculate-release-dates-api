@@ -26,6 +26,7 @@ generic-service:
     PRISON-REGISTER_API_URL: https://prison-register-dev.hmpps.service.justice.gov.uk
     ADJUSTMENTS_UI_URL: https://adjustments-dev.hmpps.service.justice.gov.uk
     ERS_ZERO_ENABLED: "true"
+    ADULT_HDC_SUSPENDED: "false"
 
   # Switches off the allow list in the DEV env only.
   allowlist: null
